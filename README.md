@@ -49,6 +49,7 @@ Works with any tool that supports workspace-level instructions:
 
 | Tool | How |
 |------|-----|
+| **[MyAgents](https://myagents.ai)** | Open folder as workspace |
 | **Claude Code** | `cd my-agent && claude` |
 | **Cursor** | Open folder → Agent mode |
 | **Windsurf** | Open folder → Cascade |
@@ -221,6 +222,7 @@ cd my-agent
 
 | 工具 | 方式 |
 |------|------|
+| **[MyAgents](https://myagents.ai)** | 打开文件夹作为工作区 |
 | **Claude Code** | `cd my-agent && claude` |
 | **Cursor** | 打开文件夹 → Agent 模式 |
 | **Windsurf** | 打开文件夹 → Cascade |
