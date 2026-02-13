@@ -1,6 +1,6 @@
 ---
 name: nano-pdf
-description: Edit PDFs with natural-language instructions using the nano-pdf CLI.
+description: "PDF文本表格提取、创建、合并拆分"
 ---
 
 # nano-pdf
