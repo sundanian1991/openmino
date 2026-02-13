@@ -53,6 +53,19 @@
 - 业务价值：对业务KPI的贡献
 - 平衡：短期效率 vs 长期风险、可复制性
 
+## 技术配置（2026-02-13更新）
+
+**Claude Code API配置**：
+- 桌面端"选模型"和"底层API"是分开的
+- settings.json的env字段优先级 > 环境变量
+- 删掉env = 让桌面端读环境变量 = 灵活切换
+- 年老师的API来源：
+  - 摩尔线程（GLM-4.7）：BASE_URL=open.bigmodel.cn, AUTH_TOKEN=99280010...
+  - 硅基流动：待配置（需要BASE_URL和API Key）
+- 切换方式：修改~/.zshrc后重启桌面端
+
+---
+
 ## Technical Knowledge
 
 **数据分析工具**：
