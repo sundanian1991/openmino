@@ -49,8 +49,9 @@ _不重复犯错。进化中。_
 **原因**: 看到搜索结果就直接说，没有本地验证
 
 **改进**:
-- 版本信息必须本地验证（`defaults read`或`claude --version`）
+- 版本信息必须本地验证（`defaults read`或`/Applications/Auto-Claude.app/Contents/MacOS/Claude --version`）
 - 不确认的数据，用"据搜索显示"而不是肯定语气
 - 搜索结果是某时点的快照，不是实时数据
+- **更新频率**：搜索结果可能滞后（2月初 vs 2月中）
 
 ---
