@@ -4,12 +4,12 @@
 
 ## 当前状态
 
-**当前任务**：吸收proactive-agent核心协议，升级能力架构
+**当前任务**：能力架构升级完成，tavily搜索测试成功
 
 **关键信息**：
 - 已装skills：proactive-agent、search (tavily)、openclaw-self-healing
 - WAL协议、工作缓冲区、统一搜索、无穷资源fulness已写入SOUL.md
-- tavily需要OAuth认证或API Key才能用
+- tavily API Key已配置：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
 
 ## WAL日志
 
