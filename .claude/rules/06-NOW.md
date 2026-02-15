@@ -5,6 +5,7 @@ _重启后先看这个，就知道我在哪。_
 ## 当前会话 - 实时更新
 
 **最新动态**:
+- [2026-02-15] 🌐 OpenClaw Markdown MCP服务器自研成功：Cloudflare协议支持、隐私脱敏、Turndown回退
 - [2026-02-14 21:30] 🌐 tavily搜索配置成功，实时数据接入
 - [2026-02-14 21:00] 🧠 能力架构升级：WAL协议、工作缓冲区、统一搜索、自愈机制
 - [2026-02-14 21:00] 🔧 Skills安装：proactive-agent、search (tavily)、openclaw-self-healing
