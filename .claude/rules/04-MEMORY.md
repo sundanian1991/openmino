@@ -107,6 +107,15 @@
 - 设计系统偏好：Shadcn UI / Radix UI 风格
 - Clean > Minimalist > Modern 审美
 
+**搜索与抓取（2026-02-15）**：
+- **问题根因**：webReader MCP服务器响应慢/超时，导致卡死
+- **解决方案**：建立"不受限搜索"多源协议
+  - tavily搜索：实时信息搜索
+  - openclaw-markdown：自研MCP服务器，支持Cloudflare Markdown协议、隐私脱敏、Content-Signal检查
+  - curl/fetch：备用方案
+- **自愈机制**：webReader超时 → 自动切换tavily → 记录失败到self-review.md
+- **核心原则**：依赖多个独立源，避免单点故障
+
 ## Ongoing Context
 
 **当前岗位**：
