@@ -273,43 +273,49 @@ FULL_HTML = '''<!DOCTYPE html>
         @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
         body {{ font-family: "Noto Sans SC", "Inter", sans-serif; }}
 
-        /* 文章卡片 - 多层次阴影 */
+        /* 文章卡片 - 多层次阴影 + 丰富质感 */
         .article-card {{
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
             box-shadow:
-                0 1px 2px 0 rgba(0, 0, 0, 0.05),
-                0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                0 2px 4px 0 rgba(0, 0, 0, 0.06),
+                0 6px 12px -2px rgba(0, 0, 0, 0.1),
+                0 16px 24px -4px rgba(0, 0, 0, 0.08);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }}
         .article-card:hover {{
+            background: linear-gradient(145deg, #ffffff 0%, #fafafa 50%, #f1f5f9 100%);
             box-shadow:
-                0 4px 6px -1px rgba(124, 58, 237, 0.1),
-                0 20px 25px -5px rgba(124, 58, 237, 0.15),
-                0 0 0 1px rgba(124, 58, 237, 0.1);
-            transform: translateY(-2px);
+                0 8px 12px -1px rgba(124, 58, 237, 0.15),
+                0 24px 36px -4px rgba(124, 58, 237, 0.2),
+                0 0 0 1px rgba(124, 58, 237, 0.15);
+            transform: translateY(-3px) scale(1.005);
+            border-color: rgba(139, 92, 246, 0.3);
         }}
 
-        /* 顶部渐变条 - hover显示 */
+        /* 顶部渐变条 - hover显示 + 更鲜艳 */
         .article-card::before {{
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #7c3aed, #a78bfa, #c4b5fd);
+            height: 4px;
+            background: linear-gradient(90deg, #6d28d9 0%, #8b5cf6 50%, #a78bfa 100%);
             border-radius: 16px 16px 0 0;
             opacity: 0;
             transition: opacity 0.3s ease;
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
         }}
         .article-card:hover::before {{
             opacity: 1;
         }}
 
-        /* 标签渐变 */
+        /* 标签渐变 - 更丰富的色彩 */
         .tag-gradient {{
-            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            box-shadow: 0 1px 2px rgba(139, 92, 246, 0.1);
         }}
 
         /* 内阴影增加深度 */
@@ -322,7 +328,7 @@ FULL_HTML = '''<!DOCTYPE html>
     <div class="min-h-screen">
         <!-- Sticky Header -->
         <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-            <div class="max-w-3xl mx-auto px-6 py-4">
+            <div class="max-w-6xl mx-auto px-6 py-4">
                 <a href="index.html" class="inline-flex items-center gap-2 text-slate-400 hover:text-violet-600 text-sm font-medium transition-colors cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     <span>返回首页</span>
@@ -340,13 +346,13 @@ FULL_HTML = '''<!DOCTYPE html>
         </header>
 
         <!-- Main Content -->
-        <main class="max-w-3xl mx-auto px-6 py-8">
+        <main class="max-w-6xl mx-auto px-6 py-8">
             {articles}
         </main>
 
         <!-- Footer -->
         <footer class="border-t border-slate-200 mt-16">
-            <div class="max-w-3xl mx-auto px-6 py-8 text-center">
+            <div class="max-w-6xl mx-auto px-6 py-8 text-center">
                 <p class="text-slate-400 text-sm">由 Mino 自动生成 · Claude API 驱动</p>
             </div>
         </footer>
@@ -412,46 +418,46 @@ def main():
     articles_html = ""
     for article in all_articles:
         articles_html += f'''
-        <article class="article-card relative rounded-2xl p-6 mb-6 cursor-pointer">
-            <div class="flex items-start gap-4">
+        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
+            <div class="flex items-start gap-5">
                 <div class="flex-shrink-0">
-                    <span class="text-4xl filter drop-shadow-sm">{article['emoji']}</span>
+                    <span class="text-5xl filter drop-shadow-md">{article['emoji']}</span>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="tag-gradient inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold text-violet-800 border border-violet-200">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
                             {article['category']}
                         </span>
-                        <span class="text-slate-300 text-xs">·</span>
-                        <span class="text-slate-500 text-xs flex items-center gap-1">
-                            <i data-lucide="user" class="w-3 h-3"></i>
+                        <span class="text-slate-300 text-sm">·</span>
+                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
+                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
                             {article['source']}
                         </span>
                     </div>
 
                     <a href="{article['link']}" target="_blank" class="block group">
-                        <h2 class="text-xl font-bold text-slate-900 leading-snug mb-3 line-clamp-2
-                                   group-hover:text-violet-600 transition-colors duration-200">
+                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
+                                   group-hover:text-violet-700 transition-colors duration-200">
                             {article['title']}
                         </h2>
                     </a>
 
-                    {f'<p class="text-violet-700 font-semibold text-base mb-3">{article["insight"]}</p>' if article['insight'] else ''}
+                    {f'<p class="text-violet-800 font-semibold text-lg mb-4 leading-relaxed">{article["insight"]}</p>' if article['insight'] else ''}
 
-                    <div class="bg-slate-50 rounded-xl p-4 mb-4 depth-shadow">
-                        <p class="text-slate-700 text-sm leading-relaxed">
-                            💬 <span class="font-medium">{article['one_liner']}</span>
+                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
+                        <p class="text-slate-800 text-base leading-relaxed font-medium">
+                            💬 {article['one_liner']}
                         </p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-4 border-t border-slate-200">
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
+                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
                             {article['value']}
                         </span>
                         <a href="{article['link']}" target="_blank"
-                           class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold rounded-xl
-                                  hover:from-violet-700 hover:to-purple-700 transition-all duration-200
-                                  shadow-md hover:shadow-lg cursor-pointer">
+                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
+                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
+                                  shadow-lg hover:shadow-xl cursor-pointer">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
