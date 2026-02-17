@@ -19,19 +19,27 @@
 | 脚本 | 用途 | 状态 |
 |------|------|------|
 | `fetch-rss.py` | RSS抓取：解析OPML→抓取feed→存储JSON | ✅ 已实现 |
-| `daily-briefing.py` | 每日简报：RSS抓取→Claude摘要→Shadcn风格HTML | ✅ 已实现 |
+| `daily-briefing.py` | 每日简报V2：精选15源→Claude摘要→Tailwind+Lucide设计 | ✅ 已实现 |
 
 **daily-briefing.py 使用示例**：
 ```bash
 # 需要先设置API密钥
 export ANTHROPIC_API_KEY="your-key-here"
 
-# 生成简报（2个RSS源，每个源2篇文章）
-python3 scripts/daily-briefing.py 2
+# 生成简报（精选15个高质量RSS源）
+python3 scripts/daily-briefing.py
 
-# 输出：data/briefing/YYYY-MM-DD.html
-# 自动在浏览器中打开
+# 输出：data/briefing/YYYY-MM-DD/
+#   - index.html  (导航页)
+#   - brief.html  (快速浏览：每源1篇)
+#   - full.html   (深度阅读：每源3篇+AI摘要)
 ```
+
+**V2设计特点**：
+- Tailwind CSS + Lucide Icons（Vibe Coding标准）
+- 两版输出：brief（快速）+ full（深度）
+- 精选15个高质量源（Simon Willison、Paul Graham、Gwern等）
+- Newsletter级别排版设计
 
 **fetch-rss.py 使用示例**：
 ```bash
