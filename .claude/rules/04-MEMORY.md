@@ -25,14 +25,6 @@
 - 从"事后救火"转向"过程监控"
 - 思考如何让这个生态健康有韧性
 
-## Important Decisions
-
-**2025年关键决策**：
-- 四个团队合并后，统一供应商管理标准和流程
-- 通过引入8家新供应商激活竞争，75%进入季度前三
-- 建立全生命周期管理指引（六大模块：储备、引入、运营、评估、清退、结算）
-- 平稳清退4家高风险供应商，零纠纷
-
 ## User Preferences
 
 **沟通风格**：
@@ -53,16 +45,12 @@
 - 业务价值：对业务KPI的贡献
 - 平衡：短期效率 vs 长期风险、可复制性
 
-## 技术配置（2026-02-13更新）
+## 技术配置
 
 **Claude Code API配置**：
 - 桌面端"选模型"和"底层API"是分开的
 - settings.json的env字段优先级 > 环境变量
-- 删掉env = 让桌面端读环境变量 = 灵活切换
-- 年老师的API来源：
-  - 摩尔线程（GLM-4.7）：BASE_URL=open.bigmodel.cn, AUTH_TOKEN=99280010...
-  - 硅基流动：待配置（需要BASE_URL和API Key）
-- 切换方式：修改~/.zshrc后重启桌面端
+- TAVILY_API_KEY已配置，tavily-mcp包可用
 
 ---
 
@@ -112,14 +100,12 @@
 - 设计系统偏好：Shadcn UI / Radix UI 风格
 - Clean > Minimalist > Modern 审美
 
-**搜索与抓取（2026-02-15）**：
-- **问题根因**：webReader MCP服务器响应慢/超时，导致卡死
-- **解决方案**：建立"不受限搜索"多源协议
-  - tavily搜索：实时信息搜索
-  - openclaw-markdown：自研MCP服务器，支持Cloudflare Markdown协议、隐私脱敏、Content-Signal检查
-  - curl/fetch：备用方案
-- **自愈机制**：webReader超时 → 自动切换tavily → 记录失败到self-review.md
-- **核心原则**：依赖多个独立源，避免单点故障
+**搜索与抓取（2026-02-17更新）**：
+- **tavily搜索**：包名`tavily-mcp`，已配置到.mcp.json，验证可用
+- **memory MCP**：@modelcontextprotocol/server-memory，知识图谱记忆搜索
+- **openclaw-markdown**：自研MCP服务器，Cloudflare Markdown协议、隐私脱敏
+- **统一搜索协议**：tavily → memory_search → grep（强制执行）
+- **核心原则**：先用后读，搜索命中直接用，未命中再Read全文件
 
 ## Ongoing Context
 
