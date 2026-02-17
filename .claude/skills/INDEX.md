@@ -50,6 +50,7 @@
 | **remotion-best-practices** | React视频创作 | 需要制作视频内容时 |
 | **skill-creator** | 创建新skill指南 | 开发新功能时 |
 | **peekaboo** | macOS UI自动化 | 录制操作流程 |
+| **steal-learning** | 偷师三行法 - 极简信息萃取 | 萃取学习方法、提炼沟通话术、记录他人经验、避免"收藏即学习" |
 
 ---
 

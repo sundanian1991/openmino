@@ -70,19 +70,26 @@ That's it. You have a persistent AI companion.
 
 ```
 my-agent/
-├── CLAUDE.md                    # Main instructions (auto-loaded)
 ├── .claude/rules/               # Core identity (auto-loaded every session)
 │   ├── 01-IDENTITY.md           # Name, origin, emoji, motto
 │   ├── 02-SOUL.md               # Personality & behavior rules
 │   ├── 03-USER.md               # About you (the human)
-│   └── 04-MEMORY.md             # Curated long-term memory
+│   ├── 04-MEMORY.md             # Curated long-term memory
+│   ├── 05-self-review.md        # Mistake log
+│   ├── 06-NOW.md                # Current state (what's happening now)
+│   └── WORK.md                  # Work contract with user
+├── .claude/agents/              # Specialized agents
 ├── .claude/commands/            # Slash commands
 │   ├── BOOTSTRAP.md             # First-run onboarding (/BOOTSTRAP)
 │   └── UPDATE_MEMORY.md         # Memory maintenance (/UPDATE_MEMORY)
-├── .claude/skills/              # 14 pre-built capabilities
-├── memory/                      # Daily journal (YYYY-MM-DD.md)
-├── drafts/                      # Work-in-progress documents
-└── workspace/                   # Temp area (gitignored)
+├── .claude/skills/              # Pre-built capabilities
+├── memory/daily/                # Daily journal (YYYY-MM-DD.md)
+├── memory/working-buffer.md     # Temp buffer for long sessions
+├── business/                    # Work-related content
+├── personal/                    # Personal life management
+├── projects/                    # Development projects
+├── workspace/                   # Temp area (gitignored)
+└── README.md                    # This file
 ```
 
 ### The Memory System
@@ -243,19 +250,26 @@ cd my-agent
 
 ```
 my-agent/
-├── CLAUDE.md                    # 主指令文件（自动加载）
 ├── .claude/rules/               # 核心身份（每次会话自动加载）
 │   ├── 01-IDENTITY.md           # 名字、起源、emoji、座右铭
 │   ├── 02-SOUL.md               # 人格与行为规则
 │   ├── 03-USER.md               # 关于你（人类）
-│   └── 04-MEMORY.md             # 精炼的长期记忆
+│   ├── 04-MEMORY.md             # 精炼的长期记忆
+│   ├── 05-self-review.md        # 错题本
+│   ├── 06-NOW.md                # 当下状态（我在哪）
+│   └── WORK.md                  # 工作契约
+├── .claude/agents/              # 专用 Agent
 ├── .claude/commands/            # 快捷指令
 │   ├── BOOTSTRAP.md             # 冷启动引导（/BOOTSTRAP）
 │   └── UPDATE_MEMORY.md         # 记忆维护（/UPDATE_MEMORY）
-├── .claude/skills/              # 14 个预置技能
-├── memory/                      # 每日日志（YYYY-MM-DD.md）
-├── drafts/                      # 工作草稿
-└── workspace/                   # 临时工作区（不进 git）
+├── .claude/skills/              # 预置技能
+├── memory/daily/                # 每日日志（YYYY-MM-DD.md）
+├── memory/working-buffer.md     # 长会话临时缓冲
+├── business/                    # 工作相关内容
+├── personal/                    # 个人生活管理
+├── projects/                    # 开发项目
+├── workspace/                   # 临时工作区（不进 git）
+└── README.md                    # 本文件
 ```
 
 ### 记忆系统
