@@ -19,8 +19,21 @@
 | 脚本 | 用途 | 状态 |
 |------|------|------|
 | `fetch-rss.py` | RSS抓取：解析OPML→抓取feed→存储JSON | ✅ 已实现 |
+| `daily-briefing.py` | 每日简报：RSS抓取→Claude摘要→Shadcn风格HTML | ✅ 已实现 |
 
-**使用示例**：
+**daily-briefing.py 使用示例**：
+```bash
+# 需要先设置API密钥
+export ANTHROPIC_API_KEY="your-key-here"
+
+# 生成简报（2个RSS源，每个源2篇文章）
+python3 scripts/daily-briefing.py 2
+
+# 输出：data/briefing/YYYY-MM-DD.html
+# 自动在浏览器中打开
+```
+
+**fetch-rss.py 使用示例**：
 ```bash
 # 抓取前5个RSS源（默认）
 python3 scripts/fetch-rss.py
