@@ -6,11 +6,31 @@
 
 ## 已有脚本
 
+### Bash脚本
+
 | 脚本 | 用途 | 状态 |
 |------|------|------|
 | `analyze-skills.sh` | 分析skill使用情况 | ✅ 已实现 |
 | `organize-memory.sh` | 整理记忆文件 | ✅ 已实现 |
 | `daily-report.sh` | 自动生成日报 | ✅ 已实现 |
+
+### Python脚本
+
+| 脚本 | 用途 | 状态 |
+|------|------|------|
+| `fetch-rss.py` | RSS抓取：解析OPML→抓取feed→存储JSON | ✅ 已实现 |
+
+**使用示例**：
+```bash
+# 抓取前5个RSS源（默认）
+python3 scripts/fetch-rss.py
+
+# 抓取前10个RSS源
+python3 scripts/fetch-rss.py 10
+
+# 抓取全部92个源
+python3 scripts/fetch-rss.py 92
+```
 
 ---
 
