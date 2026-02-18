@@ -22,6 +22,9 @@
 | Skill | 功能 | 使用场景 |
 |-------|------|---------|
 | **frontend-patterns** | React/Next.js前端模式 | 开发用户界面时 |
+| **frontend-design** | 生产级前端界面设计 | 创建高质量、非AI风格的网页/组件 |
+| **web-design-guidelines** | Web界面规范审查 | UI/UX审查、可访问性检查 |
+| **building-native-ui** | Expo Router原生应用指南 | 构建React Native应用 |
 | **backend-patterns** | Node.js/Express后端模式 | API开发、数据库操作时 |
 | **python-patterns** | Python惯用法、PEP 8标准 | Python脚本、数据处理 |
 | **python-testing** | pytest/TDD测试策略 | 需要写测试时 |
