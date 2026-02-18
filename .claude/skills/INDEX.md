@@ -48,6 +48,7 @@
 
 | Skill | 功能 | 使用场景 |
 |-------|------|---------|
+| **ui-ux-pro-max** | 完整UI/UX设计系统（颜色/图标/组件/最佳实践） | 产品级界面设计、设计系统建立 |
 | **security-review** | 安全检查清单 | 处理认证/支付/敏感数据前 |
 | **iterative-retrieval** | 渐进式上下文检索 | 复杂问题需要多轮搜索时 |
 | **remotion-best-practices** | React视频创作 | 需要制作视频内容时 |
