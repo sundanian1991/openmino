@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" class="scroll-smooth">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,1748 +8,418 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
-        body { font-family: "Noto Sans SC", "Inter", sans-serif; }
+        body { font-family: "Noto Sans SC", "Inter", -apple-system, sans-serif; }
 
-        /* 文章卡片 - 多层次阴影 + 丰富质感 */
+        /* ========== Design Tokens ========== */
+        :root {
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --radius: 10px;
+            --color-primary: #6366f1;
+            --color-bg: #ffffff;
+            --color-bg-muted: #f9fafb;
+            --color-border: #e5e7eb;
+            --color-text: #111827;
+            --color-text-muted: #6b7280;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
+            --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+        }
+
+        /* Typography */
+        .display { font-size: 32px; line-height: 40px; }
+        .heading { font-size: 24px; line-height: 32px; }
+        .subheading { font-size: 20px; }
+        .body { font-size: 16px; line-height: 1.6; }
+        .caption { font-size: 14px; line-height: 22px; }
+        .label { font-size: 12px; line-height: 18px; }
+
+        /* Components */
         .article-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            box-shadow:
-                0 2px 4px 0 rgba(0, 0, 0, 0.06),
-                0 6px 12px -2px rgba(0, 0, 0, 0.1),
-                0 16px 24px -4px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: var(--space-24);
+            margin-bottom: var(--space-16);
+            transition: all 150ms ease;
         }
         .article-card:hover {
-            background: linear-gradient(145deg, #ffffff 0%, #fafafa 50%, #f1f5f9 100%);
-            box-shadow:
-                0 8px 12px -1px rgba(124, 58, 237, 0.15),
-                0 24px 36px -4px rgba(124, 58, 237, 0.2),
-                0 0 0 1px rgba(124, 58, 237, 0.15);
-            transform: translateY(-3px) scale(1.005);
-            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-hover);
+            border-color: #d1d5db;
         }
 
-        /* 顶部渐变条 - hover显示 + 更鲜艳 */
-        .article-card::before {
-            content: "";
-            position: absolute;
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px var(--space-12);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            background: var(--color-bg-muted);
+            color: var(--color-text-muted);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-4);
+            color: var(--color-primary);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 150ms ease;
+        }
+        .btn-link:hover {
+            color: #4f46e5;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: var(--space-24);
+            padding-right: var(--space-24);
+        }
+
+        .header-sticky {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #6d28d9 0%, #8b5cf6 50%, #a78bfa 100%);
-            border-radius: 16px 16px 0 0;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
-        }
-        .article-card:hover::before {
-            opacity: 1;
+            z-index: 50;
         }
 
-        /* 标签渐变 - 更丰富的色彩 */
-        .tag-gradient {
-            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
-            border: 1px solid rgba(139, 92, 246, 0.25);
-            box-shadow: 0 1px 2px rgba(139, 92, 246, 0.1);
-        }
-
-        /* 内阴影增加深度 */
-        .depth-shadow {
-            box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        .summary-box {
+            background: var(--color-bg-muted);
+            border-radius: 8px;
+            padding: var(--space-16);
+            margin: var(--space-16) 0;
+            border: 1px solid var(--color-border);
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased">
-    <div class="min-h-screen">
-        <!-- Sticky Header -->
-        <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-            <div class="max-w-6xl mx-auto px-6 py-4">
-                <a href="index.html" class="inline-flex items-center gap-2 text-slate-400 hover:text-violet-600 text-sm font-medium transition-colors cursor-pointer">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                    <span>返回首页</span>
-                </a>
-                <div class="flex items-center justify-between mt-4">
-                    <div>
-                        <h1 class="text-2xl font-bold text-slate-900">深度阅读</h1>
-                        <p class="text-slate-500 text-sm mt-1">2月18日 周三 · 36 篇完整内容</p>
-                    </div>
-                    <div class="p-3 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl shadow-lg">
-                        <i data-lucide="book-open" class="w-7 h-7 text-white"></i>
-                    </div>
-                </div>
+<body class="bg-white">
+    <!-- Sticky Header -->
+    <header class="header-sticky">
+        <div class="container flex items-center justify-between" style="padding-top: var(--space-16); padding-bottom: var(--space-16);">
+            <a href="index.html" class="btn-link">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span>返回</span>
+            </a>
+            <div class="text-center">
+                <h1 class="heading font-semibold text-gray-900">深度阅读</h1>
+                <p class="label text-gray-500 mt-4">2月18日 周三 · 9 篇</p>
             </div>
-        </header>
+            <div style="width: 60px;"></div>
+        </div>
+    </header>
 
-        <!-- Main Content -->
-        <main class="max-w-6xl mx-auto px-6 py-8">
-            
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🤖</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            AI技术
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Simon Willison
-                        </span>
+    <!-- Articles -->
+    <main class="container" style="padding-top: var(--space-32);">
+        
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🤖</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">AI技术</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Simon Willison</span>
                     </div>
 
-                    <a href="https://simonwillison.net/2026/Feb/17/rough-draft-8266/#atom-everything" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://simonwillison.net/2026/Feb/17/rough-draft-8266/#atom-everything" target="_blank" class="hover:text-indigo-600 transition-colors">
                             Quoting ROUGH DRAFT 8/2/66
-                        </h2>
-                    </a>
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Quoting ROUGH DRAFT 8/2/66...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Quoting ROUGH DRAFT 8/2/66...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://simonwillison.net/2026/Feb/17/rough-draft-8266/#atom-everything" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://simonwillison.net/2026/Feb/17/rough-draft-8266/#atom-everything" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🤖</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            AI技术
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Simon Willison
-                        </span>
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🤖</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">AI技术</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Simon Willison</span>
                     </div>
 
-                    <a href="https://simonwillison.net/2026/Feb/17/first-kakapo-chick-in-four-years/#atom-everything" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://simonwillison.net/2026/Feb/17/first-kakapo-chick-in-four-years/#atom-everything" target="_blank" class="hover:text-indigo-600 transition-colors">
                             First kākāpō chick in four years hatches on Valentine's Day
-                        </h2>
-                    </a>
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 First kākāpō chick in four years hatches on Valent...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">First kākāpō chick in four years hatches on Valent...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://simonwillison.net/2026/Feb/17/first-kakapo-chick-in-four-years/#atom-everything" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://simonwillison.net/2026/Feb/17/first-kakapo-chick-in-four-years/#atom-everything" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🤖</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            AI技术
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Simon Willison
-                        </span>
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🤖</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">AI技术</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Simon Willison</span>
                     </div>
 
-                    <a href="https://simonwillison.net/2026/Feb/17/dimitris-papailiopoulos/#atom-everything" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://simonwillison.net/2026/Feb/17/dimitris-papailiopoulos/#atom-everything" target="_blank" class="hover:text-indigo-600 transition-colors">
                             Quoting Dimitris Papailiopoulos
-                        </h2>
-                    </a>
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Quoting Dimitris Papailiopoulos...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Quoting Dimitris Papailiopoulos...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://simonwillison.net/2026/Feb/17/dimitris-papailiopoulos/#atom-everything" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://simonwillison.net/2026/Feb/17/dimitris-papailiopoulos/#atom-everything" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">⚙️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            Linux硬件
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Jeff Geerling
-                        </span>
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🚀</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">工程创业</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Mitchell Hashimoto</span>
                     </div>
 
-                    <a href="https://www.jeffgeerling.com/blog/2026/ai-is-destroying-open-source/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            AI is destroying Open Source, and it's not even good yet
-                        </h2>
-                    </a>
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://www.hashicorp.com/blog/vault-radar-2025-recap-expanding-visibility-deepening-integration-simplifying-security" target="_blank" class="hover:text-indigo-600 transition-colors">
+                            Vault Radar 2025 recap: Expanding visibility, deepening integration, and simplifying security
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 AI is destroying Open Source, and it's not even go...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Vault Radar 2025 recap: Expanding visibility, deep...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.jeffgeerling.com/blog/2026/ai-is-destroying-open-source/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://www.hashicorp.com/blog/vault-radar-2025-recap-expanding-visibility-deepening-integration-simplifying-security" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">⚙️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            Linux硬件
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Jeff Geerling
-                        </span>
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🚀</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">工程创业</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Mitchell Hashimoto</span>
                     </div>
 
-                    <a href="https://www.jeffgeerling.com/blog/2026/testing-reachy-mini-hugging-face-robot/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Testing Reachy Mini - Hugging Face's Pi powered robot
-                        </h2>
-                    </a>
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://www.hashicorp.com/blog/vault-certificates-secrets-inventory-reporting-visibility-audit-readiness" target="_blank" class="hover:text-indigo-600 transition-colors">
+                            Vault certificates and secrets inventory reporting: Improve visibility and audit readiness
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Testing Reachy Mini - Hugging Face's Pi powered ro...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Vault certificates and secrets inventory reporting...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.jeffgeerling.com/blog/2026/testing-reachy-mini-hugging-face-robot/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://www.hashicorp.com/blog/vault-certificates-secrets-inventory-reporting-visibility-audit-readiness" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">⚙️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            Linux硬件
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Jeff Geerling
-                        </span>
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🚀</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">工程创业</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Mitchell Hashimoto</span>
                     </div>
 
-                    <a href="https://www.jeffgeerling.com/blog/2026/exploring-a-modern-smpte-2110-broadcast-truck-with-my-dad/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Exploring a Modern SMPTE 2110 Broadcast Truck With My Dad
-                        </h2>
-                    </a>
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://www.hashicorp.com/blog/securing-modern-workloads-with-hashicorp-vault-and-wif" target="_blank" class="hover:text-indigo-600 transition-colors">
+                            Securing modern workloads with HashiCorp Vault and WIF
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Exploring a Modern SMPTE 2110 Broadcast Truck With...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Securing modern workloads with HashiCorp Vault and...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.jeffgeerling.com/blog/2026/exploring-a-modern-smpte-2110-broadcast-truck-with-my-dad/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://www.hashicorp.com/blog/securing-modern-workloads-with-hashicorp-vault-and-wif" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🚀</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            工程创业
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Mitchell Hashimoto
-                        </span>
-                    </div>
-
-                    <a href="https://mitchellh.com/writing/my-ai-adoption-journey" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            My AI Adoption Journey
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 My AI Adoption Journey...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://mitchellh.com/writing/my-ai-adoption-journey" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🚀</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            工程创业
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Mitchell Hashimoto
-                        </span>
-                    </div>
-
-                    <a href="https://mitchellh.com/writing/tripwire" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Don't Trip[wire] Yourself: Testing Error Recovery in Zig
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Don't Trip[wire] Yourself: Testing Error Recovery ...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://mitchellh.com/writing/tripwire" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🚀</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            工程创业
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Mitchell Hashimoto
-                        </span>
-                    </div>
-
-                    <a href="https://mitchellh.com/writing/ghostty-memory-leak-fix" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Finding and Fixing Ghostty's Largest Memory Leak
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Finding and Fixing Ghostty's Largest Memory Leak...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://mitchellh.com/writing/ghostty-memory-leak-fix" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">💡</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            深度思考
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Paul Graham
-                        </span>
-                    </div>
-
-                    <a href="http://www.paulgraham.com/superlinear.html" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Superlinear Returns
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Superlinear Returns...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="http://www.paulgraham.com/superlinear.html" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">💡</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            深度思考
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Paul Graham
-                        </span>
-                    </div>
-
-                    <a href="http://www.paulgraham.com/greatwork.html" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            How to Do Great Work
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 How to Do Great Work...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="http://www.paulgraham.com/greatwork.html" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">💡</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            深度思考
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Paul Graham
-                        </span>
-                    </div>
-
-                    <a href="http://www.paulgraham.com/getideas.html" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            How to Get New Ideas
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 How to Get New Ideas...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="http://www.paulgraham.com/getideas.html" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🏗️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            系统设计
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Dan Luu
-                        </span>
-                    </div>
-
-                    <a href="https://danluu.com/ballmer/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Steve Ballmer was an underrated CEO
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Steve Ballmer was an underrated CEO...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://danluu.com/ballmer/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🏗️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            系统设计
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Dan Luu
-                        </span>
-                    </div>
-
-                    <a href="https://danluu.com/codenames/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            How good can you be at Codenames without knowing any words?
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 How good can you be at Codenames without knowing a...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://danluu.com/codenames/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🏗️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            系统设计
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Dan Luu
-                        </span>
-                    </div>
-
-                    <a href="https://danluu.com/ai-bias/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            A discussion of discussions on AI bias
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 A discussion of discussions on AI bias...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://danluu.com/ai-bias/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">📚</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            思维方法
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Refactoring English
-                        </span>
-                    </div>
-
-                    <a href="https://refactoringenglish.com/blog/2025-hn-top-5/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            The Most Popular Blogs of Hacker News in 2025
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 The Most Popular Blogs of Hacker News in 2025...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://refactoringenglish.com/blog/2025-hn-top-5/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">📚</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            思维方法
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Refactoring English
-                        </span>
-                    </div>
-
-                    <a href="https://refactoringenglish.com/blog/crafting-interpreters-intro/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            What Makes the Intro to *Crafting Interpreters* so Good?
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 What Makes the Intro to *Crafting Interpreters* so...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://refactoringenglish.com/blog/crafting-interpreters-intro/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">📚</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            思维方法
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Refactoring English
-                        </span>
-                    </div>
-
-                    <a href="https://refactoringenglish.com/chapters/useful-feedback-on-design-docs/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            How to Get Meaningful Feedback on Your Design Document
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 How to Get Meaningful Feedback on Your Design Docu...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://refactoringenglish.com/chapters/useful-feedback-on-design-docs/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🛡️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            网络安全
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Krebs
-                        </span>
-                    </div>
-
-                    <a href="https://krebsonsecurity.com/2026/02/kimwolf-botnet-swamps-anonymity-network-i2p/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Kimwolf Botnet Swamps Anonymity Network I2P
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Kimwolf Botnet Swamps Anonymity Network I2P...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://krebsonsecurity.com/2026/02/kimwolf-botnet-swamps-anonymity-network-i2p/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🛡️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            网络安全
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Krebs
-                        </span>
-                    </div>
-
-                    <a href="https://krebsonsecurity.com/2026/02/patch-tuesday-february-2026-edition/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Patch Tuesday, February 2026 Edition
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Patch Tuesday, February 2026 Edition...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://krebsonsecurity.com/2026/02/patch-tuesday-february-2026-edition/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🛡️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            网络安全
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Krebs
-                        </span>
-                    </div>
-
-                    <a href="https://krebsonsecurity.com/2026/02/please-dont-feed-the-scattered-lapsus-shiny-hunters/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Please Don’t Feed the Scattered Lapsus ShinyHunters
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Please Don’t Feed the Scattered Lapsus ShinyHunter...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://krebsonsecurity.com/2026/02/please-dont-feed-the-scattered-lapsus-shiny-hunters/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🔒</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            安全实践
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Troy Hunt
-                        </span>
-                    </div>
-
-                    <a href="https://www.troyhunt.com/weekly-update-491/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Weekly Update 491
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Weekly Update 491...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.troyhunt.com/weekly-update-491/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🔒</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            安全实践
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Troy Hunt
-                        </span>
-                    </div>
-
-                    <a href="https://www.troyhunt.com/weekly-update-490/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Weekly Update 490
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Weekly Update 490...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.troyhunt.com/weekly-update-490/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🔒</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            安全实践
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Troy Hunt
-                        </span>
-                    </div>
-
-                    <a href="https://www.troyhunt.com/weekly-update-489/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Weekly Update 489
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Weekly Update 489...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.troyhunt.com/weekly-update-489/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">📐</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            数学思维
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            John Cook
-                        </span>
-                    </div>
-
-                    <a href="https://www.johndcook.com/blog/2026/02/16/hodograph/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Visualizing orbital velocity
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Visualizing orbital velocity...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.johndcook.com/blog/2026/02/16/hodograph/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">📐</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            数学思维
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            John Cook
-                        </span>
-                    </div>
-
-                    <a href="https://www.johndcook.com/blog/2026/02/15/chebyshev-bias/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Race between primes of the forms 4k + 1 and 4k + 3
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Race between primes of the forms 4k + 1 and 4k + 3...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.johndcook.com/blog/2026/02/15/chebyshev-bias/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">📐</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            数学思维
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            John Cook
-                        </span>
-                    </div>
-
-                    <a href="https://www.johndcook.com/blog/2026/02/14/wagons-algorithm-in-python/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Wagon’s algorithm in Python
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Wagon’s algorithm in Python...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://www.johndcook.com/blog/2026/02/14/wagons-algorithm-in-python/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🐍</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            Python开发
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Miguel Grinberg
-                        </span>
-                    </div>
-
-                    <a href="https://blog.miguelgrinberg.com/post/my-courses-site-is-moving-to-a-new-home" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            My Courses Site is Moving to a New Home
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 My Courses Site is Moving to a New Home...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://blog.miguelgrinberg.com/post/my-courses-site-is-moving-to-a-new-home" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🐍</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            Python开发
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Miguel Grinberg
-                        </span>
-                    </div>
-
-                    <a href="https://blog.miguelgrinberg.com/post/date-arithmetic-in-bash" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Date Arithmetic in Bash
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Date Arithmetic in Bash...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://blog.miguelgrinberg.com/post/date-arithmetic-in-bash" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🐍</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            Python开发
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Miguel Grinberg
-                        </span>
-                    </div>
-
-                    <a href="https://blog.miguelgrinberg.com/post/how-to-add-a-quick-interactive-map-to-your-website" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            How to Add a Quick Interactive Map to your Website
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 How to Add a Quick Interactive Map to your Website...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://blog.miguelgrinberg.com/post/how-to-add-a-quick-interactive-map-to-your-website" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">⚛️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            React哲学
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Dan Abramov
-                        </span>
-                    </div>
-
-                    <a href="https://overreacted.io/a-social-filesystem/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            A Social Filesystem
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 A Social Filesystem...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://overreacted.io/a-social-filesystem/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">⚛️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            React哲学
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Dan Abramov
-                        </span>
-                    </div>
-
-                    <a href="https://overreacted.io/introducing-rsc-explorer/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Introducing RSC Explorer
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Introducing RSC Explorer...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://overreacted.io/introducing-rsc-explorer/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">⚛️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            React哲学
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Dan Abramov
-                        </span>
-                    </div>
-
-                    <a href="https://overreacted.io/hire-me-in-japan/" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
-                            Hire Me in Japan
-                        </h2>
-                    </a>
-
-                    
-
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Hire Me in Japan...
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://overreacted.io/hire-me-in-japan/" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
-                            <span>阅读全文</span>
-                            <i data-lucide="external-link" class="w-4 h-4"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🔧</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            软件工程
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Matklad
-                        </span>
-                    </div>
-
-                    <a href="https://matklad.github.io/2026/02/16/diagnostics-factory.html" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🔧</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">软件工程</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Matklad</span>
+                    </div>
+
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://matklad.github.io/2026/02/16/diagnostics-factory.html" target="_blank" class="hover:text-indigo-600 transition-colors">
                             Diagnostics Factory
-                        </h2>
-                    </a>
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Diagnostics Factory...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Diagnostics Factory...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://matklad.github.io/2026/02/16/diagnostics-factory.html" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://matklad.github.io/2026/02/16/diagnostics-factory.html" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🔧</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            软件工程
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Matklad
-                        </span>
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🔧</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">软件工程</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Matklad</span>
                     </div>
 
-                    <a href="https://matklad.github.io/2026/02/14/justifying-text-wrap-pretty.html" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://matklad.github.io/2026/02/14/justifying-text-wrap-pretty.html" target="_blank" class="hover:text-indigo-600 transition-colors">
                             Justifying text-wrap: pretty
-                        </h2>
-                    </a>
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Justifying text-wrap: pretty...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Justifying text-wrap: pretty...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://matklad.github.io/2026/02/14/justifying-text-wrap-pretty.html" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://matklad.github.io/2026/02/14/justifying-text-wrap-pretty.html" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        <article class="article-card relative rounded-2xl p-7 mb-8 cursor-pointer">
-            <div class="flex items-start gap-5">
-                <div class="flex-shrink-0">
-                    <span class="text-5xl filter drop-shadow-md">🔧</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="tag-gradient inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-violet-900 border border-violet-300">
-                            软件工程
-                        </span>
-                        <span class="text-slate-300 text-sm">·</span>
-                        <span class="text-slate-600 text-sm flex items-center gap-1.5 font-medium">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                            Matklad
-                        </span>
+        </article>
+        <article class="article-card">
+            <div class="flex items-start gap-16" style="gap: var(--space-16);">
+                <span class="text-4xl">🔧</span>
+                <div class="flex-1">
+                    <div class="flex items-center gap-8 mb-12" style="margin-bottom: 12px; gap: 8px;">
+                        <span class="tag">软件工程</span>
+                        <span class="caption text-gray-400">·</span>
+                        <span class="caption text-gray-500">Matklad</span>
                     </div>
 
-                    <a href="https://matklad.github.io/2026/02/11/programming-aphorisms.html" target="_blank" class="block group">
-                        <h2 class="text-2xl font-bold text-slate-900 leading-relaxed mb-4 line-clamp-2
-                                   group-hover:text-violet-700 transition-colors duration-200">
+                    <h2 class="subheading font-semibold text-gray-900 mb-12" style="margin-bottom: 12px;">
+                        <a href="https://matklad.github.io/2026/02/11/programming-aphorisms.html" target="_blank" class="hover:text-indigo-600 transition-colors">
                             Programming Aphorisms
-                        </h2>
-                    </a>
+                        </a>
+                    </h2>
 
                     
 
-                    <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 mb-5 depth-shadow border border-slate-200">
-                        <p class="text-slate-800 text-base leading-relaxed font-medium">
-                            💬 Programming Aphorisms...
-                        </p>
+                    <div class="summary-box">
+                        <p class="caption text-gray-600">Programming Aphorisms...</p>
                     </div>
 
-                    <div class="flex items-center justify-between pt-5 border-t border-slate-300">
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-sm font-semibold border border-slate-300">
-                            深度阅读
-                        </span>
-                        <a href="https://matklad.github.io/2026/02/11/programming-aphorisms.html" target="_blank"
-                           class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-700 to-purple-700 text-white text-base font-semibold rounded-xl
-                                  hover:from-violet-800 hover:to-purple-800 transition-all duration-200
-                                  shadow-lg hover:shadow-xl cursor-pointer">
+                    <div class="flex items-center justify-between mt-16" style="margin-top: 16px;">
+                        <span class="tag">深度阅读</span>
+                        <a href="https://matklad.github.io/2026/02/11/programming-aphorisms.html" target="_blank" class="btn-link">
                             <span>阅读全文</span>
                             <i data-lucide="external-link" class="w-4 h-4"></i>
                         </a>
                     </div>
                 </div>
             </div>
-        </main>
+        </article>
+    </main>
 
-        <!-- Footer -->
-        <footer class="border-t border-slate-200 mt-16">
-            <div class="max-w-6xl mx-auto px-6 py-8 text-center">
-                <p class="text-slate-400 text-sm">由 Mino 自动生成 · Claude API 驱动</p>
-            </div>
-        </footer>
-    </div>
+    <!-- Footer -->
+    <footer class="container text-center" style="padding: var(--space-32) 0; border-top: 1px solid var(--color-border); margin-top: var(--space-32);">
+        <p class="label text-gray-400">由 Mino 生成 · Claude API 驱动</p>
+    </footer>
+
     <script>lucide.createIcons();</script>
 </body>
 </html>

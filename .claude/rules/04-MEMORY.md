@@ -127,15 +127,22 @@
 - 设计系统偏好：Shadcn UI / Radix UI 风格
 - Clean > Minimalist > Modern 审美
 
-**搜索与抓取（2026-02-17更新）**：
+**搜索与抓取（2026-02-18更新）**：
+- **工具优先级策略**（避免webReader 100次/月限制）：
+  | 优先级 | 工具 | 限制 | 用途 |
+  |--------|------|------|------|
+  | 1️⃣ | **tavily_extract/search/crawl** | API配额（通常更大） | 优先使用 |
+  | 2️⃣ | **curl + html2text** | 无限制 | 备用方案 |
+  | 3️⃣ | **webReader** | 100次/月 | 最后手段 |
 - **tavily搜索**：包名`tavily-mcp`，已配置到.mcp.json，验证可用（实时网页搜索）
 - **百度搜索**：中文网页内容搜索（mcp__web-search__web_search）
-- **WebReader**：网页转Markdown（mcp__web_reader__webReader）
+- **WebReader**：网页转Markdown（mcp__web_reader__webReader），**注意100次/月限制**
 - **memory MCP**：@modelcontextprotocol/server-memory，知识图谱记忆搜索
 - **openclaw-markdown**：自研MCP服务器，Cloudflare Markdown协议、隐私脱敏
 - **统一搜索协议**：tavily → memory_search → grep（强制执行）
 - **核心原则**：先用后读，搜索命中直接用，未命中再Read全文件
 - **MCP工具 ≠ Skills**：MCP是外部能力，Skills是知识指南
+- **智能抓取脚本**：`scripts/fetch-web-content.sh` — 自动按优先级选择工具
 
 **子代理系统（2026-02-18）**：
 - **核心工作流**（按优先级）：planner → tdd-guide → code-reviewer → security-reviewer
