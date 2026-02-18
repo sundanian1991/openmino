@@ -56,14 +56,15 @@ Notes
 - Requires Apple Notes.app to be accessible.
 - For automation, grant permissions in System Settings > Privacy & Security > Automation.
 
-## 排版规范
+## 排版规范（参考task.md风格）
 
-Apple Notes不完全支持标准Markdown，建议：
+Apple Notes推荐格式：
 
-**分隔线**：用 `━━━━━` 或 `─────`，不用 `═════`
-**列表**：用 `·` 或 `-`，不用复杂符号
-**间距**：标题与内容间空两行，区块间空三行
-**格式**：保持简洁，避免嵌套结构
-**目标**：原生显示清晰，不需要渲染
+**分隔线**：用 `---`
+**标题**：`##` 和 `###` 分级
+**列表**：用 `-` 或 emoji（✅ ❌ ⏳）
+**表格**：简洁三线表
+**代码**：用 ``` 包裹
+**间距**：标题后空一行，区块间用 `---` 分隔
 
 Apple Notes会将内容转换为HTML格式显示。
