@@ -55,3 +55,15 @@ Notes
 - macOS-only.
 - Requires Apple Notes.app to be accessible.
 - For automation, grant permissions in System Settings > Privacy & Security > Automation.
+
+## 排版规范
+
+Apple Notes不完全支持标准Markdown，建议：
+
+**分隔线**：用 `━━━━━` 或 `─────`，不用 `═════`
+**列表**：用 `·` 或 `-`，不用复杂符号
+**间距**：标题与内容间空两行，区块间空三行
+**格式**：保持简洁，避免嵌套结构
+**目标**：原生显示清晰，不需要渲染
+
+Apple Notes会将内容转换为HTML格式显示。
