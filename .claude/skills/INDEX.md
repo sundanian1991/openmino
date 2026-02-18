@@ -39,7 +39,6 @@
 | **bird** | X/Twitter CLI | 社交媒体操作 |
 | **imsg** | iMessage/SMS CLI | 消息管理 |
 | **apple-reminders** | macOS提醒管理 | 设置待办提醒 |
-| **apple-notes** | macOS笔记管理 | 快速记录想法 |
 | **find-skills** | 发现和安装新skill | "有没有做XX的skill？" |
 
 ---
