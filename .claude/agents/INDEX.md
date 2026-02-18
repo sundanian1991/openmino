@@ -15,6 +15,7 @@
 | **Security-reviewer** | 安全审查 | `Task(subagent_type=Security-reviewer)` | 处理认证、支付、敏感数据前 |
 | **Tdd-guide** | 测试驱动开发 | `Task(subagent_type=Tdd-guide)` | 新功能开发、bug修复时 |
 | **E2e-runner** | E2E测试 | `Task(subagent_type=E2e-runner)` | 关键用户流程需要验证时 |
+| **Reading-internalizer** | 知识内化 | `Task(subagent_type=reading-internalizer)` | 读文章/书籍，需要消化整理笔记时 |
 
 ---
 
