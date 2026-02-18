@@ -137,6 +137,20 @@
 - **核心原则**：先用后读，搜索命中直接用，未命中再Read全文件
 - **MCP工具 ≠ Skills**：MCP是外部能力，Skills是知识指南
 
+**子代理系统（2026-02-18）**：
+- **核心工作流**（按优先级）：planner → tdd-guide → code-reviewer → security-reviewer
+- **Task tool类型**：
+  - **Explore**（haiku）：快速探索代码库
+  - **general-purpose**（sonnet）：复杂搜索、多步骤任务
+  - **Plan**（opus）：软件架构设计
+  - **Bash**（haiku）：命令执行
+- **强制使用场景**：
+  - ✅ 代码写完 → code-reviewer
+  - ✅ 涉及用户输入/认证/支付 → security-reviewer
+  - ✅ 复杂功能 → planner 先计划
+  - ✅ 写代码前 → tdd-guide 测试先行
+- **索引文件**：~/.claude/agents/INDEX.md
+
 ## Ongoing Context
 
 **当前岗位**：
