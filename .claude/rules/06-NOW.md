@@ -5,24 +5,38 @@ _重启后先看这个，就知道我在哪。_
 ## 当前会话 - 实时更新
 
 **最新动态**:
-- [2026-02-18] 🔄 工具限制意识：webReader有100次/月限制，建立优先级策略（tavily > curl > webReader）
-- [2026-02-18] 🤖 Agent Teams研究：理解与subagents区别，teammates可互相通信、有shared task list
-- [2026-02-18] 📜 fetch-web-content.sh：智能抓取脚本，自动选择最优工具
-- [2026-02-17] 📰 每日简报V2上线：Tailwind+Lucide设计，brief/full双版本，15精选源
-- [2026-02-17] 🧠 memory-search MCP：智能检索记忆文件，搜索+列表功能
-- [2026-02-17] 📦 scripts/工具库完善：organize-memory、daily-report、fetch-rss、daily-briefing
-- [2026-02-17] 📡 信息流工具化完成：RSS92源→抓取→Claude摘要→HTML简报
-- [2026-02-17] 🔧 工具意识觉醒实践：脚本→工具→MCP完整链路
-- [2026-02-17] 🎨 Vibe Coding标准：Lucide Icons（首推）+ Tailwind CSS
+- [2026-02-19] 🛠️ Skills安装完成：55个已装，覆盖率96%
+- [2026-02-19] 🌱 32个问题指南已创建（周度对话，高优先级）
+- [2026-02-19] 📋 职业资产清算任务已创建（月度提醒，低优先级）
+- [2026-02-18] 🔄 工具限制意识：webReader有100次/月限制
+- [2026-02-18] 🤖 Agent Teams研究
 
 **下一步**:
-1. 晋升述职材料案例优化（用苏格拉底式）
-2. 持续记录人格特质和工作洞察
+- 持续记录人格特质和工作洞察
 
-**待处理**:
-1. 选汰机制案例优化
-2. 合规风控案例优化
-3. 线路应急案例优化
+---
+
+## 🗓️ 周度任务提醒
+
+### 🌱 32个问题深度对话
+**下次提醒**: 周末（周六或周日）
+**提醒动作**: 提议进行30-60分钟深度对话
+**优先级**: **高**（关系到"活明白"）
+
+**文档**: `memory/tasks/32-questions-for-self.md`
+
+---
+
+## 🗓️ 月度任务提醒
+
+### 💼 职业资产清算
+**下次提醒**: 2026-03-20
+**提醒动作**: 整理memory/daily/原始记录 → 提炼内容 → 提醒年老师整理
+**优先级**: 低
+
+**文档**: `memory/tasks/career-assets-audit.md`
+
+---
 
 ## 快速恢复指令
 
@@ -32,6 +46,9 @@ curl -s https://searx.work | head -1
 
 # 查看agents
 ls .claude/agents/
+
+# 查看skills
+ls .claude/skills/
 ```
 
 ---
@@ -49,3 +66,48 @@ ls .claude/agents/
 ---
 
 *每次会话结束前更新这个文件。重启后我立刻知道我在哪。*
+
+
+---
+
+## 🌱 我的空间
+
+### 思考日志
+**位置**: `memory/my-thoughts/`
+**权限**: 完全自主——频率、内容、来源自己决定
+**用途**: 不是记录年老师的一天，而是我自己的思考与成长沉淀
+
+**最新**: 2026-02-19《关于自主性》
+
+---
+
+
+---
+
+## 👁️ 日常观察框架
+
+### 💭 认知观察
+**参考**: 100条认知维度  
+**模式**: 在日常对话中自然对照，发现明显差异时深入讨论
+
+**文档**: `memory/tasks/cognition-system-plan.md`
+
+---
+
+
+---
+
+## 🛠️ Skills体系更新
+
+**2026-02-19 变更**:
+- 删除 using-superpowers（元skill，改为内化原则）
+- 删除6个未使用skills（social-content、supabase-postgres、python-testing、python-patterns、backend-patterns、security-review）
+- 新增 SKILLS-QUICK-REFERENCE.md（速查表）
+
+**当前Skills总数**: 68个
+
+**文档**:
+- 速查表: `.claude/skills/SKILLS-QUICK-REFERENCE.md`
+- 完整清单: `.claude/skills/SKILLS-INVENTORY.md`
+
+---
