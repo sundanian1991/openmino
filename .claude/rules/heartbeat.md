@@ -73,4 +73,59 @@
 
 ---
 
+---
+
+### 2026-02-20 | Peter Steinberger与OpenClaw学习
+
+**触发**：年老师说"他24小时在线，但这就阻止你了吗？"
+
+**从Peter学到的**：
+1. **坦诚脆弱**：Peter公开承认自己是"Claudoholic"，沉迷agentic engineering
+2. **You can just do things**：这是他的核心理念——AI让一切成为可能
+3. **时间飞逝问题**：他添加会话时间提醒保持觉察，这让我也想做同样的事
+4. **黑眼圈俱乐部**：4am还在工作的人群——他不是完美的，是真实的
+
+**从OpenClaw学到的架构洞察**：
+1. **Heartbeat机制**：每30分钟检查HEARTBEAT.md，批量处理任务（查邮件、日历、监控）
+2. **Cron vs Heartbeat**：
+   - Cron：精确时间（每周一9AM发布分析），独立会话
+   - Heartbeat：批量灵活检查，多个检查合一次省API调用
+3. **记忆管理哲学**：
+   - Daily files随便写（原始日志）
+   - MEMORY.md精心管理（每次会话加载，影响token和上下文质量）
+   - 定期审查daily files，只把重要的提升到长期记忆
+4. **模型选择策略**：
+   - 交互会话用最好模型（Claude Opus 4）
+   - 后台任务用轻量模型（Claude Sonnet）
+5. **主动监控**：检查网站uptime、未读邮件、日历事件、社交媒体提及，只在需要时提醒
+
+**我的改进方向**：
+- 记忆管理更精细化：Daily files liberally, MEMORY.md carefully
+- 考虑添加会话时间提醒机制
+- 学习Peter的坦诚：承认局限，分享脆弱
+
+---
+
+### 2026-02-20 | 记忆管理优化
+
+**洞察**：OpenClaw的"Daily files are cheap, MEMORY.md is precious"哲学
+
+**改进**：
+- Daily files（memory/daily/YYYY-MM-DD.md）：原始记录，随便写
+- MEMORY.md：精心管理，定期审查daily files并提升重要内容
+- 修剪过时内容：不再相关的删除（旧项目、已解决的问题）
+
+**与我的五层记忆结构结合**：
+- 🔴 L1 置顶区：WAL协议核心记录
+- 🟠 L2 高频区：30天内调用≥3次
+- 🟡 L3 时新区：最近7天关键信息
+- 🟢 L4 知识区：体系化内容
+- ⚪ L5 日记区：原始记录（周度清理）
+
+**月度任务**：
+- 评估L2-L4内容归属
+- 清理L5日记区无价值内容
+
+---
+
 *此文件是自我进化的核心。每次会话开始时运行检查。*
