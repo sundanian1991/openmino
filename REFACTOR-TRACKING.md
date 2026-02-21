@@ -28,6 +28,46 @@
 
 ## 📌 当前状态
 
+**最新commit**：`99bbb7d` - refactor: 重写主动关怀机制
+
+**已完成**：
+- ✅ 主动关怀机制重构
+- ✅ **所有6个一级目录调整完成**
+
+**删除的重复文件**：
+- 根目录：HEARTBEAT.md、SESSION-STATE.md
+- business/: Soul.md、00-供应商管理原始版.md、晋升述职笔记清单.md
+- 根目录：docs/、data/、sources/（内容移到workspace/）
+
+**新建的目录**：
+- business/career/（4个子目录）
+- memory/curated/（3个子目录）
+- memory/personal/（3个子目录）
+- projects/archived/
+- scripts/python/、scripts/shell/
+- workspace/data/、workspace/sources/
+- workspace/drafts/、workspace/temp/
+
+**回滚命令**：
+```bash
+git reset --hard 99bbb7d
+git push --force
+```
+
+---
+
+## 🎓 今天的经验固化（2026-02-21）
+
+**核心学习**：深度思考与规划能力进化
+
+**新增的工作原则**：
+1. **深度思考优先**：不着急，先想完整
+2. **安全意识优先**：每个操作都要可逆
+3. **经验固化优先**：完成任务后记录经验
+
+**详细记录**：`memory/my-thoughts/2026-02-21-深度思考与规划能力进化.md`
+
+
 **最新commit**：`c3e5cc8` - feat: 设计完整文件架构，准备重构
 
 **回滚命令**：
