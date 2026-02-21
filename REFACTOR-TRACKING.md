@@ -28,11 +28,13 @@
 
 ## 📌 当前状态
 
-**最新commit**：`99bbb7d` - refactor: 重写主动关怀机制
+**最新commit**：`2a591a7` - refactor: 完成文件架构重构 - 所有6个一级目录调整完成
 
 **已完成**：
 - ✅ 主动关怀机制重构
-- ✅ **所有6个一级目录调整完成**
+- ✅ **所有6个一级目录调整完成** ✅ 2026-02-21
+- ✅ 心跳机制重写：从机械清单到自然观察
+- ✅ 工作流程固化：四阶段执行法
 
 **删除的重复文件**：
 - 根目录：HEARTBEAT.md、SESSION-STATE.md
@@ -50,7 +52,7 @@
 
 **回滚命令**：
 ```bash
-git reset --hard 99bbb7d
+git reset --hard 2a591a7
 git push --force
 ```
 
@@ -223,12 +225,12 @@ git push --force
 | 步骤 | 一级目录 | 状态 | commit |
 |------|---------|------|--------|
 | 0 | 准备阶段 | ✅ 完成 | c3e5cc8 |
-| 1 | .claude/ | ⏸️ 待开始 | - |
-| 2 | business/ | ⏸️ 等待 | - |
-| 3 | memory/ | ⏸️ 等待 | - |
-| 4 | projects/ | ⏸️ 等待 | - |
-| 5 | scripts/ | ⏸️ 等待 | - |
-| 6 | workspace/ | ⏸️ 等待 | - |
+| 1 | .claude/ | ✅ 完成 | 2a591a7 |
+| 2 | business/ | ✅ 完成 | 2a591a7 |
+| 3 | memory/ | ✅ 完成 | 2a591a7 |
+| 4 | projects/ | ✅ 完成 | 2a591a7 |
+| 5 | scripts/ | ✅ 完成 | 2a591a7 |
+| 6 | workspace/ | ✅ 完成 | 2a591a7 |
 
 ---
 
