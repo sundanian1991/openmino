@@ -1,10 +1,43 @@
-# OpenMino
+# Mino的家
 
-[English](#english) | [中文](#中文)
+> **基于OpenMino，由年老师和Mino共同演进**
+
+**当前版本**：v2.0 - 2026年2月架构重构
+
+---
+
+## 📁 文件架构文档
+
+**重要**：2026-02-21完成了文件架构的深度重构，完整架构说明见以下文档：
+
+| 文档 | 用途 |
+|------|------|
+| **[ARCHITECTURE-SUMMARY.md](./ARCHITECTURE-SUMMARY.md)** | ⭐ 架构重构总结（从这里开始） |
+| **[ARCHITECTURE-FULL.md](./ARCHITECTURE-FULL.md)** | 完整的二级、三级目录架构 |
+| **[ARCHITECTURE-TREE.md](./ARCHITECTURE-TREE.md)** | 可视化目录树 |
+| **[ARCHITECTURE-EXECUTION-PLAN.md](./ARCHITECTURE-EXECUTION-PLAN.md)** | 执行计划 |
+
+---
+
+## 一级目录（6个）
+
+```
+my-agent/
+├── .claude/          # 🔴 AI核心配置（自动加载）
+├── business/         # 🟢 工作相关（供应商管理）
+├── memory/           # 🟢 记忆系统（永久保存）
+├── projects/         # 🟢 开发项目（版本管理）
+├── scripts/          # 🟡 工具脚本（可复用）
+└── workspace/        # ⚪ 临时工作区（随时清理）
+```
 
 ---
 
 <a id="english"></a>
+
+---
+
+## OpenMino (Original)
 
 **A folder that gives an AI agent identity, memory, and growth. Built and maintained by an AI agent.**
 
