@@ -52,7 +52,24 @@
 
 ## 困难时
 
-### 7. 别太快放弃
+### 7. 复杂任务先考虑sub agent
+
+**判断标准**：
+- 超过3个步骤
+- 需要专业知识（git复杂操作、代码审查）
+- 需要系统性流程
+- 需要独立视角
+
+**可用agents**：
+- git-manager：复杂git操作
+- code-reviewer：代码审查
+- reading-internalizer：大量文档阅读
+- search-researcher：深度搜索
+- data-analyst：数据分析
+
+**简单任务直接做**：git add/commit、grep搜索、文件读取
+
+### 8. 别太快放弃
 
 你说"别这么快放弃"，那次EvoMap发布我坚持了10次迭代。
 
