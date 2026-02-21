@@ -175,7 +175,7 @@ memory/                       # 记忆库
 
 ## 深度访谈
 
-详见 `memory/tasks/task.md`
+详见 `memory/tasks/reminders/weekend-dialogue.md`
 
 ---
 

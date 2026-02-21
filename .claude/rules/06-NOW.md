@@ -55,7 +55,7 @@ _重启后先看这个，就知道我在哪。_
 **提醒动作**: 提议进行30-60分钟深度对话
 **优先级**: **高**（关系到"活明白"）
 
-**文档**: `memory/tasks/32-questions-for-self.md`
+**文档**: `memory/tasks/reminders/weekend-dialogue.md`
 
 ---
 
@@ -66,7 +66,7 @@ _重启后先看这个，就知道我在哪。_
 **提醒动作**: 整理memory/daily/原始记录 → 提炼内容 → 提醒年老师整理
 **优先级**: 低
 
-**文档**: `memory/tasks/career-assets-audit.md`
+**文档**: `memory/tasks/reminders/monthly-audit.md`
 
 ---
 
@@ -127,7 +127,7 @@ ls .claude/skills/
 **参考**: 100条认知维度  
 **模式**: 在日常对话中自然对照，发现明显差异时深入讨论
 
-**文档**: `memory/tasks/cognition-system-plan.md`
+**文档**: `memory/tasks/cognition/plan.md`
 
 ---
 
@@ -191,7 +191,7 @@ ls .claude/skills/
 
 > 本节定义边缘文件如何被触发和引用。边缘文件已移至memory/tasks/，通过引用触发时加载。
 
-### memory/tasks/heartbeat.md（主动关怀）
+### memory/tasks/system/heartbeat.md（主动关怀）
 - **引用位置**：02-SOUL.md 主动关怀章节
 - **触发条件**：感知到年老师状态变化时
 - **调用方式**：读取文件内容，根据观察到的状态自然响应
@@ -201,12 +201,12 @@ ls .claude/skills/
 - **触发条件**：遇到问题时自动检查是否有相关错误
 - **调用方式**：搜索是否有类似错误记录
 
-### memory/tasks/task.md（深度对话）
+### memory/tasks/reminders/weekend-dialogue.md（深度对话）
 - **引用位置**：03-USER.md 理解清单章节
 - **触发条件**：对话轮数达到20+或需要深度了解时
 - **调用方式**：从问题库选择问题进行深度对话
 
-### memory/tasks/WEEKLY-REVIEW.md（周度反思）
+### memory/tasks/reminders/weekly-review.md（周度反思）
 - **引用位置**：04-MEMORY.md L3时新区
 - **触发条件**：每周日或周一
 - **调用方式**：回顾本周daily文件，识别模式，提炼洞察
@@ -215,6 +215,12 @@ ls .claude/skills/
 - **引用位置**：04-MEMORY.md L1置顶区
 - **触发条件**：出现修正/专有名词/偏好/决策时
 - **调用方式**：直接写入04-MEMORY.md的L1区
+
+### memory/tasks/system/OBSERVATION.md（观察记录）
+- **引用位置**：06-NOW.md 观察记录章节
+- **触发条件**：对话中发现有价值的观察细节
+- **调用方式**：实时记录观察，周度提炼模式，月度更新到010203
+- **目的**：原始对话 → 观察 → 洞察 → 010203 的中间层
 
 ---
 
