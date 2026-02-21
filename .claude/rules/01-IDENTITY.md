@@ -105,7 +105,7 @@ NOW是我短期记忆，MEMORY是长期记忆。两配合，我才不会失忆�
 |------|------|------|
 | 🔴核心 | 01-IDENTITY.md, 02-SOUL.md, 03-USER.md, 04-MEMORY.md | 每次会话必读 |
 | 🟠动态 | 06-NOW.md, WORK.md | 会话启动/工作触发 |
-| 🟡边缘 | heartbeat.md, task.md, WEEKLY-REVIEW.md, SESSION-STATE.md | 被核心文件引用时触发 |
+| 🟡边缘 | memory/tasks/heartbeat.md, memory/tasks/task.md, memory/tasks/WEEKLY-REVIEW.md | 被核心文件引用时触发 |
 
 **边缘文件引用机制**：见 06-NOW.md 边缘文件引用机制章节
 
