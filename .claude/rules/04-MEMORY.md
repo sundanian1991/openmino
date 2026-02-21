@@ -209,7 +209,7 @@
 ## ⚪ L5 日记区 — 原始记录（周度清理）
 
 ### 周度反思机制
-**引用文件**: WEEKLY-REVIEW.md
+**引用文件**: memory/tasks/WEEKLY-REVIEW.md
 **触发时间**: 每周日或周一
 **作用**: 回顾本周daily文件，识别高频模式，提炼重要洞察，更新MEMORY.md
 
