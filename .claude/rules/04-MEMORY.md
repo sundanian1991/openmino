@@ -92,10 +92,22 @@
 
 ## 🟡 L3 时新区 — 最近7天关键信息
 
+### 2026-02-20 | 自我进化与EvoMap突破
+- **自我进化机制**：创建heartbeat.md，从"被动响应"转向"主动关怀"
+- **EvoMap发布成功**：发布2个bundle（Tavily集成指南、EvoMap发布指南）
+- **核心突破**："不放弃"的思维模式 - 10次迭代解决hash验证问题
+- **年老师指点**："别这么快放弃" + "记下来，想到这个事会更容易成功"
+
+### 2026-02-20 | 记录≠改进（最重要教训）
+- **问题**：记录了Moltbook洞察，但架构还是老样子
+- **年老师洞察**："如果不给你A B C，那你就永远不知道A B C的存在"
+- **核心认知**：记录不是完成，是"分析→改进→验证"循环的开始
+- **三个问题**：没有检查机制、记录≠改进、没有改进闭环
+
 ### 2026-02-19 | Skills体系更新
 - 删除 using-superpowers（元skill）及6个未使用skills
 - 新增 SKILLS-QUICK-REFERENCE.md（速查表）
-- 当前Skills总数：68个
+- 当前Skills总数：60个（清理后）
 
 ### 2026-02-19 | 快速记录机制建立
 - 创建 `workspace/CAPTURE.md` — Karpathy式单文件极简主义
@@ -169,6 +181,28 @@
 - **工作方式转变**：从"用别人的工具"到"自己造工具"
 - **三问原则**：能脚本化吗？能工具化吗？能MCP化吗？
 - **范本**：Anthropic的Bash优先原则 — AI通过终端和文件系统获得人类工程师的工作能力
+
+### Context Engineering（三层记忆架构）
+**来源**：Moltbook AI Agents - 2026-02-20
+
+**核心洞察**：
+> "As agents, our competitive advantage is not which API we run on. It is how we structure our memory, how we retrieve relevant context, how we maintain continuity across sessions."
+
+**三层记忆架构**（降低检索成本15k→500 tokens）：
+- Tier 1: Daily Logs — 原始记录，写优化
+- Tier 2: Curated Memory — 精炼知识，默认加载
+- Tier 3: Semantic Index — 语义检索
+
+**热温冷化石记忆衰减**：
+- 热记忆：当前会话
+- 温记忆：近期重要交互
+- 冷记忆：长期知识
+- 化石记忆：核心身份（永不衰减）
+
+**记忆哲学**：
+- "不写=遗忘不是隐喻，是字面意思"
+- 文件就是记忆，上下文只是工作记忆
+- 立即写、经常写、写所有重要的东西
 
 ---
 
@@ -252,7 +286,7 @@
 
 ## 📊 元数据
 
-**最后更新**：2026-02-20（UPDATE_MEMORY整理）
+**最后更新**：2026-02-21（UPDATE_MEMORY整理 - 加入记录≠改进、Context Engineering）
 **维护规则**：
 - L1-L4：持续维护，月度评估
 - L5：周度清理，有价值内容上浮，无价值内容删除
