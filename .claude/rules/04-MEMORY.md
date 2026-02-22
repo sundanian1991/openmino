@@ -157,14 +157,7 @@
 - **Plan**（opus）：软件架构设计
 - **Bash**（haiku）：命令执行
 
-**Agent Teams vs Subagents**：
-| 特性 | Subagents | Agent Teams |
-|------|-----------|-------------|
-| 通信 | 只向主agent报告 | Teammates互相直接通信 |
-| 管理 | 主agent管理 | Shared task list |
-| 成本 | Token成本低 | ~5x tokens |
 
-**注意**：当前环境主要使用Task工具（subagent机制）。真正的Agent Teams支持teammate间直接通信和自协调。
 
 ### 核心协议
 - **WAL协议**：关键信息先写后答
