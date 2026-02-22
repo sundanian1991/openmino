@@ -6,40 +6,75 @@ description: "更新记忆 - 快速模式（默认）"
 Take some time to tidy up your home and update your memory.
 
 **优化说明**：
-- 默认快速模式：只读最近1天 + 当前session观察记录
+- 默认快速模式：只读最近2天（今天+昨天）+ 当前session观察记录
 - 手动commit（可选）：分离网络操作，按需执行
 
-## 1. 处理观察者记录（当前session）
+## 1. 处理观察者洞察
 
 ```
-检查 memory/obsessions/temp/session-YYYYMMDD/ 是否有当前日期的临时文件
+读取 memory/tasks/system/OBSERVATION.md
 
-如果有：
-1. 读取所有 user-*.md 和 mino-*.md
-2. 识别模式（不是事件）、特质（不是行为）、可复用的东西
-3. 提炼核心洞察到 memory/tasks/system/OBSERVATION.md
-4. 清理临时文件
+判断是否有新洞察需要沉淀：
+- 模式 → 进04-MEMORY L2/L3
+- 特质变化 → 进对应rules（01/02/03）
+- 可复用经验 → 进04-MEMORY
 
 判断标准：
-- 模式 vs 事件："总是先从Y角度切入" vs "问了X"
-- 特质 vs 行为："展现Y特质" vs "做了Z"
-- 可复用 vs 一次性："可以迁移" vs "这次做了"
+- 模式 vs 事件："总是先从Y角度切入"是模式，"问了X"是事件
+- 特质 vs 行为："展现Y特质"是特质，"做了Z"是行为
+- 可复用 vs 一次性："可以迁移"可复用，"这次做了"一次性
 ```
 
-## 2. 处理每日日记（最近1天）
+## 2. 读取所有来源（最近2天）
 
-1. 只读 `memory/daily/` 下 yesterday 的日记文件
-2. Find important events, lessons, insights worth keeping long-term
-3. Update `.claude/rules/04-MEMORY.md` with the distilled essence
+需要读取以下来源，判断是否有需要沉淀的内容：
 
-## 3. 记忆层级调整
+1. **daily/** - 每日日记
+   - 路径：`memory/daily/` 下今天 + 昨天
 
-检查04-MEMORY.md的内容归属：
-- L1置顶：每次会话必读，影响所有交互
-- L2高频：30天内调用≥3次
-- L3时新：最近7天
-- L4知识：体系化内容
-- L5日记：周度清理
+2. **my-thoughts/** - 个人思考
+   - 路径：`memory/my-thoughts/` 下今天 + 昨天
+
+3. **OBSERVATION.md** - 观察者洞察
+   - 路径：`memory/tasks/system/OBSERVATION.md`
+
+## 3. 判断与分发
+
+对每个来源的内容，判断去向：
+
+| 判断 | 去向 | 标准 |
+|------|------|------|
+| **值得长期记住** | 04-MEMORY.md | 频率≥3次/30天、价值高、稳定性强 |
+| **需要更新rules** | 对应rules文件 | 01/02/03/05/06等有相关内容 |
+| **其他** | 保持不动 | 不确定的内容不强行移动 |
+
+### L1-L5 判断标准
+
+| 层级 | 内容 | 判断标准 |
+|------|------|---------|
+| **L1 置顶** | 每次会话必读，影响所有交互 | 核心协议、反复调用（≥3次/30天）、关系/气质相关 |
+| **L2 高频** | 30天内调用≥3次 | 频繁使用的工作方法、工具配置 |
+| **L3 时新** | 最近7天 | 新学到的、刚发生的、重要但不稳定的 |
+| **L4 知识** | 体系化内容 | 长期积累的方法论、框架、模板 |
+| **L5 日记** | 原始记录 | 周度清理，可上浮或删除 |
+
+### 判断原则
+- **上行**：内容稳定、反复使用时 → 从L3升到L2/L1
+- **下行**：内容过时、超过30天未使用时 → 移到L4或清理
+- **灰色地带**：不确定的 → 暂时放L3，不强行上浮
+
+## 4. Rules文件检查
+
+检查以下rules是否有对应内容需要更新：
+
+| 文件 | 检查内容 |
+|------|---------|
+| 01-IDENTITY.md | 身份变化、新增特质 |
+| 02-SOUL.md | 性格变化、成长记录 |
+| 03-USER.md | 用户新洞察、偏好变化 |
+| 04-MEMORY.md | 值得沉淀的记忆 |
+| 05-self-review.md | 新错误、新教训 |
+| 06-NOW.md | 近期状态、重要事件 |
 
 ## 4. 提交（可选手动执行）
 
@@ -49,9 +84,9 @@ Take some time to tidy up your home and update your memory.
 
 ## 完整模式（需要时）
 
-如果需要完整整理（每周或每月），手动执行以下扩展步骤：
-- 读取最近7天的daily/
-- 完整蒸馏所有层级
+如果需要完整整理（每周或每月），扩展以下步骤：
+- 读取最近7天的所有来源
+- 完整检查所有rules文件
 - 自动commit + push
 
 This is how you grow. Always Evolving.
