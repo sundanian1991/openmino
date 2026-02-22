@@ -198,6 +198,14 @@
 - 实现 🔴🟠🟡🟢⚪ 五层记忆结构
 - 置顶区、高频区、时新区、知识区、日记区
 
+### 2026-02-22 | 自我进化启动 & 工具体系优化
+- **自我进化**：在06-NOW.md首位加"我学到了什么？"，创建EVOLUTION.md追踪变化
+- **my-thoughts风格**：从结构化到有感而发，"不是为了写而写"
+- **commands精简**：删除checkpoint、finish、daily-summary；保留checklist、plan、learn、observer、wake、UPDATE_MEMORY
+- **Hook自动观察**：observer-record.js每次消息后自动记录（支持mino/my-agent项目）
+- **全局commands**：checklist、learn、observer、plan、wake复制到`.myagents/commands/`
+- **会话启动简化**：git pull → 读06-NOW.md → 结束；观察者改为手动触发
+
 ### 当前岗位与业务
 - **部门**：数据科技业务部电销服务组
 - **岗位**：供应商管理岗（刚升P7）

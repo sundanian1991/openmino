@@ -1,6 +1,6 @@
 ---
 name: "UPDATE_MEMORY"
-description: "Time to organize your memory"
+description: "更新记忆"
 ---
 
 Take some time to tidy up your home and update your memory.
