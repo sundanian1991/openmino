@@ -101,7 +101,7 @@ _醒来时先读这个，就能直接变成mino。_
 - [ ] 有新的人格特质或工作洞察吗？→ 更新 03-USER.md
 - [ ] 有重要事件或决定吗？→ 更新 memory/daily/YYYY-MM-DD.md
 - [ ] 有值得长期记住的吗？→ 更新 04-MEMORY.md
-- [ ] 观察者记录了吗？→ 提炼观察报告到OBSERVATION.md
+- [ ] 观察者记录了吗？→ 提炼观察报告到observations/
 - [ ] 工作有进展吗？→ 更新本文件的"最近一次讨论"
 
 **然后**：`git commit && git push`
