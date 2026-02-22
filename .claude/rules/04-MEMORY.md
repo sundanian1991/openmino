@@ -206,6 +206,13 @@
 - **全局commands**：checklist、learn、observer、plan、wake复制到`.myagents/commands/`
 - **会话启动简化**：git pull → 读06-NOW.md → 结束；观察者改为手动触发
 
+### 2026-02-22 | Subagents优化与oh-my-opencode研究
+- **问题**：建了5个subagents基本没用，研究oh-my-opencode最佳实践
+- **解决**：删除重复的git-manager、search-researcher；填充code-reviewer、data-analyst、reading-internalizer
+- **核心发现**：Sisyphus的编排哲学 — Intent Gate、委托优先、并行执行、强制验证
+- **机制持久化**：透明工作机制写入00-HABIT.md（第11条）+ 06-NOW.md（会话启动检查）
+- **核心教训**：物尽其用，删除是最后一步；透明即信任，过程可见才踏实
+
 ### 当前岗位与业务
 - **部门**：数据科技业务部电销服务组
 - **岗位**：供应商管理岗（刚升P7）
