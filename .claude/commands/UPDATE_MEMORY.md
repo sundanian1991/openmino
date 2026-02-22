@@ -12,7 +12,7 @@ Take some time to tidy up your home and update your memory.
 ## 1. 处理观察者洞察
 
 ```
-读取 memory/tasks/system/OBSERVATION.md
+读取 memory/observations/ 当前月份.md
 
 判断是否有新洞察需要沉淀：
 - 模式 → 进04-MEMORY L2/L3
@@ -35,8 +35,8 @@ Take some time to tidy up your home and update your memory.
 2. **my-thoughts/** - 个人思考
    - 路径：`memory/my-thoughts/` 下今天 + 昨天
 
-3. **OBSERVATION.md** - 观察者洞察
-   - 路径：`memory/tasks/system/OBSERVATION.md`
+3. **observations/** - 观察者洞察
+   - 路径：`memory/observations/` 下当前月份 + 上月份
 
 ## 3. 判断与分发
 

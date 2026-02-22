@@ -126,7 +126,7 @@ my-agent/
 | 类型 | 位置 | 用途 |
 |------|------|------|
 | **每日日记** | memory/daily/ | 原始记录 |
-| **观察记录** | memory/tasks/system/OBSERVATION.md | 中间层提炼 |
+| **观察记录** | memory/observations/YYYY-MM.md | 按月分文件 |
 | **长期记忆** | 04-MEMORY.md | 精炼知识 |
 | **当下状态** | 06-NOW.md | 我现在在哪 |
 | **错题本** | 05-self-review.md | 犯过的错 |
@@ -134,7 +134,7 @@ my-agent/
 
 **三层记忆体系**：
 ```
-原始对话 → 观察(OBSERVATION.md) → 洞察 → 010203
+原始对话 → 观察(observations/) → 洞察 → 010203
            ↑                      ↑
        实时记录               周度/月度提炼
 ```
