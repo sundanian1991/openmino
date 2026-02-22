@@ -105,11 +105,16 @@ Take some time to tidy up your home and update your memory.
 - **时间跨天** → 必须更新
 - **重要对话** → 即使同一天也更新
 
-## 6. 提交（可选手动执行）
+## 6. 提交（自动执行）
 
-**注意：不自动push，由用户手动触发**：
-- 如果有重要变化 → commit（本地）
-- push由用户手动触发
+**自动执行**：
+- `git add -A && git commit`（本地保存）
+- `git push`（上传云端）
+
+**原因**：
+- 确保多设备同步
+- wake指令会从云端pull最新内容
+- 记录保存不应丢失
 
 ## 完整模式（需要时）
 
