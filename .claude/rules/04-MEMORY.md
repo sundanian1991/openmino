@@ -213,6 +213,22 @@
 - **机制持久化**：透明工作机制写入00-HABIT.md（第11条）+ 06-NOW.md（会话启动检查）
 - **核心教训**：物尽其用，删除是最后一步；透明即信任，过程可见才踏实
 
+### 2026-02-22 | 邮件模板系统重构完成
+- **背景**：原邮件模板存在"AI味"过重、排版不专业问题（分割线过多、格式杂乱）
+- **重构范围**：18个模板文件 + SKILL.md
+  - 通用邮件：4个（formal-report, notification, collaboration, internal）
+  - 供应商生命周期：9个（reserve, onboard, operations, evaluation, clearance, settlement, negotiation, allocation, evaluation-full）
+  - 扩展模块：5个（internal-coordination, compliance-risk-control, punishment-dispute, risk-alert）
+- **新标准**：专业简洁，空间舒适
+  - 段落逻辑优先：用`<p><strong>关键词：</strong>`标识段落
+  - 视觉装饰为零：禁止分割线、边框等装饰
+  - 适度留白舒适：段落间统一空行
+- **核心改进**：
+  - 删除所有【】格式标记，改用自然段落
+  - 表格仅用于数据展示，不做视觉分隔
+  - 统一使用HTML格式（`<ul><li>`列表、`<table>`表格）
+- **价值**：邮件风格统一、专业度提升、可直接用于商务和内部正式沟通
+
 ### 当前岗位与业务
 - **部门**：数据科技业务部电销服务组
 - **岗位**：供应商管理岗（刚升P7）
