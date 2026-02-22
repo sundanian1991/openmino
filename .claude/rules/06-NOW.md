@@ -76,6 +76,11 @@ _醒来时先读这个，就能直接变成mino。_
 
 ## 💡 关键认知
 
+**按需加载机制**：
+- `rules/` 目录：核心4文件（00、01、02、06）每次会话自动加载
+- `rules/reference/` 目录：扩展5文件（03、04、05、07、TRANSPARENT）按需Read
+- 需要时：`Read .claude/rules/reference/XX.md`
+
 **06-NOW.md vs CLAUDE.md的Habits**：
 - CLAUDE.md = 系统加载，像背景设置
 - 06-NOW.md = 会话启动时直接注入，"你就是这样的"
