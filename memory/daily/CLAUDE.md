@@ -1,68 +1,27 @@
-# CLAUDE.md — Daily 记录
+---
+input: -
+output: 向后兼容说明
+pos: memory/ 的旧目录（已废弃）
+# 文件夹变化需同步注释及所属文件夹 md
+---
 
-> **L2: daily模块说明**
+# CLAUDE.md — Daily（旧目录）
+
+> **已废弃 — 请改用 active/daily/**
 
 ---
 
-## Summary
+## 说明
 
-日维度事实记录。记录每天发生的事实、涉及文件、产生结果。
+本目录已迁移至 `memory/active/daily/`。
 
-**特点**：简洁、按时间顺序、不展开细节。
-
----
-
-## Members
-
-| 文件 | 用途 |
-|------|------|
-| **.index.md** | 快速索引（lifecycle/tags/summary） |
-| **YYYY-MM-DD.md** | 事实记录 |
+保留此目录仅用于向后兼容。
 
 ---
 
-## Rules
+## 新位置
 
-### 文件命名
-
-格式：`YYYY-MM-DD.md`
-
-### 写作原则
-
-- 一天一个文件
-- 一天内多件事 → 按时间顺序记录在同一天文件中
-- 简洁记录，不用详细展开
-- 记录三要素：做了什么、涉及哪些文件、产生了什么结果
-
-### 文件头标记（自指三行）
-
-```markdown
----
-lifecycle: P2  # P0=永久，P1=90 天，P2=30 天
-tags: [obsidian-claude, ultrawork]
-input: 当日对话记录、涉及文件路径
-output: 事实摘要、可供 observations 提炼洞察
-pos: daily 目录的成员，文件夹变化需更新此注释
-# 文件更新需同步注释及所属文件夹 md
----
-```
-
-**三行说明**：
-- `input`：依赖外部资源（对话、文件）
-- `output`：对外提供功能（事实记录、洞察来源）
-- `pos`：系统局部地位（daily 目录成员）
-
-### 索引更新
-
-写完文件后执行：
-```bash
-python3 memory/tasks/scripts/index_manager.py --action update-daily
-```
+- **当前日记**：`memory/active/daily/`
+- **历史归档**：`memory/archive/daily/`
 
 ---
-
-*每天的事实，从这里开始。*
-
----
-
-*最后更新：2026-02-23*

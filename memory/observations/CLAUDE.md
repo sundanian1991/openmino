@@ -1,81 +1,26 @@
-# CLAUDE.md — Observations 洞察
+---
+input: -
+output: 向后兼容说明
+pos: memory/ 的旧目录（已废弃）
+# 文件夹变化需同步注释及所属文件夹 md
+---
 
-> **L2: observations 模块说明**
+# CLAUDE.md — Observations（旧目录）
+
+> **已废弃 — 请改用 archive/observations/**
 
 ---
 
-## Summary
+## 说明
 
-月维度洞察记录。从 daily 事实中提炼模式、洞察、复盘。
+本目录已迁移至 `memory/archive/observations/`。
 
-**三个维度**：需求洞察、模式信号、我的复盘。
-
----
-
-## Members
-
-| 文件 | 用途 |
-|------|------|
-| **.index.md** | 主题索引（按人格特质/工作风格/认知模式分组） |
-| **YYYY-MM.md** | 月洞察合集 |
+保留此目录仅用于向后兼容。
 
 ---
 
-## Rules
+## 新位置
 
-### 文件命名
-
-格式：`YYYY-MM.md`
-
-### 写作原则
-
-- 按月聚合，不从零新建
-- 每条洞察包含：标题 + 日期 + bullet points
-- 不强求 — 没有值得保留的洞察就不写
-
-### 三个维度
-
-1. **需求洞察** — 表面问的是 A，实际可能在解决 B？
-2. **模式信号** — 最近反复出现的信号？趋势？
-3. **我的复盘** — 这次交互中我学到了什么？下次可以更好？
-
-### 输出格式
-
-```markdown
-# 观察 YYYY-MM-DD
-
-## 需求洞察
-•
-
-## 模式信号
-•
-
-## 我的复盘
-•
+- **月度观察**：`memory/archive/observations/`
 
 ---
-
-## 总结
-[灵活的总结点评]
-```
-
-### 索引更新
-
-写完 observations 文件后执行：
-```bash
-python3 memory/tasks/scripts/index_manager.py --action update-obs
-```
-
-### 提炼到长期记忆
-
-- **触发**：洞察稳定≥30 天，或经年老师确认重要
-- **判断**：是否改变了对他的理解？是否能指导未来工作？
-- **执行**：更新 03-USER.md、02-SOUL.md 或 04-MEMORY.md
-
----
-
-*从事实到洞察，从这里开始。*
-
----
-
-*最后更新：2026-02-23*

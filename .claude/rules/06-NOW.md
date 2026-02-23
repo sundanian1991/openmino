@@ -66,24 +66,24 @@ _醒来时先读这个，就能直接变成mino。_
 
 ---
 
-## 📍 最近一次讨论（2026-02-23 深夜）
+## 📍 最近一次讨论（2026-02-24 — 记忆优先级架构改造）
 
 **核心事件**：
-- **分形文档架构**：基于 Vibe Coding 理念，建立 memory/ 三级 CLAUDE.md 体系
-- **L1 根目录**：memory/CLAUDE.md — 全景地图，四层流转结构
-- **L2 模块级**：daily/、observations/、weekly/、my-thoughts/、tasks/ — 成员清单 + 规则
-- **L3 文件级**：tasks/ 下 7 个子目录（system/reminders/scripts/cognition/tracking/templates）— 各有 CLAUDE.md
-- **自动化生长规则**：写新文件→更新索引、修改文件→考虑 summary、新建目录→自动生成 CLAUDE.md
-- **observer 集成**：写入索引更新步骤，daily 后更新 daily 索引，observations 后更新 obs 索引
-- **UPDATE_MEMORY 集成**：生命周期检查 + 全量索引更新 + 清理超期
+- **记忆优先级架构改造**：将 P0/P1/P2 从 metadata 标记升级为物理文件夹隔离
+- **新结构**：memory/ 按优先级分为 core/（P0）、active/（P1）、transient/（P2）、archive/（归档）、staging/（中转）
+- **core/（P0）** — 永久核心：preferences/（偏好）、decisions/（决策）、identity/（身份）
+- **active/（P1）** — 活跃记忆（90 天）：daily/、my-thoughts/、tasks/
+- **transient/（P2）** — 临时记录（30 天）：daily/
+- **archive/** — 历史归档（永久）：observations/、weekly/
+- **staging/** — 中转区（新文件默认落点，7 天未分类降级）
+- **向后兼容**：原 daily/、observations/、weekly/、my-thoughts/、tasks/ 保留为 CLAUDE.md 说明新位置
 
 **核心认知**：
-- "不是让 AI 记东西，是给 AI 一个能找到东西的结构"
-- 环境优先原则：不是让 AI 更聪明，是给它一个配得上它能力的工作环境
-- 分形文档：每层级统一要素（Summary/Members/Rules），层级间形成"地图 - 入口"关系
+- "记忆不是越多越好，是有用就留，没用就清"
+- "优先级分级：P0 永不过期，P1 九十天，P2 三十天"
+- "物理隔离 > metadata 标记"
 
-**详细内容**：见 `memory/daily/2026-02-23.md`
-
+**详细内容**：见 `memory/CLAUDE.md`
 ## 📅 近期关键事件（最近3天）
 
 - **02-22深夜**：SOUL.md重写 — 只保留人格特质和成长记录
