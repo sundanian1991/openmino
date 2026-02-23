@@ -91,10 +91,24 @@ tags: [obsidian-claude, ultrawork]
 
 ### 自动化生长规则
 
-1. **写新文件** → 自动更新对应 .index
-2. **修改文件** → 考虑是否更新 summary/tags
-3. **删除文件** → 从 .index 中移除
-4. **新建目录** → 自动生成 CLAUDE.md
+| 操作 | 自动执行 | 手动命令 |
+|------|---------|---------|
+| **写新文件** | observer/UPDATE_MEMORY 调用 `update-daily` 或`update-obs` | `--action update-all` |
+| **修改文件** | - | 手动运行 `update-daily` 更新摘要 |
+| **新建目录** | - | `--action create-claude-md --dir <目录>` |
+| **删除文件** | lifecycle_manager 清理后更新索引 | `--action cleanup` |
+
+**命令**：
+```bash
+# 更新索引
+python3 memory/tasks/scripts/index_manager.py --action update-all
+
+# 为新目录创建 CLAUDE.md
+python3 memory/tasks/scripts/index_manager.py --action create-claude-md --dir memory/tasks/new-dir --template tasks
+
+# 清理超期文件
+python3 memory/tasks/scripts/lifecycle_manager.py --action cleanup
+```
 
 ---
 

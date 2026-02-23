@@ -325,14 +325,141 @@ directory: "memory/observations/"
 
         return results
 
+    def update_all_indexes(self) -> dict:
+        """更新所有索引"""
+        daily_result = self.update_daily_index()
+        obs_result = self.update_obs_index()
+        return {
+            "daily": daily_result,
+            "obs": obs_result
+        }
+
+    def create_dir_claude_md(self, dir_path: str, template: str = "default") -> bool:
+        """为新目录创建 CLAUDE.md"""
+        dir_path = Path(dir_path)
+        if not dir_path.exists():
+            print(f"目录不存在：{dir_path}")
+            return False
+
+        claude_md = dir_path / "CLAUDE.md"
+        if claude_md.exists():
+            print(f"CLAUDE.md 已存在：{claude_md}")
+            return False
+
+        # 模板
+        templates = {
+            "default": """# CLAUDE.md — {dir_name}
+
+> **L3: {dir_name} 模块说明**
+
+---
+
+## Summary
+
+{一句话描述这个目录的用途}
+
+---
+
+## Members
+
+| 文件 | 内容 |
+|------|------|
+| - | - |
+
+---
+
+## Rules
+
+### 使用方式
+
+[说明如何使用这个目录的文件]
+
+### 新增文件
+
+当 [触发条件] 时：
+1. 在本目录下新建 .md 文件
+2. 说明 [文件内容]
+3. 在对应 command 中集成调用
+
+---
+
+*{一句话总结}*
+
+---
+
+*最后更新：{date}*
+""",
+            "tasks": """# CLAUDE.md — {dir_name}
+
+> **L3: {dir_name} 模块说明**
+
+---
+
+## Summary
+
+{一句话描述这个目录的用途}
+
+---
+
+## Members
+
+| 文件 | 内容 |
+|------|------|
+| - | - |
+
+---
+
+## Rules
+
+### 机制文档结构
+
+每个机制文档包含：
+- 触发条件（何时启动）
+- 执行流程（怎么做）
+- 相关文件（涉及哪些文件）
+- 变更记录（历史演进）
+
+### 新增机制
+
+创建新机制时：
+1. 在本目录下新建 .md 文件
+2. 说明触发条件、执行流程、相关文件
+3. 在 observer 或 UPDATE_MEMORY 中集成调用
+
+---
+
+*{一句话总结}*
+
+---
+
+*最后更新：{date}*
+"""
+        }
+
+        template_content = templates.get(template, templates["default"])
+        dir_name = dir_path.name
+
+        content = template_content.format(
+            dir_name=dir_name,
+            date=datetime.now().strftime("%Y-%m-%d")
+        )
+
+        with open(claude_md, 'w', encoding='utf-8') as f:
+            f.write(content)
+
+        print(f"已创建 CLAUDE.md: {claude_md}")
+        return True
+
 
 def main():
     """命令行入口"""
     import argparse
 
     parser = argparse.ArgumentParser(description="记忆索引管理器")
-    parser.add_argument("--action", choices=["update-daily", "update-obs", "query"], required=True)
+    parser.add_argument("--action", choices=["update-daily", "update-obs", "update-all", "query", "create-claude-md"], required=True)
     parser.add_argument("--tags", nargs='+')
+    parser.add_argument("--dir", help="目录路径（create-claude-md 使用）")
+    parser.add_argument("--template", choices=["default", "tasks"], default="default")
 
     args = parser.parse_args()
 
@@ -346,6 +473,10 @@ def main():
         result = manager.update_obs_index()
         print(f"Observations索引已更新：{result['updated']} 个观察")
 
+    elif args.action == "update-all":
+        result = manager.update_all_indexes()
+        print(f"所有索引已更新：daily={result['daily']['updated']} 个文件，obs={result['obs']['updated']} 个观察")
+
     elif args.action == "query":
         if not args.tags:
             print("错误：query操作需要--tags参数")
@@ -355,6 +486,13 @@ def main():
         print(f"找到 {len(results)} 个文件：")
         for r in results:
             print(f"  {r['file']} - {r['summary']}")
+
+    elif args.action == "create-claude-md":
+        if not args.dir:
+            print("错误：create-claude-md 操作需要--dir 参数")
+            return
+
+        manager.create_dir_claude_md(args.dir, args.template)
 
 
 if __name__ == "__main__":
