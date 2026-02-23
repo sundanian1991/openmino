@@ -21,6 +21,11 @@ pos: memory/ 的旧目录（已废弃）
 
 ## 新位置
 
-- **我的思考**：`memory/active/my-thoughts/`
+- **当前思考（30 天内）**：`memory/active/my-thoughts/`
 
 ---
+
+## 迁移状态
+
+- [x] 文件已复制到 active/my-thoughts/
+- [x] CLAUDE.md 已更新为新位置说明

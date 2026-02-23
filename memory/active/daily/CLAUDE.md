@@ -1,27 +1,43 @@
 ---
-input: 每日对话记录
-output: 事实记录（P1 活跃期）
-pos: active/的成员
+input: 对话记录、observer
+output: 每日事实记录（P1 活跃期）
+pos: active/ 的成员，存放 30 天内日记
 # 文件夹变化需同步注释及所属文件夹 md
 ---
 
-# CLAUDE.md — Active Daily
+# CLAUDE.md — Daily（活跃期）
 
-> **每日记录 — P1 活跃期（90 天）**
+> **P1 活跃记忆 — 30 天内日记**
 
 ---
 
 ## Summary
 
-存储 30-90 天内的日记，记录每天发生的事实。
+存储最近 30 天的日记，记录事实、对话、关键事件。
+
+---
+
+## Members
+
+| 文件 | 内容 |
+|------|------|
+| **YYYY-MM-DD.md** | 每日对话记录，由 observer 生成 |
 
 ---
 
 ## Rules
 
-1. **命名**：YYYY-MM-DD.md
-2. **更新**：每天会话结束后写入
+1. **命名**：`YYYY-MM-DD.md` 格式
+2. **生成**：observer 在每段对话后写入
 3. **流转**：
-   - 90 天后 → UPDATE_MEMORY 检查 → archive/ 或 删除
+   - 30 天后 → 有历史价值 → archive/daily/
+   - 30 天后 → 无历史价值 → 删除（内容已提炼到 weekly）
+4. **索引**：更新 `.index.md` 记录 lifecycle/tags/summary
 
 ---
+
+*这是活跃记忆的核心，记录正在发生的成长。*
+
+---
+
+*最后更新：2026-02-24 — 优先级分级架构*

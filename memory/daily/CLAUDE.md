@@ -21,7 +21,12 @@ pos: memory/ 的旧目录（已废弃）
 
 ## 新位置
 
-- **当前日记**：`memory/active/daily/`
-- **历史归档**：`memory/archive/daily/`
+- **当前日记（30 天内）**：`memory/active/daily/`
+- **历史归档（90 天+）**：`memory/archive/daily/`
 
 ---
+
+## 迁移状态
+
+- [x] 文件已复制到 active/daily/
+- [x] CLAUDE.md 已更新为新位置说明
