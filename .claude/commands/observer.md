@@ -22,7 +22,13 @@ description: "对话结束后记录事实与洞察"
 - 一天内多件事 → 按时间顺序记录在同一天文件中
 - 简洁记录，不用详细展开
 
-### Step 2: 生成洞察到observations
+### Step 2: 更新索引
+写完 daily 文件后，更新索引：
+```bash
+python3 memory/tasks/scripts/index_manager.py --action update-daily
+```
+
+### Step 3: 生成洞察到observations
 基于 daily 内容，在 `memory/observations/YYYY-MM.md` 中生成洞察：
 
 **三个维度**：
@@ -49,7 +55,13 @@ description: "对话结束后记录事实与洞察"
 [灵活的总结点评]
 ```
 
-### Step 3: 提交
+### Step 4: 更新索引
+写完 observations 文件后，更新索引：
+```bash
+python3 memory/tasks/scripts/index_manager.py --action update-obs
+```
+
+### Step 5: 提交
 - `git add -A && git commit`
 - `git push`
 
@@ -69,11 +81,13 @@ description: "对话结束后记录事实与洞察"
 ```
 memory/
 ├── daily/           # 日维度 - 事实记录
+│   ├── .index.md    # 快速索引（脚本更新）
 │   └── YYYY-MM-DD.md
 └── observations/    # 月维度 - 洞察记录
+    ├── .index.md    # 快速索引（脚本更新）
     └── YYYY-MM.md
 ```
 
 ---
 
-*最后更新：2026-02-22 — observer记录事实到daily，生成洞察到observations/，UPDATE_MEMORY按周汇总*
+*最后更新：2026-02-23 — 加入索引更新步骤，保持与 UPDATE_MEMORY 同步*
