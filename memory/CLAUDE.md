@@ -89,6 +89,24 @@ tags: [obsidian-claude, ultrawork]
 - `observations/.index.md` - observations主题索引
 - 更新方式：写完文件后运行 `python3 memory/tasks/scripts/index_manager.py`
 
+### 自指三行注释（文件层）
+
+每个文件开头包含三行注释，实现自指与自更新：
+
+```markdown
+---
+input: [依赖外部资源]
+output: [对外提供功能]
+pos: [系统局部地位，文件夹变化需更新此注释]
+# 文件更新需同步注释及所属文件夹 md
+---
+```
+
+**三行说明**：
+- `input`：依赖外部资源（如对话记录、配置文件）
+- `output`：对外提供功能（如事实摘要、索引更新）
+- `pos`：系统局部地位（如"daily 目录的成员"）
+
 ### 自动化生长规则
 
 | 操作 | 自动执行 | 手动命令 |

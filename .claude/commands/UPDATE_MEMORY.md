@@ -150,14 +150,23 @@ python3 memory/tasks/scripts/lifecycle_manager.py --action cleanup
 
 ## 生命周期标记
 
-每个daily文件开头应标注生命周期：
+每个 daily 文件开头应标注生命周期和自指三行：
 
 ```markdown
 ---
-lifecycle: P1  # P0=永久, P1=90天, P2=30天
+lifecycle: P1  # P0=永久，P1=90 天，P2=30 天
 tags: [obsidian-claude, ultrawork]
+input: 当日对话记录、涉及文件路径
+output: 事实摘要、可供 observations 提炼洞察
+pos: daily 目录的成员
+# 文件更新需同步注释及所属文件夹 md
 ---
 ```
+
+**三行说明**：
+- `input`：依赖外部资源（对话、文件）
+- `output`：对外提供功能（事实记录、洞察来源）
+- `pos`：系统局部地位（daily 目录成员）
 
 ---
 

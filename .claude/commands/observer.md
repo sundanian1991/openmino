@@ -11,7 +11,8 @@ description: "对话结束后记录事实与洞察"
 
 ## 工作流程
 
-### Step 1: 记录事实到daily
+### Step 1: 记录事实到 daily
+
 在 `memory/daily/YYYY-MM-DD.md` 中记录：
 - 今天做了什么（事实）
 - 涉及哪些文件
@@ -21,6 +22,18 @@ description: "对话结束后记录事实与洞察"
 - 一天一个文件
 - 一天内多件事 → 按时间顺序记录在同一天文件中
 - 简洁记录，不用详细展开
+
+**文件头（自指三行）**：
+```markdown
+---
+lifecycle: P2
+tags: [关键词]
+input: 当日对话记录、涉及文件路径
+output: 事实摘要、可供 observations 提炼洞察
+pos: daily 目录的成员
+# 文件更新需同步注释及所属文件夹 md
+---
+```
 
 ### Step 2: 更新索引
 写完 daily 文件后，更新索引：
