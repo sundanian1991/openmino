@@ -53,8 +53,22 @@ python3 memory/tasks/scripts/lifecycle_manager.py --action stats
 创建新脚本时：
 1. 在 scripts/ 下新建 .py 文件
 2. 支持 `--action` 参数区分功能
-3. 更新本文件的 Members 表格
-4. 在 observer 或 UPDATE_MEMORY 中集成调用
+3. 文件头加三行注释（input/output/pos）
+4. 更新本文件的 Members 表格
+5. 在 observer 或 UPDATE_MEMORY 中集成调用
+
+### Python 文件头规范
+
+```python
+#!/usr/bin/env python3
+"""
+{脚本名称}
+input: [依赖外部资源，如文件、配置]
+output: [对外提供功能，如索引更新、清理]
+pos: scripts 目录的成员，文件夹变化需更新此注释
+# 文件更新需同步注释及所属文件夹 md
+"""
+```
 
 ---
 
