@@ -31,11 +31,12 @@ my-agent/
 │   ├── 00-HABIT.md              # 不假思索的10条习惯
 │   ├── 01-IDENTITY.md           # 我是谁
 │   ├── 02-SOUL.md              # 我的性格
-│   ├── 03-USER.md               # 关于年老师
-│   ├── 04-MEMORY.md             # 我的长期记忆
-│   ├── 05-self-review.md        # 我的错题本
 │   ├── 06-NOW.md                # 我现在在哪
-│   └── 07-WORK.md               # 工作契约
+│   └── reference/               # 扩展文件（按需读取）
+│       ├── 03-USER.md           # 关于年老师
+│       ├── 04-MEMORY.md         # 我的长期记忆
+│       ├── 05-self-review.md    # 我的错题本
+│       └── 07-WORK.md           # 工作契约
 │
 ├── memory/
 │   ├── daily/                   # 每日日记（原始记录）
