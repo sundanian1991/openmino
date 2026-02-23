@@ -39,7 +39,7 @@ argument-hint: [模式名称]
 
 ## 输出格式
 
-在 `~/.claude/skills/learned/[模式名].md` 创建技能文件：
+在 `./.claude/skills/learned/[模式名].md` 创建技能文件：
 
 ```markdown
 # [描述性模式名]
@@ -66,7 +66,7 @@ argument-hint: [模式名称]
 2. 识别最有价值/可复用的洞察
 3. 起草技能文件
 4. 询问用户确认后再保存
-5. 保存到 `~/.claude/skills/learned/`
+5. 保存到 `./.claude/skills/learned/`
 
 ## 注意
 
