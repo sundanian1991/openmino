@@ -1,55 +1,26 @@
-# CLAUDE.md — Weekly 周文档
+---
+input: -
+output: 向后兼容说明
+pos: memory/ 的旧目录（已废弃）
+# 文件夹变化需同步注释及所属文件夹 md
+---
 
-> **L2: weekly 模块说明**
+# CLAUDE.md — Weekly（旧目录）
+
+> **已废弃 — 请改用 archive/weekly/**
 
 ---
 
-## Summary
+## 说明
 
-周维度汇总文档。由 UPDATE_MEMORY 命令每周生成。
+本目录已迁移至 `memory/archive/weekly/`。
 
-**目的**：汇总一周的事实与洞察，判断是否更新长期记忆。
-
----
-
-## Members
-
-| 文件 | 用途 |
-|------|------|
-| **YYYY-Www.md** | 周文档（ISO 周数） |
+保留此目录仅用于向后兼容。
 
 ---
 
-## Rules
+## 新位置
 
-### 文件命名
-
-格式：`YYYY-Www.md`（ISO 周数）
-
-### 生成时机
-
-- 每周一次（周日或周一）
-- 触发：`/UPDATE_MEMORY` 命令
-
-### 内容结构
-
-1. **本周事实汇总** — 从 daily 提取
-2. **本周洞察汇总** — 从 observations 提取
-3. **本周成长** — 从 my-thoughts 提取
-4. **长期记忆判断** — 是否更新 03/04/SOUL
-
-### 更新方式
-
-执行 `/UPDATE_MEMORY` 命令，自动：
-1. 读取本周 daily 文件
-2. 提取核心事件
-3. 生成周文档
-4. 更新 06-NOW.md 的"最近一次讨论"
+- **周文档**：`memory/archive/weekly/`
 
 ---
-
-*周度复盘，从这里开始。*
-
----
-
-*最后更新：2026-02-23*
