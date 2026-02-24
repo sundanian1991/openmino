@@ -1,40 +1,55 @@
-# CLAUDE.md — Tracking 跟踪
+---
+input: 项目启动请求
+output: 项目追踪文件索引
+pos: active/tasks/tracking/ 的成员
+# 文件更新需同步注释及所属文件夹 md
+---
 
-> **L3: tracking 模块说明**
+# CLAUDE.md — Projects Tracking
+
+> **项目追踪索引 — 进行中的项目**
 
 ---
 
 ## Summary
 
-跟踪相关文档。记录技能使用等跟踪数据。
+存储进行中的项目工作流文件。
+
+每个项目一个 `.md` 文件，包含 Prompt + Plans + Architecture + Documentation。
 
 ---
 
 ## Members
 
-| 文件 | 内容 |
-|------|------|
-| **skills-usage.md** | 技能使用统计 |
+| 文件 | 项目 | 状态 | 启动日期 |
+|------|------|------|---------|
+| **skills-usage.md** | 技能使用统计 | ⬜ | - |
+| **[项目名].md** | [新增项目] | ⬜ | YYYY-MM-DD |
 
 ---
 
 ## Rules
 
-### 使用方式
+### 启动项目
 
-需要跟踪某项数据时，更新对应文件。
+1. 复制 `../templates/project-workflow.md` 到本目录
+2. 填写 **Prompt**（目标边界）和 **Plans**（任务拆解）
+3. 启动指令：`先读 active/tasks/tracking/[项目名].md，按 Plans 顺序执行`
 
-### 新增跟踪
+### 更新进度
 
-当需要跟踪新维度时：
-1. 在 tracking/ 下新建 .md 文件
-2. 说明跟踪的指标、更新方式
-3. 在对应 command 中集成调用
+- 每日更新 **Documentation** 部分（或在 `active/daily/` 中记录）
+- 完成里程碑后更新 **Plans** 状态
+
+### 完成项目
+
+- 标记状态为 `✅完成`
+- 移动到 `archive/projects/`（如有长期价值）
 
 ---
 
-*跟踪，看见变化。*
+*这是项目管理的核心，防止 AI 跑偏。*
 
 ---
 
-*最后更新：2026-02-23*
+*最后更新：2026-02-24 — 5 文件流融合*
