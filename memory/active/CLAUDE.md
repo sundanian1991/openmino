@@ -34,6 +34,7 @@ pos: memory/的 P1 活跃区
 1. **进入**：新文件默认进入 active/
 2. **生命周期**：90 天后检查 → 有价值降为 P0，无价值降级到 transient/
 3. **清理**：UPDATE_MEMORY 每周检查生命周期
+4. **项目启动**：复杂项目使用 `tasks/templates/project-workflow.md`，填写 Prompt+Plans 后启动
 
 ---
 

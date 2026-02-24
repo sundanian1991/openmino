@@ -22,6 +22,7 @@ pos: memory/的中转区
 1. **进入**：新文件、未分类文件
 2. **清理**：UPDATE_MEMORY 每周检查，分类到 active/core/transient
 3. **超时**：超过 7 天未分类 → 自动降级到 transient
+4. **例外**：项目文件直接使用 `active/tasks/tracking/`，不进入 staging/
 
 ---
 
