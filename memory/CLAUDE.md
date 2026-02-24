@@ -113,6 +113,18 @@ pos: [系统局部地位，文件夹变化需更新此注释]
 | **修改文件** | - | 手动运行脚本更新摘要 |
 | **新建目录** | - | `--action create-claude-md --dir <目录>` |
 | **清理超期** | lifecycle_manager | `--action cleanup` |
+| **启动项目** | 5 文件流：复制 `active/tasks/templates/project-workflow.md` | `./memory/active/tasks/scripts/init-project.sh [项目名]` |
+
+### 5 文件流（项目管理）
+
+**核心**：Prompt（目标）+ Plans（里程碑 + 验收），防止 AI 跑偏。
+
+**位置**：`active/tasks/templates/project-workflow.md`
+
+**用法**：
+1. 复杂项目（>4 小时）必用
+2. 填写 Prompt（要什么/不要什么）+ Plans（1-2 小时里程碑）
+3. 启动指令："先读 active/tasks/tracking/[项目名].md，按 Plans 顺序执行"
 
 ---
 
