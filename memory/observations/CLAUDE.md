@@ -7,13 +7,13 @@ pos: memory/ 的旧目录（已废弃）
 
 # CLAUDE.md — Observations（旧目录）
 
-> **已废弃 — 请改用 archive/observations/**
+> **已清空 — 请改用 archive/observations/**
 
 ---
 
 ## 说明
 
-本目录已迁移至 `memory/archive/observations/`。
+本目录已迁移至 `memory/archive/observations/`，原文件已清空。
 
 保留此目录仅用于向后兼容。
 
@@ -24,3 +24,9 @@ pos: memory/ 的旧目录（已废弃）
 - **月度观察**：`memory/archive/observations/`
 
 ---
+
+## 清理状态
+
+- [x] 文件已迁移到 archive/observations/
+- [x] 原文件已删除（仅保留 CLAUDE.md）
+- [x] CLAUDE.md 已更新为向后兼容说明
