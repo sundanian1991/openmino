@@ -59,20 +59,6 @@ Mino 的记忆系统，按优先级分级管理：
 
 ---
 
-## 向后兼容（旧目录已清空）
-
-| 旧目录 | 新位置 | 状态 |
-|--------|--------|------|
-| **daily/** | `active/daily/` | 已清空，仅保留 CLAUDE.md |
-| **my-thoughts/** | `active/my-thoughts/` | 已清空，仅保留 CLAUDE.md |
-| **observations/** | `archive/observations/` | 已清空，仅保留 CLAUDE.md |
-| **weekly/** | `archive/weekly/` | 已清空，仅保留 CLAUDE.md |
-| **tasks/** | `active/tasks/` | 已清空，子目录保留 CLAUDE.md |
-
-旧目录保留仅用于向后兼容，防止链接断裂。
-
----
-
 ## Rules（核心规则）
 
 ### 记忆流转规则
