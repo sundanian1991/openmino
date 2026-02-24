@@ -1,6 +1,6 @@
 ---
-input: Plan 文档、会话任务
-output: 待办事项清单
+input: 复杂任务需求
+output: 可执行的规划文档
 pos: memory/active/tasks/todo.md，待办清单
 ---
 
@@ -12,19 +12,9 @@ pos: memory/active/tasks/todo.md，待办清单
 
 ## 当前任务
 
-### [任务名称]
-**关联 Plan**：`plans/[任务名].md`
-**状态**：`planning` | `in-progress` | `blocked` | `completed`
-**优先级**：`P0` | `P1` | `P2`
-
-#### Checklist
-- [ ] [步骤 1]
-- [ ] [步骤 2]
-- [ ] [步骤 3]
-
-#### 验证
-- [ ] [验证项 1]
-- [ ] [验证项 2]
+| 任务 | Plan | 状态 | 优先级 |
+|------|------|------|--------|
+| | | `pending` | |
 
 ---
 
@@ -32,7 +22,7 @@ pos: memory/active/tasks/todo.md，待办清单
 
 | 任务 | 阻塞原因 | 预计开始 |
 |------|---------|---------|
-| [任务名] | [等待什么] | [时间] |
+| | | |
 
 ---
 
@@ -40,7 +30,7 @@ pos: memory/active/tasks/todo.md，待办清单
 
 | 任务 | 完成时间 | 验证状态 | Plan |
 |------|---------|---------|------|
-| [任务名] | YYYY-MM-DD | ✅ | `plans/[任务名].md` |
+| | | | |
 
 ---
 
