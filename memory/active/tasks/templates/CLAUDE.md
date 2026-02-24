@@ -1,3 +1,10 @@
+---
+input: 项目启动请求、标准化文档需求
+output: 模板文件（5 文件流、项目工作流）
+pos: active/tasks/的子模块，L3 模板库
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md — Templates 模板
 
 > **L3: templates 模块说明**

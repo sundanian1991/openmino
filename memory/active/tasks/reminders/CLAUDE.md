@@ -1,3 +1,10 @@
+---
+input: 定时触发器、提醒配置
+output: 定时提醒文档（周末对话、月度清算）
+pos: active/tasks/的子模块，L3 定时提醒
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md — Reminders 定时提醒
 
 > **L3: reminders 模块说明**

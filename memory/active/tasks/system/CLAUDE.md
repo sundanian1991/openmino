@@ -1,3 +1,10 @@
+---
+input: 机制设计需求、工作流程定义
+output: 系统级机制文档（心跳、观察等）
+pos: active/tasks/的子模块，L3 系统机制
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md — System 系统机制
 
 > **L3: system 模块说明**

@@ -1,3 +1,10 @@
+---
+input: 周度对话记录、UPDATE_MEMORY
+output: 周文档汇总（事实 + 洞察）
+pos: archive/的子模块，周维度归档
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md — Weekly 周文档
 
 > **L2: weekly 模块说明**

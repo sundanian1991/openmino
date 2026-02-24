@@ -1,3 +1,10 @@
+---
+input: 自动化需求、索引更新触发
+output: Python 管理脚本（索引、生命周期）
+pos: active/tasks/的子模块，L3 脚本工具
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md — Scripts 管理脚本
 
 > **L3: scripts 模块说明**
