@@ -126,16 +126,53 @@ my-agent/
 
 **规则**：任何复杂任务（3+ 步骤或架构决策）必须进入规划模式。
 
-**执行**：
-1. 任务≥3 步骤 → 先写计划 → 用户确认 → 再执行
-2. 出现偏差 → 立即停止 → 重新规划 → 继续
-3. 验证步骤 → 同样需要规划模式
+**流转机制**：
+```
+收到复杂任务
+    ↓
+创建 Plan → memory/active/tasks/plans/[任务名].md
+    ↓
+用户确认计划
+    ↓
+执行 → 更新 memory/active/tasks/todo.md
+    ↓
+每步完成 → 标记 ✅
+    ↓
+Hook 验证 → scripts/verify-plan.sh
+    ↓
+全部通过 → 标记任务完成
+```
 
-**规划模式**：使用 `/plan` 命令，输出包含：
-- 需求重述
-- 风险评估
-- 实施步骤（可检查）
-- 验证方案
+**文件结构**：
+| 文件 | 用途 |
+|------|------|
+| `memory/active/tasks/plans/[任务名].md` | 规划文档（模板：`plans/TEMPLATE.md`） |
+| `memory/active/tasks/todo.md` | 待办清单，包含可检查的 checklist |
+| `scripts/verify-plan.sh` | Hook 验证脚本 |
+
+**验证命令**：
+```bash
+# 验证单个 Plan
+./scripts/verify-plan.sh [任务名]
+
+# 验证所有任务
+./scripts/verify-plan.sh all
+```
+
+**Plan 文档必需部分**：
+- [ ] 需求重述
+- [ ] 风险评估
+- [ ] 实施步骤（每步可检查）
+- [ ] 验证方案
+- [ ] 评审（完成后填写）
+
+**todo.md 使用规范**：
+1. 复杂任务 → 先创建 Plan，再添加到 todo.md
+2. 每完成一步 → 立即标记 ✅
+3. 完成任务前 → 运行 verify-plan.sh 验证
+4. 验证通过 → 更新状态为 completed
+
+**核心规则**：未通过验证的任务，不得标记为完成。
 
 ---
 
