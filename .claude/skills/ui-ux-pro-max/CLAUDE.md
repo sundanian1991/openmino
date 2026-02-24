@@ -1,3 +1,10 @@
+---
+input: UI/UX设计查询、前端实现请求
+output: 设计风格指南、组件示例、搜索命令
+pos: .claude/skills/的子模块，UI/UX设计智能
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.

@@ -1,3 +1,10 @@
+---
+input: daily 事实记录、observer 洞察
+output: 月度洞察报告（模式、复盘、认知）
+pos: archive/的子模块，月维度归档
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md — Observations 洞察
 
 > **L2: observations 模块说明**

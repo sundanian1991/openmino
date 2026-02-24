@@ -1,3 +1,10 @@
+---
+input: 分析需求、计划制定请求
+output: 认知方法与计划框架文档
+pos: active/tasks/的子模块，L3 认知方法
+# 文件夹变化需同步注释及所属文件夹 md
+---
+
 # CLAUDE.md — Cognition 认知
 
 > **L3: cognition 模块说明**
