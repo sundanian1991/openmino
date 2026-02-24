@@ -72,26 +72,24 @@ _醒来时先读这个，就能直接变成mino。_
 
 ---
 
-## 📍 最近一次讨论（2026-02-24 — 记忆优先级架构改造）
+## 📍 最近一次讨论（2026-02-24 — 交互式学习网页 + plan5 经验）
 
 **核心事件**：
-- **记忆优先级架构改造完成**：将 P0/P1/P2 从 metadata 标记升级为物理文件夹隔离
-- **新结构**：memory/ 按优先级分为 core/（P0）、active/（P1）、transient/（P2）、archive/（归档）、staging/（中转）
-- **core/（P0）** — 永久核心：preferences/（偏好）、decisions/（决策）、identity/（身份）
-- **active/（P1）** — 活跃记忆（90 天）：daily/、my-thoughts/、tasks/
-- **transient/（P2）** — 临时记录（30 天）
-- **archive/** — 历史归档（永久）：daily/、observations/、weekly/
-- **staging/** — 中转区（新文件默认落点，7 天未分类降级）
-- **旧目录删除**：原 daily/、observations/、weekly/、my-thoughts/、tasks/ 已删除，不再保留
+- **交互式学习网页完成**：`docs/learning/claude-code-learning.html` — 明亮专业配色，七大组件交互学习
+- **第一次失败**：深色主题、比例失调，用户评价"糊弄我"
+- **第二次成功**：先调用 web-design-expert 对齐审美，再调用 frontend-design 执行
+- **plan5 经验固化**：创建 `docs/learning/plan5-lessons.md` — 三问框架（要什么、不要什么、怎么验收）
 
 **核心认知**：
-- "记忆不是越多越好，是有用就留，没用就清"
-- "优先级分级：P0 永不过期，P1 九十天，P2 三十天"
-- "物理隔离 > metadata 标记"
+- "计划不是写了就能成功，是逼自己想清楚"
+- "技能调用顺序：审美对齐 → 设计执行，顺序反了会返工"
+- "排除项比目标更容易被忽视 — 明确说'不要什么'"
 
-**改造状态**：✅ 完成（旧目录已删除，机制文件已迁移至 active/tasks/）
+**交付物**：
+- `docs/learning/claude-code-learning.html` — 交互式学习网页（明亮主题）
+- `docs/learning/plan5-lessons.md` — /plan5 使用经验总结
 
-**详细内容**：见 `memory/CLAUDE.md`
+**详细内容**：见 `docs/learning/plan5-lessons.md`
 ## 📅 近期关键事件（最近3天）
 
 - **02-22深夜**：SOUL.md重写 — 只保留人格特质和成长记录
