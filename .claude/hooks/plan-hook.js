@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Plan First Hook — 验证 Plan 文档完整性
+ * Plan First Hook — 验证 Plan 文档完整性 + CLAUDE.md 三行注释
  *
  * 触发时机：执行 /plan 命令后、任务标记完成前
  *
@@ -10,13 +10,16 @@
  * 2. 所有步骤必须有验证方式
  * 3. 验证清单必须全部通过
  * 4. 评审部分必须填写
+ * 5. 目录级 CLAUDE.md 必须有三行注释
  */
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const PLANS_DIR = path.join(__dirname, '../memory/active/tasks/plans');
 const TODO_FILE = path.join(__dirname, '../memory/active/tasks/todo.md');
+const PROJECT_ROOT = path.join(__dirname, '../..');
 
 // 验证 Plan 文档
 function validatePlan(planName) {
@@ -72,6 +75,63 @@ function validatePlan(planName) {
     return valid;
 }
 
+// 验证 CLAUDE.md 三行注释
+function validateClaudeMdFiles() {
+    console.log('🔍 检查 CLAUDE.md 三行注释...');
+
+    try {
+        const output = execSync(
+            `find "${PROJECT_ROOT}" -name "CLAUDE.md" -o -name "Claude.md" 2>/dev/null`,
+            { encoding: 'utf-8' }
+        );
+
+        const files = output.trim().split('\n').filter(f => f.length > 0);
+        let valid = true;
+        let missingCount = 0;
+
+        for (const file of files) {
+            // 跳过特殊目录
+            if (file.includes('/workspace/') || file.includes('/.git/') || file.includes('/.claude/skills/')) {
+                continue;
+            }
+
+            const content = fs.readFileSync(file, 'utf-8');
+            const lines = content.split('\n');
+
+            // 检查第一行是否为 "---"
+            if (lines[0].trim() !== '---') {
+                console.error(`❌ 缺少三行注释：${file}`);
+                valid = false;
+                missingCount++;
+            } else {
+                // 检查是否有 input/output/pos
+                const hasInput = lines.some(l => l.startsWith('input:'));
+                const hasOutput = lines.some(l => l.startsWith('output:'));
+                const hasPos = lines.some(l => l.startsWith('pos:'));
+
+                if (!hasInput || !hasOutput || !hasPos) {
+                    console.error(`❌ 三行注释不完整：${file}`);
+                    valid = false;
+                    missingCount++;
+                }
+            }
+        }
+
+        if (missingCount > 0) {
+            console.error(`\n共发现 ${missingCount} 个 CLAUDE.md 文件缺少三行注释`);
+            console.error('运行以下命令自动修复：');
+            console.error(`  ./scripts/create-claude-md.sh --all\n`);
+        } else {
+            console.log('✅ 所有 CLAUDE.md 文件都有完整的三行注释');
+        }
+
+        return valid;
+    } catch (error) {
+        console.error(`❌ 检查 CLAUDE.md 失败：${error.message}`);
+        return false;
+    }
+}
+
 // 验证 Todo 清单
 function validateTodo() {
     if (!fs.existsSync(TODO_FILE)) {
@@ -121,12 +181,23 @@ function main() {
             success = validateTodo();
             break;
 
+        case 'validate-claude-md':
+            success = validateClaudeMdFiles();
+            break;
+
         case 'validate-all':
-            success = validateTodo();
+            const todoValid = validateTodo();
+            const claudeMdValid = validateClaudeMdFiles();
+            success = todoValid && claudeMdValid;
             break;
 
         default:
-            console.log('用法：node plan-hook.js [validate-plan|validate-todo|validate-all] [planName]');
+            console.log('用法：node plan-hook.js [validate-plan|validate-todo|validate-claude-md|validate-all] [planName]');
+            console.log('');
+            console.log('  validate-plan     验证单个 Plan 文档');
+            console.log('  validate-todo     验证 Todo 清单');
+            console.log('  validate-claude-md 验证 CLAUDE.md 三行注释');
+            console.log('  validate-all      验证所有（Plan + Todo + CLAUDE.md）');
     }
 
     if (success) {
