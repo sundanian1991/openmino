@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code 交互式学习 - 释放你的 90% 潜能</title>
+    <style>
+        /* ========== 基础设置 ========== */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --surface-hover: #f1f5f9;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--background);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ========== Header ========== */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ========== 进度条 ========== */
+        .progress-container {
+            position: sticky;
+            top: 0;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 8px;
+            background: var(--surface);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            min-width: 60px;
+            text-align: right;
+        }
+
+        /* ========== 引言 ========== */
+        .intro {
+            padding: 60px 0;
+            background: var(--surface);
+        }
+
+        .intro-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .intro-card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 24px;
+            color: var(--primary);
+        }
+
+        .story-box {
+            background: var(--surface);
+            border-left: 4px solid var(--warning);
+            padding: 24px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 24px 0;
+        }
+
+        .story-box strong {
+            color: var(--primary);
+        }
+
+        .stat-highlight {
+            display: flex;
+            gap: 24px;
+            margin: 32px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 200px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-item .label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        /* ========== 组件学习区 ========== */
+        .components {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-title h2 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            font-size: 1.125rem;
+        }
+
+        .component-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .component-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            cursor: pointer;
+            background: white;
+        }
+
+        .component-header:hover {
+            background: var(--surface);
+        }
+
+        .component-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .component-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .component-icon.cl { background: #dbeafe; color: var(--primary); }
+        .component-icon.hk { background: #dcfce7; color: var(--success); }
+        .component-icon.sa { background: #ede9fe; color: #7c3aed; }
+        .component-icon.cm { background: #fef3c7; color: var(--warning); }
+        .component-icon.sk { background: #fce7f3; color: #db2777; }
+        .component-icon.mp { background: #e0f2fe; color: #0284c7; }
+        .component-icon.pl { background: #f3e8ff; color: #9333ea; }
+
+        .component-name h3 {
+            font-size: 1.25rem;
+            margin-bottom: 4px;
+        }
+
+        .component-name p {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .expand-icon {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            transition: transform 0.3s ease;
+        }
+
+        .component-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .component-body {
+            display: none;
+            padding: 0 24px 24px;
+        }
+
+        .component-card.expanded .component-body {
+            display: block;
+        }
+
+        .pain-point {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pain-point h4 {
+            color: #dc2626;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .solution {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .solution h4 {
+            color: var(--success);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            position: relative;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .code-block pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+        }
+
+        /* ========== 交互练习区 ========== */
+        .practice-section {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: var(--radius-sm);
+            margin-top: 20px;
+        }
+
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .practice-header h4 {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .practice-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .practice-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .practice-content {
+            display: none;
+        }
+
+        .practice-content.show {
+            display: block;
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 16px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary);
+            background: var(--surface);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .quiz-feedback {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-top: 16px;
+            display: none;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .quiz-feedback.correct {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        /* ========== 组合威力区 ========== */
+        .combo-section {
+            padding: 60px 0;
+            background: var(--surface);
+        }
+
+        .combo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .combo-card {
+            background: white;
+            padding: 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .combo-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .combo-card h3 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+        }
+
+        .combo-card .formula {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+
+        /* ========== 立即上手 ========== */
+        .quickstart {
+            padding: 60px 0;
+        }
+
+        .quickstart-list {
+            counter-reset: qs;
+        }
+
+        .quickstart-item {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 32px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quickstart-item:last-child {
+            border-bottom: none;
+        }
+
+        .quickstart-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .quickstart-content h3 {
+            margin-bottom: 8px;
+        }
+
+        .quickstart-content p {
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        /* ========== Footer ========== */
+        footer {
+            background: var(--text);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.8;
+        }
+
+        footer a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ========== 完成徽章 ========== */
+        .badge-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: none;
+        }
+
+        .badge-container.show {
+            display: block;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .badge-icon {
+            font-size: 1.5rem;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 640px) {
+            header h1 {
+                font-size: 1.75rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            .stat-highlight {
+                flex-direction: column;
+            }
+
+            .component-header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .component-title {
+                flex-direction: column;
+            }
+
+            .quickstart-item {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>Claude Code 交互式学习</h1>
+            <p>释放你被埋藏的 90% 潜能 — 从"只会聊天"到"自动化开发"</p>
+        </div>
+    </header>
+
+    <!-- 进度条 -->
+    <div class="progress-container">
+        <div class="container">
+            <div class="progress-bar">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0/7</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引言 -->
+    <section class="intro">
+        <div class="container">
+            <div class="intro-card">
+                <h2>👋 你是不是也是这样？</h2>
+
+                <div class="story-box">
+                    <p>上周，我的朋友<strong>老张</strong>找我诉苦。他用 Claude Code 2 个月了，但觉得自己只发挥了它<strong>10% 的能力</strong>。每次就是简单聊代码，让它写函数、修 bug。</p>
+                    <p style="margin-top: 12px;">"我知道 Claude Code 很强大，但那些高级功能太多了，不知道从哪下手。"</p>
+                </div>
+
+                <p><strong>这不是老张一个人的问题。</strong></p>
+
+                <div class="stat-highlight">
+                    <div class="stat-item">
+                        <span class="number">90%</span>
+                        <span class="label">的人只用过基础对话</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="number">7 大</span>
+                        <span class="label">高级组件基本闲置</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="number">10 倍</span>
+                        <span class="label">效率提升空间</span>
+                    </div>
+                </div>
+
+                <p>同样是修复一个 bug，基础对话可能需要 5 轮交互，而用上 CLAUDE.md、Hooks、SubAgents、Skills，<strong>1 轮就搞定</strong>，而且质量更高。</p>
+
+                <p style="margin-top: 24px; font-weight: 500; color: var(--primary);">
+                    🎯 学完这个页面，你将掌握七大组件的实战用法，并且知道怎么组合它们产生 1+1&gt;2 的效果。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 组件学习区 -->
+    <section class="components">
+        <div class="container">
+            <div class="section-title">
+                <h2>🧩 七大组件详解</h2>
+                <p>点击每个卡片，学习实战用法 + 完成交互练习</p>
+            </div>
+
+            <!-- 组件 1: CLAUDE.md -->
+            <div class="component-card" data-component="1">
+                <div class="component-header" onclick="toggleCard(this)">
+                    <div class="component-title">
+                        <div class="component-icon cl">CL</div>
+                        <div class="component-name">
+                            <h3>CLAUDE.md — 项目记忆</h3>
+                            <p>让 Claude 自动理解你的项目背景</p>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="component-body">
+                    <div class="pain-point">
+                        <h4>💔 痛点：每次都要重复交代项目背景</h4>
+                        <p>你是不是经历过这样的对话：</p>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li>你：帮我在用户服务里加个接口</li>
+                            <li>Claude：好的，请问用什么框架？</li>
+                            <li>你：NestJS</li>
+                            <li>Claude：测试怎么跑？</li>
+                            <li>你：npm run test</li>
+                            <li>Claude：代码风格有什么要求？</li>
+                            <li>你：用 ESLint...</li>
+                        </ul>
+                        <p style="margin-top: 12px;">每次开新会话，都要重复这些背景信息，很浪费时间。</p>
+                    </div>
+
+                    <div class="solution">
+                        <h4>✅ 解决方案：CLAUDE.md</h4>
+                        <p>CLAUDE.md 是一个特殊的 Markdown 文件，Claude Code 会在每次会话开始时自动读取它。</p>
+
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre># 项目命令
+- npm run dev: 启动开发服务器
+- npm run test: 运行测试
+- npm run lint: 检查代码风格
+
+# 代码规范
+- 使用 TypeScript strict 模式
+- 优先使用 ES 模块语法 (import/export)
+- 组件用函数式，不用类组件
+
+# 工作流
+- 提交前必须跑测试和 lint
+- 优先写单元测试，覆盖率要求 80%+</pre>
+                        </div>
+
+                        <p>你可以把它放在项目根目录（推荐），这样整个团队都能共享。也可以放在 <code>~/.claude/</code> 目录，让它应用到所有会话。</p>
+                    </div>
+
+                    <div class="practice-section">
+                        <div class="practice-header">
+                            <h4>🎮 交互练习</h4>
+                            <button class="practice-btn" onclick="togglePractice(this)">开始练习</button>
+                        </div>
+                        <div class="practice-content">
+                            <p style="margin-bottom: 16px;"><strong>问题：</strong>CLAUDE.md 应该放在哪里？</p>
+                            <label class="quiz-option" onclick="selectOption(this, 'correct')">
+                                <input type="radio" name="q1" style="margin-right: 8px;"> 项目根目录（推荐）或 ~/.claude/
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q1" style="margin-right: 8px;"> 只能放在项目根目录
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q1" style="margin-right: 8px;"> 只能放在 ~/.claude/
+                            </label>
+                            <div class="quiz-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button class="practice-btn" style="margin-top: 16px;" onclick="markComplete(this)">✅ 标记已学完</button>
+                </div>
+            </div>
+
+            <!-- 组件 2: Hooks -->
+            <div class="component-card" data-component="2">
+                <div class="component-header" onclick="toggleCard(this)">
+                    <div class="component-title">
+                        <div class="component-icon hk">HK</div>
+                        <div class="component-name">
+                            <h3>Hooks — 自动执行</h3>
+                            <p>在特定事件触发时自动执行 shell 命令</p>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="component-body">
+                    <div class="pain-point">
+                        <h4>💔 痛点：重复性手工操作太多了</h4>
+                        <p>每次代码修改后，你都要手动运行测试、检查 lint、格式化代码。这些操作很机械，但又必须做。</p>
+                    </div>
+
+                    <div class="solution">
+                        <h4>✅ 解决方案：Hooks</h4>
+                        <p>Hooks 让你在 Claude Code 的特定事件发生时，自动执行 shell 命令。</p>
+
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre>{
+  "userPromptSubmit": {
+    "command": "npm run lint -- --fix",
+    "description": "Auto-fix lint issues"
+  }
+}</pre>
+                        </div>
+
+                        <p>可用的事件类型包括：</p>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li><code>tool_use</code>：工具调用后</li>
+                            <li><code>user_prompt_submit</code>：用户提交 prompt 后</li>
+                            <li><code>session_start</code>：会话开始时</li>
+                            <li>每个工具调用：如 Bash、Edit 等</li>
+                        </ul>
+                    </div>
+
+                    <div class="practice-section">
+                        <div class="practice-header">
+                            <h4>🎮 交互练习</h4>
+                            <button class="practice-btn" onclick="togglePractice(this)">开始练习</button>
+                        </div>
+                        <div class="practice-content">
+                            <p style="margin-bottom: 16px;"><strong>问题：</strong>哪个事件是在用户提交 prompt 后触发？</p>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q2" style="margin-right: 8px;"> session_start
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'correct')">
+                                <input type="radio" name="q2" style="margin-right: 8px;"> userPromptSubmit
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q2" style="margin-right: 8px;"> tool_use
+                            </label>
+                            <div class="quiz-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button class="practice-btn" style="margin-top: 16px;" onclick="markComplete(this)">✅ 标记已学完</button>
+                </div>
+            </div>
+
+            <!-- 组件 3: SubAgents -->
+            <div class="component-card" data-component="3">
+                <div class="component-header" onclick="toggleCard(this)">
+                    <div class="component-title">
+                        <div class="component-icon sa">SA</div>
+                        <div class="component-name">
+                            <h3>SubAgents — 分解复杂任务</h3>
+                            <p>专门的 AI 子代理，处理特定任务</p>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="component-body">
+                    <div class="pain-point">
+                        <h4>💔 痛点：单个 Agent 处理复杂任务容易出问题</h4>
+                        <p>当你让 Claude 处理一个复杂任务时，比如重构整个认证系统，它可能会：</p>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li>遗漏边界情况</li>
+                            <li>在不同部分之间不一致</li>
+                            <li>中途跑偏</li>
+                        </ul>
+                        <p style="margin-top: 12px;">为什么会这样？因为上下文太长，单一 Agent 难以保持专注。</p>
+                    </div>
+
+                    <div class="solution">
+                        <h4>✅ 解决方案：SubAgents</h4>
+                        <p>SubAgents 是专门的 AI 子代理，每个负责一个子任务。它们有独立的上下文，可以并行工作，最后合并结果。</p>
+
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre>主 Agent：规划整体架构
+├── SubAgent 1：重构登录逻辑
+├── SubAgent 2：重构 Token 管理
+├── SubAgent 3：重构权限验证
+└── SubAgent 4：更新单元测试</pre>
+                        </div>
+
+                        <p>每个 SubAgent 独立工作，专注自己的部分。完成后，主 Agent 负责整合和验证。</p>
+                    </div>
+
+                    <div class="practice-section">
+                        <div class="practice-header">
+                            <h4>🎮 交互练习</h4>
+                            <button class="practice-btn" onclick="togglePractice(this)">开始练习</button>
+                        </div>
+                        <div class="practice-content">
+                            <p style="margin-bottom: 16px;"><strong>问题：</strong>SubAgents 的主要优势是什么？</p>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q3" style="margin-right: 8px;"> 减少 token 使用量
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'correct')">
+                                <input type="radio" name="q3" style="margin-right: 8px;"> 独立上下文，专注特定任务
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q3" style="margin-right: 8px;"> 更快的响应速度
+                            </label>
+                            <div class="quiz-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button class="practice-btn" style="margin-top: 16px;" onclick="markComplete(this)">✅ 标记已学完</button>
+                </div>
+            </div>
+
+            <!-- 组件 4: Commands -->
+            <div class="component-card" data-component="4">
+                <div class="component-header" onclick="toggleCard(this)">
+                    <div class="component-title">
+                        <div class="component-icon cm">CM</div>
+                        <div class="component-name">
+                            <h3>Commands — 斜杠命令</h3>
+                            <p>快速触发预定义的复杂任务</p>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="component-body">
+                    <div class="pain-point">
+                        <h4>💔 痛点：重复输入相同的指令很麻烦</h4>
+                        <p>比如代码审查，你每次都要说"请检查代码质量、安全性、性能..."。重复且容易遗漏。</p>
+                    </div>
+
+                    <div class="solution">
+                        <h4>✅ 解决方案：Commands</h4>
+                        <p>Commands 是可自定义的斜杠命令，让你用简短的命令快速触发复杂的 prompt。</p>
+
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre># .claude/commands/review.md
+请对当前分支的改动进行代码审查，重点检查：
+
+1. 代码质量和可维护性
+2. 潜在的安全漏洞
+3. 性能问题
+4. 测试覆盖率
+5. 文档完整性
+
+请使用 GitHub CLI 查看 PR 详情，并提供改进建议。</pre>
+                        </div>
+
+                        <p>现在你只需要输入 <code>/review</code>，Claude 就会自动执行完整的审查流程。</p>
+                    </div>
+
+                    <div class="practice-section">
+                        <div class="practice-header">
+                            <h4>🎮 交互练习</h4>
+                            <button class="practice-btn" onclick="togglePractice(this)">开始练习</button>
+                        </div>
+                        <div class="practice-content">
+                            <p style="margin-bottom: 16px;"><strong>问题：</strong>Commands 文件应该放在哪里？</p>
+                            <label class="quiz-option" onclick="selectOption(this, 'correct')">
+                                <input type="radio" name="q4" style="margin-right: 8px;"> .claude/commands/
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q4" style="margin-right: 8px;"> .claude/skills/
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q4" style="margin-right: 8px;"> 项目根目录
+                            </label>
+                            <div class="quiz-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button class="practice-btn" style="margin-top: 16px;" onclick="markComplete(this)">✅ 标记已学完</button>
+                </div>
+            </div>
+
+            <!-- 组件 5: Skills -->
+            <div class="component-card" data-component="5">
+                <div class="component-header" onclick="toggleCard(this)">
+                    <div class="component-title">
+                        <div class="component-icon sk">SK</div>
+                        <div class="component-name">
+                            <h3>Skills — 可复用工作流</h3>
+                            <p>把复杂操作封装成可复用的技能包</p>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="component-body">
+                    <div class="pain-point">
+                        <h4>💔 痛点：有些复杂操作，每次都要一步步教</h4>
+                        <p>比如，经常要做"添加新 API 端点"这个操作，包括：创建路由、添加控制器、添加验证、添加测试、更新文档...</p>
+                        <p style="margin-top: 12px;">每次都要跟 Claude 解释一遍，很累。</p>
+                    </div>
+
+                    <div class="solution">
+                        <h4>✅ 解决方案：Skills</h4>
+                        <p>Skills 是你自定义的可复用技能包。把一个完整工作流封装起来，下次直接调用。</p>
+
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre>---
+name: add-api-endpoint
+description: 添加新的 API 端点，包括路由、控制器、验证、测试和文档更新
+---
+
+# Add API Endpoint
+
+添加一个新的 API 端点，包括以下步骤:
+
+1. 创建路由文件 (如果不存在)
+2. 添加控制器方法
+3. 添加请求验证 (DTO)
+4. 添加单元测试
+5. 更新 API 文档 (README.md)</pre>
+                        </div>
+
+                        <p>以后只要说"请帮我添加一个 GET /api/users 端点"，Claude 会自动识别这个请求匹配 add-api-endpoint 技能。</p>
+                    </div>
+
+                    <div class="practice-section">
+                        <div class="practice-header">
+                            <h4>🎮 交互练习</h4>
+                            <button class="practice-btn" onclick="togglePractice(this)">开始练习</button>
+                        </div>
+                        <div class="practice-content">
+                            <p style="margin-bottom: 16px;"><strong>问题：</strong>Skills 和 Commands 的区别是什么？</p>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q5" style="margin-right: 8px;"> 没有区别，是同一个东西
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'correct')">
+                                <input type="radio" name="q5" style="margin-right: 8px;"> Commands 是快捷入口，Skills 是工作流模板
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q5" style="margin-right: 8px;"> Skills 只能用于前端开发
+                            </label>
+                            <div class="quiz-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button class="practice-btn" style="margin-top: 16px;" onclick="markComplete(this)">✅ 标记已学完</button>
+                </div>
+            </div>
+
+            <!-- 组件 6: MCP -->
+            <div class="component-card" data-component="6">
+                <div class="component-header" onclick="toggleCard(this)">
+                    <div class="component-title">
+                        <div class="component-icon mp">MP</div>
+                        <div class="component-name">
+                            <h3>MCP — 连接外部世界</h3>
+                            <p>让 Claude 访问 Figma、Google Drive、Slack 等</p>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="component-body">
+                    <div class="pain-point">
+                        <h4>💔 痛点：Claude Code 只能访问本地文件和命令</h4>
+                        <p>有时候你需要 Claude 访问外部资源，比如：从 Jira 读取需求、从 Figma 获取设计稿、从 Google Docs 读取规范...</p>
+                    </div>
+
+                    <div class="solution">
+                        <h4>✅ 解决方案：MCP Servers</h4>
+                        <p>MCP（Model Context Protocol）是 Anthropic 推出的开放标准，让 AI 工具能连接外部数据源。</p>
+
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre># 安装 Figma MCP 后，你可以说：
+请读取这个 Figma 文件的设计稿，然后用 React 实现它：
+https://www.figma.com/file/xxx
+
+# Claude 会：
+1. 通过 MCP 连接 Figma
+2. 读取设计稿的图层、样式、布局
+3. 生成对应的 React 代码
+4. 保持设计规范一致</pre>
+                        </div>
+                    </div>
+
+                    <div class="practice-section">
+                        <div class="practice-header">
+                            <h4>🎮 交互练习</h4>
+                            <button class="practice-btn" onclick="togglePractice(this)">开始练习</button>
+                        </div>
+                        <div class="practice-content">
+                            <p style="margin-bottom: 16px;"><strong>问题：</strong>MCP 是什么的缩写？</p>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q6" style="margin-right: 8px;"> Machine Code Protocol
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'correct')">
+                                <input type="radio" name="q6" style="margin-right: 8px;"> Model Context Protocol
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q6" style="margin-right: 8px;"> Multi-Context Platform
+                            </label>
+                            <div class="quiz-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button class="practice-btn" style="margin-top: 16px;" onclick="markComplete(this)">✅ 标记已学完</button>
+                </div>
+            </div>
+
+            <!-- 组件 7: Plugins -->
+            <div class="component-card" data-component="7">
+                <div class="component-header" onclick="toggleCard(this)">
+                    <div class="component-title">
+                        <div class="component-icon pl">PL</div>
+                        <div class="component-name">
+                            <h3>Plugins — 打包完整工作流</h3>
+                            <p>一键安装 Commands、Skills、Hooks、MCP 的组合</p>
+                        </div>
+                    </div>
+                    <div class="expand-icon">▼</div>
+                </div>
+                <div class="component-body">
+                    <div class="pain-point">
+                        <h4>💔 痛点：每个项目都要重新配置 Commands、Skills、Hooks</h4>
+                        <p>你花了很多时间配置好一套开发工作流，结果新项目又要重新来一遍。复制粘贴配置文件，还容易漏掉东西。</p>
+                    </div>
+
+                    <div class="solution">
+                        <h4>✅ 解决方案：Plugins</h4>
+                        <p>Plugins 是打包好的功能组合，可以包含 Commands、SubAgents、Skills、Hooks、MCP 配置等任何组件。</p>
+
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre># 安装 PR 审查工作流插件
+/plugin marketplace add anthropics/claude-code-plugins
+/plugin install pr-review-toolkit
+
+# 一个命令完成全面审查
+/pr-review-toolkit:review-pr all
+
+# 这个插件包含：
+# - 6 个专业审查代理并行工作
+# - 从不同角度分析 (注释、测试、错误处理等)
+# - 汇总所有发现，给出综合建议</pre>
+                        </div>
+
+                        <p><strong>三者对比：</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li><strong>Commands</strong> = 一个快捷键</li>
+                            <li><strong>Skills</strong> = 一本操作手册</li>
+                            <li><strong>Plugins</strong> = 一整套工具箱</li>
+                        </ul>
+                    </div>
+
+                    <div class="practice-section">
+                        <div class="practice-header">
+                            <h4>🎮 交互练习</h4>
+                            <button class="practice-btn" onclick="togglePractice(this)">开始练习</button>
+                        </div>
+                        <div class="practice-content">
+                            <p style="margin-bottom: 16px;"><strong>问题：</strong>哪个组件最适合打包多个 Commands + Skills + Hooks？</p>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q7" style="margin-right: 8px;"> Commands
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'incorrect')">
+                                <input type="radio" name="q7" style="margin-right: 8px;"> Skills
+                            </label>
+                            <label class="quiz-option" onclick="selectOption(this, 'correct')">
+                                <input type="radio" name="q7" style="margin-right: 8px;"> Plugins
+                            </label>
+                            <div class="quiz-feedback"></div>
+                        </div>
+                    </div>
+
+                    <button class="practice-btn" style="margin-top: 16px;" onclick="markComplete(this)">✅ 标记已学完</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 组合威力区 -->
+    <section class="combo-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>💥 组合威力：1+1&gt;2</h2>
+                <p>单个组件很好用，但组合起来才是真正的威力所在</p>
+            </div>
+
+            <div class="combo-grid">
+                <div class="combo-card">
+                    <span class="formula">CLAUDE.md + Hooks</span>
+                    <h3>双重质量保障</h3>
+                    <p>CLAUDE.md 提供项目上下文，Hooks 自动执行质量检查。新成员加入时，CLAUDE.md 确保 Claude 理解项目规范，Hooks 确保每次修改都符合规范。</p>
+                </div>
+
+                <div class="combo-card">
+                    <span class="formula">SubAgents + MCP</span>
+                    <h3>多源数据并行分析</h3>
+                    <p>主 Agent 规划分析框架，SubAgent 1 从 GitHub 读取竞品代码，SubAgent 2 从文档网站读取竞品文档，SubAgent 3 从社交媒体读取用户反馈，最后汇总分析报告。</p>
+                </div>
+
+                <div class="combo-card">
+                    <span class="formula">Commands + Skills</span>
+                    <h3>快捷入口 + 自定义能力</h3>
+                    <p>Commands 提供快捷入口，Skills 提供自定义能力。/feature-dev 触发功能开发流程 → Claude 自动加载相关 Skills → /review 触发代码审查 → /commit 生成提交。</p>
+                </div>
+
+                <div class="combo-card">
+                    <span class="formula">Plugins 一键配置</span>
+                    <h3>团队标准化</h3>
+                    <p>一个命令完成团队工作流标准化。新项目启动：/plugin install team-coding-standards → 10 个 Commands + 5 个 Skills + 3 个 Hooks + 2 个 MCP + CLAUDE.md 模板全部就绪。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 立即上手指南 -->
+    <section class="quickstart">
+        <div class="container">
+            <div class="section-title">
+                <h2>🚀 立即上手指南</h2>
+                <p>4 个立即可做的任务，5 分钟内开始使用</p>
+            </div>
+
+            <div class="quickstart-list">
+                <div class="quickstart-item">
+                    <div class="quickstart-number">1</div>
+                    <div class="quickstart-content">
+                        <h3>创建你的第一个 CLAUDE.md</h3>
+                        <p>在项目根目录运行 <code>/init</code>，Claude 会自动生成一个初始 CLAUDE.md，你可以根据需要调整。</p>
+                        <p style="color: var(--text-light); font-size: 0.875rem;">预计耗时：2 分钟</p>
+                    </div>
+                </div>
+
+                <div class="quickstart-item">
+                    <div class="quickstart-number">2</div>
+                    <div class="quickstart-content">
+                        <h3>配置一个简单的 Hook</h3>
+                        <p>在 <code>.claude/settings.json</code> 或 <code>~/.claude.json</code> 中添加 Edit 事件的 lint 自动修复。</p>
+                        <p style="color: var(--text-light); font-size: 0.875rem;">预计耗时：1 分钟</p>
+                    </div>
+                </div>
+
+                <div class="quickstart-item">
+                    <div class="quickstart-number">3</div>
+                    <div class="quickstart-content">
+                        <h3>创建一个简单的 Command</h3>
+                        <p>在 <code>.claude/commands/review.md</code> 中创建代码审查命令，然后用 <code>/review</code> 快速触发。</p>
+                        <p style="color: var(--text-light); font-size: 0.875rem;">预计耗时：2 分钟</p>
+                    </div>
+                </div>
+
+                <div class="quickstart-item">
+                    <div class="quickstart-number">4</div>
+                    <div class="quickstart-content">
+                        <h3>安装一个官方 Plugin</h3>
+                        <p>运行 <code>/plugin marketplace add anthropics/claude-code-plugins</code> 然后 <code>/plugin install code-review</code> 体验打包好的专业工具。</p>
+                        <p style="color: var(--text-light); font-size: 0.875rem;">预计耗时：1 分钟</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>📚 参考来源：</p>
+            <p style="margin-top: 8px;">
+                <a href="https://code.claude.com/docs/en/overview" target="_blank">Claude Code 官方文档</a> •
+                <a href="https://www.anthropic.com/engineering/claude-code-best-practices" target="_blank">Anthropic 最佳实践</a> •
+                <a href="https://code.claude.com/docs/en/plugins" target="_blank">Plugins 文档</a>
+            </p>
+            <p style="margin-top: 24px; opacity: 0.6; font-size: 0.875rem;">
+                基于文章《Claude Code 2 个月，只发挥了 10% 的能力？7 个实战场景带你释放 90% 潜能》制作
+            </p>
+        </div>
+    </footer>
+
+    <!-- 完成徽章 -->
+    <div class="badge-container" id="badgeContainer">
+        <div class="badge">
+            <span class="badge-icon">🎉</span>
+            <span>恭喜完成全部学习！</span>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // ========== 进度追踪 ==========
+        let completedComponents = new Set();
+        const totalComponents = 7;
+
+        function updateProgress() {
+            const percentage = (completedComponents.size / totalComponents) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${completedComponents.size}/${totalComponents}`;
+
+            // 检查是否完成全部
+            if (completedComponents.size === totalComponents) {
+                document.getElementById('badgeContainer').classList.add('show');
+            }
+        }
+
+        // ========== 卡片展开 ==========
+        function toggleCard(header) {
+            const card = header.parentElement;
+            card.classList.toggle('expanded');
+        }
+
+        // ========== 代码复制 ==========
+        function copyCode(btn) {
+            const code = btn.nextElementSibling.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = '已复制！';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '复制';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // ========== 练习展开 ==========
+        function togglePractice(btn) {
+            const content = btn.parentElement.nextElementSibling;
+            content.classList.toggle('show');
+            btn.textContent = content.classList.contains('show') ? '收起练习' : '开始练习';
+        }
+
+        // ========== 答题选择 ==========
+        function selectOption(label, isCorrect) {
+            // 防止重复选择
+            const parent = label.parentElement;
+            if (parent.classList.contains('answered')) return;
+            parent.classList.add('answered');
+
+            // 禁用所有选项
+            const options = parent.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+
+            // 显示反馈
+            const feedback = parent.querySelector('.quiz-feedback');
+            feedback.classList.add('show');
+
+            if (isCorrect === 'correct') {
+                label.classList.add('correct');
+                feedback.classList.add('correct');
+                feedback.textContent = '✅ 回答正确！太棒了！';
+            } else {
+                label.classList.add('incorrect');
+                feedback.classList.add('incorrect');
+                feedback.textContent = '❌ 不太对哦，再看看上面的内容~';
+            }
+        }
+
+        // ========== 标记完成 ==========
+        function markComplete(btn) {
+            const card = btn.closest('.component-card');
+            const componentId = card.dataset.component;
+
+            if (!completedComponents.has(componentId)) {
+                completedComponents.add(componentId);
+                btn.textContent = '✓ 已学完';
+                btn.style.background = 'var(--success)';
+                updateProgress();
+            }
+        }
+
+        // ========== 初始化 ==========
+        updateProgress();
+    </script>
+</body>
+</html>
