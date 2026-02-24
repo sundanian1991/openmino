@@ -50,14 +50,12 @@ my-agent/
 │       ├── 05-self-review.md    # 我的错题本
 │       └── 07-WORK.md           # 工作契约
 │
-├── memory/
-│   ├── daily/                   # 每日日记（原始记录）
-│   ├── my-thoughts/             # 我的思考
-│   └── tasks/                   # 任务相关
-│       ├── system/             # 系统级机制
-│       │   ├── heartbeat.md    # 主动关怀机制
-│       │   └── OBSERVATION.md  # 观察记录
-│       └── reminders/          # 定时提醒
+├── memory/                        # 记忆系统（优先级分级）
+│   ├── core/                      # P0 永久核心：偏好、决策、身份
+│   ├── active/                    # P1 活跃记忆（90 天）：daily、my-thoughts、tasks
+│   ├── transient/                 # P2 临时记录（30 天）
+│   ├── archive/                   # 历史归档：daily、observations、weekly
+│   └── staging/                   # 中转区（新文件默认落点）
 │
 ├── workspace/                   # 工作台（gitignored）
 └── projects/                    # 项目归档
@@ -71,7 +69,7 @@ my-agent/
 
 1. `git pull` — 同步仓库
 2. 读 `.claude/rules/06-NOW.md` — 知道我在哪
-3. 读 `memory/daily/`最近2天 — 了解最近发生了什么
+3. 读 `memory/active/daily/`最近2天 — 了解最近发生了什么
 
 ---
 
@@ -122,36 +120,38 @@ my-agent/
 
 ---
 
-## 记忆系统
 
-| 类型 | 位置 | 用途 |
-|------|------|------|
-| **每日日记** | memory/daily/ | 原始记录 |
-| **观察记录** | memory/observations/YYYY-MM.md | 按月分文件 |
-| **长期记忆** | 04-MEMORY.md | 精炼知识 |
-| **当下状态** | 06-NOW.md | 我现在在哪 |
-| **错题本** | 05-self-review.md | 犯过的错 |
-| **我的思考** | memory/my-thoughts/ | 有感而发的思考 |
+## 记忆系统（优先级分级架构）
 
-**三层记忆体系**：
+| 优先级 | 位置 | 内容 | 生命周期 |
+|--------|------|------|---------|
+| **P0（永久）** | `memory/core/` | 偏好、决策、身份 | 永不过期 |
+| **P1（活跃）** | `memory/active/` | daily、my-thoughts、tasks | 90 天 |
+| **P2（临时）** | `memory/transient/` | 临时记录 | 30 天 |
+| **归档** | `memory/archive/` | 历史文档 | 永久 |
+| **中转** | `memory/staging/` | 新文件默认落点 | 7 天未分类降级 |
+
+**记忆流转**：
 ```
-原始对话 → 观察(observations/) → 洞察 → 010203
-           ↑                      ↑
-       实时记录               周度/月度提炼
+新文件 → staging/ → active/ → 提炼 → core/
+                    ↓
+                 archive/（归档）
 ```
 
-**原则**：写下来 > 脑记。记忆有限，想记住的，写进文件。
+**原则**：记忆不是越多越好，是有用就留，没用就清。
 
 ---
 
 ## 每次会话结束前
 
 快速扫描：
-- 有WAL协议触发吗？→ 更新 04-MEMORY.md
-- 有新的人格特质或工作洞察吗？→ 更新 03-USER.md
-- 有重要事件或决定吗？→ 更新 memory/daily/
-- 有值得长期记住的吗？→ 更新 04-MEMORY.md
-- 工作有进展吗？→ 更新 06-NOW.md
+- [ ] **我学到了什么？** → 写 `memory/active/my-thoughts/`（有感受就写）
+- 有 WAL 协议触发吗？→ 更新 `memory/core/decisions/`
+- 有新的人格特质或工作洞察吗？→ 更新 `03-USER.md`
+- 有重要事件或决定吗？→ 更新 `memory/active/daily/`
+- 有值得长期记住的吗？→ 更新 `04-MEMORY.md`
+- 观察者记录了吗？→ 提炼观察报告到 `memory/active/tasks/system/OBSERVATION.md`
+- 工作有进展吗？→ 更新 `06-NOW.md`
 
 **然后**：`git commit && git push`
 
@@ -167,7 +167,7 @@ my-agent/
 - 📝 草稿修改
 - 🔢 具体值：数字，日期，ID，URL
 
-**规则**：出现以上情况 → 立即写 04-MEMORY.md → 然后回答
+**规则**：出现以上情况 → 立即写 `memory/core/decisions/` → 然后回答
 
 ---
 
@@ -184,4 +184,4 @@ my-agent/
 
 ---
 
-*最后更新：2026-02-21 — 文件关系调整，加入观察记录机制*
+*最后更新：2026-02-24 — 记忆系统升级为优先级分级架构（P0/P1/P2 物理隔离）*
