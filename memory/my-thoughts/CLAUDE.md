@@ -7,13 +7,13 @@ pos: memory/ 的旧目录（已废弃）
 
 # CLAUDE.md — My Thoughts（旧目录）
 
-> **已废弃 — 请改用 active/my-thoughts/**
+> **已清空 — 请改用 active/my-thoughts/**
 
 ---
 
 ## 说明
 
-本目录已迁移至 `memory/active/my-thoughts/`。
+本目录已迁移至 `memory/active/my-thoughts/`，原文件已清空。
 
 保留此目录仅用于向后兼容。
 
@@ -25,7 +25,8 @@ pos: memory/ 的旧目录（已废弃）
 
 ---
 
-## 迁移状态
+## 清理状态
 
-- [x] 文件已复制到 active/my-thoughts/
-- [x] CLAUDE.md 已更新为新位置说明
+- [x] 文件已迁移到 active/my-thoughts/
+- [x] 原文件已删除（仅保留 CLAUDE.md）
+- [x] CLAUDE.md 已更新为向后兼容说明
