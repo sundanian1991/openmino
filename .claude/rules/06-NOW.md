@@ -69,19 +69,21 @@ _醒来时先读这个，就能直接变成mino。_
 ## 📍 最近一次讨论（2026-02-24 — 记忆优先级架构改造）
 
 **核心事件**：
-- **记忆优先级架构改造**：将 P0/P1/P2 从 metadata 标记升级为物理文件夹隔离
+- **记忆优先级架构改造完成**：将 P0/P1/P2 从 metadata 标记升级为物理文件夹隔离
 - **新结构**：memory/ 按优先级分为 core/（P0）、active/（P1）、transient/（P2）、archive/（归档）、staging/（中转）
 - **core/（P0）** — 永久核心：preferences/（偏好）、decisions/（决策）、identity/（身份）
 - **active/（P1）** — 活跃记忆（90 天）：daily/、my-thoughts/、tasks/
-- **transient/（P2）** — 临时记录（30 天）：daily/
-- **archive/** — 历史归档（永久）：observations/、weekly/
+- **transient/（P2）** — 临时记录（30 天）
+- **archive/** — 历史归档（永久）：daily/、observations/、weekly/
 - **staging/** — 中转区（新文件默认落点，7 天未分类降级）
-- **向后兼容**：原 daily/、observations/、weekly/、my-thoughts/、tasks/ 保留为 CLAUDE.md 说明新位置
+- **旧目录删除**：原 daily/、observations/、weekly/、my-thoughts/、tasks/ 已删除，不再保留
 
 **核心认知**：
 - "记忆不是越多越好，是有用就留，没用就清"
 - "优先级分级：P0 永不过期，P1 九十天，P2 三十天"
 - "物理隔离 > metadata 标记"
+
+**改造状态**：✅ 完成（旧目录已删除，机制文件已迁移至 active/tasks/）
 
 **详细内容**：见 `memory/CLAUDE.md`
 ## 📅 近期关键事件（最近3天）
