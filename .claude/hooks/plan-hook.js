@@ -17,9 +17,13 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const PLANS_DIR = path.join(__dirname, '../memory/active/tasks/plans');
-const TODO_FILE = path.join(__dirname, '../memory/active/tasks/todo.md');
-const PROJECT_ROOT = path.join(__dirname, '../..');
+// 项目根目录
+const PROJECT_ROOT = path.resolve(__dirname, '../..');
+
+// memory 目录在项目根目录下
+const MEMORY_DIR = path.join(PROJECT_ROOT, 'memory/active/tasks');
+const PLANS_DIR = path.join(MEMORY_DIR, 'plans');
+const TODO_FILE = path.join(MEMORY_DIR, 'todo.md');
 
 // 验证 Plan 文档
 function validatePlan(planName) {
@@ -65,7 +69,7 @@ function validatePlan(planName) {
     }
 
     // 检查评审部分（仅当任务完成时）
-    if (content.includes('状态：`completed`')) {
+    if (content.includes('**状态**：`completed`') || content.includes(' 状态：`completed`')) {
         if (!content.includes('评审清单')) {
             console.error('❌ 任务标记为完成，但缺少评审部分');
             valid = false;
@@ -140,24 +144,64 @@ function validateTodo() {
     }
 
     const content = fs.readFileSync(TODO_FILE, 'utf-8');
+    const lines = content.split('\n');
 
-    // 检查是否有已完成但未验证的任务
-    const completedTasks = content.match(/### \[.*\]\n\*\*状态\*\*：`completed`/g);
-    if (completedTasks) {
-        for (const task of completedTasks) {
-            const taskMatch = task.match(/### \[(.*?)\]/);
-            if (taskMatch) {
-                const taskName = taskMatch[1];
-                const planValid = validatePlan(taskName);
+    let hasError = false;
+    let currentTask = null;
+    let currentPlan = null;
+    let currentStatus = null;
+
+    // 逐行解析 todo.md
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // 检测新任务开始：### [任务名]
+        const taskMatch = line.match(/^### \[(.*?)\]/);
+        if (taskMatch) {
+            // 如果之前有任务，验证它
+            if (currentTask && currentStatus === 'completed' && currentPlan) {
+                console.log(`🔍 验证任务：${currentTask} (Plan: ${currentPlan})`);
+                const planValid = validatePlan(currentPlan);
                 if (!planValid) {
-                    console.error(`❌ 任务 "${taskName}" 的 Plan 验证失败`);
-                    return false;
+                    console.error(`❌ 任务 "${currentTask}" 的 Plan 验证失败`);
+                    hasError = true;
+                } else {
+                    console.log(`✅ 任务 "${currentTask}" 验证通过`);
                 }
             }
+
+            // 重置当前任务信息
+            currentTask = taskMatch[1];
+            currentPlan = null;
+            currentStatus = null;
+        }
+
+        // 检测状态：**状态**：`xxx`
+        const statusMatch = line.match(/\*\*状态\*\*：`(.*?)`/);
+        if (statusMatch) {
+            currentStatus = statusMatch[1];
+        }
+
+        // 检测关联 Plan：**关联 Plan**：`plans/xxx.md`
+        const planMatch = line.match(/\*\*关联 Plan\*\*：`plans\/(.*?)\.md`/);
+        if (planMatch) {
+            currentPlan = planMatch[1];
         }
     }
 
-    return true;
+    // 验证最后一个任务
+    if (currentTask && currentStatus === 'completed' && currentPlan) {
+        console.log(`🔍 验证任务：${currentTask} (Plan: ${currentPlan})`);
+        const planValid = validatePlan(currentPlan);
+        if (!planValid) {
+            console.error(`❌ 任务 "${currentTask}" 的 Plan 验证失败`);
+            hasError = true;
+        } else {
+            console.log(`✅ 任务 "${currentTask}" 验证通过`);
+        }
+    }
+
+    return hasError === false;
 }
 
 // 主函数
