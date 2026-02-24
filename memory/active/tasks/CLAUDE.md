@@ -49,6 +49,22 @@ python3 memory/tasks/scripts/[脚本名].py --action [动作]
 - 执行流程
 - 相关文件
 
+### 5 文件流（项目管理）
+
+**核心文件**（必做）：
+1. **Prompt** — 定义目标边界（要什么/不要什么）
+2. **Plans** — 任务拆解 + 验收命令（1-2 小时里程碑）
+
+**辅助文件**（按需）：
+3. **Architecture** — 技术规范
+4. **Implement** — 操作手册
+5. **Documentation** — 进度日志（active/daily/自动记录）
+
+**使用方式**：
+1. 复制 `templates/project-workflow.md` 到 `tracking/[项目名].md`
+2. 填写 Prompt + Plans
+3. 启动指令：`先读 tracking/[项目名].md，按 Plans 顺序执行`
+
 ---
 
 *这里是工作机制的所在地。*
