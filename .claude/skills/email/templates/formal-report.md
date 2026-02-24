@@ -1,3 +1,9 @@
+---
+input: 需求
+output: formal-report.md
+pos: .claude/skills/email/templates/formal-report.md
+---
+
 # 正式汇报邮件模板
 
 ## 使用说明

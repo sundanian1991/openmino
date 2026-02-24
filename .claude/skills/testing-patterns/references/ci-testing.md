@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ci-testing.md
+pos: .claude/skills/testing-patterns/references/ci-testing.md
+---
+
 # CI/CD Testing Patterns
 
 Testing strategies for continuous integration pipelines.

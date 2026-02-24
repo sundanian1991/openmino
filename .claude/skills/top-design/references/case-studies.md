@@ -1,3 +1,9 @@
+---
+input: 需求
+output: case-studies.md
+pos: .claude/skills/top-design/references/case-studies.md
+---
+
 # Case Studies: Agency Technique Analysis
 
 ## Table of Contents

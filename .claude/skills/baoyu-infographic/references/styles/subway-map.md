@@ -1,3 +1,9 @@
+---
+input: 需求
+output: subway-map.md
+pos: .claude/skills/baoyu-infographic/references/styles/subway-map.md
+---
+
 # subway-map
 
 Transit diagram style with colored lines and stations

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: node_mcp_server.md
+pos: .claude/skills/mcp-builder/reference/node_mcp_server.md
+---
+
 # Node/TypeScript MCP Server Implementation Guide
 
 ## Overview

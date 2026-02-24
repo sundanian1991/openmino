@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: ARCHITECTURE-SUMMARY.md 实现
+pos: projects/archive/architecture/ARCHITECTURE-SUMMARY.md
+---
+
 # 文件架构重构 - 总结与确认
 
 ## 📋 完成的工作

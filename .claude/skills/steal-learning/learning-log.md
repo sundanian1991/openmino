@@ -1,3 +1,9 @@
+---
+input: 需求
+output: learning-log.md
+pos: .claude/skills/steal-learning/learning-log.md
+---
+
 # 学习日志 - 活的记录
 
 > 把搜索到的内容吃透，形成学习记录。不只是收藏，是内化。

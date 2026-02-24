@@ -1,3 +1,9 @@
+---
+input: 需求
+output: evaluation.md
+pos: .claude/skills/mcp-builder/reference/evaluation.md
+---
+
 # MCP Server Evaluation Guide
 
 ## Overview

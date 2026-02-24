@@ -1,3 +1,9 @@
+---
+input: 需求
+output: aged-academia.md
+pos: .claude/skills/baoyu-infographic/references/styles/aged-academia.md
+---
+
 # aged-academia
 
 Historical scientific illustration with aged paper aesthetic.

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: test-academic.md
+pos: .claude/skills/systematic-debugging/test-academic.md
+---
+
 # Academic Test: Systematic Debugging Skill
 
 You have access to the systematic debugging skill at skills/debugging/systematic-debugging

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: minimal.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/minimal.md
+---
+
 # minimal
 
 Ultra-clean keynote style with maximum whitespace and zen-like simplicity

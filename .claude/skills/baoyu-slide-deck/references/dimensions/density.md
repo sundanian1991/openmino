@@ -1,3 +1,9 @@
+---
+input: 需求
+output: density.md
+pos: .claude/skills/baoyu-slide-deck/references/dimensions/density.md
+---
+
 # Density Dimension
 
 Information density per slide.

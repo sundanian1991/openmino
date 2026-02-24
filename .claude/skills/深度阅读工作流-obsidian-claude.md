@@ -1,3 +1,9 @@
+---
+input: 需求
+output: 深度阅读工作流-obsidian-claude.md
+pos: .claude/skills/深度阅读工作流-obsidian-claude.md
+---
+
 # 深度阅读工作流 - Obsidian+Claude
 
 > 将扫描版PDF转化为中英双语深度阅读笔记的可复用工作流

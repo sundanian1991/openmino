@@ -1,3 +1,9 @@
+---
+input: 需求
+output: mood.md
+pos: .claude/skills/baoyu-slide-deck/references/dimensions/mood.md
+---
+
 # Mood Dimension
 
 Color temperature and palette style.

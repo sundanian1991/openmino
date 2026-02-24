@@ -1,3 +1,9 @@
+---
+input: 需求
+output: supplier-reserve.md
+pos: .claude/skills/email/templates/supplier-reserve.md
+---
+
 # 供应商寻源与储备邮件模板
 
 ## 使用说明

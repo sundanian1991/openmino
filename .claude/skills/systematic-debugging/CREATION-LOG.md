@@ -1,3 +1,9 @@
+---
+input: 需求
+output: CREATION-LOG.md
+pos: .claude/skills/systematic-debugging/CREATION-LOG.md
+---
+
 # Creation Log: Systematic Debugging Skill
 
 Reference example of extracting, structuring, and bulletproofing a critical skill.

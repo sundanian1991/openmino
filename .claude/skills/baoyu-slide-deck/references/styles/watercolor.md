@@ -1,3 +1,9 @@
+---
+input: 需求
+output: watercolor.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/watercolor.md
+---
+
 # watercolor
 
 Soft watercolor illustration style with hand-painted textures and natural warmth

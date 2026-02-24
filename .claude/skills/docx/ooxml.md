@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ooxml.md
+pos: .claude/skills/docx/ooxml.md
+---
+
 # Office Open XML Technical Reference
 
 **Important: Read this entire document before starting.** This document covers:

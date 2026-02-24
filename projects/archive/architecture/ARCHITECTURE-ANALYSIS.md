@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: ARCHITECTURE-ANALYSIS.md 实现
+pos: projects/archive/architecture/ARCHITECTURE-ANALYSIS.md
+---
+
 # Mino的家 - 文件架构深度分析
 
 ## 第一部分：当前架构问题诊断

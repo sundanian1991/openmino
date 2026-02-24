@@ -1,3 +1,9 @@
+---
+input: 需求
+output: quick-reference.md
+pos: .claude/skills/ui-ux-pro-max/cli/assets/templates/base/quick-reference.md
+---
+
 ## When to Apply
 
 Reference these guidelines when:

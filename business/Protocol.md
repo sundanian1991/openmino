@@ -1,3 +1,9 @@
+---
+input: 需求
+output: Protocol.md
+pos: business/Protocol.md
+---
+
 # AI交互协议
 
 > **版本**：v1.0（共4页）｜ **原则数量**：12条 ｜ **更新频率**：每周动态更新

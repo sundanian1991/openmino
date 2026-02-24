@@ -1,3 +1,9 @@
+---
+input: 需求
+output: comparison-matrix.md
+pos: .claude/skills/baoyu-infographic/references/layouts/comparison-matrix.md
+---
+
 # comparison-matrix
 
 Grid-based multi-factor comparison across multiple items.

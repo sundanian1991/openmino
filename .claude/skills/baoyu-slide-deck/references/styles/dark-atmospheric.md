@@ -1,3 +1,9 @@
+---
+input: 需求
+output: dark-atmospheric.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/dark-atmospheric.md
+---
+
 # dark-atmospheric
 
 Dark moody aesthetic with deep colors and glowing accent elements

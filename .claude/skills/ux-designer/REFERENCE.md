@@ -1,3 +1,9 @@
+---
+input: 需求
+output: REFERENCE.md
+pos: .claude/skills/ux-designer/REFERENCE.md
+---
+
 # UX Designer Reference Guide
 
 Complete reference for design patterns, accessibility guidelines, and wireframe techniques.

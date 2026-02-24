@@ -1,3 +1,9 @@
+---
+input: 需求
+output: design-tokens.md
+pos: .claude/skills/ux-designer/resources/design-tokens.md
+---
+
 # Design Tokens
 
 Complete design system tokens for consistent, scalable UI design.

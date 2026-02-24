@@ -1,3 +1,9 @@
+---
+input: 需求
+output: CHANGELOG.md
+pos: .claude/skills/web-design-expert/CHANGELOG.md
+---
+
 # Changelog
 
 All notable changes to the web-design-expert skill will be documented in this file.

@@ -1,3 +1,9 @@
+---
+input: reminders 需求
+output: monthly-audit.md 文档
+pos: memory/active/tasks/reminders/monthly-audit.md
+---
+
 # 💼 职业资产清算任务
 
 > **优先级**: 低  

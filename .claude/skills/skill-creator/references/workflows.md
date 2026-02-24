@@ -1,3 +1,9 @@
+---
+input: 需求
+output: workflows.md
+pos: .claude/skills/skill-creator/references/workflows.md
+---
+
 # Workflow Patterns
 
 ## Sequential Workflows

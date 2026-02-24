@@ -1,3 +1,9 @@
+---
+input: 需求
+output: outline-template.md
+pos: .claude/skills/baoyu-slide-deck/references/outline-template.md
+---
+
 # Outline Template
 
 Standard structure for slide deck outlines with style instructions.

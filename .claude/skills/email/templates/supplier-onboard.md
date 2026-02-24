@@ -1,3 +1,9 @@
+---
+input: 需求
+output: supplier-onboard.md
+pos: .claude/skills/email/templates/supplier-onboard.md
+---
+
 # 供应商引入与上线邮件模板
 
 ## 使用说明

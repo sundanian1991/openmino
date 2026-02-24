@@ -1,3 +1,9 @@
+---
+input: 需求
+output: 04-MEMORY.md
+pos: .claude/rules/reference/04-MEMORY.md
+---
+
 # MEMORY.md — Long-Term Memory
 
 *Your curated memories. The distilled essence, not raw logs.*

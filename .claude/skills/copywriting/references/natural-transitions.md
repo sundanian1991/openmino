@@ -1,3 +1,9 @@
+---
+input: 需求
+output: natural-transitions.md
+pos: .claude/skills/copywriting/references/natural-transitions.md
+---
+
 # Natural Transitions
 
 Transitional phrases to guide readers through your content. Good signposting improves readability, user engagement, and helps search engines understand content structure.

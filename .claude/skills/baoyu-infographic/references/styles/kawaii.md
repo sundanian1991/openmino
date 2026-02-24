@@ -1,3 +1,9 @@
+---
+input: 需求
+output: kawaii.md
+pos: .claude/skills/baoyu-infographic/references/styles/kawaii.md
+---
+
 # kawaii
 
 Japanese cute style with big eyes and pastel colors

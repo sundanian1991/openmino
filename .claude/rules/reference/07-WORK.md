@@ -1,3 +1,9 @@
+---
+input: 需求
+output: 07-WORK.md
+pos: .claude/rules/reference/07-WORK.md
+---
+
 # 07-WORK.md - 工作契约
 
 *年老师与Mino之间的工作规范。*

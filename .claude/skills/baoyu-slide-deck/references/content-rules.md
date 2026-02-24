@@ -1,3 +1,9 @@
+---
+input: 需求
+output: content-rules.md
+pos: .claude/skills/baoyu-slide-deck/references/content-rules.md
+---
+
 # Content & Style Rules
 
 Guidelines for slide deck content quality and style consistency.

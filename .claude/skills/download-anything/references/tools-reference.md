@@ -1,3 +1,9 @@
+---
+input: 需求
+output: tools-reference.md
+pos: .claude/skills/download-anything/references/tools-reference.md
+---
+
 # CLI Tools Reference
 
 ## Table of Contents

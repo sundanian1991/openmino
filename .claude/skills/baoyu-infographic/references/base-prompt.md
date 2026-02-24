@@ -1,3 +1,9 @@
+---
+input: 需求
+output: base-prompt.md
+pos: .claude/skills/baoyu-infographic/references/base-prompt.md
+---
+
 Create a professional infographic following these specifications:
 
 ## Image Specifications

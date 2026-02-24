@@ -1,3 +1,9 @@
+---
+input: 需求
+output: TRANSPARENT-WORKFLOW.md
+pos: .claude/rules/reference/TRANSPARENT-WORKFLOW.md
+---
+
 # 透明工作机制
 
 > 让年老师看到我的思考过程，不再是黑盒

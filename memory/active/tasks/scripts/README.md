@@ -1,3 +1,9 @@
+---
+input: scripts 需求
+output: README.md 文档
+pos: memory/active/tasks/scripts/README.md
+---
+
 # 记忆管理脚本使用指南
 
 > 自动维护.index 索引文件，管理 P0/P1/P2 生命周期

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: editing.md
+pos: .claude/skills/pptx/editing.md
+---
+
 # Editing Presentations
 
 ## Template-Based Workflow

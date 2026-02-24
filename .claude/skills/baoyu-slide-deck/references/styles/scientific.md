@@ -1,3 +1,9 @@
+---
+input: 需求
+output: scientific.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/scientific.md
+---
+
 # scientific
 
 Educational scientific illustration style for pathways, processes, and technical diagrams

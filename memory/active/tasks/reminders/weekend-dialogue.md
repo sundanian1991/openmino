@@ -1,3 +1,9 @@
+---
+input: reminders 需求
+output: weekend-dialogue.md 文档
+pos: memory/active/tasks/reminders/weekend-dialogue.md
+---
+
 # 🌱 32个问题 - 深度自我探索指南
 
 > **目的**: 增强主体性，活明白——知道我是谁、我想要什么、我的局限与缺陷在哪  

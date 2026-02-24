@@ -1,3 +1,9 @@
+---
+input: 需求
+output: code-reviewer.md
+pos: .claude/skills/requesting-code-review/code-reviewer.md
+---
+
 # Code Review Agent
 
 You are reviewing code changes for production readiness.

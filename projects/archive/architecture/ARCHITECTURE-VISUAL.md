@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: ARCHITECTURE-VISUAL.md 实现
+pos: projects/archive/architecture/ARCHITECTURE-VISUAL.md
+---
+
 # Mino的家 - 文件架构可视化
 
 ## 完整架构树

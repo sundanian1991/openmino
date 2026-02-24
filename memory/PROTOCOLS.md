@@ -1,3 +1,9 @@
+---
+input: 需求
+output: PROTOCOLS.md
+pos: memory/PROTOCOLS.md
+---
+
 # PROTOCOLS.md - 记忆系统协议
 
 > 为未来可能的跨Agent协作准备。任何AI都应该能读懂并使用这个记忆系统。

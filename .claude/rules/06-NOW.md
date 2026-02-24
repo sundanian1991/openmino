@@ -1,3 +1,9 @@
+---
+input: 需求
+output: 06-NOW.md
+pos: .claude/rules/06-NOW.md
+---
+
 # NOW.md — 插卡式记忆衔接
 
 _醒来时先读这个，就能直接变成mino。_

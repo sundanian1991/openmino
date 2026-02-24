@@ -1,3 +1,9 @@
+---
+input: 需求
+output: periodic-table.md
+pos: .claude/skills/baoyu-infographic/references/layouts/periodic-table.md
+---
+
 # periodic-table
 
 Grid of categorized elements with consistent cell formatting.

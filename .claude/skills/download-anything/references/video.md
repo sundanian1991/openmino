@@ -1,3 +1,9 @@
+---
+input: 需求
+output: video.md
+pos: .claude/skills/download-anything/references/video.md
+---
+
 # Video, Film & TV Downloads
 
 ## Table of Contents

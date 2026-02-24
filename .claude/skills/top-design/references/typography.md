@@ -1,3 +1,9 @@
+---
+input: 需求
+output: typography.md
+pos: .claude/skills/top-design/references/typography.md
+---
+
 # Typography Reference
 
 ## Table of Contents

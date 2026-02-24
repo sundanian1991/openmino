@@ -1,3 +1,9 @@
+---
+input: 需求
+output: jigsaw.md
+pos: .claude/skills/baoyu-infographic/references/layouts/jigsaw.md
+---
+
 # jigsaw
 
 Interlocking puzzle pieces showing how parts fit together.

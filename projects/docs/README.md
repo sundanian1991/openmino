@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: README.md 实现
+pos: projects/docs/README.md
+---
+
 # Tavily MCP 搜索配置指南
 
 ## 问题记录

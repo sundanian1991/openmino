@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ai-writing-detection.md
+pos: .claude/skills/seo-audit/references/ai-writing-detection.md
+---
+
 # AI Writing Detection
 
 Words, phrases, and punctuation patterns commonly associated with AI-generated text. Avoid these to ensure writing sounds natural and human.

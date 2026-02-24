@@ -1,3 +1,9 @@
+---
+input: 需求
+output: lego-brick.md
+pos: .claude/skills/baoyu-infographic/references/styles/lego-brick.md
+---
+
 # lego-brick
 
 Toy brick construction with playful aesthetic

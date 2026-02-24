@@ -1,3 +1,9 @@
+---
+input: 需求
+output: skill-content.md
+pos: .claude/skills/ui-ux-pro-max/cli/assets/templates/base/skill-content.md
+---
+
 # {{TITLE}}
 
 {{DESCRIPTION}}

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: python_mcp_server.md
+pos: .claude/skills/mcp-builder/reference/python_mcp_server.md
+---
+
 # Python MCP Server Implementation Guide
 
 ## Overview

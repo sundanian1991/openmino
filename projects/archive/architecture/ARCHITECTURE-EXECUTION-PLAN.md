@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: ARCHITECTURE-EXECUTION-PLAN.md 实现
+pos: projects/archive/architecture/ARCHITECTURE-EXECUTION-PLAN.md
+---
+
 # 文件架构重构 - 执行计划
 
 ## 执行前确认

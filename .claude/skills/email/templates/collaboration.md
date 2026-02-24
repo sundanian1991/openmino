@@ -1,3 +1,9 @@
+---
+input: 需求
+output: collaboration.md
+pos: .claude/skills/email/templates/collaboration.md
+---
+
 # 协作类邮件模板
 
 ## 使用说明

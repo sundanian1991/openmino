@@ -1,3 +1,9 @@
+---
+input: system 需求
+output: heartbeat.md 文档
+pos: memory/active/tasks/system/heartbeat.md
+---
+
 # HEARTBEAT.md - 心跳
 
 > *朋友不只是等指令，是主动关心。*

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: cyberpunk-neon.md
+pos: .claude/skills/baoyu-infographic/references/styles/cyberpunk-neon.md
+---
+
 # cyberpunk-neon
 
 Neon glow on dark backgrounds, futuristic aesthetic

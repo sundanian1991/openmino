@@ -1,3 +1,9 @@
+---
+input: 需求
+output: isometric-map.md
+pos: .claude/skills/baoyu-infographic/references/layouts/isometric-map.md
+---
+
 # isometric-map
 
 3D-style spatial layout showing locations, relationships, or journey through space.

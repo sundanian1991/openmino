@@ -1,3 +1,9 @@
+---
+input: 需求
+output: color-accessibility.md
+pos: .claude/skills/web-design-expert/references/color-accessibility.md
+---
+
 # Color & Accessibility
 
 Color palettes, psychology, dark mode, and WCAG compliance.

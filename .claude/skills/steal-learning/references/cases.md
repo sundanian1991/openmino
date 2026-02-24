@@ -1,3 +1,9 @@
+---
+input: 需求
+output: cases.md
+pos: .claude/skills/steal-learning/references/cases.md
+---
+
 # 偷师三行法 - 案例库
 
 > 真实应用三行法萃取的案例集合，供参考和模仿

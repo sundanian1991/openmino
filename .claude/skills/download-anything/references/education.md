@@ -1,3 +1,9 @@
+---
+input: 需求
+output: education.md
+pos: .claude/skills/download-anything/references/education.md
+---
+
 # Educational Resources
 
 ## Table of Contents

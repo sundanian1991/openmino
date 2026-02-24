@@ -1,3 +1,9 @@
+---
+input: 需求
+output: pixel-art.md
+pos: .claude/skills/baoyu-infographic/references/styles/pixel-art.md
+---
+
 # pixel-art
 
 Retro 8-bit gaming aesthetic

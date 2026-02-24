@@ -1,3 +1,9 @@
+---
+input: 需求
+output: comic-strip.md
+pos: .claude/skills/baoyu-infographic/references/layouts/comic-strip.md
+---
+
 # comic-strip
 
 Sequential narrative panels telling a story or explaining a concept.

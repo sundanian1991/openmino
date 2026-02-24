@@ -1,3 +1,9 @@
+---
+input: system 需求
+output: OBSERVATION.md 文档
+pos: memory/active/tasks/system/OBSERVATION.md
+---
+
 # 观察报告 - 2026-02-22 晚间续
 
 ### 他讨厌"填空题"

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: corporate-memphis.md
+pos: .claude/skills/baoyu-infographic/references/styles/corporate-memphis.md
+---
+
 # corporate-memphis
 
 Flat vector people with vibrant geometric fills

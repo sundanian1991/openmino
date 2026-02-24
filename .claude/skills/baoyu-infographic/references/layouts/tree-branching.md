@@ -1,3 +1,9 @@
+---
+input: 需求
+output: tree-branching.md
+pos: .claude/skills/baoyu-infographic/references/layouts/tree-branching.md
+---
+
 # tree-branching
 
 Hierarchical structure branching from root to leaves, showing categories and subcategories.

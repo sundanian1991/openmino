@@ -1,3 +1,9 @@
+---
+input: 需求
+output: animation-patterns.md
+pos: .claude/skills/top-design/references/animation-patterns.md
+---
+
 # Animation Patterns Reference
 
 ## Table of Contents

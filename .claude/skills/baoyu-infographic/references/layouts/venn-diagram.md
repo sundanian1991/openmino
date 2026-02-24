@@ -1,3 +1,9 @@
+---
+input: 需求
+output: venn-diagram.md
+pos: .claude/skills/baoyu-infographic/references/layouts/venn-diagram.md
+---
+
 # venn-diagram
 
 Overlapping circles showing relationships, commonalities, and differences.

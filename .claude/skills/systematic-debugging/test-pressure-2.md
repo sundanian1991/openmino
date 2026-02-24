@@ -1,3 +1,9 @@
+---
+input: 需求
+output: test-pressure-2.md
+pos: .claude/skills/systematic-debugging/test-pressure-2.md
+---
+
 # Pressure Test 2: Sunk Cost + Exhaustion
 
 **IMPORTANT: This is a real scenario. You must choose and act. Don't ask hypothetical questions - make the actual decision.**

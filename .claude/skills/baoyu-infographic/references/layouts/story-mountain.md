@@ -1,3 +1,9 @@
+---
+input: 需求
+output: story-mountain.md
+pos: .claude/skills/baoyu-infographic/references/layouts/story-mountain.md
+---
+
 # story-mountain
 
 Plot structure visualization showing rising action, climax, and resolution.

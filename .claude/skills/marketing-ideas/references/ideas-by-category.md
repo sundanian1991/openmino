@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ideas-by-category.md
+pos: .claude/skills/marketing-ideas/references/ideas-by-category.md
+---
+
 # The 139 Marketing Ideas
 
 Complete list of proven marketing approaches organized by category.

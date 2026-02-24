@@ -1,3 +1,9 @@
+---
+input: 需求
+output: bridge.md
+pos: .claude/skills/baoyu-infographic/references/layouts/bridge.md
+---
+
 # bridge
 
 Gap-crossing structure connecting problem to solution or current to future state.

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: README.md
+pos: README.md
+---
+
 # Mino的家
 
 > **基于OpenMino，由年老师和Mino共同演进**

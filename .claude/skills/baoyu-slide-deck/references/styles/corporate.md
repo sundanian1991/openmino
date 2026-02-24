@@ -1,3 +1,9 @@
+---
+input: 需求
+output: corporate.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/corporate.md
+---
+
 # corporate
 
 Professional business style with navy/gold palette and structured layouts

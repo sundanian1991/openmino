@@ -1,3 +1,9 @@
+---
+input: 需求
+output: chalkboard.md
+pos: .claude/skills/baoyu-infographic/references/styles/chalkboard.md
+---
+
 # chalkboard
 
 Black chalkboard background with colorful chalk drawing style

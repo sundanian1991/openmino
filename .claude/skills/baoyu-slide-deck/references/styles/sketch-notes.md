@@ -1,3 +1,9 @@
+---
+input: 需求
+output: sketch-notes.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/sketch-notes.md
+---
+
 # sketch-notes
 
 Soft hand-drawn illustration style with fresh, refined minimalist editorial aesthetic

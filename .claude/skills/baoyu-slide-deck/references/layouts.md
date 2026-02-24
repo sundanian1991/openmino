@@ -1,3 +1,9 @@
+---
+input: 需求
+output: layouts.md
+pos: .claude/skills/baoyu-slide-deck/references/layouts.md
+---
+
 # Layout Gallery
 
 Optional layout hints for individual slides. Specify in outline's `// LAYOUT` section.

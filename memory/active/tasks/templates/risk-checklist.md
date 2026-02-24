@@ -1,3 +1,9 @@
+---
+input: templates 需求
+output: risk-checklist.md 文档
+pos: memory/active/tasks/templates/risk-checklist.md
+---
+
 # 职业风险自检表
 
 > **使用频率**: 每季度1次  

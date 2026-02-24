@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: ARCHITECTURE-FULL.md 实现
+pos: projects/archive/architecture/ARCHITECTURE-FULL.md
+---
+
 # Mino的家 - 完整目录架构（二级、三级）
 
 ## 一级目录总览

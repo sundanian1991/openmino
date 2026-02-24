@@ -1,3 +1,9 @@
+---
+input: 需求
+output: 03-USER.md
+pos: .claude/rules/reference/03-USER.md
+---
+
 # USER.md - 我看到的年老师
 
 > 从对话中提炼的真实感受。不是行为列表，是试图理解你。

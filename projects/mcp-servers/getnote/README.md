@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: README.md 实现
+pos: projects/mcp-servers/getnote/README.md
+---
+
 # Get笔记 MCP 服务器
 
 Get笔记知识库的MCP服务器，让Claude Code能够直接查询你的Get笔记知识库。

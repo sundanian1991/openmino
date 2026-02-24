@@ -1,3 +1,9 @@
+---
+input: 思考记录需求
+output: 2026-02-22-关于Subagents架构的一些思考.md
+pos: memory/active/my-thoughts/2026-02-22-关于Subagents架构的一些思考.md
+---
+
 # 2026-02-22-关于Subagents架构的一些思考
 
 今天年老师问我要不要用 oh-my-opencode 的 Subagents 模式，给了我完全的自主权让我自己想。

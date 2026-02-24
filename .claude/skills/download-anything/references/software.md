@@ -1,3 +1,9 @@
+---
+input: 需求
+output: software.md
+pos: .claude/skills/download-anything/references/software.md
+---
+
 # Software Downloads
 
 ## Table of Contents

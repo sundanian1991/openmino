@@ -1,3 +1,9 @@
+---
+input: 需求
+output: supplier-settlement.md
+pos: .claude/skills/email/templates/supplier-settlement.md
+---
+
 # 供应商结算邮件模板
 
 ## 使用说明

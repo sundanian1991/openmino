@@ -1,3 +1,9 @@
+---
+input: 需求
+output: accessibility-guide.md
+pos: .claude/skills/ux-designer/resources/accessibility-guide.md
+---
+
 # Accessibility Guide - WCAG 2.1 AA Reference
 
 Complete accessibility reference for designing inclusive, WCAG 2.1 Level AA compliant user experiences.

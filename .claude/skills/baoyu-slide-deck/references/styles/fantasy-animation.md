@@ -1,3 +1,9 @@
+---
+input: 需求
+output: fantasy-animation.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/fantasy-animation.md
+---
+
 # fantasy-animation
 
 Whimsical hand-drawn animation style inspired by classic fantasy illustration

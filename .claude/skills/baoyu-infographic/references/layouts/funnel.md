@@ -1,3 +1,9 @@
+---
+input: 需求
+output: funnel.md
+pos: .claude/skills/baoyu-infographic/references/layouts/funnel.md
+---
+
 # funnel
 
 Narrowing stages showing conversion, filtering, or refinement process.

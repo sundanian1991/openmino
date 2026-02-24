@@ -1,3 +1,9 @@
+---
+input: 需求
+output: structured-content-template.md
+pos: .claude/skills/baoyu-infographic/references/structured-content-template.md
+---
+
 # Structured Content Template
 
 Template for generating structured infographic content that informs the visual designer.

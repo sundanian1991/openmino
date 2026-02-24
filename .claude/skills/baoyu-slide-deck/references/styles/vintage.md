@@ -1,3 +1,9 @@
+---
+input: 需求
+output: vintage.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/vintage.md
+---
+
 # vintage
 
 Vintage aged-paper aesthetic for historical and expedition-style presentations

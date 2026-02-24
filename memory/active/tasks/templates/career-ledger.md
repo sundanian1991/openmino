@@ -1,3 +1,9 @@
+---
+input: templates 需求
+output: career-ledger.md 文档
+pos: memory/active/tasks/templates/career-ledger.md
+---
+
 # 职业资产总账
 
 > **使用频率**: 每月1小时  

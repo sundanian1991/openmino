@@ -1,3 +1,9 @@
+---
+input: 需求
+output: supplier-allocation.md
+pos: .claude/skills/email/templates/supplier-allocation.md
+---
+
 # 供应商分量/扩项邮件模板
 
 ## 使用说明

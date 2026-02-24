@@ -1,3 +1,9 @@
+---
+input: 需求
+output: root-cause-tracing.md
+pos: .claude/skills/systematic-debugging/root-cause-tracing.md
+---
+
 # Root Cause Tracing
 
 ## Overview

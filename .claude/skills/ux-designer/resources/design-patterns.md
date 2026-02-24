@@ -1,3 +1,9 @@
+---
+input: 需求
+output: design-patterns.md
+pos: .claude/skills/ux-designer/resources/design-patterns.md
+---
+
 # Design Patterns Library
 
 Complete UI pattern reference for consistent, accessible user interfaces.

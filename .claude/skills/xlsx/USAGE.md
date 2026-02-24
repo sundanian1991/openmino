@@ -1,3 +1,9 @@
+---
+input: 需求
+output: USAGE.md
+pos: .claude/skills/xlsx/USAGE.md
+---
+
 # xlsx Skill - 使用指南
 
 > Excel表格创建、编辑、数据分析

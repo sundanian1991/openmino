@@ -1,3 +1,9 @@
+---
+input: 需求
+output: notion.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/notion.md
+---
+
 # notion
 
 SaaS dashboard aesthetic with clean data focus and productivity tool styling

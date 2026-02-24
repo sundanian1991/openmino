@@ -1,3 +1,9 @@
+---
+input: 需求
+output: media-assets.md
+pos: .claude/skills/download-anything/references/media-assets.md
+---
+
 # Media Assets: Images, Video, Audio & Fonts
 
 ## Table of Contents

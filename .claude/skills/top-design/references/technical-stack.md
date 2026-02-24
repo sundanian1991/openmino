@@ -1,3 +1,9 @@
+---
+input: 需求
+output: technical-stack.md
+pos: .claude/skills/top-design/references/technical-stack.md
+---
+
 # Technical Stack Reference
 
 ## Table of Contents

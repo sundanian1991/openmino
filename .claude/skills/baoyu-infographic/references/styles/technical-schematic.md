@@ -1,3 +1,9 @@
+---
+input: 需求
+output: technical-schematic.md
+pos: .claude/skills/baoyu-infographic/references/styles/technical-schematic.md
+---
+
 # technical-schematic
 
 Technical diagrams with engineering precision and clean geometry.
