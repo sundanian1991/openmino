@@ -1,3 +1,9 @@
+---
+input: 需求
+output: weekly-report.md
+pos: .claude/skills/email/templates/weekly-report.md
+---
+
 # 周报邮件模板
 
 ## 使用说明

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ui-wireframe.md
+pos: .claude/skills/baoyu-infographic/references/styles/ui-wireframe.md
+---
+
 # ui-wireframe
 
 Grayscale interface mockup style

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: preferences-schema.md
+pos: .claude/skills/baoyu-slide-deck/references/config/preferences-schema.md
+---
+
 # EXTEND.md Schema
 
 Structure for user preferences in `.baoyu-skills/baoyu-slide-deck/EXTEND.md`.

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: craft-handmade.md
+pos: .claude/skills/baoyu-infographic/references/styles/craft-handmade.md
+---
+
 # craft-handmade (DEFAULT)
 
 Hand-drawn and paper craft aesthetic with warm, organic feel.

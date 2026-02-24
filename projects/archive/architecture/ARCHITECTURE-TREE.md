@@ -1,3 +1,9 @@
+---
+input: 项目需求
+output: ARCHITECTURE-TREE.md 实现
+pos: projects/archive/architecture/ARCHITECTURE-TREE.md
+---
+
 # Mino的家 - 可视化目录树
 
 ## 完整目录树（含三级、四级）

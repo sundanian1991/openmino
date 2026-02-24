@@ -1,3 +1,9 @@
+---
+input: 需求
+output: supplier-operations.md
+pos: .claude/skills/email/templates/supplier-operations.md
+---
+
 # 供应商日常运营邮件模板
 
 ## 使用说明

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: storybook-watercolor.md
+pos: .claude/skills/baoyu-infographic/references/styles/storybook-watercolor.md
+---
+
 # storybook-watercolor
 
 Soft hand-painted illustration with whimsical charm

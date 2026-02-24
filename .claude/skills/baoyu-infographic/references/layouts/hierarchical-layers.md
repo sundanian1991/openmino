@@ -1,3 +1,9 @@
+---
+input: 需求
+output: hierarchical-layers.md
+pos: .claude/skills/baoyu-infographic/references/layouts/hierarchical-layers.md
+---
+
 # hierarchical-layers
 
 Nested layers showing levels of importance, influence, or proximity.

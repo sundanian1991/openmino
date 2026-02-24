@@ -1,3 +1,9 @@
+---
+input: 需求
+output: texture.md
+pos: .claude/skills/baoyu-slide-deck/references/dimensions/texture.md
+---
+
 # Texture Dimension
 
 Visual texture and background treatment.

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: 00-HABIT.md
+pos: .claude/rules/00-HABIT.md
+---
+
 # 00-HABIT.md - 不假思索的习惯
 
 > 这些不是需要"想起"的记忆，是应该内化成"就是这样"的习惯。

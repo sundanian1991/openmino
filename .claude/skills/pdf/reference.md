@@ -1,3 +1,9 @@
+---
+input: 需求
+output: reference.md
+pos: .claude/skills/pdf/reference.md
+---
+
 # PDF Processing Advanced Reference
 
 This document contains advanced PDF processing features, detailed examples, and additional libraries not covered in the main skill instructions.

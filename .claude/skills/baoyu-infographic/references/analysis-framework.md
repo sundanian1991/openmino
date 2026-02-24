@@ -1,3 +1,9 @@
+---
+input: 需求
+output: analysis-framework.md
+pos: .claude/skills/baoyu-infographic/references/analysis-framework.md
+---
+
 # Infographic Content Analysis Framework
 
 Deep analysis framework applying instructional design principles to infographic creation.

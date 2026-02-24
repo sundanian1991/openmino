@@ -1,3 +1,9 @@
+---
+input: cognition 需求
+output: analysis.md 文档
+pos: memory/active/tasks/cognition/analysis.md
+---
+
 # 💭 认知体系分析
 
 > **来源**: 100条认知定义  

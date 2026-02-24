@@ -1,3 +1,9 @@
+---
+input: 需求
+output: tooling-integration.md
+pos: .claude/skills/web-design-expert/references/tooling-integration.md
+---
+
 # Design Tooling Integration
 
 21st.dev, Figma MCP, and component workflows.

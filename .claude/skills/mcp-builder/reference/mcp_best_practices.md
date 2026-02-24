@@ -1,3 +1,9 @@
+---
+input: 需求
+output: mcp_best_practices.md
+pos: .claude/skills/mcp-builder/reference/mcp_best_practices.md
+---
+
 # MCP Server Best Practices
 
 ## Quick Reference

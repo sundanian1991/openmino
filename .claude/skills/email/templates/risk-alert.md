@@ -1,3 +1,9 @@
+---
+input: 需求
+output: risk-alert.md
+pos: .claude/skills/email/templates/risk-alert.md
+---
+
 # 风险通报邮件模板
 
 ## 使用说明

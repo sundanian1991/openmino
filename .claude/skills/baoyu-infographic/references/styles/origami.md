@@ -1,3 +1,9 @@
+---
+input: 需求
+output: origami.md
+pos: .claude/skills/baoyu-infographic/references/styles/origami.md
+---
+
 # origami
 
 Folded paper forms with geometric precision

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: layout-systems.md
+pos: .claude/skills/web-design-expert/references/layout-systems.md
+---
+
 # Layout Systems
 
 Grid systems, spacing scales, and layout composition.

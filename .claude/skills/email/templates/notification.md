@@ -1,3 +1,9 @@
+---
+input: 需求
+output: notification.md
+pos: .claude/skills/email/templates/notification.md
+---
+
 # 通知类邮件模板
 
 ## 使用说明

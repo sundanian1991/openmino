@@ -1,3 +1,9 @@
+---
+input: 需求
+output: bold-editorial.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/bold-editorial.md
+---
+
 # bold-editorial
 
 High-impact magazine editorial style with bold visual expression

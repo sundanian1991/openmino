@@ -1,3 +1,9 @@
+---
+input: 需求
+output: defense-in-depth.md
+pos: .claude/skills/systematic-debugging/defense-in-depth.md
+---
+
 # Defense-in-Depth Validation
 
 ## Overview

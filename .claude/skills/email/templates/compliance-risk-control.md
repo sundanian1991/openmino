@@ -1,3 +1,9 @@
+---
+input: 需求
+output: compliance-risk-control.md
+pos: .claude/skills/email/templates/compliance-risk-control.md
+---
+
 # 合规与风险管控邮件模板
 
 ## 使用说明

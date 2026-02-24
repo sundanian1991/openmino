@@ -1,3 +1,9 @@
+---
+input: 需求
+output: XSD-SCHEMAS-REMOVED.md
+pos: .claude/skills/xlsx/XSD-SCHEMAS-REMOVED.md
+---
+
 # XSD Schemas已移除
 
 ## 说明

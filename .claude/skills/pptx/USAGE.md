@@ -1,3 +1,9 @@
+---
+input: 需求
+output: USAGE.md
+pos: .claude/skills/pptx/USAGE.md
+---
+
 # pptx Skill - 使用指南
 
 > PPT演示文稿创建与编辑

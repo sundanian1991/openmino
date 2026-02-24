@@ -1,3 +1,9 @@
+---
+input: 需求
+output: base-prompt.md
+pos: .claude/skills/baoyu-slide-deck/references/base-prompt.md
+---
+
 Create a presentation slide image following these guidelines:
 
 ## Image Specifications

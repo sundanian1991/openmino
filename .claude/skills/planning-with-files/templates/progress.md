@@ -1,3 +1,9 @@
+---
+input: 需求
+output: progress.md
+pos: .claude/skills/planning-with-files/templates/progress.md
+---
+
 # Progress Log
 <!-- 
   WHAT: Your session log - a chronological record of what you did, when, and what happened.

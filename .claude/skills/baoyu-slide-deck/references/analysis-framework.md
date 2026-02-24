@@ -1,3 +1,9 @@
+---
+input: 需求
+output: analysis-framework.md
+pos: .claude/skills/baoyu-slide-deck/references/analysis-framework.md
+---
+
 # Presentation Analysis Framework
 
 Deep content analysis for effective slide deck creation.

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: USAGE.md
+pos: .claude/skills/pdf/USAGE.md
+---
+
 # pdf Skill - 使用指南
 
 > PDF文档处理工具

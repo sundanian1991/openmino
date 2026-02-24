@@ -1,3 +1,9 @@
+---
+input: system 需求
+output: EVOLUTION.md 文档
+pos: memory/active/tasks/system/EVOLUTION.md
+---
+
 # EVOLUTION.md - Mino的进化轨迹
 
 > 不是"能改"，是"主动改"。从被动到主动，这就是进化。

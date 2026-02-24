@@ -1,3 +1,9 @@
+---
+input: 需求
+output: examples.md
+pos: .claude/skills/planning-with-files/examples.md
+---
+
 # Examples: Planning with Files in Action
 
 ## Example 1: Research Task

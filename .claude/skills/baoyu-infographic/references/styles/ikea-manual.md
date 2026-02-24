@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ikea-manual.md
+pos: .claude/skills/baoyu-infographic/references/styles/ikea-manual.md
+---
+
 # ikea-manual
 
 Minimal line art assembly instruction style

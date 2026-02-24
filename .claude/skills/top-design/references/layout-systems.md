@@ -1,3 +1,9 @@
+---
+input: 需求
+output: layout-systems.md
+pos: .claude/skills/top-design/references/layout-systems.md
+---
+
 # Layout Systems Reference
 
 ## Table of Contents

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: README.md
+pos: scripts/README.md
+---
+
 # Scripts - 自动化脚本库
 
 > Mino的工具箱：脚本化重复任务，提高效率

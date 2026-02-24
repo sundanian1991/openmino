@@ -1,3 +1,9 @@
+---
+input: 需求
+output: modification-guide.md
+pos: .claude/skills/baoyu-slide-deck/references/modification-guide.md
+---
+
 # Slide Modification Guide
 
 Workflows for modifying individual slides after initial generation.

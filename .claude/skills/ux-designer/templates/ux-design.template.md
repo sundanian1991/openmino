@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ux-design.template.md
+pos: .claude/skills/ux-designer/templates/ux-design.template.md
+---
+
 # UX Design Document
 
 **Project:** [Project Name]

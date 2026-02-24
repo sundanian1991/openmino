@@ -1,3 +1,9 @@
+---
+input: 需求
+output: supplier-negotiation.md
+pos: .claude/skills/email/templates/supplier-negotiation.md
+---
+
 # 供应商商务谈判邮件模板
 
 ## 使用说明

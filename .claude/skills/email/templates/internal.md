@@ -1,3 +1,9 @@
+---
+input: 需求
+output: internal.md
+pos: .claude/skills/email/templates/internal.md
+---
+
 # 内部简洁邮件模板
 
 ## 使用说明

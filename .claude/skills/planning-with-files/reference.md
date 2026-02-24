@@ -1,3 +1,9 @@
+---
+input: 需求
+output: reference.md
+pos: .claude/skills/planning-with-files/reference.md
+---
+
 # Reference: Manus Context Engineering Principles
 
 This skill is based on context engineering principles from Manus, the AI agent company acquired by Meta for $2 billion in December 2025.

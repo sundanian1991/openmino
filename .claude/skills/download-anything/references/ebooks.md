@@ -1,3 +1,9 @@
+---
+input: 需求
+output: ebooks.md
+pos: .claude/skills/download-anything/references/ebooks.md
+---
+
 # Ebooks, Academic Papers & Comics
 
 ## Table of Contents

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: INDEX.md
+pos: .claude/skills/INDEX.md
+---
+
 # Skills索引
 
 > 所有可用技能及其使用场景

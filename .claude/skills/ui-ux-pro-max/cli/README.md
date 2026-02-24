@@ -1,3 +1,9 @@
+---
+input: 需求
+output: README.md
+pos: .claude/skills/ui-ux-pro-max/cli/README.md
+---
+
 # uipro-cli
 
 CLI to install UI/UX Pro Max skill for AI coding assistants.

@@ -1,0 +1,17 @@
+---
+input: 记忆数据
+output: active记忆存储
+pos: memory/active
+---
+
+# memory/active/
+
+> active 记忆存储
+
+## 用途
+
+存储 `active` 级别的记忆数据。
+
+## 生命周期
+
+90 天

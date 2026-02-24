@@ -1,3 +1,9 @@
+---
+input: 需求
+output: tdd-workflow.md
+pos: .claude/skills/testing-patterns/references/tdd-workflow.md
+---
+
 # Test-Driven Development (TDD)
 
 Red-Green-Refactor cycle for quality code.

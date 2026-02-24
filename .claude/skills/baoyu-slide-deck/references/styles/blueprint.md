@@ -1,3 +1,9 @@
+---
+input: 需求
+output: blueprint.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/blueprint.md
+---
+
 # blueprint
 
 Precise technical blueprint style with professional analytical visual presentation

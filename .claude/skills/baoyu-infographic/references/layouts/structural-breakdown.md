@@ -1,3 +1,9 @@
+---
+input: 需求
+output: structural-breakdown.md
+pos: .claude/skills/baoyu-infographic/references/layouts/structural-breakdown.md
+---
+
 # structural-breakdown
 
 Internal structure visualization with labeled parts or layers.

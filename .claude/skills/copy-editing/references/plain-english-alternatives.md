@@ -1,3 +1,9 @@
+---
+input: 需求
+output: plain-english-alternatives.md
+pos: .claude/skills/copy-editing/references/plain-english-alternatives.md
+---
+
 # Plain English Alternatives
 
 Replace complex or pompous words with plain English alternatives.

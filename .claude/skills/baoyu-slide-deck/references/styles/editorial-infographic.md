@@ -1,3 +1,9 @@
+---
+input: 需求
+output: editorial-infographic.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/editorial-infographic.md
+---
+
 # editorial-infographic
 
 Modern magazine-style editorial infographic with clear visual storytelling

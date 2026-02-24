@@ -1,3 +1,9 @@
+---
+input: templates 需求
+output: work-log.md 文档
+pos: memory/active/tasks/templates/work-log.md
+---
+
 # 工作事项流水表
 
 > **使用频率**: 每周30分钟  

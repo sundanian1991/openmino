@@ -1,3 +1,9 @@
+---
+input: 需求
+output: winding-roadmap.md
+pos: .claude/skills/baoyu-infographic/references/layouts/winding-roadmap.md
+---
+
 # winding-roadmap
 
 Curved path showing journey with milestones and checkpoints.

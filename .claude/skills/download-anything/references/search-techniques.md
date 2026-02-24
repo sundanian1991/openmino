@@ -1,3 +1,9 @@
+---
+input: 需求
+output: search-techniques.md
+pos: .claude/skills/download-anything/references/search-techniques.md
+---
+
 # Search Techniques & Direct Link Extraction
 
 ## Table of Contents

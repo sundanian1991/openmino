@@ -1,3 +1,9 @@
+---
+input: 需求
+output: claymation.md
+pos: .claude/skills/baoyu-infographic/references/styles/claymation.md
+---
+
 # claymation
 
 3D clay figure aesthetic with stop-motion charm

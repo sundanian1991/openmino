@@ -1,3 +1,9 @@
+---
+input: 需求
+output: punishment-dispute.md
+pos: .claude/skills/email/templates/punishment-dispute.md
+---
+
 # 处罚与争议处理邮件模板
 
 ## 适用场景

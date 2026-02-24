@@ -1,3 +1,9 @@
+---
+input: 需求
+output: findings.md
+pos: .claude/skills/planning-with-files/templates/findings.md
+---
+
 # Findings & Decisions
 <!-- 
   WHAT: Your knowledge base for the task. Stores everything you discover and decide.

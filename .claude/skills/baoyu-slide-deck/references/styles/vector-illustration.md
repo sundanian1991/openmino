@@ -1,3 +1,9 @@
+---
+input: 需求
+output: vector-illustration.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/vector-illustration.md
+---
+
 # vector-illustration
 
 Flat vector illustration style with clear black outlines and retro soft color palette

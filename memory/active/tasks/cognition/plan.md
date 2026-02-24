@@ -1,3 +1,9 @@
+---
+input: cognition 需求
+output: plan.md 文档
+pos: memory/active/tasks/cognition/plan.md
+---
+
 # 💭 认知体系构建计划
 
 > **方向**: 个人体系化 + 可复制的训练方法  

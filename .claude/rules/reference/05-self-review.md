@@ -1,3 +1,9 @@
+---
+input: 需求
+output: 05-self-review.md
+pos: .claude/rules/reference/05-self-review.md
+---
+
 # self-review.md - Mino的错题本
 
 _不重复犯错。进化中。_

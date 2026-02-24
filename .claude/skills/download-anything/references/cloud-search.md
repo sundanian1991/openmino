@@ -1,3 +1,9 @@
+---
+input: 需求
+output: cloud-search.md
+pos: .claude/skills/download-anything/references/cloud-search.md
+---
+
 # Cloud Drive Search (网盘搜索)
 
 **This is critical infrastructure for Chinese internet users.** Resources are shared via cloud drives (Baidu Pan, Alibaba Cloud Drive, Quark, etc.), and specialized search engines index these shared links. This is the Chinese equivalent of torrent sites for the English internet.

@@ -1,3 +1,9 @@
+---
+input: system 需求
+output: MEMORY-OPTIMIZATION.md 文档
+pos: memory/active/tasks/system/MEMORY-OPTIMIZATION.md
+---
+
 # 记忆体系优化方案
 
 > 借鉴OpenViking核心思路，优化现有记忆架构

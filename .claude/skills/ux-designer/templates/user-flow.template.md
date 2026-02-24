@@ -1,3 +1,9 @@
+---
+input: 需求
+output: user-flow.template.md
+pos: .claude/skills/ux-designer/templates/user-flow.template.md
+---
+
 # User Flow: [Flow Name]
 
 **Project:** [Project Name]

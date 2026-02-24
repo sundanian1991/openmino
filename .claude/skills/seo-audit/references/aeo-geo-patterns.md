@@ -1,3 +1,9 @@
+---
+input: 需求
+output: aeo-geo-patterns.md
+pos: .claude/skills/seo-audit/references/aeo-geo-patterns.md
+---
+
 # AEO and GEO Content Patterns
 
 Reusable content block patterns optimized for answer engines and AI citation.

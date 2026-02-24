@@ -1,3 +1,9 @@
+---
+input: 需求
+output: templates.md
+pos: .claude/skills/steal-learning/references/templates.md
+---
+
 # 偷师三行法 - 模板库
 
 > 针对不同场景的即用模板

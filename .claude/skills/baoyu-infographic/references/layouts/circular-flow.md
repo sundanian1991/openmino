@@ -1,3 +1,9 @@
+---
+input: 需求
+output: circular-flow.md
+pos: .claude/skills/baoyu-infographic/references/layouts/circular-flow.md
+---
+
 # circular-flow
 
 Cyclic process showing continuous or recurring steps.

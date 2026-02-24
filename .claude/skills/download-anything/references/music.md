@@ -1,3 +1,9 @@
+---
+input: 需求
+output: music.md
+pos: .claude/skills/download-anything/references/music.md
+---
+
 # Music & Audio Downloads
 
 ## Table of Contents

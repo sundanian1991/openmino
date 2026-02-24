@@ -1,3 +1,9 @@
+---
+input: 需求
+output: iceberg.md
+pos: .claude/skills/baoyu-infographic/references/layouts/iceberg.md
+---
+
 # iceberg
 
 Surface vs hidden depths, visible vs underlying factors.

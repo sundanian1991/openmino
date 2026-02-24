@@ -1,3 +1,9 @@
+---
+input: 需求
+output: output-patterns.md
+pos: .claude/skills/skill-creator/references/output-patterns.md
+---
+
 # Output Patterns
 
 Use these patterns when skills need to produce consistent, high-quality output.

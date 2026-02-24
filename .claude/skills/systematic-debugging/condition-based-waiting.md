@@ -1,3 +1,9 @@
+---
+input: 需求
+output: condition-based-waiting.md
+pos: .claude/skills/systematic-debugging/condition-based-waiting.md
+---
+
 # Condition-Based Waiting
 
 ## Overview

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: binary-comparison.md
+pos: .claude/skills/baoyu-infographic/references/layouts/binary-comparison.md
+---
+
 # binary-comparison
 
 Side-by-side comparison of two items, states, or concepts.

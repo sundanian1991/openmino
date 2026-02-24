@@ -1,3 +1,9 @@
+---
+input: tracking 需求
+output: skills-usage.md 文档
+pos: memory/active/tasks/tracking/skills-usage.md
+---
+
 # 高价值Skill记录
 
 > 只记录真正有用或没用的skill，不是每次都记录

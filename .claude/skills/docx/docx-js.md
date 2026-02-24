@@ -1,3 +1,9 @@
+---
+input: 需求
+output: docx-js.md
+pos: .claude/skills/docx/docx-js.md
+---
+
 # DOCX Library Tutorial
 
 Generate .docx files with JavaScript/TypeScript.

@@ -1,3 +1,9 @@
+---
+input: reminders 需求
+output: weekly-review.md 文档
+pos: memory/active/tasks/reminders/weekly-review.md
+---
+
 # WEEKLY-REVIEW.md - 周度反思
 
 *每周回顾daily文件，提炼高频/重要内容，形成高层次抽象。*

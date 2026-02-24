@@ -247,6 +247,41 @@ Hook 验证 → scripts/verify-plan.sh
 **记录位置**：`memory/active/tasks/lessons.md`
 
 **记录格式**：
+```
+
+---
+
+## 📚 文档同步机制
+
+**核心规则**：
+1. 每个文件夹必须有 README.md 或 CLAUDE.md
+2. 每个 .md 文件必须有 `---` 头注释：
+   ```markdown
+   ---
+   input: [依赖外部资源]
+   output: [对外提供功能]
+   pos: [系统局部地位]
+   ---
+   ```
+3. 文件夹变化需同步更新所属 README
+
+**自动化检查**：
+```bash
+# 提交前检查
+.scripts/check-docs-sync.sh
+
+# Git pre-commit hook 自动阻止无头注释的 .md 文件提交
+git commit -m "xxx"
+```
+
+**新增文件操作清单**：
+1. 在文件顶部添加 `---` 头注释
+2. 更新所属文件夹的 README.md
+3. 结构变更则更新 CLAUDE.md
+
+---
+
+## 经验教训记录
 ```markdown
 ## YYYY-MM-DD | 问题简述
 

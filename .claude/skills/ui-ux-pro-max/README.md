@@ -1,3 +1,9 @@
+---
+input: 需求
+output: README.md
+pos: .claude/skills/ui-ux-pro-max/README.md
+---
+
 # UI UX Pro Max
  
 <p align="center">

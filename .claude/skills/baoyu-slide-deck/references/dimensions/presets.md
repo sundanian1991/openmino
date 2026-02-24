@@ -1,3 +1,9 @@
+---
+input: 需求
+output: presets.md
+pos: .claude/skills/baoyu-slide-deck/references/dimensions/presets.md
+---
+
 # Preset → Dimension Mapping
 
 Maps 16 preset styles to their dimension combinations.

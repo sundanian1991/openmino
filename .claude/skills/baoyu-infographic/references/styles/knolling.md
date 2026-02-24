@@ -1,3 +1,9 @@
+---
+input: 需求
+output: knolling.md
+pos: .claude/skills/baoyu-infographic/references/styles/knolling.md
+---
+
 # knolling
 
 Organized flat-lay with top-down arrangement

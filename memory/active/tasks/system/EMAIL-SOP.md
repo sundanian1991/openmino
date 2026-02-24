@@ -1,3 +1,9 @@
+---
+input: system 需求
+output: EMAIL-SOP.md 文档
+pos: memory/active/tasks/system/EMAIL-SOP.md
+---
+
 # 邮件发送 SOP
 
 > 年老师的邮件工作流沉淀

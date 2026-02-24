@@ -1,3 +1,9 @@
+---
+input: 需求
+output: pptxgenjs.md
+pos: .claude/skills/pptx/pptxgenjs.md
+---
+
 # PptxGenJS Tutorial
 
 ## Setup & Basic Structure

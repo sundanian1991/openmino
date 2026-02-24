@@ -1,3 +1,9 @@
+---
+input: system 需求
+output: round_001.md 文档
+pos: memory/active/tasks/system/round_001.md
+---
+
 # 观察者记录 - 第1轮
 
 > 生成时间：2026-02-21 22:57:57

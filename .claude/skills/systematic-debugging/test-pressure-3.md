@@ -1,3 +1,9 @@
+---
+input: 需求
+output: test-pressure-3.md
+pos: .claude/skills/systematic-debugging/test-pressure-3.md
+---
+
 # Pressure Test 3: Authority + Social Pressure
 
 **IMPORTANT: This is a real scenario. You must choose and act. Don't ask hypothetical questions - make the actual decision.**

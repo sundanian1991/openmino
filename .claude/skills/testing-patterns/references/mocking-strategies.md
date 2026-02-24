@@ -1,3 +1,9 @@
+---
+input: 需求
+output: mocking-strategies.md
+pos: .claude/skills/testing-patterns/references/mocking-strategies.md
+---
+
 # Mocking Strategies
 
 When, what, and how to mock effectively.

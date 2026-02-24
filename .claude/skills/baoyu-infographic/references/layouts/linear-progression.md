@@ -1,3 +1,9 @@
+---
+input: 需求
+output: linear-progression.md
+pos: .claude/skills/baoyu-infographic/references/layouts/linear-progression.md
+---
+
 # linear-progression
 
 Sequential progression showing steps, timeline, or chronological events.

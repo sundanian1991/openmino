@@ -1,3 +1,9 @@
+---
+input: 需求
+output: copy-frameworks.md
+pos: .claude/skills/copywriting/references/copy-frameworks.md
+---
+
 # Copy Frameworks Reference
 
 Headline formulas, page section types, and structural templates.

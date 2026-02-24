@@ -1,3 +1,9 @@
+---
+input: 需求
+output: supplier-evaluation.md
+pos: .claude/skills/email/templates/supplier-evaluation.md
+---
+
 # 供应商评估邮件模板
 
 ## 使用说明

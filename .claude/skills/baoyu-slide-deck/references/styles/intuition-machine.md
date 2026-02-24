@@ -1,3 +1,9 @@
+---
+input: 需求
+output: intuition-machine.md
+pos: .claude/skills/baoyu-slide-deck/references/styles/intuition-machine.md
+---
+
 # intuition-machine
 
 Technical briefing infographic style with aged paper texture and bilingual explanatory text boxes

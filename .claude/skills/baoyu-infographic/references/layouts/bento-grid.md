@@ -1,3 +1,9 @@
+---
+input: 需求
+output: bento-grid.md
+pos: .claude/skills/baoyu-infographic/references/layouts/bento-grid.md
+---
+
 # bento-grid
 
 Modular grid layout with varied cell sizes, like a bento box.

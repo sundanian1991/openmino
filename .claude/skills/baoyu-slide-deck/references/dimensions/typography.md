@@ -1,3 +1,9 @@
+---
+input: 需求
+output: typography.md
+pos: .claude/skills/baoyu-slide-deck/references/dimensions/typography.md
+---
+
 # Typography Dimension
 
 Headline and body text styling.

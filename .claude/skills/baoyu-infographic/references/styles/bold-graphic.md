@@ -1,3 +1,9 @@
+---
+input: 需求
+output: bold-graphic.md
+pos: .claude/skills/baoyu-infographic/references/styles/bold-graphic.md
+---
+
 # bold-graphic
 
 High-contrast comic style with bold outlines and dramatic visuals.

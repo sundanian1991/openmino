@@ -1,3 +1,9 @@
+---
+input: 需求
+output: design-guidelines.md
+pos: .claude/skills/baoyu-slide-deck/references/design-guidelines.md
+---
+
 # Design Guidelines
 
 Detailed design principles for slide decks.

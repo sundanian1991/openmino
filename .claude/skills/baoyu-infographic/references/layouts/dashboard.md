@@ -1,3 +1,9 @@
+---
+input: 需求
+output: dashboard.md
+pos: .claude/skills/baoyu-infographic/references/layouts/dashboard.md
+---
+
 # dashboard
 
 Multi-metric display with charts, numbers, and KPI indicators.

@@ -1,3 +1,9 @@
+---
+input: 需求
+output: test-data-patterns.md
+pos: .claude/skills/testing-patterns/references/test-data-patterns.md
+---
+
 # Test Data Patterns
 
 Strategies for managing test data effectively.

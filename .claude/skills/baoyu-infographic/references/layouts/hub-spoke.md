@@ -1,3 +1,9 @@
+---
+input: 需求
+output: hub-spoke.md
+pos: .claude/skills/baoyu-infographic/references/layouts/hub-spoke.md
+---
+
 # hub-spoke
 
 Central concept with radiating connections to related items.

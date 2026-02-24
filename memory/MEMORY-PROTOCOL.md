@@ -1,3 +1,9 @@
+---
+input: 记忆系统设计需求
+output: 记忆协议规范
+pos: memory/MEMORY-PROTOCOL.md
+---
+
 # 记忆机制 - 事后补记
 
 > 不是每次都记，而是每次结束后自然回顾。
