@@ -1,7 +1,6 @@
 ---
 name: "workflow:code"
 description: "代码开发工作流 - 从需求到部署的专业开发流程"
-argument-hint: <功能描述>
 ---
 
 # Workflow: 代码开发
