@@ -1,8 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Style } from '@/types/style';
 import { StylePreview } from './style-preview';
+
+interface ProductColorScheme {
+  id: string;
+  productType: string;
+  primary: string;
+  secondary: string;
+  cta: string;
+  background: string;
+  text: string;
+  border: string;
+  notes: string;
+}
 
 interface StyleDetailProps {
   style: Style;
@@ -10,6 +22,19 @@ interface StyleDetailProps {
 
 export function StyleDetail({ style }: StyleDetailProps) {
   const [activeTab, setActiveTab] = useState<'preview' | 'colors' | 'guide'>('preview');
+  const [colorSchemes, setColorSchemes] = useState<ProductColorScheme[]>([]);
+
+  // 加载行业配色方案
+  useEffect(() => {
+    fetch('/api/styles?type=colors')
+      .then((res) => res.json())
+      .then((data: ProductColorScheme[]) => {
+        // 根据风格类型推荐相关的行业配色
+        const recommended = recommendColorSchemes(style, data);
+        setColorSchemes(recommended.slice(0, 8)); // 最多显示 8 个
+      })
+      .catch(console.error);
+  }, [style]);
 
   return (
     <div className="space-y-8">
@@ -49,6 +74,45 @@ export function StyleDetail({ style }: StyleDetailProps) {
 
       {/* 预览标签页 */}
       {activeTab === 'preview' && (
+// 根据风格类型推荐相关的行业配色方案
+function recommendColorSchemes(style: Style, schemes: ProductColorScheme[]): ProductColorScheme[] {
+  const keywords = style.keywords.join(' ').toLowerCase();
+  const bestFor = style.bestFor.join(' ').toLowerCase();
+  const styleName = style.name.toLowerCase();
+
+  // 评分排序
+  const scored = schemes.map((scheme) => {
+    let score = 0;
+    const productType = scheme.productType.toLowerCase();
+    const notes = scheme.notes.toLowerCase();
+
+    // 匹配关键词
+    if (keywords.includes('saas') || productType.includes('saas')) score += 3;
+    if (keywords.includes('enterprise') || productType.includes('saas')) score += 2;
+    if (keywords.includes('dashboard') || productType.includes('dashboard')) score += 3;
+    if (keywords.includes('ecommerce') || productType.includes('ecommerce')) score += 3;
+    if (keywords.includes('finance') || productType.includes('fintech')) score += 3;
+    if (keywords.includes('health') || productType.includes('healthcare')) score += 3;
+    if (keywords.includes('education') || productType.includes('educational')) score += 3;
+    if (keywords.includes('gaming') || productType.includes('gaming')) score += 3;
+    if (keywords.includes('crypto') || productType.includes('crypto')) score += 3;
+    if (keywords.includes('social') || productType.includes('social')) score += 2;
+
+    // 匹配备注
+    if (notes.includes('professional')) score += 1;
+    if (notes.includes('trust')) score += 1;
+    if (notes.includes('modern')) score += 1;
+    if (notes.includes('playful')) score += 1;
+
+    return { scheme, score };
+  });
+
+  // 按评分排序，返回高分的
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8)
+    .map((item) => item.scheme);
+}
         <div className="space-y-6">
           {/* 主预览 - 完整桌面布局 */}
           <div>
@@ -168,6 +232,40 @@ export function StyleDetail({ style }: StyleDetailProps) {
               主色用于主要按钮、链接和重要视觉元素。辅助色用于背景、边框和次要元素。
               确保文本与背景的对比度符合无障碍标准。
             </p>
+          </div>
+
+          {/* 行业配色方案推荐 */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">🎨 行业配色方案参考</h3>
+            {colorSchemes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {colorSchemes.map((scheme) => (
+                  <div key={scheme.id} className="rounded-xl border border-gray-200 p-4 bg-white hover:shadow-lg transition-all">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-semibold text-gray-900">{scheme.productType}</h4>
+                      <span className="text-xs text-gray-500">No.{scheme.id}</span>
+                    </div>
+                    {/* 配色预览 */}
+                    <div className="flex gap-2 mb-3">
+                      <div className="flex-1 h-10 rounded border border-gray-200" style={{ backgroundColor: scheme.primary }} title="主色" />
+                      <div className="flex-1 h-10 rounded border border-gray-200" style={{ backgroundColor: scheme.secondary }} title="辅助色" />
+                      <div className="flex-1 h-10 rounded border border-gray-200" style={{ backgroundColor: scheme.cta }} title="CTA 按钮色" />
+                    </div>
+                    <div className="flex gap-2 mb-3">
+                      <div className="flex-1 h-8 rounded border border-gray-200" style={{ backgroundColor: scheme.background }} title="背景色" />
+                      <div className="flex-1 h-8 rounded border border-gray-200" style={{ backgroundColor: scheme.text }} title="文字色" />
+                      <div className="flex-1 h-8 rounded border border-gray-200" style={{ backgroundColor: scheme.border }} title="边框色" />
+                    </div>
+                    {/* 说明 */}
+                    <p className="text-xs text-gray-600">{scheme.notes}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>加载中...</p>
+              </div>
+            )}
           </div>
         </div>
       )}

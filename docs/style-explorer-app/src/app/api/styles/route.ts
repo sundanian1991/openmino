@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
-import { getStyles } from '@/lib/data/styles';
+import { getStyles, getProductColorSchemes } from '@/lib/data/styles';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get('type');
+
+    if (type === 'colors') {
+      const colorSchemes = getProductColorSchemes();
+      return NextResponse.json(colorSchemes);
+    }
+
     const styles = getStyles();
     return NextResponse.json(styles);
   } catch (error) {

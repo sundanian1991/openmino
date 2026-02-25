@@ -2292,6 +2292,7 @@ const TERM_TRANSLATIONS: Record<string, string> = {
   'exa': '艾',
   'zetta': '泽',
   'yotta': '尧',
+};
 
 // 翻译英文文本到中文
 function translateText(text: string): string {
@@ -2324,21 +2325,85 @@ function parseArray(field: string): string[] {
   return field.split(',').map(s => s.trim()).filter(Boolean);
 }
 
-// 解析颜色字段
+// 解析颜色字段（优化版：支持 rgba 格式、清理颜色名称）
 function parseColors(field: string): Array<{ name?: string; hex: string }> {
   if (!field || field.trim() === '') return [];
 
   const colors: Array<{ name?: string; hex: string }> = [];
-  const parts = field.split(',');
+
+  // 颜色名称清理（移除前缀描述和后缀）
+  const cleanColorName = (name: string): string => {
+    let cleaned = name.trim();
+    // 移除常见前缀
+    const prefixes = ['Light pastels', 'Primary', 'Neutral', 'Tints/shades', 'Translucent white', 'Vibrant'];
+    for (const prefix of prefixes) {
+      if (cleaned.startsWith(prefix)) {
+        cleaned = cleaned.slice(prefix.length).trim();
+      }
+    }
+    // 移除冒号、括号
+    cleaned = cleaned.replace(/^[::]+/, '').replace(/[():]/g, '').trim();
+    // 翻译颜色名称
+    const colorTranslations: Record<string, string> = {
+      'Black': '黑色',
+      'White': '白色',
+      'Red': '红色',
+      'Blue': '蓝色',
+      'Yellow': '黄色',
+      'Green': '绿色',
+      'Pink': '粉色',
+      'Purple': '紫色',
+      'Orange': '橙色',
+      'Cyan': '青色',
+      'Grey': '灰色',
+      'Gray': '灰色',
+      'Soft Blue': '柔和蓝',
+      'Soft Pink': '柔和粉',
+      'Soft Grey': '柔和灰',
+    };
+    return colorTranslations[cleaned] || cleaned;
+  };
+
+  // 先提取 rgba 格式（避免被逗号分割）
+  const rgbaRegex = /rgba\(\d+,\d+,\d+,[\d.-]+\)/g;
+  const rgbaMatches = field.match(rgbaRegex) || [];
+
+  // 将 rgba 占位符替换为特殊标记
+  let processedField = field;
+  for (let i = 0; i < rgbaMatches.length; i++) {
+    processedField = processedField.replace(rgbaMatches[i], `__RGBA_${i}__`);
+  }
+
+  // 分割字段
+  const parts = processedField.split(',');
 
   for (const part of parts) {
     const trimmed = part.trim();
     if (!trimmed) continue;
 
-    // 匹配 hex 颜色代码
+    // 检查是否是 rgba 占位符
+    const rgbaPlaceholder = trimmed.match(/__RGBA_(\d+)__/);
+    if (rgbaPlaceholder) {
+      const rgbaStr = rgbaMatches[parseInt(rgbaPlaceholder[1])];
+      const colorMatch = rgbaStr.match(/rgba\((\d+),(\d+),(\d+)/);
+      if (colorMatch) {
+        const r = parseInt(colorMatch[1]).toString(16).padStart(2, '0');
+        const g = parseInt(colorMatch[2]).toString(16).padStart(2, '0');
+        const b = parseInt(colorMatch[3]).toString(16).padStart(2, '0');
+        const hex = `#${r}${g}${b}`;
+        const name = cleanColorName(processedField.split('__RGBA_' + rgbaPlaceholder[1] + '__')[0].trim());
+        colors.push({
+          name: name || '透明色',
+          hex
+        });
+      }
+      continue;
+    }
+
+    // 匹配 hex 颜色代码 (#RRGGBB)
     const hexMatch = trimmed.match(/#[0-9A-Fa-f]{6}/);
     if (hexMatch) {
-      const name = trimmed.replace(hexMatch[0], '').trim().replace(/[():]/g, '').trim();
+      const name = cleanColorName(trimmed.replace(hexMatch[0], '').trim());
       colors.push({
         name: name || undefined,
         hex: hexMatch[0]
@@ -2387,6 +2452,52 @@ export function loadStyles(): Style[] {
 
 // 预加载并缓存数据
 let cachedStyles: Style[] | null = null;
+
+// 行业配色方案类型
+export interface ProductColorScheme {
+  id: string;
+  productType: string;
+  primary: string;
+  secondary: string;
+  cta: string;
+  background: string;
+  text: string;
+  border: string;
+  notes: string;
+}
+
+// 加载行业配色方案
+export function loadProductColorSchemes(): ProductColorScheme[] {
+  const filePath = join(process.cwd(), 'public/data/colors.csv');
+  const fileContent = readFileSync(filePath, 'utf-8');
+
+  const records = parse(fileContent, {
+    columns: true,
+    skip_empty_lines: true,
+    trim: true,
+  });
+
+  return records.map((row: any) => ({
+    id: row.No?.toString() || '',
+    productType: row['Product Type'] || '',
+    primary: row['Primary (Hex)'] || '',
+    secondary: row['Secondary (Hex)'] || '',
+    cta: row['CTA (Hex)'] || '',
+    background: row['Background (Hex)'] || '',
+    text: row['Text (Hex)'] || '',
+    border: row['Border (Hex)'] || '',
+    notes: row['Notes'] || '',
+  }));
+}
+
+let cachedColorSchemes: ProductColorScheme[] | null = null;
+
+export function getProductColorSchemes(): ProductColorScheme[] {
+  if (!cachedColorSchemes) {
+    cachedColorSchemes = loadProductColorSchemes();
+  }
+  return cachedColorSchemes;
+}
 
 export function getStyles(): Style[] {
   if (!cachedStyles) {
