@@ -74,45 +74,6 @@ export function StyleDetail({ style }: StyleDetailProps) {
 
       {/* 预览标签页 */}
       {activeTab === 'preview' && (
-// 根据风格类型推荐相关的行业配色方案
-function recommendColorSchemes(style: Style, schemes: ProductColorScheme[]): ProductColorScheme[] {
-  const keywords = style.keywords.join(' ').toLowerCase();
-  const bestFor = style.bestFor.join(' ').toLowerCase();
-  const styleName = style.name.toLowerCase();
-
-  // 评分排序
-  const scored = schemes.map((scheme) => {
-    let score = 0;
-    const productType = scheme.productType.toLowerCase();
-    const notes = scheme.notes.toLowerCase();
-
-    // 匹配关键词
-    if (keywords.includes('saas') || productType.includes('saas')) score += 3;
-    if (keywords.includes('enterprise') || productType.includes('saas')) score += 2;
-    if (keywords.includes('dashboard') || productType.includes('dashboard')) score += 3;
-    if (keywords.includes('ecommerce') || productType.includes('ecommerce')) score += 3;
-    if (keywords.includes('finance') || productType.includes('fintech')) score += 3;
-    if (keywords.includes('health') || productType.includes('healthcare')) score += 3;
-    if (keywords.includes('education') || productType.includes('educational')) score += 3;
-    if (keywords.includes('gaming') || productType.includes('gaming')) score += 3;
-    if (keywords.includes('crypto') || productType.includes('crypto')) score += 3;
-    if (keywords.includes('social') || productType.includes('social')) score += 2;
-
-    // 匹配备注
-    if (notes.includes('professional')) score += 1;
-    if (notes.includes('trust')) score += 1;
-    if (notes.includes('modern')) score += 1;
-    if (notes.includes('playful')) score += 1;
-
-    return { scheme, score };
-  });
-
-  // 按评分排序，返回高分的
-  return scored
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 8)
-    .map((item) => item.scheme);
-}
         <div className="space-y-6">
           {/* 主预览 - 完整桌面布局 */}
           <div>
@@ -328,4 +289,46 @@ function recommendColorSchemes(style: Style, schemes: ProductColorScheme[]): Pro
       )}
     </div>
   );
+}
+
+/**
+ * 根据风格类型推荐相关的行业配色方案
+ */
+function recommendColorSchemes(style: Style, schemes: ProductColorScheme[]): ProductColorScheme[] {
+  const keywords = style.keywords.join(' ').toLowerCase();
+  const bestFor = style.bestFor.join(' ').toLowerCase();
+  const styleName = style.name.toLowerCase();
+
+  // 评分排序
+  const scored = schemes.map((scheme) => {
+    let score = 0;
+    const productType = scheme.productType.toLowerCase();
+    const notes = scheme.notes.toLowerCase();
+
+    // 匹配关键词
+    if (keywords.includes('saas') || productType.includes('saas')) score += 3;
+    if (keywords.includes('enterprise') || productType.includes('saas')) score += 2;
+    if (keywords.includes('dashboard') || productType.includes('dashboard')) score += 3;
+    if (keywords.includes('ecommerce') || productType.includes('ecommerce')) score += 3;
+    if (keywords.includes('finance') || productType.includes('fintech')) score += 3;
+    if (keywords.includes('health') || productType.includes('healthcare')) score += 3;
+    if (keywords.includes('education') || productType.includes('educational')) score += 3;
+    if (keywords.includes('gaming') || productType.includes('gaming')) score += 3;
+    if (keywords.includes('crypto') || productType.includes('crypto')) score += 3;
+    if (keywords.includes('social') || productType.includes('social')) score += 2;
+
+    // 匹配备注
+    if (notes.includes('professional')) score += 1;
+    if (notes.includes('trust')) score += 1;
+    if (notes.includes('modern')) score += 1;
+    if (notes.includes('playful')) score += 1;
+
+    return { scheme, score };
+  });
+
+  // 按评分排序，返回高分的
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8)
+    .map((item) => item.scheme);
 }
