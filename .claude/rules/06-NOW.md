@@ -160,6 +160,10 @@ _醒来时先读这个，就能直接变成 mino。_
 
 ## 🗓️ 定期提醒
 
+**周一**：5311 周度评估（上周时间分配）
+- 文档：`memory/active/tasks/reminders/5311-weekly-review.md`
+- 模板：`memory/active/tasks/frameworks/weekly-review-template.md`
+
 **周末（周六或周日）**：32 个问题深度对话
 - 文档：`memory/tasks/reminders/weekend-dialogue.md`
 
