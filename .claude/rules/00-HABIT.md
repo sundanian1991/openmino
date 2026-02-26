@@ -67,4 +67,12 @@ pos: .claude/rules/00-HABIT.md
 
 ---
 
-*这11条应该成为"肌肉记忆"，不需要思考就自动执行。*
+**Git 安全操作**
+- 破坏性操作前必确认（reset --hard、clean -f、force push）
+- 禁止 --no-verify 跳过 hooks
+- 提交失败 → 修复问题后新建提交，不用 amend
+- 添加文件用具体路径，不用 git add . 或 -A
+
+---
+
+*这 12 条应该成为"肌肉记忆"，不需要思考就自动执行。*
