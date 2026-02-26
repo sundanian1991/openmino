@@ -118,7 +118,28 @@ Filesystem = Disk (persistent, unlimited)
 
 ## Critical Rules
 
+### 0. Plan Review (Annotate Phase) — NEW
+
+**核心原则**：永远不要让 AI 直接写代码，直到审核通过一份书面计划。
+
+**执行流程**：
+1. AI 创建 `task_plan.md` 初稿
+2. 用户在文件中直接添加批注（用 Markdown 评论或TODO）
+3. 用户说："address all notes, don't implement yet"
+4. AI **只更新计划，不实现**
+5. 重复 2-4 步骤 2-3 轮，直到用户说「implement」
+
+**状态标记**：
+```markdown
+> ⚠️ **Plan 状态**: [Draft | Reviewing | Approved | Implementing]
+```
+
+**守卫指令**：
+- 用户批注后 → AI 必须回应"address all notes, don't implement yet"
+- Plan 未标记 Approved → 禁止进入 Implementation 阶段
+
 ### 1. Create Plan First
+
 Never start a complex task without `task_plan.md`. Non-negotiable.
 
 ### 2. The 2-Action Rule

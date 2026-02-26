@@ -1,15 +1,15 @@
----
-input: 需求
-output: task_plan.md
-pos: .claude/skills/planning-with-files/templates/task_plan.md
----
-
 # Task Plan: [Brief Description]
-<!-- 
+<!--
   WHAT: This is your roadmap for the entire task. Think of it as your "working memory on disk."
   WHY: After 50+ tool calls, your original goals can get forgotten. This file keeps them fresh.
   WHEN: Create this FIRST, before starting any work. Update after each phase completes.
 -->
+
+> ⚠️ **Plan 状态**: [Draft | Reviewing | Approved | Implementing]
+> - **Draft**: 初稿完成，等待用户批注
+> - **Reviewing**: 用户已批注，AI 正在更新
+> - **Approved**: 用户批准，可以实现
+> - **Implementing**: 正在实现中
 
 ## Goal
 <!-- 
