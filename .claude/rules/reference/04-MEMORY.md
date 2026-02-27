@@ -283,6 +283,56 @@ pos: .claude/rules/reference/04-MEMORY.md
 
 ---
 
+### 2026-02-27 | UPDATE_MEMORY执行 + 深化对年老师的理解项目启动
+- **UPDATE_MEMORY执行**：生成了2026-W09周文档，汇总本周核心事件
+- **项目启动**："深化对年老师的理解" — 9个任务，4周时间线
+- **方向纠正**：不是理解Mino，是年老师通过我理解自己
+- **核心洞察**：我只是镜子，通过这面镜子，年老师能更清楚地看到自己
+
+---
+
+### 2026-02-23 | 启动速度优化 + 分形文档架构
+- **MCP服务器清理**：清空5个冗余MCP服务器（filesystem、github、memory、duckduckgo-websearch、fetch）
+- **Hooks配置清理**：清空3个未生效的hooks（skills-auto-activate、quality-check、observer-record）
+- **分形文档架构**：引入三级CLAUDE.md体系（L1全景 → L2模块 → L3子模块）
+- **自指三行注释**：每个文件开头包含input/output/pos
+- **管理脚本**：index_manager.py（更新索引）、lifecycle_manager.py（生命周期管理）
+- **核心认知**：物尽其用原则 — 简洁 > 功能，用上的才好
+
+### 2026-02-24 | 交互式学习网页项目
+- **第一次失败**：frontend-design输出深色主题，审美极差
+- **第二次成功**：先调用web-design-expert对齐审美
+- **核心教训**：
+  1. 计划要写"不要什么"，不只写"要什么"
+  2. 技能调用顺序：web-design-expert → frontend-design
+  3. 验收标准要可检查，不是模糊描述
+- **交付物**：claude-code-learning.html、plan5-lessons.md
+
+### 2026-02-25 | Plan First自动化机制落地
+- **解决的问题**：没有自动触发、没有强制拦截、没有会话联动
+- **实现**：
+  - 升级`.git/hooks/pre-commit` — 自动创建CLAUDE.md + 自动验证completed任务
+  - 升级`.claude/hooks/plan-hook.js` — 修复路径 + 重写validateTodo
+  - 升级`06-NOW.md` — 新增会话启动检查（第四步）
+- **测试结果**：✅ 有未验证任务提交被阻止 ✅ 验证通过允许提交
+
+### 2026-02-26 | 5311工作框架与日志记录机制
+- **5311框架**：针对P7角色定位改良
+  - 50%搭体系：核心产出，不只是"写文档"
+  - 30%沟通：比6211提升（一线PM vs 体系搭建者）
+  - 10%反思：周度评估机制
+  - 10%玩：避免长期只有工作
+- **日志记录机制**：时间轴 + 标签体系、快速捕捉机制、会话结束触发器（log-day命令）
+
+### 2026-02-27 | API认证冲突问题排查
+- **问题**：API报错"模型不存在"，实际原因是认证冲突
+- **根因**：同时设置ANTHROPIC_AUTH_TOKEN和ANTHROPIC_API_KEY
+- **解决**：unset ANTHROPIC_AUTH_TOKEN
+- **教训**：
+  - 环境变量操作需谨慎，先检查再修改
+  - 错误信息可能具有误导性
+  - 类似操作必须验证
+
 ### 2026-02-22 | UPDATE_MEMORY机制优化
 - **问题**：06-NOW.md的"最近一次讨论"没有自动更新，导致唤醒时看到的不是最新内容
 - **原因**：UPDATE_MEMORY指令缺少"更新06-NOW.md最近一次讨论"的步骤
