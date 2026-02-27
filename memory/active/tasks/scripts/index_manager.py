@@ -26,7 +26,7 @@ class MemoryIndexManager:
 
         self.base_path = Path(base_path)
         self.daily_path = self.base_path / "memory/active/daily"
-        self.obs_path = self.base_path / "memory/observations"
+        self.obs_path = self.base_path / "memory/active/observations"
 
     def update_daily_index(self) -> dict:
         """更新daily索引"""
