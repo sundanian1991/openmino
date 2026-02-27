@@ -62,6 +62,34 @@ _不重复犯错。进化中。_
 
 ---
 
+### 2026-02-27 | API认证冲突导致误导性错误
+
+**问题**: API报错"模型不存在，请检查模型代码"，但实际原因是认证冲突
+
+**错误信息**:
+```
+Error: API Error: 400 {"type":"error","error":{"type":"api_error","message":"模型不存在，请检查模型代码。"}}}
+⚠ Auth conflict: Both a token (ANTHROPIC_AUTH_TOKEN) and an API key (ANTHROPIC_API_KEY) are set
+```
+
+**原因**:
+- 环境变量同时设置了 `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_API_KEY`
+- 认证方式冲突，导致API请求失败
+- 错误信息"模型不存在"具有误导性，掩盖了真正的认证问题
+
+**改进**:
+- **环境变量修改前强制检查**：`env | grep ANTHROPIC` 先查看现有配置
+- **认证方式二选一**：AUTH_TOKEN 或 API_KEY，不能同时存在
+- **修改后必须验证**：发送测试请求确认配置有效
+- **系统性排查**：错误信息可能不准确，需要全面检查配置
+
+**核心教训**:
+- 环境变量操作需谨慎，先检查再修改
+- 错误信息可能具有误导性，要系统性排查
+- 类似操作需要验证，不能假设问题已解决
+
+---
+
 ### 2026-02-13 | MCP配置路径错误
 
 **问题**: 尝试在settings.json添加mcpServers，报错

@@ -36,6 +36,31 @@ pos: memory/active/tasks/，经验教训记录
 
 <!-- 新增教训写在这里 -->
 
+### 2026-02-27 | API 认证冲突导致"模型不存在"错误
+
+**问题**：
+- API 报错：`API Error: 400 {"type":"error","error":{"type":"api_error","message":"模型不存在，请检查模型代码。"}}`
+- 同时存在警告：`Auth conflict: Both a token (ANTHROPIC_AUTH_TOKEN) and an API key (ANTHROPIC_API_KEY) are set`
+
+**根因**：
+- 环境变量中同时设置了 `ANTHROPIC_AUTH_TOKEN` 和 `ANTHROPIC_API_KEY`
+- 两个认证方式冲突，导致 API 请求异常
+- 初始错误信息"模型不存在"具有误导性，实际是认证问题
+
+**改进**：
+- 移除冲突的认证方式，只保留一个（选择 `unset ANTHROPIC_AUTH_TOKEN`）
+- 修改环境变量前必须先检查现有配置，避免冲突
+- 操作后进行验证测试，确保问题真正解决
+
+**规则**：
+- **环境变量修改前强制检查**：
+  ```bash
+  env | grep ANTHROPIC  # 先查看现有配置
+  ```
+- **认证方式二选一**：`AUTH_TOKEN` 或 `API_KEY`，不能同时存在
+- **修改后必须验证**：发送测试请求确认配置有效
+- **错误信息可能具有误导性**："模型不存在"可能是认证问题，需要系统性排查
+
 ---
 
 ## 已内化的规则
