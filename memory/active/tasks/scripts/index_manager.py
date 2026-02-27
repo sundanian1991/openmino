@@ -17,8 +17,15 @@ class MemoryIndexManager:
 
     def __init__(self, base_path: str = None):
         """初始化索引管理器"""
-        self.base_path = Path(base_path or os.path.expanduser("~/my-agent"))
-        self.daily_path = self.base_path / "memory/daily"
+        if base_path is None:
+            # 自动检测：从脚本位置向上5级找到项目根目录
+            # 脚本位置: memory/active/tasks/scripts/index_manager.py
+            # 项目根: my-agent
+            script_dir = Path(__file__).parent.parent.parent.parent.parent
+            base_path = script_dir
+
+        self.base_path = Path(base_path)
+        self.daily_path = self.base_path / "memory/active/daily"
         self.obs_path = self.base_path / "memory/observations"
 
     def update_daily_index(self) -> dict:
