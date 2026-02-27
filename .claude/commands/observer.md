@@ -13,7 +13,7 @@ description: "对话结束后记录事实与洞察"
 
 ### Step 1: 记录事实到 daily
 
-在 `memory/daily/YYYY-MM-DD.md` 中记录：
+在 `memory/active/daily/YYYY-MM-DD.md` 中记录：
 - 今天做了什么（事实）
 - 涉及哪些文件
 - 产生了什么结果
@@ -35,10 +35,46 @@ pos: daily 目录的成员
 ---
 ```
 
+### Step 1.5: 写入今日对话摘要（跨对话上下文）
+
+在 daily 文件**顶部**追加今日对话摘要，供 wake 命令快速读取：
+
+```markdown
+---
+
+## 今日对话摘要
+
+### [时间范围] 第N段对话
+- **时长**：约XX分钟
+- **涉及文件**：[主要文件列表]
+- **核心进展**：[一句话总结]
+- **待续事项**：[如有未完成的工作]
+```
+
+**摘要原则**：
+- 简洁：3-5条 bullet points
+- 聚焦：只记录核心内容
+- 可读：新对话能快速了解上下文
+
+**示例**：
+```markdown
+---
+
+## 今日对话摘要
+
+### 09:00-10:30 第1段对话
+- **时长**：约90分钟
+- **文件**：定价委员会机制V1.0.md
+- **进展**：完成定价委员会机制初稿
+- **待续**：约年老师和军哥时间对齐思路
+```
+
+---
+
 ### Step 2: 更新索引
 写完 daily 文件后，更新索引：
 ```bash
-python3 memory/tasks/scripts/index_manager.py --action update-daily
+python3 memory/active/tasks/scripts/index_manager.py --action update-daily
 ```
 
 ### Step 3: 生成洞察到observations
@@ -71,7 +107,7 @@ python3 memory/tasks/scripts/index_manager.py --action update-daily
 ### Step 4: 更新索引
 写完 observations 文件后，更新索引：
 ```bash
-python3 memory/tasks/scripts/index_manager.py --action update-obs
+python3 memory/active/tasks/scripts/index_manager.py --action update-obs
 ```
 
 ### Step 5: 提交
@@ -93,12 +129,17 @@ python3 memory/tasks/scripts/index_manager.py --action update-obs
 
 ```
 memory/
-├── daily/           # 日维度 - 事实记录
-│   ├── .index.md    # 快速索引（脚本更新）
-│   └── YYYY-MM-DD.md
-└── observations/    # 月维度 - 洞察记录
-    ├── .index.md    # 快速索引（脚本更新）
-    └── YYYY-MM.md
+├── active/
+│   ├── daily/           # 日维度 - 事实记录
+│   │   ├── .index.md    # 快速索引（脚本更新）
+│   │   └── YYYY-MM-DD.md
+│   └── observations/    # 月维度 - 洞察记录
+│       ├── .index.md    # 快速索引（脚本更新）
+│       └── YYYY-MM.md
+├── core/       # 永久核心记忆
+├── staging/    # 临时记忆（30天）
+├── transient/  # 短期记忆（7天）
+└── archive/    # 归档记忆
 ```
 
 ---
