@@ -333,6 +333,17 @@ pos: .claude/rules/reference/04-MEMORY.md
   - 错误信息可能具有误导性
   - 类似操作必须验证
 
+### 2026-02-28 | document-writer 技能 + 场景适配性检查机制
+- **需求**：从 email skill 中提取公文起草功能，专注写作质量
+- **实现**：
+  - 创建 `.claude/skills/document-writer/` 技能
+  - 输出 Markdown 格式（可预览、可编辑、可转换 HTML）
+  - 创建 `CHECKLIST.md` 场景适配性检查规则
+- **关键特性**：
+  - 完整的场景适配性检查规则（向上审批/向上汇报/供应商管理/内部协调/整改通知）
+  - 禁用词汇库 + 数据化表达要求
+  - 与 email skill 分离：前者专注起草，后者负责发送
+
 ### 2026-02-22 | UPDATE_MEMORY机制优化
 - **问题**：06-NOW.md的"最近一次讨论"没有自动更新，导致唤醒时看到的不是最新内容
 - **原因**：UPDATE_MEMORY指令缺少"更新06-NOW.md最近一次讨论"的步骤
