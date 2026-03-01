@@ -94,7 +94,7 @@ pos: .claude/skills/document-writer/
 | 协作类 | `templates/collaboration.md` | 方案审阅、决策请求、跨部门协作 |
 | 内部简洁 | `templates/internal.md` | 日常沟通、快速同步 |
 
-### 供应商管理 - 全生命周期（6个）
+### 供应商管理 - 全生命周期（7个）
 
 | 模板 | 文件 | 用途 |
 |------|------|------|
@@ -104,6 +104,7 @@ pos: .claude/skills/document-writer/
 | 评估激励 | `templates/supplier-evaluation-full.md` | 季度排名汇报、评估结果通知、排名公布、合同续约、年度表彰 |
 | 清退处置 | `templates/supplier-clearance.md` | 风险处置、清退决策、清退通知、交接计划、完成报告 |
 | 结算对账 | `templates/supplier-settlement.md` | 月度对账、结算异常、付款通知、成本分析、审计协助、税务协调 |
+| **问询函** | `templates/supplier-inquiry.md` | 人力异常、质量下滑、违约问询、情况说明 |
 
 ### 扩展模块（6个）
 
