@@ -201,6 +201,34 @@ pos: .claude/rules/reference/04-MEMORY.md
 - **统一搜索协议**：tavily → memory_search → grep
 - **先用后读原则**：搜索命中直接用，未命中再Read全文件
 
+### 任务管理规则（2026-03-01 融合改进）
+
+**任务分类**：
+| 类型 | 标准 | 处理方式 |
+|------|------|---------|
+| **简单** | ≤3步、无风险 | 直接执行 + 更新 todo.md |
+| **复杂** | ≥4步、涉及删除/覆盖 | Plan First → 创建 active/[task-name]/ |
+
+**Active Task 结构**（融合 Dev Docs 三文件模式）：
+```
+memory/active/tasks/active/
+└── [task-name]/
+    ├── plan.md           # 规划（使用 TEMPLATE.md）
+    ├── context.md        # 关键文件、决策、依赖
+    └── tasks.md          # 可验证检查清单
+```
+
+**执行保证机制**：
+1. **会话启动检查**：06-NOW.md 第五步扫描 active/ 未完成任务
+2. **处理时自动创建**：复杂任务必须创建三文件
+3. **验证时强制检查**：pre-commit hook 验证 completed 任务
+4. **会话结束时清理**：UPDATE_MEMORY 移动已完成任务到 archive/
+
+**禁止行为**：
+- ❌ 复杂任务不规划直接执行
+- ❌ 规划未批准就开始编码
+- ❌ 完成任务不清理 active/
+
 ### 技能调用规范（2026-03-01）
 - **调用前先读 SKILL.md** — 了解执行流程，不是直接调用
 - **指南型技能** = 我按流程执行，不是技能自动运行

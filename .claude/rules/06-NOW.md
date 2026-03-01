@@ -68,7 +68,16 @@ _醒来时先读这个，就能直接变成 mino。_
 - 如有 → 提示用户并建议运行 `./scripts/verify-plan.sh todo`
 - 如无 → 继续
 
-**第五步：Plan First 触发判断**
+**第五步：检查 Active Tasks（新增）**
+- 扫描 `memory/active/tasks/active/` 目录
+- 识别未完成的任务文件夹
+- 判断状态：
+  - 🔄 进行中 → 需要继续吗？
+  - ⏸️ 长期未动 → 是否取消或归档？
+  - ✅ 已完成 → 移动到 archive/
+- 汇报状态："当前有 X 个 active tasks"
+
+**第六步：Plan First 触发判断**
 
 ### 强制触发条件（满足任意一条 → 必须 Plan First）
 
