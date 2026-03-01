@@ -394,6 +394,170 @@ git commit -m "xxx"
 
 ---
 
+## 🛠️ Bash 命令速查
+
+| 操作 | 命令 | 说明 |
+|------|------|------|
+| **性能分析** | `npx @mariozechner/claude-trace` | 可视化事件流 |
+| **验证 Plan** | `./scripts/verify-plan.sh [任务名\|todo\|all]` | 验证规划完整性 |
+| **搜索记忆** | `grep -r "keyword" memory/` | 快速搜索历史 |
+| **检查文档** | `.scripts/check-docs-sync.sh` | 提交前检查 |
+| **日志分析** | `npx claude-history stats` | 查看会话统计 |
+| **会话搜索** | `/search-sessions "keyword"` | 搜索历史对话 |
+
+---
+
+## ⚙️ 环境要求
+
+### 系统要求
+
+| 组件 | 版本 | 验证命令 |
+|------|------|---------|
+| **Node.js** | 18+ | `node --version` |
+| **npm** | 9+ | `npm --version` |
+| **Git** | 2.30+ | `git --version` |
+| **macOS** | 12.0+ | `sw_vers` |
+
+### API 配置
+
+**二选一**（不可同时设置）：
+
+```bash
+# 方式 1：AUTH_TOKEN（推荐）
+export ANTHROPIC_AUTH_TOKEN="your-token"
+
+# 方式 2：API_KEY
+export ANTHROPIC_API_KEY="your-key"
+```
+
+**验证配置**：
+```bash
+env | grep ANTHROPIC
+```
+
+---
+
+## 📝 代码风格规范
+
+### 命名规范
+
+| 类型 | 规范 | 示例 |
+|------|------|------|
+| **变量/函数** | camelCase | `calculateTotal`, `userName` |
+| **文件/组件** | PascalCase | `UserProfile.tsx`, `CLAUDE.md` |
+| **常量** | UPPER_SNAKE | `MAX_RETRIES`, `API_KEY` |
+| **CSS 类** | kebab-case | `user-profile`, `btn-primary` |
+
+### 注释规范
+
+- **代码本身**：英文
+- **注释**：简体中文
+- **Git 提交**：英文开头，中文说明（可选）
+
+### 文件格式
+
+- **Markdown**：LF 换行，UTF-8 编码
+- **头注释**：所有 `.md` 文件必须有 `---` 头（input/output/pos）
+
+### Lint / 格式化
+
+```bash
+# 提交前自动运行
+pre-commit hook → 检查头注释 + CLAUDE.md 索引
+```
+
+---
+
+## 🌿 Git 工作流
+
+### 分支命名
+
+| 类型 | 格式 | 示例 |
+|------|------|------|
+| 新功能 | `feat/xxx` | `feat/supplier-evaluation` |
+| Bug 修复 | `fix/xxx` | `fix/plan-first-hook` |
+| 文档 | `docs/xxx` | `docs/claude-md-update` |
+| 重构 | `refactor/xxx` | `refactor/memory-system` |
+
+### Commit 格式
+
+```
+type: description
+
+可选：详细说明（多行）
+```
+
+**type 取值**：`feat`, `fix`, `docs`, `refactor`, `chore`, `test`
+
+**示例**：
+```bash
+feat: 新增供应商评估测试套件
+
+- 添加 spec.md 规范文档
+- 添加 test-cases.md 测试用例
+- 添加 validation.sh 验证脚本
+```
+
+### 禁止操作
+
+| 操作 | 风险 | 替代方案 |
+|------|------|---------|
+| `--no-verify` | 跳过安全检查 | 修复问题后新建提交 |
+| `git reset --hard` | 丢失未提交更改 | `git restore` 或 `git stash` |
+| `git push --force` (main) | 覆盖远程历史 | `git revert` + 新提交 |
+| `git commit --amend` | 修改已发布提交 | 新建提交 |
+
+### 提交流程
+
+```
+1. git status → 查看状态
+2. git diff → 查看变更
+3. git add <具体文件> → 添加文件（不用 -A 或 .）
+4. git commit -m "消息"
+5. git status → 验证成功
+```
+
+---
+
+## 🔌 MCP 配置
+
+### 项目级（`.mcp.json`）
+
+| 工具 | 用途 | 状态 |
+|------|------|------|
+| `tavily-mcp` | 网页搜索/API | ✅ 已配置 |
+| `web-search` | 中文网页搜索 | ✅ 已配置 |
+| `webReader` | 网页→Markdown（100 次/月） | ✅ 已配置 |
+
+### 全局级（`~/.claude/config.json`）
+
+| 工具 | 用途 | 状态 |
+|------|------|------|
+| `memory` | 知识图谱记忆 | ✅ 已配置 |
+| `openclaw-markdown` | Markdown 协议 | ✅ 已配置 |
+
+### 环境变量
+
+```bash
+# Tavily API
+export TAVILY_API_KEY="your-key"
+
+# GitHub CLI
+export GH_TOKEN="your-token"
+```
+
+### 配置验证
+
+```bash
+# 检查 MCP 服务器
+claude mcp list
+
+# 检查环境变量
+env | grep -E "TAVILY|GH_TOKEN|ANTHROPIC"
+```
+
+---
+
 ## 安全边界
 
 - 别泄露隐私数据。永远不要。
@@ -407,4 +571,4 @@ git commit -m "xxx"
 
 ---
 
-*最后更新：2026-02-24 — 记忆系统升级为优先级分级架构（P0/P1/P2 物理隔离）*
+*最后更新：2026-03-01 — 新增 Bash 命令/环境要求/代码规范/Git 工作流/MCP 配置*
