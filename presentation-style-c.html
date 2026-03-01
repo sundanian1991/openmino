@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定价委员会机制策略组讨论 - Style C</title>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&f[]=cormorant-garamond@400,600,700&display=swap">
+    <style>
+        /* ===========================================
+           BASE STYLES
+           =========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Satoshi', sans-serif;
+            background: #faf9f6;
+            color: #2d2d2d;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Paper texture overlay */
+        .paper-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* ===========================================
+           SLIDE CONTAINER
+           =========================================== */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: clamp(1.5rem, 4vw, 3rem);
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        :root {
+            --title-size: clamp(2rem, 5vw, 3.5rem);
+            --h2-size: clamp(1.5rem, 3.5vw, 2.25rem);
+            --h3-size: clamp(1.125rem, 2vw, 1.5rem);
+            --body-size: clamp(0.875rem, 1.3vw, 1rem);
+            --small-size: clamp(0.75rem, 1vw, 0.875rem);
+            --slide-padding: clamp(1.5rem, 4vw, 3rem);
+            --content-gap: clamp(1rem, 2vw, 2rem);
+        }
+
+        /* ===========================================
+           TAB NAVIGATION
+           =========================================== */
+        .tabs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 4px;
+            padding: clamp(1rem, 2vw, 1.5rem) clamp(2rem, 4vw, 4rem) 0;
+            z-index: 10;
+        }
+
+        .tab {
+            padding: clamp(0.5rem, 1vw, 0.75rem) clamp(1rem, 2vw, 1.5rem);
+            font-size: clamp(0.7rem, 0.9vw, 0.85rem);
+            font-weight: 500;
+            color: #888;
+            background: #e8e6e1;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #c4b5a3;
+            color: #fff;
+        }
+
+        /* ===========================================
+           TITLE SLIDE
+           =========================================== */
+        .title-slide {
+            background: linear-gradient(135deg, #faf9f6 0%, #f5f2eb 100%);
+        }
+
+        .title-content {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: var(--content-gap);
+            align-items: center;
+            height: 100%;
+        }
+
+        .title-sidebar {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-right: var(--content-gap);
+            border-right: 3px solid #c4b5a3;
+            height: min(70vh, 500px);
+        }
+
+        .title-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.5rem, 2.5vw, 2rem);
+            font-weight: 700;
+            color: #2d2d2d;
+            letter-spacing: 0.05em;
+        }
+
+        .title-meta {
+            font-size: var(--small-size);
+            color: #666;
+            line-height: 2;
+            font-style: italic;
+        }
+
+        .title-main {
+            padding-left: var(--content-gap);
+        }
+
+        .title-label {
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #888;
+            margin-bottom: calc(var(--content-gap) * 0.75);
+        }
+
+        .title-main h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: var(--title-size);
+            font-weight: 600;
+            line-height: 1.2;
+            color: #2d2d2d;
+            margin-bottom: calc(var(--content-gap) * 1.25);
+        }
+
+        .title-subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.125rem, 1.8vw, 1.5rem);
+            font-style: italic;
+            color: #555;
+        }
+
+        /* ===========================================
+           CONTENT SLIDES
+           =========================================== */
+        .content-slide {
+            background: #ffffff;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .content-slide .slide-content {
+            justify-content: flex-start;
+            padding-top: calc(var(--slide-padding) * 1.25);
+        }
+
+        .slide-header {
+            margin-bottom: calc(var(--content-gap) * 1.5);
+        }
+
+        .slide-number {
+            font-size: var(--small-size);
+            color: #999;
+            margin-bottom: 0.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+        }
+
+        .slide-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: var(--h2-size);
+            font-weight: 600;
+            color: #2d2d2d;
+        }
+
+        .slide-subtitle {
+            font-size: var(--body-size);
+            color: #666;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Section label */
+        .section-label {
+            font-size: var(--small-size);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #888;
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid #c4b5a3;
+        }
+
+        /* Lists */
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.5rem, 1vw, 1rem);
+        }
+
+        .bullet-list li {
+            font-size: var(--body-size);
+            padding-left: 1.25rem;
+            position: relative;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #c4b5a3;
+            font-size: 1.2em;
+            line-height: 1.4;
+        }
+
+        .bullet-list strong {
+            color: #2d2d2d;
+            font-weight: 600;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            margin-bottom: var(--content-gap);
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: clamp(0.75rem, 1vw, 0.9rem);
+            table-layout: fixed;
+        }
+
+        th {
+            background: #f5f2eb;
+            text-align: left;
+            padding: clamp(0.75rem, 1vw, 1rem);
+            font-weight: 600;
+            color: #2d2d2d;
+            border-bottom: 2px solid #c4b5a3;
+            font-family: 'Cormorant Garamond', serif;
+            width: auto;
+        }
+
+        td {
+            padding: clamp(0.75rem, 1vw, 1rem);
+            border-bottom: 1px solid #eae8e3;
+            color: #444;
+            line-height: 1.4;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background: #faf9f7;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: #2d2d2d;
+            color: #e8e6e1;
+            padding: var(--content-gap);
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: clamp(0.75rem, 1vw, 0.875rem);
+            line-height: 2;
+            overflow-x: auto;
+            margin-bottom: var(--content-gap);
+            border-left: 4px solid #c4b5a3;
+        }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--content-gap);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--content-gap);
+        }
+
+        /* Cards */
+        .card {
+            background: #faf9f6;
+            border: 1px solid #e5e5e5;
+            padding: clamp(1rem, 2vw, 1.5rem);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #c4b5a3;
+        }
+
+        .card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: var(--body-size);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d2d2d;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            font-size: var(--small-size);
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* Bottom accent line */
+        .accent-line {
+            position: absolute;
+            left: var(--slide-padding);
+            right: var(--slide-padding);
+            bottom: clamp(2rem, 4vw, 4rem);
+            height: 2px;
+            background: linear-gradient(90deg, #c4b5a3 0%, #a89f91 50%, #c4b5a3 100%);
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.25s; }
+        .reveal-delay-3 { transition-delay: 0.4s; }
+        .reveal-delay-4 { transition-delay: 0.55s; }
+
+        /* ===========================================
+           NAVIGATION
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #d5d3cd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-dot.active {
+            background: #c4b5a3;
+            transform: scale(1.3);
+        }
+
+        .nav-dot:hover {
+            background: #a89f91;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #c4b5a3, #a89f91);
+            width: 0%;
+            transition: width 0.3s ease;
+            z-index: 101;
+        }
+
+        /* ===========================================
+           RESPONSIVE
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --title-size: clamp(1.5rem, 4vw, 2.5rem);
+                --h2-size: clamp(1.25rem, 3vw, 1.75rem);
+                --slide-padding: clamp(1rem, 3vw, 2rem);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .title-content {
+                grid-template-columns: 1fr;
+            }
+
+            .title-sidebar {
+                border-right: none;
+                border-bottom: 3px solid #c4b5a3;
+                padding-right: 0;
+                padding-bottom: var(--content-gap);
+                margin-bottom: var(--content-gap);
+                height: auto;
+            }
+
+            .title-main {
+                padding-left: 0;
+            }
+
+            .tabs {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
+            }
+
+            html {
+                scroll-behavior: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="paper-overlay"></div>
+    <div class="progress-bar"></div>
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- Slide 1: Title -->
+    <section class="slide title-slide" id="slide-1">
+        <div class="slide-content title-content">
+            <div class="title-sidebar">
+                <div class="title-logo">定价委员会</div>
+                <div class="title-meta">
+                    策略组讨论
+                    <br>2026 年 3 月
+                    <br>V1.0
+                </div>
+            </div>
+            <div class="title-main">
+                <p class="title-label reveal reveal-delay-1">策略组讨论</p>
+                <h1 class="reveal reveal-delay-2">定价委员会机制<br>策略组讨论</h1>
+                <p class="title-subtitle reveal reveal-delay-3">从"事后救火"转向"事前防火"</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 2: 背景与目标 -->
+    <section class="slide content-slide" id="slide-2">
+        <!-- Tab indicators -->
+        <div class="tabs">
+            <div class="tab">背景与目标</div>
+            <div class="tab">组织架构</div>
+            <div class="tab">核心流程</div>
+            <div class="tab">下一步</div>
+        </div>
+
+        <div class="slide-content">
+            <div class="slide-header reveal">
+                <p class="slide-number">02 / 05</p>
+                <h2 class="slide-title">背景与目标</h2>
+                <p class="slide-subtitle">为什么要建这个机制？</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="reveal reveal-delay-1">
+                    <p class="section-label">当前问题</p>
+                    <ul class="bullet-list">
+                        <li><strong>定价调整随意</strong> — 策略/量化单方面决策，缺乏供应商声音</li>
+                        <li><strong>降幅无约束</strong> — 单次调整超过 50%，超出心理承受</li>
+                        <li><strong>事后救火</strong> — 供应商管理岗只有安抚，没有决策权</li>
+                        <li><strong>无复盘机制</strong> — 调整完不追踪，下次还犯同样错误</li>
+                    </ul>
+                </div>
+
+                <div class="reveal reveal-delay-2">
+                    <p class="section-label">建设目标</p>
+                    <ul class="bullet-list">
+                        <li><strong>从"事后救火"转向"事前防火"</strong></li>
+                        <li><strong>有约束的决策机制</strong>（单次≤30%、次月生效）</li>
+                        <li><strong>有代表的委员会</strong>（供应商、业务、策略、量化、督导）</li>
+                        <li><strong>有复盘的闭环</strong>（每次调整后追踪效果）</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="accent-line"></div>
+        </div>
+    </section>
+
+    <!-- Slide 3: 组织架构 -->
+    <section class="slide content-slide" id="slide-3">
+        <div class="tabs">
+            <div class="tab">背景与目标</div>
+            <div class="tab active">组织架构</div>
+            <div class="tab">核心流程</div>
+            <div class="tab">下一步</div>
+        </div>
+
+        <div class="slide-content">
+            <div class="slide-header reveal">
+                <p class="slide-number">03 / 05</p>
+                <h2 class="slide-title">组织架构</h2>
+                <p class="slide-subtitle">5 人委员会 + C2 终审</p>
+            </div>
+
+            <div class="table-wrapper reveal reveal-delay-1">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>角色</th>
+                            <th>人员</th>
+                            <th>主要职责</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>秘书长</strong></td>
+                            <td>供应商管理岗</td>
+                            <td>组织会议、收集材料、追踪落地、归档记录</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="3"><strong>委员</strong></td>
+                            <td>业务督导代表</td>
+                            <td>坐席层面信息（收入增减对业务的影响）</td>
+                        </tr>
+                        <tr>
+                            <td>量化代表</td>
+                            <td>数据测算、ROI 分析</td>
+                        </tr>
+                        <tr>
+                            <td>服务组负责人 C3</td>
+                            <td>业务运营、职场管理</td>
+                        </tr>
+                        <tr>
+                            <td><strong>委员</strong></td>
+                            <td>策略组负责人 C3</td>
+                            <td>定价策略、规则设计</td>
+                        </tr>
+                        <tr>
+                            <td><strong>终审</strong></td>
+                            <td>数据科技业务部负责人 C2</td>
+                            <td>每项调整的最终审批</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="reveal reveal-delay-2">
+                <p class="section-label">表决规则</p>
+                <ul class="bullet-list">
+                    <li><strong>常规调整（降幅≤15%）</strong>：5 人委员会，3/5 通过</li>
+                    <li><strong>重大调整（降幅>15%）</strong>：5 人委员会，4/5 通过后，报 C2 终审</li>
+                    <li><strong>每项调整</strong>：C2 终审</li>
+                </ul>
+            </div>
+
+            <div class="accent-line"></div>
+        </div>
+    </section>
+
+    <!-- Slide 4: 核心流程 -->
+    <section class="slide content-slide" id="slide-4">
+        <div class="tabs">
+            <div class="tab">背景与目标</div>
+            <div class="tab">组织架构</div>
+            <div class="tab active">核心流程</div>
+            <div class="tab">下一步</div>
+        </div>
+
+        <div class="slide-content">
+            <div class="slide-header reveal">
+                <p class="slide-number">04 / 05</p>
+                <h2 class="slide-title">核心流程</h2>
+                <p class="slide-subtitle">提案→评审→终审→生效→复盘</p>
+            </div>
+
+            <div class="code-block reveal reveal-delay-1">
+阶段 1：提案（T-5 天）
+    ↓
+阶段 2：初审 + 评审（T-2 天）
+    ↓
+阶段 3：终审（T-1 天）
+    ↓
+阶段 4：生效（次月 1 日）
+    ↓
+阶段 5：复盘（+30 天）
+            </div>
+
+            <div class="reveal reveal-delay-2">
+                <p class="section-label">三条红线</p>
+                <div class="grid-3">
+                    <div class="card">
+                        <p class="card-title">单次降幅</p>
+                        <p class="card-desc"><strong>≤30%</strong><br>超过需分 2 次执行</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">生效时间</p>
+                        <p class="card-desc"><strong>次月 1 日</strong><br>当月审批，避免突发冲击</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">调整频次</p>
+                        <p class="card-desc"><strong>3 个月调整一次</strong><br>特殊调整单独申请</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accent-line"></div>
+        </div>
+    </section>
+
+    <!-- Slide 5: 策略组的角色 -->
+    <section class="slide content-slide" id="slide-5">
+        <div class="tabs">
+            <div class="tab">背景与目标</div>
+            <div class="tab">组织架构</div>
+            <div class="tab">核心流程</div>
+            <div class="tab active">策略组的角色</div>
+        </div>
+
+        <div class="slide-content">
+            <div class="slide-header reveal">
+                <p class="slide-number">05 / 05</p>
+                <h2 class="slide-title">策略组的角色</h2>
+                <p class="slide-subtitle">策略组在委员会中要做什么？</p>
+            </div>
+
+            <div class="table-wrapper reveal reveal-delay-1">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>职责</th>
+                            <th>说明</th>
+                            <th>时间投入</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>提案发起</strong></td>
+                            <td>市场变化、成本变动时发起调整</td>
+                            <td>15-30 分钟/次</td>
+                        </tr>
+                        <tr>
+                            <td><strong>评审参与</strong></td>
+                            <td>每月评审会，投票表决</td>
+                            <td>60-90 分钟/月</td>
+                        </tr>
+                        <tr>
+                            <td><strong>策略意见</strong></td>
+                            <td>提供定价策略专业意见</td>
+                            <td>按需沟通</td>
+                        </tr>
+                        <tr>
+                            <td><strong>复盘参与</strong></td>
+                            <td>调整后 30 天复盘</td>
+                            <td>30-60 分钟/次</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="reveal reveal-delay-2">
+                <p class="section-label">合计时间投入：1.5-5.5 小时/月</p>
+            </div>
+
+            <div class="accent-line"></div>
+        </div>
+    </section>
+
+    <!-- JavaScript Controller -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentIndex = 0;
+                this.init();
+            }
+
+            init() {
+                this.createNavDots();
+                this.setupKeyboard();
+                this.setupScroll();
+                this.setupIntersectionObserver();
+                this.updateProgress();
+                this.updateTabs();
+                setTimeout(() => this.checkCurrentSlide(), 100);
+            }
+
+            createNavDots() {
+                const navDots = document.getElementById('navDots');
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'nav-dot' + (index === 0 ? ' active' : '');
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    navDots.appendChild(dot);
+                });
+            }
+
+            setupKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowDown' || e.key === ' ') {
+                        e.preventDefault();
+                        this.next();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        this.prev();
+                    }
+                });
+            }
+
+            setupScroll() {
+                document.addEventListener('scroll', () => {
+                    this.checkCurrentSlide();
+                    this.updateProgress();
+                    this.updateTabs();
+                });
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            checkCurrentSlide() {
+                const scrollPosition = window.scrollY + window.innerHeight / 2;
+                this.slides.forEach((slide, index) => {
+                    const slideTop = slide.offsetTop;
+                    const slideBottom = slideTop + slide.offsetHeight;
+                    const dot = document.querySelectorAll('.nav-dot')[index];
+
+                    if (scrollPosition >= slideTop && scrollPosition < slideBottom) {
+                        this.currentIndex = index;
+                        document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+                        dot.classList.add('active');
+                    }
+                });
+            }
+
+            updateTabs() {
+                // Update tab indicators for content slides
+                const tabContainers = document.querySelectorAll('.content-slide .tabs');
+                tabContainers.forEach((tabs, index) => {
+                    if (index === this.currentIndex - 1) {
+                        const tabChildren = tabs.querySelectorAll('.tab');
+                        tabChildren.forEach((tab, i) => {
+                            tab.classList.remove('active');
+                            if (i === this.currentIndex - 1) {
+                                tab.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+
+            goToSlide(index) {
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+            }
+
+            next() {
+                if (this.currentIndex < this.slides.length - 1) {
+                    this.goToSlide(this.currentIndex + 1);
+                }
+            }
+
+            prev() {
+                if (this.currentIndex > 0) {
+                    this.goToSlide(this.currentIndex - 1);
+                }
+            }
+
+            updateProgress() {
+                const scrollTop = window.scrollY;
+                const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const progress = (scrollTop / docHeight) * 100;
+                document.querySelector('.progress-bar').style.width = progress + '%';
+            }
+        }
+
+        new SlidePresentation();
+    </script>
+</body>
+</html>
