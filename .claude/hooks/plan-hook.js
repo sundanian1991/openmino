@@ -23,11 +23,27 @@ const PROJECT_ROOT = path.resolve(__dirname, '../..');
 // memory 目录在项目根目录下
 const MEMORY_DIR = path.join(PROJECT_ROOT, 'memory/active/tasks');
 const PLANS_DIR = path.join(MEMORY_DIR, 'plans');
+const ACTIVE_DIR = path.join(MEMORY_DIR, 'active');
 const TODO_FILE = path.join(MEMORY_DIR, 'todo.md');
 
-// 验证 Plan 文档
+// 验证 Plan 文档（支持两种路径）
 function validatePlan(planName) {
-    const planPath = path.join(PLANS_DIR, `${planName}.md`);
+    // 优先检查 active/ 目录
+    const activePlanPath = path.join(ACTIVE_DIR, planName, 'plan.md');
+    // 其次检查 plans/ 目录
+    const legacyPlanPath = path.join(PLANS_DIR, `${planName}.md`);
+
+    let planPath = null;
+    if (fs.existsSync(activePlanPath)) {
+        planPath = activePlanPath;
+    } else if (fs.existsSync(legacyPlanPath)) {
+        planPath = legacyPlanPath;
+    }
+
+    if (!planPath) {
+        console.error(`❌ Plan 文档不存在：${activePlanPath} 或 ${legacyPlanPath}`);
+        return false;
+    }
 
     if (!fs.existsSync(planPath)) {
         console.error(`❌ Plan 文档不存在：${planPath}`);
@@ -136,68 +152,101 @@ function validateClaudeMdFiles() {
     }
 }
 
-// 验证 Todo 清单
+// 验证 Todo 清单 + Active Tasks
 function validateTodo() {
-    if (!fs.existsSync(TODO_FILE)) {
-        console.error(`❌ Todo 文件不存在：${TODO_FILE}`);
-        return false;
-    }
-
-    const content = fs.readFileSync(TODO_FILE, 'utf-8');
-    const lines = content.split('\n');
-
     let hasError = false;
-    let currentTask = null;
-    let currentPlan = null;
-    let currentStatus = null;
 
-    // 逐行解析 todo.md
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+    // 1. 验证 todo.md
+    if (fs.existsSync(TODO_FILE)) {
+        const content = fs.readFileSync(TODO_FILE, 'utf-8');
+        const lines = content.split('\n');
 
-        // 检测新任务开始：### [任务名]
-        const taskMatch = line.match(/^### \[(.*?)\]/);
-        if (taskMatch) {
-            // 如果之前有任务，验证它
-            if (currentTask && currentStatus === 'completed' && currentPlan) {
-                console.log(`🔍 验证任务：${currentTask} (Plan: ${currentPlan})`);
-                const planValid = validatePlan(currentPlan);
-                if (!planValid) {
-                    console.error(`❌ 任务 "${currentTask}" 的 Plan 验证失败`);
-                    hasError = true;
-                } else {
-                    console.log(`✅ 任务 "${currentTask}" 验证通过`);
+        let currentTask = null;
+        let currentPlan = null;
+        let currentStatus = null;
+
+        // 逐行解析 todo.md
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+
+            // 检测新任务开始：### [任务名]
+            const taskMatch = line.match(/^### \[(.*?)\]/);
+            if (taskMatch) {
+                // 如果之前有任务，验证它
+                if (currentTask && currentStatus === 'completed' && currentPlan) {
+                    console.log(`🔍 验证任务：${currentTask} (Plan: ${currentPlan})`);
+                    const planValid = validatePlan(currentPlan);
+                    if (!planValid) {
+                        console.error(`❌ 任务 "${currentTask}" 的 Plan 验证失败`);
+                        hasError = true;
+                    } else {
+                        console.log(`✅ 任务 "${currentTask}" 验证通过`);
+                    }
                 }
+
+                // 重置当前任务信息
+                currentTask = taskMatch[1];
+                currentPlan = null;
+                currentStatus = null;
             }
 
-            // 重置当前任务信息
-            currentTask = taskMatch[1];
-            currentPlan = null;
-            currentStatus = null;
+            // 检测状态：**状态**：`xxx`
+            const statusMatch = line.match(/\*\*状态\*\*：`(.*?)`/);
+            if (statusMatch) {
+                currentStatus = statusMatch[1];
+            }
+
+            // 检测关联 Plan：**关联 Plan**：`plans/xxx.md` 或 `active/xxx`
+            const planMatch = line.match(/\*\*关联 Plan\*\*：`(.*?)`/);
+            if (planMatch) {
+                // 提取任务名（去掉路径前缀）
+                const planPath = planMatch[1];
+                if (planPath.includes('active/')) {
+                    currentPlan = planPath.replace('active/', '').replace(/\/plan\.md$/, '');
+                } else {
+                    currentPlan = planPath.replace('plans/', '').replace(/\.md$/, '');
+                }
+            }
         }
 
-        // 检测状态：**状态**：`xxx`
-        const statusMatch = line.match(/\*\*状态\*\*：`(.*?)`/);
-        if (statusMatch) {
-            currentStatus = statusMatch[1];
+        // 验证最后一个任务
+        if (currentTask && currentStatus === 'completed' && currentPlan) {
+            console.log(`🔍 验证任务：${currentTask} (Plan: ${currentPlan})`);
+            const planValid = validatePlan(currentPlan);
+            if (!planValid) {
+                console.error(`❌ 任务 "${currentTask}" 的 Plan 验证失败`);
+                hasError = true;
+            } else {
+                console.log(`✅ 任务 "${currentTask}" 验证通过`);
+            }
         }
-
-        // 检测关联 Plan：**关联 Plan**：`plans/xxx.md`
-        const planMatch = line.match(/\*\*关联 Plan\*\*：`plans\/(.*?)\.md`/);
-        if (planMatch) {
-            currentPlan = planMatch[1];
-        }
+    } else {
+        console.warn(`⚠️  Todo 文件不存在：${TODO_FILE}`);
     }
 
-    // 验证最后一个任务
-    if (currentTask && currentStatus === 'completed' && currentPlan) {
-        console.log(`🔍 验证任务：${currentTask} (Plan: ${currentPlan})`);
-        const planValid = validatePlan(currentPlan);
-        if (!planValid) {
-            console.error(`❌ 任务 "${currentTask}" 的 Plan 验证失败`);
-            hasError = true;
-        } else {
-            console.log(`✅ 任务 "${currentTask}" 验证通过`);
+    // 2. 扫描 active/ 目录中的已完成任务
+    if (fs.existsSync(ACTIVE_DIR)) {
+        const activeTasks = fs.readdirSync(ACTIVE_DIR, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .map(dirent => dirent.name);
+
+        for (const taskName of activeTasks) {
+            const planPath = path.join(ACTIVE_DIR, taskName, 'plan.md');
+            if (!fs.existsSync(planPath)) continue;
+
+            const content = fs.readFileSync(planPath, 'utf-8');
+            const isCompleted = content.includes('**状态**：`completed`') || content.includes(' 状态：`completed`');
+
+            if (isCompleted) {
+                console.log(`🔍 验证 Active Task：${taskName}`);
+                const planValid = validatePlan(taskName);
+                if (!planValid) {
+                    console.error(`❌ Active Task "${taskName}" 验证失败`);
+                    hasError = true;
+                } else {
+                    console.log(`✅ Active Task "${taskName}" 验证通过（建议移动到 archive/）`);
+                }
+            }
         }
     }
 

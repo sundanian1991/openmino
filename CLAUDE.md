@@ -166,32 +166,37 @@ my-agent/
 **简化版 Plan**：只填 3 部分 — 步骤 + 验证清单 + 执行记录
 
 
-**流转机制**：
+**流转机制**（2026-03-01 更新）：
 
 ```
 收到复杂任务
     ↓
-创建 Plan → memory/active/tasks/plans/[任务名].md
+创建 Active Task → memory/active/tasks/active/[任务名]/
+    ├── plan.md           # 规划文档（使用 TEMPLATE.md 或 SIMPLE-TEMPLATE.md）
+    ├── context.md        # 关键文件、决策、依赖
+    └── tasks.md          # 可验证检查清单
     ↓
 用户确认计划
     ↓
-执行 → 更新 memory/active/tasks/todo.md
+执行 → 更新 tasks.md 标记 ✅
     ↓
-每步完成 → 标记 ✅
+每步完成 → 更新进度
     ↓
 Hook 验证 → scripts/verify-plan.sh
     ↓
-全部通过 → 标记任务完成
+全部通过 → 移动到 archive/ 或删除
 ```
 
 **文件结构**：
 
-
-| 文件                                   | 用途                           |
-| ------------------------------------ | ---------------------------- |
-| `memory/active/tasks/plans/[任务名].md` | 规划文档（模板：`TEMPLATE.md` / `SIMPLE-TEMPLATE.md`） |
-| `memory/active/tasks/todo.md`        | 待办清单，包含可检查的 checklist        |
-| `scripts/verify-plan.sh`             | Hook 验证脚本                    |
+| 文件 | 用途 |
+| ------------------- | ------------------------------------------------------------ |
+| `memory/active/tasks/active/[任务名]/plan.md` | 规划文档（模板：`TEMPLATE.md` / `SIMPLE-TEMPLATE.md`） |
+| `memory/active/tasks/active/[任务名]/context.md` | 关键文件、决策记录、依赖关系 |
+| `memory/active/tasks/active/[任务名]/tasks.md` | 可验证的检查清单 |
+| `memory/active/tasks/todo.md` | 全局待办清单 |
+| `memory/active/tasks/archive/` | 已完成任务归档 |
+| `scripts/verify-plan.sh` | Hook 验证脚本 |
 
 
 **验证命令**：
