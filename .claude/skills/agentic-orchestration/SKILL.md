@@ -1,7 +1,6 @@
 ---
-input: 复杂任务（Spec + 测试用例）
-output: 多 Agent 协同执行结果
-pos: .claude/skills/agentic-orchestration/SKILL.md
+name: agentic-orchestration
+description: 复杂任务拆解，多 Agent 并行，人类监督验收
 ---
 
 # Agentic Orchestration 技能

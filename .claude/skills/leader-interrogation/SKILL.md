@@ -1,7 +1,6 @@
 ---
-input: 用户汇报方案 + 领导风格配置 + 汇报场景
-output: 多轮压力测试质询 + 漏洞报告 + 话术建议
-pos: .claude/skills/leader-interrogation/ 核心执行文件
+name: leader-interrogation
+description: 领导模拟质询法 - 在低风险环境中暴露思维漏洞，建立经得起质疑的逻辑体系
 ---
 
 # Leader Interrogation — 领导模拟质询法

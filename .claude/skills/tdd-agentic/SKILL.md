@@ -1,7 +1,6 @@
 ---
-input: Spec + 测试用例
-output: 通过测试的实现代码
-pos: .claude/skills/tdd-agentic/SKILL.md
+name: tdd-agentic
+description: 测试是验收标准，代码是实现物 - 基于测试驱动的 AI 开发
 ---
 
 # TDD-Agentic 技能

@@ -1,7 +1,6 @@
 ---
-input: Apify + Claude Code 集成需求
-output: Apify 集成技能 + 使用指南
-pos: .claude/skills/apify-integration/
+name: apify-integration
+description: Apify 网页抓取集成 - 专用工具负责数据抓取，LLM 专注智能分析
 ---
 
 # Apify Integration - 网页抓取自动化

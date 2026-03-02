@@ -1,7 +1,6 @@
 ---
-input: 用户需要起草公文/邮件/审批材料
-output: Markdown格式的公文文档（可预览、可编辑、可转换HTML发送）
-pos: .claude/skills/document-writer/
+name: document-writer
+description: 专业的公文/邮件/审批材料起草工具（Markdown 输出）
 ---
 
 # 公文起草技能
@@ -37,7 +36,7 @@ pos: .claude/skills/document-writer/
 ## 工作流
 
 ```
-用户说："写一个XXX审批"
+用户说："写一个 XXX 审批"
   ↓
 调用 document-writer 技能
   ↓
@@ -72,7 +71,7 @@ pos: .claude/skills/document-writer/
 5. 结尾：明确请求（"请审阅"、"如有问题请反馈"）
 ```
 
-### 6条具体规则
+### 6 条具体规则
 
 1. **开头称呼**：称呼单行，空一行后接主体
 2. **关键词标识**：每个段落开始用`<strong>关键词：</strong>`标识
@@ -85,7 +84,7 @@ pos: .claude/skills/document-writer/
 
 ## 模板分类
 
-### 通用公文（4个）
+### 通用公文（4 个）
 
 | 模板 | 文件 | 用途 |
 |------|------|------|
@@ -94,7 +93,7 @@ pos: .claude/skills/document-writer/
 | 协作类 | `templates/collaboration.md` | 方案审阅、决策请求、跨部门协作 |
 | 内部简洁 | `templates/internal.md` | 日常沟通、快速同步 |
 
-### 供应商管理 - 全生命周期（7个）
+### 供应商管理 - 全生命周期（7 个）
 
 | 模板 | 文件 | 用途 |
 |------|------|------|
@@ -106,7 +105,7 @@ pos: .claude/skills/document-writer/
 | 结算对账 | `templates/supplier-settlement.md` | 月度对账、结算异常、付款通知、成本分析、审计协助、税务协调 |
 | **问询函** | `templates/supplier-inquiry.md` | 人力异常、质量下滑、违约问询、情况说明 |
 
-### 扩展模块（6个）
+### 扩展模块（6 个）
 
 | 模板 | 文件 | 用途 |
 |------|------|------|
@@ -121,22 +120,22 @@ pos: .claude/skills/document-writer/
 
 ## 使用方式
 
-### 方式1：直接指定模板
+### 方式 1：直接指定模板
 
 用户说："写一个审批邮件" / "写一个结算通知"
 → 根据用途选择对应模板
 → 按模板格式起草
 → **输出 Markdown 格式，可预览可编辑**
 
-### 方式2：用户描述需求
+### 方式 2：用户描述需求
 
-用户说："我要写一个xxx，告知yyy，请求zzz"
+用户说："我要写一个 xxx，告知 yyy，请求 zzz"
 → 分析需求
 → 匹配最接近的模板
 → 按模板格式起草
 → **输出 Markdown 格式**
 
-### 方式3：用户提供内容要点
+### 方式 3：用户提供内容要点
 
 用户说："帮我写个邮件，要点是..."
 → 提炼结构（背景/事实/分析/建议）

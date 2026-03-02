@@ -1,7 +1,6 @@
 ---
-input: 公文起草需求
-output: official-docs
-pos: .claude/skills/official-docs/SKILL.md
+name: official-docs
+description: 专业化公文起草模板库，持续打磨，越来越好用
 ---
 
 # 公文起草技能
