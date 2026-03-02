@@ -1,5 +1,5 @@
 ---
-name: sending-email
+name: email
 description: Use when user needs to send email via SMTP, create email templates for business communication, or automate regular email reports like daily news/weekly summaries
 ---
 

@@ -1,7 +1,6 @@
 ---
-input: 需求/功能描述
-output: Spec 文档 + 测试用例 + AI 循环实现
-pos: .claude/skills/spec-driven/SKILL.md
+name: spec-driven
+description: Spec 是源代码，代码是生成物 - 基于规格说明的开发方法
 ---
 
 # Spec-Driven Development (SDD) 技能
