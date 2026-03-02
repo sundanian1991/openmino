@@ -137,6 +137,16 @@ Claude Code 定位
 
 # 文章 2：Claude Code Best Practices
 
+> **📁 详细内容已拆分**：本文为概览，详细实践指南见 [best-practices/](./best-practices/) 文件夹
+>
+> - [01 - Context 管理](./best-practices/01-context-management.md) — 15 分钟
+> - [02 - 规划与架构](./best-practices/02-planning-architecture.md) — 12 分钟
+> - [03 - 工具与自动化](./best-practices/03-tools-automation.md) — 18 分钟
+> - [04 - 代码质量](./best-practices/04-code-quality.md) — 10 分钟
+> - [05 - 反模式与避坑](./best-practices/05-anti-patterns.md) — 8 分钟
+
+---
+
 ## 📖 核心内容提炼
 
 **来源**：社区综合分析 12 篇文章的 Best Practices
