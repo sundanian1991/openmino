@@ -255,4 +255,44 @@ pos: .claude/rules/reference/工具使用指南
 
 ---
 
+## 浏览器自动化工具选择
+
+> **评估文档**: `docs/tools-evaluation/browser-automation-comparison.md`
+
+### 决策树
+
+```
+需要浏览器自动化？
+    ↓
+是 macOS only？
+    ├─ 是 → 需要登录状态？
+    │       ├─ 是 → Claude for Safari
+    │       └─ 否 → agent-browser
+    │
+    └─ 否（跨平台）→ agent-browser
+```
+
+### 工具对比
+
+| 场景 | 推荐工具 | 理由 |
+|------|---------|------|
+| **需要登录状态** | Claude for Safari | 保留现有会话，无需重新登录 |
+| **跨平台需求** | agent-browser | 支持 Windows/Linux |
+| **大规模抓取** | agent-browser | 并行会话、更好隔离 |
+| **快速原型** | Claude for Safari | 零依赖、即用 |
+| **iOS 测试** | agent-browser | 支持 iOS Simulator |
+| **敏感操作** | Claude for Safari | 反检测、真实用户指纹 |
+
+### 安装
+
+```bash
+# agent-browser（已集成）
+claude agent-browser
+
+# Claude for Safari
+npx skills add SDLLL/claude-for-safari
+```
+
+---
+
 *工具是手段，不是目的。选对的工具，不是快的工具。*
