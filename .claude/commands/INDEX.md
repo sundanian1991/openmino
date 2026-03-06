@@ -41,6 +41,7 @@ description: "Commands目录说明 - 命令系统索引"
 | Command | Description | Frequency |
 |---------|-------------|-----------|
 | `log-day.md` | 日志记录 | Low |
+| `convert-to-md.md` | 多格式转 Markdown — 支持 DOCX/PDF/HTML/EPUB 等 | Medium |
 
 ## Standards
 
