@@ -19,6 +19,7 @@ pos: scripts/README.md
 | `analyze-skills.sh` | 分析skill使用情况 | ✅ 已实现 |
 | `organize-memory.sh` | 整理记忆文件 | ✅ 已实现 |
 | `daily-report.sh` | 自动生成日报 | ✅ 已实现 |
+| `daily-claude-news.sh` | Claude 新闻日报（重试 + 超时 + 告警） | ✅ 已实现 |
 
 ### Python脚本
 
