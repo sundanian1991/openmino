@@ -13,9 +13,9 @@ description: "每周汇总事实与洞察到周文档，判断是否更新长期
 
 ### Step 1: 读取来源
 读取本周（最近7天）的内容：
-- `memory/daily/` - 事实记录
-- `memory/my-thoughts/` - 个人思考
-- `memory/observations/` - 洞察记录
+- `memory/active/daily/` - 事实记录
+- `memory/active/my-thoughts/` - 个人思考
+- `memory/active/observations/` - 洞察记录
 
 ### Step 2: 生成周文档
 生成 `memory/weekly/YYYY-Www.md`（例如：2026-W08.md）
@@ -49,8 +49,8 @@ description: "每周汇总事实与洞察到周文档，判断是否更新长期
 
 **执行**：
 ```bash
-python3 memory/tasks/scripts/lifecycle_manager.py --action check
-python3 memory/tasks/scripts/lifecycle_manager.py --action cleanup --dry-run
+python3 scripts/python/lifecycle_manager.py --action check
+python3 scripts/python/lifecycle_manager.py --action cleanup --dry-run
 ```
 
 ### Step 5: 更新索引（新增）
@@ -58,10 +58,10 @@ python3 memory/tasks/scripts/lifecycle_manager.py --action cleanup --dry-run
 
 ```bash
 # 更新daily索引
-python3 memory/tasks/scripts/index_manager.py --action update-daily
+python3 scripts/python/index_manager.py --action update-daily
 
 # 更新observations索引
-python3 memory/tasks/scripts/index_manager.py --action update-obs
+python3 scripts/python/index_manager.py --action update-obs
 ```
 
 ### Step 6: 清理过时记忆
@@ -85,8 +85,8 @@ python3 memory/tasks/scripts/index_manager.py --action update-obs
 - 或我观察到年老师的独特行为模式
 
 **执行**：
-- 从daily提取有价值的观察
-- 记录到observations/当月.md
+- 从 daily 提取有价值的观察
+- 记录到 memory/active/observations/当月.md
 - 按三个维度：需求洞察、模式识别、我的复盘
 
 ### observations → 长期记忆
@@ -118,16 +118,19 @@ python3 memory/tasks/scripts/index_manager.py --action update-obs
 
 ```
 memory/
-├── daily/           # 日维度 - 事实记录（observer生成）
-│   └── .index.md    # 快速索引（脚本更新）
-├── weekly/          # 周维度 - 周文档（UPDATE_MEMORY生成）
-├── observations/    # 月维度 - 洞察记录（observer生成）
-│   └── .index.md    # 快速索引（脚本更新）
-├── tasks/scripts/   # 管理脚本
-│   ├── index_manager.py    # 索引更新脚本
-│   ├── lifecycle_manager.py # 生命周期管理脚本
-│   └── README.md            # 脚本使用指南
-└── my-thoughts/     # 个人思考
+├── active/
+│   ├── daily/           # 日维度 - 事实记录（observer生成）
+│   │   └── .index.md    # 快速索引（脚本更新）
+│   ├── weekly/          # 周维度 - 周文档（UPDATE_MEMORY生成）
+│   ├── observations/    # 月维度 - 洞察记录（observer生成）
+│   │   └── .index.md    # 快速索引（脚本更新）
+│   └── my-thoughts/     # 个人思考
+└── core/                # 永久记忆
+scripts/
+└── python/              # 管理脚本
+    ├── index_manager.py    # 索引更新脚本
+    ├── lifecycle_manager.py # 生命周期管理脚本
+    └── README.md            # 脚本使用指南
 ```
 
 ---
@@ -136,14 +139,14 @@ memory/
 
 ### 更新索引
 ```bash
-python3 memory/tasks/scripts/index_manager.py --action update-daily
-python3 memory/tasks/scripts/index_manager.py --action update-obs
+python3 scripts/python/index_manager.py --action update-daily
+python3 scripts/python/index_manager.py --action update-obs
 ```
 
 ### 生命周期检查
 ```bash
-python3 memory/tasks/scripts/lifecycle_manager.py --action check
-python3 memory/tasks/scripts/lifecycle_manager.py --action cleanup
+python3 scripts/python/lifecycle_manager.py --action check
+python3 scripts/python/lifecycle_manager.py --action cleanup
 ```
 
 ---
