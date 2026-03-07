@@ -18,7 +18,7 @@ description: "每周汇总事实与洞察到周文档，判断是否更新长期
 - `memory/active/observations/` - 洞察记录
 
 ### Step 2: 生成周文档
-生成 `memory/weekly/YYYY-Www.md`（例如：2026-W08.md）
+生成 `memory/active/weekly/YYYY-Www.md`（例如：2026-W08.md）
 
 **内容**：
 - 本周核心事件（从daily提炼）
@@ -38,8 +38,21 @@ description: "每周汇总事实与洞察到周文档，判断是否更新长期
 
 **注意**：特质变化需要长期积累，不频繁更新
 
-### Step 4: 生命周期检查（新增）
-检查daily文件的生命周期状态：
+### Step 4: 更新索引（手动）
+创建新 daily 文件时，手动更新索引：
+
+```markdown
+| 文件名 | 日期 | 生命周期 | 标签 | 备注 |
+|--------|------|---------|------|------|
+| 2026-03-07.md | 2026-03-07 | P2 | 上下文优化, Skills懒加载 | - |
+```
+
+**更新时机**：
+- 创建新 daily 文件时
+- UPDATE_MEMORY 执行时
+
+### Step 5: 生命周期检查（手动）
+检查 daily 文件的生命周期状态：
 
 | 生命周期 | 保留周期 | 操作 |
 |---------|---------|------|
@@ -47,22 +60,11 @@ description: "每周汇总事实与洞察到周文档，判断是否更新长期
 | P1 | 90天 | 检查是否超期，超期则清理 |
 | P2 | 30天 | 超期则删除（重要内容已提炼到周文档） |
 
-**执行**：
-```bash
-python3 scripts/python/lifecycle_manager.py --action check
-python3 scripts/python/lifecycle_manager.py --action cleanup --dry-run
-```
-
-### Step 5: 更新索引（新增）
-使用索引管理脚本更新`.index`文件：
-
-```bash
-# 更新daily索引
-python3 scripts/python/index_manager.py --action update-daily
-
-# 更新observations索引
-python3 scripts/python/index_manager.py --action update-obs
-```
+**检查方式**：
+1. 查看 daily 文件的修改日期
+2. 对比当前日期，判断是否超过保留周期
+3. 删除过期文件
+4. 从 `.index.md` 中移除对应记录
 
 ### Step 6: 清理过时记忆
 从 04-MEMORY.md 中删除：
@@ -71,8 +73,20 @@ python3 scripts/python/index_manager.py --action update-obs
 - 重复的内容
 
 ### Step 7: 提交
-- `git add -A && git commit`
+- `git add <相关文件>`
+- `git commit -m "chore: UPDATE_MEMORY Week XX"`
 - `git push`
+
+---
+
+## 定期清理提醒
+
+**每月清理**（建议每月1日）：
+- [ ] 检查 P2 文件是否超过 30 天
+- [ ] 检查 P1 文件是否超过 90 天
+- [ ] 删除过期文件
+- [ ] 更新索引
+- [ ] 清理 04-MEMORY.md 中的过时内容
 
 ---
 
@@ -120,33 +134,12 @@ python3 scripts/python/index_manager.py --action update-obs
 memory/
 ├── active/
 │   ├── daily/           # 日维度 - 事实记录（observer生成）
-│   │   └── .index.md    # 快速索引（脚本更新）
+│   │   └── .index.md    # 快速索引（手动更新）
 │   ├── weekly/          # 周维度 - 周文档（UPDATE_MEMORY生成）
 │   ├── observations/    # 月维度 - 洞察记录（observer生成）
-│   │   └── .index.md    # 快速索引（脚本更新）
+│   │   └── .index.md    # 快速索引（手动更新）
 │   └── my-thoughts/     # 个人思考
 └── core/                # 永久记忆
-scripts/
-└── python/              # 管理脚本
-    ├── index_manager.py    # 索引更新脚本
-    ├── lifecycle_manager.py # 生命周期管理脚本
-    └── README.md            # 脚本使用指南
-```
-
----
-
-## 脚本使用
-
-### 更新索引
-```bash
-python3 scripts/python/index_manager.py --action update-daily
-python3 scripts/python/index_manager.py --action update-obs
-```
-
-### 生命周期检查
-```bash
-python3 scripts/python/lifecycle_manager.py --action check
-python3 scripts/python/lifecycle_manager.py --action cleanup
 ```
 
 ---
@@ -170,6 +163,20 @@ pos: daily 目录的成员
 - `input`：依赖外部资源（对话、文件）
 - `output`：对外提供功能（事实记录、洞察来源）
 - `pos`：系统局部地位（daily 目录成员）
+
+---
+
+## 索引维护
+
+### 创建 daily 文件时
+1. 创建文件：`memory/active/daily/YYYY-MM-DD.md`
+2. 添加到索引：编辑 `.index.md`
+3. 格式：`| 文件名 | 日期 | 生命周期 | 标签 | 备注 |`
+
+### 清理过期文件时
+1. 删除文件：`rm memory/active/daily/YYYY-MM-DD.md`
+2. 从索引移除：编辑 `.index.md`
+3. 删除对应行
 
 ---
 
