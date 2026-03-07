@@ -1,9 +1,3 @@
----
-input: N/A
-output: N/A
-pos: N/A
----
-
 # Claude Command System 优化报告
 
 ## 1. 优化摘要
