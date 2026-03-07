@@ -4,26 +4,38 @@
 
 ## 说明
 
-本目录包含所有可用的Claude命令配置文件。每个命令都是一个独立的.md文件，遵循标准化格式。
+本目录包含所有可用的Claude命令配置文件，按功能分组到子目录中。每个命令都是一个独立的.md文件，遵循标准化格式。
 
 ## 目录结构
 
 ```
-.commands/
-├── INDEX.md           # 命令系统索引
-├── wake.md           # 会话启动命令
-├── plan.md           # 规划模式命令
-├── checklist.md      # 任务核实命令
-├── UPDATE_MEMORY.md  # 每周汇总命令
-├── learn.md          # 模式提取命令
-├── observer.md       # 对话观察命令
-├── plan5.md          # 五文件工作流
-├── ultrawork.md      # 超强工作模式
-├── g-workflow-code.md # 代码开发流程
-├── b-workflow-report.md # 汇报制作流程
-├── c-workflow-sop.md # SOP标准化流程
-├── d-workflow-debug.md # 问题排查流程
-└── log-day.md        # 日志记录命令
+.claude/commands/
+├── INDEX.md                    # 命令系统索引
+├── README.md                   # 本文件
+├── CLAUDE.md                   # 配置文件
+│
+├── core/                       # 核心高频命令
+│   ├── wake.md                 # 会话启动
+│   ├── plan.md                 # 规划模式
+│   ├── checklist.md            # 任务核实
+│   └── think.md                # 思考显性化
+│
+├── memory/                     # 记忆与学习
+│   ├── observer.md             # 对话观察
+│   ├── UPDATE_MEMORY.md        # 每周汇总
+│   ├── learn.md                # 模式提取
+│   └── log-day.md              # 日志记录
+│
+├── workflow/                   # 专项工作流
+│   ├── plan5.md                # 五文件工作流
+│   ├── ultrawork.md            # 超强工作模式
+│   ├── workflow-code.md        # 代码开发
+│   ├── workflow-report.md      # 汇报制作
+│   ├── workflow-sop.md         # SOP 标准化
+│   └── workflow-debug.md       # 问题排查
+│
+└── utility/                    # 工具命令
+    └── convert-to-md.md        # 格式转换
 ```
 
 ## 命令格式
