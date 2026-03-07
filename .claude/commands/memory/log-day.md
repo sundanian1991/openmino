@@ -1,7 +1,6 @@
 ---
-input: 会话结束触发
-output: 引导用户记录当天时间轴和标签
-pos: .claude/commands/会话结束命令目录
+name: "log-day"
+description: "日志记录 - 时间轴+标签，整理到daily"
 ---
 
 # log-day 命令
