@@ -1,8 +1,3 @@
----
-name: "commands-index"
-description: "Commands目录说明 - 命令系统索引"
----
-
 # Commands Directory Index
 
 > 索引Claude命令系统的核心功能模块
