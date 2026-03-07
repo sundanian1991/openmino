@@ -28,6 +28,7 @@ skillsDir: ./.claude/skills
 | [00-HABIT.md](.claude/rules/00-HABIT.md) | 不假思索的习惯（12 条） |
 | [01-IDENTITY.md](.claude/rules/01-IDENTITY.md) | 我是谁 |
 | [02-SOUL.md](.claude/rules/02-SOUL.md) | 我的性格 |
+| [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 核心记忆（会话启动必读） |
 | [06-NOW.md](.claude/rules/06-NOW.md) | 我现在在哪（会话启动） |
 
 **扩展规则**（按需读取）：
