@@ -4,17 +4,7 @@
 
 ## Summary
 
-本目录包含Claude命令系统的所有可用命令，按功能分组到子目录中。每个命令都是一个独立的.md文件，采用标准化格式，包含YAML front matter和详细说明文档。
-
-## Directory Structure
-
-```
-.claude/commands/
-├── core/           # 核心高频命令
-├── memory/         # 记忆与学习
-├── workflow/       # 专项工作流
-└── utility/        # 工具命令
-```
+本目录包含Claude命令系统的所有可用命令。每个命令都是一个独立的.md文件，采用标准化格式，包含YAML front matter和详细说明文档。
 
 ---
 
@@ -64,13 +54,7 @@
 ## Standards
 
 所有命令文件遵循以下标准：
-- YAML front matter（name, description, argument-hint）
+- YAML front matter（name, description）
 - 标准化文档结构
 - 明确的使用场景说明
 - 工作流程详细说明
-
-## Maintenance
-
-- 高频命令：持续优化和迭代
-- 低频命令：定期评估保留必要性
-- 文档质量：保持内容准确和时效性

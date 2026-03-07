@@ -4,39 +4,7 @@
 
 ## 说明
 
-本目录包含所有可用的Claude命令配置文件，按功能分组到子目录中。每个命令都是一个独立的.md文件，遵循标准化格式。
-
-## 目录结构
-
-```
-.claude/commands/
-├── INDEX.md                    # 命令系统索引
-├── README.md                   # 本文件
-├── CLAUDE.md                   # 配置文件
-│
-├── core/                       # 核心高频命令
-│   ├── wake.md                 # 会话启动
-│   ├── plan.md                 # 规划模式
-│   ├── checklist.md            # 任务核实
-│   └── think.md                # 思考显性化
-│
-├── memory/                     # 记忆与学习
-│   ├── observer.md             # 对话观察
-│   ├── UPDATE_MEMORY.md        # 每周汇总
-│   ├── learn.md                # 模式提取
-│   └── log-day.md              # 日志记录
-│
-├── workflow/                   # 专项工作流
-│   ├── plan5.md                # 五文件工作流
-│   ├── ultrawork.md            # 超强工作模式
-│   ├── workflow-code.md        # 代码开发
-│   ├── workflow-report.md      # 汇报制作
-│   ├── workflow-sop.md         # SOP 标准化
-│   └── workflow-debug.md       # 问题排查
-│
-└── utility/                    # 工具命令
-    └── convert-to-md.md        # 格式转换
-```
+本目录包含所有可用的Claude命令配置文件。每个命令都是一个独立的.md文件，遵循标准化格式。
 
 ## 命令格式
 
@@ -49,6 +17,31 @@ description: "命令描述"
 argument-hint: <参数说明>  # 可选
 ---
 ```
+
+## 命令分类
+
+### Core Commands (核心高频)
+- `wake` - 会话启动
+- `plan` - 规划模式
+- `checklist` - 任务核实
+- `think` - 思考显性化
+
+### Memory Commands (记忆与学习)
+- `observer` - 对话观察
+- `UPDATE_MEMORY` - 每周汇总
+- `learn` - 模式提取
+- `log-day` - 日志记录
+
+### Workflow Commands (专项工作流)
+- `plan5` - 五文件工作流
+- `ultrawork` - 超强工作模式
+- `workflow-code` - 代码开发
+- `workflow-report` - 汇报制作
+- `workflow-sop` - SOP 标准化
+- `workflow-debug` - 问题排查
+
+### Utility Commands (工具命令)
+- `convert-to-md` - 格式转换
 
 ## 标准
 
