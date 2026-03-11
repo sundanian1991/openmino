@@ -1,3 +1,11 @@
+---
+lifecycle: P0
+tags: [交互速度, 会话启动, 优化, 偏好]
+input: 用户反馈、优化方案
+output: 决策记录、后续行动
+pos: memory/core/decisions/ 目录的成员
+---
+
 # 交互速度偏好
 
 **日期**：2026-03-10

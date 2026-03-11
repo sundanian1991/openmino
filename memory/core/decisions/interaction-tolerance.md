@@ -1,3 +1,11 @@
+---
+lifecycle: P0
+tags: [交互速度, 边界, 容忍度, 偏好]
+input: 用户反馈、边界设定
+output: 决策记录、边界明确
+pos: memory/core/decisions/ 目录的成员
+---
+
 # 交互速度容忍度
 
 **日期**：2026-03-10
