@@ -64,6 +64,19 @@ pos: .claude/skills/INDEX.md
 
 ---
 
+---
+
+## 职业发展
+
+| Skill | 功能 | 使用场景 |
+|-------|------|---------|
+| **career-coach** | 专属AI职业导师（情绪支持+职业发展） | 职场困惑倾诉、决策辅助、成长回顾、压力释放 |
+| **building-a-promotion-case** | 晋升案例准备 | 述职材料、晋升答辩 |
+| **personal-productivity** | 个人生产力管理 | 时间管理、任务优先级 |
+| **having-difficult-conversations** | 困难对话指南 | 反馈谈话、绩效沟通、冲突处理 |
+
+---
+
 ## 待补充Skills
 
 根据年老师工作场景，待添加：
