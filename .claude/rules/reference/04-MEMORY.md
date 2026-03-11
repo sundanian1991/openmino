@@ -240,6 +240,33 @@ memory/active/tasks/active/
 
 ## 🟡 L3 时新区 — 最近7天关键信息
 
+### 2026-03-11 | Token 优化与 RTK 安装
+- **背景**：借鉴 Get 笔记文章中的 Token 优化方法
+- **两大"邪修"方法**：
+  - RTK（命令输出脱水）：git status 节约 65%，ls 节约 65%，curl 节约 92-98%
+  - mcp2cli（MCP 按需加载）：30工具×10轮从 36,310→1,734 Token（95%）
+- **执行内容**：
+  - P0 分析：统计命令频率（curl 10次、git 8次、ls 7次）和 MCP 使用频率
+  - P1 安装：安装 Rust 1.94.0 + RTK v0.28.2
+  - 配置 hook：全局 hook 已安装，重启 Claude Code 后生效
+  - 测试效果：git status 对比（原始 180 字符 → RTK 60 字符）
+- **决策**：mcp2cli 暂不执行（当前 MCP 数量少，收益有限）
+- **下一步**：重启 Claude Code 让 hook 生效
+- **标签**：#系统优化 #Token优化 #RTK
+
+### 2026-03-10 | Mino 机制启动
+- **背景**：分析 Mino 的能力边界，确定优先级，启动记忆机制
+- **核心分析**：
+  - 能力边界：供应商管理、记忆管理、脚本自动化、文档生成、代码支持、主动关怀
+  - 优先级 P0：让已有机制运转起来（Observer、任务跟踪、daily 记录）
+- **关键决策**：
+  - 交互速度容忍度：当前速度（~3-5秒）可接受，不立即优化
+  - 恢复 daily 记录、启动 Observer（按需触发）、激活任务跟踪
+- **产出**：
+  - `memory/core/decisions/interaction-speed.md`（交互速度优化方案，未执行）
+  - `memory/core/decisions/interaction-tolerance.md`（交互速度容忍度边界）
+- **标签**：#工作/搭体系 #Mino启动 #机制运转
+
 ### 2026-03-07 | 上下文优化方案一执行
 - **Skills 懒加载**：创建 SKILLS-QUICK-INDEX.md（高频9个、中频12个、低频60+个）
 - **MEMORY 拆分**：从 04-MEMORY.md 提取 L1 区，创建独立的 MEMORY-L1.md（~100行）
