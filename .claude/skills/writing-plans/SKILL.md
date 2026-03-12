@@ -1,6 +1,10 @@
 ---
 name: writing-plans
-description: Use when you have a spec or requirements for a multi-step task, before touching code
+description: |
+  Use when you have a spec or requirements for a multi-step task, before touching code.
+  Trigger on: implementation plans, task breakdowns, multi-step projects, or any request to
+  "plan this out" before coding. Creates bite-sized tasks with exact file paths, test cases,
+  and commands. Even if not explicitly mentioned, use this skill for any complex implementation.
 ---
 
 # Writing Plans
