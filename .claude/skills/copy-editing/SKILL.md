@@ -1,447 +1,214 @@
 ---
 name: copy-editing
-description: "When the user wants to edit, review, or improve existing marketing copy. Also use when the user mentions 'edit this copy,' 'review my copy,' 'copy feedback,' 'proofread,' 'polish this,' 'make this better,' or 'copy sweep.' This skill provides a systematic approach to editing marketing copy through multiple focused passes."
-metadata:
-  version: 1.0.0
+description: 文案编辑七步扫描 — 当用户需要编辑、润色、改进现有文案时触发。即使没有明确说"用 copy-editing"，只要涉及文案润色、修改、优化，就应该使用此技能。
 ---
 
-# Copy Editing
+# Copy Editing 技能
 
-You are an expert copy editor specializing in marketing and conversion copy. Your goal is to systematically improve existing copy through focused editing passes while preserving the core message.
-
-## Core Philosophy
-
-**Check for product marketing context first:**
-If `.claude/product-marketing-context.md` exists, read it before editing. Use brand voice and customer language from that context to guide your edits.
-
-Good copy editing isn't about rewriting—it's about enhancing. Each pass focuses on one dimension, catching issues that get missed when you try to fix everything at once.
-
-**Key principles:**
-- Don't change the core message; focus on enhancing it
-- Multiple focused passes beat one unfocused review
-- Each edit should have a clear reason
-- Preserve the author's voice while improving clarity
+> **核心理念**：好文案不是写出来的，是改出来的。七步扫描，每步聚焦一个维度。
 
 ---
 
-## The Seven Sweeps Framework
+## 何时激活
 
-Edit copy through seven sequential passes, each focusing on one dimension. After each sweep, loop back to check previous sweeps aren't compromised.
-
-### Sweep 1: Clarity
-
-**Focus:** Can the reader understand what you're saying?
-
-**What to check:**
-- Confusing sentence structures
-- Unclear pronoun references
-- Jargon or insider language
-- Ambiguous statements
-- Missing context
-
-**Common clarity killers:**
-- Sentences trying to say too much
-- Abstract language instead of concrete
-- Assuming reader knowledge they don't have
-- Burying the point in qualifications
-
-**Process:**
-1. Read through quickly, highlighting unclear parts
-2. Don't correct yet—just note problem areas
-3. After marking issues, recommend specific edits
-4. Verify edits maintain the original intent
-
-**After this sweep:** Confirm the "Rule of One" (one main idea per section) and "You Rule" (copy speaks to the reader) are intact.
+- ✅ "帮我修改这段文案"
+- ✅ "润色一下这个页面"
+- ✅ "让这段话更有说服力"
+- ✅ "检查这个落地页的文案"
+- ✅ "改进这个广告文案"
 
 ---
 
-### Sweep 2: Voice and Tone
+## 核心原则
 
-**Focus:** Is the copy consistent in how it sounds?
-
-**What to check:**
-- Shifts between formal and casual
-- Inconsistent brand personality
-- Mood changes that feel jarring
-- Word choices that don't match the brand
-
-**Common voice issues:**
-- Starting casual, becoming corporate
-- Mixing "we" and "the company" references
-- Humor in some places, serious in others (unintentionally)
-- Technical language appearing randomly
-
-**Process:**
-1. Read aloud to hear inconsistencies
-2. Mark where tone shifts unexpectedly
-3. Recommend edits that smooth transitions
-4. Ensure personality remains throughout
-
-**After this sweep:** Return to Clarity Sweep to ensure voice edits didn't introduce confusion.
+1. **不要改变核心信息** — 聚焦增强，不是重写
+2. **多次聚焦扫描** — 每次只关注一个维度
+3. **每个修改有理由** — 不说"感觉不对"，说"违反了 X 原则"
+4. **保留作者声音** — 改进清晰度，不改变个性
 
 ---
 
-### Sweep 3: So What
+## 七步扫描框架
 
-**Focus:** Does every claim answer "why should I care?"
+### 扫描 1：清晰度
 
-**What to check:**
-- Features without benefits
-- Claims without consequences
-- Statements that don't connect to reader's life
-- Missing "which means..." bridges
+**问题**：读者能看懂吗？
 
-**The So What test:**
-For every statement, ask "Okay, so what?" If the copy doesn't answer that question with a deeper benefit, it needs work.
+**检查项**：
+-  confusing 的句式
+-  指代不明的代词
+-  行话/黑话
+-  模糊的表述
 
-❌ "Our platform uses AI-powered analytics"
-*So what?*
-✅ "Our AI-powered analytics surface insights you'd miss manually—so you can make better decisions in half the time"
-
-**Common So What failures:**
-- Feature lists without benefit connections
-- Impressive-sounding claims that don't land
-- Technical capabilities without outcomes
-- Company achievements that don't help the reader
-
-**Process:**
-1. Read each claim and literally ask "so what?"
-2. Highlight claims missing the answer
-3. Add the benefit bridge or deeper meaning
-4. Ensure benefits connect to real reader desires
-
-**After this sweep:** Return to Voice and Tone, then Clarity.
+**常见清晰度杀手**：
+- 一句话想说太多
+- 抽象语言代替具体描述
+- 假设读者知道背景
 
 ---
 
-### Sweep 4: Prove It
+### 扫描 2：声音与语气
 
-**Focus:** Is every claim supported with evidence?
+**问题**：整体听起来一致吗？
 
-**What to check:**
-- Unsubstantiated claims
-- Missing social proof
-- Assertions without backup
-- "Best" or "leading" without evidence
-
-**Types of proof to look for:**
-- Testimonials with names and specifics
-- Case study references
-- Statistics and data
-- Third-party validation
-- Guarantees and risk reversals
-- Customer logos
-- Review scores
-
-**Common proof gaps:**
-- "Trusted by thousands" (which thousands?)
-- "Industry-leading" (according to whom?)
-- "Customers love us" (show them saying it)
-- Results claims without specifics
-
-**Process:**
-1. Identify every claim that needs proof
-2. Check if proof exists nearby
-3. Flag unsupported assertions
-4. Recommend adding proof or softening claims
-
-**After this sweep:** Return to So What, Voice and Tone, then Clarity.
+**检查项**：
+- 正式与随意的切换
+- 品牌人格一致性
+- 情绪跳跃
 
 ---
 
-### Sweep 5: Specificity
+### 扫描 3：那又怎样
 
-**Focus:** Is the copy concrete enough to be compelling?
+**问题**：每个主张都回答了"关我什么事"吗？
 
-**What to check:**
-- Vague language ("improve," "enhance," "optimize")
-- Generic statements that could apply to anyone
-- Round numbers that feel made up
-- Missing details that would make it real
+**检查项**：
+- 功能没有连接利益
+- 主张没有连接后果
+- 缺少"这意味着..."桥梁
 
-**Specificity upgrades:**
-
-| Vague | Specific |
-|-------|----------|
-| Save time | Save 4 hours every week |
-| Many customers | 2,847 teams |
-| Fast results | Results in 14 days |
-| Improve your workflow | Cut your reporting time in half |
-| Great support | Response within 2 hours |
-
-**Common specificity issues:**
-- Adjectives doing the work nouns should do
-- Benefits without quantification
-- Outcomes without timeframes
-- Claims without concrete examples
-
-**Process:**
-1. Highlight vague words and phrases
-2. Ask "Can this be more specific?"
-3. Add numbers, timeframes, or examples
-4. Remove content that can't be made specific (it's probably filler)
-
-**After this sweep:** Return to Prove It, So What, Voice and Tone, then Clarity.
+**示例**：
+```
+❌ "我们的平台使用 AI 驱动分析"
+   那又怎样？
+✅ "AI 驱动分析帮你发现手动会遗漏的洞察—用一半时间做更好的决策"
+```
 
 ---
 
-### Sweep 6: Heightened Emotion
+### 扫描 4：证明
 
-**Focus:** Does the copy make the reader feel something?
+**问题**：每个主张有证据支撑吗？
 
-**What to check:**
-- Flat, informational language
-- Missing emotional triggers
-- Pain points mentioned but not felt
-- Aspirations stated but not evoked
+**检查项**：
+- 无支持的主张
+- 缺少社会证明
+- "最好/领先"没有证据
 
-**Emotional dimensions to consider:**
-- Pain of the current state
-- Frustration with alternatives
-- Fear of missing out
-- Desire for transformation
-- Pride in making smart choices
-- Relief from solving the problem
-
-**Techniques for heightening emotion:**
-- Paint the "before" state vividly
-- Use sensory language
-- Tell micro-stories
-- Reference shared experiences
-- Ask questions that prompt reflection
-
-**Process:**
-1. Read for emotional impact—does it move you?
-2. Identify flat sections that should resonate
-3. Add emotional texture while staying authentic
-4. Ensure emotion serves the message (not manipulation)
-
-**After this sweep:** Return to Specificity, Prove It, So What, Voice and Tone, then Clarity.
+**证据类型**：
+- 带名字和细节的客户评价
+- 案例研究引用
+- 数据和统计
+- 第三方验证
 
 ---
 
-### Sweep 7: Zero Risk
+### 扫描 5：具体化
 
-**Focus:** Have we removed every barrier to action?
+**问题**：文案足够具体、有说服力吗？
 
-**What to check:**
-- Friction near CTAs
-- Unanswered objections
-- Missing trust signals
-- Unclear next steps
-- Hidden costs or surprises
+**具体化升级**：
 
-**Risk reducers to look for:**
-- Money-back guarantees
-- Free trials
-- "No credit card required"
-- "Cancel anytime"
-- Social proof near CTA
-- Clear expectations of what happens next
-- Privacy assurances
-
-**Common risk issues:**
-- CTA asks for commitment without earning trust
-- Objections raised but not addressed
-- Fine print that creates doubt
-- Vague "Contact us" instead of clear next step
-
-**Process:**
-1. Focus on sections near CTAs
-2. List every reason someone might hesitate
-3. Check if the copy addresses each concern
-4. Add risk reversals or trust signals as needed
-
-**After this sweep:** Return through all previous sweeps one final time: Heightened Emotion, Specificity, Prove It, So What, Voice and Tone, Clarity.
+| 模糊 | 具体 |
+|------|------|
+| 节省时间 | 每周节省 4 小时 |
+| 很多客户 | 2,847 个团队 |
+| 快速结果 | 14 天内见效 |
+| 改善工作流 | 报告时间减半 |
 
 ---
 
-## Quick-Pass Editing Checks
+### 扫描 6：情绪共鸣
 
-Use these for faster reviews when a full seven-sweep process isn't needed.
+**问题**：文案让读者有感觉吗？
 
-### Word-Level Checks
+**检查项**：
+- 平淡的信息性语言
+- 缺失的情绪触发
+- 痛点被提及但未被感受
 
-**Cut these words:**
-- Very, really, extremely, incredibly (weak intensifiers)
-- Just, actually, basically (filler)
-- In order to (use "to")
-- That (often unnecessary)
-- Things, stuff (vague)
+**技巧**：
+- 生动描绘"之前"状态
+- 使用感官语言
+- 讲述微故事
 
-**Replace these:**
+---
 
-| Weak | Strong |
-|------|--------|
+### 扫描 7：零风险
+
+**问题**：我们移除了所有行动障碍吗？
+
+**检查项**：
+- CTA 附近的摩擦
+- 未回答的异议
+- 缺失的信任信号
+- 不清晰的下一步
+
+**风险降低器**：
+- 退款保证
+- 免费试用
+- "无需信用卡"
+- "随时取消"
+
+---
+
+## 快速检查清单
+
+### 词汇检查
+
+**删除这些词**：
+- very, really, extremely（弱强调词）
+- just, actually, basically（填充词）
+- in order to（用 to）
+- things, stuff（模糊词）
+
+**替换这些词**：
+
+| 弱 | 强 |
+|----|----|
 | Utilize | Use |
-| Implement | Set up |
 | Leverage | Use |
 | Facilitate | Help |
 | Innovative | New |
-| Robust | Strong |
-| Seamless | Smooth |
-| Cutting-edge | New/Modern |
 
-**Watch for:**
-- Adverbs (usually unnecessary)
-- Passive voice (switch to active)
-- Nominalizations (verb → noun: "make a decision" → "decide")
+### 句子检查
 
-### Sentence-Level Checks
+- 一句一意
+- 变化句长
+- 前置重要信息
+- 不超过 25 词
 
-- One idea per sentence
-- Vary sentence length (mix short and long)
-- Front-load important information
-- Max 3 conjunctions per sentence
-- No more than 25 words (usually)
+### 段落检查
 
-### Paragraph-Level Checks
-
-- One topic per paragraph
-- Short paragraphs (2-4 sentences for web)
-- Strong opening sentences
-- Logical flow between paragraphs
-- White space for scannability
+- 一段一主题
+- 短段落（2-4 句）
+- 强开头
+- 逻辑流畅
 
 ---
 
-## Copy Editing Checklist
+## 常见问题与修复
 
-### Before You Start
-- [ ] Understand the goal of this copy
-- [ ] Know the target audience
-- [ ] Identify the desired action
-- [ ] Read through once without editing
-
-### Clarity (Sweep 1)
-- [ ] Every sentence is immediately understandable
-- [ ] No jargon without explanation
-- [ ] Pronouns have clear references
-- [ ] No sentences trying to do too much
-
-### Voice & Tone (Sweep 2)
-- [ ] Consistent formality level throughout
-- [ ] Brand personality maintained
-- [ ] No jarring shifts in mood
-- [ ] Reads well aloud
-
-### So What (Sweep 3)
-- [ ] Every feature connects to a benefit
-- [ ] Claims answer "why should I care?"
-- [ ] Benefits connect to real desires
-- [ ] No impressive-but-empty statements
-
-### Prove It (Sweep 4)
-- [ ] Claims are substantiated
-- [ ] Social proof is specific and attributed
-- [ ] Numbers and stats have sources
-- [ ] No unearned superlatives
-
-### Specificity (Sweep 5)
-- [ ] Vague words replaced with concrete ones
-- [ ] Numbers and timeframes included
-- [ ] Generic statements made specific
-- [ ] Filler content removed
-
-### Heightened Emotion (Sweep 6)
-- [ ] Copy evokes feeling, not just information
-- [ ] Pain points feel real
-- [ ] Aspirations feel achievable
-- [ ] Emotion serves the message authentically
-
-### Zero Risk (Sweep 7)
-- [ ] Objections addressed near CTA
-- [ ] Trust signals present
-- [ ] Next steps are crystal clear
-- [ ] Risk reversals stated (guarantee, trial, etc.)
-
-### Final Checks
-- [ ] No typos or grammatical errors
-- [ ] Consistent formatting
-- [ ] Links work (if applicable)
-- [ ] Core message preserved through all edits
+| 问题 | 症状 | 修复 |
+|------|------|------|
+| 功能墙 | 只列功能不说为什么重要 | 每个功能后加"这意味着..." |
+| 企业黑话 | "利用协同优化结果" | 用人话重写 |
+| 弱开头 | 从公司历史开始 | 从读者痛点开始 |
+| 埋没 CTA | 要求太多铺垫 | CTA 前置、重复 |
+| 无证明 | "客户爱我们"无证据 | 加具体评价、数据 |
+| 通用主张 | "我们帮企业成长" | 具体化：谁、如何、多少 |
 
 ---
 
-## Common Copy Problems & Fixes
+## 完整检查清单
 
-### Problem: Wall of Features
-**Symptom:** List of what the product does without why it matters
-**Fix:** Add "which means..." after each feature to bridge to benefits
-
-### Problem: Corporate Speak
-**Symptom:** "Leverage synergies to optimize outcomes"
-**Fix:** Ask "How would a human say this?" and use those words
-
-### Problem: Weak Opening
-**Symptom:** Starting with company history or vague statements
-**Fix:** Lead with the reader's problem or desired outcome
-
-### Problem: Buried CTA
-**Symptom:** The ask comes after too much buildup, or isn't clear
-**Fix:** Make the CTA obvious, early, and repeated
-
-### Problem: No Proof
-**Symptom:** "Customers love us" with no evidence
-**Fix:** Add specific testimonials, numbers, or case references
-
-### Problem: Generic Claims
-**Symptom:** "We help businesses grow"
-**Fix:** Specify who, how, and by how much
-
-### Problem: Mixed Audiences
-**Symptom:** Copy tries to speak to everyone, resonates with no one
-**Fix:** Pick one audience and write directly to them
-
-### Problem: Feature Overload
-**Symptom:** Listing every capability, overwhelming the reader
-**Fix:** Focus on 3-5 key benefits that matter most to the audience
+- [ ] 每句清晰易懂
+- [ ] 无行话
+- [ ] 语气一致
+- [ ] 功能连接利益
+- [ ] 主张有证据
+- [ ] 具体数字/时间
+- [ ] 情绪共鸣
+- [ ] 异议已处理
+- [ ] 下一步清晰
+- [ ] 无错别字
 
 ---
 
-## Working with Copy Sweeps
+## 参考文档
 
-When editing collaboratively:
-
-1. **Run a sweep and present findings** - Show what you found, why it's an issue
-2. **Recommend specific edits** - Don't just identify problems; propose solutions
-3. **Request the updated copy** - Let the author make final decisions
-4. **Verify previous sweeps** - After each round of edits, re-check earlier sweeps
-5. **Repeat until clean** - Continue until a full sweep finds no new issues
-
-This iterative process ensures each edit doesn't create new problems while respecting the author's ownership of the copy.
+- [替换词表](references/plain-english-alternatives.md)
 
 ---
 
-## References
-
-- [Plain English Alternatives](references/plain-english-alternatives.md): Replace complex words with simpler alternatives
-
----
-
-## Task-Specific Questions
-
-1. What's the goal of this copy? (Awareness, conversion, retention)
-2. What action should readers take?
-3. Are there specific concerns or known issues?
-4. What proof/evidence do you have available?
-
----
-
-## Related Skills
-
-- **copywriting**: For writing new copy from scratch (use this skill to edit after your first draft is complete)
-- **page-cro**: For broader page optimization beyond copy
-- **marketing-psychology**: For understanding why certain edits improve conversion
-- **ab-test-setup**: For testing copy variations
-
----
-
-## When to Use Each Skill
-
-| Task | Skill to Use |
-|------|--------------|
-| Writing new page copy from scratch | copywriting |
-| Reviewing and improving existing copy | copy-editing (this skill) |
-| Editing copy you just wrote | copy-editing (this skill) |
-| Structural or strategic page changes | page-cro |
+*好文案是改出来的，七步扫描，每步聚焦一个维度。*

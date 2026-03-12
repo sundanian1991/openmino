@@ -1,419 +1,206 @@
 ---
 name: markdown-slides
-description: Create presentation slides in Markdown format (Deckset/Marp compatible). Use when user requests to create slides, presentations, or convert documents to slide format. Handles image positioning, speaker notes, and proper formatting.
-allowed-tools:
-  - Read
-  - Write
-  - Glob
-  - Bash
+description: Create presentation slides in Markdown format (Deckset/Marp compatible). Use when user requests to create slides, presentations, or convert documents to slide format.
+allowed-tools: [Read, Write, Glob, Bash]
 license: MIT
 ---
 
 # Markdown Slides Skill
 
-Convert content to presentation slides in Markdown format compatible with Deckset and Marp presentation tools.
+Convert content to presentation slides in Markdown format compatible with Deckset and Marp.
 
-## When to Use This Skill
+## When to Activate
 
-Activate this skill when the user:
-- Asks to create slides or a presentation
-- Requests to convert a document to slide format
-- Mentions Deckset or Marp
-- Wants to generate speaker notes
-- Needs to format images for presentations
+- 创建幻灯片/演示文稿
+- 转换文档为幻灯片格式
+- 提及 Deckset 或 Marp
+- 需要生成演讲者注释 (speaker notes)
+- 需要格式化图片
 
 ## Input Requirements
 
-- **Source content**: Markdown file, outline, or structured content
-- **Images**: Files in `_files_/` directory or paths to be resolved
-- **Target platform**: Deckset (default) or Marp
-- **Options**:
-  - Speaker notes (enabled by default)
-  - Slide numbering (optional frontmatter)
-  - Emoji enhancement (enabled by default)
+- **源内容**: Markdown 文件、大纲或结构化内容
+- **图片**: `_files_/` 目录中的文件或可解析路径
+- **目标平台**: Deckset(默认) 或 Marp
+- **选项**: 演讲者注释 (默认启用)、幻灯片编号、emoji 增强
 
 ## Output Specifications
 
-- **File location**: Same folder as source
-- **File naming**: Original name with `- slides` suffix
-  - Example: `document.md` → `document - slides.md`
-- **Format**: Deckset-compatible markdown
-- **Structure**: Proper slide dividers, image tags, speaker notes
-- **Enhancement**: Emojis added for visual appeal
+- **文件位置**: 与源文件同文件夹
+- **命名**: 原名 + `- slides` 后缀 (例：`document.md` → `document - slides.md`)
+- **格式**: Deckset-compatible markdown
+- **结构**: 正确的幻灯片分隔符、图片标签、演讲者注释
 
-## Main Process
+## Core Process
 
 ### Step 1: Slide Structure Setup
 
-**Objective**: Create logical slide divisions with proper hierarchy
+**目标**: 创建逻辑清晰的幻灯片结构
 
-**Actions**:
-1. Read and analyze source content structure
-2. Insert slide dividers (`---`) at logical breaks:
-   - Between major sections
-   - Between distinct topics
-   - After section intro slides
-   - Before/after major diagrams
-3. Maintain content hierarchy:
-   - H1 (`#`) for section titles
-   - H2 (`##`) for main slide titles
-   - H3 (`###`) for sub-topics
-4. Preserve original organization and flow
-5. Add optional frontmatter: `slidenumbers: true`
+**动作**:
+1. 读取并分析源内容结构
+2. 在逻辑断点插入幻灯片分隔符 (`---`)
+3. 维持内容层级：H1(章节标题) → H2(幻灯片标题) → H3(子主题)
+4. 保留原始组织和流程
+5. 可选 frontmatter: `slidenumbers: true`
 
-**Example**:
+**示例**:
 ```markdown
 slidenumbers: true
 # 1. Section Title 🎯
 
 ![](section-background.png)
 
-^ Introduction to this section.
+^ 章节介绍。
 
 ---
 
 ## Main Topic 📊
 
 Content here...
-
----
-
-### Detailed Subtopic
-
-More details...
 ```
 
 ### Step 2: Image Format Conversion
 
-**Objective**: Convert images to Deckset format with proper positioning
+**目标**: 转换为 Deckset 格式，正确定位图片
 
-**Critical Requirements**:
-⚠️ **MUST resolve relative paths per-image basis**
-⚠️ **MUST URL-encode spaces and escape special characters**
-⚠️ **MUST verify image files exist**
+**Critical Rules**:
+- ⚠️ 必须逐个解析相对路径
+- ⚠️ URL 编码空格和特殊字符
+- ⚠️ 验证图片文件存在
 
 **Image Position Formats**:
 
-| Format | Usage | Example |
-|--------|-------|---------|
-| `![]()` | Section intro backgrounds | `![](background.png)` |
-| `![inline]()` | Diagrams within text flow | `![inline](diagram.svg)` |
-| `![right fit]()` | **PRIMARY**: Content slides | `![right fit](chart.png)` |
-| `![right 80%]()` | Specific sizing needed | `![right 80%](image.png)` |
-| `![inline fill]()` | Full-width inline | `![inline fill](wide.png)` |
+| 格式 | 用途 | 示例 |
+|------|------|------|
+| `![]()` | 章节 intro 背景 | `![](background.png)` |
+| `![inline]()` | 文本流内图表 | `![inline](diagram.svg)` |
+| `![right fit]()` | **主要**: 内容幻灯片 | `![right fit](chart.png)` |
+| `![right 80%]()` | 特定尺寸 | `![right 80%](image.png)` |
+| `![inline fill]()` | 全宽 inline | `![inline fill](wide.png)` |
 
-**Actions**:
-1. Identify all image references in source
-2. For each image:
-   ```
-   a. Determine appropriate position format
-   b. Resolve relative path from slide file location
-   c. URL-encode spaces: " " → "%20"
-   d. Escape parentheses: "(" → "%28", ")" → "%29"
-   e. Verify file exists at resolved path
-   f. Use original images when available
-   g. Copy missing images to _files_/ directory
-   ```
-3. Apply positioning based on context:
-   - **Section intros**: Use `![]()` for full background
-   - **Diagrams in text**: Use `![inline]()`
-   - **Default for content slides**: Use `![right fit]()` ⭐
-   - **Custom sizing**: Use `![right XX%]()` when needed
-   - **Full-width inline**: Use `![inline fill]()` for wide images
-
-**Examples**:
-```markdown
-# Section Title
-![](background-image.png)
-
----
-
-## Content Slide
-Key points here:
-- Point 1
-- Point 2
-
-![right fit](diagram.png)
-
----
-
-## Inline Diagram
-Text before diagram.
-
-![inline](process-flow.svg)
-
-Text after diagram.
-```
+**动作**:
+1. 识别所有图片引用
+2. 对每张图片：
+   - 确定 appropriate 格式
+   - 从幻灯片文件位置解析相对路径
+   - URL 编码：` ` → `%20`
+   - 转义括号：`(` → `%28`, `)` → `%29`
+   - 验证文件存在
+3. 基于上下文应用定位：
+   - 章节 intro: `![]()` 全背景
+   - 文本流图表：`![inline]()`
+   - 默认内容幻灯片：`![right fit]()` ⭐
+   - 全宽 inline: `![inline fill]()`
 
 ### Step 3: Speaker Notes Conversion
 
-**Objective**: Convert appropriate content to speaker notes
+**目标**: 转换适当内容为演讲者注释
 
-**Format**: Lines starting with `^ ` (caret + space)
+**格式**: 行首 `^ ` (caret + space)
 
-**Placement**: At the end of each slide
+**位置**: 每张幻灯片末尾
 
-**Convert to speaker notes**:
-✅ Multi-sentence paragraphs
-✅ Explanatory text
-✅ Additional context
-✅ Talking points
+**转换为注释** ✅:
+- 多句段落
+- 解释性文本
+- 额外上下文
+- 演讲要点
 
-**DO NOT convert**:
-❌ Single-sentence paragraphs
-❌ Lists (bullet or numbered)
-❌ Block quotes
-❌ Sentences ending with colon (`:`)
-❌ Headers (H1, H2, H3)
-❌ Table content
+**不转换** ❌:
+- 单句段落
+- 列表 (bullet/numbered)
+- 引用块
+- 冒号结尾的句子
+- 标题 (H1/H2/H3)
+- 表格内容
 
-**For Marp platform**: Use HTML comments instead
+**Marp 平台**: 使用 HTML 注释
 ```markdown
 <!-- This is a speaker note for Marp -->
 ```
 
-**Examples**:
-```markdown
-## Slide Title
-
-Main content visible to audience.
-
-^ This paragraph becomes a speaker note because it's multi-sentence explanatory text. It provides context that the speaker needs but the audience doesn't need to read on the slide.
-
----
-
-## Another Slide
-
-- Bullet points stay visible
-- Not converted to notes
-
-^ Additional speaking points go here.
-```
-
 ### Step 4: Content Enhancement
 
-**Objective**: Polish the presentation for maximum impact
+**目标**: 优化演示文稿呈现效果
 
-**Actions**:
-1. **Add emojis** to section and slide titles:
-   - Use relevant emojis that enhance meaning
-   - Don't overuse - keep it professional
-   - Examples: 🎯📊🤖💡🚀📚🔧⚡
+**动作**:
+1. **添加 emoji** 到标题：
+   - 使用相关、专业的 emoji
+   - 示例：🎯📊🤖💡🚀📚
+2. **清理注释**:
+   - 移除 markdown 注释
+   - 移除 TODO 项
+3. **确保格式清晰**:
+   - 一致间距
+   - 正确的 header 层级
+   - 清晰的幻灯片断点
+4. **添加 frontmatter** (如请求): `slidenumbers: true`
+5. **最终检查**: 每页焦点清晰、图片定位正确、注释就位
 
-2. **Clean up comments**:
-   - Remove markdown comments not meant for slides
-   - Remove TODO items
-   - Remove internal notes
-
-3. **Ensure clean format**:
-   - Consistent spacing
-   - Proper header hierarchy
-   - Clear slide breaks
-
-4. **Add frontmatter** (if requested):
-   ```markdown
-   slidenumbers: true
-   ```
-
-5. **Final review**:
-   - Each slide has clear focus
-   - Images positioned correctly
-   - Speaker notes placed at end
-   - No orphaned content
-
-## Critical Guidelines
-
-### Image Handling
-
-⚠️ **CRITICAL RULES**:
-
-1. **NEVER invent images** - Only reference images that exist in the source document or `_files_/` folder. Do NOT create placeholder references like `background-xxx.png` for images that don't exist.
-2. **Use original images** from source when available
-3. **Copy missing images** to `_files_/` directory rather than substituting
-4. **Resolve paths per-image** - don't assume same directory
-5. **URL-encode spaces**: `my file.png` → `my%20file.png`
-6. **Escape special characters**:
-   - Parentheses: `(` → `%28`, `)` → `%29`
-   - Other special chars as needed
-7. **Verify existence** before referencing - run `ls` or glob to confirm file exists
-8. **Maintain semantic relevance** - image should match slide content
-9. **Section intros without images are OK** - If no background image exists for a section intro slide, just use the title and speaker notes without an image reference
-
-### Image Position Standards
-
-**Decision tree for image positioning**:
-
-```
-Is it a section intro slide with just title?
-  → Does a background image exist?
-    → YES: Use ![]() for full background
-    → NO: Skip image, use title + speaker notes only
-
-Is it a diagram embedded in flowing text?
-  → YES: Use ![inline]() or ![inline fill]()
-
-Is it the main visual for the slide with bullet points?
-  → YES: Use ![right fit]() ⭐ PRIMARY FORMAT
-
-Does it need specific sizing?
-  → YES: Use ![right 80%]() or other percentage
-```
-
-### Speaker Notes Rules
-
-**When to convert to speaker notes**:
-- Multi-sentence explanatory paragraphs
-- Contextual information not needed on slide
-- Talking points for the speaker
-- Additional details for verbal explanation
-
-**When NOT to convert**:
-- Single-sentence paragraphs (might be slide content)
-- Bullet or numbered lists (usually slide content)
-- Block quotes (usually featured content)
-- Sentences ending with `:` (usually introducing lists)
-- Any header level
-- Table content
-
-**Format**:
-```markdown
-Slide content here.
-
-^ Speaker note paragraph one. Can be multiple sentences providing context.
-
-^ Speaker note paragraph two. Each note paragraph gets its own ^ prefix.
-```
-
-### Content Standards
-
-1. **File Naming**:
-   - Always use `- slides` suffix
-   - Preserve original filename otherwise
-   - Example: `AI for PKM.md` → `AI for PKM - slides.md`
-
-2. **Emoji Usage**:
-   - Add to H1 and H2 headers
-   - Choose relevant, professional emojis
-   - Don't overuse - quality over quantity
-   - Examples:
-     - 🎯 Goals/Objectives
-     - 📊 Data/Charts
-     - 🤖 AI/Technology
-     - 💡 Ideas/Insights
-     - 🚀 Future/Launch
-     - 📚 Learning/Knowledge
-
-3. **Hierarchy**:
-   - H1 for major sections (usually numbered)
-   - H2 for main slide titles
-   - H3 for subtopics within slides
-   - Consistent numbering scheme
-
-4. **Slide Breaks**:
-   - Use `---` (three dashes) on its own line
-   - Blank line before and after recommended
-   - Logical breaks between topics
-
-## Platform-Specific Notes
+## Platform Differences
 
 ### Deckset (Default)
 
-**Format**:
-- Speaker notes: `^ ` prefix on each line
-- Image positioning: All formats fully supported
-- Frontmatter: Simple key-value pairs
-
-**Features**:
-- Automatic slide numbering with `slidenumbers: true`
-- Full control over image positioning
-- Rich presenter notes support
-
-**Example Frontmatter**:
-```markdown
-slidenumbers: true
-autoscale: true
-theme: Plain Jane, 3
-```
+- **演讲者注释**: `^ ` prefix
+- **图片定位**: 全格式支持
+- **Frontmatter**: 简单 key-value
+- **特性**: 自动编号、丰富的 presenter notes
 
 ### Marp (Optional)
 
-**Format**:
-- Speaker notes: HTML comments `<!-- speaker note -->`
-- Image positioning: May use different syntax
-- Frontmatter: YAML with `marp: true`
+- **演讲者注释**: HTML 注释 `<!-- note -->`
+- **Frontmatter**: YAML with `marp: true`
+- **图片背景**: `![bg]()` 替代 `![]()`
 
-**Conversion for Marp**:
-```markdown
----
-marp: true
-paginate: true
----
-
-<!-- This is a speaker note in Marp -->
-```
-
-**Differences**:
-- HTML comments instead of `^` prefix
-- Different frontmatter structure
-- May need `![bg]()` for backgrounds instead of `![]()`
+**详细对比**: 见 [references/platform-differences.md](references/platform-differences.md)
 
 ## Quality Checklist
 
-Before marking task complete, verify:
-
-- [ ] **No invented images** - every image reference points to a real file
-- [ ] All images have valid, URL-encoded paths
-- [ ] Image files exist at specified locations (run `ls` to confirm)
-- [ ] Spaces in paths converted to `%20`
-- [ ] Special characters properly escaped
-- [ ] Speaker notes use `^ ` prefix (or HTML for Marp)
-- [ ] Speaker notes placed at END of each slide
-- [ ] Slide dividers (`---`) at logical breaks
-- [ ] Consistent header hierarchy (H1 → H2 → H3)
-- [ ] Emojis added appropriately to titles
-- [ ] File saved with '- slides' suffix
-- [ ] Content hierarchy maintained from source
-- [ ] No orphaned content or broken sections
-- [ ] Internal comments removed
-- [ ] Frontmatter added if requested
+- [ ] **无虚构图片** - 所有引用指向真实文件
+- [ ] 所有图片路径 URL 编码正确
+- [ ] 图片文件存在 (运行 `ls` 验证)
+- [ ] 空格转义为 `%20`
+- [ ] 特殊字符正确转义
+- [ ] 演讲者注释使用 `^ ` (Deckset) 或 HTML 注释 (Marp)
+- [ ] 注释位于幻灯片末尾
+- [ ] 分隔符 `---` 在逻辑断点
+- [ ] Header 层级一致 (H1→H2→H3)
+- [ ] Emoji 适当添加到标题
+- [ ] 文件名含 `- slides` 后缀
+- [ ] 内部注释已移除
 
 ## Error Handling
 
 ### Missing Images
-**Problem**: Source references image that doesn't exist
-
-**Solution**:
-1. Check source `_files_/` directory
-2. Check parent directory `_files_/`
-3. Search for image by name in project
-4. If found: Copy to presentation `_files_/` directory
-5. If not found: Note in speaker notes and skip image
+1. 检查源 `_files_/` 目录
+2. 检查父目录 `_files_/`
+3. 项目内搜索图片
+4. 找到则复制到 `_files_/`
+5. 未找到则在注释中标注并跳过
 
 ### Broken Relative Paths
-**Problem**: Path doesn't resolve correctly
+1. 确定幻灯片文件位置
+2. 计算从幻灯片到图片的相对路径
+3. 测试路径解析
+4. URL 编码可用路径
 
-**Solution**:
-1. Determine slide file location
-2. Calculate relative path from slide to image
-3. Test path resolution
-4. URL-encode the working path
+### Invalid Characters
+- 空格 → `%20`
+- 括号 → `(`: `%28`, `)`: `%29`
+- 方括号 → `[`: `%5B`, `]`: `%5D`
 
-### Invalid Characters in Paths
-**Problem**: Special characters break image links
+## Tips
 
-**Solution**:
-- Spaces: Convert to `%20`
-- Parentheses: `(` → `%28`, `)` → `%29`
-- Brackets: `[` → `%5B`, `]` → `%5D`
-- Other special chars: Use URL encoding
+1. 从大纲开始：先创建清晰的章节和幻灯片结构
+2. 一页一观点：每页单一清晰信息
+3. 视觉层级：H1=章节，H2=幻灯片，H3=子主题
+4. 图片定位：默认 `![right fit]()`
+5. 演讲者注释：添加帮助演讲者但 clutter 页面的内容
+6. 测试：在 Deckset 中预览验证格式
 
-## Tips for Best Results
+## References
 
-1. **Start with outline**: Create clear section and slide structure first
-2. **One idea per slide**: Each slide should have single clear message
-3. **Visual hierarchy**: Use H1 for sections, H2 for slides, H3 for sub-points
-4. **Image positioning**: Default to `![right fit]()` for content slides
-5. **Speaker notes**: Add context that helps speaker but clutters slide
-6. **Emoji consistency**: Use similar emojis for similar concepts
-7. **Test in Deckset**: Preview the slides to verify formatting
-8. **Iterate**: First pass for structure, second for polish
+- [图片处理指南](references/image-handling.md) - 路径解析、URL 编码、验证流程
+- [演讲者注释指南](references/speaker-notes-guide.md) - 何时转换、最佳实践
+- [平台差异](references/platform-differences.md) - Deckset vs Marp 完整对比

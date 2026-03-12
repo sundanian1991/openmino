@@ -1,446 +1,269 @@
 ---
 name: top-design
-description: 'Award-winning web design framework inspired by elite agencies (Locomotive, Studio Freight, AREA 17). Use when you need to: (1) build premium portfolio sites and brand websites, (2) create immersive web experiences with custom animations, (3) implement exceptional typography with dramatic scale contrast, (4) design scroll-based compositions with purposeful motion, (5) match the quality of Awwwards-winning sites, (6) implement performance-optimized animations.'
-license: MIT
-metadata:
-  author: wondelai
-  version: "1.1.0"
+description: 获奖网站设计框架 — 当需要创建高端作品集/品牌网站、滚动动画、卓越排版、10/10 设计质量时触发。
 ---
 
-# Top-Design: Award-Winning Digital Experiences
+# Top-Design: 获奖数字体验
 
-Create websites and applications at the level of world-class digital agencies. This skill embodies the craft of studios that consistently win FWA, Awwwards, CSS Design Awards, and Webby Awards.
+> **核心原则**：每个像素都有意图 — 没有默认，没有偶然。
 
-## Core Principle
+---
 
-**Every pixel is intentional -- nothing default, nothing accidental.** The agencies you are emulating -- Locomotive, Studio Freight, AREA 17, Active Theory, Hello Monday -- share a common DNA: typography IS the design (not decoration, but architecture), motion creates emotion (animation serves narrative, not novelty), white space is a weapon (tension through restraint), and performance is non-negotiable (60fps or nothing).
+## 何时激活
 
-**The foundation:** What separates 10/10 from 8/10 is not incremental improvement but a qualitative leap. An 8/10 design has good typography, nice colors, and smooth animations. A 10/10 design has typography that makes you gasp, colors that feel invented for this specific project, and animations that tell stories. The gap is not skill -- it is intention. Every decision at the 10/10 level answers the question: "Does this serve the experience, or is it just filling space?"
+- ✅ 构建高端作品集/品牌网站
+- ✅ 创建滚动动画体验
+- ✅ 需要卓越的排版对比
+- ✅ 设计 Awwwards 级别网站
+- ✅ 实现性能优化动画
 
-## Scoring
+---
 
-**Goal: 10/10.** When reviewing or creating digital experiences, rate them 0-10 using the rubric below. A 10/10 means the design would be featured on Awwwards. Always provide the current score and specific improvements needed to reach 10/10.
+## 评分系统（0-10 分）
 
-### Scoring Rubric
+| 分数 | 级别 | 描述 |
+|------|------|------|
+| **0-2** | 业余 | 默认字体、无层次、模板感 |
+| **3-4** | 基础 | 不错的排版、可遗忘 |
+| **5-6** | 胜任 | 干净执行、缺乏灵魂 |
+| **7-8** | 专业 | 强烈的排版意图、清晰的 POV |
+| **9** | 卓越 | 签名式时刻、接近完美 |
+| **10** | 世界级 | 会赢得 Awwards SOTD、定义新标准 |
 
-| Score | Level | Description |
-|-------|-------|-------------|
-| **0-2** | Amateur | Default fonts, no hierarchy, generic layout, template feel |
-| **3-4** | Basic | Decent typography, some hierarchy, but forgettable |
-| **5-6** | Competent | Good fundamentals, clean execution, but lacks soul |
-| **7-8** | Professional | Strong typography, intentional motion, clear POV |
-| **9** | Exceptional | Signature moments, memorable details, near-flawless craft |
-| **10** | World-class | Would win Awwwards SOTD, defines new standards |
+### 分类评分
 
-### Category Scoring (Each 0-10)
+| 维度 | 权重 | 10 分标准 |
+|------|------|----------|
+| **排版** | 25% | 排版即设计 — 让人屏息的字体、定制字体 |
+| **视觉构图** | 25% | 磁性构图、意外的比例转换 |
+| **运动与交互** | 20% | 讲述故事的动画、完美编排 |
+| **色彩与氛围** | 15% | 为项目定制的色彩、可感知的氛围 |
+| **细节与工艺** | 15% | 每个微观细节都被考虑 |
 
-**TYPOGRAPHY (Weight: 25%)**
-| Score | Criteria |
-|-------|----------|
-| 0-3 | System fonts, uniform scale, default tracking |
-| 4-6 | Premium fonts, some scale contrast, basic hierarchy |
-| 7-8 | Dramatic scale contrast (10:1+), perfect tracking, optical alignment |
-| 9-10 | Typography IS the design -- gasping moments, custom/variable fonts, type as architecture |
+**总分公式**：`(排版×0.25) + (构图×0.25) + (运动×0.20) + (色彩×0.15) + (细节×0.15)`
 
-**VISUAL COMPOSITION (Weight: 25%)**
-| Score | Criteria |
-|-------|----------|
-| 0-3 | Centered everything, equal spacing, rigid grid, no tension |
-| 4-6 | Some asymmetry, decent spacing rhythm, basic depth |
-| 7-8 | Intentional grid breaks, layered elements, strong negative space |
-| 9-10 | Magnetic compositions, unexpected scale shifts, elements that breathe and surprise |
+---
 
-**MOTION & INTERACTION (Weight: 20%)**
-| Score | Criteria |
-|-------|----------|
-| 0-3 | No animation or default/linear motion |
-| 4-6 | Basic transitions, some scroll effects |
-| 7-8 | Custom easing, orchestrated reveals, purposeful parallax |
-| 9-10 | Motion that tells stories, perfectly timed choreography, scroll feels invented |
+## 七大支柱
 
-**COLOR & ATMOSPHERE (Weight: 15%)**
-| Score | Criteria |
-|-------|----------|
-| 0-3 | Random colors, pure black/white, no mood |
-| 4-6 | Cohesive palette, some atmosphere |
-| 7-8 | Colors feel owned, contextual shifts, intentional contrast |
-| 9-10 | Colors feel invented for this project, atmosphere you can feel |
+### 1. 排版即架构
 
-**DETAILS & CRAFT (Weight: 15%)**
-| Score | Criteria |
-|-------|----------|
-| 0-3 | Default cursors, no hover states, generic everything |
-| 4-6 | Basic hover states, some custom elements |
-| 7-8 | Custom cursor, magnetic buttons, branded selection colors |
-| 9-10 | Every micro-detail considered -- focus states, loading, empty states, scroll indicators |
+**核心**：排版不是装饰，是架构。
 
-### Quick Score Formula
+**10 分标准**：
+- 戏剧性比例对比（10:1+，如 180px 标题/14px 正文）
+- 大字体负字距（-0.02em 到 -0.05em）
+- 高端字库（Pangram Pangram、Dinamo、Grilli Type）
+- 变量字体支持重量动画
+- 光学对齐优于数学对齐
+- 手动控制标题换行
+
+**禁忌**：
+- ❌ Inter、Roboto、Arial、system-ui 作为主字体
+- ❌ 统一比例（所有元素在 2x 以内）
+
+---
+
+### 2. 布局与构图
+
+**核心**：掌握网格，然后有意图地打破。
+
+**10 分标准**：
+- 白空间是武器，不是空白
+- 不对称平衡创造张力
+- 意外的比例转换创造节奏
+- 元素有意图地重叠、溢出、延伸
+- 强底层网格支撑有意义的打破
+
+**技巧**：
+- 偏移元素（如 12 列网格中偏移 1 列）
+- 让图像溢出容器
+- 密集与呼吸区域交替
+
+---
+
+### 3. 运动与动画
+
+**核心**：每个动画必须回答"为什么动"。
+
+**10 分标准**：
+- 自定义缓动（禁用 `ease`/`linear`）
+- 页面加载编排（0-200ms 结构，200-600ms 标题，400-800ms 副标题）
+- 滚动触发序列渐进揭示
+- 固定区域用于叙事时刻
+- 60fps 是底线
+
+**自定义缓动**：
 ```
-Total = (Typography x 0.25) + (Composition x 0.25) + (Motion x 0.20) + (Color x 0.15) + (Details x 0.15)
-```
-
-## The Seven Pillars of 10/10 Design
-
-### 1. Typography as Architecture
-
-**Core concept:** Typography is not decoration layered onto a design -- it IS the design. The typeface you choose, the scale you set, and the tracking you refine dictate everything else: color palette mood, animation style, spacing rhythm, and overall personality. When someone scrolls past your hero and does not pause, your typography is not working.
-
-**Why it works:** Dramatic scale contrast creates immediate visual hierarchy that communicates even when content is blurred or viewed from across the room. Large display type with tight tracking commands attention like architecture commands a skyline, while intimate body text draws readers into the content. This tension between monumental and personal is what makes people stop scrolling.
-
-**Key insights:**
-- **Massive scale contrast is non-negotiable** -- the ratio between display and body should be at minimum 10:1 (e.g., 180px headline / 14px body), with viewport-filling type at the extreme end making body text feel intimate
-- **Negative tracking on large type** (-0.02em to -0.05em) tightens display text into cohesive visual units, while generous line-height for body (1.5-1.7) ensures readability
-- **Font selection defines tier** -- display fonts should come from premium foundries (Pangram Pangram, Dinamo, Grilli Type, Klim, Commercial Type) or quality Google alternatives (Space Grotesk, Instrument Serif, Fraunces); never Inter, Roboto, Arial, or system-ui for hero experiences
-- **Variable fonts enable weight animation** on hover states and transitions, adding dynamism without layout shift
-- **Optical alignment over mathematical alignment** -- human perception is imperfect, so text must be adjusted visually, not just numerically
-- **Control every line break on headlines** -- text that breaks beautifully requires manual intervention at key breakpoints
-
-**Product applications:**
-
-| Context | Application | Example |
-|---------|-------------|---------|
-| Portfolio hero | Viewport-filling display type with dramatic scale drop to body | Locomotive.ca hero typography |
-| Brand website | Custom/variable font with weight animation on hover | Studio Freight interactive type |
-| Product landing | Tight display tracking with generous body spacing | Apple product pages |
-| Editorial layout | Serif/sans pairing with extreme scale contrast | AREA 17 case studies |
-| Cultural institution | Statement typography that becomes the visual identity | Hello Monday museum sites |
-| Tech startup | Premium geometric sans at architectural scale | Stripe typography system |
-
-**Copy patterns:**
-- Display: single powerful statement, 3-7 words maximum
-- Subhead: one sentence that contextualizes the display type
-- Body: 16-18px minimum, generous line-height, moderate measure (45-75 characters)
-- The "typography stare test": blur your eyes -- does the type hierarchy still read? If everything looks the same importance when blurred, you have failed
-
-**Ethical boundary:** Typography choices should enhance readability and accessibility, not sacrifice legibility for aesthetic novelty. Ensure body text meets WCAG contrast requirements and remains readable at standard viewing distances.
-
-See: [references/typography.md](references/typography.md) for font pairing strategies, type scale systems, and advanced CSS typography.
-
-### 2. Layout & Composition
-
-**Core concept:** Master the grid so you can break it with intention. Every violation should feel deliberate, not accidental. The rhythm of density and breathing room -- full-viewport hero, intimate text section, massive single word, dense grid -- creates a reading experience that holds attention.
-
-**Why it works:** White space is not empty space -- it is active design material that creates tension, controls pacing, and makes viewers lean in. Asymmetric layouts generate visual energy that centered, symmetrical compositions cannot achieve. When elements overlap, bleed, or extend beyond their containers with intention, the design feels alive and confident rather than constrained.
-
-**Key insights:**
-- **White space as a weapon** -- amateurs fill every gap with content, professionals use padding liberally, 10/10 designers use white space to create tension that controls the reader's eye
-- **Asymmetric balance creates interest** -- offset elements from center (e.g., one column offset in a 12-column grid), let images bleed and extend beyond containers
-- **Unexpected scale shifts create rhythm** -- the alternation between massive and intimate, dense and sparse, creates a narrative pacing that prevents monotony
-- **Elements should overlap, bleed, or extend with intention** -- breaking the container signals confidence and craftsmanship
-- **The grid paradox** -- a strong underlying grid is necessary precisely so you can break it meaningfully; without the grid, breaks are just chaos
-- **The screenshot test** -- if someone would not screenshot a section and share it, you are missing signature moments
-
-**Product applications:**
-
-| Context | Application | Example |
-|---------|-------------|---------|
-| Hero section | Offset title with bleeding imagery | `margin-left: 8.33%; margin-right: -5vw` |
-| Portfolio grid | Varied card sizes with intentional asymmetry | Locomotive project showcases |
-| Section transitions | Scale shifts between dense and breathing sections | Studio Freight scroll compositions |
-| Image galleries | Mixed full-bleed and contained images | AREA 17 editorial layouts |
-| Feature showcase | Overlapping elements creating depth | Active Theory layered compositions |
-| Navigation | Asymmetric mega-menus with dramatic scale | Hello Monday navigation systems |
-
-**Copy patterns:**
-- Hero: position text off-center with intentional alignment to grid
-- Sections: alternate between full-width immersion and contained reading
-- Cards: vary sizes within grids -- not everything needs to be the same dimensions
-- Images: mix full-bleed, contained, and overlapping treatments
-
-**Ethical boundary:** Layout experimentation must not compromise navigation clarity or content accessibility. Users should always understand where they are, how to move forward, and how to access critical information regardless of compositional choices.
-
-See: [references/layout-systems.md](references/layout-systems.md) for grid frameworks, breakpoints, and responsive patterns.
-
-### 3. Motion & Animation
-
-**Core concept:** Every animation must answer "Why does this move?" Motion is not polish applied at the end -- it is core to the design, prototyped early and developed alongside visual design. The three laws of elite motion are: purpose over decoration, custom curves (never linear), and orchestration over isolation.
-
-**Why it works:** Choreographed motion creates a cinematic experience that guides attention, communicates hierarchy, and creates emotional resonance. When elements animate in relationship to each other rather than independently, the result feels cohesive and intentional. Custom easing curves (exponential, quartic) give movement a physical quality that default browser easing cannot achieve.
-
-**Key insights:**
-- **Custom easing is mandatory** -- `ease`, `ease-in`, `ease-out`, and `linear` are banned; use `cubic-bezier(0.16, 1, 0.3, 1)` (expo out), `cubic-bezier(0.25, 1, 0.5, 1)` (quart out), `cubic-bezier(0.87, 0, 0.13, 1)` (expo in-out)
-- **Page load choreography follows a strict timeline** -- background/structure (0-200ms), hero title words staggered (200-600ms, 80ms stagger), subtitle (400-800ms), navigation cascade (600-900ms), supporting elements (800-1200ms)
-- **Scroll-triggered sequences reveal elements as they enter viewport** -- not all at once; parallax used sparingly and only on non-essential elements
-- **Pinned sections for storytelling moments** and horizontal scroll for galleries (with clear affordance) create immersive reading experiences
-- **Default browser scroll is unacceptable** -- use Lenis or Locomotive Scroll for smooth, custom scroll behavior
-- **60fps is non-negotiable** -- if an animation drops frames, simplify or remove it
-
-**Product applications:**
-
-| Context | Application | Example |
-|---------|-------------|---------|
-| Page load | Choreographed staggered reveal sequence | Studio Freight entry animations |
-| Scroll sections | Pinned storytelling with progressive reveals | Locomotive scroll experiences |
-| Navigation | Magnetic hover effects with custom cursors | Active Theory interactive nav |
-| Image reveals | Clip-path or mask animations on scroll enter | AREA 17 case study reveals |
-| Page transitions | Seamless cross-page animation continuity | Hello Monday page morphs |
-| Micro-interactions | Hover weight shifts, button magnetic effects | Dogstudio interactive details |
-
-**Copy patterns:**
-- Reveal: text lines slide up individually with stagger (not fade in as a block)
-- Hover: elements respond with custom cursor, scale shift, or color transition
-- Scroll: content reveals progressively, never all at once
-- Transition: pages morph rather than cut or fade
-
-**Ethical boundary:** Motion must never block interaction, cause motion sickness, or prevent users from accessing content. Always respect `prefers-reduced-motion` and ensure all content is accessible without animation. Animations longer than 1.2s require clear justification.
-
-See: [references/animation-patterns.md](references/animation-patterns.md) for scroll animations, page transitions, and micro-interactions with code.
-
-### 4. Color & Contrast
-
-**Core concept:** Color should feel invented for each specific project -- not pulled from a generic palette generator. The three approaches are monochromatic tension (95% one dominant color, 5% accent that pops), bold signature (own a color combination and make it unmistakable), and contextual shifting (color responds to content, with sections having distinct palettes).
-
-**Why it works:** Color creates atmosphere before a single word is read. When colors feel owned by a specific project, they become part of the brand's identity. Pure black (#000000) and pure white (#ffffff) feel digital and lifeless; slightly warm variants (#0a0a0a, #fafaf9) feel physical and considered. The restrained use of a single accent color creates moments of surprise that draw the eye exactly where intended.
-
-**Key insights:**
-- **Never use pure black or pure white** -- warm variants create a physical quality that pure digital colors lack
-- **The functional color hierarchy** -- text-primary, text-secondary (60% opacity), text-tertiary (40% opacity), surface, border (10% opacity) -- creates consistent depth across all components
-- **Accent color creates moments of surprise** -- a single strong accent (#ff4d00 or similar) used sparingly has more impact than a complex multi-color palette
-- **Contextual color shifts between sections** signal content changes and create visual chapters
-- **The squint test** -- squint at your design; if the important elements do not stand out through contrast alone, your color hierarchy is failing
-- **Colors must work in both light and dark contexts** -- design the system, not individual instances
-
-**Product applications:**
-
-| Context | Application | Example |
-|---------|-------------|---------|
-| Agency portfolio | Monochromatic with signature accent | Locomotive: cream + black + orange spark |
-| Brand identity | Bold owned color combination | Studio Freight: black + cream + rust |
-| Client showcase | Contextual shifting per case study | AREA 17: adapts palette to each client |
-| Product landing | Dark mode with single vibrant accent | Stripe: dark navy + signature purple |
-| Cultural site | Rich tonal palette from source material | Hello Monday: palette drawn from art/content |
-| Tech product | Minimal neutral with functional accent | Linear: grayscale + signature blue |
-
-**Copy patterns:**
-- Define CSS custom properties for your full color system: `--color-dark`, `--color-light`, `--color-accent`
-- Build functional tokens on top: `--color-text-primary`, `--color-text-secondary`, `--color-surface`
-- Use opacity-based variants (`rgba(10, 10, 10, 0.6)`) for consistent secondary/tertiary text
-- Accent color appears on CTAs, links, and single-detail moments -- never everywhere
-
-**Ethical boundary:** Color choices must meet WCAG 2.1 AA contrast requirements at minimum. Atmospheric design cannot come at the cost of readability for users with visual impairments. Test all color combinations with contrast checkers.
-
-See: [references/case-studies.md](references/case-studies.md) for agency technique breakdowns including color system analysis.
-
-### 5. Scroll-Based Design
-
-**Core concept:** Scroll is the primary interaction on the web, and it should feel designed, not default. The best digital experiences treat the scroll as a narrative device -- controlling pacing, creating reveals, building tension, and delivering signature moments tied to scroll position.
-
-**Why it works:** Default browser scroll is mechanical and uniform, treating all content as equally important. Custom scroll behavior (via Lenis or Locomotive Scroll) creates a smooth, weighted feel that mirrors physical objects. When scroll position drives animations, reveals, and transitions, the user's movement through content becomes an active, participatory experience rather than passive consumption.
-
-**Key insights:**
-- **Smooth scroll is the foundation** -- implement Lenis or Locomotive Scroll for the weighted, physical scroll feel that every award-winning site uses
-- **Parallax must be purposeful** -- used sparingly and only on non-essential decorative elements; never on text or critical content
-- **Pinned sections create storytelling beats** -- locking a section in place while content transforms within it creates cinematic moments
-- **Horizontal scroll for galleries** requires clear visual affordance so users know to scroll sideways
-- **Scroll-triggered reveals should be progressive** -- elements enter as they become visible, creating a sense of discovery
-- **Scroll velocity can modulate animation speed** -- fast scrolling compresses animations, slow scrolling expands them, creating a responsive feel
-
-**Product applications:**
-
-| Context | Application | Example |
-|---------|-------------|---------|
-| Product story | Pinned hero with scroll-driven content transformation | Apple product deep-dives |
-| Portfolio | Progressive image reveals tied to scroll position | Locomotive project showcases |
-| Editorial | Parallax depth on decorative elements only | AREA 17 editorial layouts |
-| Landing page | Horizontal scroll gallery with clear affordance | Studio Freight work galleries |
-| Brand narrative | Scroll-driven animation sequences | Active Theory immersive stories |
-| Feature tour | Step-by-step reveals pinned to scroll progress | Stripe feature presentations |
-
-**Copy patterns:**
-- Use `data-scroll`, `data-scroll-speed`, and `data-scroll-direction` attributes for declarative scroll behavior
-- Implement intersection observers for lightweight scroll-triggered class toggling
-- Reserve GSAP ScrollTrigger for complex, multi-step scroll-driven animations
-- Always provide a non-scroll fallback for accessibility
-
-**Ethical boundary:** Scroll hijacking that prevents users from scrolling at their own pace is hostile UX. Custom scroll should enhance the experience, not trap users. Always allow users to scroll freely through content, and never make scroll-driven animations mandatory for accessing information.
-
-See: [references/animation-patterns.md](references/animation-patterns.md) for scroll animation implementation patterns.
-
-### 6. Performance & Loading
-
-**Core concept:** Performance is not an optimization step -- it is a design constraint from day one. A beautiful animation that drops frames, a stunning font that causes layout shift, or a gorgeous image that takes three seconds to load all fail the craft test. 60fps is the floor, not the ceiling.
-
-**Why it works:** Users perceive performance as quality. A site that loads instantly and scrolls fluidly feels premium, regardless of visual complexity. Conversely, a visually stunning site that stutters or delays feels broken. The best agencies achieve both visual ambition and technical performance by making performance a first-class design decision: choosing GPU-accelerated properties, subsetting fonts, optimizing images, and testing on real devices.
-
-**Key insights:**
-- **Fonts must be subset and preloaded** -- only include the glyphs you need, use `font-display: swap` or `optional`, and preload critical font files
-- **Images must be optimized** -- use WebP/AVIF with fallbacks, implement responsive `srcset`, and lazy-load below-the-fold images
-- **Animations must be GPU-accelerated** -- only animate `transform` and `opacity`; never animate `width`, `height`, `top`, `left`, or `margin`
-- **No layout shifts** -- Cumulative Layout Shift (CLS) must be near zero; reserve space for images, fonts, and dynamic content
-- **LCP under 2.5s** -- Largest Contentful Paint is the key metric; optimize the critical rendering path for the hero
-- **First contentful paint must feel instant** -- use custom skeleton/loading animations as designed elements, not afterthoughts
-
-**Product applications:**
-
-| Context | Application | Example |
-|---------|-------------|---------|
-| Font loading | Subset, preload, and swap strategy | `<link rel="preload" as="font" crossorigin>` |
-| Image delivery | AVIF/WebP with responsive srcset | `<picture>` element with format fallbacks |
-| Animation perf | GPU-only properties with will-change hints | `transform: translate3d()` + `opacity` |
-| Layout stability | Aspect-ratio and min-height reservations | `aspect-ratio: 16/9` on image containers |
-| Loading experience | Designed skeleton screens and progress indicators | Custom branded loading animations |
-| Bundle optimization | Code-split, tree-shake, defer non-critical JS | Dynamic imports for below-fold interactivity |
-
-**Copy patterns:**
-- Audit with Lighthouse, targeting 90+ on all metrics
-- Test on real devices, not just simulators -- simulators lie about performance and feel
-- Implement `loading="lazy"` on all images below the fold
-- Use `will-change` sparingly and only on elements about to animate
-- Profile animations with Chrome DevTools Performance panel at 4x CPU throttle
-
-**Ethical boundary:** Performance optimization must not strip away accessibility features, skip semantic HTML, or remove meaningful content. Fast-but-inaccessible is not a valid tradeoff.
-
-See: [references/technical-stack.md](references/technical-stack.md) for libraries, tools, and performance optimization techniques.
-
-### 7. Micro-Interactions
-
-**Core concept:** The details that signal craft live in the 1% that most designers skip: custom cursors, branded selection colors, magnetic button effects, designed focus states, considered loading states, crafted error pages, and correct micro-typography. These details are the difference between professional and world-class.
-
-**Why it works:** Micro-interactions create a sense that every pixel was considered. When a cursor changes on hover, when text selection has a branded color, when a button has a subtle magnetic pull, and when focus states are beautiful AND accessible, users feel the care embedded in the experience. These details compound -- individually subtle, collectively transformative.
-
-**Key insights:**
-- **Custom cursor reflects brand personality** -- cursor changes on interactive elements, with optional magnetic effect on buttons
-- **Selection colors are branded** -- custom `::selection` color that works well on all backgrounds
-- **Every link has a considered hover state** -- images have scale or overlay treatment, cards transform meaningfully
-- **Focus states are visible AND beautiful** -- focus indicators match brand aesthetic while remaining clearly visible for keyboard navigation
-- **Loading and empty states are designed** -- custom skeleton animations, branded progress indicators, designed 404 pages, helpful error states
-- **Micro-typography is correct** -- smart quotes, proper apostrophes, en/em dashes where appropriate, no orphans on headlines, `text-wrap: balance` on key text
-
-**Product applications:**
-
-| Context | Application | Example |
-|---------|-------------|---------|
-| Cursor | Custom cursor with interactive-element variants | Dogstudio custom cursor system |
-| Selection | Branded `::selection` background color | On-brand highlight that works on all surfaces |
-| Buttons | Magnetic hover effect with subtle pull | Studio Freight magnetic buttons |
-| Focus | Styled focus-visible rings matching brand | Accessible + beautiful focus indicators |
-| Loading | Custom skeleton screens and progress bars | Locomotive branded loading sequences |
-| Error states | Designed 404 and error pages | Memorable, on-brand error experiences |
-
-**Copy patterns:**
-- `::selection { background: var(--color-accent); color: var(--color-light); }`
-- `cursor: none;` on body with custom cursor div following mouse position
-- Magnetic effect: calculate distance between cursor and button center, apply proportional transform
-- Smart quotes: use `&ldquo;` and `&rdquo;` or configure your build tool to auto-convert
-
-**Ethical boundary:** Micro-interactions must enhance usability, not hinder it. Custom cursors must remain functional and visible. Focus states must meet accessibility requirements -- beauty cannot replace visibility. Designed error states must be genuinely helpful, not just clever.
-
-See: [references/case-studies.md](references/case-studies.md) for agency technique breakdowns on micro-interaction implementation.
-
-## Design Process
-
-### 1. Concept First, Code Second
-
-Before any code, define:
-```
-BRAND ESSENCE: What single word captures the soul?
-VISUAL TENSION: What opposing forces create interest?
-SIGNATURE MOMENT: What will people screenshot and share?
-TECHNICAL AMBITION: What pushes the browser's limits?
+expo out: cubic-bezier(0.16, 1, 0.3, 1)
+quart out: cubic-bezier(0.25, 1, 0.5, 1)
+expo in-out: cubic-bezier(0.87, 0, 0.13, 1)
 ```
 
-### 2. Design the Signature Moment First
+**禁忌**：
+- ❌ `ease`/`ease-in`/`ease-out`/`linear`
+- ❌ 同时动画所有元素
+- ❌ 在文本上使用视差
 
-Do not start with the header. Start with the thing that defines the experience. The header can be solved later. Every 10/10 project has at least one moment that makes people stop and share: a hero animation never seen before, typography so bold it becomes the visual, an interaction that delights unexpectedly, a scroll sequence that tells a story, or a transition that feels like magic.
+---
 
-**Questions to identify your signature:**
-1. What will people screenshot?
-2. What will they describe to colleagues?
-3. What will they try to reverse-engineer?
-4. What makes this unmistakably THIS project?
+### 4. 色彩与对比
 
-### 3. Typography Sets Everything
+**核心**：色彩应该感觉是为项目定制的。
 
-Choose your display typeface first. Let it dictate the color palette mood, the animation style, the spacing rhythm, and the overall personality.
+**三种方法**：
+- **单色张力**：95% 主色 + 5% 点缀色
+- **大胆签名**：拥有独特的色彩组合
+- **情境转换**：不同区域有不同调色板
 
-### 4. Motion Is Not Polish
+**10 分标准**：
+- 从不用纯黑 (#000000) 或纯白 (#ffffff)
+- 暖色变体 (#0a0a0a, #fafaf9)
+- 功能色彩层次（主/次/第三级文本）
+- 单一强调色创造惊喜时刻
 
-Prototype animations early. Motion design happens alongside visual design, not after.
+**禁忌**：
+- ❌ 紫色到蓝色渐变（"AI 渐变"）
+- ❌ 复杂多色调色板
 
-### 5. Ship With Restraint
+---
 
-3 things perfect beats 10 things mediocre. Cut ruthlessly.
+### 5. 滚动设计
 
-## Implementation Notes
+**核心**：滚动是主要交互，应该被设计。
 
-1. **Start with the signature moment** -- design the thing that defines the experience first
-2. **Conceptualize desktop-first, build mobile-first** -- dream big, implement progressively
-3. **Prototype animations early** -- motion is not a polish step, it is core to the design
-4. **Test on real devices** -- simulators lie about performance and feel
-5. **Ship with restraint** -- 3 things perfect beats 10 things mediocre
-6. **Sweat the micro-details** -- craft lives in the 1% others skip
-7. **Design the states** -- hover, focus, loading, empty, error all matter
-8. **Own your constraints** -- every limitation is a design opportunity
-9. **Use project conventions** -- if Tailwind 4+ and/or shadcn/ui are available, build on top of them rather than fighting them. Extend their design tokens, customize their components, and use their patterns as a foundation for 10/10 craft
+**10 分标准**：
+- 平滑滚动（Lenis/Locomotive Scroll）
+- 有意图的视差（仅用于非关键装饰元素）
+- 固定区域用于叙事
+- 水平滚动用于画廊（有明确指示）
+- 滚动触发渐进揭示
 
-## Reference Files
+**禁忌**：
+- ❌ 默认浏览器滚动
+- ❌ 滚动劫持阻止用户自由滚动
 
-Consult these for detailed implementation:
+---
 
-- **[references/typography.md](references/typography.md)**: Font pairing strategies, type scale systems, advanced CSS typography
-- **[references/animation-patterns.md](references/animation-patterns.md)**: Scroll animations, page transitions, micro-interactions with code
-- **[references/layout-systems.md](references/layout-systems.md)**: Grid frameworks, breakpoints, responsive patterns
-- **[references/technical-stack.md](references/technical-stack.md)**: Libraries, tools, performance optimization
-- **[references/case-studies.md](references/case-studies.md)**: Agency technique breakdowns (Locomotive, Studio Freight, AREA 17, Hello Monday, etc.)
+### 6. 性能与加载
 
-## Common Mistakes
+**核心**：性能是设计约束，不是优化步骤。
 
-| Mistake | Why It Fails | Fix |
-|---------|-------------|-----|
-| Using Inter, Roboto, Arial, or system-ui as primary typeface | These are application fonts, not experience fonts -- they signal generic, not premium | Choose from premium foundries (Pangram Pangram, Dinamo, Grilli Type, Klim) or quality Google alternatives (Space Grotesk, Instrument Serif, Fraunces) |
-| Uniform type scale (everything within 2x of each other) | No hierarchy means no gasping moments -- everything feels equally unimportant | Push to minimum 10:1 ratio between display and body; viewport-filling type is the goal |
-| Using `ease`, `ease-in`, `ease-out`, or `linear` easing | Default easing feels mechanical and lifeless -- instantly signals amateur work | Use custom cubic-bezier curves: expo out (0.16, 1, 0.3, 1), quart out (0.25, 1, 0.5, 1) |
-| Animating everything simultaneously | Simultaneous animation creates visual noise with no hierarchy or narrative | Choreograph with stagger (80ms between elements), sequence in order of importance |
-| Center-aligning everything | Symmetry is safe but boring -- it creates no tension or visual energy | Use asymmetric compositions with intentional grid offsets and bleeding elements |
-| Equal spacing everywhere | Uniform spacing creates monotony -- the eye has nowhere to rest or focus | Vary spacing to create rhythm: dense sections followed by breathing room |
-| Pure #000000 black and pure #ffffff white | Pure digital colors feel lifeless and harsh -- they signal no design consideration | Use warm variants: #0a0a0a (slightly warm black), #fafaf9 (slightly warm white) |
-| Default browser scroll | Standard scroll feels mechanical and treats all content as equally important | Implement Lenis or Locomotive Scroll for smooth, weighted, physical scroll feel |
-| Purple-to-blue gradient hero sections | The "AI gradient" -- instantly signals generic, trend-following design | Develop a signature color approach specific to the project |
-| No signature moment in the entire experience | Without a screenshot-worthy moment, the design is competent but forgettable | Design the signature moment FIRST -- the thing people will reverse-engineer |
-| Any emoji in professional interfaces | Emoji signal casual/amateur craft and undermine premium positioning | Use custom iconography or typographic treatments instead |
-| Parallax on text and critical content | Parallax on readable content causes motion sickness and accessibility issues | Reserve parallax for decorative, non-essential background elements only |
-| Animations blocking user interaction | Motion that prevents scrolling, clicking, or reading is hostile UX | Ensure all animations are non-blocking; content remains accessible during transitions |
-| Font Awesome icons used unmodified | Generic icon sets signal template-level design | Create custom icons or heavily customize existing ones to match brand personality |
-| Default form styles | Unstyled form elements immediately break the illusion of craft | Design every input, select, checkbox, and button as a branded experience |
+**10 分标准**：
+- 字体子集化和预加载
+- 图片优化（WebP/AVIF + srcset）
+- 仅动画 `transform` 和 `opacity`
+- 无布局偏移（CLS ≈ 0）
+- LCP < 2.5s
+- 即时首屏
 
-## Quick Diagnostic
+**测试**：
+- Lighthouse 90+ 分
+- 真实设备测试（模拟器会骗人）
+- 4x CPU 降频分析动画
 
-| Question | If No | Action |
-|----------|-------|--------|
-| Does the hero typography make someone pause mid-scroll? | Display type is not commanding enough | Push scale contrast to 10:1+, choose a more distinctive typeface, fill the viewport |
-| Would someone screenshot any section and share it? | No signature moment exists | Identify one section to make extraordinary -- an animation, scale shift, or interaction |
-| Does the design still read when you blur your eyes? | Hierarchy is too flat | Increase contrast between levels -- bigger headlines, more white space, stronger accents |
-| Are all easing curves custom (no `ease` or `linear`)? | Motion feels default and mechanical | Replace with expo out (0.16, 1, 0.3, 1) or quart out (0.25, 1, 0.5, 1) |
-| Is there asymmetric tension in the composition? | Layout feels safe and symmetrical | Offset elements from center, let images bleed, vary section density |
-| Do the colors feel invented for THIS project? | Palette could belong to any brand | Develop a signature color identity: monochromatic tension, bold signature, or contextual shifting |
-| Is the page load choreographed (not all at once)? | Elements pop in simultaneously | Implement staggered reveal: structure first, then hero, then supporting elements |
-| Does scroll feel custom and weighted? | Using default browser scroll | Implement Lenis or Locomotive Scroll for smooth, physical scroll behavior |
-| Are micro-details considered (selection, focus, cursor)? | Default browser behaviors remain | Add branded selection colors, designed focus states, and considered cursor behavior |
-| Is CLS near zero and LCP under 2.5s? | Performance undermines perceived quality | Subset fonts, optimize images (WebP/AVIF), animate only transform/opacity |
-| Does every animation answer "why does this move?" | Motion is decorative, not purposeful | Remove animations that do not serve narrative, hierarchy, or user guidance |
-| Are focus states both beautiful AND accessible? | Accessibility sacrificed for aesthetics or vice versa | Design focus indicators that match brand aesthetic while meeting WCAG visibility requirements |
+---
 
-## Further Reading
+### 7. 微交互
 
-- [Designing with Type](https://www.amazon.com/Designing-Type-Essential-Typography/dp/0823014134?tag=wondelai00-20) by James Craig -- the foundational text on typographic principles, hierarchy, and the architecture of type in design
-- [Grid Systems in Graphic Design](https://www.amazon.com/Grid-Systems-Graphic-Design-Communication/dp/3721201450?tag=wondelai00-20) by Josef Muller-Brockmann -- the definitive work on grid-based composition, proportional systems, and the mathematical foundations of visual layout
-- [The Elements of Typographic Style](https://www.amazon.com/Elements-Typographic-Style-Version-4-0/dp/0881792128?tag=wondelai00-20) by Robert Bringhurst -- the typographer's bible covering rhythm, proportion, and the craft of setting type beautifully
-- [Interaction of Color](https://www.amazon.com/Interaction-Color-50th-Anniversary-Edition/dp/0300179359?tag=wondelai00-20) by Josef Albers -- essential reading on color perception, contrast, and how colors behave in relation to each other
-- [Layout Essentials: 100 Design Principles for Using Grids](https://www.amazon.com/Layout-Essentials-Design-Principles-Using/dp/1592537073?tag=wondelai00-20) by Beth Tondreau -- practical grid-based layout principles applied to real design scenarios
-- [Awwwards Annual: The Best 365 Websites Around the World](https://www.awwwards.com/books/) -- yearly collection of the web's most innovative designs, serving as a benchmark for 10/10 craft
+**核心**：细节体现工艺。
 
-## About the Author
+**10 分标准**：
+- 定制光标反映品牌个性
+- 品牌化选区颜色 (`::selection`)
+- 每个链接有考虑的悬停状态
+- 焦点状态既可见又美观
+- 加载/空/错误状态被设计
+- 微观排版正确（智能引号、破折号）
 
-This skill synthesizes techniques and principles from the world's most awarded digital design agencies. The primary sources are:
+**代码示例**：
+```css
+::selection { background: var(--accent); color: var(--light); }
+cursor: none; /* 配合定制光标 */
+```
 
-**Locomotive** (Montreal) -- pioneers of smooth scroll experiences (creators of Locomotive Scroll), known for monochromatic tension palettes, bold typography, and seamless page transitions. Their work for clients like Ubisoft and the National Film Board of Canada defines the standard for immersive web storytelling.
+---
 
-**Studio Freight** (New York) -- specialists in creative development, known for magnetic interactions, bold signature color palettes, and pushing the technical boundaries of the browser. Their open-source tools and experimental projects influence the broader creative development community.
+## 设计流程
 
-**AREA 17** (New York/Paris) -- a digital product agency known for contextual design systems that adapt to each client's identity, editorial-quality layouts, and the balance of visual ambition with functional clarity. Their work for cultural institutions and media organizations sets the bar for content-driven design.
+### 1. 概念优先，代码第二
 
-**Active Theory** (Los Angeles) -- a creative studio specializing in WebGL, immersive 3D experiences, and interactive storytelling. Their work demonstrates what is possible when technical ambition meets design vision.
+定义前编码：
+- **品牌本质**：什么词捕捉灵魂？
+- **视觉张力**：什么对立力创造兴趣？
+- **签名时刻**：什么会让人截图分享？
+- **技术野心**：什么推动浏览器极限？
 
-**Hello Monday** (Copenhagen/New York, now part of DEPT) -- known for playful, innovative interactions and page transitions that feel like magic. Their work for brands like Spotify, Adidas, and Google consistently wins top awards.
+### 2. 先设计签名时刻
 
-Additional inspiration drawn from Dogstudio (Belgium), Tonik (Poland), Instrument (Portland), Resn (New Zealand), and the broader community of Awwwards, FWA, CSS Design Awards, and Webby Award winners whose collective work establishes the evolving standard for world-class digital craft.
+不要从 header 开始。从定义体验的元素开始。
+
+**问题识别签名**：
+1. 人们会截图什么？
+2. 他们会向同事描述什么？
+3. 他们会尝试逆向工程什么？
+4. 什么让这 unmistakably 是这个项目？
+
+### 3. 排版设定一切
+
+先选展示字体。让它决定色彩情绪、动画风格、间距节奏。
+
+### 4. 运动不是抛光
+
+早期原型动画。运动设计与视觉设计并行。
+
+### 5. 克制发布
+
+3 件事完美胜过 10 件事平庸。无情切割。
+
+---
+
+## 快速诊断
+
+| 问题 | 如果否 | 行动 |
+|------|-------|------|
+| 英雄排版让人暂停滚动？ | 展示字体不够突出 | 推到 10:1+ 比例，选更独特字体 |
+| 有人会截图分享吗？ | 无签名时刻 | 识别一个区域做到极致 |
+| 模糊眼睛还能读层次吗？ | 层次太平 | 增加对比，更大标题，更多白空间 |
+| 所有缓动是自定义吗？ | 运动感觉默认 | 替换为 expo out 或 quart out |
+| 有不对称张力吗？ | 布局感觉安全 | 偏移中心，让图像溢出 |
+| 色彩感觉是定制的吗？ | 调色板属于任何品牌 | 发展签名色彩身份 |
+| 页面加载有编排吗？ | 元素同时弹出 | 实现交错揭示 |
+| 滚动感觉定制吗？ | 用默认浏览器滚动 | 实现 Lenis/Locomotive Scroll |
+| 考虑了微细节吗？ | 默认浏览器行为残留 | 添加品牌选区色、设计焦点状态 |
+
+---
+
+## 常见错误
+
+| 错误 | 为什么失败 | 修复 |
+|------|-----------|------|
+| Inter/Roboto/Arial 主字体 | 应用字体，不是体验字体 | 选高端字库或优质 Google 替代 |
+| 统一比例（2x 内） | 无层次无惊喜 | 推到 10:1+ 比例 |
+| 用 `ease`/`linear` | 感觉机械业余 | 用自定义 cubic-bezier |
+| 同时动画所有 | 视觉噪音无层次 | 交错编排（80ms 间隔） |
+| 全部居中对齐 | 安全无聊无张力 | 不对称构图，偏移网格 |
+| 等间距 everywhere | 单调无节奏 | 变化间距创造节奏 |
+| 纯黑纯白 | 感觉数字无情 | 用暖色变体 |
+| 默认浏览器滚动 | 机械对待所有内容 | 用 Lenis/Locomotive |
+| 紫蓝渐变英雄 | "AI 渐变"模板感 | 发展项目定制色彩 |
+| 无签名时刻 | 胜任但可遗忘 | 先设计签名时刻 |
+| Emoji 专业界面 | 业余感 | 用定制图标 |
+| 文本上视差 | 晕动症 | 视差仅用于装饰元素 |
+| 默认表单样式 | 打破工艺幻觉 | 设计每个输入体验 |
+
+---
+
+## 参考文档
+
+详细实现代码、案例研究、完整技术栈请参阅：
+
+- [排版系统](references/typography.md) — 字体配对、比例系统、CSS 技术、变量字体、加载优化
+- [动画模式](references/animation-patterns.md) — 缓动函数、加载序列、滚动触发、微交互、页面过渡
+- [布局系统](references/layout-systems.md) — 网格框架、断点策略、构图技巧、响应式模式
+- [技术栈](references/technical-stack.md) — 核心技术、动画库、平滑滚动、3D/WebGL、构建工具
+- [案例研究](references/case-studies.md) — Locomotive、Studio Freight、AREA 17 等顶级设计公司分析
+
+---
+
+*每个像素都有意图 — 没有默认，没有偶然。*
