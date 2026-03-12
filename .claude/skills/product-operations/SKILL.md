@@ -1,6 +1,15 @@
 ---
 name: product-operations
-description: Help users build and scale product operations functions. Use when someone is scaling a product team, struggling with cross-functional coordination, needs to standardize product processes, or wants to improve how insights reach product teams.
+description: |
+  帮助用户搭建和规模化产品运营职能。
+
+  当用户提到以下情况时使用此技能：
+  - 产品团队快速扩张、流程跟不上
+  - 跨部门协调困难、信息不通
+  - 需要标准化产品流程
+  - 想要改进用户洞察如何传递给产品团队
+
+  即使没有明确说"需要产品运营"，只要涉及产品团队规模化、流程标准化、跨部门协同就应触发此技能。
 ---
 
 # Product Operations

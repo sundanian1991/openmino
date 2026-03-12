@@ -1,6 +1,16 @@
 ---
 name: pricing-strategy
-description: Help users design and optimize pricing strategies. Use when someone is setting prices for the first time, considering freemium vs paid models, optimizing monetization, dealing with willingness to pay questions, or transitioning between pricing models.
+description: |
+  帮助用户设计和优化定价策略。
+
+  当用户需要以下内容时使用此技能：
+  - 首次设定产品价格
+  - 考虑免费 vs 付费模式（freemium）
+  - 优化货币化策略
+  - 处理用户支付意愿问题
+  - 在不同定价模型之间切换
+
+  即使没有明确说"需要定价建议"，只要涉及 monetization、付费墙、定价调整就应触发此技能。
 ---
 
 # Pricing Strategy

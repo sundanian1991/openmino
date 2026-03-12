@@ -1,6 +1,15 @@
 ---
 name: github
-description: "Interact with GitHub using the `gh` CLI. Use `gh issue`, `gh pr`, `gh run`, and `gh api` for issues, PRs, CI runs, and advanced queries."
+description: |
+  使用 `gh` CLI 与 GitHub 交互。
+
+  当用户需要以下内容时使用此技能：
+  - 查询 PR 状态、检查 CI 运行结果
+  - 创建/管理 Issue 和 Pull Request
+  - 查看工作流运行日志
+  - 执行高级 GitHub API 查询
+
+  即使没有明确说"用 gh 命令"，只要涉及 GitHub 操作就应优先使用此技能而非网页浏览。
 ---
 
 # GitHub Skill

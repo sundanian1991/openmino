@@ -1,6 +1,15 @@
 ---
 name: personal-productivity
-description: Help users manage their time and tasks more effectively. Use when someone is overwhelmed with work, struggling with focus, trying to balance multiple responsibilities, or asking how to get more done.
+description: |
+  帮助用户更有效地管理时间和任务。
+
+  当用户提到以下情况时使用此技能：
+  - 工作压得喘不过气、感到不堪重负
+  - 难以保持专注、总是分心
+  - 试图平衡多重责任（工作/生活/副业）
+  - 询问如何更高效地完成更多事情
+
+  即使没有明确说"我需要生产力建议"，只要涉及时间管理、任务优先级、专注力问题就应触发此技能。
 ---
 
 # Personal Productivity

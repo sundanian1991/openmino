@@ -1,6 +1,15 @@
 ---
 name: running-effective-meetings
-description: Help users run more effective meetings. Use when someone is dealing with meeting overload, wants to improve meeting culture, is preparing an important meeting, or struggles to get decisions made in meetings.
+description: |
+  帮助用户召开更高效的会议。
+
+  当用户提到以下情况时使用此技能：
+  - 会议过多、不堪重负
+  - 想要改进会议文化
+  - 正在准备重要会议
+  - 难以在会议中做出决策
+
+  即使没有明确说"需要会议建议"，只要涉及会议效率、议程设计、决策流程就应触发此技能。
 ---
 
 # Running Effective Meetings
