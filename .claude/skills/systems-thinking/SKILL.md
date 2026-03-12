@@ -1,6 +1,15 @@
 ---
 name: systems-thinking
-description: Help users think in systems and understand complex dynamics. Use when someone is dealing with multi-stakeholder problems, trying to understand second-order effects, managing platform ecosystems, or analyzing complex organizational dynamics.
+description: |
+  帮助用户用系统思维理解复杂动态。
+
+  当用户遇到以下情况时使用此技能：
+  - 多方利益相关者的复杂问题
+  - 需要理解二阶/三阶效应
+  - 管理平台生态系统
+  - 分析复杂的组织动态
+
+  即使没有明确说"用系统思维"，只要涉及多方博弈、长链条因果、生态设计就应触发此技能。
 ---
 
 # Systems Thinking

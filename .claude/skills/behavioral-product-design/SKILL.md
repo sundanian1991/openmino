@@ -1,6 +1,16 @@
 ---
 name: behavioral-product-design
-description: Help users apply behavioral science to product design. Use when someone is designing for habit formation, reducing friction, applying psychology to UX, increasing retention through behavioral principles, or using nudges to influence user behavior.
+description: |
+  帮助用户将行为科学应用于产品设计。
+
+  当用户需要以下内容时使用此技能：
+  - 设计习惯养成机制
+  - 减少用户操作摩擦
+  - 将心理学原理应用于 UX
+  - 通过行为原则提高留存率
+  - 使用助推（nudge）影响用户行为
+
+  即使没有明确说"用行为科学"，只要涉及用户行为改变、习惯设计、留存优化就应触发此技能。
 ---
 
 # Behavioral Product Design

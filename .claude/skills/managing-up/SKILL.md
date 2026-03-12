@@ -1,6 +1,16 @@
 ---
 name: managing-up
-description: Help users work effectively with their manager and executives. Use when someone is struggling with their manager relationship, needs to influence leadership, wants to get better at executive communication, or is trying to build trust with their boss.
+description: |
+  帮助用户与上级和高管有效协作。
+
+  当用户提到以下情况时使用此技能：
+  - 与领导关系遇到摩擦或挑战
+  - 需要影响高层决策或获取支持
+  - 想要提升高管沟通技巧
+  - 试图与上级建立信任
+  - 感觉被领导误解或忽视
+
+  即使没有明确说"向上管理"，只要涉及上下级协作困境就应触发此技能。
 ---
 
 # Managing Up

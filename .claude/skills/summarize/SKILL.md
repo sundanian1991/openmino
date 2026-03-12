@@ -1,6 +1,15 @@
 ---
 name: summarize
-description: Summarize or extract text/transcripts from URLs, podcasts, and local files (great fallback for "transcribe this YouTube/video").
+description: |
+  快速总结 URL、本地文件、YouTube 视频的内容。
+
+  当用户提到以下情况时使用此技能：
+  - "总结这个链接/文章"
+  - "这个视频讲了什么"
+  - "转写这个 YouTube 视频"
+  - "帮我看看这篇长文在说什么"
+
+  即使没有明确说"用 summarize"，只要涉及内容摘要、链接分析、视频转写就应触发此技能。
 ---
 
 # Summarize
