@@ -1,6 +1,10 @@
 ---
 name: writing-clearly
-description: Principles and techniques for clear, concise writing
+description: |
+  Principles and techniques for clear, concise writing. Use when editing or improving any written content —
+  emails, documents, reports, memos, presentations, or web copy. Trigger on: "make this clearer",
+  "simplify this", "too wordy", "edit this", "rewrite for clarity", or any request to improve writing.
+  Even if not explicitly mentioned, use this skill for any business or professional writing.
 ---
 
 # Writing Clearly and Concisely

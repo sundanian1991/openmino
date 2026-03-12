@@ -1,6 +1,11 @@
 ---
 name: report-builder
-description: Framework for building structured, effective reports
+description: |
+  Framework for building structured, effective reports. Use when creating business reports, status updates,
+  research reports, recommendation documents, executive summaries, or any formal report.
+  Trigger on: "report", "status update", "recommendation", "executive summary", "business case",
+  "proposal", "analysis document", or any request for structured business writing.
+  Even if not explicitly mentioned, use this skill for any formal report to ensure clarity and impact.
 ---
 
 # Report Builder
