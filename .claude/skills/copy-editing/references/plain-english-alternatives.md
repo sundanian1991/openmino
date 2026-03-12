@@ -1,400 +1,173 @@
----
-input: 需求
-output: plain-english-alternatives.md
-pos: .claude/skills/copy-editing/references/plain-english-alternatives.md
----
-
 # Plain English Alternatives
 
-Replace complex or pompous words with plain English alternatives.
-
-Source: Plain English Campaign A-Z of Alternative Words (2001), Australian Government Style Manual (2024), plainlanguage.gov
+> 替换复杂词的简单替代方案
 
 ---
 
-## Contents
-- A
-- B
-- C
-- D
-- E
-- F
-- G-H
-- I
-- L-M
-- N-O
-- P
-- R
-- S
-- T-U
-- V-Z
-- Phrases to Remove Entirely
+## 弱强调词（删除）
 
-## A
+| 避免 | 说明 |
+|------|------|
+| very | 直接用更强的词 |
+| really | 直接用更强的词 |
+| extremely | 直接用更强的词 |
+| incredibly | 直接用更强的词 |
+| quite | 删除或直接用更强的词 |
+| rather | 删除或直接用更强的词 |
 
-| Complex | Plain Alternative |
-|---------|-------------------|
-| (an) absence of | no, none |
-| abundance | enough, plenty, many |
-| accede to | allow, agree to |
-| accelerate | speed up |
-| accommodate | meet, hold, house |
-| accomplish | do, finish, complete |
-| accordingly | so, therefore |
-| acknowledge | thank you for, confirm |
-| acquire | get, buy, obtain |
-| additional | extra, more |
-| adjacent | next to |
-| advantageous | useful, helpful |
-| advise | tell, say, inform |
-| aforesaid | this, earlier |
-| aggregate | total |
-| alleviate | ease, reduce |
-| allocate | give, share, assign |
-| alternative | other, choice |
-| ameliorate | improve |
-| anticipate | expect |
-| apparent | clear, obvious |
-| appreciable | large, noticeable |
-| appropriate | proper, right, suitable |
-| approximately | about, roughly |
-| ascertain | find out |
-| assistance | help |
-| at the present time | now |
-| attempt | try |
-| authorise | allow, let |
+**示例**：
+- ❌ "very good" → ✅ "excellent"
+- ❌ "really fast" → ✅ "instant"
+- ❌ "incredibly powerful" → ✅ "powerful"
 
 ---
 
-## B
+## 填充词（删除）
 
-| Complex | Plain Alternative |
-|---------|-------------------|
-| belated | late |
-| beneficial | helpful, useful |
-| bestow | give |
-| by means of | by |
+| 避免 | 说明 |
+|------|------|
+| just | 通常可以删除 |
+| actually | 通常可以删除 |
+| basically | 通常可以删除 |
+| simply | 通常可以删除 |
+| literally | 通常可以删除（而且常被误用）|
 
----
-
-## C
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| calculate | work out |
-| cease | stop, end |
-| circumvent | avoid, get around |
-| clarification | explanation |
-| commence | start, begin |
-| communicate | tell, talk, write |
-| competent | able |
-| compile | collect, make |
-| complete | fill in, finish |
-| component | part |
-| comprise | include, make up |
-| (it is) compulsory | (you) must |
-| conceal | hide |
-| concerning | about |
-| consequently | so |
-| considerable | large, great, much |
-| constitute | make up, form |
-| consult | ask, talk to |
-| consumption | use |
-| currently | now |
+**示例**：
+- ❌ "It just works" → ✅ "It works"
+- ❌ "We actually help companies" → ✅ "We help companies"
+- ❌ "Basically, you save time" → ✅ "You save time"
 
 ---
 
-## D
+## 企业黑话（替换）
 
-| Complex | Plain Alternative |
-|---------|-------------------|
-| deduct | take off |
-| deem | treat as, consider |
-| defer | delay, put off |
-| deficiency | lack |
-| delete | remove, cross out |
-| demonstrate | show, prove |
-| denote | show, mean |
-| designate | name, appoint |
-| despatch/dispatch | send |
-| determine | decide, find out |
-| detrimental | harmful |
-| diminish | reduce, lessen |
-| discontinue | stop |
-| disseminate | spread, distribute |
-| documentation | papers, documents |
-| due to the fact that | because |
-| duration | time, length |
-| dwelling | home |
+| 避免 | 替换 |
+|------|------|
+| utilize | use |
+| implement | set up / start using |
+| leverage | use |
+| facilitate | help |
+| optimize | improve |
+| synergize | work together |
+| operationalize | put into practice |
+| institutionalize | make standard |
+| strategize | plan |
+| prioritize | rank / focus on |
+| incentivize | motivate / reward |
+| monetize | make money from |
+| finalize | finish / complete |
+| customize | tailor / adapt |
+| standardize | make consistent |
+| revolutionize | change / transform |
+| innovate | improve / create |
+| demonstrate | show |
+| communicate | share / tell |
+| collaborate | work together |
 
 ---
 
-## E
+## 模糊形容词（替换）
 
-| Complex | Plain Alternative |
-|---------|-------------------|
-| economical | cheap, good value |
-| eligible | allowed, qualified |
-| elucidate | explain |
-| enable | allow |
-| encounter | meet |
-| endeavour | try |
-| enquire | ask |
+| 避免 | 替换（用具体描述） |
+|------|-------------------|
+| innovative | new / fresh |
+| robust | strong / complete |
+| seamless | smooth |
+| cutting-edge | new / modern |
+| best-in-class | leading / top |
+| world-class | excellent |
+| enterprise-grade | professional / business |
+| carrier-grade | professional / reliable |
+| military-grade | very strong / secure |
+| bank-level | very secure |
+
+---
+
+## 模糊动词（替换）
+
+| 避免 | 替换 |
+|------|------|
+| enhance | improve |
+| streamline | simplify |
+| empower | help / enable |
+| enable | let / allow |
 | ensure | make sure |
-| entitlement | right |
-| envisage | expect |
-| equivalent | equal, the same |
-| erroneous | wrong |
-| establish | set up, show |
-| evaluate | assess, test |
-| excessive | too much |
-| exclusively | only |
-| exempt | free from |
 | expedite | speed up |
-| expenditure | spending |
-| expire | run out |
+| procure | get / buy |
+| terminate | end / stop |
+| initiate | start |
+| modify | change |
+| resolve | fix |
+| escalate | raise / pass to |
+| ascertain | find out |
+| rectify | fix |
+| utilize | use |
 
 ---
 
-## F
+## 模糊名词（替换）
 
-| Complex | Plain Alternative |
-|---------|-------------------|
-| fabricate | make |
-| facilitate | help, make possible |
-| finalise | finish, complete |
-| following | after |
-| for the purpose of | to, for |
-| for the reason that | because |
-| forthwith | now, at once |
-| forward | send |
-| frequently | often |
-| furnish | give, provide |
-| furthermore | also, and |
-
----
-
-## G-H
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| generate | produce, create |
-| henceforth | from now on |
-| hitherto | until now |
+| 避免 | 替换 |
+|------|------|
+| solution | tool / product / way |
+| methodology | method / approach |
+| paradigm | model / framework |
+| framework | system / structure |
+| mechanism | way / method |
+| capability | ability / skill |
+| deliverable | output / result |
+| initiative | project / effort |
+| milestone | goal / target |
+| resource | person / tool / money |
+| stakeholder | person / team / customer |
+| synergy | cooperation / teamwork |
+| visibility | insight / awareness |
+| bandwidth | capacity / time |
+| granularity | detail / specifics |
 
 ---
 
-## I
+## 常见短语简化
 
-| Complex | Plain Alternative |
-|---------|-------------------|
-| if and when | if, when |
-| illustrate | show |
-| immediately | at once, now |
-| implement | carry out, do |
-| imply | suggest |
-| in accordance with | under, following |
-| in addition to | and, also |
-| in conjunction with | with |
-| in excess of | more than |
-| in lieu of | instead of |
+| 避免 | 替换 |
+|------|------|
 | in order to | to |
-| in receipt of | receive |
-| in relation to | about |
-| in respect of | about, for |
-| in the event of | if |
-| in the majority of instances | most, usually |
+| at this point in time | now |
+| due to the fact that | because |
+| in the event that | if |
+| for the purpose of | to |
+| in close proximity to | near |
+| the majority of | most |
+| a number of | some / many |
+| on a daily basis | daily |
 | in the near future | soon |
-| in view of the fact that | because |
-| inception | start |
-| indicate | show, suggest |
-| inform | tell |
-| initiate | start, begin |
-| insert | put in |
-| instances | cases |
-| irrespective of | despite |
-| issue | give, send |
-
----
-
-## L-M
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| (a) large number of | many |
-| liaise with | work with, talk to |
-| locality | place, area |
-| locate | find |
-| magnitude | size |
-| (it is) mandatory | (you) must |
-| manner | way |
-| modification | change |
-| moreover | also, and |
-
----
-
-## N-O
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| negligible | small |
-| nevertheless | but, however |
-| notify | tell |
-| notwithstanding | despite, even if |
-| numerous | many |
-| objective | aim, goal |
-| (it is) obligatory | (you) must |
-| obtain | get |
-| occasioned by | caused by |
-| on behalf of | for |
-| on numerous occasions | often |
-| on receipt of | when you get |
-| on the grounds that | because |
-| operate | work, run |
-| optimum | best |
-| option | choice |
-| otherwise | or |
-| outstanding | unpaid |
-| owing to | because |
-
----
-
-## P
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| partially | partly |
-| participate | take part |
-| particulars | details |
-| per annum | a year |
-| perform | do |
-| permit | let, allow |
-| personnel | staff, people |
-| peruse | read |
-| possess | have, own |
-| practically | almost |
-| predominant | main |
-| prescribe | set |
-| preserve | keep |
-| previous | earlier, before |
-| principal | main |
-| prior to | before |
-| proceed | go ahead |
-| procure | get |
-| prohibit | ban, stop |
-| promptly | quickly |
-| provide | give |
-| provided that | if |
-| provisions | rules, terms |
-| proximity | nearness |
-| purchase | buy |
-| pursuant to | under |
-
----
-
-## R
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| reconsider | think again |
-| reduction | cut |
-| referred to as | called |
-| regarding | about |
-| reimburse | repay |
-| reiterate | repeat |
-| relating to | about |
-| remain | stay |
-| remainder | rest |
-| remuneration | pay |
-| render | make, give |
-| represent | stand for |
-| request | ask |
-| require | need |
-| residence | home |
-| retain | keep |
-| revised | changed, new |
-
----
-
-## S
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| scrutinise | examine, check |
-| select | choose |
-| solely | only |
-| specified | given, stated |
-| state | say |
-| statutory | legal, by law |
-| subject to | depending on |
-| submit | send, give |
-| subsequent to | after |
-| subsequently | later |
-| substantial | large, much |
-| sufficient | enough |
-| supplement | add to |
-| supplementary | extra |
-
----
-
-## T-U
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| terminate | end, stop |
-| thereafter | then |
-| thereby | by this |
-| thus | so |
-| to date | so far |
-| transfer | move |
-| transmit | send |
-| ultimately | in the end |
-| undertake | agree, do |
-| uniform | same |
-| utilise | use |
-
----
-
-## V-Z
-
-| Complex | Plain Alternative |
-|---------|-------------------|
-| variation | change |
-| virtually | almost |
-| visualise | imagine, see |
-| ways and means | ways |
-| whatsoever | any |
-| with a view to | to |
-| with effect from | from |
-| with reference to | about |
+| at your earliest convenience | soon / when you can |
+| until such time as | until |
 | with regard to | about |
-| with respect to | about |
-| zone | area |
+| in accordance with | by / following |
+| for the duration of | during |
 
 ---
 
-## Phrases to Remove Entirely
+## 被动语态转主动
 
-These phrases often add nothing. Delete them:
+| 被动（避免） | 主动（推荐） |
+|-------------|-------------|
+| "The report was written by the team" | "The team wrote the report" |
+| "Mistakes were made" | "We made mistakes" |
+| "Your account will be charged" | "We will charge your account" |
+| "The decision was made to..." | "We decided to..." |
+| "It is recommended that..." | "We recommend..." |
 
-- a total of
-- absolutely
-- actually
-- all things being equal
-- as a matter of fact
-- at the end of the day
-- at this moment in time
-- basically
-- currently (when "now" or nothing works)
-- I am of the opinion that (use: I think)
-- in due course (use: soon, or say when)
-- in the final analysis
-- it should be understood
-- last but not least
-- obviously
-- of course
-- quite
-- really
-- the fact of the matter is
-- to all intents and purposes
-- very
+---
+
+## 使用指南
+
+1. **第一遍扫描**：删除所有弱强调词和填充词
+2. **第二遍扫描**：替换企业黑话为简单词
+3. **第三遍扫描**：替换模糊词为具体词
+4. **第四遍扫描**：被动语态转主动
+
+---
+
+*简单不是简陋，是让读者更容易理解。*
