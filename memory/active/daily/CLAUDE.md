@@ -19,9 +19,27 @@ pos: active/ 的成员，存放 30 天内日记
 
 ## Members
 
-| 文件 | 内容 |
+| 文件 | 用途 |
 |------|------|
-| **YYYY-MM-DD.md** | 每日对话记录，由 observer 生成 |
+| `2026-02-13.md` | Markdown 文档 |
+| `2026-02-17.md` | Markdown 文档 |
+| `2026-02-18.md` | Markdown 文档 |
+| `2026-02-20.md` | Markdown 文档 |
+| `2026-02-21.md` | Markdown 文档 |
+| `2026-02-22.md` | Markdown 文档 |
+| `2026-02-23.md` | Markdown 文档 |
+| `2026-02-24.md` | Markdown 文档 |
+| `2026-02-25.md` | Markdown 文档 |
+| `2026-02-26.md` | Markdown 文档 |
+| `2026-02-27.md` | Markdown 文档 |
+| `2026-03-01.md` | Markdown 文档 |
+| `2026-03-04.md` | Markdown 文档 |
+| `2026-03-05.md` | Markdown 文档 |
+| `2026-03-07.md` | Markdown 文档 |
+| `2026-03-10.md` | Markdown 文档 |
+| `2026-03-11.md` | Markdown 文档 |
+| `2026-03-13.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
 
 ---
 
