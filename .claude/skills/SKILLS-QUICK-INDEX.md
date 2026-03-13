@@ -21,6 +21,7 @@ pos: .claude/skills/SKILLS-QUICK-INDEX.md
 | **observer** | 观察、总结 | 对话结束后记录事实与洞察 |
 | **email** | 发邮件、邮件模板 | SMTP 邮件发送 |
 | **pptx** | PPT、幻灯片 | PowerPoint 创建编辑 |
+| **mck-ppt-design** | 麦肯锡PPT、咨询风格PPT | McKinsey 风格专业 PPT |
 | **pdf** | PDF、提取文本 | PDF 处理（提取/创建/合并） |
 | **frontend-slides** | HTML 幻灯片、演讲 | 动画丰富的 HTML 演示文稿 |
 | **search** | 搜索、查资料 | Tavily 网页搜索 |
@@ -36,6 +37,14 @@ pos: .claude/skills/SKILLS-QUICK-INDEX.md
 | **ultra-research** | 深度研究、调研 | 多 AI 并行深度研究 |
 | **summarize** | 摘要、总结 | URL/文本/音频摘要 |
 | **steal-learning** | 萃取、学习方法 | 三行框架萃取信息 |
+
+### 商业咨询（McKinsey）
+| Skill | 触发关键词 | 说明 |
+|-------|-----------|------|
+| **lbs-market-analyzer** | LBS分析、地理商业 | 基于位置的服务市场分析器 |
+| **market-sizing** | 市场规模、TAM/SAM | 市场估算计算器 |
+| **moat-finder** | 护城河、竞争优势 | 护城河分析探测器 |
+| **story-lining** | 商业叙事、SCQR | 故事线构建 |
 
 ### 开发相关
 | Skill | 触发关键词 | 说明 |
