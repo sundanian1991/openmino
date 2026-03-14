@@ -1,40 +1,46 @@
 ---
-input: 用户需求、学习材料（Claude Code 核心概述文章）
-output: 结构化学习文档 + 实战练习
-pos: docs/learning/，学习目标定义
-# 文件夹变化需同步注释及所属文件夹 md
+pos: docs/prompt.md
+input: 文档同步机制需求
+output: 文件夹 README + 文件头注释补齐 + 执行机制
+update: 需求变更时更新
 ---
 
-# 学习目标：学会使用 Claude Code 七大核心组件
+# 项目定义：my-agent 文档同步机制
 
-## 需求来源
-用户提供的《Claude Code 核心概述》文章，包含：
-- 工具定位（CLI-first、agentic coding）
-- 七大核心组件（CLAUDE.md、Commands、Hooks、SubAgents、Skills、Plugins、MCP Servers）
-- 组件实战应用
-- 协同策略
-- 避坑指南
+## 目标
+
+**建立 my-agent 项目的文档同步机制**：
+1. 每个文件夹有对应的 README.md（或 CLAUDE.md）
+2. 每个 .md 文件有 `---` 头注释，格式：
+   ```
+   ---
+   input: [依赖外部资源]
+   output: [对外提供功能]
+   pos: [系统局部地位]
+   ---
+   ```
+3. 文件夹变化时自动同步更新所属 README
 
 ## 排除项
-- 不深入 MCP 协议技术细节（除非用户后续要求）
-- 不开发自定义 Skills/MCP Server（进阶内容，后续单独学习）
-- 不涉及 CI/CD 集成（进阶内容）
+
+- [ ] 不改变现有项目结构
+- [ ] 不修改代码逻辑
+- [ ] 不引入重型文档工具
 
 ## 交付物
-1. **学习文档** — 结构化教程，按组件组织
-2. **实战练习** — 每个组件的动手任务
-3. **速查表** — 一页纸快速参考
-4. **学习路径** — 推荐学习顺序
+
+1. 缺失文件夹 README 补齐
+2. 缺失文件头注释补齐
+3. 文档同步检查脚本
+4. Git pre-commit hook
 
 ## 完成标准
-- [ ] 学完能独立创建 CLAUDE.md
-- [ ] 学完能配置 Hooks 自动化
-- [ ] 学完能创建自定义 Commands
-- [ ] 学完能使用 Skills 封装工作流
-- [ ] 学完能配置 MCP Servers 连接外部数据
-- [ ] 学完能理解 Plugins 并安装使用
-- [ ] 学完能组合多个组件形成工作流
 
----
+- [ ] 检查脚本运行无 ❌
+- [ ] pre-commit hook 正常工作
+- [ ] 机制写入项目 CLAUDE.md
 
-*最后更新：2026-02-24*
+## 约束条件
+
+- 保持脚本执行时间 < 5 秒
+- 不破坏现有文件内容
