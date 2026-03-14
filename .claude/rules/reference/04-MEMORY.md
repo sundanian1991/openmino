@@ -240,6 +240,21 @@ memory/active/tasks/active/
 
 ## 🟡 L3 时新区 — 最近7天关键信息
 
+### 2026-03-14 | 记忆体系重构 + 执行统计自监控
+- **背景**：简化记忆流转、重新定义目录用途、实现自动化 UPDATE_MEMORY
+- **核心变更**：
+  - 重命名 `staging/` → `workspace/`（草稿/研究/临时）
+  - 清空 `context/` 重新定义（项目上下文/共享知识）
+  - 删除 `transient/`（内容合并到 workspace/temp/）
+- **自动化**：创建 `auto-update-memory.sh` + launchd 定时任务（每周一9点）
+- **执行统计**：创建 `execution-log.md`，追踪透明工作流/技能检查/Plan First 执行情况
+- **产出**：
+  - `memory/CLAUDE.md`（新目录结构）
+  - `memory/logs/AUTO-UPDATE-SETUP.md`（自动化设置指南）
+  - `memory/active/tasks/tracking/execution-log.md`（执行总台账）
+  - `scripts/auto-update-memory.sh`（自动化脚本）
+- **标签**：#系统优化 #记忆体系 #自动化
+
 ### 2026-03-11 | Token 优化与 RTK 安装
 - **背景**：借鉴 Get 笔记文章中的 Token 优化方法
 - **两大"邪修"方法**：
