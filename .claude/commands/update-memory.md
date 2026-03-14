@@ -124,7 +124,37 @@ description: "每周汇总事实与洞察到周文档，判断是否更新长期
 ## 执行频率
 
 - **默认**：每周执行一次
-- **触发**：手动执行 `/update-memory`
+- **手动触发**：`/update-memory`
+- **自动执行**：每周一早上9点（launchd 定时任务）
+
+### 自动化执行（2026-03-14 新增）
+
+**脚本**：`scripts/auto-update-memory.sh`
+
+**功能**：
+- 检查超期文件（lifecycle_manager）
+- 归档超期文件到 archive/
+- 自动更新索引
+- 记录执行日志
+
+**配置**：
+- 文件：`~/Library/LaunchAgents/com.mino.update-memory.plist`
+- 时间：每周一早上9点
+- 日志：`memory/logs/update-memory.log`
+
+**启用**：
+```bash
+# 加载定时任务
+launchctl load ~/Library/LaunchAgents/com.mino.update-memory.plist
+
+# 验证已加载
+launchctl list | grep com.mino.update-memory
+
+# 手动测试
+./scripts/auto-update-memory.sh
+```
+
+**详细说明**：`memory/logs/AUTO-UPDATE-SETUP.md`
 
 ---
 
