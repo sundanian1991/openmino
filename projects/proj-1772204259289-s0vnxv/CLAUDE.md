@@ -20,4 +20,8 @@ pos: [projects/proj-1772204259289-s0vnxv，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| memory/ | MEMORY |
+| outputs/ | 子目录 |
+| scripts/ | SCRIPTS |
+| `CLAUDE.md` | Claude 配置文档 |
+| `project.md` | Markdown 文档 |

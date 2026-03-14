@@ -20,4 +20,8 @@ pos: [projects/proj-1772240987779-zrc3gz/outputs/alternative-resources，说明�
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `complete-alternative-resources.md` | Markdown 文档 |
+| `cs25-transformers-course.md` | Markdown 文档 |
+| `domestic-ai-resources.md` | Markdown 文档 |
+| `final-learning-path-cn.md` | Markdown 文档 |

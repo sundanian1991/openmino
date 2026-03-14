@@ -28,7 +28,7 @@ argument-hint: <参数说明>  # 可选
 
 ### Memory Commands (记忆与学习)
 - `observer` - 对话观察
-- `UPDATE_MEMORY` - 每周汇总
+- `update-memory` - 每周汇总
 - `learn` - 模式提取
 - `log-day` - 日志记录
 

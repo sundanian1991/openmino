@@ -20,4 +20,8 @@ pos: [projects/proj-1772979560848-vwiehr，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| memory/ | 子目录 |
+| outputs/ | 子目录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `emotional-trigger-map.md` | Markdown 文档 |
+| `project.md` | Markdown 文档 |

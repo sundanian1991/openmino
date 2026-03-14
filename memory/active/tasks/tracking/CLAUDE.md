@@ -21,10 +21,11 @@ pos: active/tasks/tracking/ 的成员
 
 ## Members
 
-| 文件 | 项目 | 状态 | 启动日期 |
-|------|------|------|---------|
-| **skills-usage.md** | 技能使用统计 | ⬜ | - |
-| **[项目名].md** | [新增项目] | ⬜ | YYYY-MM-DD |
+| 文件 | 用途 |
+|------|------|
+| `CLAUDE.md` | Claude 配置文档 |
+| `execution-log.md` | Markdown 文档 |
+| `skills-usage.md` | Markdown 文档 |
 
 ---
 

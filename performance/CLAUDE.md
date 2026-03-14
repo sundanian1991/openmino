@@ -20,4 +20,17 @@ pos: [performance，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| optimization/ | 子目录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `OPTIMIZATION_GUIDE.md` | 指南文档 |
+| `context-manager.js` | 文件 |
+| `file-cache.js` | 文件 |
+| `lightweight-pre-commit.sh` | Shell 脚本 |
+| `memory-manager.js` | 文件 |
+| `network-optimizer.js` | 文件 |
+| `performance-config.sh` | 配置 |
+| `performance-monitor.js` | 文件 |
+| `personal-optimizer.js` | 文件 |
+| `preloader.js` | 文件 |
+| `skill-selector.js` | 文件 |
+| `tool-pool.js` | 文件 |

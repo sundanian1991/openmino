@@ -21,11 +21,16 @@ pos: memory/的 P1 活跃区
 
 ## Members
 
-| 目录 | 内容 | 维护 |
-|------|------|------|
-| **daily/** | 最近的日记（30 天内） | observer 生成 |
-| **my-thoughts/** | 最近的思考 | 有感而发 |
-| **tasks/** | 运行中的机制 | 系统维护 |
+| 文件 | 用途 |
+|------|------|
+| daily/ | Daily（活跃期） |
+| goals/ | GOALS |
+| my-thoughts/ | My Thoughts（活跃期） |
+| observations/ | OBSERVATIONS |
+| tasks/ | Tasks 任务系统 |
+| weekly/ | WEEKLY |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |
 
 ---
 

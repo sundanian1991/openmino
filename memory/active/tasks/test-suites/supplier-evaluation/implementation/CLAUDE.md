@@ -20,4 +20,6 @@ pos: [memory/active/tasks/test-suites/supplier-evaluation/implementation，说�
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `supplier-evaluation.test.ts` | 供应商相关 |
+| `supplier-evaluation.ts` | 供应商相关 |

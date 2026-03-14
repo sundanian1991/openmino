@@ -21,11 +21,13 @@ pos: memory/ 的 P0 核心区，永不过期
 
 ## Members
 
-| 目录 | 内容 | 来源 |
-|------|------|------|
-| **preferences/** | 审美、沟通、写作偏好 | 03-USER.md 提炼 |
-| **decisions/** | 重要决策、协议、工作流 | WAL 协议触发 |
-| **identity/** | 身份认知、核心记忆 | 04-MEMORY.md 精华 |
+| 文件 | 用途 |
+|------|------|
+| decisions/ | Decisions |
+| identity/ | Identity |
+| preferences/ | Preferences |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |
 
 ---
 

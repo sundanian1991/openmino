@@ -1,5 +1,5 @@
 ---
-name: "workflow:report"
+name: "workflow-report"
 description: "汇报制作全流程 - 从数据收集到最终报告的自动化工作流"
 argument-hint: <汇报主题>
 ---
@@ -130,7 +130,7 @@ tavily    summarize   clearly   design    infographic
 ## 使用示例
 
 ```
-用户: /workflow:report 供应商管理优化成果
+用户: /workflow-report 供应商管理优化成果
 
 AI: 让我们开始汇报制作流程。
 

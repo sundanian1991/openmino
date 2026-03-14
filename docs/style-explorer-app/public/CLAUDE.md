@@ -20,4 +20,10 @@ pos: [docs/style-explorer-app/public，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| data/ | DATA |
+| `CLAUDE.md` | Claude 配置文档 |
+| `file.svg` | SVG 矢量图 |
+| `globe.svg` | SVG 矢量图 |
+| `next.svg` | SVG 矢量图 |
+| `vercel.svg` | SVG 矢量图 |
+| `window.svg` | SVG 矢量图 |

@@ -20,4 +20,9 @@ pos: [projects/proj-1772116804441-jd1bsd，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| memory/ | MEMORY |
+| outputs/ | 子目录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `forward-looking-advice.md` | Markdown 文档 |
+| `project.md` | Markdown 文档 |
+| `soul-insights.md` | Markdown 文档 |

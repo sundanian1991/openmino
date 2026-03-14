@@ -19,6 +19,30 @@ pos: active/的子模块，P1 活跃工作机制
 
 ---
 
+
+## Members
+
+| 文件 | 用途 |
+|------|------|
+| active/ | ACTIVE |
+| archive/ | ARCHIVE |
+| cognition/ | Cognition 认知 |
+| frameworks/ | FRAMEWORKS |
+| monitoring/ | MONITORING |
+| plans/ | Plans |
+| reminders/ | Reminders 定时提醒 |
+| scripts/ | Scripts 管理脚本 |
+| system/ | System 系统机制 |
+| templates/ | Templates 模板 |
+| test-suites/ | TEST-SUITES |
+| tracking/ | Projects Tracking |
+| `CLAUDE.md` | Claude 配置文档 |
+| `chrome-login-flash-fix.md` | Markdown 文档 |
+| `lessons.md` | Markdown 文档 |
+| `todo.md` | Markdown 文档 |
+| `供应商管理长期任务.md` | 供应商管理 |
+
+---
 ## Members（子目录清单）
 
 | 子目录 | 内容 | 维护 |
@@ -78,4 +102,4 @@ python3 memory/tasks/scripts/[脚本名].py --action [动作]
 
 ---
 
-*最后更新：2026-02-23*
+*最后更新：2026-03-14*

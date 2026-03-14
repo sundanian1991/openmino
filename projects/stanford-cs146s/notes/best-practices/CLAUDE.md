@@ -20,4 +20,10 @@ pos: [projects/stanford-cs146s/notes/best-practices，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `01-context-management.md` | Markdown 文档 |
+| `02-planning-architecture.md` | 架构设计文档 |
+| `03-tools-automation.md` | Markdown 文档 |
+| `04-code-quality.md` | Markdown 文档 |
+| `05-anti-patterns.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `INDEX.md` | Markdown 文档 |

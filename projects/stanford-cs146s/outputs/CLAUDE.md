@@ -20,4 +20,7 @@ pos: [projects/stanford-cs146s/outputs，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `COURSE-GUIDE.md` | 指南文档 |
+| `LEARNING-ROADMAP.md` | Markdown 文档 |
+| `WEEK1-AGENT-MCP.md` | Markdown 文档 |

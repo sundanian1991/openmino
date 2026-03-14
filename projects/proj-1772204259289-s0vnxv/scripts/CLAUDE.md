@@ -20,4 +20,6 @@ pos: [projects/proj-1772204259289-s0vnxv/scripts，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `analyze_transcripts.py` | Python 脚本 |
+| `analyze_transcripts_v2.py` | Python 脚本 |

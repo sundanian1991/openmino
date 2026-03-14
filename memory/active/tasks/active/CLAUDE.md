@@ -20,4 +20,7 @@ pos: [memory/active/tasks/active，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| memory-system-redesign/ | MEMORY-SYSTEM-REDESIGN |
+| supplier-structural-dilemma/ | SUPPLIER-STRUCTURAL-DILEMMA |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |

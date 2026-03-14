@@ -20,4 +20,5 @@ pos: [memory/active/tasks/archive，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |

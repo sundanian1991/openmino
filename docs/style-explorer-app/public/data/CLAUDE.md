@@ -20,4 +20,8 @@ pos: [docs/style-explorer-app/public/data，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `colors.csv` | 文件 |
+| `styles.csv` | 文件 |
+| `typography.csv` | 文件 |
+| `ui-reasoning.csv` | 文件 |

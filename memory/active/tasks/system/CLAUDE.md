@@ -19,10 +19,15 @@ pos: active/tasks/的子模块，L3 系统机制
 
 ## Members
 
-| 文件 | 内容 |
+| 文件 | 用途 |
 |------|------|
-| **heartbeat.md** | 主动关怀机制（周末/月度提醒） |
-| **OBSERVATION.md** | 观察记录机制说明 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `EMAIL-SOP.md` | Markdown 文档 |
+| `EVOLUTION.md` | Markdown 文档 |
+| `MEMORY-OPTIMIZATION.md` | Markdown 文档 |
+| `OBSERVATION.md` | Markdown 文档 |
+| `heartbeat.md` | Markdown 文档 |
+| `round_001.md` | Markdown 文档 |
 
 ---
 
@@ -49,4 +54,4 @@ pos: active/tasks/的子模块，L3 系统机制
 
 ---
 
-*最后更新：2026-02-23*
+*最后更新：2026-03-14*

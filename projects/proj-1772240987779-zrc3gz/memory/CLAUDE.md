@@ -20,4 +20,8 @@ pos: [projects/proj-1772240987779-zrc3gz/memory，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `2026-03-01.md` | Markdown 文档 |
+| `2026-03-08.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `learning-notes.md` | Markdown 文档 |
+| `long-term.md` | Markdown 文档 |

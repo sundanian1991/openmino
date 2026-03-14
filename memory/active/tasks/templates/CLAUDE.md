@@ -21,10 +21,11 @@ pos: active/tasks/的子模块，L3 模板库
 
 | 文件 | 用途 |
 |------|------|
-| **project-workflow.md** | 5 文件流项目模板（Prompt/Plans/Architecture/Implement/Documentation） |
-| **work-log.md** | 工作日志模板 |
-| **risk-checklist.md** | 风险检查清单 |
-| **career-ledger.md** | 职业资产台账 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `career-ledger.md` | Markdown 文档 |
+| `project-workflow.md` | Markdown 文档 |
+| `risk-checklist.md` | Markdown 文档 |
+| `work-log.md` | Markdown 文档 |
 
 ---
 
@@ -60,4 +61,4 @@ pos: active/tasks/的子模块，L3 模板库
 
 ---
 
-*最后更新：2026-02-23*
+*最后更新：2026-03-14*

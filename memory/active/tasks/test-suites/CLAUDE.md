@@ -20,4 +20,11 @@ pos: [memory/active/tasks/test-suites，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| TEMPLATE/ | TEMPLATE |
+| document-writer/ | DOCUMENT-WRITER |
+| risk-alert/ | RISK-ALERT |
+| supplier-evaluation/ | SUPPLIER-EVALUATION |
+| `AGENTIC-LOOP-STANDARD.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `GETTING-STARTED.md` | Markdown 文档 |
+| `README.md` | 目录说明文档 |

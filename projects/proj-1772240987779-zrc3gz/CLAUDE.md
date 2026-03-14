@@ -20,4 +20,8 @@ pos: [projects/proj-1772240987779-zrc3gz，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| memory/ | MEMORY |
+| outputs/ | OUTPUTS |
+| scripts/ | SCRIPTS |
+| `CLAUDE.md` | Claude 配置文档 |
+| `project.md` | Markdown 文档 |

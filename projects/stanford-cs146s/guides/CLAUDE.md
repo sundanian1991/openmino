@@ -20,4 +20,6 @@ pos: [projects/stanford-cs146s/guides，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| apify-demo/ | APIFY-DEMO |
+| `APIFY-GUIDE.md` | 指南文档 |
+| `CLAUDE.md` | Claude 配置文档 |
