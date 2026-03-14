@@ -39,6 +39,8 @@ pos: active/ 的成员，存放 30 天内日记
 | `2026-03-10.md` | Markdown 文档 |
 | `2026-03-11.md` | Markdown 文档 |
 | `2026-03-13.md` | Markdown 文档 |
+| `2026-03-14-github-hosts-update.md` | Markdown 文档 |
+| `2026-03-14.md` | Markdown 文档 |
 | `CLAUDE.md` | Claude 配置文档 |
 
 ---
