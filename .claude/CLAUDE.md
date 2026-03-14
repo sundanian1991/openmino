@@ -21,4 +21,9 @@ pos: .claude/的成员
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| commands/ | 子目录 |
+| hooks/ | HOOKS |
+| rules/ | RULES |
+| skills/ | SKILLS |
+| `CLAUDE.md` | Claude 配置文档 |
+| `settings.local.json` | JSON 配置文件 |

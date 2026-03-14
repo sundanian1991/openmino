@@ -227,11 +227,11 @@ generate_header() {
             echo ""
             echo "# CLAUDE.md — Shell 脚本"
             ;;
-        career)
+        职业发展)
             echo "---"
             echo "input: 职业发展需求"
             echo "output: 职业资产文档"
-            echo "pos: business/career/的成员，职业资产"
+            echo "pos: business/职业发展/的成员，职业资产"
             echo "# 文件夹变化需同步注释及所属文件夹 md"
             echo "---"
             echo ""

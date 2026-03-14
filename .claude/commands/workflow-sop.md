@@ -1,5 +1,5 @@
 ---
-name: "workflow:sop"
+name: "workflow-sop"
 description: "SOP标准化工作流 - 将重复工作转化为可复制经验"
 argument-hint: <工作场景描述>
 ---
@@ -227,7 +227,7 @@ Clarify   steal-    planning-  docs-     systematic+
 ## 使用示例
 
 ```
-用户: /workflow:sop 供应商月度评估流程
+用户: /workflow-sop 供应商月度评估流程
 
 AI: 让我们开始SOP标准化流程。
 

@@ -20,4 +20,12 @@ pos: [docs/style-explorer-app/src/app，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| api/ | 子目录 |
+| quiz/ | 子目录 |
+| report/ | 子目录 |
+| style/ | 子目录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `favicon.ico` | 文件 |
+| `globals.css` | 文件 |
+| `layout.tsx` | 文件 |
+| `page.tsx` | 文件 |

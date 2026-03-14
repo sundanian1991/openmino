@@ -19,10 +19,11 @@ pos: active/tasks/的子模块，L3 认知方法
 
 ## Members
 
-| 文件 | 内容 |
+| 文件 | 用途 |
 |------|------|
-| **analysis.md** | 分析方法论 |
-| **plan.md** | 计划制定框架 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `analysis.md` | Markdown 文档 |
+| `plan.md` | Markdown 文档 |
 
 ---
 
@@ -45,4 +46,4 @@ pos: active/tasks/的子模块，L3 认知方法
 
 ---
 
-*最后更新：2026-02-23*
+*最后更新：2026-03-14*

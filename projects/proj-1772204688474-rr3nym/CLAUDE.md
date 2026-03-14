@@ -20,4 +20,7 @@ pos: [projects/proj-1772204688474-rr3nym，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| memory/ | MEMORY |
+| outputs/ | 子目录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `project.md` | Markdown 文档 |

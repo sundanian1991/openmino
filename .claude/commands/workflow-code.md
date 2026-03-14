@@ -1,5 +1,5 @@
 ---
-name: "workflow:code"
+name: "workflow-code"
 description: "代码开发工作流 - 从需求到部署的专业开发流程"
 ---
 
@@ -217,7 +217,7 @@ description: "代码开发工作流 - 从需求到部署的专业开发流程"
 ## 使用示例
 
 ```
-用户: /workflow:code 做一个供应商评分系统
+用户: /workflow-code 做一个供应商评分系统
 
 AI: 让我们开始代码开发流程。
 

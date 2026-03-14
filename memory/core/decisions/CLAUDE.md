@@ -21,11 +21,11 @@ pos: core/的成员，P0 永久核心
 
 ## Members
 
-| 文件 | 内容 |
+| 文件 | 用途 |
 |------|------|
-| **WAL-protocol.md** | WAL 协议核心规则 |
-| **work-agreements.md** | 工作契约、协作规范 |
-| **architecture-decisions/** | 架构决策记录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `interaction-speed.md` | Markdown 文档 |
+| `interaction-tolerance.md` | Markdown 文档 |
 
 ---
 

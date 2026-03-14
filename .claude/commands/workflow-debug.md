@@ -1,5 +1,5 @@
 ---
-name: "workflow:debug"
+name: "workflow-debug"
 description: "问题排查全流程 - 从发现问题到根因解决的结构化调试"
 argument-hint: <问题描述>
 ---
@@ -133,7 +133,7 @@ argument-hint: <问题描述>
 ## 使用示例
 
 ```
-用户: /workflow:debug 用户列表页面加载很慢
+用户: /workflow-debug 用户列表页面加载很慢
 
 AI: 让我们开始问题排查流程。
 

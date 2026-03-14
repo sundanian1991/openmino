@@ -21,11 +21,9 @@ pos: core/的成员，P0 永久核心
 
 ## Members
 
-| 文件 | 内容 |
+| 文件 | 用途 |
 |------|------|
-| **mino-identity.md** | Mino 是谁（从 01-IDENTITY.md 提炼） |
-| **growth-milestones.md** | 成长里程碑（从 02-SOUL.md 提炼） |
-| **core-memory.md** | 核心记忆（从 04-MEMORY.md 提炼） |
+| `CLAUDE.md` | Claude 配置文档 |
 
 ---
 

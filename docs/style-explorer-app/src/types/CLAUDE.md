@@ -20,4 +20,5 @@ pos: [docs/style-explorer-app/src/types，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `style.ts` | 文件 |

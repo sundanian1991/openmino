@@ -52,8 +52,8 @@ pos: .claude/rules/MEMORY-L1.md
 |------|------|------|------|
 | **daily** | 日 | 事实记录 | observer每段对话后 |
 | **observations** | 月 | 洞察记录 | observer每段对话后 |
-| **weekly** | 周 | 周文档 | UPDATE_MEMORY每周 |
-| **长期记忆** | 长期 | 04-MEMORY/03-USER/02-SOUL | UPDATE_MEMORY判断 |
+| **weekly** | 周 | 周文档 | update-memory每周 |
+| **长期记忆** | 长期 | 04-MEMORY/03-USER/02-SOUL | update-memory判断 |
 
 **核心原则**：边界清晰，职责明确，各司其职
 

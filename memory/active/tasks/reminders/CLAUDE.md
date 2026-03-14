@@ -19,10 +19,13 @@ pos: active/tasks/的子模块，L3 定时提醒
 
 ## Members
 
-| 文件 | 触发时间 | 内容 |
-|------|----------|------|
-| **weekend-dialogue.md** | 每周六/日 | 32 个问题深度对话 |
-| **monthly-audit.md** | 每月 20 日 | 职业资产清算 |
+| 文件 | 用途 |
+|------|------|
+| `5311-weekly-review.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `monthly-audit.md` | Markdown 文档 |
+| `weekend-dialogue.md` | Markdown 文档 |
+| `weekly-review.md` | Markdown 文档 |
 
 ---
 
@@ -45,4 +48,4 @@ pos: active/tasks/的子模块，L3 定时提醒
 
 ---
 
-*最后更新：2026-02-23*
+*最后更新：2026-03-14*

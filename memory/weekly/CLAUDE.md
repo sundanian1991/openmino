@@ -20,4 +20,6 @@ pos: [memory/weekly，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `2026-W09.md` | Markdown 文档 |
+| `2026-W10.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |

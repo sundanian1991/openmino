@@ -20,4 +20,8 @@ pos: [projects/mcp-servers/memos，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| src/ | SRC |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |
+| `package-lock.json` | JSON 配置文件 |
+| `package.json` | JSON 配置文件 |

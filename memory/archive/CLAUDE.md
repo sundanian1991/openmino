@@ -21,11 +21,12 @@ pos: memory/的归档区
 
 ## Members
 
-| 目录 | 内容 |
+| 文件 | 用途 |
 |------|------|
-| **daily/** | 90 天以上的日记（有历史价值） |
-| **observations/** | 月度观察归档 |
-| **weekly/** | 周文档归档 |
+| observations/ | Observations 洞察 |
+| weekly/ | Weekly 周文档 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |
 
 ---
 

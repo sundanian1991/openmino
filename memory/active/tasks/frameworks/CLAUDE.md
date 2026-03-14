@@ -20,4 +20,9 @@ pos: [memory/active/tasks/frameworks，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| 电销知识库/ | 子目录 |
+| `5311-framework.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |
+| `daily-log-template.md` | Markdown 文档 |
+| `weekly-review-template.md` | Markdown 文档 |

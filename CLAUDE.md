@@ -88,7 +88,7 @@ my-agent/
 |--------|------|------|
 | P0 | memory/core/ | 偏好、决策、身份 |
 | P1 | memory/active/ | daily、my-thoughts、tasks |
-| P2 | memory/transient/ | 临时记录 |
+| P2 | memory/workspace/ | 工作空间、临时记录 |
 
 ---
 

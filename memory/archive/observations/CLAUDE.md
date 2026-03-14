@@ -23,8 +23,8 @@ pos: archive/的子模块，月维度归档
 
 | 文件 | 用途 |
 |------|------|
-| **.index.md** | 主题索引（按人格特质/工作风格/认知模式分组） |
-| **YYYY-MM.md** | 月洞察合集 |
+| `2026-02.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
 
 ---
 
@@ -85,4 +85,4 @@ python3 memory/tasks/scripts/index_manager.py --action update-obs
 
 ---
 
-*最后更新：2026-02-23*
+*最后更新：2026-03-14*

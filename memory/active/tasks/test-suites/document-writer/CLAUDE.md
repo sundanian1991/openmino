@@ -20,4 +20,8 @@ pos: [memory/active/tasks/test-suites/document-writer，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| implementation/ | IMPLEMENTATION |
+| `CLAUDE.md` | Claude 配置文档 |
+| `spec.md` | Markdown 文档 |
+| `test-cases.md` | Markdown 文档 |
+| `validation.sh` | Shell 脚本 |

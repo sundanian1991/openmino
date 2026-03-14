@@ -20,4 +20,6 @@ pos: [projects/proj-1772204259289-s0vnxv/memory，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `2026-02-27.md` | Markdown 文档 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `long-term.md` | Markdown 文档 |

@@ -78,7 +78,7 @@ class PersonalOptimizer {
   getRandomFile() {
     const files = [
       'CLAUDE.md', 'memory/active/tasks/todo.md', 'memory/active/daily/2026-02-25.md',
-      '.claude/rules/06-NOW.md', 'memory/core/decisions/2026-02-25.md', 'docs/learning/claude-code-learning.html'
+      '.claude/rules/06-NOW.md', 'memory/core/decisions/2026-02-25.md', 'docs/学习资料/claude-code-learning.html'
     ];
     return files[Math.floor(Math.random() * files.length)];
   }

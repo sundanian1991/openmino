@@ -20,4 +20,14 @@ pos: [docs/style-explorer-app，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| public/ | PUBLIC |
+| src/ | 子目录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |
+| `eslint.config.mjs` | 配置 |
+| `next-env.d.ts` | 文件 |
+| `next.config.ts` | 配置 |
+| `package-lock.json` | JSON 配置文件 |
+| `package.json` | JSON 配置文件 |
+| `postcss.config.mjs` | 配置 |
+| `tsconfig.json` | 配置 |

@@ -20,4 +20,9 @@ pos: [projects/stanford-cs146s/notes，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| best-practices/ | BEST-PRACTICES |
+| slides/ | 子目录 |
+| `CLAUDE.md` | Claude 配置文档 |
+| `README.md` | 目录说明文档 |
+| `monday-learning.md` | Markdown 文档 |
+| `subagent-analysis.md` | Markdown 文档 |

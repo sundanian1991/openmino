@@ -21,11 +21,9 @@ pos: core/的成员，P0 永久核心
 
 ## Members
 
-| 文件 | 内容 |
+| 文件 | 用途 |
 |------|------|
-| **aesthetic.md** | 审美偏好（Clean > Minimalist > Modern） |
-| **communication.md** | 沟通风格（结构化表达、用数据说话） |
-| **writing.md** | 写作偏好（接地气、直白、案例支撑） |
+| `CLAUDE.md` | Claude 配置文档 |
 
 ---
 

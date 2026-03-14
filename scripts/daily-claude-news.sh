@@ -107,7 +107,7 @@ main() {
 
     # 生成输出文件名（带日期）
     local today=$(date '+%Y-%m-%d')
-    local output_dir="$PROJECT_DIR/docs/daily-claude-news"
+    local output_dir="$PROJECT_DIR/docs/每日Claude新闻"
     local output_file="$output_dir/claude-news-$today.md"
 
     # 确保输出目录存在

@@ -20,4 +20,5 @@ pos: [projects/proj-1772116804441-jd1bsd/memory，说明目录职责]
 
 | 文件 | 用途 |
 |------|------|
-| [文件 1] | [说明] |
+| `CLAUDE.md` | Claude 配置文档 |
+| `long-term.md` | Markdown 文档 |

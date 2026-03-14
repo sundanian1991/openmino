@@ -100,12 +100,12 @@ pos: .claude/rules/reference/04-MEMORY.md
 |------|------|------|------|
 | **daily** | 日 | 事实记录 | observer每段对话后 |
 | **observations** | 月 | 洞察记录 | observer每段对话后 |
-| **weekly** | 周 | 周文档 | UPDATE_MEMORY每周 |
-| **长期记忆** | 长期 | 04-MEMORY/03-USER/02-SOUL | UPDATE_MEMORY判断 |
+| **weekly** | 周 | 周文档 | update-memory每周 |
+| **长期记忆** | 长期 | 04-MEMORY/03-USER/02-SOUL | update-memory判断 |
 
 **核心原则**：
 - observer：记录事实→daily，生成洞察→observations/
-- UPDATE_MEMORY：汇总→周文档，判断→长期记忆
+- update-memory：汇总→周文档，判断→长期记忆
 - 边界清晰，职责明确，各司其职
 
 ---
@@ -223,7 +223,7 @@ memory/active/tasks/active/
 1. **会话启动检查**：06-NOW.md 第五步扫描 active/ 未完成任务
 2. **处理时自动创建**：复杂任务必须创建三文件
 3. **验证时强制检查**：pre-commit hook 验证 completed 任务
-4. **会话结束时清理**：UPDATE_MEMORY 移动已完成任务到 archive/
+4. **会话结束时清理**：update-memory 移动已完成任务到 archive/
 
 **禁止行为**：
 - ❌ 复杂任务不规划直接执行
@@ -318,7 +318,7 @@ memory/active/tasks/active/
 ### 2026-02-22 | 自我进化启动 & 工具体系优化
 - **自我进化**：在06-NOW.md首位加"我学到了什么？"，创建EVOLUTION.md追踪变化
 - **my-thoughts风格**：从结构化到有感而发，"不是为了写而写"
-- **commands精简**：删除checkpoint、finish、daily-summary；保留checklist、plan、learn、observer、wake、UPDATE_MEMORY
+- **commands精简**：删除checkpoint、finish、daily-summary；保留checklist、plan、learn、observer、wake、update-memory
 - **Hook自动观察**：observer-record.js每次消息后自动记录（支持mino/my-agent项目）
 - **全局commands**：checklist、learn、observer、plan、wake复制到`.myagents/commands/`
 - **会话启动简化**：git pull → 读06-NOW.md → 结束；观察者改为手动触发
@@ -390,8 +390,8 @@ memory/active/tasks/active/
 
 ---
 
-### 2026-02-27 | UPDATE_MEMORY执行 + 深化对年老师的理解项目启动
-- **UPDATE_MEMORY执行**：生成了2026-W09周文档，汇总本周核心事件
+### 2026-02-27 | update-memory执行 + 深化对年老师的理解项目启动
+- **update-memory执行**：生成了2026-W09周文档，汇总本周核心事件
 - **项目启动**："深化对年老师的理解" — 9个任务，4周时间线
 - **方向纠正**：不是理解Mino，是年老师通过我理解自己
 - **核心洞察**：我只是镜子，通过这面镜子，年老师能更清楚地看到自己
@@ -482,15 +482,15 @@ memory/active/tasks/active/
 - **核心原则**：保优汰劣，风险可控，符合"生态经营"理念
 
 
-### 2026-02-22 | UPDATE_MEMORY机制优化
+### 2026-02-22 | update-memory机制优化
 - **问题**：06-NOW.md的"最近一次讨论"没有自动更新，导致唤醒时看到的不是最新内容
-- **原因**：UPDATE_MEMORY指令缺少"更新06-NOW.md最近一次讨论"的步骤
-- **解决**：在UPDATE_MEMORY.md中新增第5步"更新06-NOW.md的最近一次讨论"（强制步骤）
+- **原因**：update-memory指令缺少"更新06-NOW.md最近一次讨论"的步骤
+- **解决**：在update-memory.md中新增第5步"更新06-NOW.md的最近一次讨论"（强制步骤）
 - **机制**：
   - 读取今天和昨天的daily文件
   - 提取核心事件（3-5个）
   - 更新06-NOW.md的"最近一次讨论"部分
-- **触发时机**：会话结束时执行UPDATE_MEMORY，或手动触发
+- **触发时机**：会话结束时执行update-memory，或手动触发
 
 ---
 
@@ -688,7 +688,7 @@ memory/active/tasks/active/
 
 ## 📊 元数据
 
-**最后更新**：2026-02-21（UPDATE_MEMORY整理 - 加入记录≠改进、Context Engineering）
+**最后更新**：2026-02-21（update-memory整理 - 加入记录≠改进、Context Engineering）
 **维护规则**：
 - L1-L4：持续维护，月度评估
 - L5：周度清理，有价值内容上浮，无价值内容删除
