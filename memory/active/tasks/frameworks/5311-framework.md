@@ -200,3 +200,10 @@ pos: memory/active/tasks/frameworks/工作框架目录
 ---
 
 **最后更新**：2026-02-26 创建
+
+---
+
+## 相关链接
+
+- [[../../index/任务系统.md]] — Plan First 任务跟踪
+- [[../../index/工作机制.md]] — 工作流程与实践

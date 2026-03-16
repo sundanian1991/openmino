@@ -144,3 +144,10 @@ pos: memory/active/tasks/reminders/weekend-dialogue.md
 - **32个问题探索**: **周度提醒，高优先级**
 
 ---
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

@@ -79,3 +79,10 @@ cp ~/Library/Application\ Support/Google/Chrome/Default.backup.*/History \
 
 **记录时间**：2026-02-27
 **验证状态**：✅ 已验证有效
+
+---
+
+## 相关链接
+
+- [[../../index/任务系统.md]] — Plan First 任务跟踪
+- [[../../index/工作机制.md]] — 工作流程与实践

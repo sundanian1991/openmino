@@ -99,3 +99,10 @@ pos: memory/active/tasks/system/EVOLUTION.md
 
 *创建时间：2026-02-22*
 *触发：年老师的期待 - "你会越来越好"*
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

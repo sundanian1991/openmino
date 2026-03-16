@@ -141,3 +141,10 @@ python3 memory/tasks/scripts/lifecycle_manager.py --action cleanup
 ---
 
 *最后更新：2026-02-23 — 加入自动化生长规则*
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

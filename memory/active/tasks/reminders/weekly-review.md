@@ -101,3 +101,10 @@ pos: memory/active/tasks/reminders/weekly-review.md
 ---
 
 *每周回顾，持续进化。*
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

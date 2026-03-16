@@ -15,3 +15,8 @@ pos: memory/active
 ## 生命周期
 
 90 天
+
+## 相关导航
+
+- [[../../index/日记系统.md]] — 日记记录系统导航
+- [[../../index/Mino成长.md]] — Mino 成长记录
