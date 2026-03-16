@@ -1,5 +1,7 @@
 """Shared utilities for skill-creator scripts."""
+
 from pathlib import Path
+
 
 
 def parse_skill_md(skill_path: Path) -> tuple[str, str, str]:
@@ -22,7 +24,6 @@ def parse_skill_md(skill_path: Path) -> tuple[str, str, str]:
     name = ""
     description = ""
     frontmatter_lines = lines[1:end_idx]
-
     i = 0
     while i < len(frontmatter_lines):
         line = frontmatter_lines[i]

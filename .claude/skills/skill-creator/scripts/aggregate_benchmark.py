@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Aggregate individual run results into benchmark summary statistics.
+
 Reads grading.json files from run directories and produces:
 - run_summary with mean, stddev, min, max for each metric
 - delta between with_skill and without_skill configurations
@@ -10,7 +11,29 @@ Usage:
 
 Example:
     python aggregate_benchmark.py benchmarks/2026-01-15T10-30-00/
+
+The script supports two directory layouts:
+
+    Workspace layout (from skill-creator iterations):
+    <benchmark_dir>/
+    └── eval-N/
+        ├── with_skill/
+        │   ├── run-1/grading.json
+        │   └── run-2/grading.json
+        └── without_skill/
+            ├── run-1/grading.json
+            └── run-2/grading.json
+
+    Legacy layout (with runs/ subdirectory):
+    <benchmark_dir>/
+    └── runs/
+        └── eval-N/
+            ├── with_skill/
+            │   └── run-1/grading.json
+            └── without_skill/
+                └── run-1/grading.json
 """
+
 import argparse
 import json
 import math
@@ -44,20 +67,23 @@ def calculate_stats(values: list[float]) -> dict:
 def load_run_results(benchmark_dir: Path) -> dict:
     """
     Load all run results from a benchmark directory.
-    Returns dict keyed by config name.
+
+    Returns dict keyed by config name (e.g. "with_skill"/"without_skill",
+    or "new_skill"/"old_skill"), each containing a list of run results.
     """
+    # Support both layouts: eval dirs directly under benchmark_dir, or under runs/
+    runs_dir = benchmark_dir / "runs"
+    if runs_dir.exists():
+        search_dir = runs_dir
+    elif list(benchmark_dir.glob("eval-*")):
+        search_dir = benchmark_dir
+    else:
+        print(f"No eval directories found in {benchmark_dir} or {benchmark_dir / 'runs'}")
+        return {}
+
     results: dict[str, list] = {}
 
-    # Discover eval directories
-    eval_dirs = sorted(benchmark_dir.glob("eval-*"))
-    if not eval_dirs:
-        # Try runs/ subdirectory
-        runs_dir = benchmark_dir / "runs"
-        if runs_dir.exists():
-            eval_dirs = sorted(runs_dir.glob("eval-*"))
-
-    for eval_idx, eval_dir in enumerate(eval_dirs):
-        # Get eval_id from metadata or directory name
+    for eval_idx, eval_dir in enumerate(sorted(search_dir.glob("eval-*"))):
         metadata_path = eval_dir / "eval_metadata.json"
         if metadata_path.exists():
             try:
@@ -71,14 +97,13 @@ def load_run_results(benchmark_dir: Path) -> dict:
             except ValueError:
                 eval_id = eval_idx
 
-        # Discover config directories dynamically
+        # Discover config directories dynamically rather than hardcoding names
         for config_dir in sorted(eval_dir.iterdir()):
             if not config_dir.is_dir():
                 continue
-            # Skip non-config directories
+            # Skip non-config directories (inputs, outputs, etc.)
             if not list(config_dir.glob("run-*")):
                 continue
-
             config = config_dir.name
             if config not in results:
                 results[config] = []
@@ -108,7 +133,7 @@ def load_run_results(benchmark_dir: Path) -> dict:
                     "total": grading.get("summary", {}).get("total", 0),
                 }
 
-                # Extract timing
+                # Extract timing — check grading.json first, then sibling timing.json
                 timing = grading.get("timing", {})
                 result["time_seconds"] = timing.get("total_duration_seconds", 0.0)
                 timing_file = run_dir / "timing.json"
@@ -116,23 +141,26 @@ def load_run_results(benchmark_dir: Path) -> dict:
                     try:
                         with open(timing_file) as tf:
                             timing_data = json.load(tf)
-                            result["time_seconds"] = timing_data.get("total_duration_seconds", 0.0)
-                            result["tokens"] = timing_data.get("total_tokens", 0)
+                        result["time_seconds"] = timing_data.get("total_duration_seconds", 0.0)
+                        result["tokens"] = timing_data.get("total_tokens", 0)
                     except json.JSONDecodeError:
                         pass
 
-                # Extract additional metrics
+                # Extract metrics if available
                 metrics = grading.get("execution_metrics", {})
                 result["tool_calls"] = metrics.get("total_tool_calls", 0)
                 if not result.get("tokens"):
                     result["tokens"] = metrics.get("output_chars", 0)
                 result["errors"] = metrics.get("errors_encountered", 0)
 
-                # Extract expectations - viewer requires fields: text, passed, evidence
+                # Extract expectations — viewer requires fields: text, passed, evidence
                 raw_expectations = grading.get("expectations", [])
+                for exp in raw_expectations:
+                    if "text" not in exp or "passed" not in exp:
+                        print(f"Warning: expectation in {grading_file} missing required fields (text, passed, evidence): {exp}")
                 result["expectations"] = raw_expectations
 
-                # Extract notes
+                # Extract notes from user_notes_summary
                 notes_summary = grading.get("user_notes_summary", {})
                 notes = []
                 notes.extend(notes_summary.get("uncertainties", []))
@@ -146,12 +174,17 @@ def load_run_results(benchmark_dir: Path) -> dict:
 
 
 def aggregate_results(results: dict) -> dict:
-    """Aggregate run results into summary statistics."""
+    """
+    Aggregate run results into summary statistics.
+
+    Returns run_summary with stats for each configuration and delta.
+    """
     run_summary = {}
     configs = list(results.keys())
 
     for config in configs:
         runs = results.get(config, [])
+
         if not runs:
             run_summary[config] = {
                 "pass_rate": {"mean": 0.0, "stddev": 0.0, "min": 0.0, "max": 0.0},
@@ -170,12 +203,10 @@ def aggregate_results(results: dict) -> dict:
             "tokens": calculate_stats(tokens)
         }
 
-    # Calculate delta between the first two configs
+    # Calculate delta between the first two configs (if two exist)
     if len(configs) >= 2:
-        config_a = configs[0]
-        config_b = configs[1]
-        primary = run_summary.get(config_a, {})
-        baseline = run_summary.get(config_b, {})
+        primary = run_summary.get(configs[0], {})
+        baseline = run_summary.get(configs[1], {})
     else:
         primary = run_summary.get(configs[0], {}) if configs else {}
         baseline = {}
@@ -194,7 +225,9 @@ def aggregate_results(results: dict) -> dict:
 
 
 def generate_benchmark(benchmark_dir: Path, skill_name: str = "", skill_path: str = "") -> dict:
-    """Generate complete benchmark.json from run results."""
+    """
+    Generate complete benchmark.json from run results.
+    """
     results = load_run_results(benchmark_dir)
     run_summary = aggregate_results(results)
 
@@ -229,17 +262,17 @@ def generate_benchmark(benchmark_dir: Path, skill_name: str = "", skill_path: st
 
     benchmark = {
         "metadata": {
-            "skill_name": skill_name or "",
-            "skill_path": skill_path or "",
-            "executor_model": "",
-            "analyzer_model": "",
+            "skill_name": skill_name or "<skill-name>",
+            "skill_path": skill_path or "<path/to/skill>",
+            "executor_model": "<model-name>",
+            "analyzer_model": "<model-name>",
             "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "evals_run": eval_ids,
             "runs_per_configuration": 3
         },
         "runs": runs,
         "run_summary": run_summary,
-        "notes": []
+        "notes": []  # To be filled by analyzer
     }
 
     return benchmark
@@ -254,7 +287,6 @@ def generate_markdown(benchmark: dict) -> str:
     configs = [k for k in run_summary if k != "delta"]
     config_a = configs[0] if len(configs) >= 1 else "config_a"
     config_b = configs[1] if len(configs) >= 2 else "config_b"
-
     label_a = config_a.replace("_", " ").title()
     label_b = config_b.replace("_", " ").title()
 
@@ -268,7 +300,7 @@ def generate_markdown(benchmark: dict) -> str:
         "## Summary",
         "",
         f"| Metric | {label_a} | {label_b} | Delta |",
-        "|-------------------|",
+        "|--------|------------|---------------|-------|",
     ]
 
     a_summary = run_summary.get(config_a, {})
@@ -362,7 +394,7 @@ def main():
         pr = run_summary[config]["pass_rate"]["mean"]
         label = config.replace("_", " ").title()
         print(f"  {label}: {pr*100:.1f}% pass rate")
-    print(f"  Delta: {delta.get('pass_rate', '—')}")
+    print(f"  Delta:         {delta.get('pass_rate', '—')}")
 
 
 if __name__ == "__main__":
