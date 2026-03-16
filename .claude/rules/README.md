@@ -19,14 +19,14 @@ pos: .claude/rules
 ## 文件结构
 
 ```
-.claude/rules/
-├── 00-IDENTITY.md      # 身份、铁律、行为习惯（每次会话加载）
-├── 01-SOUL.md          # 性格、气质、我和年老师的关系（每次会话加载）
-├── 06-NOW.md           # 当前状态、最近讨论（每次会话加载）
-├── MEMORY-L1.md        # 核心记忆、WAL协议（每次会话加载）
-├── CLAUDE.md           # 规则目录配置
-├── README.md           # 本文件
-└── reference/          # 扩展规则（按需读取）
+.claude/
+├── rules/              # 核心规则（每次会话自动加载）
+│   ├── 00-IDENTITY.md  # 身份、铁律、行为习惯
+│   ├── 01-SOUL.md      # 性格、气质、关系
+│   ├── 06-NOW.md       # 当前状态、最近讨论
+│   ├── MEMORY-L1.md    # 核心记忆、WAL协议
+│   └── README.md       # 本文件
+└── reference/          # 扩展规则（按需读取，不自动加载）
     ├── 03-USER.md      # 关于年老师的深度洞察
     ├── 04-MEMORY.md    # 高频记忆（L1-L2）
     ├── 05-self-review.md # 错题本
@@ -47,8 +47,9 @@ pos: .claude/rules
 - 06-NOW.md — 当前状态、最近讨论
 
 **扩展规则（按需 Read）**：
-- 需要时主动读取，不自动加载
+- 位于 `../reference/` 目录，不自动加载
 - 避免会话启动时信息过载
+- 需要时主动读取
 
 ---
 

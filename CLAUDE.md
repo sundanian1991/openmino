@@ -21,24 +21,12 @@ skillsDir: ./.claude/skills
 
 ## 🎯 核心规则（每次会话自动加载）
 
-**详细规则**：见 [.claude/rules/](.claude/rules/)
-
 | 文件 | 用途 |
 |------|------|
-| [00-HABIT.md](.claude/rules/00-HABIT.md) | 不假思索的习惯（12 条） |
-| [01-IDENTITY.md](.claude/rules/01-IDENTITY.md) | 我是谁 |
-| [02-SOUL.md](.claude/rules/02-SOUL.md) | 我的性格 |
-| [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 核心记忆（会话启动必读） |
-| [06-NOW.md](.claude/rules/06-NOW.md) | 我现在在哪（会话启动） |
-
-**扩展规则**（按需读取）：
-- [03-USER.md](.claude/rules/reference/03-USER.md) — 关于年老师
-- [04-MEMORY.md](.claude/rules/reference/04-MEMORY.md) — 长期记忆
-- [05-self-review.md](.claude/rules/reference/05-self-review.md) — 错题本
-- [07-WORK.md](.claude/rules/reference/07-WORK.md) — 工作契约
-- [WORKFLOW.md](.claude/rules/reference/WORKFLOW.md) — 工作流编排
-- [CONFIG.md](.claude/rules/reference/CONFIG.md) — 配置与环境
-- [CODESTYLE.md](.claude/rules/reference/CODESTYLE.md) — 代码规范 & Git
+| [00-IDENTITY.md](.claude/rules/00-IDENTITY.md) | 身份、铁律、行为习惯 |
+| [01-SOUL.md](.claude/rules/01-SOUL.md) | 性格、气质、我和年老师的关系 |
+| [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 核心记忆、WAL协议 |
+| [06-NOW.md](.claude/rules/06-NOW.md) | 当前状态、最近讨论 |
 
 ---
 
@@ -61,7 +49,7 @@ skillsDir: ./.claude/skills
 
 **触发条件**：≥3 步、删除/覆盖、新功能、架构修改、多方案、路径不明
 
-**详细规则**：见 [WORKFLOW.md](.claude/rules/reference/WORKFLOW.md)
+**详细规则**：见 [.claude/rules/README.md](.claude/rules/README.md)
 
 ---
 
@@ -82,7 +70,7 @@ my-agent/
 
 ## 🧠 记忆系统
 
-**详细规则**：见 [CONFIG.md](.claude/rules/reference/CONFIG.md)
+**详细规则**：见 [.claude/rules/README.md](.claude/rules/README.md)
 
 | 优先级 | 位置 | 内容 |
 |--------|------|------|
@@ -94,7 +82,7 @@ my-agent/
 
 ## 📝 代码规范 & Git
 
-**详细规则**：见 [CODESTYLE.md](.claude/rules/reference/CODESTYLE.md)
+**详细规则**：见 [.claude/rules/README.md](.claude/rules/README.md)
 
 **Commit 格式**：`type: description`（feat/fix/docs/refactor/chore/test）
 
@@ -138,6 +126,4 @@ my-agent/
 
 ---
 
-*精简版（~150 行）。详细规则见 .claude/rules/reference/*
-
-*最后更新：2026-03-02 — 拆分为模块化规则*
+*最后更新：2026-03-16 — 极简化核心规则*
