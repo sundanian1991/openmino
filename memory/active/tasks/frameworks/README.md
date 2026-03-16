@@ -33,3 +33,10 @@ pos: memory/active/tasks/frameworks/框架文档目录
 ---
 
 *框架是死的，人是活的。根据实际使用情况迭代优化。*
+
+---
+
+## 相关链接
+
+- [[../../index/任务系统.md]] — Plan First 任务跟踪
+- [[../../index/工作机制.md]] — 工作流程与实践

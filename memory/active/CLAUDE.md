@@ -8,6 +8,8 @@ pos: memory/的 P1 活跃区
 # CLAUDE.md — Active Memory
 
 > **P1 活跃记忆 — 中期项目（90 天）**
+>
+> **相关链接**：[[../CLAUDE]]（根目录记忆系统）| [[记忆系统]]
 
 ---
 

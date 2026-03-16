@@ -84,3 +84,10 @@ pos: memory/active/tasks/templates/career-ledger.md
 - [ ] 计划创建的SOP：____
 
 ---
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

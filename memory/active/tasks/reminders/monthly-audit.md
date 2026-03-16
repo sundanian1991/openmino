@@ -122,3 +122,10 @@ cp memory/templates/risk-checklist.md memory/quarterly-risk-$(date +%Y-Q%q).md
 ```
 
 ---
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

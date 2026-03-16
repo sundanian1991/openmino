@@ -215,3 +215,10 @@ pos: memory/active/tasks/cognition/plan.md
 **发现明显差异时，单独拎出来深入讨论**
 
 ---
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/Mino成长]] — Mino 成长时间线

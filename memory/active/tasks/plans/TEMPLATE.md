@@ -86,3 +86,10 @@ pos: memory/active/tasks/plans/，规划文档模板
 ---
 
 *Plan First — 先规划，后执行。*
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

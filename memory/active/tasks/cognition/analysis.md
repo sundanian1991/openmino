@@ -157,3 +157,10 @@ pos: memory/active/tasks/cognition/analysis.md
 告诉我，我能帮你更精确地构建。
 
 ---
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/Mino成长]] — Mino 成长时间线

@@ -258,3 +258,10 @@ pos: memory/active/tasks/system/heartbeat.md
 ---
 
 *此文件是自我进化的核心。*
+
+---
+
+## 相关链接
+
+- [[../../../index/任务系统]] — Plan First 任务跟踪
+- [[../../../index/工作机制]] — 工作流程与实践

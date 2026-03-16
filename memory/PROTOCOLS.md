@@ -6,6 +6,8 @@ pos: memory/PROTOCOLS.md
 
 # PROTOCOLS.md - 记忆系统协议
 
+> **相关链接**：[[CLAUDE]]（记忆系统全景）| [[记忆系统]]（MOC 导航）| [[MEMORY-PROTOCOL]]（事后补记）
+
 > 为未来可能的跨Agent协作准备。任何AI都应该能读懂并使用这个记忆系统。
 
 ---
