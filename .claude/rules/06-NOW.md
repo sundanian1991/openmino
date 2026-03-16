@@ -16,11 +16,9 @@ pos: .claude/rules/06-NOW.md
 
 ### 加载顺序
 
-1. **读本文件** — 了解当前状态
-2. **读 MEMORY-L1.md** — 核心记忆（WAL协议、搜索优先级等）
-3. **按需读取** — 03-USER.md、04-MEMORY.md、05-self-review.md
-4. **检查 Active Tasks** — `memory/active/tasks/active/`
-5. **检查待验证任务** — `memory/active/tasks/todo.md`
+1. 读本文件 + MEMORY-L1.md
+2. 按需：03-USER.md、05-self-review.md
+3. 检查 `memory/active/tasks/active/`
 
 ---
 
@@ -53,51 +51,21 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-## 📊 执行统计
-
-> 目的：确认机制真正在运转，不是每次都要你提醒
-
-| 维度 | 本会话 | 累计 | 上次更新 |
-|------|--------|------|---------|
-| **会话次数** | - | - | - |
-| **透明工作流展开** | - | - | - |
-| **技能检查通过** | - | - | - |
-| **Plan First 执行** | - | - | - |
-| **主动提醒** | - | - | - |
-
-**主动提醒定义**：你提醒我之前，我已经主动执行了某项机制
-
-**详细记录**：`memory/active/tasks/tracking/execution-log.md`
-
----
-
 ## 🔧 会话结束检查
 
-- [ ] **我学到了什么？** → 写 my-thoughts/
-- [ ] 有 WAL 协议触发吗？→ 更新 MEMORY-L1.md
-- [ ] 有重要事件或决定吗？→ 更新 memory/daily/
-- [ ] 观察者记录了吗？→ 提炼到 observations/
-- [ ] **日志记录了吗？** → 时间轴 + 标签
-- [ ] **记忆同步到云端了吗？** → 调用 sync-to-memos.sh
-- [ ] **git commit && push**
-
-**日志规范**：
-- 时间轴：精确到小时（09:00-10:30）
-- 标签：#工作/搭体系、#生活/家庭...
-
-**MemOS 同步**：
-- 有价值的对话 → 同步摘要
-- 偏好/决策 → 必须同步
+- [ ] 学到什么？→ my-thoughts/
+- [ ] WAL触发？→ 更新 MEMORY-L1.md
+- [ ] 重要事件？→ memory/daily/
+- [ ] 观察者？→ observations/
+- [ ] git commit && push
 
 ---
 
 ## 🗓️ 定期提醒
 
-| 时间 | 事件 | 文档 |
-|------|------|------|
-| **周一** | 5311 周度评估 | `memory/active/tasks/reminders/5311-weekly-review.md` |
-| **周末** | 32个问题深度对话 | `memory/tasks/reminders/weekend-dialogue.md` |
-| **每月20日** | 职业资产清算 | `memory/tasks/reminders/monthly-audit.md` |
+- **周一**：5311周度评估 → `memory/active/tasks/reminders/5311-weekly-review.md`
+- **周末**：32个问题深度对话
+- **每月20日**：职业资产清算 |
 
 ---
 
