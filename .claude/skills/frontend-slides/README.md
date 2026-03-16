@@ -1,9 +1,3 @@
----
-input: 无
-output: frontend-slides 技能使用说明
-pos: .claude/skills/frontend-slides/ 目录说明文件
----
-
 # Frontend Slides
 
 A Claude Code skill for creating stunning, animation-rich HTML presentations — from scratch or by converting PowerPoint files.

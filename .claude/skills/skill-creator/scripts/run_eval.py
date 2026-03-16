@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Run trigger evaluation for a skill description.
+
 Tests whether a skill's description causes Claude to trigger (read the skill)
 for a set of queries. Outputs results as JSON.
 """
+
 import argparse
 import json
 import os
@@ -19,11 +21,12 @@ from scripts.utils import parse_skill_md
 
 def find_project_root() -> Path:
     """Find the project root by walking up from cwd looking for .claude/.
+
     Mimics how Claude Code discovers its project root, so the command file
     we create ends up where claude -p will look for it.
     """
     current = Path.cwd()
-    for parent in [current] + list(current.parents):
+    for parent in [current, *current.parents]:
         if (parent / ".claude").is_dir():
             return parent
     return current
@@ -38,8 +41,9 @@ def run_single_query(
     model: str | None = None,
 ) -> bool:
     """Run a single query and return whether the skill was triggered.
+
     Creates a command file in .claude/commands/ so it appears in Claude's
-    available_skills list, then runs claude -p with the raw query.
+    available_skills list, then runs `claude -p` with the raw query.
     Uses --include-partial-messages to detect triggering early from
     stream events (content_block_start) rather than waiting for the
     full assistant message, which only arrives after tool execution.
@@ -89,7 +93,6 @@ def run_single_query(
         triggered = False
         start_time = time.time()
         buffer = ""
-
         # Track state for stream event detection
         pending_tool_name = None
         accumulated_json = ""
@@ -134,8 +137,8 @@ def run_single_query(
                                 if tool_name in ("Skill", "Read"):
                                     pending_tool_name = tool_name
                                     accumulated_json = ""
-                            else:
-                                return False
+                                else:
+                                    return False
 
                         elif se_type == "content_block_delta" and pending_tool_name:
                             delta = se.get("delta", {})
@@ -158,17 +161,14 @@ def run_single_query(
                                 continue
                             tool_name = content_item.get("name", "")
                             tool_input = content_item.get("input", {})
-
                             if tool_name == "Skill" and clean_name in tool_input.get("skill", ""):
                                 triggered = True
                             elif tool_name == "Read" and clean_name in tool_input.get("file_path", ""):
                                 triggered = True
-
-                        return triggered
+                            return triggered
 
                     elif event.get("type") == "result":
                         return triggered
-
         finally:
             # Clean up process on any exit path (return, exception, timeout)
             if process.poll() is None:
@@ -176,7 +176,6 @@ def run_single_query(
                 process.wait()
 
         return triggered
-
     finally:
         if command_file.exists():
             command_file.unlink()
@@ -213,53 +212,48 @@ def run_eval(
 
         query_triggers: dict[str, list[bool]] = {}
         query_items: dict[str, dict] = {}
-
         for future in as_completed(future_to_info):
             item, _ = future_to_info[future]
             query = item["query"]
             query_items[query] = item
-
             if query not in query_triggers:
                 query_triggers[query] = []
-
             try:
                 query_triggers[query].append(future.result())
             except Exception as e:
                 print(f"Warning: query failed: {e}", file=sys.stderr)
                 query_triggers[query].append(False)
 
-        for query, triggers in query_triggers.items():
-            item = query_items[query]
-            trigger_rate = sum(triggers) / len(triggers)
-            should_trigger = item["should_trigger"]
+    for query, triggers in query_triggers.items():
+        item = query_items[query]
+        trigger_rate = sum(triggers) / len(triggers)
+        should_trigger = item["should_trigger"]
+        if should_trigger:
+            did_pass = trigger_rate >= trigger_threshold
+        else:
+            did_pass = trigger_rate < trigger_threshold
+        results.append({
+            "query": query,
+            "should_trigger": should_trigger,
+            "trigger_rate": trigger_rate,
+            "triggers": sum(triggers),
+            "runs": len(triggers),
+            "pass": did_pass,
+        })
 
-            if should_trigger:
-                did_pass = trigger_rate >= trigger_threshold
-            else:
-                did_pass = trigger_rate < trigger_threshold
+    passed = sum(1 for r in results if r["pass"])
+    total = len(results)
 
-            results.append({
-                "query": query,
-                "should_trigger": should_trigger,
-                "trigger_rate": trigger_rate,
-                "triggers": sum(triggers),
-                "runs": len(triggers),
-                "pass": did_pass,
-            })
-
-        passed = sum(1 for r in results if r["pass"])
-        total = len(results)
-
-        return {
-            "skill_name": skill_name,
-            "description": description,
-            "results": results,
-            "summary": {
-                "total": total,
-                "passed": passed,
-                "failed": total - passed,
-            },
-        }
+    return {
+        "skill_name": skill_name,
+        "description": description,
+        "results": results,
+        "summary": {
+            "total": total,
+            "passed": passed,
+            "failed": total - passed,
+        },
+    }
 
 
 def main():
@@ -273,7 +267,6 @@ def main():
     parser.add_argument("--trigger-threshold", type=float, default=0.5, help="Trigger rate threshold")
     parser.add_argument("--model", default=None, help="Model to use for claude -p (default: user's configured model)")
     parser.add_argument("--verbose", action="store_true", help="Print progress to stderr")
-
     args = parser.parse_args()
 
     eval_set = json.loads(Path(args.eval_set).read_text())

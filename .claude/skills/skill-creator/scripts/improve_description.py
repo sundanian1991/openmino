@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Improve a skill description based on eval results.
+
 Takes eval results (from run_eval.py) and generates an improved description
-by calling claude -p as a subprocess (same auth pattern as run_eval.py —
+by calling `claude -p` as a subprocess (same auth pattern as run_eval.py —
 uses the session's Claude Code auth, no separate ANTHROPIC_API_KEY needed).
 """
+
 import argparse
 import json
 import os
@@ -16,7 +18,8 @@ from scripts.utils import parse_skill_md
 
 
 def _call_claude(prompt: str, model: str | None, timeout: int = 300) -> str:
-    """Run claude -p with the prompt on stdin and return the text response.
+    """Run `claude -p` with the prompt on stdin and return the text response.
+
     Prompt goes over stdin (not argv) because it embeds the full SKILL.md
     body and can easily exceed comfortable argv length.
     """
@@ -37,7 +40,6 @@ def _call_claude(prompt: str, model: str | None, timeout: int = 300) -> str:
         env=env,
         timeout=timeout,
     )
-
     if result.returncode != 0:
         raise RuntimeError(
             f"claude -p exited {result.returncode}\nstderr: {result.stderr}"
@@ -79,21 +81,23 @@ def improve_description(
 The description appears in Claude's "available_skills" list. When a user sends a query, Claude decides whether to invoke the skill based solely on the title and on this description. Your goal is to write a description that triggers for relevant queries, and doesn't trigger for irrelevant ones.
 
 Here's the current description:
+<current_description>
 "{current_description}"
+</current_description>
 
 Current scores ({scores_summary}):
+<scores_summary>
 """
-
     if failed_triggers:
         prompt += "FAILED TO TRIGGER (should have triggered but didn't):\n"
         for r in failed_triggers:
-            prompt += f' - "{r["query"]}" (triggered {r["triggers"]}/{r["runs"]} times)\n'
+            prompt += f'  - "{r["query"]}" (triggered {r["triggers"]}/{r["runs"]} times)\n'
         prompt += "\n"
 
     if false_triggers:
         prompt += "FALSE TRIGGERS (triggered but shouldn't have):\n"
         for r in false_triggers:
-            prompt += f' - "{r["query"]}" (triggered {r["triggers"]}/{r["runs"]} times)\n'
+            prompt += f'  - "{r["query"]}" (triggered {r["triggers"]}/{r["runs"]} times)\n'
         prompt += "\n"
 
     if history:
@@ -102,20 +106,23 @@ Current scores ({scores_summary}):
             train_s = f"{h.get('train_passed', h.get('passed', 0))}/{h.get('train_total', h.get('total', 0))}"
             test_s = f"{h.get('test_passed', '?')}/{h.get('test_total', '?')}" if h.get('test_passed') is not None else None
             score_str = f"train={train_s}" + (f", test={test_s}" if test_s else "")
-            prompt += f'Iteration {h.get("iteration", "?")}: {score_str}\n'
+            prompt += f'<attempt {score_str}>\n'
             prompt += f'Description: "{h["description"]}"\n'
             if "results" in h:
                 prompt += "Train results:\n"
                 for r in h["results"]:
                     status = "PASS" if r["pass"] else "FAIL"
-                    prompt += f' [{status}] "{r["query"][:80]}" (triggered {r["triggers"]}/{r["runs"]})\n'
+                    prompt += f'  [{status}] "{r["query"][:80]}" (triggered {r["triggers"]}/{r["runs"]})\n'
             if h.get("note"):
                 prompt += f'Note: {h["note"]}\n'
-        prompt += "\n\n"
+            prompt += "</attempt>\n\n"
 
-    prompt += f"""
+    prompt += f"""</scores_summary>
+
 Skill content (for context on what the skill does):
+<skill_content>
 {skill_content}
+</skill_content>
 
 Based on the failures, write a new and improved description that is more likely to trigger correctly. When I say "based on the failures", it's a bit of a tricky line to walk because we don't want to overfit to the specific cases you're seeing. So what I DON'T want you to do is produce an ever-expanding list of specific queries that this skill should or shouldn't trigger for. Instead, try to generalize from the failures to broader categories of user intent and situations where this skill would be useful or not useful. The reason for this is twofold:
 
@@ -129,12 +136,14 @@ Here are some tips that we've found to work well in writing these descriptions:
 - The skill description should focus on the user's intent, what they are trying to achieve, vs. the implementation details of how the skill works.
 - The description competes with other skills for Claude's attention — make it distinctive and immediately recognizable.
 - If you're getting lots of failures after repeated attempts, change things up. Try different sentence structures or wordings.
-- I'd encourage you to be creative and mix up the style in different iterations since you'll have multiple opportunities to try different approaches and we'll just grab the highest-scoring one at the end.
 
-Please respond with only the new description text in <description> tags, nothing else."""
+I'd encourage you to be creative and mix up the style in different iterations since you'll have multiple opportunities to try different approaches and we'll just grab the highest-scoring one at the end. 
+
+Please respond with only the new description text in <new_description> tags, nothing else."""
 
     text = _call_claude(prompt, model)
-    match = re.search(r"<description>(.*?)</description>", text, re.DOTALL)
+
+    match = re.search(r"<new_description>(.*?)</new_description>", text, re.DOTALL)
     description = match.group(1).strip().strip('"') if match else text.strip().strip('"')
 
     transcript: dict = {
@@ -148,7 +157,9 @@ Please respond with only the new description text in <description> tags, nothing
 
     # Safety net: the prompt already states the 1024-char hard limit, but if
     # the model blew past it anyway, make one fresh single-turn call that
-    # quotes the too-long version and asks for a shorter rewrite.
+    # quotes the too-long version and asks for a shorter rewrite. (The old
+    # SDK path did this as a true multi-turn; `claude -p` is one-shot, so we
+    # inline the prior output into the new prompt instead.)
     if len(description) > 1024:
         shorten_prompt = (
             f"{prompt}\n\n"
@@ -158,10 +169,10 @@ Please respond with only the new description text in <description> tags, nothing
             f'"{description}"\n\n'
             f"Rewrite it to be under 1024 characters while keeping the most "
             f"important trigger words and intent coverage. Respond with only "
-            f"the new description in <description> tags."
+            f"the new description in <new_description> tags."
         )
         shorten_text = _call_claude(shorten_prompt, model)
-        match = re.search(r"<description>(.*?)</description>", shorten_text, re.DOTALL)
+        match = re.search(r"<new_description>(.*?)</new_description>", shorten_text, re.DOTALL)
         shortened = match.group(1).strip().strip('"') if match else shorten_text.strip().strip('"')
 
         transcript["rewrite_prompt"] = shorten_prompt
@@ -187,11 +198,9 @@ def main():
     parser.add_argument("--history", default=None, help="Path to history JSON (previous attempts)")
     parser.add_argument("--model", required=True, help="Model for improvement")
     parser.add_argument("--verbose", action="store_true", help="Print thinking to stderr")
-
     args = parser.parse_args()
 
     skill_path = Path(args.skill_path)
-
     if not (skill_path / "SKILL.md").exists():
         print(f"Error: No SKILL.md found at {skill_path}", file=sys.stderr)
         sys.exit(1)

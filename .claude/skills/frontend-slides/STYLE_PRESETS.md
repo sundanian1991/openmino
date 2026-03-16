@@ -1,9 +1,3 @@
----
-input: 无
-output: 12 种视觉风格预设参考
-pos: frontend-slides 技能的子文件
----
-
 # Style Presets Reference
 
 Curated visual styles for Frontend Slides. Each preset is inspired by real design references—no generic "AI slop" aesthetics. **Abstract shapes only—no illustrations.**
