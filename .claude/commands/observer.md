@@ -11,117 +11,51 @@ description: "对话结束后记录事实与洞察"
 
 ## 工作流程
 
-### Step 1: 记录事实到 daily
+### Step 1: 记录到 insights.md
 
-在 `memory/active/daily/YYYY-MM-DD.md` 中记录：
-- 今天做了什么（事实）
-- 涉及哪些文件
-- 产生了什么结果
+在 `memory/insights.md` 中追加：
 
-**记录方式**：
-- 一天一个文件
-- 一天内多件事 → 按时间顺序记录在同一天文件中
-- 简洁记录，不用详细展开
+**两个部分**：
+1. **关键事件** — 今天做了什么、产生了什么结果
+2. **洞察** — 需求洞察、模式信号、我的复盘
 
-**文件头（自指三行）**：
+**记录格式**：
 ```markdown
----
-lifecycle: P2
-tags: [关键词]
-input: 当日对话记录、涉及文件路径
-output: 事实摘要、可供 observations 提炼洞察
-pos: daily 目录的成员
-# 文件更新需同步注释及所属文件夹 md
----
-```
+### YYYY-MM-DD 事件标题
 
-### Step 1.5: 写入今日对话摘要（跨对话上下文）
+**事实**：一句话描述
 
-在 daily 文件**顶部**追加今日对话摘要，供 wake 命令快速读取：
-
-```markdown
----
-
-## 今日对话摘要
-
-### [时间范围] 第N段对话
-- **时长**：约XX分钟
-- **涉及文件**：[主要文件列表]
-- **核心进展**：[一句话总结]
-- **待续事项**：[如有未完成的工作]
-```
-
-**摘要原则**：
-- 简洁：3-5条 bullet points
-- 聚焦：只记录核心内容
-- 可读：新对话能快速了解上下文
-
-**示例**：
-```markdown
----
-
-## 今日对话摘要
-
-### 09:00-10:30 第1段对话
-- **时长**：约90分钟
-- **文件**：定价委员会机制V1.0.md
-- **进展**：完成定价委员会机制初稿
-- **待续**：约年老师和军哥时间对齐思路
+**洞察**：
+- 需求洞察：表面问的是A，实际可能在解决B？
+- 模式信号：最近反复出现的信号？
+- 我的复盘：学到了什么？
 ```
 
 ---
 
-### Step 2: 更新索引
-写完 daily 文件后，更新索引：
+### Step 2: 更新 MEMORY.md
+
+如果有重要变化（决策、待办、项目），更新 `memory/MEMORY.md`：
+- 当前待办变化 → 更新"当前状态"
+- 新决策 → 更新"关键决策"
+- 新项目 → 更新"项目索引"
+
+---
+
+### Step 3: 提交
+
 ```bash
-python3 memory/active/tasks/scripts/index_manager.py --action update-daily
+git add -A && git commit -m "docs: 更新记忆"
+git push
 ```
-
-### Step 3: 生成洞察到observations
-基于 daily 内容，在 `memory/observations/YYYY-MM.md` 中生成洞察：
-
-**三个维度**：
-1. **需求洞察** - 表面问的是A，实际可能在解决B？
-2. **模式信号** - 最近反复出现的信号？趋势？
-3. **我的复盘** - 这次交互中我学到了什么？下次可以更好？
-
-**输出格式**：
-```markdown
-# 观察 YYYY-MM-DD
-
-## 需求洞察
-•
-
-## 模式信号
-•
-
-## 我的复盘
-•
-
----
-
-## 总结
-[灵活的总结点评]
-```
-
-### Step 4: 更新索引
-写完 observations 文件后，更新索引：
-```bash
-python3 memory/active/tasks/scripts/index_manager.py --action update-obs
-```
-
-### Step 5: 提交
-- `git add -A && git commit`
-- `git push`
 
 ---
 
 ## 质量原则
 
-- **事实简明** - daily只记录事实，不展开
-- **洞察深入** - 观察不只记录发生了什么，要理解为什么
-- **bullet points** - 简洁、易读、易对比
-- **不强求** - 没有值得保留的洞察，就不写
+- **简洁** — 一句话描述事实
+- **深入** — 洞察不只记录发生了什么，要理解为什么
+- **不强求** — 没有值得保留的洞察，就不写
 
 ---
 
@@ -129,19 +63,12 @@ python3 memory/active/tasks/scripts/index_manager.py --action update-obs
 
 ```
 memory/
-├── active/
-│   ├── daily/           # 日维度 - 事实记录
-│   │   ├── .index.md    # 快速索引（脚本更新）
-│   │   └── YYYY-MM-DD.md
-│   └── observations/    # 月维度 - 洞察记录
-│       ├── .index.md    # 快速索引（脚本更新）
-│       └── YYYY-MM.md
-├── core/       # 永久核心记忆
-├── staging/    # 临时记忆（30天）
-├── transient/  # 短期记忆（7天）
-└── archive/    # 归档记忆
+├── MEMORY.md     # 详细记忆索引（启动加载）
+├── insights.md   # 洞察记录
+├── projects/     # 项目背景
+└── archive/      # 历史归档
 ```
 
 ---
 
-*最后更新：2026-02-23 — 加入索引更新步骤，保持与 UPDATE_MEMORY 同步*
+*最后更新：2026-03-17 — 简化结构，合并到insights.md*

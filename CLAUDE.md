@@ -41,15 +41,7 @@ skillsDir: ./.claude/skills
 - 中等（4-6 步）→ 简化记录
 - 复杂（≥7 步/架构修改）→ 三文件模式（plan/context/tasks）
 
----
 
-## 🔧 工作流编排
-
-**Plan First**：复杂任务必须先规划
-
-**触发条件**：≥3 步、删除/覆盖、新功能、架构修改、多方案、路径不明
-
-**详细规则**：见 [.claude/rules/README.md](.claude/rules/README.md)
 
 ---
 
@@ -59,8 +51,9 @@ skillsDir: ./.claude/skills
 my-agent/
 ├── .claude/rules/          # 核心规则（自动加载）
 ├── memory/                 # 记忆系统
-│   ├── core/              # P0 永久
-│   ├── active/            # P1 活跃（90 天）
+│   ├── MEMORY.md          # 详细记忆索引
+│   ├── insights.md        # 洞察记录
+│   ├── projects/          # 项目背景
 │   └── archive/           # 历史归档
 ├── workspace/             # 工作台（gitignored）
 └── projects/              # 项目归档
@@ -70,13 +63,13 @@ my-agent/
 
 ## 🧠 记忆系统
 
-**详细规则**：见 [.claude/rules/README.md](.claude/rules/README.md)
+**详细规则**：见 [memory/MEMORY.md](memory/MEMORY.md)
 
-| 优先级 | 位置 | 内容 |
-|--------|------|------|
-| P0 | memory/core/ | 偏好、决策、身份 |
-| P1 | memory/active/ | daily、my-thoughts、tasks |
-| P2 | memory/workspace/ | 工作空间、临时记录 |
+| 文件 | 内容 |
+|------|------|
+| MEMORY.md | 用户画像、决策、项目索引（启动加载） |
+| insights.md | 洞察记录（合并daily/observations/weekly） |
+| projects/ | 项目背景 |
 
 ---
 
@@ -108,19 +101,8 @@ my-agent/
 
 ---
 
-## 📋 WAL 协议
-
-关键信息先写后答。触发：修正、专有名词、偏好、决策、具体值
-
-**写入**：`memory/core/decisions/`
-
----
-
 ## ✅ 会话结束检查
 
-- [ ] 我学到了什么？→ my-thoughts/
-- [ ] WAL 协议触发？→ decisions/
-- [ ] 观察者记录？→ observations/
 - [ ] 更新 NOW.md
 - [ ] `git commit && git push`
 

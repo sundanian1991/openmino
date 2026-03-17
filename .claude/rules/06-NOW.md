@@ -17,59 +17,60 @@ pos: .claude/rules/06-NOW.md
 ### 加载顺序
 
 1. 读本文件 + MEMORY-L1.md
-2. 按需：03-USER.md、05-self-review.md
-3. 检查 `memory/active/tasks/active/`
+2. 按需读取：`memory/MEMORY.md`（详细记忆）
+3. 检查当前待办（在MEMORY-L1.md中）
 
 ---
 
-## 📍 最近一次讨论（2026-03-17 — 启动文件优化完成）
+## 📍 最近一次讨论（2026-03-17 — 技能文件结构优化）
 
 **核心对话**：
-年老师指出初始化文件太多（907行），要求按需渐进披露优化。
+年老师指出技能目录有 60+ 个 .md 文件被全量加载，导致启动 token 过高（30.1K）。要求按标准技能规范清理。
 
 **核心进展**：
-- 分析现状：5个核心文件，907行，约3000 tokens
-- 设计方案：三层披露（L0身份、L1高频、L2时新）
-- 执行结果：4个核心文件，331行，约1200 tokens，节省63%
+- 分析现状：60 个 .md 文件，其中 47 个非 SKILL.md
+- 设计方案：按 skill-creator 标准改为 Progressive Disclosure 结构
+- 执行结果：47 个文件改为 .txt 后缀，只保留 13 个 .md
 
 **已完成**：
-- ✅ 压缩00-IDENTITY.md（163→98行）
-- ✅ 压缩01-SOUL.md（105→47行）
-- ✅ 整合透明工作流到IDENTITY
-- ✅ 验证完整性并测试
-- ✅ 更新索引文件
+- ✅ 清理 CLAUDE.md 文件（7个 → .txt）
+- ✅ 清理 official-doc/assets/ 模板（20个 → .txt）
+- ✅ 清理 USAGE.md、reference.md 等文档（10个 → .txt）
+- ✅ 清理 references/ 目录文件（10个 → .txt）
+- ✅ 验证：60 → 13 个 .md 文件（节省 78%）
 
-**标签**：#系统优化 #渐进披露 #文件重构
+**预期收益**：启动 token 从 30.1K 降至约 22K（-27%）
+
+**标签**：#系统优化 #技能清理 #Token优化
 
 ---
 
 ## 📅 近期关键事件（最近3条）
 
-- **03-16**：启动文件优化 — 三层披露设计，预期节省60% tokens
-- **03-14**：记忆体系重构 — 执行统计自监控、自动化UPDATE_MEMORY
-- **03-11**：Token优化与RTK安装 — 命令输出脱水95%
+- **03-17**：技能文件结构优化 — 47 文件改 .txt，节省 27% tokens
+- **03-17**：记忆系统重构 — 方案B，MEMORY.md作索引
+- **03-16**：启动文件优化 — 三层披露，节省63% tokens
 
-**更多事件**：`memory/active/daily/YYYY-MM-DD.md`
+**更多事件**：`memory/insights.md`
 
 ---
 
 ## 🔧 会话结束检查
 
-- [ ] 学到什么？→ my-thoughts/
-- [ ] WAL触发？→ 更新 MEMORY-L1.md
-- [ ] 重要事件？→ memory/daily/
-- [ ] 观察者？→ observations/
+- [ ] 学到什么？→ `memory/insights.md`
+- [ ] WAL触发？→ 更新 `memory/MEMORY.md`
+- [ ] 重要事件？→ 更新06-NOW.md
 - [ ] git commit && push
 
 ---
 
 ## 🗓️ 定期提醒
 
-- **周一**：5311周度评估 → `memory/active/tasks/reminders/5311-weekly-review.md`
+- **周一**：5311周度评估
 - **周末**：32个问题深度对话
-- **每月20日**：职业资产清算 |
+- **每月20日**：职业资产清算
 
 ---
 
 *每次会话结束前更新"最近一次讨论"。*
-*最后更新：2026-03-16*
+*最后更新：2026-03-17*
