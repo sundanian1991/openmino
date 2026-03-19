@@ -22,28 +22,20 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-## 📍 最近一次讨论（2026-03-18 — Agent团队设计 + Proactive Onboarding）
+## 📍 最近一次讨论（2026-03-20 — 记忆维护）
 
 **核心对话**：
-年老师研究傅盛"三万"体系，要求结合工作场景设计Agent团队。安装proactive-agent技能并完成onboarding。建立claw123.ai技能搜索规范。
+执行记忆维护流程，创建 topics/ 目录和三大项目文件（Agent设计、技能搜索规范、记忆系统），完善记忆结构。
 
 **已完成**：
-- ✅ 验证 claw123.ai API 可用
-- ✅ 在 CLAUDE.md 新增"技能搜索规范"模块
-- ✅ 调研傅盛"三万"8角色体系 + 40+技能
-- ✅ 设计5Agent团队架构（秘书官/笔杆子/情报官/数据官/合规官）
-- ✅ 生成5个Agent配置文件 + README
-- ✅ 安装 proactive-agent v3.1.0 + 完成onboarding（12核心问题）
-- ✅ 建立 memory/daily/ + memory/topics/ 目录
-- ✅ 更新CLAUDE.md项目结构
+- ✅ 创建 memory/topics/ 目录
+- ✅ 建立 Agent设计.md（5Agent架构记录）
+- ✅ 建立技能搜索规范.md（claw123.ai流程）
+- ✅ 建立记忆系统.md（方案B架构记录）
+- ✅ 更新 insights.md 添加 03-20 维护记录
+- ✅ 更新 06-NOW.md 最近讨论
 
-**待安装技能**：
-- ai-writing-humanizer（文本润色）
-- cls-news-scraper（科技资讯）
-- anycrawl（网页数据采集）
-- pptx（PPT生成）
-
-**标签**：#Agent设计 #技能搜索 #claw123 #傅盛参考 #ProactiveAgent #Onboarding
+**标签**：#记忆维护 #topics目录 #记忆结构完善
 
 ---
 
@@ -98,4 +90,4 @@ pos: .claude/rules/06-NOW.md
 ---
 
 *每次会话结束前更新"最近一次讨论"。*
-*最后更新：2026-03-19 — 记忆维护*
+*最后更新：2026-03-20 — 记忆维护*
