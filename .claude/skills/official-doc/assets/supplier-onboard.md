@@ -3,29 +3,22 @@ input: 需求
 output: supplier-onboard.md
 pos: .claude/skills/email/templates/supplier-onboard.md
 ---
-
 # 供应商引入与上线邮件模板
-
 ## 使用说明
 用于准入评估、试运行启动、系统接入、正式上线
 
 ---
-
 ## 准入评估结果汇报（内部）
 
-**邮件主题**：关于XXX供应商准入评估结果
+尊敬的领导：
 
-**邮件正文**：
+现将XXX供应商准入评估结果汇报如下。
 
-<p>尊敬的领导：</p>
+**评估结论：**
 
-<p>现将XXX供应商准入评估结果汇报如下。</p>
+建议通过/建议暂缓/不建议通过。
 
-<p><strong>评估结论：</strong></p>
-
-<p>建议通过/建议暂缓/不建议通过。</p>
-
-<p><strong>评估得分：</strong></p>
+**评估得分：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -77,61 +70,42 @@ pos: .claude/skills/email/templates/supplier-onboard.md
     <td style="text-align: center;">A级/B级</td>
   </tr>
 </table>
+**核心优势：**
 
-<p><strong>核心优势：</strong></p>
+一是XXX，具体描述和数据支撑如下；二是XXX，具体描述和数据支撑如下。
 
-<p>一是XXX，具体描述和数据支撑如下；二是XXX，具体描述和数据支撑如下。</p>
+**主要风险：**
 
-<p><strong>主要风险：</strong></p>
+一是XXX，具体描述如下；二是XXX，具体描述如下。
 
-<p>一是XXX，具体描述如下；二是XXX，具体描述如下。</p>
+**风险措施：**
 
-<p><strong>风险措施：</strong></p>
+- 措施1：XXX
+- 措施2：XXX
+**试运行方案：**
 
-<ul>
-  <li>措施1：XXX</li>
-  <li>措施2：XXX</li>
-</ul>
+- 试运行规模：20-50席
+- 试运行周期：1-3个月
+- 评估节点：每月复盘
+**决策建议：**
 
-<p><strong>试运行方案：</strong></p>
+如通过，需总部支持：法务合同审核（预计2天）、财务开户流程（预计X天）、技术系统接入（预计X天）。
 
-<ul>
-  <li>试运行规模：20-50席</li>
-  <li>试运行周期：1-3个月</li>
-  <li>评估节点：每月复盘</li>
-</ul>
-
-<p><strong>决策建议：</strong></p>
-
-<p>如通过，需总部支持：法务合同审核（预计2天）、财务开户流程（预计X天）、技术系统接入（预计X天）。</p>
-
-<p>请确认是否启动试运行。</p>
+请确认是否启动试运行。
 
 ---
-**签名部分自动追加**
-
-
----
-
 ## 准入通知（发给供应商）
 
-**邮件主题**：XXX供应商准入通知书
+尊敬的XXX：
 
-**邮件正文**：
+您好。经我公司评审，贵司已通过供应商准入评估，现将试运行启动安排通知如下。
 
-<p>尊敬的XXX：</p>
+**准入结果：**
 
-<p>您好。经我公司评审，贵司已通过供应商准入评估，现将试运行启动安排通知如下。</p>
-
-<p><strong>准入结果：</strong></p>
-
-<ul>
-  <li>评估等级：XXX</li>
-  <li>合作模式：XXX</li>
-  <li>试运行规模：XX席</li>
-</ul>
-
-<p><strong>试运行安排：</strong></p>
+- 评估等级：XXX
+- 合作模式：XXX
+- 试运行规模：XX席
+**试运行安排：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -160,21 +134,17 @@ pos: .claude/skills/email/templates/supplier-onboard.md
     <td style="text-align: center;">XXX</td>
   </tr>
 </table>
+**上线前准备清单：**
 
-<p><strong>上线前准备清单：</strong></p>
-
-<ul>
-  <li>公司资质材料提交</li>
-  <li>职场环境确认</li>
-  <li>坐席人员名册</li>
-  <li>管理团队名单</li>
-  <li>系统接入测试</li>
-  <li>产品知识培训</li>
-  <li>合规话术培训</li>
-  <li>操作系统培训</li>
-</ul>
-
-<p><strong>试运行考核标准：</strong></p>
+- 公司资质材料提交
+- 职场环境确认
+- 坐席人员名册
+- 管理团队名单
+- 系统接入测试
+- 产品知识培训
+- 合规话术培训
+- 操作系统培训
+**试运行考核标准：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -198,47 +168,32 @@ pos: .claude/skills/email/templates/supplier-onboard.md
     <td style="text-align: center;">XX%</td>
   </tr>
 </table>
+**对接人：**
 
-<p><strong>对接人：</strong></p>
+- 项目对接：XXX（XXX）
+- 技术支持：XXX（XXX）
+- 质检对接：XXX（XXX）
 
-<ul>
-  <li>项目对接：XXX（XXX）</li>
-  <li>技术支持：XXX（XXX）</li>
-  <li>质检对接：XXX（XXX）</li>
-</ul>
-
-<p>请于X月X日前确认可用，我们安排启动流程。期待合作。</p>
+请于X月X日前确认可用，我们安排启动流程。期待合作。
 
 ---
-**签名部分自动追加**
-
-
----
-
 ## 系统接入指引（发给供应商）
 
-**邮件主题**：XXX系统对接指引
+XXX技术团队：
 
-**邮件正文**：
+现将对接我方CRM系统的指引如下。
 
-<p>XXX技术团队：</p>
+**系统接入信息：**
 
-<p>现将对接我方CRM系统的指引如下。</p>
+- 系统地址：XXX
+- 账号：XXX
+- 密码：XXX（首次登录请修改）
+- 联系人：XXX（电话：XXX）
+**接入流程：**
 
-<p><strong>系统接入信息：</strong></p>
+共分四个阶段：一是环境配置（配置手册见附件），二是接口联调（接口文档见附件），三是压力测试（测试案例见附件），四是数据核对（数据格式规范见附件）。
 
-<ul>
-  <li>系统地址：XXX</li>
-  <li>账号：XXX</li>
-  <li>密码：XXX（首次登录请修改）</li>
-  <li>联系人：XXX（电话：XXX）</li>
-</ul>
-
-<p><strong>接入流程：</strong></p>
-
-<p>共分四个阶段：一是环境配置（配置手册见附件），二是接口联调（接口文档见附件），三是压力测试（测试案例见附件），四是数据核对（数据格式规范见附件）。</p>
-
-<p><strong>时间计划：</strong></p>
+**时间计划：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -267,47 +222,34 @@ pos: .claude/skills/email/templates/supplier-onboard.md
     <td style="text-align: center;">数据一致、无遗漏</td>
   </tr>
 </table>
+**注意事项：**
 
-<p><strong>注意事项：</strong></p>
+数据安全方面，严禁私自下载或备份客户数据。保密要求方面，接入人员需签署保密协议。问题反馈方面，遇到技术问题立即联系XXX。
 
-<p>数据安全方面，严禁私自下载或备份客户数据。保密要求方面，接入人员需签署保密协议。问题反馈方面，遇到技术问题立即联系XXX。</p>
+**附件：**
 
-<p><strong>附件：</strong></p>
+配置手册.pdf、接口文档.pdf、测试案例.xlsx。
 
-<p>配置手册.pdf、接口文档.pdf、测试案例.xlsx。</p>
-
-<p>如有疑问，随时沟通。</p>
-
----
-**签名部分自动追加**
-
+如有疑问，随时沟通。
 
 ---
-
 ## 试运行启动通知（发给供应商）
 
-**邮件主题**：XXX供应商试运行启动通知
+尊敬的XXX：
 
-**邮件正文**：
+您好。XXX供应商试运行将于X月X日正式启动，现将具体安排通知如下。
 
-<p>尊敬的XXX：</p>
+**启动信息：**
 
-<p>您好。XXX供应商试运行将于X月X日正式启动，现将具体安排通知如下。</p>
+- 启动日期：X月X日
+- 启动时间：XX:XX
+- 试运行规模：XX席
+- 业务类型：XXX
+**首日支持：**
 
-<p><strong>启动信息：</strong></p>
+我方将派驻以下人员现场支持：项目经理XXX（XXX）、培训师XXX（XXX）、技术支持XXX（XXX）。
 
-<ul>
-  <li>启动日期：X月X日</li>
-  <li>启动时间：XX:XX</li>
-  <li>试运行规模：XX席</li>
-  <li>业务类型：XXX</li>
-</ul>
-
-<p><strong>首日支持：</strong></p>
-
-<p>我方将派驻以下人员现场支持：项目经理XXX（XXX）、培训师XXX（XXX）、技术支持XXX（XXX）。</p>
-
-<p><strong>首日流程：</strong></p>
+**首日流程：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -336,47 +278,31 @@ pos: .claude/skills/email/templates/supplier-onboard.md
     <td style="text-align: center;">全员</td>
   </tr>
 </table>
+**监控渠道：**
 
-<p><strong>监控渠道：</strong></p>
+- 数据看板：XXX
+- 问题反馈群：XXX
+- 紧急联系人：XXX（XXX）
+**首日考核：**
 
-<ul>
-  <li>数据看板：XXX</li>
-  <li>问题反馈群：XXX</li>
-  <li>紧急联系人：XXX（XXX）</li>
-</ul>
+试运行首日重点考核三项：系统稳定运行、话术合规执行、数据准确上报。
 
-<p><strong>首日考核：</strong></p>
-
-<p>试运行首日重点考核三项：系统稳定运行、话术合规执行、数据准确上报。</p>
-
-<p>预祝试运行顺利。</p>
+预祝试运行顺利。
 
 ---
-**签名部分自动追加**
-
-
----
-
 ## 试运行转正评估汇报（内部）
 
-**邮件主题**：关于XXX供应商试运行转正评估
+尊敬的领导：
 
-**邮件正文**：
+现将XXX供应商试运行（X月X日至X月X日）评估结果汇报如下。
 
-<p>尊敬的领导：</p>
+**试运行概况：**
 
-<p>现将XXX供应商试运行（X月X日至X月X日）评估结果汇报如下。</p>
-
-<p><strong>试运行概况：</strong></p>
-
-<ul>
-  <li>试运行周期：X个月</li>
-  <li>试运行规模：XX席</li>
-  <li>试运行通话量：XX通</li>
-  <li>试运行转化率：XX%</li>
-</ul>
-
-<p><strong>核心指标达成：</strong></p>
+- 试运行周期：X个月
+- 试运行规模：XX席
+- 试运行通话量：XX通
+- 试运行转化率：XX%
+**核心指标达成：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -410,37 +336,17 @@ pos: .claude/skills/email/templates/supplier-onboard.md
     <td style="text-align: center;">XX%</td>
   </tr>
 </table>
+**评估结论：**
 
-<p><strong>评估结论：</strong></p>
+建议转正/建议延长试运行/建议终止合作。
 
-<p>建议转正/建议延长试运行/建议终止合作。</p>
+**转正后方案：**
 
-<p><strong>转正后方案：</strong></p>
+- 常态规模：XX席
+- 考核周期：月度/季度
+- 激励政策：XX
+**待解决问题：**
 
-<ul>
-  <li>常态规模：XX席</li>
-  <li>考核周期：月度/季度</li>
-  <li>激励政策：XX</li>
-</ul>
+一是XXX，问题描述和改进计划如下；二是XXX，问题描述和改进计划如下。
 
-<p><strong>待解决问题：</strong></p>
-
-<p>一是XXX，问题描述和改进计划如下；二是XXX，问题描述和改进计划如下。</p>
-
-<p>请确认是否转正。</p>
-
----
-
-**签名**：
-
---------------------------------------------------------
-
-孙大年
-京东科技-金融科技事业群-数据科技业务部-电销服务组
-电话：+86 18249515580
-邮箱：sundanian@jd.com
-地址：北京市经济技术开发区科创十一街京东总部二号楼A座19层
-
-重要提示：此邮件及附件具保密性质，包含商业秘密，受法律保护不得泄露，特此提醒您此邮件的机密性。如果您意外收到此邮件，请立即通知我，并从您的系统中删除此邮件及附件，禁止使用、复制或向他人披露邮件及附件相关内容。
----
-**签名部分自动追加**
+请确认是否转正。
