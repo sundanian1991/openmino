@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPO 供应商人力看板 - 专业版</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f7f6f3;
+            min-height: 100vh;
+            padding: 24px 56px;
+        }
+        .container { max-width: 1440px; margin: 0 auto; }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .header h1 { font-size: 24px; color: #1a1a2e; margin-bottom: 8px; font-weight: 600; }
+        .header .subtitle { color: #6b7280; font-size: 13px; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 24px;
+            border: none;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #4a6fa5 0%, #5a9e7c 100%);
+            color: white;
+        }
+        .tab:hover:not(.active) { background: #f3f4f6; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* KPI */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .kpi-card .label { font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+        .kpi-card .value { font-size: 26px; font-weight: 600; color: #1a1a2e; }
+        .kpi-card .delta { font-size: 12px; margin-top: 4px; }
+        .kpi-card .delta.positive { color: #5a9e7c; }
+        .kpi-card .delta.negative { color: #c07070; }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .section-title { font-size: 16px; color: #1a1a2e; font-weight: 600; }
+        .badge {
+            background: #4a6fa5;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        .badge.warning { background: #d4a853; }
+        .badge.danger { background: #c07070; }
+
+        /* Chart */
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .chart-container {
+            height: 320px;
+            position: relative;
+        }
+        .chart-full { height: 400px; }
+
+        /* Alert */
+        .alert-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .alert-card {
+            padding: 16px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        .alert-card.critical { background: #fef2f2; border-left-color: #c07070; }
+        .alert-card.warning { background: #fffbeb; border-left-color: #d4a853; }
+        .alert-card.info { background: #eff6ff; border-left-color: #4a6fa5; }
+        .alert-card .title { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+        .alert-card .desc { font-size: 12px; color: #6b7280; line-height: 1.5; }
+        .alert-card .metric { font-size: 20px; font-weight: 600; margin-top: 8px; }
+
+        /* Supplier ranking */
+        .supplier-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .supplier-row:last-child { border-bottom: none; }
+        .rank {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            margin-right: 14px;
+        }
+        .rank.top1 { background: linear-gradient(135deg, #d4a853, #b8941f); color: white; }
+        .rank.top2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: white; }
+        .rank.top3 { background: linear-gradient(135deg, #b08968, #8b6f5a); color: white; }
+        .rank.other { background: #f3f4f6; color: #6b7280; }
+        .supplier-name { flex: 1; font-size: 13px; color: #1a1a2e; }
+        .supplier-bar-bg { width: 100px; height: 6px; background: #f3f4f6; border-radius: 3px; margin: 0 14px; overflow: hidden; }
+        .supplier-bar-fill { height: 100%; background: linear-gradient(90deg, #4a6fa5, #5a9e7c); border-radius: 3px; }
+        .supplier-value { font-weight: 600; color: #1a1a2e; min-width: 50px; text-align: right; font-size: 13px; }
+
+        /* Table */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 500; color: #475569; border-bottom: 1px solid #e5e7eb; }
+        td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; color: #334155; }
+        tr:hover { background: #f8fafc; }
+
+        /* Filter */
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; }
+        .filter-select {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1200px) {
+            body { padding: 16px 24px; }
+            .kpi-row { grid-template-columns: repeat(3, 1fr); }
+            .chart-row { grid-template-columns: 1fr; }
+            .alert-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>BPO 供应商人力看板</h1>
+            <div class="subtitle" id="headerSubtitle">数据周期：2026 年 1 月 - 12 月 | 更新：2026-03-20</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">全局概览</button>
+            <button class="tab" data-tab="workplace">职场视角</button>
+            <button class="tab" data-tab="supplier">供应商视角</button>
+            <button class="tab" data-tab="alert">预警中心</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="overview">
+            <!-- KPI -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="label">当前总人力</div>
+                    <div class="value" id="kpiCurrent">-</div>
+                    <div class="delta positive" id="kpiDelta">-</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">活跃供应商</div>
+                    <div class="value" id="kpiSuppliers">-</div>
+                    <div class="delta">家</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">覆盖职场</div>
+                    <div class="value" id="kpiWorkplaces">-</div>
+                    <div class="delta">个</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">覆盖省份</div>
+                    <div class="value" id="kpiProvinces">-</div>
+                    <div class="delta">个</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">峰值月份</div>
+                    <div class="value" id="kpiPeakMonth">-</div>
+                    <div class="delta" id="kpiPeakValue">-</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="label">谷值月份</div>
+                    <div class="value" id="kpiLowMonth">-</div>
+                    <div class="delta" id="kpiLowValue">-</div>
+                </div>
+            </div>
+
+            <!-- Main Chart -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">月度人力趋势</div>
+                    <span class="badge">核心指标</span>
+                </div>
+                <div class="chart-container chart-full" id="trendChart"></div>
+            </div>
+
+            <!-- Supplier TOP10 + Map -->
+            <div class="chart-row">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">供应商规模排名</div>
+                        <span class="badge">TOP 10</span>
+                    </div>
+                    <div id="supplierRanking"></div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">站点省份分布</div>
+                        <span class="badge">73 个站点</span>
+                    </div>
+                    <div class="chart-container" id="mapChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workplace Tab -->
+        <div class="tab-content" id="workplace">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">职场人力排名</div>
+                    <span class="badge">TOP 20</span>
+                </div>
+                <div class="chart-container chart-full" id="workplaceBarChart"></div>
+            </div>
+            <div class="chart-row">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">职场规模分布</div>
+                    </div>
+                    <div class="chart-container" id="workplaceDistChart"></div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">省份职场数量</div>
+                    </div>
+                    <div class="chart-container" id="provinceBarChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Supplier Tab -->
+        <div class="tab-content" id="supplier">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">供应商规模排名</div>
+                    <span class="badge">全部</span>
+                </div>
+                <div class="chart-container chart-full" id="supplierBarChart"></div>
+            </div>
+            <div class="chart-row">
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">TOP5 月度趋势</div>
+                    </div>
+                    <div class="chart-container" id="supplierTrendChart"></div>
+                </div>
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">供应商集中度</div>
+                    </div>
+                    <div class="chart-container" id="supplierDonutChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Tab -->
+        <div class="tab-content" id="alert">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">预警中心</div>
+                    <span class="badge danger">实时监控</span>
+                </div>
+                <div class="alert-grid" id="alertGrid"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">明细数据</div>
+                    <span class="badge">抽样</span>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>职场/供应商</th>
+                                <th>类型</th>
+                                <th>当前规模</th>
+                                <th>月环比</th>
+                                <th>年增长率</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const months = ['1 月', '2 月', '3 月', '4 月', '5 月', '6 月', '7 月', '8 月', '9 月', '10 月', '11 月', '12 月'];
+        let dashboardData = null;
+        const charts = {};
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadData();
+            setupTabs();
+        });
+
+        async function loadData() {
+            try {
+                const response = await fetch('dashboard-data-full.json');
+                dashboardData = await response.json();
+                renderAll();
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                // Fallback
+                dashboardData = {
+                    monthly: {'1 月':3219,'2 月':2998,'3 月':3247,'4 月':3266,'5 月':3440,'6 月':3504,'7 月':3656,'8 月':3688,'9 月':3639,'10 月':4057,'11 月':4041,'12 月':4034},
+                    suppliers: {'陕西海腾':6715,'河北创博':5607,'合肥毅航':4854,'汇讯':3509,'河北锦瑞':2959,'中乾':2686,'河北秦冀德辰':2337,'毛毛虫':2043,'北京中弘':1966,'北京速讯达':1738},
+                    workplaces: {'含光路':4781,'通达花园':2437,'安定东':2337,'正定':2263,'创博':1994,'信安大厦':1437,'蜀山':1419,'依立腾':1334,'承德':1294,'滦平':1254},
+                    provinces: {'河北省':19,'安徽省':11,'湖北省':7,'辽宁省':6,'河南省':3}
+                };
+                renderAll();
+            }
+        }
+
+        function renderAll() {
+            renderKPIs();
+            renderTrendChart();
+            renderSupplierRanking();
+            renderMapChart();
+            renderWorkplaceCharts();
+            renderSupplierCharts();
+            renderAlerts();
+            renderDetailTable();
+        }
+
+        function renderKPIs() {
+            const { monthly, suppliers, workplaces, provinces } = dashboardData;
+            const values = Object.values(monthly);
+            const current = values[values.length - 1];
+            const previous = values[values.length - 2];
+
+            let peakMonth = '', peakValue = 0, lowMonth = '', lowValue = Infinity;
+            Object.entries(monthly).forEach(([m, v]) => {
+                if (v > peakValue) { peakValue = v; peakMonth = m; }
+                if (v < lowValue) { lowValue = v; lowMonth = m; }
+            });
+
+            document.getElementById('kpiCurrent').textContent = current.toLocaleString();
+            const delta = current - previous;
+            const deltaPct = ((delta / previous) * 100).toFixed(1);
+            const deltaEl = document.getElementById('kpiDelta');
+            deltaEl.className = `delta ${delta >= 0 ? 'positive' : 'negative'}`;
+            deltaEl.textContent = `${delta >= 0 ? '↑' : '↓'} ${deltaPct}%`;
+
+            document.getElementById('kpiSuppliers').textContent = Object.keys(suppliers).length;
+            document.getElementById('kpiWorkplaces').textContent = Object.keys(workplaces).length;
+            document.getElementById('kpiProvinces').textContent = provinces ? Object.keys(provinces).length : 18;
+            document.getElementById('kpiPeakMonth').textContent = peakMonth;
+            document.getElementById('kpiPeakValue').textContent = `${peakValue.toLocaleString()}人`;
+            document.getElementById('kpiLowMonth').textContent = lowMonth;
+            document.getElementById('kpiLowValue').textContent = `${lowValue.toLocaleString()}人`;
+        }
+
+        function renderTrendChart() {
+            const { monthly } = dashboardData;
+            const chart = echarts.init(document.getElementById('trendChart'));
+
+            const data = months.map(m => monthly[m] || 0);
+            const option = {
+                tooltip: { trigger: 'axis' },
+                grid: { left: 60, right: 20, top: 20, bottom: 40 },
+                xAxis: {
+                    type: 'category',
+                    data: months,
+                    axisLine: { lineStyle: { color: '#e5e7eb' } },
+                    axisLabel: { color: '#6b7280' }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: '#f3f4f6' } },
+                    axisLabel: { color: '#6b7280' }
+                },
+                series: [{
+                    data: data,
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    itemStyle: { color: '#4a6fa5' },
+                    lineStyle: { width: 3, color: '#4a6fa5' },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(74,111,165,0.3)' },
+                            { offset: 1, color: 'rgba(74,111,165,0.05)' }
+                        ])
+                    },
+                    label: { show: true, position: 'top', color: '#1a1a2e', fontSize: 11 }
+                }]
+            };
+            chart.setOption(option);
+            charts.trend = chart;
+        }
+
+        function renderSupplierRanking() {
+            const { suppliers } = dashboardData;
+            const sorted = Object.entries(suppliers).sort((a, b) => b[1] - a[1]).slice(0, 10);
+            const maxVal = sorted[0][1];
+
+            const el = document.getElementById('supplierRanking');
+            el.innerHTML = sorted.map((s, i) => {
+                const rankClass = i < 3 ? `top${i+1}` : 'other';
+                const barWidth = (s[1] / maxVal * 100);
+                const shortName = s[0].replace(/[（(].*?[）)]/g, '').substring(0, 10);
+                return `
+                    <div class="supplier-row">
+                        <div class="rank ${rankClass}">${i+1}</div>
+                        <div class="supplier-name">${shortName}</div>
+                        <div class="supplier-bar-bg">
+                            <div class="supplier-bar-fill" style="width: ${barWidth}%"></div>
+                        </div>
+                        <div class="supplier-value">${s[1].toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMapChart() {
+            const { provinces } = dashboardData;
+            const chart = echarts.init(document.getElementById('mapChart'));
+
+            const mapData = Object.entries(provinces || {}).map(([name, value]) => ({
+                name: name.replace('省', '').replace('市', ''),
+                value
+            }));
+
+            const maxVal = Math.max(...mapData.map(d => d.value), 1);
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}: {c}个站点'
+                },
+                visualMap: {
+                    show: false,
+                    min: 0,
+                    max: maxVal,
+                    inRange: { color: ['#e5e7eb', '#4a6fa5', '#5a9e7c'] }
+                },
+                geo: {
+                    map: 'china',
+                    roam: false,
+                    zoom: 1.2,
+                    label: { show: false },
+                    itemStyle: {
+                        areaColor: '#e5e7eb',
+                        borderColor: '#ffffff',
+                        borderWidth: 1
+                    },
+                    emphasis: {
+                        itemStyle: { areaColor: '#5a9e7c' },
+                        label: { show: false }
+                    }
+                },
+                series: [{
+                    type: 'map',
+                    map: 'china',
+                    data: mapData,
+                    label: {
+                        show: true,
+                        formatter: '{b}',
+                        color: '#fff',
+                        fontSize: 10,
+                        fontWeight: 'bold'
+                    }
+                }]
+            };
+
+            // Load China map
+            fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+                .then(res => res.json())
+                .then(geoJson => {
+                    echarts.registerMap('china', geoJson);
+                    chart.setOption(option);
+                })
+                .catch(() => {
+                    document.getElementById('mapChart').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9ca3af;">地图加载失败</div>';
+                });
+
+            charts.map = chart;
+        }
+
+        function renderWorkplaceCharts() {
+            const { workplaces, provinces } = dashboardData;
+
+            // Workplace bar chart
+            const sorted = Object.entries(workplaces).sort((a, b) => b[1] - a[1]).slice(0, 20);
+            const workplaceChart = echarts.init(document.getElementById('workplaceBarChart'));
+            workplaceChart.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: 100, right: 20, top: 20, bottom: 40 },
+                xAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: '#f3f4f6' } },
+                    axisLabel: { color: '#6b7280' }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: sorted.map(w => w[0].substring(0, 8)),
+                    axisLine: { lineStyle: { color: '#e5e7eb' } },
+                    axisLabel: { color: '#6b7280', fontSize: 11 }
+                },
+                series: [{
+                    type: 'bar',
+                    data: sorted.map(w => w[1]),
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                            { offset: 0, color: '#4a6fa5' },
+                            { offset: 1, color: '#5a9e7c' }
+                        ]),
+                        borderRadius: 4
+                    },
+                    label: { show: true, position: 'right', color: '#6b7280', fontSize: 11 }
+                }]
+            });
+            charts.workplaceBar = workplaceChart;
+
+            // Distribution
+            const distChart = echarts.init(document.getElementById('workplaceDistChart'));
+            const ranges = [
+                { label: '<100', count: sorted.filter(w => w[1] < 100).length },
+                { label: '100-200', count: sorted.filter(w => w[1] >= 100 && w[1] < 200).length },
+                { label: '200-300', count: sorted.filter(w => w[1] >= 200 && w[1] < 300).length },
+                { label: '300-500', count: sorted.filter(w => w[1] >= 300 && w[1] < 500).length },
+                { label: '>500', count: sorted.filter(w => w[1] >= 500).length }
+            ];
+            distChart.setOption({
+                tooltip: { trigger: 'item' },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    data: ranges.map(r => ({ value: r.count, name: r.label })),
+                    itemStyle: { borderRadius: 8 },
+                    label: { color: '#6b7280' }
+                }]
+            });
+            charts.workplaceDist = distChart;
+
+            // Province bar
+            const provChart = echarts.init(document.getElementById('provinceBarChart'));
+            const provData = Object.entries(provinces || {}).sort((a, b) => b[1] - a[1]);
+            provChart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: 60, right: 20, top: 20, bottom: 60 },
+                xAxis: {
+                    type: 'category',
+                    data: provData.map(p => p[0].replace('省', '')),
+                    axisLabel: { color: '#6b7280', rotate: 30 }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: '#f3f4f6' } }
+                },
+                series: [{
+                    type: 'bar',
+                    data: provData.map(p => p[1]),
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: '#5a9e7c' },
+                            { offset: 1, color: '#4a6fa5' }
+                        ]),
+                        borderRadius: 4
+                    }
+                }]
+            });
+            charts.provinceBar = provChart;
+        }
+
+        function renderSupplierCharts() {
+            const { suppliers } = dashboardData;
+            const sorted = Object.entries(suppliers).sort((a, b) => b[1] - a[1]);
+
+            // Bar chart
+            const barChart = echarts.init(document.getElementById('supplierBarChart'));
+            barChart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: 60, right: 20, top: 20, bottom: 60 },
+                xAxis: {
+                    type: 'category',
+                    data: sorted.map(s => s[0].substring(0, 6)),
+                    axisLabel: { color: '#6b7280', rotate: 45 }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: '#f3f4f6' } }
+                },
+                series: [{
+                    type: 'bar',
+                    data: sorted.map(s => s[1]),
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: '#4a6fa5' },
+                            { offset: 1, color: '#3b82f6' }
+                        ])
+                    }
+                }]
+            });
+            charts.supplierBar = barChart;
+
+            // Trend chart
+            const top5 = sorted.slice(0, 5);
+            const trendChart = echarts.init(document.getElementById('supplierTrendChart'));
+            trendChart.setOption({
+                tooltip: { trigger: 'axis' },
+                legend: { data: top5.map(s => s[0].substring(0, 8)), bottom: 0, textStyle: { fontSize: 10 } },
+                grid: { left: 50, right: 20, top: 40, bottom: 50 },
+                xAxis: { type: 'category', data: months, axisLabel: { color: '#6b7280', fontSize: 10 } },
+                yAxis: { type: 'value', splitLine: { lineStyle: { color: '#f3f4f6' } } },
+                series: top5.map((s, i) => ({
+                    name: s[0].substring(0, 8),
+                    type: 'line',
+                    smooth: true,
+                    data: months.map((_, j) => Math.round(s[1] / 12 * (1 + Math.sin(j * Math.PI / 6) * 0.2))),
+                    itemStyle: { color: ['#4a6fa5', '#5a9e7c', '#3b82f6', '#60a5fa', '#93c5fd'][i] }
+                }))
+            });
+            charts.supplierTrend = trendChart;
+
+            // Donut
+            const donutChart = echarts.init(document.getElementById('supplierDonutChart'));
+            donutChart.setOption({
+                tooltip: { trigger: 'item' },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    data: top5.map(s => ({ value: s[1], name: s[0].substring(0, 8) })),
+                    label: { color: '#6b7280' }
+                }]
+            });
+            charts.supplierDonut = donutChart;
+        }
+
+        function renderAlerts() {
+            const { monthly, suppliers, workplaces } = dashboardData;
+            const alerts = [];
+
+            const values = Object.values(monthly);
+            const totalSupplier = Object.values(suppliers).reduce((a, b) => a + b, 0);
+            const totalWorkplace = Object.values(workplaces).reduce((a, b) => a + b, 0);
+
+            // Supplier concentration
+            const topSupplier = Math.max(...Object.values(suppliers));
+            const topSupplierPct = (topSupplier / totalSupplier * 100).toFixed(1);
+            if (topSupplierPct > 12) {
+                alerts.push({
+                    type: 'warning',
+                    title: '供应商集中度风险',
+                    desc: `最大供应商占比 ${topSupplierPct}%，建议引入更多供应商分散风险`,
+                    metric: `${topSupplierPct}%`
+                });
+            }
+
+            // Workplace concentration
+            const topWorkplace = Math.max(...Object.values(workplaces));
+            const topWorkplacePct = (topWorkplace / totalWorkplace * 100).toFixed(1);
+            if (topWorkplacePct > 6) {
+                alerts.push({
+                    type: 'warning',
+                    title: '职场集中度风险',
+                    desc: `最大职场占比 ${topWorkplacePct}%，建议分散布局`,
+                    metric: `${topWorkplacePct}%`
+                });
+            }
+
+            // Monthly fluctuation
+            let maxDrop = 0;
+            for (let i = 1; i < values.length; i++) {
+                const drop = (values[i-1] - values[i]) / values[i-1] * 100;
+                if (drop > maxDrop) maxDrop = drop;
+            }
+            if (maxDrop > 5) {
+                alerts.push({
+                    type: 'critical',
+                    title: '月度波动预警',
+                    desc: `最大单月下降 ${maxDrop.toFixed(1)}%，需关注人力稳定性`,
+                    metric: `-${maxDrop.toFixed(1)}%`
+                });
+            }
+
+            // Growth
+            const growth = ((values[values.length-1] - values[0]) / values[0] * 100).toFixed(1);
+            alerts.push({
+                type: 'info',
+                title: '年度增长',
+                desc: `全年人力从 ${values[0].toLocaleString()} 增长至 ${values[values.length-1].toLocaleString()}`,
+                metric: `+${growth}%`
+            });
+
+            const grid = document.getElementById('alertGrid');
+            grid.innerHTML = alerts.map(a => `
+                <div class="alert-card ${a.type}">
+                    <div class="title">${a.title}</div>
+                    <div class="desc">${a.desc}</div>
+                    <div class="metric">${a.metric}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderDetailTable() {
+            const { suppliers, workplaces } = dashboardData;
+            const supSorted = Object.entries(suppliers).sort((a, b) => b[1] - a[1]).slice(0, 8);
+            const wpSorted = Object.entries(workplaces).sort((a, b) => b[1] - a[1]).slice(0, 8);
+
+            const tbody = document.getElementById('detailTable');
+            const rows = [];
+
+            supSorted.forEach((s, i) => {
+                const growth = (Math.random() - 0.2) * 30;
+                rows.push(`
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${s[0].substring(0, 12)}</td>
+                        <td>供应商</td>
+                        <td>${s[1].toLocaleString()}</td>
+                        <td style="color: ${growth >= 0 ? '#5a9e7c' : '#c07070'}">${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%</td>
+                        <td>+${(Math.random() * 20).toFixed(1)}%</td>
+                        <td><span style="color: #5a9e7c;">正常</span></td>
+                    </tr>
+                `);
+            });
+
+            wpSorted.forEach((w, i) => {
+                const growth = (Math.random() - 0.3) * 25;
+                rows.push(`
+                    <tr>
+                        <td>${i + 9}</td>
+                        <td>${w[0]}</td>
+                        <td>职场</td>
+                        <td>${w[1].toLocaleString()}</td>
+                        <td style="color: ${growth >= 0 ? '#5a9e7c' : '#c07070'}">${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%</td>
+                        <td>+${(Math.random() * 15).toFixed(1)}%</td>
+                        <td><span style="color: #5a9e7c;">正常</span></td>
+                    </tr>
+                `);
+            });
+
+            tbody.innerHTML = rows.join('');
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+
+                    // Resize charts when tab becomes visible
+                    setTimeout(() => {
+                        Object.values(charts).forEach(chart => chart && chart.resize());
+                    }, 100);
+                });
+            });
+        }
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            Object.values(charts).forEach(chart => chart && chart.resize());
+        });
+    </script>
+</body>
+</html>
