@@ -3,29 +3,22 @@ input: 需求
 output: supplier-settlement.md
 pos: .claude/skills/email/templates/supplier-settlement.md
 ---
-
 # 供应商结算邮件模板
-
 ## 使用说明
 用于月度对账、费用确认、结算异常、付款通知、审计对接
 
 ---
-
 ## 月度对账单（发给供应商）
 
-**邮件主题**：XXX月结算对账单 - XXX供应商
+尊敬的XXX：
 
-**邮件正文**：
+现将**X月**结算对账单发送如下，请核对。
 
-<p>尊敬的XXX：</p>
+**结算周期：**
 
-<p>现将**X月**结算对账单发送如下，请核对。</p>
+X月1日 - X月31日。
 
-<p><strong>结算周期：</strong></p>
-
-<p>X月1日 - X月31日。</p>
-
-<p><strong>结算数据汇总：</strong></p>
+**结算数据汇总：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -59,12 +52,11 @@ pos: .claude/skills/email/templates/supplier-settlement.md
     <td style="text-align: center;">**XX元**</td>
   </tr>
 </table>
+**详细数据：**
 
-<p><strong>详细数据：</strong></p>
+详见附件1《X月数据明细表》。
 
-<p>详见附件1《X月数据明细表》。</p>
-
-<p><strong>绩效考核：</strong></p>
+**绩效考核：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -110,38 +102,28 @@ pos: .claude/skills/email/templates/supplier-settlement.md
     <td style="text-align: center;">**±XX元**</td>
   </tr>
 </table>
+**最终结算金额：**
 
-<p><strong>最终结算金额：</strong></p>
+基础结算为XX元，绩效奖罚为±XX元，其他扣减为-XX元，**最终金额为XX元**。
 
-<p>基础结算为XX元，绩效奖罚为±XX元，其他扣减为-XX元，<strong>最终金额为XX元</strong>。</p>
+**确认要求：**
 
-<p><strong>确认要求：</strong></p>
+请于X月X日前确认以下事项：一是数据准确性，请核对各分项数据；二是金额确认，请确认最终结算金额；三是发票开具，确认后请开具有效发票。
 
-<p>请于X月X日前确认以下事项：一是数据准确性，请核对各分项数据；二是金额确认，请确认最终结算金额；三是发票开具，确认后请开具有效发票。</p>
+**联系方式：**
 
-<p><strong>联系方式：</strong></p>
+对账疑问联系XXX（电话：XXX），发票事宜联系XXX（电话：XXX）。
 
-<p>对账疑问联系XXX（电话：XXX），发票事宜联系XXX（电话：XXX）。</p>
-
-<p>请及时确认，以便按时付款。</p>
-
----
-**签名部分自动追加**
-
+请及时确认，以便按时付款。
 
 ---
-
 ## 结算异常通知（发给供应商）
 
-**邮件主题**：X月结算数据异常说明
+尊敬的XXX：
 
-**邮件正文**：
+在X月结算对账中，发现以下数据异常，请核实。
 
-<p>尊敬的XXX：</p>
-
-<p>在X月结算对账中，发现以下数据异常，请核实。</p>
-
-<p><strong>异常项目：</strong></p>
+**异常项目：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -175,78 +157,59 @@ pos: .claude/skills/email/templates/supplier-settlement.md
     <td style="text-align: center;">±XX元</td>
   </tr>
 </table>
+**差异说明：**
 
-<p><strong>差异说明：</strong></p>
+根据我方系统记录：有效通话量为XX通（XXX系统导出），合格通话量为XX通（质检部门统计），转化成功量为XX单（业务部门统计）。
 
-<p>根据我方系统记录：有效通话量为XX通（XXX系统导出），合格通话量为XX通（质检部门统计），转化成功量为XX单（业务部门统计）。</p>
+数据来源详见附件2《数据统计明细》。
 
-<p>数据来源详见附件2《数据统计明细》。</p>
+**核实要求：**
 
-<p><strong>核实要求：</strong></p>
+请于X月X日前：一是核对贵司数据统计方式，二是提供差异原因说明，三是如有数据错误，提供修正方案及证据，四是双方对齐后重新确认结算金额。
 
-<p>请于X月X日前：一是核对贵司数据统计方式，二是提供差异原因说明，三是如有数据错误，提供修正方案及证据，四是双方对齐后重新确认结算金额。</p>
+**后续影响：**
 
-<p><strong>后续影响：</strong></p>
+如X月X日前未能确认差异，将按我方数据进行临时结算，待后续确认后多退少补。
 
-<p>如X月X日前未能确认差异，将按我方数据进行临时结算，待后续确认后多退少补。</p>
-
-<p>请尽快核实，以便推进结算流程。</p>
-
----
-**签名部分自动追加**
-
+请尽快核实，以便推进结算流程。
 
 ---
-
 ## 付款通知（发给供应商）
 
-**邮件主题**：X月结算款支付通知
+尊敬的XXX：
 
-**邮件正文**：
+您好。经双方对账确认，X月结算款将按以下方式支付。
 
-<p>尊敬的XXX：</p>
+**付款信息：**
 
-<p>您好。经双方对账确认，X月结算款将按以下方式支付。</p>
+结算周期为X月1日 - X月31日，确认金额为XX元，预计付款日期为X月X日，付款方式为银行转账。
 
-<p><strong>付款信息：</strong></p>
+**收款账户：**
 
-<p>结算周期为X月1日 - X月31日，确认金额为XX元，预计付款日期为X月X日，付款方式为银行转账。</p>
+户名为XXX，账号为XXX，开户行为XXX。
 
-<p><strong>收款账户：</strong></p>
+**发票确认：**
 
-<p>户名为XXX，账号为XXX，开户行为XXX。</p>
+您已提供发票信息：发票类型为XXX，发票金额为XX元，发票号码为XXX。发票已审核通过，将随付款一同交付。
 
-<p><strong>发票确认：</strong></p>
+**到账确认：**
 
-<p>您已提供发票信息：发票类型为XXX，发票金额为XX元，发票号码为XXX。发票已审核通过，将随付款一同交付。</p>
+预计付款后1-3个工作日到账。
 
-<p><strong>到账确认：</strong></p>
-
-<p>预计付款后1-3个工作日到账。</p>
-
-<p>如有疑问，请及时联系：XXX（XXX）。</p>
+如有疑问，请及时联系：XXX（XXX）。
 
 ---
-**签名部分自动追加**
-
-
----
-
 ## 成本分析报告（内部）
 
-**邮件主题**：关于X月供应商成本分析报告
+尊敬的领导：
 
-**邮件正文**：
+现将X月供应商成本分析汇报如下。
 
-<p>尊敬的领导：</p>
+**成本汇总：**
 
-<p>现将X月供应商成本分析汇报如下。</p>
+本月结算总额为XXX元，上月结算总额为XXX元，环比变化为±X%。
 
-<p><strong>成本汇总：</strong></p>
-
-<p>本月结算总额为XXX元，上月结算总额为XXX元，环比变化为±X%。</p>
-
-<p><strong>成本结构分析：</strong></p>
+**成本结构分析：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -285,8 +248,7 @@ pos: .claude/skills/email/templates/supplier-settlement.md
     <td style="text-align: center;">—</td>
   </tr>
 </table>
-
-<p><strong>单位成本：</strong></p>
+**单位成本：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -318,12 +280,11 @@ pos: .claude/skills/email/templates/supplier-settlement.md
     <td style="text-align: center;">市场变化</td>
   </tr>
 </table>
+**成本优化机会：**
 
-<p><strong>成本优化机会：</strong></p>
+一是XXX，通过优化XX可降低成本XX元/月；二是XXX，通过调整XX可降低成本XX元/月。
 
-<p>一是XXX，通过优化XX可降低成本XX元/月；二是XXX，通过调整XX可降低成本XX元/月。</p>
-
-<p><strong>成本异常：</strong></p>
+**成本异常：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -348,34 +309,24 @@ pos: .claude/skills/email/templates/supplier-settlement.md
     <td style="text-align: center;">XXX</td>
   </tr>
 </table>
+**下月预测：**
 
-<p><strong>下月预测：</strong></p>
+基于业务增长预测，预计结算总额为XXX元（环比±X%）。
 
-<p>基于业务增长预测，预计结算总额为XXX元（环比±X%）。</p>
+**建议：**
 
-<p><strong>建议：</strong></p>
+一是成本控制为XXX，二是结构优化为XXX，三是商务谈判为XXX。
 
-<p>一是成本控制为XXX，二是结构优化为XXX，三是商务谈判为XXX。</p>
-
-<p>附件：详细数据表（含各供应商成本明细）。</p>
-
----
-**签名部分自动追加**
-
+附件：详细数据表（含各供应商成本明细）。
 
 ---
-
 ## 审计协助请求（发给供应商）
 
-**邮件主题**：财务审计资料提供要求
+尊敬的XXX：
 
-**邮件正文**：
+为配合我司年度财务审计，需贵司提供以下资料。
 
-<p>尊敬的XXX：</p>
-
-<p>为配合我司年度财务审计，需贵司提供以下资料。</p>
-
-<p><strong>需提供资料清单：</strong></p>
+**需提供资料清单：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -427,75 +378,49 @@ pos: .claude/skills/email/templates/supplier-settlement.md
     <td style="text-align: center;">扫描件</td>
   </tr>
 </table>
+**提供时间：**
 
-<p><strong>提供时间：</strong></p>
+请于**X月X日前**将资料发至以下邮箱：审计对接人为XXX，邮箱为XXX，电话为XXX。
 
-<p>请于**X月X日前**将资料发至以下邮箱：审计对接人为XXX，邮箱为XXX，电话为XXX。</p>
+**资料要求：**
 
-<p><strong>资料要求：</strong></p>
+一是数据完整、准确、可核对，二是部分敏感数据需脱敏处理，三是文件命名规范为供应商名_类型_日期。
 
-<p>一是数据完整、准确、可核对，二是部分敏感数据需脱敏处理，三是文件命名规范为供应商名_类型_日期。</p>
+**保密承诺：**
 
-<p><strong>保密承诺：</strong></p>
+我司将严格保密贵司提供的所有资料，仅用于审计目的，审计结束后按规定归档或销毁。
 
-<p>我司将严格保密贵司提供的所有资料，仅用于审计目的，审计结束后按规定归档或销毁。</p>
+**审计说明：**
 
-<p><strong>审计说明：</strong></p>
+本次审计由以下机构执行：审计机构为XXX会计师事务所，审计师为XXX，联系方式为XXX。
 
-<p>本次审计由以下机构执行：审计机构为XXX会计师事务所，审计师为XXX，联系方式为XXX。</p>
-
-<p>如有疑问，请随时沟通。</p>
-
----
-**签名部分自动追加**
-
+如有疑问，请随时沟通。
 
 ---
-
 ## 税务协调告知（发给供应商）
 
-**邮件主题**：结算款税务注意事项
+尊敬的XXX：
 
-**邮件正文**：
+为顺利推进结算款税务处理，请贵司注意以下事项。
 
-<p>尊敬的XXX：</p>
+**发票要求：**
 
-<p>为顺利推进结算款税务处理，请贵司注意以下事项。</p>
+发票类型为增值税专用发票，税率为6%，服务项目为电话营销服务，价税分离须清晰标注。
 
-<p><strong>发票要求：</strong></p>
+**税务信息：**
 
-<p>发票类型为增值税专用发票，税率为6%，服务项目为电话营销服务，价税分离须清晰标注。</p>
+我司税务信息（请在发票上准确填写）：名称为XXX有限公司，纳税人识别号为XXX，地址电话为XXX，开户行及账号为XXX。
 
-<p><strong>税务信息：</strong></p>
+**扣税说明：**
 
-<p>我司税务信息（请在发票上准确填写）：名称为XXX有限公司，纳税人识别号为XXX，地址电话为XXX，开户行及账号为XXX。</p>
+根据税法规定：个人独资企业/个体工商户需代扣个人所得税，税率X%；其他类型企业无需代扣，自行申报。
 
-<p><strong>扣税说明：</strong></p>
+**特殊说明：**
 
-<p>根据税法规定：个人独资企业/个体工商户需代扣个人所得税，税率X%；其他类型企业无需代扣，自行申报。</p>
+贵司企业性质为XXX，预计扣税金额为XXX元（如适用）。
 
-<p><strong>特殊说明：</strong></p>
+**税务处理时间：**
 
-<p>贵司企业性质为XXX，预计扣税金额为XXX元（如适用）。</p>
+我司将在每月X日前完成税务处理：代扣个税为X日前申报缴纳，进项税抵扣按税法申报。
 
-<p><strong>税务处理时间：</strong></p>
-
-<p>我司将在每月X日前完成税务处理：代扣个税为X日前申报缴纳，进项税抵扣按税法申报。</p>
-
-<p>如有税务疑问，建议咨询贵司税务顾问。</p>
-
----
-
-**签名**：
-
---------------------------------------------------------
-
-孙大年
-京东科技-金融科技事业群-数据科技业务部-电销服务组
-电话：+86 18249515580
-邮箱：sundanian@jd.com
-地址：北京市经济技术开发区科创十一街京东总部二号楼A座19层
-
-重要提示：此邮件及附件具保密性质，包含商业秘密，受法律保护不得泄露，特此提醒您此邮件的机密性。如果您意外收到此邮件，请立即通知我，并从您的系统中删除此邮件及附件，禁止使用、复制或向他人披露邮件及附件相关内容。
----
-**签名部分自动追加**
+如有税务疑问，建议咨询贵司税务顾问。

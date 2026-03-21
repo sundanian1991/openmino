@@ -3,25 +3,18 @@ input: 需求
 output: supplier-operations.md
 pos: .claude/skills/email/templates/supplier-operations.md
 ---
-
 # 供应商日常运营邮件模板
-
 ## 使用说明
 用于日常监控、数据同步、整改通知、约谈、巡检报告
 
 ---
-
 ## 运营日报（内部/供应商）
 
-**邮件主题**：XX月XX日供应商运营情况
+团队成员：
 
-**邮件正文**：
+XX月XX日供应商运营情况如下。
 
-<p>团队成员：</p>
-
-<p>XX月XX日供应商运营情况如下。</p>
-
-<p><strong>核心数据：</strong></p>
+**核心数据：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -55,12 +48,11 @@ pos: .claude/skills/email/templates/supplier-operations.md
     <td style="text-align: center;">+X%</td>
   </tr>
 </table>
+**供应商TOP5：**
 
-<p><strong>供应商TOP5：</strong></p>
+一是XXX供应商，接通率XX%、转化率XX%、同比增长X%；二是XXX供应商，接通率XX%、转化率XX%、同比增长X%；三是XXX供应商，接通率XX%、转化率XX%、同比增长X%；四是XXX供应商，接通率XX%、转化率XX%、同比增长X%；五是XXX供应商，接通率XX%、转化率XX%、同比增长X%。
 
-<p>一是XXX供应商，接通率XX%、转化率XX%、同比增长X%；二是XXX供应商，接通率XX%、转化率XX%、同比增长X%；三是XXX供应商，接通率XX%、转化率XX%、同比增长X%；四是XXX供应商，接通率XX%、转化率XX%、同比增长X%；五是XXX供应商，接通率XX%、转化率XX%、同比增长X%。</p>
-
-<p><strong>异常预警：</strong></p>
+**异常预警：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -82,28 +74,18 @@ pos: .claude/skills/email/templates/supplier-operations.md
     <td style="text-align: center;">启动培训支持</td>
   </tr>
 </table>
+**今日重点工作：**
 
-<p><strong>今日重点工作：</strong></p>
-
-<p>已处理事项：XXX。待处理事项：XXX。</p>
-
----
-**签名部分自动追加**
-
+已处理事项：XXX。待处理事项：XXX。
 
 ---
-
 ## 周报/月报（内部）
 
-**邮件主题**：关于第XX周工作汇报
+尊敬的领导：
 
-**邮件正文**：
+现将第XX周工作汇报如下。
 
-<p>尊敬的领导：</p>
-
-<p>现将第XX周工作汇报如下。</p>
-
-<p><strong>本周核心数据：</strong></p>
+**本周核心数据：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -142,42 +124,32 @@ pos: .claude/skills/email/templates/supplier-operations.md
     <td style="text-align: center;">合规培训见效</td>
   </tr>
 </table>
+**重点工作进展：**
 
-<p><strong>重点工作进展：</strong></p>
+一是XXX，进度XX%，预计XX完成；二是XXX，进度XX%，预计XX完成；三是XXX，进度XX%，预计XX完成。
 
-<p>一是XXX，进度XX%，预计XX完成；二是XXX，进度XX%，预计XX完成；三是XXX，进度XX%，预计XX完成。</p>
+**存在的问题：**
 
-<p><strong>存在的问题：</strong></p>
+一是XXX，问题描述为XXX，影响为XXX，措施为XXX；二是XXX，问题描述为XXX，影响为XXX，措施为XXX。
 
-<p>一是XXX，问题描述为XXX，影响为XXX，措施为XXX；二是XXX，问题描述为XXX，影响为XXX，措施为XXX。</p>
+**下周计划：**
 
-<p><strong>下周计划：</strong></p>
+一是推进XXX；二是完成XXX；三是启动XXX。
 
-<p>一是推进XXX；二是完成XXX；三是启动XXX。</p>
+**需要支持：**
 
-<p><strong>需要支持：</strong></p>
+需要XX部门协助XXX。
 
-<p>需要XX部门协助XXX。</p>
-
-<p>如有疑问，随时沟通。</p>
-
----
-**签名部分自动追加**
-
+如有疑问，随时沟通。
 
 ---
-
 ## 整改通知（发给供应商）
 
-**邮件主题**：XXX供应商整改事项
+尊敬的XXX：
 
-**邮件正文**：
+在XX月XX日的合规巡检中，发现贵司存在以下问题，请按要求整改。
 
-<p>尊敬的XXX：</p>
-
-<p>在XX月XX日的合规巡检中，发现贵司存在以下问题，请按要求整改。</p>
-
-<p><strong>问题清单：</strong></p>
+**问题清单：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -209,8 +181,7 @@ pos: .claude/skills/email/templates/supplier-operations.md
     <td style="text-align: center;">检查清单XXX</td>
   </tr>
 </table>
-
-<p><strong>整改要求：</strong></p>
+**整改要求：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -238,76 +209,57 @@ pos: .claude/skills/email/templates/supplier-operations.md
     <td style="text-align: center;">记录完整可查</td>
   </tr>
 </table>
+**处罚措施：**
 
-<p><strong>处罚措施：</strong></p>
+根据合同第X条，将对本次问题进行以下处罚：扣除当月绩效分XX分；暂时减少分量X席；罚款金额XXX元。
 
-<p>根据合同第X条，将对本次问题进行以下处罚：扣除当月绩效分XX分；暂时减少分量X席；罚款金额XXX元。</p>
+**整改跟进：**
 
-<p><strong>整改跟进：</strong></p>
+对接人为XXX，复查时间为X月X日，未整改后果为进一步降级或清退。
 
-<p>对接人为XXX，复查时间为X月X日，未整改后果为进一步降级或清退。</p>
-
-<p>请务必重视，按时整改。</p>
-
----
-**签名部分自动追加**
-
+请务必重视，按时整改。
 
 ---
-
 ## 约谈邀约（发给供应商管理层）
 
-**邮件主题**：XXX供应商管理层约谈
+尊敬的XXX：
 
-**邮件正文**：
+根据近期运营数据发现，贵司在以下方面存在明显问题，邀请管理层来我司进行约谈。
 
-<p>尊敬的XXX：</p>
+**约谈事由：**
 
-<p>根据近期运营数据发现，贵司在以下方面存在明显问题，邀请管理层来我司进行约谈。</p>
+一是绩效连续X个月不达标，KPI排名末位；二是合规问题频发，月度违规X次以上；三是人员流失严重，流失率达到XX%。
 
-<p><strong>约谈事由：</strong></p>
+**约谈安排：**
 
-<p>一是绩效连续X个月不达标，KPI排名末位；二是合规问题频发，月度违规X次以上；三是人员流失严重，流失率达到XX%。</p>
+约谈时间为X月X日XX:XX，地点为XXX，贵司参加人为总经理、项目负责人，我方约谈人为XXX、XXX。
 
-<p><strong>约谈安排：</strong></p>
+**约谈议程：**
 
-<p>约谈时间为X月X日XX:XX，地点为XXX，贵司参加人为总经理、项目负责人，我方约谈人为XXX、XXX。</p>
+一是问题数据呈现与分析（15分钟），二是贵司原因说明与改进方案（30分钟），三是帮扶支持措施讨论（30分钟），四是达成一致行动计划（15分钟）。
 
-<p><strong>约谈议程：</strong></p>
+**准备材料：**
 
-<p>一是问题数据呈现与分析（15分钟），二是贵司原因说明与改进方案（30分钟），三是帮扶支持措施讨论（30分钟），四是达成一致行动计划（15分钟）。</p>
+请携带以下材料：问题原因分析报告、改进计划与时间表、需要支持的具体需求。
 
-<p><strong>准备材料：</strong></p>
+**预期成果：**
 
-<p>请携带以下材料：问题原因分析报告、改进计划与时间表、需要支持的具体需求。</p>
+一是明确问题根源，二是达成改进措施，三是确定跟进机制。
 
-<p><strong>预期成果：</strong></p>
-
-<p>一是明确问题根源，二是达成改进措施，三是确定跟进机制。</p>
-
-<p>请于X月X日前确认参会人员。</p>
+请于X月X日前确认参会人员。
 
 ---
-**签名部分自动追加**
-
-
----
-
 ## 现场巡检报告（内部）
 
-**邮件主题**：关于XXX供应商现场巡检报告
+尊敬的领导：
 
-**邮件正文**：
+现将X月X日对XXX供应商的现场巡检情况汇报如下。
 
-<p>尊敬的领导：</p>
+**巡检概况：**
 
-<p>现将X月X日对XXX供应商的现场巡检情况汇报如下。</p>
+巡检时间为X月X日，巡检人员为XXX、XXX，巡检范围为职场环境、管理看板、培训记录、合规宣传。
 
-<p><strong>巡检概况：</strong></p>
-
-<p>巡检时间为X月X日，巡检人员为XXX、XXX，巡检范围为职场环境、管理看板、培训记录、合规宣传。</p>
-
-<p><strong>检查项得分：</strong></p>
+**检查项得分：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -353,12 +305,11 @@ pos: .claude/skills/email/templates/supplier-operations.md
     <td style="text-align: center;"></td>
   </tr>
 </table>
+**发现亮点：**
 
-<p><strong>发现亮点：</strong></p>
+一是XXX，具体描述如下；二是XXX，具体描述如下。
 
-<p>一是XXX，具体描述如下；二是XXX，具体描述如下。</p>
-
-<p><strong>发现不足：</strong></p>
+**发现不足：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -377,63 +328,37 @@ pos: .claude/skills/email/templates/supplier-operations.md
     <td style="text-align: center;">X月X日</td>
   </tr>
 </table>
+**巡检结论：**
 
-<p><strong>巡检结论：</strong></p>
+整体评价为优秀/良好/合格/不合格，结果应用为维持现状/减少分量/限期整改/启动清退。
 
-<p>整体评价为优秀/良好/合格/不合格，结果应用为维持现状/减少分量/限期整改/启动清退。</p>
+**下一步：**
 
-<p><strong>下一步：</strong></p>
-
-<p>复查时间为X月X日，跟进人为XXX。</p>
-
----
-**签名部分自动追加**
-
+复查时间为X月X日，跟进人为XXX。
 
 ---
-
 ## 系统故障/线路中断快速通报（内部）
 
-**邮件主题**：XXX供应商系统故障/线路中断
+团队成员：
 
-**邮件正文**：
+<strong style="color: #e74c3c;">紧急：XXX供应商出现系统故障/线路中断</strong>
 
-<p>团队成员：</p>
+**故障信息：**
 
-<p><strong style="color: #e74c3c;">紧急：XXX供应商出现系统故障/线路中断</strong></p>
+发生时间为X月X日XX:XX，影响供应商为XXX，影响坐席数为XX席，当前状态为XXX。
 
-<p><strong>故障信息：</strong></p>
+**影响评估：**
 
-<p>发生时间为X月X日XX:XX，影响供应商为XXX，影响坐席数为XX席，当前状态为XXX。</p>
+已受影响通话量为XX通，预计影响时长为XX小时，业务影响为低/中/高。
 
-<p><strong>影响评估：</strong></p>
+**已采取措施：**
 
-<p>已受影响通话量为XX通，预计影响时长为XX小时，业务影响为低/中/高。</p>
+XX:XX联系供应商技术团队；XX:XX启动备用线路；XX:XX调整业务分配。
 
-<p><strong>已采取措施：</strong></p>
+**恢复进展：**
 
-<p>XX:XX联系供应商技术团队；XX:XX启动备用线路；XX:XX调整业务分配。</p>
+待供应商反馈...
 
-<p><strong>恢复进展：</strong></p>
+**后续措施：**
 
-<p>待供应商反馈...</p>
-
-<p><strong>后续措施：</strong></p>
-
-<p>一是故障复盘，二是赔偿协商，三是应急预案优化。</p>
-
----
-
-**签名**：
-
---------------------------------------------------------
-
-孙大年
-京东科技-金融科技事业群-数据科技业务部-电销服务组
-电话：+86 18249515580
-邮箱：sundanian@jd.com
-地址：北京市经济技术开发区科创十一街京东总部二号楼A座19层
-
-重要提示：此邮件及附件具保密性质，包含商业秘密，受法律保护不得泄露，特此提醒您此邮件的机密性。如果您意外收到此邮件，请立即通知我，并从您的系统中删除此邮件及附件，禁止使用、复制或向他人披露邮件及附件相关内容。
----
-**签名部分自动追加**
+一是故障复盘，二是赔偿协商，三是应急预案优化。

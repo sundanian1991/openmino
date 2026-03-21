@@ -3,37 +3,30 @@ input: 需求
 output: supplier-allocation.md
 pos: .claude/skills/email/templates/supplier-allocation.md
 ---
-
 # 供应商分量/扩项邮件模板
-
 ## 使用说明
 用于分量调整、扩项申请、产能调配、收缩通知
 
 ---
-
 ## 分量调整申请（供应商发起）
 
-**邮件主题**：XXX供应商分量调整申请
+尊敬的XXX：
 
-**邮件正文**：
+贵司提交的分量调整申请已收到，现将评估情况如下。
 
-<p>尊敬的XXX：</p>
+**申请概况：**
 
-<p>贵司提交的分量调整申请已收到，现将评估情况如下。</p>
+申请人为XXX供应商，申请时间为X月X日，当前分量为XX席，申请调整至XX席（+XX席）。
 
-<p><strong>申请概况：</strong></p>
+**申请理由（贵司提供）：**
 
-<p>申请人为XXX供应商，申请时间为X月X日，当前分量为XX席，申请调整至XX席（+XX席）。</p>
+一是XXX，二是XXX，三是XXX。
 
-<p><strong>申请理由（贵司提供）：</strong></p>
+**评估结果：**
 
-<p>一是XXX，二是XXX，三是XXX。</p>
+经我司评估，结论如下。
 
-<p><strong>评估结果：</strong></p>
-
-<p>经我司评估，结论如下。</p>
-
-<p><strong>评估维度：</strong></p>
+**评估维度：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -67,46 +60,36 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">历史配合良好</td>
   </tr>
 </table>
+**评估结论：**
 
-<p><strong>评估结论：</strong></p>
+同意（+XX席）/暂缓（原因：XXX）/拒绝（原因：XXX）。
 
-<p>同意（+XX席）/暂缓（原因：XXX）/拒绝（原因：XXX）。</p>
+**经批准的条件：**
 
-<p><strong>经批准的条件：</strong></p>
+如获得批准，需满足以下条件：一是X月X日前培训新增坐席XX人，二是通过我司上岗认证（认证率100%），三是首月产能达成率不低于XX%，四是合规检查零违规。
 
-<p>如获得批准，需满足以下条件：一是X月X日前培训新增坐席XX人，二是通过我司上岗认证（认证率100%），三是首月产能达成率不低于XX%，四是合规检查零违规。</p>
+**生效时间：**
 
-<p><strong>生效时间：</strong></p>
+如批准，将于X月X日正式生效。
 
-<p>如批准，将于X月X日正式生效。</p>
-
-<p>请确认是否接受上述条件，并安排相关准备工作。</p>
-
----
-**签名部分自动追加**
-
+请确认是否接受上述条件，并安排相关准备工作。
 
 ---
-
 ## 扩项申请（新增业务类型）
 
-**邮件主题**：XXX供应商扩项申请
+尊敬的XXX：
 
-**邮件正文**：
+贵司申请扩展现有业务范围，现将评估情况汇报如下。
 
-<p>尊敬的XXX：</p>
+**扩项申请信息：**
 
-<p>贵司申请扩展现有业务范围，现将评估情况汇报如下。</p>
+供应商为XXX，当前业务为A类（XX席）、B类（XX席），申请扩项为C类业务，申请规模为XX席，申请时间为X月X日。
 
-<p><strong>扩项申请信息：</strong></p>
+**扩项类型说明：**
 
-<p>供应商为XXX，当前业务为A类（XX席）、B类（XX席），申请扩项为C类业务，申请规模为XX席，申请时间为X月X日。</p>
+C类业务特点：产品类型为XXX，话术复杂度为中/高，监管要求为XXX，转化难度为中。
 
-<p><strong>扩项类型说明：</strong></p>
-
-<p>C类业务特点：产品类型为XXX，话术复杂度为中/高，监管要求为XXX，转化难度为中。</p>
-
-<p><strong>评估维度：</strong></p>
+**评估维度：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -135,8 +118,7 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">需强化/达标</td>
   </tr>
 </table>
-
-<p><strong>风险评估：</strong></p>
+**风险评估：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -160,16 +142,15 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">XXX</td>
   </tr>
 </table>
+**先决条件：**
 
-<p><strong>先决条件：</strong></p>
+如批准扩项，需满足：一是X月X日前完成培训，二是通过话术考核（100%通过率），三是通过风险合规测试，四是试运行期（1个月）达成率≥XX%。
 
-<p>如批准扩项，需满足：一是X月X日前完成培训，二是通过话术考核（100%通过率），三是通过风险合规测试，四是试运行期（1个月）达成率≥XX%。</p>
+**审批结论：**
 
-<p><strong>审批结论：</strong></p>
+建议为批准/暂缓/拒绝。
 
-<p>建议为批准/暂缓/拒绝。</p>
-
-<p>如批准，将按以下时间表执行。</p>
+如批准，将按以下时间表执行。
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -194,25 +175,16 @@ pos: .claude/skills/email/templates/supplier-allocation.md
   </tr>
 </table>
 
-<p>请确认是否启动扩项流程。</p>
+请确认是否启动扩项流程。
 
 ---
-**签名部分自动追加**
-
-
----
-
 ## 分量收缩通知（发给供应商）
 
-**邮件主题**：XXX供应商分量调整通知
+尊敬的XXX：
 
-**邮件正文**：
+经评估，需对贵司分量进行调整。
 
-<p>尊敬的XXX：</p>
-
-<p>经评估，需对贵司分量进行调整。</p>
-
-<p><strong>调整信息：</strong></p>
+**调整信息：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -240,22 +212,21 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">-XX席</td>
   </tr>
 </table>
+**调整生效时间：**
 
-<p><strong>调整生效时间：</strong></p>
+X月X日起生效，过渡期X天。
 
-<p>X月X日起生效，过渡期X天。</p>
+**调整原因：**
 
-<p><strong>调整原因：</strong></p>
+根据近期运营数据评估：一是绩效指标为转化率连续X个月低于XX%（目标XX%），二是合规记录为近X个月违规X次（目标0次），三是人员波动为流失率XX%（警戒线XX%）。
 
-<p>根据近期运营数据评估：一是绩效指标为转化率连续X个月低于XX%（目标XX%），二是合规记录为近X个月违规X次（目标0次），三是人员波动为流失率XX%（警戒线XX%）。</p>
+具体数据详见评估报告（附件）。
 
-<p>具体数据详见评估报告（附件）。</p>
+**恢复条件：**
 
-<p><strong>恢复条件：</strong></p>
+当满足以下条件时，可申请恢复分量：一是转化率连续2个月达到XX%，二是合规率连续3个月100%，三是人员流失率低于XX%。
 
-<p>当满足以下条件时，可申请恢复分量：一是转化率连续2个月达到XX%，二是合规率连续3个月100%，三是人员流失率低于XX%。</p>
-
-<p><strong>过渡期安排：</strong></p>
+**过渡期安排：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -279,32 +250,22 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">双方</td>
   </tr>
 </table>
+**沟通渠道：**
 
-<p><strong>沟通渠道：</strong></p>
-
-<p>如对调整有异议，请于X月X日前提交申诉材料。联系人为XXX（XXX）。</p>
-
----
-**签名部分自动追加**
-
+如对调整有异议，请于X月X日前提交申诉材料。联系人为XXX（XXX）。
 
 ---
-
 ## 紧急扩容请求（内部）
 
-**邮件主题**：紧急产能扩充 - XX业务
+尊敬的领导：
 
-**邮件正文**：
+因业务紧急需求，现申请供应商产能扩充，具体情况如下。
 
-<p>尊敬的领导：</p>
+**需求背景：**
 
-<p>因业务紧急需求，现申请供应商产能扩充，具体情况如下。</p>
+业务来源为XXX，需求时间为X月X日-X月X日，时长为X天，需求产能为XX席。
 
-<p><strong>需求背景：</strong></p>
-
-<p>业务来源为XXX，需求时间为X月X日-X月X日，时长为X天，需求产能为XX席。</p>
-
-<p><strong>当前供应情况：</strong></p>
+**当前供应情况：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -338,54 +299,44 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">XXX席</td>
   </tr>
 </table>
+**缺口：**
 
-<p><strong>缺口：</strong></p>
+需求XX席 - 可供XXX席 = 缺XX席。
 
-<p>需求XX席 - 可供XXX席 = 缺XX席。</p>
+**解决方案：**
 
-<p><strong>解决方案：</strong></p>
+方案1为向现有供应商紧急扩容：优点是快速启动，信任基础好；缺点是部分供应商需培训；时间为X日内可启动。
 
-<p>方案1为向现有供应商紧急扩容：优点是快速启动，信任基础好；缺点是部分供应商需培训；时间为X日内可启动。</p>
+方案2为临时引入应急供应商：优点是快速补充短缺；缺点是质量风险高，成本高；时间为X日内可启动。
 
-<p>方案2为临时引入应急供应商：优点是快速补充短缺；缺点是质量风险高，成本高；时间为X日内可启动。</p>
+方案3为调整业务优先级：优点是无需外部资源；缺点是影响其他业务；时间为立即生效。
 
-<p>方案3为调整业务优先级：优点是无需外部资源；缺点是影响其他业务；时间为立即生效。</p>
+**建议：**
 
-<p><strong>建议：</strong></p>
+建议采用方案1+方案2组合：现有供应商扩容XX席，应急供应商补充XX席，预计可在X月X日启动。
 
-<p>建议采用方案1+方案2组合：现有供应商扩容XX席，应急供应商补充XX席，预计可在X月X日启动。</p>
+**预算影响：**
 
-<p><strong>预算影响：</strong></p>
+扩容成本约+XX元，应急供应商溢价约+XX%，合计约+XX元。
 
-<p>扩容成本约+XX元，应急供应商溢价约+XX%，合计约+XX元。</p>
+**请示：**
 
-<p><strong>请示：</strong></p>
+是否批准上述扩容方案？如批准，请授权：一是启动紧急扩容流程，二是预算超支XX元用于XX天。
 
-<p>是否批准上述扩容方案？如批准，请授权：一是启动紧急扩容流程，二是预算超支XX元用于XX天。</p>
-
-<p>请批示。</p>
-
----
-**签名部分自动追加**
-
+请批示。
 
 ---
-
 ## 产能调配通知（跨供应商）
 
-**邮件主题**：XXX业务产能调整
+Hi 各供应商：
 
-**邮件正文**：
+因业务调整需求，现对产能进行调配。
 
-<p>Hi 各供应商：</p>
+**调配背景：**
 
-<p>因业务调整需求，现对产能进行调配。</p>
+业务类型为XXX，调整原因为市场需求变化/战略调整，调整时间为X月X日。
 
-<p><strong>调配背景：</strong></p>
-
-<p>业务类型为XXX，调整原因为市场需求变化/战略调整，调整时间为X月X日。</p>
-
-<p><strong>调整前情况：</strong></p>
+**调整前情况：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -409,8 +360,7 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">XXX席</td>
   </tr>
 </table>
-
-<p><strong>调整方案：</strong></p>
+**调整方案：**
 
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <tr style="background-color: #f5f5f5;">
@@ -439,33 +389,16 @@ pos: .claude/skills/email/templates/supplier-allocation.md
     <td style="text-align: center;">XXX席</td>
   </tr>
 </table>
+**调整理由：**
 
-<p><strong>调整理由：</strong></p>
+一是XXX供应商近期绩效优秀，奖励性扩量；二是XXX供应商近期业绩达标，正常扩量；三是XXX供应商近期能力波动，暂时收缩待改善后恢复。
 
-<p>一是XXX供应商近期绩效优秀，奖励性扩量；二是XXX供应商近期业绩达标，正常扩量；三是XXX供应商近期能力波动，暂时收缩待改善后恢复。</p>
+**过渡安排：**
 
-<p><strong>过渡安排：</strong></p>
+启动时间为X月X日，过渡期为X天，交接方式为CRM系统数据调配。
 
-<p>启动时间为X月X日，过渡期为X天，交接方式为CRM系统数据调配。</p>
+**沟通渠道：**
 
-<p><strong>沟通渠道：</strong></p>
+如对调整有疑问，请于X月X日前联系：XXX（XXX）。
 
-<p>如对调整有疑问，请于X月X日前联系：XXX（XXX）。</p>
-
-<p>如有申诉或请求调整，请提交书面说明。</p>
-
----
-
-**签名**：
-
---------------------------------------------------------
-
-孙大年
-京东科技-金融科技事业群-数据科技业务部-电销服务组
-电话：+86 18249515580
-邮箱：sundanian@jd.com
-地址：北京市经济技术开发区科创十一街京东总部二号楼A座19层
-
-重要提示：此邮件及附件具保密性质，包含商业秘密，受法律保护不得泄露，特此提醒您此邮件的机密性。如果您意外收到此邮件，请立即通知我，并从您的系统中删除此邮件及附件，禁止使用、复制或向他人披露邮件及附件相关内容。
----
-**签名部分自动追加**
+如有申诉或请求调整，请提交书面说明。
