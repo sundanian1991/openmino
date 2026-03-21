@@ -1,11 +1,12 @@
 ---
 name: workspace-tidy
-description: Workspace 文件生命周期管理 — 扫描、分类、归档 workspace/ 中的文件。当用户需要"整理文件"、"清理 workspace"、"归档已完成工作"、"周回顾清理"、或处理 workspace/ 下的任何文件整理任务时使用。适用于三区域架构（workspace/docs/memory）的项目管理。
+description: Workspace 文件生命周期管理 — 扫描、分类、归档整个项目的文件。当用户需要"整理文件"、"清理根目录"、"归档已完成工作"、"周回顾清理"时使用。扫描范围包括根目录、workspace/、mino/、docs/ 等所有工作区域，适用于三区域架构（workspace/docs/memory）的项目管理。
 ---
 
 # Workspace Tidy — 文件生命周期管理
 
 > 基于 LIFECYCLE-WORKFLOW.md 的文件整理和归档技能
+> **扫描范围**：整个项目目录（根目录 + workspace/ + mino/ + docs/）
 
 ---
 
@@ -13,11 +14,13 @@ description: Workspace 文件生命周期管理 — 扫描、分类、归档 wor
 
 项目采用三区域架构：
 
-| 区域 | 用途 | 留存周期 |
-|------|------|---------|
-| **workspace/** | 入口区，临时工作 | 周度清理 |
-| **docs/** | 归档区，正式文档 | 长期保留 |
-| **memory/** | 核心区，洞察决策 | 永久保留 |
+| 区域 | 用途 | 路径示例 | 留存周期 |
+|------|------|----------|---------|
+| **根目录** | 全局配置、临时文件 | `/my-agent/*.md` | 立即整理 |
+| **workspace/** | 入口区，业务任务 | `/workspace/[主题]/🔄 进行中/` | 周度清理 |
+| **mino/** | 个人工作区、脚本 | `/mino/*.js, *.py` | 按需整理 |
+| **docs/** | 归档区，正式文档 | `/docs/项目归档/` | 长期保留 |
+| **memory/** | 核心区，洞察决策 | `/memory/` | 永久保留 |
 
 ### 工作流状态
 
@@ -32,31 +35,52 @@ description: Workspace 文件生命周期管理 — 扫描、分类、归档 wor
 
 ---
 
-## 工作流程
+## 扫描范围
 
-### 阶段 1：扫描分析
-
-遍历 workspace/ 下所有文档，收集信息：
+**全项目扫描**，不只 workspace/：
 
 ```bash
-# 扫描所有 README/CLAUDE 文档
-find workspace/ -name "README.md" -o -name "CLAUDE.md" -o -name "*.md"
+# 1. 根目录（检查是否有任务文件放错位置）
+ls -la /Users/sundanian/Documents/projects/ai-agents/my-agent/*.md /Users/sundanian/Documents/projects/ai-agents/my-agent/*.json /Users/sundanian/Documents/projects/ai-agents/my-agent/*.xlsx 2>/dev/null
 
-# 扫描所有主题目录
-ls -la workspace/*/
+# 2. workspace/ 目录（业务任务）
+find /Users/sundanian/Documents/projects/ai-agents/my-agent/workspace/ -type f \( -name "*.md" -o -name "*.json" -o -name "*.xlsx" \)
+
+# 3. mino/ 目录（个人工作区）
+find /Users/sundanian/Documents/projects/ai-agents/my-agent/mino/ -type f \( -name "*.md" -o -name "*.js" -o -name "*.py" -o -name "*.json" \)
+
+# 4. docs/ 目录（归档）
+find /Users/sundanian/Documents/projects/ai-agents/my-agent/docs/ -type f -name "*.md"
 ```
 
 对每个文档：
 1. 读取内容，理解用途
-2. 判断文件状态（活跃/完成/过时）
+2. 判断文件状态（活跃/完成/过时/位置错误）
 3. 评估价值（高/中/无）
+4. **检查是否在正确位置**（根目录只保留全局配置）
 
 ### 阶段 2：分类决策
 
-根据文件内容和建议规则进行分类：
+根据文件位置和内容进行分类：
 
-**决策树**：
+**根目录文件处理**：
+```
+根目录/*.md, *.json, *.xlsx
+    │
+    ├─→ 是规划文件？（task_plan.md, findings.md, progress.md）
+    │   └─→ 移到 workspace/[相关主题]/🔄 进行中/[任务名]/
+    │
+    ├─→ 是业务文件？（台账、报表）
+    │   └─→ 移到 workspace/[相关主题]/🔄 进行中/[任务名]/
+    │
+    ├─→ 是测试/临时数据？
+    │   └─→ 移到 mino/ 或删除
+    │
+    └─→ 是全局配置？
+        └─→ 保留在根目录（CLAUDE.md, README.md 等）
+```
 
+**workspace/ 文件处理**：
 ```
 文件分析
     │
