@@ -17,6 +17,7 @@ pos: .claude/skills/INDEX.md
 | **document-writer** | 公文起草技能（Markdown 输出） | 审批邮件、工作汇报、供应商管理公文 |
 | **pdf** | PDF 文本/表格提取、创建、合并拆分 | 处理供应商合同、述职文档 |
 | **docx** | Word 文档创建、编辑、修订跟踪 | 写制度文档、SOP、报告 |
+| **minimax-docx** | 专业 DOCX 文档（OpenXML SDK） | 复杂排版、模板套用、公文格式化 |
 | **pptx** | PPT 创建、编辑、模板操作 | 述职答辩、业务汇报 |
 | **xlsx** | Excel 表格创建、公式、数据分析 | KPI 报表、供应商绩效统计 |
 | **summarize** | URL/文本摘要提取 | 快速了解长文档核心内容 |
@@ -127,6 +128,28 @@ pos: .claude/skills/INDEX.md
 | **steal-learning** | 极简信息萃取 | 学习方法、沟通话术、他人经验 |
 | **iterative-retrieval** | 渐进式上下文检索 | 复杂问题多轮搜索 |
 | **ultra-research** | 多 AI 并行深度研究 | 技术选型、竞品分析、行业趋势 |
+
+---
+
+## 知识工作流（Compound Knowledge）
+
+| Skill | 功能 | 使用场景 | 触发方式 |
+|-------|------|---------|----------|
+| **kw:workflow** ⭐ | **一键完整工作流** | 复杂问题的完整分析（从头到尾） | `/kw:workflow [问题]` |
+| **kw:brainstorm** | 头脑风暴、问题梳理 | 复杂问题分析、会议纪要整理 | `/kw:brainstorm [主题]` |
+| **kw:plan** | 结构化计划、研究过往学习 | 策略文档、调研报告、运营手册 | `/kw:plan` |
+| **kw:confidence** | 评估确定性、识别盲区 | 计划前的"gut check"、风险评估 | `/kw:confidence` |
+| **kw:review** | 双重审查（战略对齐+数据准确性） | 分享前的质量检查 | `/kw:review` |
+| **kw:work** | 执行计划、追踪进度 | 产出交付物、任务管理 | `/kw:work` |
+| **kw:compound** | 保存学习成果到知识库 | 会话结束、洞察记录 | `/kw:compound` |
+
+**工作流顺序**：
+- **快捷模式**：`kw:workflow` → 自动完成 brainstorm → plan → review → work → compound
+- **分步模式**：brainstorm → plan → confidence → review → work → compound
+
+**文件组织**：所有内容保存在 `plans/问题名-日期/` 下，包括 brainstorm、research、workspace、review
+
+**推荐**：需要完整分析时用 `kw:workflow`，需要单独步骤时用对应技能
 
 ---
 

@@ -10,24 +10,6 @@ metadata:
     - https://github.com/microsoft/markitdown
 ---
 
-## 年老师设计规范（必须先读取）
-
-**执行 PPT 任务前，必须先读取**：`myagents_files/DESIGN.md`
-
-**设计模式选择**：演示文稿 → **演示模式**
-
-**核心规范（转换为 PPTX 格式）**：
-- 背景：米白 `F5F2EB` 或纯白 `FFFFFF`
-- 强调色：驼色 `C4B5A3`
-- 主文字：深灰 `2D2D2D`
-- 标题字体：衬线体（中文用微软雅黑）
-- 正文字体：无衬线体
-- 圆角：4-8px
-
-**PPTX 颜色格式**：6位十六进制，不带 #（如 `"C4B5A3"`）
-
----
-
 # PPTX Generator & Editor
 
 ## Overview

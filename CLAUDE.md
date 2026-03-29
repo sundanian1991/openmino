@@ -35,67 +35,34 @@ skillsDir: ./.claude/skills
 1. **技能检查** — 有 1% 适用技能必须调用
 2. **称呼检查** — 年老师 / Mino
 3. **意图分类** — 简单/复杂/探索/代码/数据
+4. **格式拦截** — 输出包含 ``` 或 → ↓ │ 等流程/结构符号时，强制替换为 generative-ui-widget
 
 **复杂任务透明工作流**：
 - 简单（≤3 步）→ 直接执行
 - 中等（4-6 步）→ 简化记录
 - 复杂（≥7 步/架构修改）→ 三文件模式（plan/context/tasks）
 
+---
 
+## 📝 规范
+
+**代码 & Git**：
+- Commit 格式：`type: description`（feat/fix/docs/refactor/chore/test）
+- 禁止：`--no-verify`、`reset --hard`、`push --force main`、`commit --amend`
+- 详细：[.claude/rules/README.md](.claude/rules/README.md)
+
+**文档格式**：
+- ✅ MD模板内容用引用块（>）
+- ❌ 永远不用代码块（```）呈现内容
+
+**交互可视化**：
+- 表达关系、流程、对比、数据、结构时 → 自动用 generative-ui-widget
+- 原则：信息抽象到无法用线性文本承载时，用可视化让洞察浮现
+- 永远不用文本符号（→ ↓ │ 📊）模拟可视化
 
 ---
 
-## 📁 项目结构
-
-```
-my-agent/
-├── .claude/
-│   ├── rules/            # 核心规则（自动加载）
-│   └── skills/           # 本地技能（按需加载）
-├── memory/               # 记忆系统
-│   ├── MEMORY.md         # 详细记忆索引
-│   ├── insights.md       # 洞察记录
-│   ├── projects/         # 项目背景
-│   └── archive/          # 历史归档
-├── workspace/            # 工作台（gitignored）
-└── projects/             # 项目归档
-
-全局 Agent（~/.myagents/agents/，所有项目通用）：
-├── 掌柜    # 内部汇报专家
-├── 文书    # 公文、合同撰写
-├── 账房    # KPI数据、报表
-├── 判官    # 供应商业绩分析
-├── 师爷    # 制度、流程文档
-├── 信使    # 沟通要点、会议提纲
-├── 管家    # 工作区整理、流程优化
-└── 情报官  # 行业资讯、舆情监控 ← 新增
-```
-
----
-
-## 🧠 记忆系统
-
-**详细规则**：见 [memory/MEMORY.md](memory/MEMORY.md)
-
-| 文件 | 内容 |
-|------|------|
-| MEMORY.md | 用户画像、决策、项目索引（启动加载） |
-| insights.md | 洞察记录（合并daily/observations/weekly） |
-| projects/ | 项目背景 |
-
----
-
-## 📝 代码规范 & Git
-
-**详细规则**：见 [.claude/rules/README.md](.claude/rules/README.md)
-
-**Commit 格式**：`type: description`（feat/fix/docs/refactor/chore/test）
-
-**禁止操作**：`--no-verify`、`reset --hard`、`push --force main`、`commit --amend`
-
----
-
-## 🔌 MCP 配置
+## 🔌 工具配置
 
 | 工具 | 用途 |
 |------|------|
@@ -103,24 +70,7 @@ my-agent/
 | web-search | 中文搜索 |
 | webReader | 网页→Markdown（100 次/月） |
 
----
-
-## 🔍 技能搜索规范
-
-**技能市场**：[claw123.ai](https://claw123.ai) — OpenClaw 精选技能导航站（5000+ 技能）
-
-**搜索方法**：
-```bash
-curl -s https://claw123.ai/api/skills.zh.json
-```
-
-**字段说明**：`name`（技能名）、`description_zh`（中文描述）、`category_zh`（分类）、`url`（SKILL.md 源地址）
-
-**安装流程**：
-1. 需要某功能时 → 先 curl 搜索技能列表
-2. 推荐最匹配的 1-3 个 → 确认后再安装
-3. fetch `url` 获取 SKILL.md → 按说明复制到 `.claude/skills/`
-4. **按需安装，不批量装**
+**技能搜索**：见 [.claude/rules/skill-search.md](.claude/rules/skill-search.md)
 
 ---
 
@@ -139,4 +89,4 @@ curl -s https://claw123.ai/api/skills.zh.json
 
 ---
 
-*最后更新：2026-03-16 — 极简化核心规则*
+*最后更新：2026-03-29*
