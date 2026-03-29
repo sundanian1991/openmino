@@ -32,49 +32,49 @@ function createSlide(pres, theme) {
 
   patterns.forEach((item, index) => {
     const x = 0.5 + (index * 1.8);
-    const y = 1.5;
+    const y = 1.4;
     const w = 1.75;
-    const h = 3.5;
+    const h = 3.6;
 
     // 序号背景
     slide.addShape(pres.shapes.RECTANGLE, {
-      x: x, y: y, w: w, h: 0.45,
+      x: x, y: y, w: w, h: 0.4,
       fill: { color: theme.primary }
     });
 
     // 序号
     slide.addText(item.num, {
-      x: x, y: y, w: w, h: 0.45,
-      fontSize: 16, fontFace: "Arial",
+      x: x, y: y, w: w, h: 0.4,
+      fontSize: 14, fontFace: "Arial",
       color: theme.bg, bold: true,
       align: "center", valign: "middle"
     });
 
     // 名称
     slide.addText(item.name, {
-      x: x + 0.1, y: y + 0.55, w: w - 0.2, h: 0.35,
-      fontSize: 12, fontFace: "Microsoft YaHei",
+      x: x + 0.1, y: y + 0.5, w: w - 0.2, h: 0.3,
+      fontSize: 11, fontFace: "Microsoft YaHei",
       color: theme.primary, bold: true,
       align: "center"
     });
 
     // 描述
     slide.addText(item.desc, {
-      x: x + 0.1, y: y + 0.95, w: w - 0.2, h: 0.5,
-      fontSize: 10, fontFace: "Microsoft YaHei",
+      x: x + 0.1, y: y + 0.85, w: w - 0.2, h: 0.45,
+      fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "center"
     });
 
     // 详情框
     slide.addShape(pres.shapes.RECTANGLE, {
-      x: x + 0.1, y: y + 1.55, w: w - 0.2, h: 1.8,
+      x: x + 0.1, y: y + 1.4, w: w - 0.2, h: 1.95,
       line: { color: theme.light, width: 1 }
     });
 
     slide.addText(item.detail, {
-      x: x + 0.15, y: y + 1.65, w: w - 0.3, h: 1.6,
-      fontSize: 9, fontFace: "Microsoft YaHei",
+      x: x + 0.15, y: y + 1.5, w: w - 0.3, h: 1.8,
+      fontSize: 8, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "left", valign: "top"
     });
@@ -82,13 +82,13 @@ function createSlide(pres, theme) {
 
   // 底部总结
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 5.15, w: 9, h: 0.25,
+    x: 0.5, y: 5.2, w: 9, h: 0.02,
     fill: { color: theme.light }
   });
   slide.addText('核心判断：这不是正常的工作方式，让人觉得动机或工作方式有问题', {
-    x: 0.65, y: 5.18, w: 8.7, h: 0.2,
-    fontSize: 10, fontFace: "Microsoft YaHei",
-    color: theme.primary, bold: true,
+    x: 0.65, y: 5.25, w: 8.7, h: 0.18,
+    fontSize: 9, fontFace: "Microsoft YaHei",
+    color: theme.secondary,
     align: "left"
   });
 

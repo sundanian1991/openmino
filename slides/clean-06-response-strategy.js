@@ -32,9 +32,9 @@ function createSlide(pres, theme) {
 
   principles.forEach((item, index) => {
     const x = 0.5 + (index * 1.8);
-    const y = 1.5;
+    const y = 1.4;
     const w = 1.75;
-    const h = 1.8;
+    const h = 1.9;
 
     // 序号背景
     slide.addShape(pres.shapes.RECTANGLE, {
@@ -52,25 +52,25 @@ function createSlide(pres, theme) {
 
     // 名称
     slide.addText(item.name, {
-      x: x + 0.1, y: y + 0.45, w: w - 0.2, h: 0.35,
-      fontSize: 12, fontFace: "Microsoft YaHei",
+      x: x + 0.1, y: y + 0.42, w: w - 0.2, h: 0.3,
+      fontSize: 11, fontFace: "Microsoft YaHei",
       color: theme.primary, bold: true,
       align: "center"
     });
 
     // 描述
     slide.addText(item.desc, {
-      x: x + 0.1, y: y + 0.85, w: w - 0.2, h: 0.8,
-      fontSize: 10, fontFace: "Microsoft YaHei",
+      x: x + 0.1, y: y + 0.78, w: w - 0.2, h: 0.9,
+      fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "center"
     });
   });
 
-  // REACT 框架卡片（底部）
+  // REACT 框架标题
   slide.addText('REACT 回应框架（群内@时使用）', {
-    x: 0.5, y: 3.5, w: 9, h: 0.3,
-    fontSize: 13, fontFace: "Microsoft YaHei",
+    x: 0.5, y: 3.5, w: 9, h: 0.25,
+    fontSize: 12, fontFace: "Microsoft YaHei",
     color: theme.primary, bold: true,
     align: "left"
   });
@@ -85,16 +85,16 @@ function createSlide(pres, theme) {
 
   reactSteps.forEach((item, i) => {
     const x = 0.5 + ((i % 3) * 3.0);
-    const y = 3.85 + (Math.floor(i / 3) * 0.75);
+    const y = 3.78 + (Math.floor(i / 3) * 0.65);
     slide.addText(item.step, {
-      x: x, y: y, w: 2.9, h: 0.2,
-      fontSize: 10, fontFace: "Microsoft YaHei",
+      x: x, y: y, w: 2.9, h: 0.18,
+      fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.accent, bold: true,
       align: "left"
     });
     slide.addText(item.text, {
-      x: x, y: y + 0.18, w: 2.9, h: 0.45,
-      fontSize: 10, fontFace: "Microsoft YaHei",
+      x: x, y: y + 0.16, w: 2.9, h: 0.4,
+      fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "left"
     });
