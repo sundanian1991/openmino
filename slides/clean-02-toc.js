@@ -21,48 +21,117 @@ function createSlide(pres, theme) {
     align: "left"
   });
 
-  // 章节列表
+  // 章节列表（左右两列布局，填充空白）
   const chapters = [
-    { num: '01', title: '事件回顾与核心矛盾', desc: '刘乾坤的攻击 vs 实际情况' },
-    { num: '02', title: '行为模式拆解', desc: '五拳组合拳路分析' },
-    { num: '03', title: '动机分析与判断', desc: '表演型预警 + 转移视线 + 保护关系网' },
-    { num: '04', title: '应对策略与话术', desc: '五大原则 + REACT 框架' }
+    { num: '01', title: '事件回顾与核心矛盾', desc: '刘乾坤的攻击 vs 实际情况', points: ['攻击话术', '实际数据对比'] },
+    { num: '02', title: '行为模式拆解', desc: '五拳组合拳路分析', points: ['选择性攻击', '群内表演', '道德绑架'] },
+    { num: '03', title: '动机分析与判断', desc: '表演型预警 + 转移视线 + 保护关系网', points: ['三重动机', '核心判断'] },
+    { num: '04', title: '应对策略与话术', desc: '五大原则 + REACT 框架', points: ['核心原则', 'REACT 回应框架'] }
   ];
 
-  chapters.forEach((item, i) => {
-    const y = 1.7 + (i * 0.85);
+  // 左列（01、02）
+  for (let i = 0; i < 2; i++) {
+    const item = chapters[i];
+    const y = 1.6 + (i * 1.9);
+
+    // 卡片背景
+    slide.addShape(pres.shapes.RECTANGLE, {
+      x: 0.5, y: y, w: 4.3, h: 1.75,
+      line: { color: theme.light, width: 1 }
+    });
 
     // 序号
     slide.addText(item.num, {
-      x: 0.5, y: y, w: 0.5, h: 0.35,
-      fontSize: 14, fontFace: "Arial",
+      x: 0.65, y: y + 0.15, w: 0.4, h: 0.3,
+      fontSize: 16, fontFace: "Arial",
       color: theme.accent, bold: true,
       align: "left"
     });
 
     // 标题
     slide.addText(item.title, {
-      x: 1.2, y: y, w: 7.5, h: 0.35,
-      fontSize: 15, fontFace: "Microsoft YaHei",
+      x: 0.65, y: y + 0.15, w: 3.8, h: 0.3,
+      fontSize: 13, fontFace: "Microsoft YaHei",
+      color: theme.primary, bold: true,
+      align: "right"
+    });
+
+    // 描述
+    slide.addText(item.desc, {
+      x: 0.65, y: y + 0.5, w: 4.0, h: 0.25,
+      fontSize: 10, fontFace: "Microsoft YaHei",
+      color: theme.secondary,
+      align: "left"
+    });
+
+    // 要点列表
+    item.points.forEach((point, j) => {
+      slide.addText('· ' + point, {
+        x: 0.65, y: y + 0.8 + (j * 0.28), w: 4.0, h: 0.22,
+        fontSize: 10, fontFace: "Microsoft YaHei",
+        color: theme.primary,
+        align: "left"
+      });
+    });
+  }
+
+  // 右列（03、04）
+  for (let i = 2; i < 4; i++) {
+    const item = chapters[i];
+    const y = 1.6 + ((i - 2) * 1.9);
+    const x = 5.2;
+
+    // 卡片背景
+    slide.addShape(pres.shapes.RECTANGLE, {
+      x: x, y: y, w: 4.3, h: 1.75,
+      line: { color: theme.light, width: 1 }
+    });
+
+    // 序号
+    slide.addText(item.num, {
+      x: x + 0.15, y: y + 0.15, w: 0.4, h: 0.3,
+      fontSize: 16, fontFace: "Arial",
+      color: theme.accent, bold: true,
+      align: "left"
+    });
+
+    // 标题
+    slide.addText(item.title, {
+      x: x + 0.65, y: y + 0.15, w: 3.5, h: 0.3,
+      fontSize: 13, fontFace: "Microsoft YaHei",
       color: theme.primary, bold: true,
       align: "left"
     });
 
     // 描述
     slide.addText(item.desc, {
-      x: 1.2, y: y + 0.35, w: 7.5, h: 0.3,
-      fontSize: 12, fontFace: "Microsoft YaHei",
+      x: x + 0.65, y: y + 0.5, w: 3.5, h: 0.25,
+      fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "left"
     });
 
-    // 分隔线（最后一项除外）
-    if (i < chapters.length - 1) {
-      slide.addShape(pres.shapes.RECTANGLE, {
-        x: 0.5, y: y + 0.85, w: 9, h: 0.02,
-        fill: { color: theme.light }
+    // 要点列表
+    item.points.forEach((point, j) => {
+      slide.addText('· ' + point, {
+        x: x + 0.65, y: y + 0.8 + (j * 0.28), w: 3.5, h: 0.22,
+        fontSize: 10, fontFace: "Microsoft YaHei",
+        color: theme.primary,
+        align: "left"
       });
-    }
+    });
+  }
+
+  // 底部说明
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 5.15, w: 9, h: 0.25,
+    fill: { color: theme.primary }
+  });
+  slide.addText('共 4 个章节，约 15 分钟汇报', {
+    x: 0.65, y: 5.15, w: 8.7, h: 0.25,
+    fontSize: 10, fontFace: "Microsoft YaHei",
+    color: theme.bg,
+    align: "left", valign: "middle"
   });
 
   // 页码
