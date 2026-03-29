@@ -6,7 +6,7 @@ license: Complete terms in LICENSE.txt
 
 ## 年老师设计规范（必须先读取）
 
-**执行设计任务前，必须先读取**：`myagents_files/DESIGN.md`
+**执行设计任务前，必须先读取**：`myagents_files/DESIGN_SYSTEM.md`
 
 根据任务类型选择设计模式：
 

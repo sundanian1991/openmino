@@ -1,111 +1,152 @@
-// slide-04.js - 写脚本技巧
-const pptxgen = require("pptxgenjs");
+// Slide 04 - 五大核心应对原则
+// Theme: 演示模式 - 驼色优雅
 
-const slideConfig = {
-  type: 'content',
-  index: 4,
-  title: '写脚本技巧：模块化Prompt工作流'
+const theme = {
+  primary: "22223b",    // 深灰 - 标题
+  secondary: "4a4e69",  // 中灰 - 正文
+  accent: "c9ada7",     // 驼色 - 强调
+  light: "9a8c98",      // 浅灰 - 背景点缀
+  bg: "f2e9e4"          // 米白 - 背景
 };
 
-function createSlide(pres, theme) {
-  const slide = pres.addSlide();
+const slideConfig = {
+  title: "五大核心应对原则",
+  type: "content",
+  layout: "LAYOUT_16x9",
+  width: 10,
+  height: 5.625
+};
+
+function createSlide(pptx) {
+  const slide = pptx.addSlide({ layout: slideConfig.layout });
+
+  // 背景色
   slide.background = { color: theme.bg };
 
   // 标题
-  slide.addText(slideConfig.title, {
-    x: 0.5, y: 0.4, w: 9, h: 0.8,
-    fontSize: 32, fontFace: "Microsoft YaHei",
-    color: theme.primary, bold: true
+  slide.addText("五大核心应对原则", {
+    x: 0.5,
+    y: 0.4,
+    w: 9,
+    h: 0.6,
+    fontSize: 28,
+    fontFace: "Microsoft YaHei",
+    color: theme.primary,
+    bold: true,
+    align: "left"
   });
 
-  // 标题下划线
-  slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 1.1, w: 3, h: 0.04,
-    fill: { color: theme.accent }
-  });
-
-  // 三个技巧
-  const techniques = [
-    { num: "01", title: "任务拆分", flow: ["开场故事", "对比反差", "概念定义", "结尾升华"] },
-    { num: "02", title: "分模块产出", desc: "每个模块单独生成Prompt，分步产出后整合" },
-    { num: "03", title: "使用Skill模板", desc: "将流程固化为可复用模板" }
+  // 原则数据
+  const principles = [
+    { name: "不接靶子", desc: "不说'激励确实有问题'" },
+    { name: "回归根本原因", desc: "指出'交接期信息真空、数据中断'" },
+    { name: "拒绝逼迫", desc: "不被道德绑架逼迫表态" },
+    { name: "保护安全感", desc: "不在群里制造对立" },
+    { name: "用数据说话", desc: "真实数据对抗情绪化数字" }
   ];
 
-  techniques.forEach((tech, i) => {
-    const y = 1.4 + i * 1.3;
+  const startY = 1.2;
+  const rowHeight = 0.8;
+  const cardWidth = 9;
+  const cardHeight = 0.7;
+  const accentBarWidth = 0.05;
 
-    // 序号
-    slide.addText(tech.num, {
-      x: 0.5, y: y, w: 0.8, h: 0.5,
-      fontSize: 28, fontFace: "Arial",
-      color: theme.accent, bold: true
+  principles.forEach((item, index) => {
+    const y = startY + index * rowHeight;
+
+    // 卡片阴影 - 底层偏移
+    slide.addShape(pptx.ShapeType.rect, {
+      x: 0.52,
+      y: y + 0.04,
+      w: cardWidth,
+      h: cardHeight,
+      fill: { color: "D9D9D9" }
     });
 
-    // 标题
-    slide.addText(tech.title, {
-      x: 1.4, y: y, w: 3, h: 0.5,
-      fontSize: 20, fontFace: "Microsoft YaHei",
-      color: theme.primary, bold: true
+    // 卡片阴影 - 第二层偏移
+    slide.addShape(pptx.ShapeType.rect, {
+      x: 0.51,
+      y: y + 0.02,
+      w: cardWidth,
+      h: cardHeight,
+      fill: { color: "E5E5E5" }
     });
 
-    // 流程或描述
-    if (tech.flow) {
-      tech.flow.forEach((step, j) => {
-        slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
-          x: 1.4 + j * 2.1, y: y + 0.55, w: 1.9, h: 0.45,
-          fill: { color: "F5F2EB" },
-          line: { color: theme.light, width: 1 },
-          rectRadius: 0.06
-        });
-        slide.addText(step, {
-          x: 1.4 + j * 2.1, y: y + 0.55, w: 1.9, h: 0.45,
-          fontSize: 12, fontFace: "Microsoft YaHei",
-          color: theme.primary, align: "center", valign: "middle"
-        });
-        if (j < tech.flow.length - 1) {
-          slide.addText("→", {
-            x: 1.4 + j * 2.1 + 1.9, y: y + 0.55, w: 0.3, h: 0.45,
-            fontSize: 14, fontFace: "Arial",
-            color: theme.accent, align: "center", valign: "middle"
-          });
-        }
-      });
-    } else {
-      slide.addText(tech.desc, {
-        x: 1.4, y: y + 0.55, w: 7, h: 0.5,
-        fontSize: 14, fontFace: "Microsoft YaHei",
-        color: theme.secondary
-      });
-    }
+    // 主卡片背景
+    slide.addShape(pptx.ShapeType.rect, {
+      x: 0.5,
+      y: y,
+      w: cardWidth,
+      h: cardHeight,
+      fill: { color: "FFFFFF" }
+    });
+
+    // 左侧驼色强调条
+    slide.addShape(pptx.ShapeType.rect, {
+      x: 0.5,
+      y: y,
+      w: accentBarWidth,
+      h: cardHeight,
+      fill: { color: theme.accent }
+    });
+
+    // 原则名称
+    slide.addText(item.name, {
+      x: 0.7,
+      y: y + 0.15,
+      w: 2.2,
+      h: 0.4,
+      fontSize: 16,
+      fontFace: "Microsoft YaHei",
+      color: theme.primary,
+      bold: true,
+      align: "left"
+    });
+
+    // 核心要点
+    slide.addText(item.desc, {
+      x: 3.0,
+      y: y + 0.15,
+      w: 6.2,
+      h: 0.4,
+      fontSize: 14,
+      fontFace: "Microsoft YaHei",
+      color: theme.secondary,
+      align: "left"
+    });
   });
 
-  // 页码
-  slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
+  // 页码徽章 - 圆形
+  slide.addShape(pptx.ShapeType.ellipse, {
+    x: 9.3,
+    y: 5.1,
+    w: 0.4,
+    h: 0.4,
     fill: { color: theme.accent }
   });
-  slide.addText("4", {
-    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
-    fontSize: 12, fontFace: "Arial",
-    color: "FFFFFF", bold: true,
-    align: "center", valign: "middle"
+
+  slide.addText("04", {
+    x: 9.3,
+    y: 5.15,
+    w: 0.4,
+    h: 0.3,
+    fontSize: 12,
+    fontFace: "Arial",
+    color: "FFFFFF",
+    bold: true,
+    align: "center"
   });
 
   return slide;
 }
 
-if (require.main === module) {
-  const pres = new pptxgen();
-  pres.layout = 'LAYOUT_16x9';
-  const theme = {
-    primary: "2D2D2D",
-    secondary: "666666",
-    accent: "C4B5A3",
-    light: "E5E5E5",
-    bg: "FAF9F6"
-  };
-  createSlide(pres, theme);
-  pres.writeFile({ fileName: "slide-04-preview.pptx" });
+// 独立预览代码
+if (typeof window !== 'undefined' && window.PptxGenJS) {
+  const pptx = new window.PptxGenJS();
+  pptx.layout = slideConfig.layout;
+  pptx.defineSlideSize({ width: slideConfig.width, height: slideConfig.height });
+  createSlide(pptx);
+  pptx.writeFile({ fileName: "slide-04-preview.pptx" });
 }
 
-module.exports = { createSlide, slideConfig };
+module.exports = { createSlide, slideConfig, theme };

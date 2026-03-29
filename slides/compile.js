@@ -1,35 +1,54 @@
-// compile.js - 李诞的AI养虾指南
 const pptxgen = require('pptxgenjs');
 const pres = new pptxgen();
 pres.layout = 'LAYOUT_16x9';
 
-// 演示模式主题
+// Luxury & Mysterious 主题 - 冷紫调高端咨询感
 const theme = {
-  primary: "2D2D2D",    // 深灰文字
-  secondary: "666666",  // 次要文字
-  accent: "C4B5A3",     // 驼色强调
-  light: "E5E5E5",      // 浅灰
-  bg: "FAF9F6"          // 米白背景
+  primary: "22223b",    // 深蓝灰 - 标题
+  secondary: "4a4e69",  // 冷灰 - 正文
+  accent: "c9ada7",     // 暖灰粉 - 强调
+  light: "9a8c98",      // 冷紫灰 - 装饰
+  bg: "f2e9e4"          // 暖米白 - 背景
 };
 
-// 导入所有幻灯片
-const slideFiles = [
-  './slide-01.js', // 封面
-  './slide-02.js', // 目录
-  './slide-03.js', // 养虾三要素
-  './slide-04.js', // 写脚本技巧
-  './slide-05.js', // 做判断与学习
-  './slide-06.js', // 飞书妙搭实操
-  './slide-07.js', // 产出案例
-  './slide-08.js', // 行动清单
-  './slide-09.js', // 核心洞察
-];
-
-slideFiles.forEach((file) => {
-  const slideModule = require(file);
+// 导入并创建所有幻灯片（1-9）
+for (let i = 1; i <= 9; i++) {
+  const num = String(i).padStart(2, '0');
+  const slideModule = require(`./slide-${num}.js`);
   slideModule.createSlide(pres, theme);
-});
+  console.log(`✓ Slide ${i} created`);
+}
 
-pres.writeFile({ fileName: './output/李诞的AI养虾指南.pptx' })
-  .then(() => console.log('PPTX created: ./output/李诞的AI养虾指南.pptx'))
-  .catch(err => console.error('Error:', err));
+// 导入并创建新增幻灯片（11-13）
+const slides11to13 = [
+  { file: '11-cover.js', num: 11 },
+  { file: '12-toc.js', num: 12 },
+  { file: '13-section-01.js', num: 13 }
+];
+for (const slide of slides11to13) {
+  const slideModule = require(`./${slide.file}`);
+  slideModule.createSlide(pres, theme);
+  console.log(`✓ Slide ${slide.num} created`);
+}
+
+// 导入并创建新增幻灯片（17-19）
+const slides17to19 = [
+  { file: '17-attack-and-private-comm.js', num: 17 },
+  { file: '18-judgment-criteria.js', num: 18 },
+  { file: '19-summary.js', num: 19 }
+];
+for (const slide of slides17to19) {
+  const slideModule = require(`./${slide.file}`);
+  slideModule.createSlide(pres, theme);
+  console.log(`✓ Slide ${slide.num} created`);
+}
+
+// 输出文件
+pres.writeFile({ fileName: './output/应对刘乾坤带节奏策略.pptx' })
+  .then(() => {
+    console.log('\n✅ PPT 生成成功！');
+    console.log('📄 文件路径: ./output/应对刘乾坤带节奏策略.pptx');
+  })
+  .catch(err => {
+    console.error('❌ 生成失败:', err);
+  });

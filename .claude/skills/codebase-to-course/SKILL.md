@@ -243,6 +243,49 @@ The visual design should feel like a **beautiful developer notebook** — warm, 
 - **Alternating backgrounds**: Even/odd modules alternate between two warm background tones for visual rhythm
 - **Dark code blocks**: IDE-style with Catppuccin-inspired syntax highlighting on deep indigo-charcoal (#1E1E2E)
 - **Depth without harshness**: Subtle warm shadows, never black drop shadows
+- **SVG Icons ONLY**: NEVER use emoji icons (🎯, ⏱️, 🚀, etc.). Always use inline SVG icons with consistent stroke style. See Icon Guidelines below.
+
+### Icon Guidelines (CRITICAL)
+
+**DO:**
+- Use inline SVG icons with `<svg>` tags
+- Consistent stroke width (2px recommended)
+- `stroke-linecap: round` and `stroke-linejoin: round` for friendly feel
+- Accent fills (`class="icon-fill"`) with primary color
+- Stroke icons (`class="icon-stroke"`) with text color
+
+**DON'T:**
+- ❌ Emoji icons (🎯, 🚀, 💡, etc.)
+- ❌ External icon fonts (FontAwesome, Heroicons, etc.)
+- ❌ Images as icons
+- ❌ Mixed icon styles in the same course
+
+**Icon SVG Template:**
+```html
+<div class="feature-icon">
+  <svg viewBox="0 0 48 48">
+    <!-- Stroke version -->
+    <path d="..." class="icon-stroke"/>
+    <!-- Or fill version -->
+    <circle cx="24" cy="24" r="8" class="icon-fill"/>
+  </svg>
+</div>
+```
+
+**CSS:**
+```css
+.icon-stroke {
+  fill: none;
+  stroke: var(--text-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.icon-fill {
+  fill: var(--accent);
+  stroke: none;
+}
+```
 
 ---
 

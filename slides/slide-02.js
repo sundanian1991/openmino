@@ -1,75 +1,142 @@
-// slide-02.js - 目录
-const pptxgen = require("pptxgenjs");
+/**
+ * Slide 02 - TOC (目录页)
+ * 4个章节导航，使用序号徽章
+ */
 
-const slideConfig = {
-  type: 'toc',
-  index: 2,
-  title: '目录'
+const theme = {
+  primary: "22223b",    // 深灰 - 标题
+  secondary: "4a4e69",  // 中灰 - 正文
+  accent: "c9ada7",     // 驼色 - 强调
+  light: "9a8c98",      // 浅灰 - 背景点缀
+  bg: "f2e9e4"          // 米白 - 背景
 };
 
-function createSlide(pres, theme) {
-  const slide = pres.addSlide();
+const slideConfig = {
+  type: "toc",
+  title: "内容导航",
+  sections: [
+    { number: 1, title: "问题背景与行为模式" },
+    { number: 2, title: "五大核心应对原则" },
+    { number: 3, title: "四种场景的应对话术" },
+    { number: 4, title: "观察与判断标准" }
+  ]
+};
+
+function createSlide(pptx) {
+  const slide = pptx.addSlide();
+
+  // 背景色
   slide.background = { color: theme.bg };
 
-  // 标题
+  // 页面标题
   slide.addText(slideConfig.title, {
-    x: 0.5, y: 0.4, w: 9, h: 0.8,
-    fontSize: 36, fontFace: "Microsoft YaHei",
-    color: theme.primary, bold: true
+    x: 1,
+    y: 0.6,
+    w: 8,
+    h: 0.8,
+    fontSize: 28,
+    fontFace: "Microsoft YaHei",
+    color: theme.primary,
+    bold: true,
+    align: "left"
   });
 
-  // 标题下划线
-  slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 1.1, w: 1.5, h: 0.04,
-    fill: { color: theme.accent }
+  // 标题下方装饰线
+  slide.addShape(pptx.ShapeType.line, {
+    x: 1,
+    y: 1.3,
+    w: 1.5,
+    h: 0,
+    line: { color: theme.accent, width: 3 }
   });
 
-  // 目录项
-  const items = [
-    "01  养虾三要素（核心框架）",
-    "02  写脚本技巧",
-    "03  做判断与学习",
-    "04  飞书妙搭实操",
-    "05  产出案例",
-    "06  行动清单",
-    "07  核心洞察"
-  ];
+  // 4个章节条目
+  const startY = 1.8;
+  const itemHeight = 0.9;
 
-  items.forEach((item, i) => {
-    slide.addText(item, {
-      x: 1, y: 1.5 + i * 0.5, w: 8, h: 0.45,
-      fontSize: 18, fontFace: "Microsoft YaHei",
-      color: i === 0 ? theme.accent : theme.secondary
+  slideConfig.sections.forEach((section, index) => {
+    const y = startY + index * itemHeight;
+
+    // 序号徽章 - 大号驼色圆形
+    slide.addShape(pptx.ShapeType.ellipse, {
+      x: 1,
+      y: y,
+      w: 0.7,
+      h: 0.7,
+      fill: { color: theme.accent }
+    });
+
+    // 序号数字
+    slide.addText(String(section.number), {
+      x: 1,
+      y: y + 0.1,
+      w: 0.7,
+      h: 0.5,
+      fontSize: 24,
+      fontFace: "Arial",
+      color: theme.bg,
+      bold: true,
+      align: "center"
+    });
+
+    // 章节标题
+    slide.addText(section.title, {
+      x: 2,
+      y: y + 0.15,
+      w: 6.5,
+      h: 0.5,
+      fontSize: 18,
+      fontFace: "Microsoft YaHei",
+      color: theme.primary,
+      align: "left"
     });
   });
 
-  // 页码
-  slide.addShape(pres.shapes.OVAL, {
-    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
+  // 右侧装饰元素 - 垂直线条
+  slide.addShape(pptx.ShapeType.line, {
+    x: 9.2,
+    y: 1.5,
+    w: 0,
+    h: 3.5,
+    line: { color: theme.light, width: 1 }
+  });
+
+  // 右侧装饰圆点
+  slide.addShape(pptx.ShapeType.ellipse, {
+    x: 9.0,
+    y: 2.5,
+    w: 0.3,
+    h: 0.3,
+    fill: { color: theme.accent, transparency: 60 }
+  });
+
+  // 页码徽章 - 右下角圆形
+  slide.addShape(pptx.ShapeType.ellipse, {
+    x: 9.1,
+    y: 5.0,
+    w: 0.5,
+    h: 0.5,
     fill: { color: theme.accent }
   });
+
   slide.addText("2", {
-    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
-    fontSize: 12, fontFace: "Arial",
-    color: "FFFFFF", bold: true,
-    align: "center", valign: "middle"
+    x: 9.1,
+    y: 5.08,
+    w: 0.5,
+    h: 0.34,
+    fontSize: 14,
+    fontFace: "Arial",
+    color: theme.bg,
+    bold: true,
+    align: "center"
   });
 
   return slide;
 }
 
-if (require.main === module) {
-  const pres = new pptxgen();
-  pres.layout = 'LAYOUT_16x9';
-  const theme = {
-    primary: "2D2D2D",
-    secondary: "666666",
-    accent: "C4B5A3",
-    light: "E5E5E5",
-    bg: "FAF9F6"
-  };
-  createSlide(pres, theme);
-  pres.writeFile({ fileName: "slide-02-preview.pptx" });
+// Standalone preview code
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { createSlide, slideConfig, theme };
 }
 
-module.exports = { createSlide, slideConfig };
+export { createSlide, slideConfig, theme };

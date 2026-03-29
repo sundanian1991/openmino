@@ -1,6 +1,6 @@
 ---
 name: mino-frontend
-description: "年老师专属前端技能 — 创建 HTML 幻灯片、数据仪表盘、前端页面。触发词：演示文稿、幻灯片、仪表盘、数据看板、前端页面、HTML 演示。支持 4 种核心设计模式 + 8 种可选风格。零依赖，单文件输出。"
+description: "年老师专属前端技能 — 创建 HTML 幻灯片、数据仪表盘、前端页面。触发词：演示文稿、幻灯片、仪表盘、数据看板、前端页面、HTML 演示。支持 13 种核心设计风格。零依赖，单文件输出。"
 license: MIT
 ---
 
@@ -56,38 +56,252 @@ Ask via AskUserQuestion:
 
 ---
 
+## Phase 1.5: Interaction Type Diagnosis
+
+> **来源**：吸收 clone-website 的交互模型识别方法论
+>
+> **目的**：根据内容特征自动判断交互类型，不询问用户
+
+### 交互类型判断逻辑
+
+**根据内容自动判断**，不问用户：
+
+| 内容特征 | 推荐交互 | 理由 |
+|---------|---------|------|
+| 数据排名/报表 | **静态展示** | 一目了然，不需要操作 |
+| 设计规范/文档 | **滚动浏览** + 入场动画 | 线性阅读，随滚动逐步展开 |
+| 多维度对比（≥3维度） | **Tab 切换** | 维度太多，分页展示 |
+| 故事/时间线 | **滚动触发** | 随阅读节奏逐步展开 |
+| 产品展示 | **滚动浏览** + 视差 | 沉浸式体验 |
+
+---
+
+### 交互类型→技术决策
+
+| 交互类型 | 关键技术 | 避免 |
+|---------|---------|------|
+| 静态展示 | 布局精度、排版节奏 | 过度动画 |
+| 滚动浏览 | IntersectionObserver、scroll-snap | 强制点击切换 |
+| Tab 切换 | 数据驱动渲染 + 状态索引 | 用 scroll 模拟 tab |
+| 滚动触发 | Observer + threshold | 用 click 模拟滚动 |
+
+---
+
+### 响应式策略判断
+
+| 内容类型 | 推荐策略 | 理由 |
+|---------|---------|------|
+| 数据仪表盘 | 桌面优先 | 复杂布局，移动端简化 |
+| 落地页/品牌 | 全响应式 | 需要覆盖所有设备 |
+| PPT/演示 | 单一尺寸 | 固定 16:9 |
+
+---
+
 ## Phase 2: Style Selection
 
-Present the 12 styles organized in two tiers:
+Present the 12 design styles:
 
-### 年老师核心设计模式（4 种）
+### 13 种核心设计风格
 
-| Mode | Core Color | Best For |
-|------|------------|----------|
-| **品牌模式** | Terracotta `#E2725B` | User-facing pages, brand content |
-| **数据模式** | B&W + Terracotta accent | Reports, print, minimal data |
-| **金融时报** | Teal `#0d7680` | Supplier dashboards, financial data |
-| **咨询模式** | Charcoal `#333` + Red accent | Strategy presentations, PPT |
-
-### 可选补充风格（8 种）
-
-| Style | Vibe | Best For |
-|-------|------|----------|
-| Bold Signal | Confident, high-impact | Pitch decks, keynotes |
-| Electric Studio | Clean, professional | Agency presentations |
-| Notebook Tabs | Editorial, organized | Reports, reviews |
-| Pastel Geometry | Friendly, approachable | Product overviews |
-| Split Pastel | Playful, modern | Creative agencies |
-| Vintage Editorial | Personality-driven | Personal brands |
-| Swiss Modern | Minimal, precise | Corporate, data |
-| Paper & Ink | Literary, thoughtful | Storytelling |
+| 风格 | 核心色彩 | 气质 | 适用场景 |
+|------|---------|------|----------|
+| **品牌模式** | 陶土色 `#E2725B` | 人文温度 × 技术精度 | 用户页面、品牌内容 |
+| **数据模式** | 黑白灰 + 陶土点缀 | 冷峻理性中的唯一温度 | 报告、打印、极简数据 |
+| **金融时报** | 青绿 `#0d7680` | K 线图表语言、值得信赖 | 供应商仪表盘、金融数据 |
+| **咨询模式** | 深灰 `#333` + 低饱和红 | 结论性标题、So What 原则 | 战略演示、PPT |
+| **自信宣言** | 黑白对比 + 金色点缀 | 高对比、冲击力 | Pitch 演示、主题演讲 |
+| **现代工坊** | 靛蓝 `#6366f1` | 干净、专业 | Agency 演示、专业汇报 |
+| **分类标签** | 板岩灰 `#475569` | 编辑本、整理感 | 报告、评审文档 |
+| **柔和几何** | 粉彩色系 | 粉彩、几何友好 | 产品介绍 |
+| **趣味拼接** | 高饱和对比 | 双色分割、现代感 | 创意 Agency |
+| **复古报刊** | 暖棕 `#78716c` | 怀旧、个性 | 个人品牌 |
+| **极简现代** | 瑞士红 `#dc2626` | 极简、精确 | 企业数据 |
+| **纸墨文学** | 墨黑 `#1c1917` | 文学、沉思 | 故事叙述 |
+| **Anthropic 文档** | 橙色 `#FF6B35` | 技术文档、代码友好 | API 文档、技术演示 |
 
 Use AskUserQuestion to let user pick:
 
-**Question: Design Mode**
-- Header: "Style"
-- Question: "Which design mode fits your needs?"
-- Options: [List the 4 core modes + "Show more options"]
+**Question: Design Style**
+- Header: "设计风格"
+- Question: "哪种设计风格适合你的需求？"
+- Options: [List all 12 styles]
+
+---
+
+## Phase 2.1: 风格选择逻辑
+
+> **核心原则**：风格哲学是语法，内容哲学是语义。用正确的语法讲述内容的故事。
+
+### 两个来源
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    设计决策的两层哲学                        │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  【内容哲学】                      【风格哲学】              │
+│  从内容中提取的"灵魂"               12种模式的"美学框架"      │
+│  ↓                                ↓                         │
+│  "金条供应商排名"                   "金融时报风格"           │
+│  → 竞争张力、金字塔结构             → 青绿品牌、权威感       │
+│  → 头部效应、等级                   → K线图表、数据语言       │
+│                                                              │
+│  【最终输出】 = 内容灵魂 × 风格语言                         │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 使用逻辑
+
+#### 场景一：风格主导（90%）
+
+**用户明确指定风格**
+```
+用户："用金融时报风格做一个供应商排名仪表盘"
+       ↓
+风格哲学：青绿品牌色、权威感、K线图表语言
+       ↓
+内容适配：把"竞争张力"翻译成"金字塔结构"
+         把"头部效应"翻译成"K线图数据展示"
+```
+
+**工作流**：
+1. 风格哲学提供 **语法**（怎么表达）
+2. 内容哲学提供 **语义**（表达什么）
+3. 输出 = 用风格语法讲述内容故事
+
+---
+
+#### 场景二：内容主导（10%）
+
+**用户没有指定风格，但内容有强视觉线索**
+```
+用户："做一个金条供应商困境分析"
+       ↓
+内容哲学：困境、张力、博弈
+       ↓
+自动判断：咨询模式（深灰+低饱和红、结论性标题）
+        因为内容需要"严肃、诊断"的气质
+```
+
+**工作流**：
+1. 从内容中提取情绪（紧迫/沉稳/庆祝/反思）
+2. 根据情绪匹配风格
+3. 用风格哲学指导实现
+
+---
+
+#### 场景三：融合生成（理想）
+
+**两者互相印证、互相补充**
+
+```
+【内容】供应商排名数据
+       ↓
+【内容哲学】竞争张力 → 需要视觉重量、等级感
+       ↓
+【风格选择】金融时报 → 青绿色权威、金字塔结构
+       ↓
+【设计决策】
+├── 来自内容哲学：头部供应商占据视觉重心
+├── 来自风格哲学：用青绿色建立可信度
+└── 融合结果：竞技场美学，数据即战场
+```
+
+---
+
+### 内容情绪 → 风格匹配决策树
+
+```
+从内容中提取情绪：
+├── 紧迫、风险、预警 → 数据模式 / 金融时报
+├── 温暖、故事、成长 → 品牌模式 / 纸墨文学
+├── 专业、可信、精确 → 现代工坊 / 极简现代
+├── 创意、冲击、记忆 → 自信宣言 / 趣味拼接
+├── 整理、分类、对比 → 分类标签
+├── 个性、怀旧、故事 → 复古报刊
+├── 友好、易用、轻松 → 柔和几何
+└── 结论、洞察、战略 → 咨询模式
+```
+
+---
+
+### 冲突处理
+
+**内容与风格气质冲突时**：
+
+```
+【冲突示例】
+用户："用柔和几何风格做风险预警"
+├── 内容哲学：紧迫、高对比、警告
+└── 风格哲学：粉彩、圆润、友好
+
+【处理方式】
+1. 承认冲突：柔和几何不适合紧急预警
+2. 建议调整：
+   └── "柔和几何更适合产品介绍，建议用数据模式"
+   或
+   └── "如果坚持柔和几何，需要调整内容为'风险成长建议'"
+3. 如果用户坚持：
+   └── 用粉彩但加深饱和度
+   └── 保持圆润但加强对比度
+```
+
+---
+
+### 实战示例
+
+**示例 1：风格主导**
+```
+用户："用纸墨文学风格讲一个供应商成长故事"
+
+【风格哲学】纸墨文学
+├── 空间：大片留白（>60%）、小字号、慢下来
+├── 色彩：单色（墨黑+纸白）、低对比
+└── 工艺：窄行宽、独页图片、克制文字
+
+【内容哲学】成长故事
+├── 时间线：2020 → 2026
+├── 关键节点：准入 → 培育 → 成长
+└── 情绪：沉淀、积累、突破
+
+【融合输出】
+├── 时间线用独页图片，每页大面积留白
+├── 年份用小字号（10px）靠近图片
+├── 关键数据用单色墨黑，不用强调色
+└── 每页只有一行短句，创造"凝视"体验
+```
+
+**示例 2：内容主导**
+```
+用户："做一个风险预警看板"
+
+【内容哲学】风险预警
+├── 情绪：紧迫、需要立即注意
+├── 视觉需求：信号灯、高对比
+└── 信息密度：高，但焦点突出
+
+【自动匹配】→ 数据模式
+原因：冷峻理性 + 单一陶土色焦点
+
+【实现】
+├── 背景纯白、表格精确对齐（数据模式哲学）
+├── 风险项用陶土色填充（唯一焦点）
+├── 正常项用黑白灰（冷峻理性）
+└── 每行只有一个异常值（符合内容需求）
+```
+
+---
+
+### 设计哲学参考
+
+**完整设计哲学文档**：`references/design-philosophy-12modes.md`
+
+每种模式的：
+- 运动名称（1-2词美学定位）
+- 设计哲学宣言（空间/色彩/工艺）
+- 概念线索表（内容→视觉翻译）
+- 工艺检查清单
 
 ---
 
@@ -560,13 +774,256 @@ body, p, li {
 
 ---
 
-## 可选风格完整规范
+### Anthropic 技术文档风格 — Anthropic Docs Style
 
-（详见 `references/styles.md`）
+> **核心风格DNA**：技术精度 × 代码友好 × 清晰可读
+>
+> 灵感来源：Anthropic 官方文档、Lucide Icons、Inter Font
+
+**完整的色彩系统：**
+
+```css
+:root {
+  /* 强调色（橙色） */
+  --anth-orange: #FF6B35;
+  --anth-orange-dark: #E55A2B;
+
+  /* 功能色 */
+  --anth-green: #4CAF50;      /* Markdown 文件 */
+  --anth-blue: #2196F3;       /* Python 文件 */
+  --anth-grey: #9E9E9E;       /* 配置文件 */
+  --anth-purple: #9C27B0;     /* 特殊标记 */
+
+  /* 基础色 */
+  --anth-bg: #F5F1E8;         /* 背景：浅米色 */
+  --anth-surface: #FFFFFF;    /* 表面：纯白 */
+  --anth-text: #1A1A1A;       /* 主文字 */
+  --anth-text-muted: #666666; /* 辅助文字 */
+  --anth-border: #E0E0E0;     /* 边框 */
+}
+```
+
+**字体系统：**
+
+```html
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* 标题和正文 - Inter */
+h1, h2, h3, body, p, li {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 代码 - JetBrains Mono */
+code, pre, .mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+</style>
+```
+
+**设计特征：**
+- 背景：浅米色 `#F5F1E8`，卡片表面纯白 `#FFFFFF`
+- 强调：橙色 `#FF6B35` 用于箭头、标题、关键图标
+- 功能色：文件类型色彩编码（MD绿、PY蓝、Config灰）
+- 图标：**混合风格** — 核心 UI 图标用 Lucide 风格，装饰用手绘
+- 字体：Inter（正文）+ JetBrains Mono（代码）
+- 禁止：阴影、渐变、emoji 图标
 
 ---
 
-## Phase 2.5: 设计哲学层（审美判断力）
+**色彩使用规则：**
+
+| 用途 | 颜色 | 说明 |
+|------|------|------|
+| 箭头、导航 | 橙色 `#FF6B35` | 引导注意力，表示行动 |
+| 文件夹标题 | 橙色 `#FF6B35` | 统一品牌标识 |
+| Markdown 文件 | 绿色 `#4CAF50` | 文档类型标识 |
+| Python 文件 | 蓝色 `#2196F3` | 代码文件标识 |
+| 配置文件 | 灰色 `#9E9E9E` | 配置/元数据 |
+| 特殊标记 | 紫色 `#9C27B0` | 警告、提示 |
+| 内联代码 | 橙色底色 `rgba(255,107,53,0.1)` | 代码高亮 |
+
+---
+
+**图标系统（混合风格）：**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    图标风格分配规则                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  【Lucide 风格】              【手绘风格】                   │
+│  核心 UI 图标                  装饰元素                      │
+│  ├─ 文件类型（.md、.py）       ├─ 章节分隔插画              │
+│  ├─ 操作图标（复制、运行）     ├─ 概念插图                  │
+│  ├─ 导航图标（箭头、菜单）     ├─ 页面装饰                  │
+│  └─ 状态图标（成功、错误）     └─ 空状态插画                │
+│                                                              │
+│  【规格】Lucide: 24px, 2px stroke                           │
+│         手绘: 48px, 2.5px stroke, #3D2C29                   │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Lucide 风格图标示例（技术文档场景）：**
+
+```html
+<!-- 文件图标：Markdown -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <path d="M16 13H8"/>
+  <path d="M16 17H8"/>
+  <path d="M10 9H8"/>
+</svg>
+
+<!-- 文件图标：Python -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+  <polyline points="14 2 14 8 20 8"/>
+  <path d="M12 18v-6"/>
+  <path d="M9 15h6"/>
+</svg>
+
+<!-- 操作图标：运行 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="5 3 19 12 5 21 5 3"/>
+</svg>
+
+<!-- 导航图标：箭头右 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <line x1="5" y1="12" x2="19" y2="12"/>
+  <polyline points="12 5 19 12 12 19"/>
+</svg>
+```
+
+**手绘风格装饰示例（章节分隔）：**
+
+```html
+<!-- 手绘波浪线分隔符 -->
+<svg viewBox="0 0 200 20" style="width: 200px; height: 20px; margin: 16px auto;">
+  <path d="M0 10 Q25 5, 50 10 T100 10 T150 10 T200 10"
+        fill="none" stroke="#E2725B" stroke-width="2" stroke-linecap="round"/>
+</svg>
+
+<!-- 手绘箭头装饰 -->
+<svg viewBox="0 0 64 64" style="width: 64px; height: 64px;">
+  <path class="hand-drawn" d="M16 32 L48 32 M40 24 L48 32 L40 40"/>
+</svg>
+```
+
+---
+
+**卡片结构：**
+
+```html
+<!-- 文件夹卡片 -->
+<div class="folder-card">
+  <div class="folder-header">
+    <svg class="folder-icon">...</svg>
+    <h3 class="folder-title">API 参考</h3>
+  </div>
+  <div class="folder-content">
+    <!-- 文件列表 -->
+    <div class="file-item">
+      <svg class="file-icon md">...</svg>
+      <span>getting-started.md</span>
+    </div>
+    <div class="file-item">
+      <svg class="file-icon py">...</svg>
+      <span>client.py</span>
+    </div>
+  </div>
+</div>
+```
+
+**CSS 样式：**
+
+```css
+/* 文件夹卡片 */
+.folder-card {
+  background: var(--anth-surface);
+  border: 1px solid var(--anth-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(255, 107, 53, 0.05);
+  border-bottom: 1px solid var(--anth-border);
+}
+
+.folder-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--anth-orange);
+}
+
+.folder-content {
+  padding: 12px 0;
+}
+
+/* 文件项 */
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  transition: background 0.15s;
+}
+
+.file-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* 内联代码 */
+code {
+  background: rgba(255, 107, 53, 0.1);
+  color: var(--anth-orange-dark);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+```
+
+---
+
+**开源图标库参考：**
+
+| 图标库 | 风格 | 用途 |
+|--------|------|------|
+| **Lucide Icons** | 简洁几何，24px | 核心 UI 图标 |
+| **Feather Icons** | 轻量线条，24px | 备选图标库 |
+| **Phosphor Icons** | 多种粗细，可选 | 需要更多变体时 |
+
+**Lucide Icons 使用方式：**
+
+```html
+<!-- 直接嵌入 SVG -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- icon paths -->
+</svg>
+
+<!-- 或通过 CDN 引入（生产环境不推荐，零依赖原则） -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<i data-lucide="menu"></i>
+```
+
+---
+
+**图标资源位置：**
+
+- **Lucide 风格图标**：`assets/anthropic-icons/lucide/`（50 个）
+- **手绘风格装饰**：`assets/anthropic-icons/hand-drawn/`（50 个）
+- **预览页面**：`assets/anthropic-icons/preview.html`
+
+---
+
+## Phase 2.5: 设计执行哲学
 
 > **来源**：融合 canvas-design 的视觉哲学方法论
 >
@@ -663,6 +1120,43 @@ body, p, li {
 ---
 
 ## Phase 3: Generate Output
+
+### 图标规范（CRITICAL）
+
+**禁止使用**：
+- ❌ Emoji 图标（⛓️、🔀、⚡ 等）
+- ❌ 组件库图标（Lucide、Heroicons、Phosphor 等）
+- ❌ 任何现成的图标字体
+
+**必须使用**：手绘 SVG（符合品牌模式规范）
+
+**手绘 SVG 规格**：
+```css
+/* 基础类 */
+.hand-drawn {
+  fill: none;
+  stroke: var(--charcoal);  /* #3D2C29 */
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hand-drawn-fill {
+  fill: var(--terracotta);  /* #E2725B */
+  stroke: none;
+}
+```
+
+**图标来源**：
+1. **优先调用素材库** — `assets/icons/` 和 `assets/icons-v2/`（200 个现成图标）
+2. **按需手绘** — 根据内容语义绘制匹配的 SVG
+
+**图标放置原则**：
+- 由 AI 判断合适位置（卡片标题、模式标识、视觉焦点）
+- 每个图标服务于内容语义，不是装饰
+- 保持风格统一（都是手绘 + 陶土色点缀）
+
+---
 
 ### HTML Architecture (所有风格通用)
 
@@ -828,6 +1322,46 @@ const { data } = await response.json();
 
 ## 素材资源
 
+### Lucene 风格图标库 — 13 种设计风格
+
+**位置**：`assets/icons-<mode>/`
+
+为每种设计风格配备的 Lucene 风格核心图标（40 个/风格）：
+
+| 风格 | 文件夹 | 主色调 | 数量 |
+|------|--------|--------|------|
+| 品牌模式 | `icons-brand/` | `#E2725B` | 40 |
+| 数据模式 | `icons-data/` | `#E2725B` | 40 |
+| 金融时报 | `icons-financial-times/` | `#0d7680` | 40 |
+| 咨询模式 | `icons-consulting/` | `#B85450` | 40 |
+| 自信宣言 | `icons-confidence/` | `#D4AF37` | 40 |
+| 现代工坊 | `icons-modern-workshop/` | `#6366f1` | 40 |
+| 分类标签 | `icons-tags/` | `#475569` | 40 |
+| 柔和几何 | `icons-pastel/` | `#F8B4D9` | 40 |
+| 趣味拼接 | `icons-split/` | `#FF6B6B` | 40 |
+| 复古报刊 | `icons-vintage/` | `#78716c` | 40 |
+| 极简现代 | `icons-swiss/` | `#dc2626` | 40 |
+| 纸墨文学 | `icons-ink/` | `#1c1917` | 40 |
+| Anthropic 文档 | `icons-anthropic-docs/` | `#FF6B35` | 40 |
+
+**通用图标列表**（40 个）：
+```
+箭头：arrow-right, arrow-left, arrow-up, arrow-down, chevron-right, chevron-left, chevron-up, chevron-down
+文件：folder, folder-open, file
+操作：search, plus, minus, x, check, copy, download, upload, refresh, settings
+导航：home, external-link, bookmark, filter
+媒体：play, pause, stop, skip-forward, skip-back, volume, mute
+其他：circle, menu, more-horizontal, more-vertical, star, sort-asc, sort-desc
+```
+
+**使用方式**：
+```html
+<!-- 使用对应风格的图标 -->
+<img src="assets/icons-<mode>/<icon-name>.svg" />
+```
+
+---
+
 ### 手绘 SVG 图标库
 
 **位置**：`assets/icons/` 和 `assets/icons-v2/`
@@ -872,6 +1406,17 @@ const { data } = await response.json();
 
 ---
 
-*版本：v1.4*
+### Anthropic 技术文档专用图标
+
+**位置**：`assets/anthropic-icons/`
+
+**Lucene 风格（50 个）**：文件类型、操作、导航、状态
+**手绘风格（50 个）**：章节分隔、装饰插图、概念图标、空状态
+
+详见：`assets/anthropic-icons/README.md`
+
+---
+
+*版本：v1.6*
 *创建：2026-03-22*
-*更新：2026-03-24 — 融合 canvas-design 设计哲学层（Phase 2.5），增加审美判断力*
+*更新：2026-03-28 — 新增 Phase 1.5 交互类型诊断环节（吸收 clone-website 方法论）*
