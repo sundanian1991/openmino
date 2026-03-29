@@ -23,23 +23,23 @@ function createSlide(pres, theme) {
 
   // 左右对比表头
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 1.5, w: 4.4, h: 0.35,
+    x: 0.5, y: 1.4, w: 4.4, h: 0.3,
     fill: { color: theme.primary }
   });
   slide.addText('刘乾坤的攻击', {
-    x: 0.5, y: 1.5, w: 4.4, h: 0.35,
-    fontSize: 12, fontFace: "Microsoft YaHei",
+    x: 0.5, y: 1.4, w: 4.4, h: 0.3,
+    fontSize: 11, fontFace: "Microsoft YaHei",
     color: theme.bg, bold: true,
     align: "center", valign: "middle"
   });
 
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 5.1, y: 1.5, w: 4.4, h: 0.35,
+    x: 5.1, y: 1.4, w: 4.4, h: 0.3,
     fill: { color: theme.accent }
   });
   slide.addText('实际情况', {
-    x: 5.1, y: 1.5, w: 4.4, h: 0.35,
-    fontSize: 12, fontFace: "Microsoft YaHei",
+    x: 5.1, y: 1.4, w: 4.4, h: 0.3,
+    fontSize: 11, fontFace: "Microsoft YaHei",
     color: theme.bg, bold: true,
     align: "center", valign: "middle"
   });
@@ -53,12 +53,12 @@ function createSlide(pres, theme) {
   ];
   attacks.forEach((item, i) => {
     slide.addShape(pres.shapes.RECTANGLE, {
-      x: 0.5, y: 1.9 + (i * 0.65), w: 4.4, h: 0.6,
+      x: 0.5, y: 1.75 + (i * 0.55), w: 4.4, h: 0.5,
       fill: { color: i % 2 === 0 ? theme.bg : "FAFAFA" }
     });
     slide.addText('✗ ' + item, {
-      x: 0.65, y: 1.9 + (i * 0.65), w: 4.1, h: 0.6,
-      fontSize: 11, fontFace: "Microsoft YaHei",
+      x: 0.65, y: 1.75 + (i * 0.55), w: 4.1, h: 0.5,
+      fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.primary,
       align: "left", valign: "middle"
     });
@@ -73,12 +73,12 @@ function createSlide(pres, theme) {
   ];
   facts.forEach((item, i) => {
     slide.addShape(pres.shapes.RECTANGLE, {
-      x: 5.1, y: 1.9 + (i * 0.65), w: 4.4, h: 0.6,
+      x: 5.1, y: 1.75 + (i * 0.55), w: 4.4, h: 0.5,
       fill: { color: i % 2 === 0 ? theme.bg : "FAFAFA" }
     });
     slide.addText('✓ ' + item, {
-      x: 5.25, y: 1.9 + (i * 0.65), w: 4.1, h: 0.6,
-      fontSize: 11, fontFace: "Microsoft YaHei",
+      x: 5.25, y: 1.75 + (i * 0.55), w: 4.1, h: 0.5,
+      fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.primary,
       align: "left", valign: "middle"
     });
@@ -86,8 +86,8 @@ function createSlide(pres, theme) {
 
   // 核心矛盾（底部）
   slide.addText('核心矛盾', {
-    x: 0.5, y: 4.3, w: 9, h: 0.3,
-    fontSize: 14, fontFace: "Microsoft YaHei",
+    x: 0.5, y: 4.0, w: 9, h: 0.25,
+    fontSize: 13, fontFace: "Microsoft YaHei",
     color: theme.primary, bold: true,
     align: "left"
   });
@@ -101,16 +101,16 @@ function createSlide(pres, theme) {
 
   conflicts.forEach((item, i) => {
     const x = 0.5 + ((i % 2) * 4.5);
-    const y = 4.65 + (Math.floor(i / 2) * 0.55);
-    slide.addText('• ' + item.label, {
-      x: x, y: y, w: 4.3, h: 0.22,
-      fontSize: 11, fontFace: "Microsoft YaHei",
+    const y = 4.3 + (Math.floor(i / 2) * 0.5);
+    slide.addText('· ' + item.label, {
+      x: x, y: y, w: 4.3, h: 0.18,
+      fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.accent, bold: true,
       align: "left"
     });
     slide.addText(item.desc, {
-      x: x, y: y + 0.2, w: 4.3, h: 0.3,
-      fontSize: 10, fontFace: "Microsoft YaHei",
+      x: x, y: y + 0.18, w: 4.3, h: 0.25,
+      fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "left"
     });

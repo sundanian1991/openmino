@@ -24,35 +24,35 @@ function createSlide(pres, theme) {
 
   // 主标题
   slide.addText('如何应对职场"带节奏"', {
-    x: 0.5, y: 1.2, w: 9, h: 1.0,
-    fontSize: 40, fontFace: "Microsoft YaHei",
+    x: 0.5, y: 1.3, w: 9, h: 0.9,
+    fontSize: 36, fontFace: "Microsoft YaHei",
     color: theme.primary, bold: true,
     align: "left"
   });
 
   // 副标题
   slide.addText('刘乾坤开门红激励预警事件深度分析', {
-    x: 0.5, y: 2.4, w: 9, h: 0.5,
-    fontSize: 16, fontFace: "Microsoft YaHei",
+    x: 0.5, y: 2.3, w: 9, h: 0.4,
+    fontSize: 14, fontFace: "Microsoft YaHei",
     color: theme.secondary,
     align: "left"
   });
 
   // 版本标签
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 3.5, w: 0.8, h: 0.28,
+    x: 0.5, y: 3.0, w: 0.7, h: 0.24,
     fill: { color: theme.primary }
   });
   slide.addText('v4.0', {
-    x: 0.5, y: 3.5, w: 0.8, h: 0.28,
-    fontSize: 11, fontFace: "Arial",
+    x: 0.5, y: 3.0, w: 0.7, h: 0.24,
+    fontSize: 10, fontFace: "Arial",
     color: theme.bg, bold: true,
     align: "center", valign: "middle"
   });
 
   // 底部装饰线
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 5.4, w: 9, h: 0.02,
+    x: 0.5, y: 5.3, w: 9, h: 0.02,
     fill: { color: theme.light }
   });
 

@@ -23,8 +23,8 @@ function createSlide(pres, theme) {
 
   // 左侧：关键洞察
   slide.addText('关键洞察', {
-    x: 0.5, y: 1.5, w: 4.2, h: 0.35,
-    fontSize: 14, fontFace: "Microsoft YaHei",
+    x: 0.5, y: 1.4, w: 4.2, h: 0.3,
+    fontSize: 13, fontFace: "Microsoft YaHei",
     color: theme.primary, bold: true,
     align: "left"
   });
@@ -37,16 +37,16 @@ function createSlide(pres, theme) {
   ];
 
   insights.forEach((item, i) => {
-    const y = 1.9 + (i * 0.75);
+    const y = 1.75 + (i * 0.7);
     slide.addText('✓ ' + item.label, {
-      x: 0.5, y: y, w: 4.2, h: 0.25,
-      fontSize: 11, fontFace: "Microsoft YaHei",
+      x: 0.5, y: y, w: 4.2, h: 0.22,
+      fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.primary, bold: true,
       align: "left"
     });
     slide.addText(item.desc, {
-      x: 0.5, y: y + 0.23, w: 4.2, h: 0.45,
-      fontSize: 10, fontFace: "Microsoft YaHei",
+      x: 0.5, y: y + 0.2, w: 4.2, h: 0.4,
+      fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "left"
     });
@@ -54,8 +54,8 @@ function createSlide(pres, theme) {
 
   // 右侧：行动指南
   slide.addText('行动指南', {
-    x: 5.1, y: 1.5, w: 4.4, h: 0.35,
-    fontSize: 14, fontFace: "Microsoft YaHei",
+    x: 5.1, y: 1.4, w: 4.4, h: 0.3,
+    fontSize: 13, fontFace: "Microsoft YaHei",
     color: theme.primary, bold: true,
     align: "left"
   });
@@ -68,16 +68,16 @@ function createSlide(pres, theme) {
   ];
 
   actions.forEach((item, i) => {
-    const y = 1.9 + (i * 0.75);
+    const y = 1.75 + (i * 0.7);
     slide.addText('→ ' + item.label, {
-      x: 5.1, y: y, w: 4.4, h: 0.25,
-      fontSize: 11, fontFace: "Microsoft YaHei",
+      x: 5.1, y: y, w: 4.4, h: 0.22,
+      fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.accent, bold: true,
       align: "left"
     });
     slide.addText(item.desc, {
-      x: 5.1, y: y + 0.23, w: 4.4, h: 0.45,
-      fontSize: 10, fontFace: "Microsoft YaHei",
+      x: 5.1, y: y + 0.2, w: 4.4, h: 0.4,
+      fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.secondary,
       align: "left"
     });
@@ -85,17 +85,17 @@ function createSlide(pres, theme) {
 
   // 底部金句
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 4.55, w: 9, h: 0.7,
+    x: 0.5, y: 4.4, w: 9, h: 0.65,
     fill: { color: theme.primary }
   });
   slide.addText('"情绪化的数字不能帮助我们解决问题，反而会制造恐慌，破坏团队安全感。"', {
-    x: 0.65, y: 4.55, w: 8.7, h: 0.45,
-    fontSize: 12, fontFace: "Microsoft YaHei",
+    x: 0.65, y: 4.4, w: 8.7, h: 0.4,
+    fontSize: 11, fontFace: "Microsoft YaHei",
     color: theme.bg,
     align: "left", valign: "middle"
   });
   slide.addText('—— 核心话术', {
-    x: 0.65, y: 5.05, w: 8.7, h: 0.2,
+    x: 0.65, y: 4.85, w: 8.7, h: 0.18,
     fontSize: 9, fontFace: "Microsoft YaHei",
     color: theme.bg,
     align: "left"

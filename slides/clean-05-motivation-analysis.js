@@ -23,12 +23,12 @@ function createSlide(pres, theme) {
 
   // 核心判断（顶部通栏）
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 1.45, w: 9, h: 0.5,
+    x: 0.5, y: 1.4, w: 9, h: 0.45,
     fill: { color: theme.primary }
   });
   slide.addText('核心判断：表演型预警 + 转移视线 + 保护关系网 的三重组合', {
-    x: 0.65, y: 1.45, w: 8.7, h: 0.5,
-    fontSize: 12, fontFace: "Microsoft YaHei",
+    x: 0.65, y: 1.4, w: 8.7, h: 0.45,
+    fontSize: 11, fontFace: "Microsoft YaHei",
     color: theme.bg, bold: true,
     align: "left", valign: "middle"
   });
@@ -59,26 +59,26 @@ function createSlide(pres, theme) {
   ];
 
   motivations.forEach((item, index) => {
-    const y = 2.1 + (index * 0.95);
+    const y = 2.0 + (index * 1.05);
 
     // 名称 + 星级
     slide.addText(item.name, {
-      x: 0.5, y: y, w: 2.2, h: 0.25,
-      fontSize: 13, fontFace: "Microsoft YaHei",
+      x: 0.5, y: y, w: 2.2, h: 0.22,
+      fontSize: 12, fontFace: "Microsoft YaHei",
       color: theme.primary, bold: true,
       align: "left"
     });
 
     slide.addText(item.stars, {
-      x: 2.7, y: y, w: 2.0, h: 0.25,
-      fontSize: 11, fontFace: "Microsoft YaHei",
+      x: 2.7, y: y, w: 2.0, h: 0.22,
+      fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.accent,
       align: "left"
     });
 
     // 逻辑
     slide.addText('逻辑：' + item.logic, {
-      x: 0.5, y: y + 0.28, w: 8.9, h: 0.18,
+      x: 0.5, y: y + 0.25, w: 8.9, h: 0.16,
       fontSize: 10, fontFace: "Microsoft YaHei",
       color: theme.primary,
       align: "left"
@@ -87,7 +87,7 @@ function createSlide(pres, theme) {
     // 证据（两行）
     item.evidence.forEach((ev, i) => {
       slide.addText('  · ' + ev, {
-        x: 0.5, y: y + 0.46 + (i * 0.14), w: 8.9, h: 0.12,
+        x: 0.5, y: y + 0.42 + (i * 0.13), w: 8.9, h: 0.11,
         fontSize: 9, fontFace: "Microsoft YaHei",
         color: theme.secondary,
         align: "left"
@@ -96,7 +96,7 @@ function createSlide(pres, theme) {
 
     // 收益
     slide.addText('收益：' + item.benefit, {
-      x: 0.5, y: y + 0.75, w: 8.9, h: 0.15,
+      x: 0.5, y: y + 0.72, w: 8.9, h: 0.14,
       fontSize: 9, fontFace: "Microsoft YaHei",
       color: theme.accent, bold: true,
       align: "left"

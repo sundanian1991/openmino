@@ -30,7 +30,7 @@ function createSlide(pres, theme) {
   ];
 
   chapters.forEach((item, i) => {
-    const y = 1.8 + (i * 0.95);
+    const y = 1.7 + (i * 0.85);
 
     // 序号
     slide.addText(item.num, {
