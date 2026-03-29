@@ -111,15 +111,21 @@ function createSlide(pres, theme) {
     }
   });
 
-  // 工作方式问题（底部）
+  // 工作方式问题 + 如何应对（底部色块）
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 5.15, w: 9, h: 0.25,
-    fill: { color: theme.light }
+    x: 0.5, y: 5.05, w: 9, h: 0.35,
+    fill: { color: theme.primary }
   });
   slide.addText('工作方式问题：不先沟通直接群里"放炮" → 选择性攻击 → 用情绪化数字 → 破坏团队安全感', {
-    x: 0.65, y: 5.18, w: 8.7, h: 0.2,
+    x: 0.65, y: 5.05, w: 8.7, h: 0.17,
     fontSize: 9, fontFace: "Microsoft YaHei",
-    color: theme.secondary,
+    color: theme.bg, bold: true,
+    align: "left", valign: "top"
+  });
+  slide.addText('应对核心：不接靶子 · 回归事实 · 保护安全感 · 用数据说话', {
+    x: 0.65, y: 5.22, w: 8.7, h: 0.15,
+    fontSize: 9, fontFace: "Microsoft YaHei",
+    color: theme.bg,
     align: "left"
   });
 

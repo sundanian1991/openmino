@@ -80,15 +80,26 @@ function createSlide(pres, theme) {
     });
   });
 
-  // 底部总结
+  // 底部总结 + 识别指南
+  const summaryY = 5.05;
+
+  // 背景色块
   slide.addShape(pres.shapes.RECTANGLE, {
-    x: 0.5, y: 5.2, w: 9, h: 0.02,
-    fill: { color: theme.light }
+    x: 0.5, y: summaryY, w: 9, h: 0.35,
+    fill: { color: theme.primary }
   });
+
   slide.addText('核心判断：这不是正常的工作方式，让人觉得动机或工作方式有问题', {
-    x: 0.65, y: 5.25, w: 8.7, h: 0.18,
+    x: 0.65, y: summaryY, w: 8.7, h: 0.2,
+    fontSize: 10, fontFace: "Microsoft YaHei",
+    color: theme.bg, bold: true,
+    align: "left", valign: "top"
+  });
+
+  slide.addText('识别指南：选择性攻击 + 群内表演 + 道德绑架 + 转移视线 + 保护关系网 = 表演型预警', {
+    x: 0.65, y: summaryY + 0.18, w: 8.7, h: 0.15,
     fontSize: 9, fontFace: "Microsoft YaHei",
-    color: theme.secondary,
+    color: theme.bg,
     align: "left"
   });
 
