@@ -1,152 +1,163 @@
-// Slide 04 - 五大核心应对原则
-// Theme: 演示模式 - 驼色优雅
-
-const theme = {
-  primary: "22223b",    // 深灰 - 标题
-  secondary: "4a4e69",  // 中灰 - 正文
-  accent: "c9ada7",     // 驼色 - 强调
-  light: "9a8c98",      // 浅灰 - 背景点缀
-  bg: "f2e9e4"          // 米白 - 背景
-};
+// slide-04.js - 供应商困境（问题部分）
+const pptxgen = require("pptxgenjs");
 
 const slideConfig = {
-  title: "五大核心应对原则",
-  type: "content",
-  layout: "LAYOUT_16x9",
-  width: 10,
-  height: 5.625
+  type: 'content',
+  index: 4,
+  section: '问题 · 是什么',
+  title: '供应商夹层困境',
+  cycle: '增长的产能被抹杀 → 不愿投入 → 产能更低 → 更有理由压价（恶性循环）'
 };
 
-function createSlide(pptx) {
-  const slide = pptx.addSlide({ layout: slideConfig.layout });
-
-  // 背景色
+function createSlide(pres, theme) {
+  const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  // 标题
-  slide.addText("五大核心应对原则", {
-    x: 0.5,
-    y: 0.4,
-    w: 9,
-    h: 0.6,
-    fontSize: 28,
-    fontFace: "Microsoft YaHei",
-    color: theme.primary,
-    bold: true,
-    align: "left"
-  });
-
-  // 原则数据
-  const principles = [
-    { name: "不接靶子", desc: "不说'激励确实有问题'" },
-    { name: "回归根本原因", desc: "指出'交接期信息真空、数据中断'" },
-    { name: "拒绝逼迫", desc: "不被道德绑架逼迫表态" },
-    { name: "保护安全感", desc: "不在群里制造对立" },
-    { name: "用数据说话", desc: "真实数据对抗情绪化数字" }
-  ];
-
-  const startY = 1.2;
-  const rowHeight = 0.8;
-  const cardWidth = 9;
-  const cardHeight = 0.7;
-  const accentBarWidth = 0.05;
-
-  principles.forEach((item, index) => {
-    const y = startY + index * rowHeight;
-
-    // 卡片阴影 - 底层偏移
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.52,
-      y: y + 0.04,
-      w: cardWidth,
-      h: cardHeight,
-      fill: { color: "D9D9D9" }
-    });
-
-    // 卡片阴影 - 第二层偏移
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.51,
-      y: y + 0.02,
-      w: cardWidth,
-      h: cardHeight,
-      fill: { color: "E5E5E5" }
-    });
-
-    // 主卡片背景
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.5,
-      y: y,
-      w: cardWidth,
-      h: cardHeight,
-      fill: { color: "FFFFFF" }
-    });
-
-    // 左侧驼色强调条
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.5,
-      y: y,
-      w: accentBarWidth,
-      h: cardHeight,
-      fill: { color: theme.accent }
-    });
-
-    // 原则名称
-    slide.addText(item.name, {
-      x: 0.7,
-      y: y + 0.15,
-      w: 2.2,
-      h: 0.4,
-      fontSize: 16,
-      fontFace: "Microsoft YaHei",
-      color: theme.primary,
-      bold: true,
-      align: "left"
-    });
-
-    // 核心要点
-    slide.addText(item.desc, {
-      x: 3.0,
-      y: y + 0.15,
-      w: 6.2,
-      h: 0.4,
-      fontSize: 14,
-      fontFace: "Microsoft YaHei",
-      color: theme.secondary,
-      align: "left"
-    });
-  });
-
-  // 页码徽章 - 圆形
-  slide.addShape(pptx.ShapeType.ellipse, {
-    x: 9.3,
-    y: 5.1,
-    w: 0.4,
-    h: 0.4,
+  // 顶部装饰线
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.1,
     fill: { color: theme.accent }
   });
 
-  slide.addText("04", {
-    x: 9.3,
-    y: 5.15,
-    w: 0.4,
-    h: 0.3,
-    fontSize: 12,
-    fontFace: "Arial",
-    color: "FFFFFF",
-    bold: true,
-    align: "center"
+  // Section label
+  slide.addText(slideConfig.section, {
+    x: 0.5, y: 0.5, w: 9, h: 0.3,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.light, bold: true
+  });
+
+  // Title
+  slide.addText(slideConfig.title, {
+    x: 0.5, y: 0.9, w: 9, h: 0.6,
+    fontSize: 28, fontFace: "Microsoft YaHei",
+    color: theme.primary, bold: true
+  });
+
+  // Two-column squeeze visualization
+  // Left box: 服务组
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 1.7, w: 2.5, h: 2.2,
+    fill: { color: "FFFFFF" },
+    line: { color: theme.light, width: 1.5 }
+  });
+
+  slide.addText('服务组', {
+    x: 0.5, y: 1.7, w: 2.5, h: 0.4,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.light, bold: true,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText('要求\n质量提升', {
+    x: 0.5, y: 2.2, w: 2.5, h: 1.6,
+    fontSize: 13, fontFace: "Microsoft YaHei",
+    color: theme.primary,
+    align: "center", valign: "middle"
+  });
+
+  // Right box: 策略组
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 7, y: 1.7, w: 2.5, h: 2.2,
+    fill: { color: "FFFFFF" },
+    line: { color: theme.accent, width: 1.5 }
+  });
+
+  slide.addText('策略组', {
+    x: 7, y: 1.7, w: 2.5, h: 0.4,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.accent, bold: true,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText('压降\n价格', {
+    x: 7, y: 2.2, w: 2.5, h: 1.6,
+    fontSize: 13, fontFace: "Microsoft YaHei",
+    color: theme.primary,
+    align: "center", valign: "middle"
+  });
+
+  // Arrows pointing inward
+  slide.addShape(pres.shapes.LINE, {
+    x: 3.1, y: 2.8, w: 1, h: 0,
+    line: { color: theme.secondary, width: 2 }
+  });
+  slide.addText('→', {
+    x: 3.2, y: 2.6, w: 0.5, h: 0.4,
+    fontSize: 20, fontFace: "Arial",
+    color: theme.secondary
+  });
+
+  slide.addShape(pres.shapes.LINE, {
+    x: 5.9, y: 2.8, w: 1, h: 0,
+    line: { color: theme.secondary, width: 2 }
+  });
+  slide.addText('←', {
+    x: 5.9, y: 2.6, w: 0.5, h: 0.4,
+    fontSize: 20, fontFace: "Arial",
+    color: theme.secondary
+  });
+
+  // Center: 供应商
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: 3.8, y: 2.3, w: 2, h: 1.2,
+    fill: { color: "FFF5F2" },
+    rectRadius: 0.1,
+    line: { color: theme.accent, width: 2 }
+  });
+
+  slide.addText('供应商', {
+    x: 3.8, y: 2.3, w: 2, h: 0.4,
+    fontSize: 13, fontFace: "Microsoft YaHei",
+    color: theme.accent, bold: true,
+    align: "center", valign: "middle"
+  });
+
+  slide.addText('两头挤压\n无处发力', {
+    x: 3.8, y: 2.75, w: 2, h: 0.6,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.primary,
+    align: "center", valign: "middle"
+  });
+
+  // Vicious cycle at bottom
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 4.2, w: 9, h: 0.8,
+    fill: { color: "FFFFFF" },
+    line: { color: theme.light, width: 1 }
+  });
+
+  slide.addText('恶性循环', {
+    x: 0.7, y: 4.3, w: 8.6, h: 0.25,
+    fontSize: 9, fontFace: "Microsoft YaHei",
+    color: theme.light, bold: true
+  });
+
+  slide.addText(slideConfig.cycle, {
+    x: 0.7, y: 4.55, w: 8.6, h: 0.35,
+    fontSize: 12, fontFace: "Microsoft YaHei",
+    color: theme.primary
+  });
+
+  // Page number badge
+  slide.addShape(pres.shapes.OVAL, {
+    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
+    fill: { color: theme.accent }
+  });
+  slide.addText("4", {
+    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
+    fontSize: 12, fontFace: "Arial",
+    color: "FFFFFF", bold: true,
+    align: "center", valign: "middle"
+  });
+
+  // Footer
+  slide.addText('权责不对等分析', {
+    x: 0.5, y: 5.1, w: 4, h: 0.3,
+    fontSize: 10, fontFace: "Microsoft YaHei",
+    color: theme.light
   });
 
   return slide;
 }
 
-// 独立预览代码
-if (typeof window !== 'undefined' && window.PptxGenJS) {
-  const pptx = new window.PptxGenJS();
-  pptx.layout = slideConfig.layout;
-  pptx.defineSlideSize({ width: slideConfig.width, height: slideConfig.height });
-  createSlide(pptx);
-  pptx.writeFile({ fileName: "slide-04-preview.pptx" });
-}
-
-module.exports = { createSlide, slideConfig, theme };
+module.exports = { createSlide, slideConfig };

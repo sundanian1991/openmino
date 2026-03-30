@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mino-frontend 调优分析</title>
+  <style>
+    :root {
+      --text: #111111;
+      --text-s: #555555;
+      --text-t: #888888;
+      --bg: #FFFFFF;
+      --surface: #F5F5F5;
+      --border: #E0E0E0;
+      --accent: #E2725B;
+      --accent-bg: rgba(226, 114, 91, 0.08);
+      --dark: #1A1A1A;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      z-index: 100;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      position: relative;
+    }
+
+    /* 字体层级 - 更密集 */
+    .t1 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 700; line-height: 1.2; }
+    .t1-cover { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 700; line-height: 1.1; }
+    .t2 { font-size: clamp(0.85rem, 1.5vw, 1rem); font-weight: 700; }
+    .t3 { font-size: clamp(0.75rem, 1.1vw, 0.9rem); font-weight: 600; }
+    .t4 { font-size: clamp(0.65rem, 1vw, 0.78rem); color: var(--text-s); line-height: 1.45; }
+    .t6 { font-size: clamp(0.55rem, 0.7vw, 0.65rem); color: var(--text-t); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* 分割线 */
+    .divider { width: 100%; height: 2px; background: var(--border); margin: 0.5rem 0; }
+    .divider.accent { background: var(--accent); width: 40px; }
+
+    .content { flex: 1; overflow: auto; display: flex; flex-direction: column; }
+    .cover { justify-content: center; align-items: center; text-align: center; }
+
+    /* 表格 - 紧凑 */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.65rem, 1vw, 0.75rem);
+    }
+    .data-table th {
+      border-bottom: 2px solid var(--text);
+      padding: 0.4rem 0.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-s);
+    }
+    .data-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem 0.5rem;
+      color: var(--text-s);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--surface); }
+
+    /* 卡片 */
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: clamp(0.6rem, 1vw, 0.85rem);
+      display: flex;
+      flex-direction: column;
+    }
+    .card.highlight { border-color: var(--accent); background: var(--accent-bg); }
+
+    /* 网格 - 不对称 */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.4rem, 0.8vw, 0.6rem); }
+    .grid-2-asym { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: clamp(0.4rem, 0.8vw, 0.6rem); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.3rem, 0.6vw, 0.5rem); }
+    .grid-3-asym { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: clamp(0.3rem, 0.6vw, 0.5rem); }
+
+    /* 徽章 */
+    .badge {
+      display: inline-block;
+      padding: 0.12rem 0.35rem;
+      font-size: 0.55rem;
+      font-weight: 600;
+      border-radius: 2px;
+    }
+    .badge-p0 { background: rgba(214, 51, 51, 0.12); color: #d63333; }
+    .badge-p1 { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+    .badge-p2 { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+
+    /* 列表 */
+    .list { list-style: none; }
+    .list-item {
+      padding: 0.28rem 0;
+      padding-left: 0.85rem;
+      position: relative;
+      font-size: clamp(0.65rem, 1vw, 0.75rem);
+      color: var(--text-s);
+    }
+    .list-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.48rem;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* Standout 页面 - 问题诊断 */
+    .standout {
+      background: var(--dark);
+      color: white;
+    }
+    .standout .divider { background: rgba(255,255,255,0.15); }
+    .standout .t6 { color: rgba(255,255,255,0.5); }
+    .standout .t4 { color: rgba(255,255,255,0.7); }
+    .standout .list-item { color: rgba(255,255,255,0.7); }
+    .standout .list-item::before { background: var(--accent); }
+
+    .contrast-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      flex: 1;
+      align-items: center;
+    }
+    .contrast-left {
+      border: 2px solid rgba(255,255,255,0.3);
+      padding: 1.25rem 1.5rem;
+    }
+    .contrast-right {
+      background: var(--accent);
+      padding: 1.25rem 1.5rem;
+    }
+    .contrast-center {
+      text-align: center;
+      padding: 1rem 0;
+    }
+    .vs-text {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* 结论页底部条 */
+    .bottom-bar {
+      background: var(--text);
+      color: white;
+      padding: 0.6rem 1rem;
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+    }
+
+    .accent-text { color: var(--accent); font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-2-asym, .grid-3, .grid-3-asym { grid-template-columns: 1fr; }
+      .contrast-box { grid-template-columns: 1fr; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress"><div class="progress-bar" id="pb"></div></div>
+
+<!-- 01 封面 -->
+<section class="slide cover">
+  <div style="max-width: 640px;">
+    <h1 class="t1-cover">mino-frontend 调优</h1>
+    <p style="font-size: clamp(0.8rem, 1.5vw, 0.95rem); color: var(--text-s); margin-top: 0.75rem;">
+      方法论是骨架，参数系统是血肉
+    </p>
+    <div class="divider accent" style="margin: 1.25rem auto;"></div>
+    <div style="display: flex; justify-content: center; gap: 1.5rem; font-size: 0.65rem; color: var(--text-t);">
+      <span>参数系统构建</span>
+      <span>执行稳定性</span>
+      <span>2026-03-30</span>
+    </div>
+  </div>
+</section>
+
+<!-- 02 迭代历史 - 紧凑表格 -->
+<section class="slide">
+  <div class="t6">迭代历史</div>
+  <h2 class="t1" style="margin-top: 0.2rem;">走过的路</h2>
+  <div class="divider"></div>
+  <div class="content">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 45px;">版本</th>
+          <th>方法论尝试</th>
+          <th style="width: 160px;">年老师反馈</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-p2">V1</span></td>
+          <td>跳过流程</td>
+          <td>"形似神不似"</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-p2">V2</span></td>
+          <td>三区模型（标题 / 内容 / 结论）</td>
+          <td>"空间上的呈现不是很有方法论的感觉"</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-p1">V3</span></td>
+          <td>均匀压缩间距</td>
+          <td>"效果更差了"</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-p1">V4</span></td>
+          <td>视觉层级法（层级数 + 权重）</td>
+          <td>"不够专业"</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-p0">V5</span></td>
+          <td>内容-位置-权重三步法</td>
+          <td>"一直没有特别满意"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background: var(--accent-bg); border-left: 3px solid var(--accent); padding: 0.6rem 0.85rem; margin-top: 0.6rem;">
+      <p style="font-size: 0.7rem; font-weight: 600; color: var(--accent); margin-bottom: 0.25rem;">迭代误区</p>
+      <p class="t4">每次迭代都在<span class="accent-text">调方法论</span>（骨架），但没有<span class="accent-text">调具体参数</span>（血肉）。方法论升级是对的，但"不满意"指向另一个问题。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 03 问题诊断 - STANDOUT 深色页 -->
+<section class="slide standout">
+  <div class="t6">核心洞察</div>
+  <h2 class="t1" style="margin-top: 0.2rem;">为什么执行不稳定？</h2>
+  <div class="divider"></div>
+  <div class="content">
+    <div class="contrast-box">
+      <div class="contrast-left">
+        <div class="t2" style="color: white; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.2);">方法论（骨架）</div>
+        <ul class="list" style="margin-top: 0.6rem;">
+          <li class="list-item">六层决策流程完整</li>
+          <li class="list-item">前注意特征编码 3 条铁律</li>
+          <li class="list-item">格式塔原理 4 大核心</li>
+          <li class="list-item">4 步推导流程</li>
+        </ul>
+        <p style="margin-top: 0.6rem; font-size: 0.6rem; color: rgba(255,255,255,0.5);">方法论是完整的 ✓</p>
+      </div>
+      <div class="contrast-center">
+        <div class="vs-text">VS</div>
+      </div>
+      <div class="contrast-right">
+        <div class="t2" style="color: white; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.3);">视觉血肉</div>
+        <ul class="list" style="margin-top: 0.6rem;">
+          <li class="list-item" style="color: rgba(255,255,255,0.85);">边框用多细？<strong>1px 还是 2px？</strong></li>
+          <li class="list-item" style="color: rgba(255,255,255,0.85);">字体层级差多少？<strong>3px 够不够？</strong></li>
+          <li class="list-item" style="color: rgba(255,255,255,0.85);">"呼吸感"具体是多少？<strong>32px？48px？</strong></li>
+          <li class="list-item" style="color: rgba(255,255,255,0.85);">"专业"是什么风格？<strong>麦肯锡？FT？</strong></li>
+        </ul>
+        <p style="margin-top: 0.6rem; font-size: 0.6rem; color: rgba(255,255,255,0.7);">参数系统缺失 ✗</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.08); border-radius: 2px;">
+      <p style="font-size: 0.75rem; color: white;">骨架有了，血肉没有。<span style="color: var(--accent);">方法论只决定了结构，没有决定具体的视觉参数。</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- 04 参数缺失 - 紧凑表格 -->
+<section class="slide">
+  <div class="t6">参数缺失</div>
+  <h2 class="t1" style="margin-top: 0.2rem;">具体缺什么？</h2>
+  <div class="divider"></div>
+  <div class="content">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>参数类型</th>
+          <th>方法论中说的</th>
+          <th>具体参数缺失</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>边框粗细</strong></td>
+          <td>"细线"、"粗线"</td>
+          <td><span class="accent-text">1px / 1.5px / 2px？什么场景用哪个？</span></td>
+        </tr>
+        <tr>
+          <td><strong>字体层级</strong></td>
+          <td>T1-T6 层级</td>
+          <td><span class="accent-text">层级差多少？3px 够不够？</span></td>
+        </tr>
+        <tr>
+          <td><strong>间距</strong></td>
+          <td>4pt 基准系统</td>
+          <td><span class="accent-text">"呼吸感"具体是多少？32px？48px？</span></td>
+        </tr>
+        <tr>
+          <td><strong>信息密度</strong></td>
+          <td>高/标准/低</td>
+          <td><span class="accent-text">卡片内 padding 具体是多少？</span></td>
+        </tr>
+        <tr>
+          <td><strong>陶土色</strong></td>
+          <td>"一页一处"</td>
+          <td><span class="accent-text">具体用在什么元素上？多大面积？</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background: var(--surface); padding: 0.5rem 0.85rem; margin-top: 0.6rem; border-radius: 2px;">
+      <p class="t4" style="margin: 0;"><strong>年老师偏好特征</strong>：锐利（圆角 2px）· 动态（进度条 3px）· 大标题（封面 35-40px）· 宽松（padding 上限 48px）</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 研究问题 - 不对称网格 -->
+<section class="slide">
+  <div class="t6">研究问题</div>
+  <h2 class="t1" style="margin-top: 0.2rem;">需要回答的问题</h2>
+  <div class="divider"></div>
+  <div class="content">
+    <div class="grid-2-asym" style="flex: 1;">
+      <div class="card" style="padding: 0.75rem;">
+        <span class="badge badge-p0">P0</span>
+        <div class="t3" style="margin-top: 0.4rem;">为什么执行不稳定？</div>
+        <ul class="list" style="margin-top: 0.4rem;">
+          <li class="list-item">同样的方法论，为什么输出不一致？</li>
+          <li class="list-item">不稳定的环节在哪里？</li>
+          <li class="list-item">风格选择 / 参数决策 / 代码生成？</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 0.75rem;">
+        <span class="badge badge-p1">P1</span>
+        <div class="t3" style="margin-top: 0.4rem;">缺少哪些具体参数？</div>
+        <ul class="list" style="margin-top: 0.4rem;">
+          <li class="list-item">边框粗细的场景映射</li>
+          <li class="list-item">字体层级差的具体值</li>
+          <li class="list-item">"呼吸感"的量化标准</li>
+          <li class="list-item">陶土色的面积规则</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 0.4rem; padding: 0.75rem;">
+      <span class="badge badge-p2">P2</span>
+      <div class="t3" style="margin-top: 0.4rem;">14种风格各自的参数？</div>
+      <p class="t4" style="margin-top: 0.35rem;">每种风格需要一套参数组合。哪些参数是风格固定的？哪些参数是内容决定的？三层参数模型：全局 → 风格 → 内容。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 06 方法与计划 - 左右两列 -->
+<section class="slide">
+  <div class="t6">方法与计划</div>
+  <h2 class="t1" style="margin-top: 0.2rem;">如何推进？</h2>
+  <div class="divider"></div>
+  <div class="content">
+    <div class="grid-2" style="flex: 1;">
+      <div class="card">
+        <div class="t2">研究方法</div>
+        <ul class="list" style="margin-top: 0.6rem;">
+          <li class="list-item"><strong>对比分析</strong> — 收集过往输出，识别不稳定环节</li>
+          <li class="list-item"><strong>参数构建</strong> — 分析风格特征，提取参数值</li>
+          <li class="list-item"><strong>验证测试</strong> — 用参数系统生成，检查稳定性</li>
+        </ul>
+        <div style="margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid var(--border); font-size: 0.65rem; color: var(--text-t);">
+          验证案例：游泳主题 / 刘乾坤分析
+        </div>
+      </div>
+      <div class="card">
+        <div class="t2">执行计划</div>
+        <table class="data-table" style="margin-top: 0.5rem;">
+          <tbody>
+            <tr><td style="width: 50px; font-weight: 600;">Step 1</td><td>分析现有方法论</td></tr>
+            <tr><td style="font-weight: 600;">Step 2</td><td>对比过往输出</td></tr>
+            <tr><td style="font-weight: 600;">Step 3</td><td>建立参数系统框架</td></tr>
+            <tr><td style="font-weight: 600;">Step 4</td><td>定义克制专业主义参数</td></tr>
+            <tr><td style="font-weight: 600;">Step 5</td><td>验证</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 风险 - 紧凑表格 -->
+<section class="slide">
+  <div class="t6">风险与缓解</div>
+  <h2 class="t1" style="margin-top: 0.2rem;">三个潜在问题</h2>
+  <div class="divider"></div>
+  <div class="content">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width: 70px;">风险</th>
+          <th>问题描述</th>
+          <th style="width: 180px;">缓解措施</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-p0">风险1</span></td>
+          <td>参数系统过于复杂，可能反而增加不稳定风险</td>
+          <td><span class="accent-text">只定义关键参数，其他用默认值</span></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-p1">风险2</span></td>
+          <td>没有专业参考资料，参数值可能不准确</td>
+          <td><span class="accent-text">用过往"满意"案例作为基准</span></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-p1">风险3</span></td>
+          <td>参数系统可能与六层决策流程冲突</td>
+          <td><span class="accent-text">参数系统作为决策的"输出层"</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 0.6rem; padding: 0.5rem 0.75rem; background: var(--surface); border-radius: 2px; font-size: 0.65rem; color: var(--text-s);">
+      <strong>已完成</strong>：Phase 2.6 参数系统新增 · 年老师满意案例参数提取（圆角 2px / 进度条 3px / 封面标题 35-40px）· 版本升级 v2.2.1
+    </div>
+  </div>
+</section>
+
+<!-- 08 结论 - 有底部条 -->
+<section class="slide">
+  <div class="t6">结论</div>
+  <h2 class="t1" style="margin-top: 0.2rem;">下一步</h2>
+  <div class="divider"></div>
+  <div class="content">
+    <div class="grid-2" style="flex: 1;">
+      <div class="card">
+        <div class="t3">问题定位</div>
+        <p class="t4" style="margin-top: 0.3rem;">方法论（骨架）已完善，缺的是具体参数（血肉）</p>
+      </div>
+      <div class="card">
+        <div class="t3">解决方向</div>
+        <p class="t4" style="margin-top: 0.3rem;">建立参数系统：全局 / 风格 / 内容三层参数模型</p>
+      </div>
+      <div class="card">
+        <div class="t3">关键参数</div>
+        <p class="t4" style="margin-top: 0.3rem;">边框粗细 · 字号层级差 · 间距系统 · 陶土色面积</p>
+      </div>
+      <div class="card highlight">
+        <div class="t3" style="color: var(--accent);">下一步</div>
+        <p class="t4" style="margin-top: 0.3rem;">用"克制专业主义"风格验证参数系统</p>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <span>08 — 结论</span>
+    <span>分析完成 · 2026-03-30</span>
+  </div>
+</section>
+
+<script>
+  const pb = document.getElementById('pb');
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    pb.style.width = (scrollTop / docHeight * 100) + '%';
+  }
+  window.addEventListener('scroll', updateProgress);
+  updateProgress();
+</script>
+
+</body>
+</html>

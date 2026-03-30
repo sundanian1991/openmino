@@ -1,211 +1,134 @@
-const PptxGenJS = require("pptxgenjs");
-
-const theme = {
-  primary: "22223b",
-  secondary: "4a4e69",
-  accent: "c9ada7",
-  light: "9a8c98",
-  bg: "f2e9e4"
-};
+// slide-08.js - 沟通无效（影响部分）
+const pptxgen = require("pptxgenjs");
 
 const slideConfig = {
-  type: "content",
-  number: 8,
-  title: "预警 vs 表演：观察期判断标准"
+  type: 'content',
+  index: 8,
+  section: '影响 · 会怎样',
+  title: '重复沟通无效',
+  conclusion: '单靠反馈、协调、说服解决不了权力结构问题'
 };
 
-function createSlide(pptx) {
-  const slide = pptx.addSlide();
-
-  // Background
+function createSlide(pres, theme) {
+  const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  // Decorative accent bar (top)
-  slide.addShape(pptx.ShapeType.rect, {
-    x: 0, y: 0, w: "100%", h: 0.08,
+  // 顶部装饰线
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.1,
     fill: { color: theme.accent }
+  });
+
+  // Section label
+  slide.addText(slideConfig.section, {
+    x: 0.5, y: 0.5, w: 9, h: 0.3,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.accent, bold: true
   });
 
   // Title
   slide.addText(slideConfig.title, {
-    x: 0.5, y: 0.4, w: "90%", h: 0.6,
-    fontSize: 28,
-    fontFace: "Microsoft YaHei",
-    color: theme.primary,
-    bold: true
+    x: 0.5, y: 0.9, w: 9, h: 0.6,
+    fontSize: 28, fontFace: "Microsoft YaHei",
+    color: theme.primary, bold: true
   });
 
-  // Left side: Table header
-  slide.addText("行为对比表", {
-    x: 0.5, y: 1.1, w: 4.5, h: 0.35,
-    fontSize: 14,
-    fontFace: "Microsoft YaHei",
-    color: theme.secondary
-  });
-
-  // Table header row
-  slide.addShape(pptx.ShapeType.rect, {
-    x: 0.5, y: 1.5, w: 4.5, h: 0.45,
-    fill: { color: theme.accent }
-  });
-
-  slide.addText("行为", {
-    x: 0.6, y: 1.55, w: 1.5, h: 0.35,
-    fontSize: 13,
-    fontFace: "Microsoft YaHei",
-    color: "FFFFFF",
-    bold: true
-  });
-
-  slide.addText("预警", {
-    x: 2.2, y: 1.55, w: 1.2, h: 0.35,
-    fontSize: 13,
-    fontFace: "Microsoft YaHei",
-    color: "FFFFFF",
-    bold: true,
-    align: "center"
-  });
-
-  slide.addText("表演", {
-    x: 3.5, y: 1.55, w: 1.2, h: 0.35,
-    fontSize: 13,
-    fontFace: "Microsoft YaHei",
-    color: "FFFFFF",
-    bold: true,
-    align: "center"
-  });
-
-  // Table rows
-  const tableData = [
-    { behavior: "沟通方式", warn: "先私下", perform: "直接群里" },
-    { behavior: "攻击对象", warn: "一视同仁", perform: "选择性攻击" },
-    { behavior: "数据使用", warn: "真实数据", perform: "情绪化数字" },
-    { behavior: "问题解决", warn: "给方案", perform: "只提问题" }
+  // Timeline - horizontal layout with more space
+  const events = [
+    { date: '03-11', event: '供应商结构性困境分析', result: '识别三层框架' },
+    { date: '03-22', event: '组织结构绑架洞察', result: '记录沟通僵局' },
+    { date: '03-29', event: '头脑风暴梳理', result: '再次讨论相同问题' }
   ];
 
-  tableData.forEach((row, index) => {
-    const yPos = 1.95 + index * 0.55;
-    const bgColor = index % 2 === 0 ? "FFFFFF" : theme.bg;
+  events.forEach((e, i) => {
+    const x = 0.5 + i * 3;
+    const isLast = i === events.length - 1;
 
-    // Row background
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.5, y: yPos, w: 4.5, h: 0.55,
-      fill: { color: bgColor },
-      line: { color: theme.light, width: 0.5 }
+    // Card
+    slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+      x: x, y: 1.7, w: 2.8, h: 1.8,
+      fill: { color: isLast ? "FFF5F2" : "FFFFFF" },
+      rectRadius: 0.08,
+      line: { color: isLast ? theme.accent : theme.light, width: isLast ? 2 : 1 }
     });
 
-    slide.addText(row.behavior, {
-      x: 0.6, y: yPos + 0.1, w: 1.5, h: 0.35,
-      fontSize: 12,
-      fontFace: "Microsoft YaHei",
-      color: theme.primary
+    // Date badge
+    slide.addShape(pres.shapes.OVAL, {
+      x: x + 0.2, y: 1.85, w: 0.7, h: 0.7,
+      fill: { color: isLast ? theme.accent : theme.light }
     });
 
-    slide.addText(row.warn, {
-      x: 2.2, y: yPos + 0.1, w: 1.2, h: 0.35,
-      fontSize: 12,
-      fontFace: "Microsoft YaHei",
-      color: theme.secondary,
-      align: "center"
+    slide.addText(e.date, {
+      x: x + 0.2, y: 1.85, w: 0.7, h: 0.7,
+      fontSize: 14, fontFace: "Microsoft YaHei",
+      color: "FFFFFF", bold: true,
+      align: "center", valign: "middle"
     });
 
-    slide.addText(row.perform, {
-      x: 3.5, y: yPos + 0.1, w: 1.2, h: 0.35,
-      fontSize: 12,
-      fontFace: "Microsoft YaHei",
-      color: theme.secondary,
-      align: "center"
+    // Event
+    slide.addText(e.event, {
+      x: x + 1.05, y: 1.9, w: 2.1, h: 0.7,
+      fontSize: 12, fontFace: "Microsoft YaHei",
+      color: theme.primary, bold: true
     });
+
+    // Result
+    slide.addText(e.result, {
+      x: x + 1.05, y: 2.65, w: 2.1, h: 0.7,
+      fontSize: 11, fontFace: "Microsoft YaHei",
+      color: theme.secondary
+    });
+
+    // Arrow between events
+    if (i < events.length - 1) {
+      slide.addText('→', {
+        x: x + 2.85, y: 2.4, w: 0.3, h: 0.4,
+        fontSize: 20, fontFace: "Arial",
+        color: theme.light
+      });
+    }
   });
 
-  // Right side: 后续观察指标
-  slide.addText("后续观察指标", {
-    x: 5.5, y: 1.1, w: 4, h: 0.35,
-    fontSize: 14,
-    fontFace: "Microsoft YaHei",
-    color: theme.secondary
-  });
-
-  const indicators = [
-    "是否愿意私下沟通",
-    "是否接受数据核实",
-    "是否提出建设性方案",
-    "是否攻击具体而非个人",
-    "情绪是否逐渐平稳"
-  ];
-
-  indicators.forEach((indicator, index) => {
-    const yPos = 1.6 + index * 0.7;
-
-    // Checkmark circle
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: 5.5, y: yPos, w: 0.32, h: 0.32,
-      fill: { color: theme.accent }
-    });
-
-    // Checkmark
-    slide.addText("✓", {
-      x: 5.5, y: yPos, w: 0.32, h: 0.32,
-      fontSize: 14,
-      fontFace: "Arial",
-      color: "FFFFFF",
-      bold: true,
-      align: "center",
-      valign: "middle"
-    });
-
-    slide.addText(indicator, {
-      x: 5.95, y: yPos, w: 3.5, h: 0.32,
-      fontSize: 14,
-      fontFace: "Microsoft YaHei",
-      color: theme.primary,
-      valign: "middle"
-    });
-  });
-
-  // Decorative accent shape (bottom right)
-  slide.addShape(pptx.ShapeType.roundRect, {
-    x: 8.8, y: 4.8, w: 0.7, h: 0.5,
-    fill: { color: theme.accent, transparency: 30 },
-    rectRadius: 0.1
-  });
-
-  // Decorative line (left side)
-  slide.addShape(pptx.ShapeType.line, {
-    x: 0.5, y: 5.0, w: 1.5, h: 0,
+  // Conclusion box at bottom
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: 0.5, y: 3.8, w: 9, h: 1.2,
+    fill: { color: "FFFFFF" },
+    rectRadius: 0.08,
     line: { color: theme.accent, width: 2 }
   });
 
-  // Page number badge
-  slide.addShape(pptx.ShapeType.ellipse, {
-    x: 9.3, y: 5.1, w: 0.35, h: 0.35,
-    fill: { color: theme.accent }
+  slide.addText('核心结论', {
+    x: 0.8, y: 4, w: 8.4, h: 0.25,
+    fontSize: 9, fontFace: "Microsoft YaHei",
+    color: theme.accent, bold: true
   });
 
-  slide.addText("08", {
-    x: 9.3, y: 5.1, w: 0.35, h: 0.35,
-    fontSize: 12,
-    fontFace: "Arial",
-    color: "FFFFFF",
-    bold: true,
-    align: "center",
-    valign: "middle"
+  slide.addText(slideConfig.conclusion, {
+    x: 0.8, y: 4.25, w: 8.4, h: 0.6,
+    fontSize: 12, fontFace: "Microsoft YaHei",
+    color: theme.primary, bold: true
+  });
+
+  // Page number badge
+  slide.addShape(pres.shapes.OVAL, {
+    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
+    fill: { color: theme.accent }
+  });
+  slide.addText("8", {
+    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
+    fontSize: 12, fontFace: "Arial",
+    color: "FFFFFF", bold: true,
+    align: "center", valign: "middle"
+  });
+
+  // Footer
+  slide.addText('权责不对等分析', {
+    x: 0.5, y: 5.1, w: 4, h: 0.3,
+    fontSize: 10, fontFace: "Microsoft YaHei",
+    color: theme.light
   });
 
   return slide;
-}
-
-// Standalone preview
-if (require.main === module) {
-  const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_16x9";
-  pptx.defineSlideSize({ width: 10, height: 5.625 });
-
-  createSlide(pptx);
-
-  pptx.writeFile({ fileName: "slide-08-preview.pptx" })
-    .then(() => console.log("Slide 08 preview created: slide-08-preview.pptx"))
-    .catch(err => console.error("Error:", err));
 }
 
 module.exports = { createSlide, slideConfig };
