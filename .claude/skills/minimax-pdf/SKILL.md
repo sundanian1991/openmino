@@ -1,43 +1,14 @@
 ---
 name: minimax-pdf
-description: >
-  Use this skill when visual quality and design identity matter for a PDF.
-  CREATE (generate from scratch): "make a PDF", "generate a report", "write a proposal",
-  "create a resume", "beautiful PDF", "professional document", "cover page",
-  "polished PDF", "client-ready document".
-  FILL (complete form fields): "fill in the form", "fill out this PDF",
-  "complete the form fields", "write values into PDF", "what fields does this PDF have".
-  REFORMAT (apply design to an existing doc): "reformat this document", "apply our style",
-  "convert this Markdown/text to PDF", "make this doc look good", "re-style this PDF".
-  This skill uses a token-based design system: color, typography, and spacing are derived
-  from the document type and flow through every page. The output is print-ready.
-  Prefer this skill when appearance matters, not just when any PDF output is needed.
-license: MIT
-metadata:
-  version: "1.0"
-  category: document-generation
+description: "Use this skill when visual quality and design identity matter for a PDF. CREATE (generate from scratch): \"make a PDF\", \"generate a report\", \"write a proposal\", \"create a resume\", \"beautiful PDF\", \"professional document\", \"cover page\", \"polished PDF\", \"client-ready document\". FILL (complete form fields): \"fill in the form\", \"fill out this PDF\", \"complete the form fields\", \"write values into PDF\", \"what fields does this PDF have\". REFORMAT (apply design to an existing doc): \"reformat this document\", \"apply our style\", \"convert this Markdown/text to PDF\", \"make this doc look good\", \"re-style this PDF\". This skill uses a token-based design system: color, typography, and spacing are derived from the document type and flow through every page. The output is print-ready. Prefer this skill when appearance matters, not just when any PDF output is needed.
+"
 ---
 
 # minimax-pdf
 
 Three tasks. One skill.
 
-## 年老师设计规范（必须先读取）
 
-**执行 PDF 任务前，必须先读取**：`myagents_files/DESIGN_SYSTEM.md`
-
-**设计模式选择**：
-
-| 文档类型 | 设计模式 | 核心色 |
-|---------|---------|--------|
-| 战略报告 / 分析文档 | 咨询模式 | #333333 + #B85450 |
-| 品牌宣传 / 面向用户 | 品牌模式 | 陶土色 #E2725B |
-| 数据报表 / 仪表盘导出 | 数据模式 | 黑白灰 + #E2725B |
-| 演示文稿 / 汇报材料 | 演示模式 | 驼色 #C4B5A3 |
-
-**扩展配色**：18 种方案可选（详见 DESIGN_SYSTEM.md）
-**风格配方**：Sharp/Soft/Rounded/Pill 四种圆角风格
-**装饰元素**：手形符号、自然意象可选
 
 ---
 

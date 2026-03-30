@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金条首贷供应商经营状况调研报告</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F9F9F9;--text:#333;--text-sec:#666;--text-ter:#999;
+  --accent:#B85450;--accent-light:rgba(184,84,80,.08);
+  --divider:#D0D0D0;--muted:#E0E0E0;--white:#fff;
+  --t1:1.4rem;--t2:.9rem;--t3:.82rem;--t4:.75rem;--t6:.62rem;
+  --pad:2.5rem
+}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;color:var(--text);background:var(--bg)}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth}
+
+/* 核心改动：frame 容器 */
+.slide{
+  width:100vw;height:100vh;height:100dvh;
+  overflow:hidden;scroll-snap-align:start;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;background:var(--bg)
+}
+.frame{
+  width:min(92vw,1140px);
+  height:min(88vh,720px);
+  display:flex;flex-direction:column;
+  padding:var(--pad);
+  position:relative
+}
+
+.progress{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:100;transition:width .3s ease}
+.breadcrumb{font-size:var(--t6);color:var(--text-ter);letter-spacing:.04em;margin-bottom:.4rem;text-transform:uppercase}
+.t1{font-size:var(--t1);font-weight:700;line-height:1.4;color:var(--text);margin-bottom:.5rem}
+.t1 em{font-style:normal;color:var(--accent)}
+.divider{width:100%;height:1px;background:var(--divider);margin:.5rem 0}
+.footer{display:flex;justify-content:space-between;align-items:center;font-size:var(--t6);color:var(--text-ter);margin-top:auto;padding-top:.4rem}
+.page-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--muted);font-size:.58rem;color:var(--text-sec)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1}
+.kpi-card{background:var(--white);border:1px solid var(--muted);border-radius:2px;padding:.75rem;display:flex;flex-direction:column;justify-content:center}
+.kpi-card .label{font-size:var(--t6);color:var(--text-sec);margin-bottom:.15rem}
+.kpi-card .value{font-size:1.3rem;font-weight:700;color:var(--text)}
+.kpi-card .value.alert{color:var(--accent)}
+.kpi-card .sub{font-size:var(--t6);color:var(--text-ter);margin-top:.15rem}
+.kpi-card.highlight{border-color:var(--accent);background:var(--accent-light)}
+
+table{width:100%;border-collapse:collapse;font-size:var(--t4)}
+th{text-align:left;font-weight:600;font-size:var(--t6);text-transform:uppercase;letter-spacing:.04em;color:var(--text-sec);padding:5px 6px;border-bottom:2px solid var(--text)}
+td{padding:5px 6px;border-bottom:1px solid var(--muted);color:var(--text)}
+tr:hover td{background:rgba(0,0,0,.015)}
+
+.badge{display:inline-block;padding:1px 5px;border-radius:2px;font-size:var(--t6);font-weight:600}
+.badge-red{background:rgba(184,84,80,.1);color:#B85450}
+.badge-orange{background:rgba(230,150,50,.1);color:#b87830}
+.badge-green{background:rgba(60,140,60,.1);color:#3a8a3a}
+.badge-gray{background:rgba(100,100,100,.1);color:#666}
+
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.bar-label{font-size:var(--t4);min-width:56px;text-align:right;color:var(--text-sec)}
+.bar-track{flex:1;height:16px;background:var(--muted);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.bar-pct{font-size:var(--t6);color:var(--text);margin-left:4px;min-width:28px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;flex:1}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;flex:1}
+
+.card{background:var(--white);border:1px solid var(--muted);border-radius:2px;padding:.6rem .75rem}
+.card h3{font-size:var(--t2);font-weight:700;margin-bottom:.3rem;color:var(--text)}
+.card p,.card li{font-size:var(--t4);color:var(--text-sec);line-height:1.45}
+.card .tag{font-size:var(--t6);color:var(--accent);font-weight:600;margin-top:.25rem}
+.card.border-accent{border-color:var(--accent)}
+
+.action-row{display:flex;align-items:center;gap:6px;padding:6px 10px;border-bottom:1px solid var(--muted)}
+.action-row:last-child{border-bottom:none}
+.priority{font-size:var(--t6);font-weight:700;padding:2px 7px;border-radius:2px;min-width:26px;text-align:center}
+.p0{background:rgba(184,84,80,.12);color:#B85450}
+.p1{background:rgba(230,150,50,.12);color:#b87830}
+.p2{background:rgba(100,100,100,.1);color:#666}
+
+.cover-title{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700;line-height:1.3;color:var(--text);margin-bottom:.4rem}
+.cover-sub{font-size:var(--t3);color:var(--text-sec);line-height:1.45}
+.cover-meta{display:flex;gap:1.5rem;font-size:var(--t4);color:var(--text-ter);margin-top:auto}
+.cover-meta span{display:flex;align-items:center;gap:4px}
+.cover-accent{position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent)}
+
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.matrix-cell{padding:.45rem .6rem;border-radius:2px;font-size:var(--t4);display:flex;flex-direction:column;gap:1px}
+.matrix-cell .mc-label{font-weight:700;font-size:var(--t3)}
+.matrix-cell .mc-val{color:var(--text-sec)}
+.mc-red{background:rgba(184,84,80,.08);border-left:3px solid var(--accent)}
+.mc-orange{background:rgba(230,150,50,.06);border-left:3px solid #d4963a}
+.mc-green{background:rgba(60,140,60,.06);border-left:3px solid #5a9e5a}
+.mc-gray{background:rgba(100,100,100,.05);border-left:3px solid #999}
+
+.quote{font-size:var(--t3);color:var(--text-sec);line-height:1.5;padding:6px 10px;border-left:3px solid var(--divider);margin:6px 0}
+
+/* 小屏适配 */
+@media(max-width:1100px){.frame{width:95vw;height:90vh;padding:1.5rem}}
+@media(max-width:768px){.frame{width:98vw;height:95vh;padding:1rem}.two-col{grid-template-columns:1fr;gap:1rem}}
+@media(max-height:650px){.frame{height:94vh;padding:1rem}:root{--t1:1.2rem}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<!-- Page 1: Cover -->
+<div class="slide">
+<div class="frame">
+<div class="cover-accent"></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:72%">
+<div style="font-size:var(--t6);color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem">Strategic Research Report</div>
+<h1 class="cover-title">金条首贷供应商<br>经营状况调研报告</h1>
+<p class="cover-sub">9 家供应商深度诊断 — 结算水平、成本结构、盈利能力、风险分层全景扫描</p>
+</div>
+<div class="cover-meta">
+<span>数据科技业务部</span>
+<span>数据日期：2026-03-05</span>
+<span>有效样本：9 份</span>
+</div>
+</div>
+</div>
+
+<!-- Page 2: Core Conclusion -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">核心结论 &gt; So What</div>
+<h1 class="t1">91% 的供应商结算下降不到 10% 就会<em>亏损</em>，小型供应商已处于生存边缘</h1>
+<div class="divider"></div>
+<div class="kpi-grid">
+<div class="kpi-card highlight">
+<div class="label">风险敏感度</div>
+<div class="value alert">91%</div>
+<div class="sub">下降 &lt;10% 就亏损</div>
+</div>
+<div class="kpi-card">
+<div class="label">规模效应差距</div>
+<div class="value">24% <span style="font-size:.7em;color:var(--text-sec)">vs -183%</span></div>
+<div class="sub">大型 vs 小型毛利率</div>
+</div>
+<div class="kpi-card">
+<div class="label">最大成本项</div>
+<div class="value">74%</div>
+<div class="sub">人力成本占比</div>
+</div>
+<div class="kpi-card highlight">
+<div class="label">供应商结构</div>
+<div class="value alert">22%</div>
+<div class="sub">优质占比 · 问题 45%</div>
+</div>
+</div>
+<div class="footer"><span>Source: 9 家有效样本调研数据</span><div class="page-badge">2</div></div>
+</div>
+</div>
+
+<!-- Page 3: Sample Overview -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">Part 1 &gt; 数据概览</div>
+<h1 class="t1">9 家有效样本覆盖大中小型供应商，78% 合作超 3 年</h1>
+<div class="divider"></div>
+<div class="two-col">
+<div>
+<table>
+<tr><th>维度</th><th>分类</th><th>数量</th><th>占比</th></tr>
+<tr><td rowspan="3"><strong>规模</strong></td><td>中型</td><td>4 家</td><td>44%</td></tr>
+<tr><td>小型</td><td>3 家</td><td>33%</td></tr>
+<tr><td>大型</td><td>2 家</td><td>22%</td></tr>
+<tr><td rowspan="2"><strong>合作时长</strong></td><td>3 年以上</td><td>7 家</td><td>78%</td></tr>
+<tr><td>1-2 年</td><td>1 家</td><td>11%</td></tr>
+<tr><td rowspan="3"><strong>结算账期</strong></td><td>T+60</td><td>5 家</td><td>56%</td></tr>
+<tr><td>T+45</td><td>3 家</td><td>33%</td></tr>
+<tr><td>T+30</td><td>1 家</td><td>11%</td></tr>
+</table>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div class="card">
+<h3>核心特征</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:var(--t4)">
+<div>平均坐席薪资<br><strong style="font-size:1.05em">5,493 元/月</strong></div>
+<div>友商溢价<br><strong style="font-size:1.05em">+15~25%</strong></div>
+<div>平均月结算<br><strong style="font-size:1.05em">54 万元</strong></div>
+<div>平均毛利<br><strong style="font-size:1.05em;color:var(--accent)">-40.5%</strong></div>
+</div>
+</div>
+<div class="card border-accent">
+<h3>数据质量</h3>
+<p>平均答题时长 25 分 38 秒，质量评估 <span class="badge badge-green">优秀</span></p>
+<p style="margin-top:3px">剔除 2 份异常数据（城市模糊 + 人力占比异常）</p>
+</div>
+</div>
+</div>
+<div class="footer"><span>Source: Step 1 数据清洗 · Step 2 描述性统计</span><div class="page-badge">3</div></div>
+</div>
+</div>
+
+<!-- Page 4: Risk Distribution -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">Part 2 &gt; 核心发现 · 风险分布</div>
+<h1 class="t1">67% 的供应商已在<em>盈亏平衡点</em>，没有低风险供应商</h1>
+<div class="divider"></div>
+<div class="two-col">
+<div style="display:flex;flex-direction:column;justify-content:center">
+<div class="bar-row"><div class="bar-label">极度敏感</div><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--accent)"></div></div><div class="bar-pct"><strong>67%</strong></div></div>
+<div style="font-size:var(--t6);color:var(--text-ter);margin:-3px 0 6px 62px">6 家 · 下降 0% 就亏损</div>
+<div class="bar-row"><div class="bar-label">高风险</div><div class="bar-track"><div class="bar-fill" style="width:22%;background:#d4963a"></div></div><div class="bar-pct">22%</div></div>
+<div style="font-size:var(--t6);color:var(--text-ter);margin:-3px 0 6px 62px">2 家 · 下降 5-10% 亏损</div>
+<div class="bar-row"><div class="bar-label">中风险</div><div class="bar-track"><div class="bar-fill" style="width:11%;background:#999"></div></div><div class="bar-pct">11%</div></div>
+<div style="font-size:var(--t6);color:var(--text-ter);margin:-3px 0 6px 62px">1 家 · 下降 10-20% 亏损</div>
+<div class="bar-row"><div class="bar-label">低风险</div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#999"></div></div><div class="bar-pct" style="color:var(--accent);font-weight:700">0%</div></div>
+</div>
+<div>
+<table>
+<tr><th>规模</th><th>极度敏感</th><th>高风险</th><th>中风险</th></tr>
+<tr><td><strong>小型</strong></td><td>2 家</td><td>1 家</td><td>0 家</td></tr>
+<tr><td><strong>中型</strong></td><td>3 家</td><td>0 家</td><td>1 家</td></tr>
+<tr><td><strong>大型</strong></td><td>1 家</td><td>1 家</td><td>0 家</td></tr>
+</table>
+<div class="card border-accent" style="margin-top:8px">
+<h3>关键发现</h3>
+<p>小型供应商 <strong>100%</strong> 处于高风险以上。即使大型供应商也有 50% 极度敏感。</p>
+<p style="margin-top:3px;color:var(--accent);font-weight:600">没有供应商能承受 20% 以上的结算下降。</p>
+</div>
+</div>
+</div>
+<div class="footer"><span>Source: Step 1 风险等级定义 · 基于供应商自报盈亏平衡点</span><div class="page-badge">4</div></div>
+</div>
+</div>
+
+<!-- Page 5: Cost Structure -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">Part 2 &gt; 核心发现 · 成本结构</div>
+<h1 class="t1">人力成本占 74% 是最大<em>刚性支出</em>，与盈利能力负相关（r=-0.38）</h1>
+<div class="divider"></div>
+<div class="two-col">
+<div>
+<div style="font-size:var(--t2);font-weight:700;margin-bottom:6px">总体成本结构</div>
+<div class="bar-row"><div class="bar-label" style="min-width:44px">人力</div><div class="bar-track"><div class="bar-fill" style="width:74.4%;background:#888"></div></div><div class="bar-pct"><strong>74.4%</strong></div></div>
+<div class="bar-row"><div class="bar-label" style="min-width:44px">运营</div><div class="bar-track"><div class="bar-fill" style="width:7.6%;background:#aaa"></div></div><div class="bar-pct">7.6%</div></div>
+<div class="bar-row"><div class="bar-label" style="min-width:44px">场地</div><div class="bar-track"><div class="bar-fill" style="width:7.5%;background:#bbb"></div></div><div class="bar-pct">7.5%</div></div>
+<div class="bar-row"><div class="bar-label" style="min-width:44px">设备</div><div class="bar-track"><div class="bar-fill" style="width:4.6%;background:#ccc"></div></div><div class="bar-pct">4.6%</div></div>
+<div style="font-size:var(--t6);color:var(--text-ter);margin-top:4px">合计 94.1% · 剩余 ~6% 为利润/其他</div>
+</div>
+<div>
+<div style="font-size:var(--t2);font-weight:700;margin-bottom:6px">按规模分组对比</div>
+<table>
+<tr><th>规模</th><th>人力</th><th>场地</th><th>运营</th><th>设备</th></tr>
+<tr><td><strong>小型</strong></td><td>74.3%</td><td style="color:var(--accent)">9.7%</td><td>10.0%</td><td style="color:var(--accent)">7.7%</td></tr>
+<tr><td><strong>中型</strong></td><td>76.7%</td><td>7.4%</td><td>5.4%</td><td>4.1%</td></tr>
+<tr><td><strong>大型</strong></td><td style="color:#3a8a3a">70.0%</td><td>4.5%</td><td>8.5%</td><td>1.0%</td></tr>
+</table>
+<div class="card" style="margin-top:8px">
+<h3>核心洞察</h3>
+<p>大型供应商人力占比最低（70%），<strong>规模效应明显</strong></p>
+<p style="margin-top:3px">小型供应商固定成本（场地+设备）占比 <strong style="color:var(--accent)">17.4%</strong>，是大型（5.5%）的 3 倍</p>
+<p style="margin-top:3px">场地成本与盈利负相关更强（r=-0.51），是隐形杀手</p>
+</div>
+</div>
+</div>
+<div class="footer"><span>Source: Step 2 描述性统计 · Step 3 深度分析</span><div class="page-badge">5</div></div>
+</div>
+</div>
+
+<!-- Page 6: Profitability -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">Part 2 &gt; 核心发现 · 盈利能力</div>
+<h1 class="t1">小型供应商人均每月<em>亏损 0.17 万</em>，长期难以存活</h1>
+<div class="divider"></div>
+<div class="two-col">
+<div>
+<div style="font-size:var(--t2);font-weight:700;margin-bottom:6px">规模效应（人均/月）</div>
+<table>
+<tr><th>规模</th><th>人均结算</th><th>人均成本</th><th>人均毛利</th><th>判定</th></tr>
+<tr><td><strong>大型</strong></td><td>0.97 万</td><td>0.72 万</td><td style="color:#3a8a3a">+0.25 万</td><td><span class="badge badge-green">盈利</span></td></tr>
+<tr><td><strong>中型</strong></td><td>0.88 万</td><td>0.79 万</td><td style="color:#3a8a3a">+0.09 万</td><td><span class="badge badge-green">微利</span></td></tr>
+<tr><td><strong>小型</strong></td><td>0.49 万</td><td>0.66 万</td><td style="color:var(--accent)">-0.17 万</td><td><span class="badge badge-red">亏损</span></td></tr>
+</table>
+</div>
+<div>
+<div style="font-size:var(--t2);font-weight:700;margin-bottom:6px">盈利能力分层</div>
+<div class="matrix">
+<div class="matrix-cell mc-green"><div class="mc-label">优质（3 家）</div><div class="mc-val">总毛利率 &gt;20%</div><div class="mc-val">优先分配增量业务</div></div>
+<div class="matrix-cell mc-green"><div class="mc-label">健康（2 家）</div><div class="mc-val">总毛利率 10-20%</div><div class="mc-val">关注成本优化</div></div>
+<div class="matrix-cell mc-orange"><div class="mc-label">边缘（1 家）</div><div class="mc-val">总毛利率 0-10%</div><div class="mc-val">风险监控</div></div>
+<div class="matrix-cell mc-red"><div class="mc-label">问题（2 家）</div><div class="mc-val">总毛利率 &lt;0%</div><div class="mc-val">干预或淘汰</div></div>
+</div>
+<div class="card border-accent" style="margin-top:6px">
+<p>大型人均结算是小型的 <strong>2 倍</strong>（0.97 vs 0.49 万），规模效应是盈利的关键</p>
+</div>
+</div>
+</div>
+<div class="footer"><span>Source: Step 3 深度分析 · 规模效应与盈利分层</span><div class="page-badge">6</div></div>
+</div>
+</div>
+
+<!-- Page 7: Supplier Tiering -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">Part 3 &gt; 供应商分层</div>
+<h1 class="t1">优质供应商仅占 <em>22%</em>，问题供应商占 <em>45%</em>，结构急需优化</h1>
+<div class="divider"></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex:1">
+<div class="card border-accent" style="border-left:4px solid #3a8a3a">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><h3 style="color:#3a8a3a">A 类 · 优质</h3><span class="badge badge-green">2 家 · 22%</span></div>
+<p>月结算 230 万（占总额 43%）</p>
+<p style="margin-top:2px">总毛利率 28.1%</p>
+<p style="margin-top:2px">昆明、合肥/宿州</p>
+<div class="tag" style="color:#3a8a3a">维持现状，优先分配增量</div>
+</div>
+<div class="card" style="border-left:4px solid #5a9e5a">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><h3 style="color:#5a9e5a">B 类 · 健康</h3><span class="badge badge-green">1 家 · 11%</span></div>
+<p>月结算 120 万（占总额 22%）</p>
+<p style="margin-top:2px">总毛利率 16.7%</p>
+<p style="margin-top:2px">合肥</p>
+<div class="tag" style="color:#5a9e5a">关注成本优化</div>
+</div>
+<div class="card" style="border-left:4px solid #d4963a">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><h3 style="color:#b87830">C 类 · 边缘</h3><span class="badge badge-orange">2 家 · 22%</span></div>
+<p>月结算 94 万（占总额 18%）</p>
+<p style="margin-top:2px">总毛利率 9.8%</p>
+<p style="margin-top:2px">石家庄、襄阳</p>
+<div class="tag" style="color:#b87830">风险监控，建立预警</div>
+</div>
+<div class="card" style="border-left:4px solid var(--accent)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><h3 style="color:var(--accent)">D 类 · 问题</h3><span class="badge badge-red">4 家 · 45%</span></div>
+<p>月结算 82 万（占总额 17%）</p>
+<p style="margin-top:2px">总毛利率 <span style="color:var(--accent)">-187.2%</span></p>
+<p style="margin-top:2px">鸡西、苏州、石家庄×2</p>
+<div class="tag">启动淘汰或整合</div>
+</div>
+</div>
+<div style="display:flex;gap:1.5rem;align-items:center;font-size:var(--t4);color:var(--text-sec)">
+<span>现状：优质 22% + 健康 11% = <strong style="color:var(--accent)">33%</strong> 健康</span>
+<span>→</span>
+<span>目标：优质 40% + 健康 30% = <strong style="color:#3a8a3a">70%</strong> 健康</span>
+</div>
+<div class="footer"><span>Source: Step 4 供应商聚类分层</span><div class="page-badge">7</div></div>
+</div>
+</div>
+
+<!-- Page 8: Competitor Comparison -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">Part 2 &gt; 核心发现 · 友商对比</div>
+<h1 class="t1">友商单价高 15-25% 但薪资高 <em>27-64%</em>，京东性价比优势明显</h1>
+<div class="divider"></div>
+<div class="two-col">
+<div>
+<table>
+<tr><th>对比维度</th><th>京东</th><th>友商</th><th>差距</th></tr>
+<tr><td><strong>结算单价</strong></td><td>基准</td><td>+15~25%</td><td><span class="badge badge-red">友商更高</span></td></tr>
+<tr><td><strong>坐席薪资</strong></td><td>5,493 元</td><td>7-9K 元</td><td><span class="badge badge-red">+27~64%</span></td></tr>
+<tr><td><strong>稳定留存期望</strong></td><td>7-9K 元</td><td>持平</td><td><span class="badge badge-green">一致</span></td></tr>
+</table>
+<div class="card" style="margin-top:8px">
+<h3>性价比分析</h3>
+<p>友商单价高 15-25%，但薪资高 27-64%</p>
+<p style="margin-top:3px"><strong>单价涨幅 &lt; 薪资涨幅</strong>，京东性价比更优</p>
+<p style="margin-top:3px;color:var(--accent)">但供应商更关注"绝对薪资"，坐席流失是直接风险</p>
+</div>
+</div>
+<div>
+<div style="font-size:var(--t2);font-weight:700;margin-bottom:6px">友商溢价 vs 盈利能力</div>
+<table>
+<tr><th>供应商</th><th>溢价</th><th>毛利率</th><th>流失风险</th></tr>
+<tr><td>鸡西市</td><td>15%</td><td style="color:#3a8a3a">40.0%</td><td><span class="badge badge-green">低</span></td></tr>
+<tr><td>合肥/宿州</td><td>15%</td><td style="color:#3a8a3a">31.2%</td><td><span class="badge badge-green">低</span></td></tr>
+<tr><td>昆明</td><td>15%</td><td style="color:#3a8a3a">25.0%</td><td><span class="badge badge-orange">中</span></td></tr>
+<tr><td>合肥</td><td>15%</td><td>16.7%</td><td><span class="badge badge-orange">中</span></td></tr>
+<tr><td>石家庄</td><td>15%</td><td style="color:var(--accent)">-4.1%</td><td><span class="badge badge-red">高</span></td></tr>
+</table>
+</div>
+</div>
+<div class="footer"><span>Source: Step 3 友商对比深度分析</span><div class="page-badge">8</div></div>
+</div>
+</div>
+
+<!-- Page 9: Supplier Demands -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">Part 4 &gt; 管理建议</div>
+<h1 class="t1">供应商最在意的是"<em>结算稳定</em>"，不是"更高价格"</h1>
+<div class="divider"></div>
+<div class="two-col">
+<div>
+<div style="font-size:var(--t2);font-weight:700;margin-bottom:6px">痛点优先级矩阵</div>
+<table>
+<tr><th>痛点</th><th>影响面</th><th>痛程度</th><th>优先级</th></tr>
+<tr><td><strong>结算调整频繁</strong></td><td>7/9</td><td>高</td><td><span class="priority p0">P0</span></td></tr>
+<tr><td><strong>结算价格低</strong></td><td>5/9</td><td>高</td><td><span class="priority p0">P0</span></td></tr>
+<tr><td>批次质量不稳定</td><td>3/9</td><td>中</td><td><span class="priority p1">P1</span></td></tr>
+<tr><td>扣罚金额过高</td><td>3/9</td><td>中</td><td><span class="priority p1">P1</span></td></tr>
+<tr><td>人员流失</td><td>5/9</td><td>高</td><td><span class="priority p1">P1</span></td></tr>
+<tr><td>通讯费成本</td><td>2/9</td><td>中</td><td><span class="priority p1">P1</span></td></tr>
+</table>
+</div>
+<div>
+<div style="font-size:var(--t2);font-weight:700;margin-bottom:6px">可执行建议（按优先级）</div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div class="action-row"><span class="priority p0">P0</span><div><strong style="font-size:var(--t3)">结算改为季度调整</strong><div style="font-size:var(--t6);color:var(--text-ter)">成本低 · 大幅提升供应商满意度</div></div></div>
+<div class="action-row"><span class="priority p1">P1</span><div><strong style="font-size:var(--t3)">赛马规则优化（增员保护期）</strong><div style="font-size:var(--t6);color:var(--text-ter)">成本低 · 降低供应商风险</div></div></div>
+<div class="action-row"><span class="priority p1">P1</span><div><strong style="font-size:var(--t3)">扣罚规则优化</strong><div style="font-size:var(--t6);color:var(--text-ter)">成本低 · 提升供应商信心</div></div></div>
+<div class="action-row"><span class="priority p2">P2</span><div><strong style="font-size:var(--t3)">批次整合简化</strong><div style="font-size:var(--t6);color:var(--text-ter)">成本低 · 降低复杂度</div></div></div>
+<div class="action-row"><span class="priority p2">P2</span><div><strong style="font-size:var(--t3)">通讯费甲方支付</strong><div style="font-size:var(--t6);color:var(--text-ter)">成本中 · 降低供应商成本 3-5%</div></div></div>
+</div>
+<div class="quote">"结算变动比较频繁，可以考虑季度变化；希望当月宣导，次月生效"</div>
+</div>
+</div>
+<div class="footer"><span>Source: Step 5 开放问题提炼 · 关键词"结算"出现 14 次</span><div class="page-badge">9</div></div>
+</div>
+</div>
+
+<!-- Page 10: Next Steps -->
+<div class="slide">
+<div class="frame">
+<div class="breadcrumb">总结 &gt; 下一步行动</div>
+<h1 class="t1">四大行动确保供应商结构优化</h1>
+<div class="divider"></div>
+<div class="two-col">
+<div style="display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--white);border:1px solid var(--muted);border-radius:2px">
+<div style="min-width:40px;font-size:var(--t6);font-weight:700;color:var(--accent)">2 周</div>
+<div><div style="font-size:var(--t3);font-weight:600">结算政策评估</div><div style="font-size:var(--t4);color:var(--text-sec)">季度调整可行性分析</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--white);border:1px solid var(--muted);border-radius:2px">
+<div style="min-width:40px;font-size:var(--t6);font-weight:700;color:var(--accent)">2 周</div>
+<div><div style="font-size:var(--t3);font-weight:600">扣罚规则优化方案</div><div style="font-size:var(--t4);color:var(--text-sec)">复贷扣罚增长 40%+ 需优化</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--white);border:1px solid var(--muted);border-radius:2px">
+<div style="min-width:40px;font-size:var(--t6);font-weight:700;color:#b87830">1 月</div>
+<div><div style="font-size:var(--t3);font-weight:600">供应商分层管理机制落地</div><div style="font-size:var(--t4);color:var(--text-sec)">ABCD 四级分类管理</div></div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--white);border:1px solid var(--muted);border-radius:2px">
+<div style="min-width:40px;font-size:var(--t6);font-weight:700;color:#b87830">1 月</div>
+<div><div style="font-size:var(--t3);font-weight:600">问题供应商淘汰/整合方案</div><div style="font-size:var(--t4);color:var(--text-sec)">D 类 4 家需清理</div></div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div class="card border-accent">
+<h3>核心结论回顾</h3>
+<div style="font-size:var(--t3);line-height:1.6">
+<p><strong style="color:var(--accent)">1.</strong> 结算是生命线：67% 已在盈亏平衡点，91% 下降 &lt;10% 就亏损</p>
+<p><strong style="color:var(--accent)">2.</strong> 规模效应明显：大型盈利，小型亏损，小供应商难以存活</p>
+<p><strong style="color:var(--accent)">3.</strong> 供应商结构需优化：优质仅 22%，问题占 45%</p>
+</div>
+</div>
+<div class="card" style="text-align:center;padding:.75rem">
+<div style="font-size:var(--t6);color:var(--text-ter);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px">One-Line Summary</div>
+<div style="font-size:var(--t3);font-weight:600;color:var(--text)">91% 的供应商结算下降不到 10% 就会亏损<br>小型供应商已处于生存边缘</div>
+</div>
+<div style="text-align:center;font-size:var(--t4);color:var(--text-sec);margin-top:auto;padding-top:6px;border-top:1px solid var(--divider)">Q & A</div>
+</div>
+</div>
+<div class="footer"><span>Source: Step 6 VP 汇报框架 · CONFIDENTIAL</span><div class="page-badge">10</div></div>
+</div>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide'),total=slides.length,bar=document.getElementById('progress');
+function updateProgress(){const t=window.scrollY,s=Math.round(t/(document.body.scrollHeight-window.innerHeight)*100)||0;bar.style.width=s+'%'}
+window.addEventListener('scroll',updateProgress);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown'){e.preventDefault();const s=Array.from(slides).findIndex(s=>s.getBoundingClientRect().top>10);if(s>=0&&s<total)slides[s].scrollIntoView({behavior:'smooth'})}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();const r=Array.from(slides).reverse().findIndex(s=>s.getBoundingClientRect().top<-10);if(r>=0)slides[total-1-r].scrollIntoView({behavior:'smooth'})}
+});
+let touchStartY=0;
+document.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{
+  const diff=touchStartY-e.changedTouches[0].clientY;
+  if(Math.abs(diff)>50){
+    const s=Array.from(slides).findIndex(s=>s.getBoundingClientRect().top>10);
+    if(diff>0&&s>=0&&s<total)slides[s].scrollIntoView({behavior:'smooth'});
+    if(diff<0){const p=Array.from(slides).findIndex(s=>s.getBoundingClientRect().top>=-5);if(p>0)slides[p-1].scrollIntoView({behavior:'smooth'})}
+  }
+},{passive:true});
+updateProgress();
+</script>
+</body>
+</html>

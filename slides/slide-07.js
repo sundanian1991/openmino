@@ -1,194 +1,114 @@
-const PptxGenJS = require("pptxgenjs");
-
-const theme = {
-  primary: "22223b",
-  secondary: "4a4e69",
-  accent: "c9ada7",
-  light: "9a8c98",
-  bg: "f2e9e4"
-};
+// slide-07.js - 行为模式（根因部分）
+const pptxgen = require("pptxgenjs");
 
 const slideConfig = {
-  type: "content",
-  number: 7,
-  title: "场景三&四：攻击方案与私下沟通"
+  type: 'content',
+  index: 7,
+  section: '根因 · 为什么',
+  title: '刘伟佳行为模式',
+  insight: '不是坏人，是在现有 KPI 下的理性自保逻辑'
 };
 
-function createSlide(pptx) {
-  const slide = pptx.addSlide();
-
-  // Background
+function createSlide(pres, theme) {
+  const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  // Decorative accent bar (top)
-  slide.addShape(pptx.ShapeType.rect, {
-    x: 0, y: 0, w: "100%", h: 0.08,
+  // 顶部装饰线
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 10, h: 0.1,
     fill: { color: theme.accent }
+  });
+
+  // Section label
+  slide.addText(slideConfig.section, {
+    x: 0.5, y: 0.5, w: 9, h: 0.3,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.secondary, bold: true
   });
 
   // Title
   slide.addText(slideConfig.title, {
-    x: 0.5, y: 0.4, w: "90%", h: 0.6,
-    fontSize: 28,
-    fontFace: "Microsoft YaHei",
-    color: theme.primary,
-    bold: true
+    x: 0.5, y: 0.9, w: 9, h: 0.6,
+    fontSize: 28, fontFace: "Microsoft YaHei",
+    color: theme.primary, bold: true
   });
 
-  // Left side: 场景三 - 攻击方案
-  slide.addText("场景三：应对对方攻击方案", {
-    x: 0.5, y: 1.1, w: 4.2, h: 0.4,
-    fontSize: 18,
-    fontFace: "Microsoft YaHei",
-    color: theme.accent,
-    bold: true
-  });
-
-  // 方案1 card
-  slide.addShape(pptx.ShapeType.roundRect, {
-    x: 0.5, y: 1.6, w: 4.2, h: 1.3,
-    fill: { color: "FFFFFF" },
-    line: { color: theme.light, width: 1 },
-    rectRadius: 0.08
-  });
-
-  slide.addText("策略一：不接靶子", {
-    x: 0.7, y: 1.7, w: 3.8, h: 0.35,
-    fontSize: 15,
-    fontFace: "Microsoft YaHei",
-    color: theme.primary,
-    bold: true
-  });
-
-  slide.addText('"这是策略组定的多方共识方案"', {
-    x: 0.7, y: 2.1, w: 3.8, h: 0.6,
-    fontSize: 14,
-    fontFace: "Microsoft YaHei",
-    color: theme.secondary,
-    italic: true
-  });
-
-  // 方案2 card
-  slide.addShape(pptx.ShapeType.roundRect, {
-    x: 0.5, y: 3.1, w: 4.2, h: 1.3,
-    fill: { color: "FFFFFF" },
-    line: { color: theme.light, width: 1 },
-    rectRadius: 0.08
-  });
-
-  slide.addText("策略二：回归根本原因", {
-    x: 0.7, y: 3.2, w: 3.8, h: 0.35,
-    fontSize: 15,
-    fontFace: "Microsoft YaHei",
-    color: theme.primary,
-    bold: true
-  });
-
-  slide.addText('"即使方案调整，数据同步不恢复问题仍在"', {
-    x: 0.7, y: 3.6, w: 3.8, h: 0.6,
-    fontSize: 14,
-    fontFace: "Microsoft YaHei",
-    color: theme.secondary,
-    italic: true
-  });
-
-  // Right side: 场景四 - 私下沟通
-  slide.addText("场景四：私下沟通目标", {
-    x: 5.3, y: 1.1, w: 4.2, h: 0.4,
-    fontSize: 18,
-    fontFace: "Microsoft YaHei",
-    color: theme.accent,
-    bold: true
-  });
-
-  const goals = [
-    { icon: "①", text: "了解真实动机" },
-    { icon: "②", text: "不被绑定" },
-    { icon: "③", text: "建立边界" },
-    { icon: "④", text: "保护团队安全感" }
+  // 2x2 grid for patterns
+  const patterns = [
+    { title: '责任边界管理', behavior: '分析外化、模糊化处理', subtext: '问题我看到了，但责任不在我', x: 0.5, y: 1.7 },
+    { title: '战略型表达', behavior: '宏观把控，不陷细节', subtext: '我在战略层面有贡献', x: 5.3, y: 1.7 },
+    { title: '服务型姿态', behavior: '"支撑""帮助"，不强调权力', subtext: '策略组是服务业务的角色', x: 0.5, y: 3.1 },
+    { title: '节奏控制', behavior: '不承诺结果，只说方向', subtext: '有节奏但不贸然承诺', x: 5.3, y: 3.1 }
   ];
 
-  goals.forEach((goal, index) => {
-    const yPos = 1.6 + index * 0.65;
-
-    // Icon circle
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: 5.3, y: yPos, w: 0.4, h: 0.4,
-      fill: { color: theme.accent }
+  patterns.forEach((p) => {
+    // Card background
+    slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+      x: p.x, y: p.y, w: 4.2, h: 1.25,
+      fill: { color: "FFFFFF" },
+      rectRadius: 0.08,
+      line: { color: theme.light, width: 1 }
     });
 
-    slide.addText(goal.icon, {
-      x: 5.3, y: yPos, w: 0.4, h: 0.4,
-      fontSize: 14,
-      fontFace: "Arial",
-      color: "FFFFFF",
-      bold: true,
-      align: "center",
-      valign: "middle"
+    // Title with accent left bar
+    slide.addShape(pres.shapes.RECTANGLE, {
+      x: p.x, y: p.y, w: 0.1, h: 1.25,
+      fill: { color: theme.accent },
+      rectRadius: 0.08
     });
 
-    slide.addText(goal.text, {
-      x: 5.85, y: yPos, w: 3.5, h: 0.4,
-      fontSize: 15,
-      fontFace: "Microsoft YaHei",
-      color: theme.primary,
-      valign: "middle"
+    slide.addText(p.title, {
+      x: p.x + 0.2, y: p.y + 0.12, w: 3.8, h: 0.3,
+      fontSize: 12, fontFace: "Microsoft YaHei",
+      color: theme.accent, bold: true
+    });
+
+    slide.addText(p.behavior, {
+      x: p.x + 0.2, y: p.y + 0.45, w: 3.8, h: 0.3,
+      fontSize: 11, fontFace: "Microsoft YaHei",
+      color: theme.primary
+    });
+
+    slide.addText(p.subtext, {
+      x: p.x + 0.2, y: p.y + 0.8, w: 3.8, h: 0.35,
+      fontSize: 10, fontFace: "Microsoft YaHei",
+      color: theme.secondary, italic: true
     });
   });
 
-  // Key quote box (bottom)
-  slide.addShape(pptx.ShapeType.roundRect, {
-    x: 0.5, y: 4.65, w: 9, h: 0.8,
-    fill: { color: theme.accent, transparency: 15 },
-    line: { color: theme.accent, width: 1.5 },
-    rectRadius: 0.08
+  // Insight at bottom
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0.5, y: 4.55, w: 9, h: 0.5,
+    fill: { color: "FFF5F2" },
+    line: { color: theme.accent, width: 1 }
   });
 
-  slide.addText('关键话术："建议私下先沟通，不要群里放炮"', {
-    x: 0.7, y: 4.8, w: 8.6, h: 0.5,
-    fontSize: 16,
-    fontFace: "Microsoft YaHei",
-    color: theme.primary,
-    bold: true,
-    align: "center"
-  });
-
-  // Decorative line (bottom left)
-  slide.addShape(pptx.ShapeType.line, {
-    x: 0.5, y: 5.5, w: 2, h: 0,
-    line: { color: theme.light, width: 2 }
+  slide.addText('核心判断：' + slideConfig.insight, {
+    x: 0.8, y: 4.65, w: 8.4, h: 0.3,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.primary, bold: true
   });
 
   // Page number badge
-  slide.addShape(pptx.ShapeType.ellipse, {
-    x: 9.3, y: 5.1, w: 0.35, h: 0.35,
+  slide.addShape(pres.shapes.OVAL, {
+    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
     fill: { color: theme.accent }
   });
+  slide.addText("7", {
+    x: 9.3, y: 5.1, w: 0.4, h: 0.4,
+    fontSize: 12, fontFace: "Arial",
+    color: "FFFFFF", bold: true,
+    align: "center", valign: "middle"
+  });
 
-  slide.addText("07", {
-    x: 9.3, y: 5.1, w: 0.35, h: 0.35,
-    fontSize: 12,
-    fontFace: "Arial",
-    color: "FFFFFF",
-    bold: true,
-    align: "center",
-    valign: "middle"
+  // Footer
+  slide.addText('权责不对等分析', {
+    x: 0.5, y: 5.1, w: 4, h: 0.3,
+    fontSize: 10, fontFace: "Microsoft YaHei",
+    color: theme.light
   });
 
   return slide;
-}
-
-// Standalone preview
-if (require.main === module) {
-  const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_16x9";
-  pptx.defineSlideSize({ width: 10, height: 5.625 });
-
-  createSlide(pptx);
-
-  pptx.writeFile({ fileName: "slide-07-preview.pptx" })
-    .then(() => console.log("Slide 07 preview created: slide-07-preview.pptx"))
-    .catch(err => console.error("Error:", err));
 }
 
 module.exports = { createSlide, slideConfig };

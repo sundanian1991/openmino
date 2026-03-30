@@ -27,6 +27,7 @@ skillsDir: ./.claude/skills
 | [01-SOUL.md](.claude/rules/01-SOUL.md) | 性格、气质、我和年老师的关系 |
 | [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 核心记忆、WAL协议 |
 | [06-NOW.md](.claude/rules/06-NOW.md) | 当前状态、最近讨论 |
+| [AGENT-FIRST.md](.claude/rules/AGENT-FIRST.md) | **子代理优先策略 — 能并行就不用串行** |
 
 ---
 

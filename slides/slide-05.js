@@ -1,200 +1,164 @@
-// Slide 05 - 场景一：群里被@时的应对（REACT框架）
-// Theme: 演示模式 - 驼色优雅
-
-const theme = {
-  primary: "22223b",    // 深灰 - 标题
-  secondary: "4a4e69",  // 中灰 - 正文
-  accent: "c9ada7",     // 驼色 - 强调
-  light: "9a8c98",      // 浅灰 - 背景点缀
-  bg: "f2e9e4"          // 米白 - 背景
-};
+// slide-05.js - 组织结构（重构版）
+const pptxgen = require("pptxgenjs");
 
 const slideConfig = {
-  title: "场景一：群里被@时的应对",
-  type: "content",
-  layout: "LAYOUT_16x9",
-  width: 10,
-  height: 5.625
+  type: 'content',
+  index: 5,
+  section: '根因 · 为什么',
+  title: '组织结构现状',
+  insight: '定价权在策略组，流失风险由服务组承担'
 };
 
-function createSlide(pptx) {
-  const slide = pptx.addSlide({ layout: slideConfig.layout });
-
-  // 背景色
+function createSlide(pres, theme) {
+  const slide = pres.addSlide();
   slide.background = { color: theme.bg };
 
-  // 标题
-  slide.addText("场景一：群里被@时的应对", {
-    x: 0.5,
-    y: 0.35,
-    w: 9,
-    h: 0.5,
-    fontSize: 26,
-    fontFace: "Microsoft YaHei",
-    color: theme.primary,
-    bold: true,
-    align: "left"
-  });
-
-  // REACT框架标题
-  slide.addText("REACT 应对框架", {
-    x: 0.5,
-    y: 0.9,
-    w: 3,
-    h: 0.4,
-    fontSize: 14,
-    fontFace: "Microsoft YaHei",
-    color: theme.accent,
-    bold: true,
-    align: "left"
-  });
-
-  // REACT步骤数据
-  const reactSteps = [
-    { letter: "R", name: "Respond", desc: "我理解你对激励问题的担忧", purpose: "承认情绪，但不说问题" },
-    { letter: "E", name: "Explain", desc: "真正的问题是交接期信息真空、数据中断", purpose: "回归根本原因" },
-    { letter: "A", name: "Action", desc: "已经和头部供应商沟通，建议恢复数据同步", purpose: "展示行动" },
-    { letter: "C", name: "Constraint", desc: "激励方案制定在策略组，我负责供应商沟通", purpose: "明确边界" },
-    { letter: "T", name: "Target", desc: "建议你们私下对齐交接期责任划分", purpose: "指出真正问题" }
-  ];
-
-  const startY = 1.4;
-  const rowHeight = 0.75;
-  const cardWidth = 9;
-  const cardHeight = 0.65;
-  const accentBarWidth = 0.05;
-
-  reactSteps.forEach((item, index) => {
-    const y = startY + index * rowHeight;
-
-    // 卡片阴影 - 底层偏移
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.52,
-      y: y + 0.04,
-      w: cardWidth,
-      h: cardHeight,
-      fill: { color: "D9D9D9" }
-    });
-
-    // 卡片阴影 - 第二层偏移
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.51,
-      y: y + 0.02,
-      w: cardWidth,
-      h: cardHeight,
-      fill: { color: "E5E5E5" }
-    });
-
-    // 主卡片背景
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.5,
-      y: y,
-      w: cardWidth,
-      h: cardHeight,
-      fill: { color: "FFFFFF" }
-    });
-
-    // 左侧驼色强调条
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0.5,
-      y: y,
-      w: accentBarWidth,
-      h: cardHeight,
-      fill: { color: theme.accent }
-    });
-
-    // 步骤字母（驼色圆形背景）
-    const letterX = 0.75;
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: letterX,
-      y: y + 0.12,
-      w: 0.4,
-      h: 0.4,
-      fill: { color: theme.accent }
-    });
-
-    slide.addText(item.letter, {
-      x: letterX,
-      y: y + 0.17,
-      w: 0.4,
-      h: 0.3,
-      fontSize: 14,
-      fontFace: "Arial",
-      color: "FFFFFF",
-      bold: true,
-      align: "center"
-    });
-
-    // 步骤名称
-    slide.addText(item.name, {
-      x: 1.25,
-      y: y + 0.18,
-      w: 1.2,
-      h: 0.3,
-      fontSize: 13,
-      fontFace: "Arial",
-      color: theme.primary,
-      bold: true,
-      align: "left"
-    });
-
-    // 话术要点
-    slide.addText('"' + item.desc + '"', {
-      x: 2.5,
-      y: y + 0.18,
-      w: 4.0,
-      h: 0.3,
-      fontSize: 12,
-      fontFace: "Microsoft YaHei",
-      color: theme.secondary,
-      italic: true,
-      align: "left"
-    });
-
-    // 目的（右侧）
-    slide.addText(item.purpose, {
-      x: 6.6,
-      y: y + 0.18,
-      w: 2.6,
-      h: 0.3,
-      fontSize: 11,
-      fontFace: "Microsoft YaHei",
-      color: theme.accent,
-      align: "right"
-    });
-  });
-
-  // 页码徽章 - 圆形
-  slide.addShape(pptx.ShapeType.ellipse, {
-    x: 9.3,
-    y: 5.1,
-    w: 0.4,
-    h: 0.4,
+  // 左侧大色块 - 与封面页呼应
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 0, y: 0, w: 0.8, h: 5.625,
     fill: { color: theme.accent }
   });
 
-  slide.addText("05", {
-    x: 9.3,
-    y: 5.15,
-    w: 0.4,
-    h: 0.3,
-    fontSize: 12,
-    fontFace: "Arial",
-    color: "FFFFFF",
-    bold: true,
-    align: "center"
+  // Section label
+  slide.addText(slideConfig.section, {
+    x: 1.3, y: 0.7, w: 7, h: 0.3,
+    fontSize: 11, fontFace: "Microsoft YaHei",
+    color: theme.secondary, bold: true
+  });
+
+  // Title
+  slide.addText(slideConfig.title, {
+    x: 1.3, y: 1, w: 7, h: 0.5,
+    fontSize: 24, fontFace: "Microsoft YaHei",
+    color: theme.primary, bold: true
+  });
+
+  // 左右两列对比布局 - 更清晰的视觉分离
+  // 左侧：服务组
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: 1.3, y: 1.7, w: 3.8, h: 1.8,
+    fill: { color: "FFFFFF" },
+    rectRadius: 0.08,
+    line: { color: theme.light, width: 2 }
+  });
+
+  // 左侧顶部色条
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 1.3, y: 1.7, w: 3.8, h: 0.12,
+    fill: { color: theme.light },
+    rectRadius: 0.08
+  });
+
+  slide.addText('服务组', {
+    x: 1.5, y: 1.75, w: 3.4, h: 0.35,
+    fontSize: 14, fontFace: "Microsoft YaHei",
+    color: theme.light, bold: true
+  });
+
+  // 服务组内容
+  const serviceItems = [
+    { label: '职责', value: '供应商管理\n执行交付' },
+    { label: '权力', value: '建议权' },
+    { label: 'KPI', value: '生态健康\n交付质量' }
+  ];
+
+  serviceItems.forEach((item, i) => {
+    const y = 2.2 + i * 0.42;
+    slide.addText(item.label, {
+      x: 1.5, y: y, w: 0.7, h: 0.35,
+      fontSize: 10, fontFace: "Microsoft YaHei",
+      color: theme.light, bold: true
+    });
+    slide.addText(item.value, {
+      x: 2.2, y: y, w: 2.7, h: 0.35,
+      fontSize: 11, fontFace: "Microsoft YaHei",
+      color: theme.primary
+    });
+  });
+
+  // 右侧：策略组
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: 5.5, y: 1.7, w: 3.8, h: 1.8,
+    fill: { color: "FFFFFF" },
+    rectRadius: 0.08,
+    line: { color: theme.accent, width: 2 }
+  });
+
+  // 右侧顶部色条
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 5.5, y: 1.7, w: 3.8, h: 0.12,
+    fill: { color: theme.accent },
+    rectRadius: 0.08
+  });
+
+  slide.addText('策略组', {
+    x: 5.7, y: 1.75, w: 3.4, h: 0.35,
+    fontSize: 14, fontFace: "Microsoft YaHei",
+    color: theme.accent, bold: true
+  });
+
+  // 策略组内容
+  const strategyItems = [
+    { label: '职责', value: '名单 + 定价\n产品 + 数据' },
+    { label: '权力', value: '决策权' },
+    { label: 'KPI', value: '预算目标\n费效比' }
+  ];
+
+  strategyItems.forEach((item, i) => {
+    const y = 2.2 + i * 0.42;
+    slide.addText(item.label, {
+      x: 5.7, y: y, w: 0.7, h: 0.35,
+      fontSize: 10, fontFace: "Microsoft YaHei",
+      color: theme.accent, bold: true
+    });
+    slide.addText(item.value, {
+      x: 6.4, y: y, w: 2.7, h: 0.35,
+      fontSize: 11, fontFace: "Microsoft YaHei",
+      color: theme.primary
+    });
+  });
+
+  // 中间对比箭头
+  slide.addText('↔', {
+    x: 5.15, y: 2.5, w: 0.3, h: 0.5,
+    fontSize: 24, fontFace: "Arial",
+    color: theme.light
+  });
+
+  // 底部洞察 - 横跨整页
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x: 1.3, y: 3.7, w: 8, h: 0.9,
+    fill: { color: "FFF5F2" },
+    rectRadius: 0.08,
+    line: { color: theme.accent, width: 1.5 }
+  });
+
+  // 左侧装饰条
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 1.3, y: 3.7, w: 0.12, h: 0.9,
+    fill: { color: theme.accent },
+    rectRadius: 0.08
+  });
+
+  slide.addText('核心洞察', {
+    x: 1.6, y: 3.85, w: 7.5, h: 0.25,
+    fontSize: 9, fontFace: "Microsoft YaHei",
+    color: theme.accent, bold: true
+  });
+
+  slide.addText(slideConfig.insight, {
+    x: 1.6, y: 4.1, w: 7.5, h: 0.4,
+    fontSize: 13, fontFace: "Microsoft YaHei",
+    color: theme.primary, bold: true
+  });
+
+  // 右下角装饰
+  slide.addShape(pres.shapes.RECTANGLE, {
+    x: 8.5, y: 5, w: 1, h: 0.1,
+    fill: { color: theme.accent }
   });
 
   return slide;
 }
 
-// 独立预览代码
-if (typeof window !== 'undefined' && window.PptxGenJS) {
-  const pptx = new window.PptxGenJS();
-  pptx.layout = slideConfig.layout;
-  pptx.defineSlideSize({ width: slideConfig.width, height: slideConfig.height });
-  createSlide(pptx);
-  pptx.writeFile({ fileName: "slide-05-preview.pptx" });
-}
-
-module.exports = { createSlide, slideConfig, theme };
+module.exports = { createSlide, slideConfig };

@@ -1,0 +1,491 @@
+// ============================================================================
+// ImageSamples.cs — Comprehensive OpenXML image handling reference
+// ============================================================================
+// EMU (English Metric Unit) is the universal measurement in DrawingML:
+//   1 inch   = 914400 EMU
+//   1 cm     = 360000 EMU
+//   1 px@96dpi = 9525 EMU  (914400 / 96 = 9525)
+//
+// Image architecture in OpenXML:
+//   Paragraph → Run → Drawing → DW.Inline (or DW.Anchor)
+//     → A.Graphic → A.GraphicData → PIC.Picture
+//       → PIC.BlipFill → A.Blip (references the image part via r:embed)
+//       → PIC.ShapeProperties → A.Transform2D → A.Extents (cx, cy)
+//
+// CRITICAL RULES:
+//   1. Extent.Cx/Cy on DW.Inline/DW.Anchor MUST match A.Extents.Cx/Cy
+//      on PIC.ShapeProperties. Mismatch causes rendering issues.
+//   2. Each Drawing element needs a unique DocProperties.Id within the document.
+//   3. ImagePart must be added to the PART that references it:
+//      - MainDocumentPart for images in body
+//      - HeaderPart for images in headers
+//      - FooterPart for images in footers
+//   4. Blip.Embed contains the relationship ID (rId) linking to the ImagePart.
+// ============================================================================
+
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+
+using A = DocumentFormat.OpenXml.Drawing;
+using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
+using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
+
+namespace MiniMaxAIDocx.Core.Samples;
+
+/// <summary>
+/// Reference implementations for every common image operation in OpenXML.
+/// All methods produce valid, Word-renderable markup.
+/// </summary>
+public static class ImageSamples
+{
+    // ── Constants ──────────────────────────────────────────────────────
+    private const long EmuPerInch = 914400L;
+    private const long EmuPerCm = 360000L;
+    private const long EmuPerPixel96Dpi = 9525L; // 914400 / 96
+
+    // GraphicData URI that tells Word "this is a picture"
+    private const string PicGraphicDataUri = "http://schemas.openxmlformats.org/drawingml/2006/picture";
+
+    // ── 1. Inline Image (most common) ──────────────────────────────────
+
+    /// <summary>
+    /// Inserts an inline image into the body. Inline images flow with text
+    /// and do not float. This is the most common image insertion pattern.
+    /// </summary>
+    /// <param name="mainPart">The MainDocumentPart to add the image relationship to.</param>
+    /// <param name="body">The Body element to append the paragraph to.</param>
+    /// <param name="imagePath">Filesystem path to the image file (png, jpg, etc.).</param>
+    /// <param name="widthPx">Desired display width in pixels (at 96 dpi).</param>
+    /// <param name="heightPx">Desired display height in pixels (at 96 dpi).</param>
+    public static void InsertInlineImage(
+        MainDocumentPart mainPart, Body body,
+        string imagePath, int widthPx, int heightPx)
+    {
+        // Step 1: Add the image file as a part. The ImagePartType must match
+        // the actual file format. AddImagePart returns the ImagePart; we then
+        // feed data into it.
+        var imageType = GetImagePartType(imagePath);
+        ImagePart imagePart = mainPart.AddImagePart(imageType);
+
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+
+        // Step 2: Get the relationship ID that links the Blip to this ImagePart.
+        string relId = mainPart.GetIdOfPart(imagePart);
+
+        // Step 3: Convert pixel dimensions to EMU.
+        // Formula: pixels * 9525 = EMU (at 96 dpi, which is Word's assumption)
+        long cx = widthPx * EmuPerPixel96Dpi;
+        long cy = heightPx * EmuPerPixel96Dpi;
+
+        // Step 4: Build the Drawing element using the reusable helper.
+        // docPropId must be unique across the entire document.
+        Drawing drawing = BuildDrawingElement(
+            relId, cx, cy,
+            docPropId: 1U,
+            name: "Image1",
+            description: null);
+
+        // Step 5: Wrap in Paragraph → Run → Drawing
+        Paragraph para = new Paragraph(
+            new Run(drawing));
+
+        body.AppendChild(para);
+    }
+
+    // ── 2. Floating Image (Anchor) ─────────────────────────────────────
+
+    /// <summary>
+    /// Inserts a floating image with absolute positioning using DW.Anchor.
+    /// Floating images are positioned relative to a reference point (page,
+    /// column, paragraph, etc.) and text wraps around them.
+    /// </summary>
+    public static void InsertFloatingImage(
+        MainDocumentPart mainPart, Body body, string imagePath)
+    {
+        ImagePart imagePart = mainPart.AddImagePart(GetImagePartType(imagePath));
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+        string relId = mainPart.GetIdOfPart(imagePart);
+
+        long cx = (long)(3.0 * EmuPerInch); // 3 inches wide
+        long cy = (long)(2.0 * EmuPerInch); // 2 inches tall
+
+        // DW.Anchor is used instead of DW.Inline for floating images.
+        // Key differences from Inline:
+        //   - Has positioning (SimplePos, HorizontalPosition, VerticalPosition)
+        //   - Has wrapping mode (WrapSquare, WrapTight, WrapNone, etc.)
+        //   - Has BehindDoc and LayoutInCell flags
+        DW.Anchor anchor = new DW.Anchor(
+            // SimplePosition: when SimplePos=true, uses SimplePosition x/y directly.
+            // Normally false; we use HorizontalPosition/VerticalPosition instead.
+            new DW.SimplePosition { X = 0L, Y = 0L },
+
+            // HorizontalPosition: where the image sits horizontally.
+            // RelativeFrom can be: Column, Page, Margin, Character, LeftMargin, etc.
+            new DW.HorizontalPosition(
+                new DW.PositionOffset("914400") // 1 inch from reference
+            )
+            { RelativeFrom = DW.HorizontalRelativePositionValues.Column },
+
+            // VerticalPosition: where the image sits vertically.
+            new DW.VerticalPosition(
+                new DW.PositionOffset("457200") // 0.5 inch from reference
+            )
+            { RelativeFrom = DW.VerticalRelativePositionValues.Paragraph },
+
+            // Extent: overall size of the drawing object
+            new DW.Extent { Cx = cx, Cy = cy },
+
+            // EffectExtent: extra space for shadows, glow, etc. (0 if none)
+            new DW.EffectExtent
+            {
+                LeftEdge = 0L,
+                TopEdge = 0L,
+                RightEdge = 0L,
+                BottomEdge = 0L
+            },
+
+            // WrapSquare: text wraps in a square around the image bounding box.
+            new DW.WrapSquare { WrapText = DW.WrapTextValues.BothSides },
+
+            // DocProperties: unique ID + name for the drawing object
+            new DW.DocProperties { Id = 2U, Name = "FloatingImage1" },
+
+            // Non-visual graphic frame properties (required but usually empty)
+            new DW.NonVisualGraphicFrameDrawingProperties(
+                new A.GraphicFrameLocks { NoChangeAspect = true }),
+
+            // The actual graphic content
+            new A.Graphic(
+                new A.GraphicData(
+                    new PIC.Picture(
+                        new PIC.NonVisualPictureProperties(
+                            new PIC.NonVisualDrawingProperties
+                            {
+                                Id = 0U,
+                                Name = "FloatingImage1.png"
+                            },
+                            new PIC.NonVisualPictureDrawingProperties()),
+                        new PIC.BlipFill(
+                            new A.Blip { Embed = relId },
+                            new A.Stretch(new A.FillRectangle())),
+                        new PIC.ShapeProperties(
+                            new A.Transform2D(
+                                new A.Offset { X = 0L, Y = 0L },
+                                // CRITICAL: These cx/cy MUST match the Extent above
+                                new A.Extents { Cx = cx, Cy = cy }),
+                            new A.PresetGeometry(
+                                new A.AdjustValueList())
+                            { Preset = A.ShapeTypeValues.Rectangle }))
+                )
+                { Uri = PicGraphicDataUri })
+        )
+        {
+            // Anchor attributes
+            DistanceFromTop = 0U,
+            DistanceFromBottom = 0U,
+            DistanceFromLeft = 114300U,  // ~0.125 inch gap between text and image
+            DistanceFromRight = 114300U,
+            SimplePos = false,
+            RelativeHeight = 251658240U, // z-order; higher = in front
+            BehindDoc = false,           // true = behind text (like a watermark)
+            Locked = false,
+            LayoutInCell = true,
+            AllowOverlap = true
+        };
+
+        Paragraph para = new Paragraph(new Run(new Drawing(anchor)));
+        body.AppendChild(para);
+    }
+
+    // ── 3. Image with Various Text Wrapping ────────────────────────────
+
+    /// <summary>
+    /// Demonstrates the four main text wrapping modes for floating images.
+    /// Each wrapping mode controls how body text flows around the image.
+    /// </summary>
+    public static void InsertImageWithTextWrapping(
+        MainDocumentPart mainPart, Body body, string imagePath)
+    {
+        // All wrapping modes require DW.Anchor (not DW.Inline).
+        // The wrapping element is a direct child of the Anchor element.
+
+        ImagePart imagePart = mainPart.AddImagePart(GetImagePartType(imagePath));
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+        string relId = mainPart.GetIdOfPart(imagePart);
+
+        long cx = (long)(2.5 * EmuPerInch);
+        long cy = (long)(2.0 * EmuPerInch);
+
+        // ── WrapSquare ──
+        // Text wraps in a rectangular bounding box around the image.
+        // WrapText controls which sides text appears on.
+        var wrapSquare = new DW.WrapSquare
+        {
+            WrapText = DW.WrapTextValues.BothSides
+            // Other options: Left, Right, Largest
+        };
+
+        // ── WrapTight ──
+        // Text wraps tightly around the actual contour of the image.
+        // Uses a WrapPolygon to define the outline; Word can auto-generate this.
+        // The coordinates are in EMU relative to the image's top-left.
+        var wrapTight = new DW.WrapTight(
+            new DW.WrapPolygon(
+                new DW.StartPoint { X = 0L, Y = 0L },
+                new DW.LineTo { X = 0L, Y = 21600L },
+                new DW.LineTo { X = 21600L, Y = 21600L },
+                new DW.LineTo { X = 21600L, Y = 0L },
+                new DW.LineTo { X = 0L, Y = 0L }
+            )
+            { Edited = false }
+        )
+        {
+            WrapText = DW.WrapTextValues.BothSides
+        };
+
+        // ── WrapTopAndBottom ──
+        // No text appears beside the image. Text only above and below.
+        // This effectively makes the image act as a block-level element
+        // but still floating (not inline).
+        var wrapTopAndBottom = new DW.WrapTopBottom
+        {
+            DistanceFromTop = 0U,
+            DistanceFromBottom = 0U
+        };
+
+        // ── WrapNone ──
+        // No text wrapping at all. Image floats over or behind text.
+        // Combined with BehindDoc=true, this creates a watermark effect.
+        var wrapNone = new DW.WrapNone();
+
+        // Example: build anchor with WrapSquare (swap in any wrapping element above)
+        DW.Anchor anchor = BuildAnchorElement(
+            relId, cx, cy,
+            docPropId: 3U,
+            name: "WrappedImage",
+            wrapElement: wrapSquare,
+            behindDoc: false);
+
+        body.AppendChild(new Paragraph(new Run(new Drawing(anchor))));
+    }
+
+    // ── 4. Image with Border ───────────────────────────────────────────
+
+    /// <summary>
+    /// Inserts an image with a visible outline/border. The border is applied
+    /// via A.Outline on the PIC.ShapeProperties element.
+    /// </summary>
+    public static void InsertImageWithBorder(
+        MainDocumentPart mainPart, Body body, string imagePath)
+    {
+        ImagePart imagePart = mainPart.AddImagePart(GetImagePartType(imagePath));
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+        string relId = mainPart.GetIdOfPart(imagePart);
+
+        long cx = (long)(3.0 * EmuPerInch);
+        long cy = (long)(2.0 * EmuPerInch);
+
+        // Build PIC.ShapeProperties with an Outline element for the border.
+        // Outline width is in EMU. 1pt = 12700 EMU.
+        var shapeProperties = new PIC.ShapeProperties(
+            new A.Transform2D(
+                new A.Offset { X = 0L, Y = 0L },
+                new A.Extents { Cx = cx, Cy = cy }),
+            new A.PresetGeometry(
+                new A.AdjustValueList())
+            { Preset = A.ShapeTypeValues.Rectangle },
+            // The Outline element defines the border
+            new A.Outline(
+                // SolidFill sets the border color
+                new A.SolidFill(
+                    new A.RgbColorModelHex { Val = "2F5496" }), // Dark blue
+                // PresetDash sets the line style (solid, dash, dot, etc.)
+                new A.PresetDash { Val = A.PresetLineDashValues.Solid }
+            )
+            {
+                Width = 25400, // 2pt border (12700 EMU per pt)
+                CompoundLineType = A.CompoundLineValues.Single
+            }
+        );
+
+        var picture = new PIC.Picture(
+            new PIC.NonVisualPictureProperties(
+                new PIC.NonVisualDrawingProperties { Id = 0U, Name = "BorderedImage.png" },
+                new PIC.NonVisualPictureDrawingProperties()),
+            new PIC.BlipFill(
+                new A.Blip { Embed = relId },
+                new A.Stretch(new A.FillRectangle())),
+            shapeProperties);
+
+        var drawing = new Drawing(
+            new DW.Inline(
+                new DW.Extent { Cx = cx, Cy = cy },
+                new DW.EffectExtent
+                {
+                    // Must account for border width in effect extent so it is not clipped
+                    LeftEdge = 25400L,
+                    TopEdge = 25400L,
+                    RightEdge = 25400L,
+                    BottomEdge = 25400L
+                },
+                new DW.DocProperties { Id = 4U, Name = "BorderedImage" },
+                new DW.NonVisualGraphicFrameDrawingProperties(
+                    new A.GraphicFrameLocks { NoChangeAspect = true }),
+                new A.Graphic(
+                    new A.GraphicData(picture)
+                    { Uri = PicGraphicDataUri })
+            )
+            {
+                DistanceFromTop = 0U,
+                DistanceFromBottom = 0U,
+                DistanceFromLeft = 0U,
+                DistanceFromRight = 0U
+            });
+
+        body.AppendChild(new Paragraph(new Run(drawing)));
+    }
+
+    // ── 5. Image with Alt Text ─────────────────────────────────────────
+
+    /// <summary>
+    /// Inserts an image with alt text for accessibility. The alt text is set
+    /// on the DocProperties.Description attribute. Screen readers use this.
+    /// Word also shows it in the "Alt Text" pane.
+    /// </summary>
+    public static void InsertImageWithAltText(
+        MainDocumentPart mainPart, Body body, string imagePath)
+    {
+        ImagePart imagePart = mainPart.AddImagePart(GetImagePartType(imagePath));
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+        string relId = mainPart.GetIdOfPart(imagePart);
+
+        long cx = (long)(3.0 * EmuPerInch);
+        long cy = (long)(2.0 * EmuPerInch);
+
+        // DocProperties.Description is the standard alt text field.
+        // DocProperties.Title is an optional short title shown in some UIs.
+        Drawing drawing = BuildDrawingElement(
+            relId, cx, cy,
+            docPropId: 5U,
+            name: "AccessibleImage",
+            description: "A chart showing quarterly revenue growth from Q1 to Q4 2025");
+
+        body.AppendChild(new Paragraph(new Run(drawing)));
+    }
+
+    // ── 6. Image in Header ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Inserts an image into a header part. The image relationship MUST be
+    /// added to the HeaderPart, NOT the MainDocumentPart. If you add it
+    /// to MainDocumentPart, Word will show a broken image in the header
+    /// because relationship IDs are scoped to their containing part.
+    /// </summary>
+    public static void InsertImageInHeader(HeaderPart headerPart, string imagePath)
+    {
+        // CRITICAL: AddImagePart to headerPart, not mainDocumentPart!
+        // Each OpenXML part has its own relationship namespace.
+        // An rId in the header must point to a relationship in the header's .rels file.
+        ImagePart imagePart = headerPart.AddImagePart(GetImagePartType(imagePath));
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+
+        // GetIdOfPart must also be called on headerPart
+        string relId = headerPart.GetIdOfPart(imagePart);
+
+        long cx = (long)(1.5 * EmuPerInch); // Company logo, typically small
+        long cy = (long)(0.5 * EmuPerInch);
+
+        Drawing drawing = BuildDrawingElement(
+            relId, cx, cy,
+            docPropId: 6U,
+            name: "HeaderLogo",
+            description: "Company logo");
+
+        // Headers use the Header element with Paragraph children (same as Body)
+        Header header = headerPart.Header;
+        Paragraph para = new Paragraph(
+            new ParagraphProperties(
+                new Justification { Val = JustificationValues.Center }),
+            new Run(drawing));
+
+        header.AppendChild(para);
+    }
+
+    // ── 7. Image in Table Cell ─────────────────────────────────────────
+
+    /// <summary>
+    /// Inserts an image into a table cell, sized to fit. Table cells constrain
+    /// content width, so we calculate appropriate dimensions to avoid overflow.
+    /// The image part is still added to MainDocumentPart (the cell is in the body).
+    /// </summary>
+    /// <param name="mainPart">MainDocumentPart (owns the relationship).</param>
+    /// <param name="cell">The TableCell to insert the image into.</param>
+    /// <param name="imagePath">Path to the image file.</param>
+    public static void InsertImageInTableCell(
+        MainDocumentPart mainPart, TableCell cell, string imagePath)
+    {
+        ImagePart imagePart = mainPart.AddImagePart(GetImagePartType(imagePath));
+        using (FileStream stream = new FileStream(imagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+        string relId = mainPart.GetIdOfPart(imagePart);
+
+        // Determine cell width from TableCellWidth if available.
+        // TableCellWidth.Width is in DXA (twentieths of a point).
+        // If not set, use a reasonable default (e.g., 2 inches).
+        long maxWidthEmu = (long)(2.0 * EmuPerInch); // default
+
+        TableCellProperties? tcPr = cell.GetFirstChild<TableCellProperties>();
+        TableCellWidth? tcWidth = tcPr?.GetFirstChild<TableCellWidth>();
+        if (tcWidth?.Width is not null && tcWidth.Type?.Value == TableWidthUnitValues.Dxa)
+        {
+            // Convert DXA to EMU: 1 DXA = 1/20 pt = 1/1440 inch = 914400/1440 EMU
+            int dxa = int.Parse(tcWidth.Width);
+            maxWidthEmu = (long)(dxa * (EmuPerInch / 1440.0));
+        }
+
+        // Calculate image dimensions to fit within the cell width
+        (long cx, long cy) = CalculateImageDimensions(imagePath, maxWidthEmu / (double)EmuPerInch);
+
+        Drawing drawing = BuildDrawingElement(
+            relId, cx, cy,
+            docPropId: 7U,
+            name: "CellImage",
+            description: null);
+
+        // A TableCell MUST contain at least one Paragraph.
+        // We add the image inside that paragraph.
+        Paragraph para = cell.GetFirstChild<Paragraph>() ?? cell.AppendChild(new Paragraph());
+        para.AppendChild(new Run(drawing));
+    }
+
+    // ── 8. Replace Existing Image ──────────────────────────────────────
+
+    /// <summary>
+    /// Replaces an existing image by updating the ImagePart data behind a
+    /// known relationship ID. The Blip.Embed attribute (rId) stays the same;
+    /// only the binary content changes. This avoids needing to rebuild the
+    /// entire Drawing XML tree.
+    /// </summary>
+    /// <param name="mainPart">The MainDocumentPart containing the image relationship.</param>
+    /// <param name="oldRelId">The existing relationship ID (e.g., "rId5") of the image to replace
