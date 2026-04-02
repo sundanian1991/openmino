@@ -25,16 +25,15 @@ pos: projects/根目录，项目资产库
 
 | 文件 | 用途 |
 |------|------|
-| archive/ | Archive 归档 |
-| claude-trace/ | CLAUDE-TRACE |
-| mcp-servers/ | MCP Servers |
-| proj-1772116804441-jd1bsd/ | PROJ-1772116804441-JD1BSD |
-| proj-1772150028227-vg8397/ | PROJ-1772150028227-VG8397 |
-| proj-1772204259289-s0vnxv/ | PROJ-1772204259289-S0VNXV |
-| proj-1772204688474-rr3nym/ | PROJ-1772204688474-RR3NYM |
-| proj-1772240987779-zrc3gz/ | PROJ-1772240987779-ZRC3GZ |
-| proj-1772979560848-vwiehr/ | PROJ-1772979560848-VWIEHR |
-| stanford-cs146s/ | 子目录 |
+| archive/ | 归档（vwiehr 等旧项目） |
+| AI学习监控/ | AI 学习库监控 |
+| claude-trace/ | Claude Trace 工具 |
+| mcp-servers/ | MCP 服务器配置 |
+| stanford-cs146s/ | Stanford CS146S 学习 |
+| 供应商管理体系/ | 供应商管理工作体系建设 |
+| 自我觉察/ | 深化对年老师的理解 |
+| 职业辅导/ | P7 胜任力与前瞻性指导 |
+| 长期放养/ | 年老师与 Mino 的共同成长之路 |
 | `CLAUDE.md` | Claude 配置文档 |
 | `README.md` | 目录说明文档 |
 
