@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>供应商经营状况分析报告</title>
+  <style>
+    /* === Reset & Base === */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow-x: hidden; font-family: system-ui, -apple-system, sans-serif; }
+    html { scroll-snap-type: y proximity; scroll-behavior: smooth; }
+
+    :root {
+      --text-primary: #111111;
+      --text-secondary: #666666;
+      --text-tertiary: #999999;
+      --bg: #FFFFFF;
+      --surface: #FAFAFA;
+      --border: #E5E5E5;
+      --accent: #E2725B;
+      --accent-light: rgba(226, 114, 91, 0.1);
+      --positive: #2a9d5c;
+      --negative: #d73a49;
+
+      --t1-cover: clamp(2.2rem, 5.5vw, 3.5rem);
+      --t1-page: clamp(1.4rem, 3.5vw, 2rem);
+      --t2: clamp(0.85rem, 1.5vw, 1.1rem);
+      --t3: clamp(0.75rem, 1.2vw, 0.9rem);
+      --t4: clamp(0.7rem, 1vw, 0.8rem);
+      --t6: clamp(0.6rem, 0.8vw, 0.7rem);
+
+      --page-padding: clamp(1.5rem, 4vw, 3rem);
+      --card-padding: clamp(0.75rem, 1.5vw, 1.25rem);
+      --card-gap: clamp(0.75rem, 1.5vw, 1.25rem);
+
+      --border-thin: 1px solid var(--border);
+      --border-thick: 2px solid var(--text-primary);
+      --border-radius: 2px;
+      --progress-bar-height: 3px;
+    }
+
+    /* === Slide System === */
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      overflow: hidden; scroll-snap-align: start;
+      display: flex; flex-direction: column;
+      padding: var(--page-padding);
+      position: relative;
+    }
+
+    /* === Progress Bar === */
+    .progress { position: fixed; top: 0; left: 0; width: 100%; height: var(--progress-bar-height); background: transparent; z-index: 100; }
+    .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s ease; }
+
+    /* === Top Accent Line === */
+    .slide::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2.4px; background: var(--accent);
+    }
+    .slide-cover::before { display: none; }
+
+    /* === Page Badge === */
+    .page-badge {
+      position: absolute; bottom: var(--page-padding); right: var(--page-padding);
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--text-primary); color: white;
+      font-size: var(--t6); font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* === Cover Slide === */
+    .slide-cover {
+      background: var(--bg);
+      justify-content: center; align-items: flex-start;
+      padding: calc(var(--page-padding) * 1.5);
+    }
+    .cover-label {
+      font-size: var(--t4); color: var(--text-tertiary);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .cover-title {
+      font-size: var(--t1-cover); font-weight: 700; color: var(--text-primary);
+      line-height: 1.25; margin-bottom: 1rem; max-width: 65%;
+    }
+    .cover-subtitle {
+      font-size: var(--t2); color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+    .cover-meta {
+      display: flex; gap: 2rem; font-size: var(--t4); color: var(--text-tertiary);
+    }
+    .cover-meta span { display: flex; align-items: center; gap: 0.4rem; }
+    .cover-accent-line {
+      width: 48px; height: 3px; background: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    /* === Section Title === */
+    .section-header { margin-bottom: 1rem; }
+    .section-title {
+      font-size: var(--t1-page); font-weight: 700; color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .section-subtitle {
+      font-size: var(--t3); color: var(--text-secondary); margin-top: 0.25rem;
+    }
+
+    /* === KPI Row === */
+    .kpi-row {
+      display: grid; gap: var(--card-gap);
+      margin-bottom: 1rem;
+    }
+    .kpi-row.cols-5 { grid-template-columns: repeat(5, 1fr); }
+    .kpi-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .kpi-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .kpi-card {
+      background: var(--bg); border: var(--border-thin);
+      border-radius: var(--border-radius);
+      padding: var(--card-padding);
+    }
+    .kpi-label { font-size: var(--t6); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .kpi-value { font-size: clamp(1.3rem, 2.5vw, 1.8rem); font-weight: 700; color: var(--text-primary); }
+    .kpi-value.negative { color: var(--negative); }
+    .kpi-value.positive { color: var(--positive); }
+    .kpi-value.accent { color: var(--accent); }
+    .kpi-desc { font-size: var(--t4); color: var(--text-secondary); margin-top: 0.2rem; }
+
+    /* === Data Table === */
+    .data-table-wrap { overflow: hidden; flex: 1; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: var(--t4); }
+    .data-table th {
+      border-bottom: var(--border-thick);
+      font-weight: 600; font-size: var(--t6); color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 0.4rem 0.6rem; text-align: left; white-space: nowrap;
+    }
+    .data-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.45rem 0.6rem; color: var(--text-primary);
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .data-table .text-negative { color: var(--negative); font-weight: 600; }
+    .data-table .text-positive { color: var(--positive); font-weight: 600; }
+    .data-table .text-accent { color: var(--accent); font-weight: 600; }
+    .data-table .highlight-row td { border-left: 3px solid var(--accent); background: var(--accent-light); }
+    .data-table .subheader td { font-weight: 600; background: var(--surface); font-size: var(--t4); }
+
+    /* === Dual Table Layout === */
+    .dual-table {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: var(--card-gap); flex: 1; min-height: 0;
+    }
+    .dual-table .table-panel {
+      display: flex; flex-direction: column;
+      border: var(--border-thin); border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+    .table-panel-header {
+      padding: 0.5rem 0.75rem; font-size: var(--t3); font-weight: 700;
+      color: var(--text-primary); border-bottom: var(--border-thick);
+      background: var(--surface);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .table-panel-header .badge {
+      font-size: var(--t6); padding: 0.15rem 0.4rem;
+      border-radius: var(--border-radius); font-weight: 600;
+    }
+    .badge-positive { background: rgba(42, 157, 92, 0.1); color: var(--positive); }
+    .badge-negative { background: rgba(215, 58, 73, 0.1); color: var(--negative); }
+    .badge-neutral { background: rgba(17, 17, 17, 0.06); color: var(--text-secondary); }
+    .table-panel .data-table { margin: 0; }
+    .table-panel-body { flex: 1; overflow: hidden; }
+
+    /* === Insight Card === */
+    .insight-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--card-gap); flex: 1; min-height: 0;
+    }
+    .insight-card {
+      border: var(--border-thin); border-radius: var(--border-radius);
+      padding: var(--card-padding);
+      display: flex; flex-direction: column;
+    }
+    .insight-card.highlight {
+      border: 1px solid var(--accent);
+      background: var(--accent-light);
+    }
+    .insight-card-title {
+      font-size: var(--t3); font-weight: 700; color: var(--text-primary);
+      margin-bottom: 0.5rem; padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .insight-card-body { flex: 1; }
+    .insight-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.35rem 0; border-bottom: 1px solid var(--border);
+      font-size: var(--t4);
+    }
+    .insight-item:last-child { border-bottom: none; }
+    .insight-item .label { color: var(--text-secondary); }
+    .insight-item .value { font-weight: 600; color: var(--text-primary); }
+    .insight-key-finding {
+      margin-top: 0.6rem; padding: 0.5rem;
+      background: var(--surface); border-radius: var(--border-radius);
+      font-size: var(--t4); color: var(--accent); font-weight: 600;
+      line-height: 1.4;
+    }
+
+    /* === Action Cards === */
+    .action-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: var(--card-gap); flex: 1; min-height: 0;
+    }
+    .action-card {
+      border: var(--border-thin); border-radius: var(--border-radius);
+      padding: var(--card-padding);
+      display: flex; flex-direction: column;
+    }
+    .action-card.highlight {
+      border: 1px solid var(--accent);
+      background: var(--accent-light);
+    }
+    .action-card-header {
+      display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.6rem; padding-bottom: 0.4rem;
+      border-bottom: var(--border-thick);
+    }
+    .action-priority {
+      font-size: var(--t6); padding: 0.15rem 0.5rem;
+      border-radius: var(--border-radius); font-weight: 700;
+      color: white;
+    }
+    .priority-high { background: var(--negative); }
+    .priority-mid { background: var(--text-tertiary); }
+    .action-title {
+      font-size: var(--t3); font-weight: 700; color: var(--text-primary);
+    }
+    .action-items { list-style: none; flex: 1; }
+    .action-items li {
+      padding: 0.4rem 0; border-bottom: 1px solid var(--border);
+      font-size: var(--t4); color: var(--text-primary); line-height: 1.5;
+    }
+    .action-items li:last-child { border-bottom: none; }
+    .action-items .item-title { font-weight: 600; }
+    .action-items .item-desc { color: var(--text-secondary); display: block; margin-top: 0.15rem; }
+
+    /* === Divider === */
+    .divider { width: 100%; height: 2px; background: var(--border); margin: 0.6rem 0; }
+    .divider.accent { background: var(--accent); }
+
+    /* === Bottom Bar === */
+    .bottom-bar {
+      margin-top: auto;
+      background: var(--text-primary); color: white;
+      padding: 0.6rem 1rem; border-radius: var(--border-radius);
+      font-size: var(--t4); display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* === Comparison Row === */
+    .compare-row {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.3rem 0; font-size: var(--t4);
+    }
+    .compare-label { color: var(--text-secondary); min-width: 80px; }
+    .compare-val { font-weight: 600; color: var(--text-primary); min-width: 100px; }
+    .compare-diff { font-weight: 700; }
+    .compare-diff.negative { color: var(--negative); }
+
+    /* === Animations === */
+    .slide { opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; }
+    .slide.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+<!-- ==================== SLIDE 1: Cover ==================== -->
+<div class="slide slide-cover">
+  <div class="cover-accent-line"></div>
+  <div class="cover-label">数据调研报告</div>
+  <h1 class="cover-title">供应商经营状况分析报告</h1>
+  <p class="cover-subtitle">基于 21 家供应商调研数据的深度分析</p>
+  <div class="cover-meta">
+    <span>汇报人：年老师</span>
+    <span>2026 年 3 月</span>
+  </div>
+</div>
+
+<!-- ==================== SLIDE 2: Core Findings ==================== -->
+<div class="slide">
+  <div class="section-header">
+    <h2 class="section-title">核心发现：整体亏损严重，首贷是主因</h2>
+    <p class="section-subtitle">21 家供应商调研数据，5 大关键发现</p>
+  </div>
+
+  <div class="kpi-row cols-5">
+    <div class="kpi-card">
+      <div class="kpi-label">平均利润率</div>
+      <div class="kpi-value negative">-18.7%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">亏损供应商</div>
+      <div class="kpi-value negative">5 家 / 24%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">首贷利润率</div>
+      <div class="kpi-value negative">-41.5%</div>
+      <div class="kpi-desc">vs 复贷 +6.4%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">薪资占创收</div>
+      <div class="kpi-value accent">111%</div>
+      <div class="kpi-desc">成本结构失衡</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">友商结算价</div>
+      <div class="kpi-value accent">+10~20%</div>
+      <div class="kpi-desc">竞争劣势明显</div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--card-gap); flex: 1; min-height: 0;">
+    <div class="insight-card">
+      <div class="insight-card-title">盈利能力：规模决定生死</div>
+      <div class="insight-card-body">
+        <div class="insight-item"><span class="label">头部（≥80人）</span><span class="value text-positive">利润率 21.3%</span></div>
+        <div class="insight-item"><span class="label">中腰部（30-80人）</span><span class="value text-positive">利润率 10.2%</span></div>
+        <div class="insight-item"><span class="label">尾部（<30人）</span><span class="value text-negative">利润率 -96.3%</span></div>
+      </div>
+    </div>
+    <div class="insight-card highlight">
+      <div class="insight-card-title">成本结构：人力吃掉全部利润</div>
+      <div class="insight-card-body">
+        <div class="insight-item"><span class="label">人力成本</span><span class="value">72.6%</span></div>
+        <div class="insight-item"><span class="label">场地成本</span><span class="value">10.3%</span></div>
+        <div class="insight-item"><span class="label">运营+设备</span><span class="value">12.4%</span></div>
+        <div class="insight-key-finding">供应商每赚 100 元，111 元要发给员工，几乎无利润空间投入培训和质量优化</div>
+      </div>
+    </div>
+  </div>
+  <span class="page-badge">1</span>
+</div>
+
+<!-- ==================== SLIDE 3: City-Level Data ==================== -->
+<div class="slide">
+  <div class="section-header">
+    <h2 class="section-title">城市级盈亏：7 城首贷 vs 7 城复贷</h2>
+    <p class="section-subtitle">合肥/宿州一骑绝尘，南昌首贷亏损严重</p>
+  </div>
+
+  <div class="dual-table">
+    <div class="table-panel">
+      <div class="table-panel-header">
+        首贷业务（11 家）
+        <span class="badge badge-negative">平均利润率 -41.5%</span>
+      </div>
+      <div class="table-panel-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>城市</th><th class="num">坐席</th><th class="num">结算(万)</th><th class="num">利润率</th><th class="num">人均创收</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>合肥/宿州</td><td class="num">150</td><td class="num">170</td><td class="num text-positive">31.2%</td><td class="num text-accent">11,333</td></tr>
+            <tr><td>合肥</td><td class="num">150</td><td class="num">120</td><td class="num text-positive">16.7%</td><td class="num">8,000</td></tr>
+            <tr><td>昆明</td><td class="num">65</td><td class="num">60</td><td class="num text-positive">25.0%</td><td class="num">9,231</td></tr>
+            <tr><td>石家庄</td><td class="num">125</td><td class="num">114.5</td><td class="num text-positive">4.1%</td><td class="num">10,045</td></tr>
+            <tr><td>鄂/冀/皖</td><td class="num">65</td><td class="num">52</td><td class="num text-positive">7.7%</td><td class="num">8,000</td></tr>
+            <tr><td>鸡西</td><td class="num">20</td><td class="num">10</td><td class="num text-positive">40.0%</td><td class="num">5,000</td></tr>
+            <tr class="highlight-row"><td>南昌</td><td class="num">20</td><td class="num">4</td><td class="num text-negative">-25.0%</td><td class="num">2,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="table-panel">
+      <div class="table-panel-header">
+        复贷业务（10 家）
+        <span class="badge badge-positive">平均利润率 +6.4%</span>
+      </div>
+      <div class="table-panel-body">
+        <table class="data-table">
+          <thead>
+            <tr><th>城市</th><th class="num">坐席</th><th class="num">结算(万)</th><th class="num">利润率</th><th class="num">人均创收</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>合肥/宿州</td><td class="num">150</td><td class="num">93</td><td class="num text-positive">16.1%</td><td class="num">6,200</td></tr>
+            <tr><td>石家庄</td><td class="num">85</td><td class="num">55</td><td class="num text-positive">8.5%</td><td class="num">7,173</td></tr>
+            <tr><td>蚌埠</td><td class="num">65</td><td class="num">36</td><td class="num text-positive">15.8%</td><td class="num">5,538</td></tr>
+            <tr><td>石/中卫</td><td class="num">65</td><td class="num">32</td><td class="num text-positive">16.2%</td><td class="num">4,923</td></tr>
+            <tr><td>包头</td><td class="num">40</td><td class="num">20</td><td class="num text-positive">10.0%</td><td class="num">5,000</td></tr>
+            <tr><td>鄂/冀/皖</td><td class="num">65</td><td class="num">44</td><td class="num text-positive">2.3%</td><td class="num">6,769</td></tr>
+            <tr><td>鸡西/晋城</td><td class="num">20</td><td class="num">6</td><td class="num" style="color: var(--text-tertiary)">0.0%</td><td class="num">3,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <span class="page-badge">2</span>
+</div>
+
+<!-- ==================== SLIDE 4: Root Cause ==================== -->
+<div class="slide">
+  <div class="section-header">
+    <h2 class="section-title">根因：不是创收问题，是成本结构问题</h2>
+    <p class="section-subtitle">复贷亏损职场人均创收反而更高，问题出在成本端</p>
+  </div>
+
+  <div class="insight-grid">
+    <!-- Card 1: Profit vs Loss -->
+    <div class="insight-card">
+      <div class="insight-card-title">盈利 vs 亏损职场对比</div>
+      <div class="insight-card-body">
+        <div class="insight-item"><span class="label">首贷人均创收（盈）</span><span class="value">8,493 元</span></div>
+        <div class="insight-item"><span class="label">首贷人均创收（亏）</span><span class="value">7,125 元</span></div>
+        <div class="divider"></div>
+        <div class="insight-item"><span class="label">首贷利润率（盈）</span><span class="value text-positive">19.6%</span></div>
+        <div class="insight-item"><span class="label">首贷利润率（亏）</span><span class="value text-negative">-14.6%</span></div>
+        <div class="divider"></div>
+        <div class="insight-item"><span class="label">复贷人均创收（盈）</span><span class="value">5,325 元</span></div>
+        <div class="insight-item"><span class="label">复贷人均创收（亏）</span><span class="value text-accent">8,500 元</span></div>
+      </div>
+      <div class="insight-key-finding">复贷亏损职场人均创收 8,500 元 > 盈利职场 5,325 元，亏损根因是成本而非收入</div>
+    </div>
+
+    <!-- Card 2: Cost Structure -->
+    <div class="insight-card">
+      <div class="insight-card-title">成本结构拆解</div>
+      <div class="insight-card-body">
+        <div style="margin-bottom: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; font-size: var(--t4); margin-bottom: 0.2rem;">
+            <span style="color: var(--text-secondary);">人力成本</span><span style="font-weight: 700; color: var(--accent);">72.6%</span>
+          </div>
+          <div style="height: 6px; background: var(--surface); border-radius: 2px; overflow: hidden;">
+            <div style="width: 72.6%; height: 100%; background: var(--accent); border-radius: 2px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; font-size: var(--t4); margin-bottom: 0.2rem;">
+            <span style="color: var(--text-secondary);">场地成本</span><span style="font-weight: 600;">10.3%</span>
+          </div>
+          <div style="height: 6px; background: var(--surface); border-radius: 2px; overflow: hidden;">
+            <div style="width: 10.3%; height: 100%; background: var(--text-tertiary); border-radius: 2px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; font-size: var(--t4); margin-bottom: 0.2rem;">
+            <span style="color: var(--text-secondary);">运营成本</span><span style="font-weight: 600;">7.9%</span>
+          </div>
+          <div style="height: 6px; background: var(--surface); border-radius: 2px; overflow: hidden;">
+            <div style="width: 7.9%; height: 100%; background: var(--text-tertiary); border-radius: 2px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; font-size: var(--t4); margin-bottom: 0.2rem;">
+            <span style="color: var(--text-secondary);">设备成本</span><span style="font-weight: 600;">4.5%</span>
+          </div>
+          <div style="height: 6px; background: var(--surface); border-radius: 2px; overflow: hidden;">
+            <div style="width: 4.5%; height: 100%; background: var(--text-tertiary); border-radius: 2px;"></div>
+          </div>
+        </div>
+        <div class="insight-key-finding">薪资占创收 111%，每赚 100 元要付 111 元工资</div>
+      </div>
+    </div>
+
+    <!-- Card 3: Competition -->
+    <div class="insight-card highlight">
+      <div class="insight-card-title">友商对比：定价差距 40-50%</div>
+      <div class="insight-card-body">
+        <div class="insight-item">
+          <span class="label">结算单价</span>
+          <span class="value">友商高 10~20%</span>
+        </div>
+        <div class="insight-item">
+          <span class="label">友商员工薪资</span>
+          <span class="value">7,000~9,000 元</span>
+        </div>
+        <div class="insight-item">
+          <span class="label">我方员工薪资</span>
+          <span class="value">4,000~8,000 元</span>
+        </div>
+        <div class="divider"></div>
+        <div class="insight-item">
+          <span class="label">综合差距</span>
+          <span class="value text-negative">低约 40~50%</span>
+        </div>
+        <div class="insight-key-finding">供应商有能力做低成本，但我们的结算价格太低，挤压了生存空间</div>
+      </div>
+    </div>
+  </div>
+  <span class="page-badge">3</span>
+</div>
+
+<!-- ==================== SLIDE 5: Actions ==================== -->
+<div class="slide">
+  <div class="section-header">
+    <h2 class="section-title">行动建议：停止压价、扶持腰部、增量分享</h2>
+    <p class="section-subtitle">短期止血 + 中期治本</p>
+  </div>
+
+  <div class="action-grid">
+    <div class="action-card highlight">
+      <div class="action-card-header">
+        <span class="action-priority priority-high">立即</span>
+        <span class="action-title">短期止血措施</span>
+      </div>
+      <ol class="action-items">
+        <li>
+          <span class="item-title">1. 停止压降价格</span>
+          <span class="item-desc">24% 供应商已亏损，继续降价会崩盘</span>
+        </li>
+        <li>
+          <span class="item-title">2. 分类管理供应商</span>
+          <span class="item-desc">盈利→维持 | 边缘→帮扶 | 亏损→整改</span>
+        </li>
+        <li>
+          <span class="item-title">3. 设首贷盈亏警戒线</span>
+          <span class="item-desc">人均创收 7,500 元为底线</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="action-card">
+      <div class="action-card-header">
+        <span class="action-priority priority-mid">中期</span>
+        <span class="action-title">中期治本措施</span>
+      </div>
+      <ol class="action-items">
+        <li>
+          <span class="item-title">4. 首贷价格上浮 10~15%</span>
+          <span class="item-desc">覆盖更高的获客成本</span>
+        </li>
+        <li>
+          <span class="item-title">5. 引入增量收益分享机制</span>
+          <span class="item-desc">让供应商相信"投入有回报"</span>
+        </li>
+        <li>
+          <span class="item-title">6. 差异化定价策略</span>
+          <span class="item-desc">一线城市 vs 三四线城市区别定价</span>
+        </li>
+        <li>
+          <span class="item-title">7. 降低头部依赖</span>
+          <span class="item-desc">培养第二梯队，分散风险</span>
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span>风险供应商 5 家：苏州（首贷 -584.6%）| 苏州/临沂（复贷 -44.2%）| 南昌（首贷 -25.0%）</span>
+    <span style="color: var(--text-tertiary);">数据来源：21 家供应商调研 | 2026.03</span>
+  </div>
+  <span class="page-badge">4</span>
+</div>
+
+<script>
+  class SlidePresentation {
+    constructor() {
+      this.slides = document.querySelectorAll('.slide');
+      this.currentIndex = 0;
+      this.progressBar = document.getElementById('progressBar');
+      this.init();
+    }
+
+    init() {
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+          e.preventDefault(); this.next();
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault(); this.prev();
+        }
+      });
+
+      // Intersection observer for animations + progress
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            const index = Array.from(this.slides).indexOf(entry.target);
+            this.currentIndex = index;
+            this.updateProgress();
+          }
+        });
+      }, { threshold: 0.5 });
+
+      this.slides.forEach(slide => observer.observe(slide));
+      this.updateProgress();
+    }
+
+    updateProgress() {
+      const progress = ((this.currentIndex + 1) / this.slides.length) * 100;
+      this.progressBar.style.width = progress + '%';
+    }
+
+    next() {
+      if (this.currentIndex < this.slides.length - 1) {
+        this.currentIndex++;
+        this.slides[this.currentIndex].scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    prev() {
+      if (this.currentIndex > 0) {
+        this.currentIndex--;
+        this.slides[this.currentIndex].scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }
+
+  new SlidePresentation();
+</script>
+</body>
+</html>
