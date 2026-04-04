@@ -1,7 +1,7 @@
 ---
 name: proactive-agent
 version: 3.1.1-optimized
-description: "Transform AI agents from task-followers into proactive partners. Optimized for existing rule systems — maps to your current architecture instead of creating new files."
+description: "主动型 Agent 转换器 — 将 AI 从任务执行者转变为主动合作伙伴。适配现有规则系统，不创建新文件。"
 author: halthelobster (optimized by autoresearch)
 ---
 

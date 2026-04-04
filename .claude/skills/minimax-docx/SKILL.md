@@ -10,9 +10,7 @@ metadata:
     - "GB/T 9704-2012 Layout Standard for Official Documents"
     - "IEEE / ACM / APA / MLA / Chicago / Turabian Style Guides"
     - "Springer LNCS / Nature / HBR Document Templates"
-description: >
-  Professional DOCX document creation, editing, and formatting using OpenXML SDK (.NET).
-  Three pipelines: (A) create new documents from scratch, (B) fill/edit content in existing
+description: 专业 DOCX 文档处理 — 使用 OpenXML SDK (.NET) 创建、编辑、格式化 Word 文档。三条流水线：(A) 从零创建、(B) 填充/编辑现有文档、(C) 应用模板格式。触发词：写报告、起草提案、制作合同、填写表单、重新格式化。
   documents, (C) apply template formatting with XSD validation gate-check.
   MUST use this skill whenever the user wants to produce, modify, or format a Word document —
   including when they say "write a report", "draft a proposal", "make a contract",

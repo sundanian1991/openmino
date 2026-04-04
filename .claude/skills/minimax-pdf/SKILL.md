@@ -1,7 +1,6 @@
 ---
 name: minimax-pdf
-description: "Use this skill when visual quality and design identity matter for a PDF. CREATE (generate from scratch): \"make a PDF\", \"generate a report\", \"write a proposal\", \"create a resume\", \"beautiful PDF\", \"professional document\", \"cover page\", \"polished PDF\", \"client-ready document\". FILL (complete form fields): \"fill in the form\", \"fill out this PDF\", \"complete the form fields\", \"write values into PDF\", \"what fields does this PDF have\". REFORMAT (apply design to an existing doc): \"reformat this document\", \"apply our style\", \"convert this Markdown/text to PDF\", \"make this doc look good\", \"re-style this PDF\". This skill uses a token-based design system: color, typography, and spacing are derived from the document type and flow through every page. The output is print-ready. Prefer this skill when appearance matters, not just when any PDF output is needed.
-"
+description: 高品质 PDF 创建 — 重视觉质量和设计感的 PDF 生成。创建：生成报告、提案、简历、封面。填充：填写表单字段。重格式化：应用设计风格。输出可打印的专业文档。
 ---
 
 # minimax-pdf

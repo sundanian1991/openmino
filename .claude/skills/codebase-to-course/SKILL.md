@@ -1,6 +1,6 @@
 ---
 name: codebase-to-course
-description: "Turn any codebase into a beautiful, interactive single-page HTML course that teaches how the code works to non-technical people. Use this skill whenever someone wants to create an interactive course, tutorial, or educational walkthrough from a codebase or project. Also trigger when users mention 'turn this into a course,' 'explain this codebase interactively,' 'teach this code,' 'interactive tutorial from code,' 'codebase walkthrough,' 'learn from this codebase,' or 'make a course from this project.' This skill produces a stunning, self-contained HTML file with scroll-based navigation, animated visualizations, embedded quizzes, and code-with-plain-English side-by-side translations."
+description: "代码库转课程 — 将任何代码库转换为精美的交互式 HTML 课程，向非技术人员讲解代码原理。触发词：转课程、交互式讲解、教学、代码演示、学习代码库、制作课程。输出单文件 HTML，含滚动导航、动画可视化、嵌入测验。"
 ---
 
 # Codebase-to-Course

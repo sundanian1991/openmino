@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>抽象设计原则体系</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #F5F0EC;
+      padding: clamp(1rem, 3vw, 2rem);
+      display: flex;
+      justify-content: center;
+    }
+
+    .poster {
+      width: min(820px, 100% - 2rem);
+      background: #fff;
+      border-radius: 2px;
+      border: 1px solid #E5E5E5;
+      overflow: hidden;
+    }
+
+    /* ===== 封面 ===== */
+    .header {
+      background: #111;
+      padding: clamp(2.5rem, 6vw, 4rem);
+      position: relative;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2.4px;
+      background: #E2725B;
+    }
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 10px;
+      padding: 4px 12px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+      letter-spacing: .5px;
+    }
+    .header h1 {
+      color: #fff;
+      font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .header h1 span {
+      display: block;
+      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+      font-weight: 400;
+      margin-top: 12px;
+      opacity: .7;
+      line-height: 1.5;
+    }
+    .header-meta {
+      margin-top: 24px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .header-meta .tag {
+      color: rgba(255,255,255,.8);
+      font-size: 10px;
+      background: rgba(255,255,255,.08);
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+
+    /* ===== 内容区 ===== */
+    .body { padding: clamp(1.5rem, 4vw, 3rem); }
+    .section {
+      margin-top: 40px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .4s ease-out, transform .4s ease-out;
+    }
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .section:first-child { margin-top: 0; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-num {
+      width: 28px; height: 28px;
+      background: #111;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 700;
+      color: #111;
+    }
+    .section-line {
+      flex: 1;
+      height: 2px;
+      background: #E5E5E5;
+    }
+    .section-desc {
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 16px;
+      margin-left: 40px;
+    }
+
+    /* ===== 原则卡片 ===== */
+    .principles {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .principle {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 16px 20px;
+      background: #FAFAFA;
+      border: 1px solid #E5E5E5;
+      border-radius: 2px;
+      transition: border-color .2s;
+    }
+    .principle:hover {
+      border-color: #E2725B;
+    }
+    .principle-keyword {
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #E2725B;
+      min-width: 48px;
+    }
+    .principle-body {}
+    .principle-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 4px;
+    }
+    .principle-desc {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* ===== 铁律列表 ===== */
+    .rules {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .rule {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid #E5E5E5;
+    }
+    .rule:last-child { border-bottom: none; }
+    .rule-index {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      border: 1px solid #E5E5E5;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #999;
+    }
+    .rule-text {
+      font-size: 13px;
+      color: #111;
+      line-height: 1.5;
+    }
+    .rule-text strong {
+      color: #111;
+      font-weight: 600;
+    }
+    .rule-text .note {
+      display: block;
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    /* ===== 检查清单 ===== */
+    .checklist {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #FAFAFA;
+      border: 1px solid #E5E5E5;
+      border-radius: 2px;
+      font-size: 12px;
+      color: #111;
+      transition: border-color .2s;
+    }
+    .check-item:hover { border-color: #999; }
+    .check-icon {
+      flex-shrink: 0;
+      width: 18px; height: 18px;
+      border: 1.5px solid #E2725B;
+      border-radius: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .check-icon::after {
+      content: '';
+      width: 8px; height: 4px;
+      border-left: 1.5px solid #E2725B;
+      border-bottom: 1.5px solid #E2725B;
+      transform: rotate(-45deg) translateY(-1px);
+    }
+    @media (max-width: 600px) {
+      .checklist { grid-template-columns: 1fr; }
+    }
+
+    /* ===== 决策流程 ===== */
+    .flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .flow::before {
+      content: '';
+      position: absolute;
+      left: 15px; top: 28px; bottom: 28px;
+      width: 1px;
+      background: #E5E5E5;
+    }
+    .flow-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px 0;
+      position: relative;
+    }
+    .flow-dot {
+      flex-shrink: 0;
+      width: 30px; height: 30px;
+      background: #fff;
+      border: 2px solid #E5E5E5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #666;
+      position: relative;
+      z-index: 1;
+      transition: border-color .2s;
+    }
+    .flow-step:hover .flow-dot { border-color: #E2725B; color: #E2725B; }
+    .flow-content {}
+    .flow-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111;
+    }
+    .flow-desc {
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+    .flow-arrow {
+      text-align: center;
+      padding: 4px 0;
+      font-size: 10px;
+      color: #ccc;
+      margin-left: 46px;
+    }
+
+    /* ===== 关系说明 ===== */
+    .relation {
+      margin-top: 40px;
+      padding: 20px 24px;
+      background: #FAFAFA;
+      border: 1px solid #E5E5E5;
+      border-radius: 2px;
+    }
+    .relation-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .relation-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .relation-item {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+    }
+    .relation-item strong {
+      color: #111;
+    }
+
+    /* ===== 底部信息条 ===== */
+    .bottom-strip {
+      background: #111;
+      padding: 16px clamp(1.5rem, 4vw, 3rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .bottom-strip .left,
+    .bottom-strip .right {
+      color: rgba(255,255,255,.6);
+      font-size: 10px;
+    }
+    .bottom-strip .center {
+      color: rgba(255,255,255,.4);
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="poster">
+  <!-- 封面 -->
+  <div class="header">
+    <div class="header-badge">设计宪法 · V6.0</div>
+    <h1>抽象设计原则体系
+      <span>跨技能的审美元规范 — 所有视觉产出物的底线约束</span>
+    </h1>
+    <div class="header-meta">
+      <div class="tag">3 条第一性原理</div>
+      <div class="tag">5 条设计铁律</div>
+      <div class="tag">6 条反 AI 味检查</div>
+      <div class="tag">6 步默认决策流程</div>
+    </div>
+  </div>
+
+  <!-- 内容 -->
+  <div class="body">
+
+    <!-- 第一性原理 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">第一性原理</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="section-desc">设计决策的最底层原则 — 所有规范不可与之矛盾</div>
+      <div class="principles">
+        <div class="principle">
+          <div class="principle-keyword">克制</div>
+          <div class="principle-body">
+            <div class="principle-name">克制 > 装饰</div>
+            <div class="principle-desc">每个元素必须有明确目的。删除不影响理解的装饰，留下的每个像素都在做叙事工作。</div>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-keyword">锐度</div>
+          <div class="principle-body">
+            <div class="principle-name">锐度 > 模糊</div>
+            <div class="principle-desc">边界清晰、焦点明确。信息层级通过字号、间距、留白区分，不靠阴影和渐变。</div>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-keyword">诚实</div>
+          <div class="principle-body">
+            <div class="principle-name">诚实 > 套路</div>
+            <div class="principle-desc">反 AI 味。让别人看时不会一眼认出"这是 AI 生成的"。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 信息设计铁律 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">信息设计铁律</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="section-desc">不可违反的设计规则 — 触犯即返工</div>
+      <div class="rules">
+        <div class="rule">
+          <div class="rule-index">1</div>
+          <div class="rule-text">
+            <strong>一页一核心</strong>
+            <span class="note">每页最多 1 个 P0 信息，2-4 个支撑信息。超了就分页。</span>
+          </div>
+        </div>
+        <div class="rule">
+          <div class="rule-index">2</div>
+          <div class="rule-text">
+            <strong>空白是设计的，不是剩余的</strong>
+            <span class="note">用进度条、徽章、分割线激活空白。空白不等于空洞。</span>
+          </div>
+        </div>
+        <div class="rule">
+          <div class="rule-index">3</div>
+          <div class="rule-text">
+            <strong>强调色 ≤10%</strong>
+            <span class="note">陶土色一页一处焦点。多焦点 = 无焦点。</span>
+          </div>
+        </div>
+        <div class="rule">
+          <div class="rule-index">4</div>
+          <div class="rule-text">
+            <strong>无装饰性元素</strong>
+            <span class="note">图标只在有语义时使用。每个区域一个大想法，不需要一堆小 UI 解释自己。</span>
+          </div>
+        </div>
+        <div class="rule">
+          <div class="rule-index">5</div>
+          <div class="rule-text">
+            <strong>50% 视觉率</strong>
+            <span class="note">每屏至少 50% 是视觉元素（图标/图表/色块/动效），不是纯文字。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 反 AI 味检查 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-title">反 AI 味检查清单</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="section-desc">逐项检查 — 任一命中即返工</div>
+      <div class="checklist">
+        <div class="check-item">
+          <div class="check-icon"></div>
+          无阴影
+        </div>
+        <div class="check-item">
+          <div class="check-icon"></div>
+          无渐变
+        </div>
+        <div class="check-item">
+          <div class="check-icon"></div>
+          无 Emoji
+        </div>
+        <div class="check-item">
+          <div class="check-icon"></div>
+          无圆角滥用
+        </div>
+        <div class="check-item">
+          <div class="check-icon"></div>
+          无居中偏执
+        </div>
+        <div class="check-item">
+          <div class="check-icon"></div>
+          无卡片堆砌
+        </div>
+      </div>
+    </div>
+
+    <!-- 默认决策流程 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-title">默认决策流程</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="section-desc">无具体技能指导时的设计路径 — 6 步从内容到输出</div>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-dot">1</div>
+          <div class="flow-content">
+            <div class="flow-label">内容识别</div>
+            <div class="flow-desc">判断内容元素类型 — 数据 / 流程 / 清单 / 洞察</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot">2</div>
+          <div class="flow-content">
+            <div class="flow-label">情绪气质</div>
+            <div class="flow-desc">紧迫 / 中性 / 庆祝 / 沉思</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot">3</div>
+          <div class="flow-content">
+            <div class="flow-label">阅读方式</div>
+            <div class="flow-desc">扫视 / 阅读 / 凝视</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot">4</div>
+          <div class="flow-content">
+            <div class="flow-label">密度与版式</div>
+            <div class="flow-desc">由情绪 × 阅读决定 — 表格 / 网格 / 列表 / 时间线</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot">5</div>
+          <div class="flow-content">
+            <div class="flow-label">可视化叠加</div>
+            <div class="flow-desc">前注意特征编码 + 格式塔组织</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot">6</div>
+          <div class="flow-content">
+            <div class="flow-label">焦点输出</div>
+            <div class="flow-desc">强调色用在一处 — 焦点类型 → 表达形式</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 关系说明 -->
+    <div class="relation">
+      <div class="relation-title">与 mino-frontend 的关系</div>
+      <div class="relation-row">
+        <div class="relation-item"><strong>本文件</strong> = 宪法（所有技能必须遵守的底线）</div>
+        <div class="relation-item"><strong>references/</strong> = 地方法规（具体执行细节）</div>
+        <div class="relation-item"><strong>关系</strong>：原则提供"为什么"，技能提供"怎么做"</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部信息条 -->
+  <div class="bottom-strip">
+    <div class="left">Mino Design System</div>
+    <div class="center">V6.0 · mino-frontend + OpenAI Codex</div>
+    <div class="right">2026-04-04 · 内部规范</div>
+  </div>
+</div>
+
+<script>
+  // Section 滚动淡入
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.section').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
