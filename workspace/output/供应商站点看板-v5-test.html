@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>供应商站点看板 v5 - 测试版</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+    <style>
+        body { font-family: system-ui; padding: 20px; }
+        .kpi-card { display: inline-block; margin: 10px; padding: 20px; border: 1px solid #ccc; }
+        #chart-container { width: 600px; height: 400px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>测试：数据加载和图表渲染</h1>
+    
+    <div id="kpi-container"></div>
+    <div id="chart-container"></div>
+    
+    <script>
+        // 简化数据（前5条）
+        const testRawData = [
+            { "站点": 61, "站点分布数": 5, "公司名称": "河北锦瑞信息科技有限公司", "供应商简称": "锦瑞", "职场": "南城站点", "模式": "人工", "项目": "POP代付&生意卡", "业务线": "其他", "区域": "华北", "城市能级": "三线", "Q1 平均人力": 4.0, "站点所在省": "河北省", "站点所在市": "定州市", "站点所在区（县）": "南城区", "站点详细地址": "通达花园酒店北邻3层", "1月": 4, "2月": 4, "3月": 4 },
+            { "站点": 47, "站点分布数": 3, "公司名称": "曲靖翰锐信息技术有限公司", "供应商简称": "翰锐", "职场": "盘龙站点", "模式": "人工", "项目": "白条分期", "业务线": "信用卡", "区域": "华西", "城市能级": "新一线", "Q1 平均人力": 16.0, "站点所在省": "云南省", "站点所在市": "昆明市", "站点所在区（县）": "盘龙区", "站点详细地址": "昆明市盘龙区北市区财富中心A座5楼501", "1月": 15, "2月": 15, "3月": 18 },
+            { "站点": 89, "站点分布数": 5, "公司名称": "毛毛虫（昆山）商务咨询有限公司", "供应商简称": "毛毛虫", "职场": "蚌山站点", "模式": "人工", "项目": "白条分期", "业务线": "信用卡", "区域": "华东", "城市能级": "三线", "Q1 平均人力": 4.7, "站点所在省": "安徽省", "站点所在市": "蚌埠市", "站点所在区（县）": "蚌山区", "站点详细地址": "跨境电子商务产业园2期6楼603", "1月": 0, "2月": 0, "3月": 14 },
+            { "站点": 11, "站点分布数": 1, "公司名称": "北京创世伙伴科技有限公司", "供应商简称": "嘉信", "职场": "西安高新站点", "模式": "人工", "项目": "财富固收", "业务线": "财富", "区域": "华西", "城市能级": "新一线", "Q1 平均人力": 56.3, "站点所在省": "陕西省", "站点所在市": "西安市", "站点所在区（县）": "高新区", "站点详细地址": "科技路37号海星城市广场B座805-1702室", "1月": 60, "2月": 57, "3月": 52 },
+            { "站点": 12, "站点分布数": 2, "公司名称": "北京创世伙伴科技有限公司", "供应商简称": "嘉信", "职场": "盐湖职场", "模式": "人工", "项目": "财富固收", "业务线": "财富", "区域": "华北", "城市能级": "三线", "Q1 平均人力": 14.7, "站点所在省": "山西省", "站点所在市": "运城市", "站点所在区（县）": "盐湖区", "站点详细地址": "天泰商务大厦10楼1009室", "1月": 20, "2月": 12, "3月": 12 }
+        ];
+
+        function mergeWorkplaces(data) {
+            const merged = new Map();
+            data.forEach(row => {
+                const key = row["供应商简称"] + "-" + row["职场"];
+                if (!merged.has(key)) {
+                    merged.set(key, {
+                        "供应商简称": row["供应商简称"],
+                        "职场": row["职场"],
+                        "省份": row["站点所在省"],
+                        "城市": row["站点所在市"],
+                        "模式": row["模式"],
+                        "项目列表": new Set([row["项目"]]),
+                        "1月": row["1月"] || 0,
+                        "2月": row["2月"] || 0,
+                        "3月": row["3月"] || 0,
+                        "Q1 平均人力": row["Q1 平均人力"] || 0
+                    });
+                } else {
+                    const wp = merged.get(key);
+                    wp["1月"] += row["1月"] || 0;
+                    wp["2月"] += row["2月"] || 0;
+                    wp["3月"] += row["3月"] || 0;
+                    wp["Q1 平均人力"] += row["Q1 平均人力"] || 0;
+                    wp["项目列表"].add(row["项目"]);
+                }
+            });
+            return Array.from(merged.values()).map(wp => ({
+                ...wp,
+                "项目列表": Array.from(wp["项目列表"])
+            }));
+        }
+
+        function calculateKPIs(workplaces) {
+            const total = workplaces.reduce((sum, wp) => sum + (wp["3月"] || 0), 0);
+            const workplaceCount = workplaces.length;
+            const suppliers = new Set(workplaces.map(wp => wp["供应商简称"])).size;
+            const projects = new Set(workplaces.flatMap(wp => wp["项目列表"])).size;
+            
+            return { total, workplaceCount, suppliers, projects };
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                console.log('开始测试...');
+                
+                // 合并数据
+                const workplaces = mergeWorkplaces(testRawData);
+                console.log('合并后职场数:', workplaces.length);
+                console.log('示例职场:', workplaces[0]);
+                
+                // 计算 KPI
+                const kpis = calculateKPIs(workplaces);
+                console.log('KPIs:', kpis);
+                
+                // 显示 KPI
+                const kpiContainer = document.getElementById('kpi-container');
+                kpiContainer.innerHTML = `
+                    <div class="kpi-card">总人力: ${kpis.total}</div>
+                    <div class="kpi-card">职场数: ${kpis.workplaceCount}</div>
+                    <div class="kpi-card">供应商数: ${kpis.suppliers}</div>
+                    <div class="kpi-card">项目数: ${kpis.projects}</div>
+                `;
+                
+                // 渲染图表
+                const chart = echarts.init(document.getElementById('chart-container'));
+                chart.setOption({
+                    title: { text: '测试图表 - 职场人力分布' },
+                    tooltip: {},
+                    xAxis: { 
+                        type: 'category',
+                        data: workplaces.map(wp => wp["供应商简称"] + '-' + wp["职场"]) 
+                    },
+                    yAxis: { type: 'value' },
+                    series: [{
+                        type: 'bar',
+                        data: workplaces.map(wp => wp["3月"]),
+                        itemStyle: { color: '#5b7fa8' }
+                    }]
+                });
+                
+                console.log('✅ 测试成功完成！');
+                
+            } catch (error) {
+                console.error('❌ 测试失败:', error);
+                document.getElementById('kpi-container').innerHTML = '<div style="color:red;">测试失败: ' + error.message + '</div>';
+            }
+        });
+    </script>
+</body>
+</html>

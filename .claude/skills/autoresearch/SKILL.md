@@ -1,6 +1,6 @@
 ---
 name: autoresearch
-description: "Autonomously optimize any Claude Code skill by running it repeatedly, scoring outputs against binary evals, mutating the prompt, and keeping improvements. Based on Karpathy's autoresearch methodology. Use when: optimize this skill, improve this skill, run autoresearch on, make this skill better, self-improve skill, benchmark skill, eval my skill, run evals on. Outputs: an improved SKILL.md, a results log, and a changelog of every mutation tried."
+description: "技能自动优化器 — 反复运行技能、评分输出、变异提示词、保留改进。基于 Karpathy 的 autoresearch 方法论。触发词：优化技能、改进技能、autoresearch、让技能更好、自改进技能、基准测试技能、评估技能。"
 ---
 
 # Autoresearch for Skills

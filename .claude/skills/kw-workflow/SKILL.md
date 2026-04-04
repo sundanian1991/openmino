@@ -1,6 +1,6 @@
 ---
 name: kw:workflow
-description: One-click complete Compound Knowledge workflow — from brainstorm to structured deliverables to knowledge compounding. Use when you want to thoroughly analyze a complex problem: brainstorm → plan → research → review → execute → compound learnings. Triggers on phrases like "完整分析这个问题", "帮我梳理一下", "知识工作流", "深度分析", "从零开始分析", "kw-workflow".
+description: 一键完整知识工作流 — 从头脑风暴到结构化交付到知识复利。触发词："完整分析这个问题"、"帮我梳理一下"、"知识工作流"、"深度分析"、"从零开始分析"、"kw-workflow"。
 argument-hint: "[problem or topic to analyze]"
 ---
 

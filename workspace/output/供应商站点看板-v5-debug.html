@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>供应商站点看板 v5 - 极简调试版</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: #f5f3ef; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: #111; color: #fff; padding: 24px; position: relative; }
+        .header::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: #E2725B; }
+        .header h1 { font-size: 24px; }
+        .kpi-section { margin: 24px 0; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .kpi-card { background: #fff; padding: 20px; border: 1px solid #e8e4df; }
+        .kpi-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .kpi-value { font-size: 28px; font-weight: bold; }
+        .chart-section { background: #fff; padding: 24px; margin: 16px 0; border: 1px solid #e8e4df; }
+        .chart-title { font-size: 16px; font-weight: bold; margin-bottom: 16px; }
+        #trend-chart { width: 100%; height: 300px; }
+        .debug { background: #fff3cd; padding: 16px; margin: 16px 0; border: 1px solid #ffc107; }
+        .debug pre { font-size: 12px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>供应商站点看板 v5</h1>
+            <div>极简调试版 - 直接显示数据和图表</div>
+        </div>
+        
+        <div style="margin: 16px 0;">
+            <label>月份：<select id="filter-month">
+                <option value="1">1月</option>
+                <option value="2">2月</option>
+                <option value="3" selected>3月</option>
+            </select></label>
+        </div>
+
+        <div class="kpi-section">
+            <div class="kpi-grid">
+                <div class="kpi-card"><div class="kpi-label">总人力</div><div class="kpi-value" id="kpi-total-headcount">-</div></div>
+                <div class="kpi-card"><div class="kpi-label">职场数</div><div class="kpi-value" id="kpi-workplace-count">-</div></div>
+                <div class="kpi-card"><div class="kpi-label">供应商数</div><div class="kpi-value" id="kpi-supplier-count">-</div></div>
+                <div class="kpi-card"><div class="kpi-label">项目数</div><div class="kpi-value" id="kpi-project-count">-</div></div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">月度人力趋势</div>
+            <div id="trend-chart"></div>
+        </div>
+
+        <div class="debug">
+            <h3>调试信息</h3>
+            <pre id="debug-output">等待初始化...</pre>
+        </div>
+    </div>
+
+    <script>
+        const debugLog = [];
+        function log(msg) { debugLog.push(msg); console.log('[调试]', msg); document.getElementById('debug-output').textContent = debugLog.join('\n'); }
+
+        const rawData = [
+            { "站点": 61, "供应商简称": "锦瑞", "职场": "南城站点", "项目": "POP代付&生意卡", "站点所在省": "河北省", "站点所在市": "定州市", "1月": 4, "2月": 4, "3月": 4, "Q1 平均人力": 4.0 },
+            { "站点": 47, "供应商简称": "翰锐", "职场": "盘龙站点", "项目": "白条分期", "站点所在省": "云南省", "站点所在市": "昆明市", "1月": 15, "2月": 15, "3月": 18, "Q1 平均人力": 16.0 },
+            { "站点": 89, "供应商简称": "毛毛虫", "职场": "蚌山站点", "项目": "白条分期", "站点所在省": "安徽省", "站点所在市": "蚌埠市", "1月": 0, "2月": 0, "3月": 14, "Q1 平均人力": 4.7 },
+            { "站点": 11, "供应商简称": "嘉信", "职场": "西安高新站点", "项目": "财富固收", "站点所在省": "陕西省", "站点所在市": "西安市", "1月": 60, "2月": 57, "3月": 52, "Q1 平均人力": 56.3 },
+            { "站点": 12, "供应商简称": "嘉信", "职场": "盐湖职场", "项目": "财富固收", "站点所在省": "山西省", "站点所在市": "运城市", "1月": 20, "2月": 12, "3月": 12, "Q1 平均人力": 14.7 },
+            { "站点": 44, "供应商简称": "汇讯", "职场": "西陵站点", "项目": "财富固收", "站点所在省": "湖北省", "站点所在市": "宜昌市", "1月": 30, "2月": 28, "3月": 25, "Q1 平均人力": 27.7 },
+            { "站点": 58, "供应商简称": "毅航", "职场": "蜀山站点", "项目": "财富固收", "站点所在省": "安徽省", "站点所在市": "合肥市", "1月": 68, "2月": 68, "3月": 98, "Q1 平均人力": 78.0 }
+        ];
+
+        log('数据加载完成：' + rawData.length + '条');
+
+        function mergeWorkplaces(data) {
+            const merged = new Map();
+            data.forEach(row => {
+                const key = row["供应商简称"] + "-" + row["职场"];
+                if (!merged.has(key)) {
+                    merged.set(key, { "供应商简称": row["供应商简称"], "职场": row["职场"], "省份": row["站点所在省"], "城市": row["站点所在市"], "项目列表": [row["项目"]], "1月": row["1月"]||0, "2月": row["2月"]||0, "3月": row["3月"]||0, "Q1 平均人力": row["Q1 平均人力"]||0 });
+                } else {
+                    const wp = merged.get(key);
+                    wp["1月"] += row["1月"]||0; wp["2月"] += row["2月"]||0; wp["3月"] += row["3月"]||0; wp["Q1 平均人力"] += row["Q1 平均人力"]||0;
+                    if(!wp["项目列表"].includes(row["项目"])) wp["项目列表"].push(row["项目"]);
+                }
+            });
+            return Array.from(merged.values());
+        }
+
+        const workplaces = mergeWorkplaces(rawData);
+        log('合并后职场数：' + workplaces.length);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const month = parseInt(document.getElementById('filter-month').value);
+            log('当前月份：' + month + '月');
+
+            const total = workplaces.reduce((s, wp) => s + (wp[month+'月']||0), 0);
+            document.getElementById('kpi-total-headcount').textContent = total;
+            document.getElementById('kpi-workplace-count').textContent = workplaces.length;
+            document.getElementById('kpi-supplier-count').textContent = new Set(workplaces.map(wp=>wp["供应商简称"])).size;
+            document.getElementById('kpi-project-count').textContent = new Set(workplaces.flatMap(wp=>wp["项目列表"])).size;
+            log('KPI已更新');
+
+            const chart = echarts.init(document.getElementById('trend-chart'));
+            chart.setOption({
+                title: { text: '各职场人力分布', left: 'center' },
+                tooltip: { trigger: 'axis' },
+                xAxis: { type: 'category', data: workplaces.map(wp=>wp["供应商简称"]+'-'+wp["职场"]) },
+                yAxis: { type: 'value' },
+                series: [{ type: 'bar', data: workplaces.map(wp=>wp[month+'月']||0), itemStyle:{color:'#5b7fa8'} }]
+            });
+            log('图表渲染完成');
+
+            document.getElementById('filter-month').addEventListener('change', function() {
+                const m = parseInt(this.value);
+                const t = workplaces.reduce((s, wp) => s + (wp[m+'月']||0), 0);
+                document.getElementById('kpi-total-headcount').textContent = t;
+                chart.setOption({ series: [{ data: workplaces.map(wp=>wp[m+'月']||0) }] });
+            });
+        });
+    </script>
+</body>
+</html>
