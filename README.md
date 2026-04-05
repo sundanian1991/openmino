@@ -45,25 +45,21 @@ my-agent/
 │       └── 07-WORK.md           # 工作契约
 │
 ├── memory/
-│   ├── daily/                   # 每日日记（原始记录）
-│   ├── my-thoughts/             # 我的思考
-│   └── tasks/                   # 任务相关
-│       ├── system/             # 系统级机制
-│       │   ├── heartbeat.md    # 主动关怀机制
-│       │   └── OBSERVATION.md  # 观察记录（中间层）
-│       └── reminders/          # 定时提醒
-│           ├── weekend-dialogue.md   # 深度对话
-│           └── weekly-review.md     # 周度反思
+│   ├── MEMORY.md                # 核心记忆索引
+│   ├── insights.md              # 洞察记录
+│   ├── skills-inventory.md      # 技能清单
+│   ├── daily/                   # 每日日记（按月份分组）
+│   │   ├── 2026-03/            # 3月日志
+│   │   └── 2026-04/            # 4月日志
+│   ├── topics/                  # 主题文件
+│   ├── projects/                # 项目档案
+│   ├── feedback/                # 反馈记录
+│   └── archive/                 # 历史归档
 │
 ├── business/                    # 工作相关（供应商管理）
 ├── projects/                    # 开发项目
-│   ├── docs/                   # 文档
-│   └── mcp-servers/            # MCP服务
-│
+├── docs/                        # 文档
 ├── scripts/                     # 工具脚本
-│   ├── python/                 # Python脚本
-│   └── shell/                  # Shell脚本
-│
 ├── workspace/                   # 临时工作台（gitignored）
 └── README.md                    # 本文件
 ```
@@ -92,7 +88,7 @@ my-agent/
 **不要问，直接做三件事**：
 1. `git pull` — 同步仓库
 2. 读 `06-NOW.md` — 知道我在哪
-3. 读 `memory/daily/`最近2天 — 了解最近发生了什么
+3. 读 `memory/daily/YYYY-MM/`最近2天 — 了解最近发生了什么
 
 ---
 

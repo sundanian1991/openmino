@@ -17,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 日志路径
-const LOG_DIR = path.join(__dirname, '../../memory/active/tasks/monitoring');
+const LOG_DIR = path.join(__dirname, '../../memory/daily');
 const LOG_FILE = path.join(LOG_DIR, 'transparent-thinking.log');
 const ERROR_LOG = path.join(__dirname, '../../.claude/rules/reference/05-self-review.md');
 

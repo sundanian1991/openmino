@@ -1,10 +1,12 @@
 # 技能搜索规范
 
-**技能市场**：[claw123.ai](https://claw123.ai) — OpenClaw 精选技能导航站（5000+ 技能）
+**技能市场（中国镜像）**：[clawhub.ai](https://clawhub.ai) — **优先使用**（国内访问稳定）
+
+**备用市场**：[claw123.ai](https://claw123.ai) — OpenClaw 国际站
 
 **搜索方法**：
 
-> curl -s https://claw123.ai/api/skills.zh.json
+> curl -s https://clawhub.ai/api/skills.zh.json
 
 **字段说明**：`name`（技能名）、`description_zh`（中文描述）、`category_zh`（分类）、`url`（SKILL.md 源地址）
 

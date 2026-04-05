@@ -9,7 +9,7 @@ description: >
 
 ## 要做什么
 
-1. **读近期日志** — 今天 + 上次维护以来的所有 `memory/daily/YYYY-MM-DD.md`
+1. **读近期日志** — 今天 + 上次维护以来的所有 `memory/daily/YYYY-MM/YYYY-MM-DD.md`
 2. **更新 topic 文件** — 最近工作过的项目，把新经验、状态变更、决策同步到 `memory/topics/<name>.md`
 3. **更新核心记忆** — 提炼跨项目的新教训到 `.claude/rules/MEMORY-L1.md`；更新当前状态；清理过时信息
 4. **整理工作区** — 把散落的临时文件归档整理
