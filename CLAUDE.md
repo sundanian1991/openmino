@@ -104,11 +104,31 @@ skillsDir: ./.claude/skills
 
 ---
 
+## 🔄 自我改进
+
+基于 [self-improving-agent](https://github.com/peterskoett/self-improving-agent) 记录学习与错误。
+
+**触发场景**（自动记录到 `.learnings/`）：
+| 场景 | 记录到 | 示例 |
+|------|--------|------|
+| 被纠正 | `.learnings/LEARNINGS.md` | "不对，应该是..."、"你搞错了" |
+| 操作失败 | `.learnings/ERRORS.md` | 命令报错、API 失败、异常 |
+| 学到新方法 | `.learnings/LEARNINGS.md` | 发现更好做法、知识更新 |
+| 用户想要新功能 | `.learnings/FEATURE_REQUESTS.md` | "能不能也..."、"我希望..." |
+
+**每周整理**（`/update-memory`）：
+- 有价值的 → 提炼到 `memory/insights.md`
+- 高频模式 → 升级到 `memory/MEMORY.md`
+- 已转移的 → 清空 `.learnings/` 记录
+
+---
+
 ## ✅ 会话结束检查
 
-- [ ] 更新 NOW.md
+- [ ] 更新 06-NOW.md
+- [ ] 检查是否需要记录到 `.learnings/`
 - [ ] `git commit && git push`
 
 ---
 
-*最后更新：2026-03-29*
+*最后更新：2026-04-05 — 新增自我改进机制*
