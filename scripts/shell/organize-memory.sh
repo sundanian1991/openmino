@@ -20,14 +20,14 @@ main() {
         exit 1
     fi
 
-    # 列出最近的日记文件
+    # 列出最近的日记文件（按月分组）
     echo "📅 最近的日记文件："
     echo "---"
-    ls -lt "$DAILY_DIR" | head -6 | tail -5 | awk '{print "  " $9}'
+    find "$DAILY_DIR" -name "*.md" -type f -exec ls -lt {} + 2>/dev/null | head -6 | tail -5 | awk '{print "  " $9}'
     echo ""
 
     # 统计日记数量
-    daily_count=$(ls -1 "$DAILY_DIR"/*.md 2>/dev/null | wc -l | tr -d ' ')
+    daily_count=$(find "$DAILY_DIR" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     echo "📊 日记文件总数：$daily_count"
     echo ""
 

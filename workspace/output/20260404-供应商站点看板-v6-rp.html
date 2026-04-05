@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>供应商站点看板 V6-RP | 日常汇报版</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <style>
+    :root {
+      --bg: #f5f3f0;
+      --card: #ffffff;
+      --text: #2e2c2a;
+      --text2: #6f6960;
+      --text3: #a09888;
+      --border: #e8e4de;
+      --accent: #c26d3a;
+      --teal: #2e8b6e;
+      --coral: #c25030;
+      --sky: #3a7ab8;
+      --amber: #b88018;
+      --radius: 2px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+    /* Header */
+    .header {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .header h1 span { color: var(--accent); font-weight: 700; }
+    .header-meta { color: var(--text2); font-size: 13px; }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-group label {
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 500;
+    }
+    .filter-group select, .filter-group input {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      background: var(--card);
+      color: var(--text);
+      min-width: 120px;
+    }
+    .filter-group select:focus, .filter-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .btn {
+      padding: 8px 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #a85a2e; }
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--bg); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--card);
+      padding: 4px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      border-radius: var(--radius);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab:hover { color: var(--text); background: var(--bg); }
+    .tab.active { color: white; background: var(--accent); }
+
+    /* Tab Content */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Cards Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+      margin: 8px 0;
+    }
+    .card-change {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .card-change.up { color: var(--teal); }
+    .card-change.down { color: var(--coral); }
+    .card-accent { border-left: 3px solid var(--accent); }
+    .card-teal { border-left: 3px solid var(--teal); }
+    .card-coral { border-left: 3px solid var(--coral); }
+    .card-sky { border-left: 3px solid var(--sky); }
+    .card-amber { border-left: 3px solid var(--amber); }
+
+    /* Risk Cards */
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .risk-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .risk-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .risk-high { background: #fde8e3; color: var(--coral); }
+    .risk-medium { background: #fef3e2; color: var(--amber); }
+    .risk-low { background: #e6f4ef; color: var(--teal); }
+    .risk-info { flex: 1; }
+    .risk-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .risk-count {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .risk-label {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    /* Chart Container */
+    .chart-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .chart-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .chart-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .chart-container { height: 300px; }
+    .chart-container-lg { height: 400px; }
+
+    /* Insight Panel */
+    .insight-panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .insight-panel h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .insight-list { list-style: none; }
+    .insight-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .insight-list li:last-child { border-bottom: none; }
+    .insight-badge {
+      padding: 4px 8px;
+      border-radius: var(--radius);
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-high { background: #fde8e3; color: var(--coral); }
+    .badge-medium { background: #fef3e2; color: var(--amber); }
+    .badge-low { background: #e6f4ef; color: var(--teal); }
+    .badge-info { background: #e8f0f8; color: var(--sky); }
+    .insight-text { flex: 1; font-size: 13px; color: var(--text); }
+
+    /* Table */
+    .table-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .table-card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-weight: 600;
+      color: var(--text2);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+    }
+    tr:hover { background: var(--bg); }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+
+    /* Status Tags */
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius);
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .tag-success { background: #e6f4ef; color: var(--teal); }
+    .tag-warning { background: #fef3e2; color: var(--amber); }
+    .tag-danger { background: #fde8e3; color: var(--coral); }
+    .tag-info { background: #e8f0f8; color: var(--sky); }
+
+    /* Data Detail Tab */
+    .detail-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .detail-search {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+    }
+    .detail-search input {
+      flex: 1;
+      max-width: 300px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+    .detail-toggle {
+      display: flex;
+      gap: 4px;
+      background: var(--bg);
+      padding: 4px;
+      border-radius: var(--radius);
+    }
+    .detail-toggle button {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      border-radius: var(--radius);
+      color: var(--text2);
+    }
+    .detail-toggle button.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* Full width chart */
+    .chart-full {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .chart-full h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 12px; }
+      .header-top { flex-direction: column; gap: 12px; align-items: flex-start; }
+      .filters { flex-direction: column; align-items: stretch; }
+      .tabs { flex-wrap: wrap; }
+      .tab { flex: 1 1 auto; padding: 10px 12px; font-size: 12px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .chart-row { grid-template-columns: 1fr; }
+      .risk-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Loading */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      color: var(--text3);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .pagination button {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      border-radius: var(--radius);
+      font-size: 12px;
+    }
+    .pagination button:hover { background: var(--bg); }
+    .pagination button.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <h1>供应商站点看板 <span>V6-RP</span></h1>
+          <div class="header-meta">日常汇报版 | 数据更新时间: <span id="updateTime"></span></div>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="filter-group">
+          <label>月份</label>
+          <select id="monthFilter">
+            <option value="3">3月（最新）</option>
+            <option value="2">2月</option>
+            <option value="1">1月</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>省份</label>
+          <select id="provinceFilter">
+            <option value="">全部省份</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>供应商</label>
+          <select id="supplierFilter">
+            <option value="">全部供应商</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>产品线</label>
+          <select id="productFilter">
+            <option value="">全部产品线</option>
+          </select>
+        </div>
+        <button class="btn" onclick="resetFilters()">重置筛选</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="overview">全局大盘</button>
+      <button class="tab" data-tab="workplace">职场分析</button>
+      <button class="tab" data-tab="supplier">供应商分析</button>
+      <button class="tab" data-tab="product">产品线分析</button>
+      <button class="tab" data-tab="detail">数据明细</button>
+    </div>
+
+    <!-- Tab 1: Overview -->
+    <div id="overview" class="tab-content active">
+      <!-- KPI Cards -->
+      <div class="card-grid">
+        <div class="card card-accent">
+          <div class="card-header">
+            <span class="card-title">总站点数</span>
+          </div>
+          <div class="card-value" id="totalSites">0</div>
+          <div class="card-change">
+            <span id="sitesChange">-</span>
+          </div>
+        </div>
+        <div class="card card-teal">
+          <div class="card-header">
+            <span class="card-title">总在岗人力</span>
+          </div>
+          <div class="card-value" id="totalHeadcount">0</div>
+          <div class="card-change up">
+            <span id="headcountChange">-</span>
+          </div>
+        </div>
+        <div class="card card-sky">
+          <div class="card-header">
+            <span class="card-title">供应商数量</span>
+          </div>
+          <div class="card-value" id="totalSuppliers">0</div>
+          <div class="card-change">
+            <span>覆盖全部业务线</span>
+          </div>
+        </div>
+        <div class="card card-amber">
+          <div class="card-header">
+            <span class="card-title">风险站点数</span>
+          </div>
+          <div class="card-value" id="riskSites">0</div>
+          <div class="card-change down">
+            <span id="riskPercent">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10 Risk Dimensions -->
+      <div class="insight-panel">
+        <h3>10大风险维度监控</h3>
+        <div class="risk-grid" id="riskGrid">
+          <!-- Risk cards will be generated here -->
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="chart-row">
+        <div class="chart-card">
+          <h3>月度人力趋势</h3>
+          <div id="trendChart" class="chart-container"></div>
+        </div>
+        <div class="chart-card">
+          <h3>人力规模分布</h3>
+          <div id="distributionChart" class="chart-container"></div>
+        </div>
+      </div>
+
+      <!-- Key Insights -->
+      <div class="insight-panel">
+        <h3>关键洞察</h3>
+        <ul class="insight-list" id="insightList">
+          <!-- Insights will be generated here -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab 2: Workplace Analysis -->
+    <div id="workplace" class="tab-content">
+      <div class="chart-row">
+        <div class="chart-card">
+          <h3>职场规模分布</h3>
+          <div id="workplacePieChart" class="chart-container"></div>
+        </div>
+        <div class="chart-card">
+          <h3>职场地理分布</h3>
+          <div id="workplaceGeoChart" class="chart-container"></div>
+        </div>
+      </div>
+
+      <div class="chart-full">
+        <h3>职场 x 业务线矩阵（人力）</h3>
+        <div id="workplaceProductHeatmap" class="chart-container-lg"></div>
+      </div>
+
+      <div class="table-card">
+        <h3>职场排名（按人力规模）</h3>
+        <table id="workplaceRankTable">
+          <thead>
+            <tr>
+              <th>排名</th>
+              <th>职场</th>
+              <th>供应商</th>
+              <th>项目</th>
+              <th>业务线</th>
+              <th class="text-right">人力</th>
+              <th>风险标签</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 3: Supplier Analysis -->
+    <div id="supplier" class="tab-content">
+      <div class="chart-row">
+        <div class="chart-card">
+          <h3>供应商人力排名 TOP15</h3>
+          <div id="supplierRankChart" class="chart-container"></div>
+        </div>
+        <div class="chart-card">
+          <h3>供应商 x 产品线热力图</h3>
+          <div id="supplierProductHeatmap" class="chart-container"></div>
+        </div>
+      </div>
+
+      <div class="chart-full">
+        <h3>供应商月度趋势 TOP10</h3>
+        <div id="supplierTrendChart" class="chart-container-lg"></div>
+      </div>
+
+      <div class="card-grid" style="margin-top: 20px;">
+        <div class="card card-teal">
+          <div class="card-header">
+            <span class="card-title">增长最快 TOP5</span>
+          </div>
+          <div id="growthTop5" style="margin-top: 12px;"></div>
+        </div>
+        <div class="card card-coral">
+          <div class="card-header">
+            <span class="card-title">下降最快 TOP5</span>
+          </div>
+          <div id="declineTop5" style="margin-top: 12px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Product Line Analysis -->
+    <div id="product" class="tab-content">
+      <div class="chart-row">
+        <div class="chart-card">
+          <h3>产品线人力占比</h3>
+          <div id="productPieChart" class="chart-container"></div>
+        </div>
+        <div class="chart-card">
+          <h3>产品线供应商数量</h3>
+          <div id="productSupplierChart" class="chart-container"></div>
+        </div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card">
+          <h3>产品线 x 运营模式</h3>
+          <div id="productModeChart" class="chart-container"></div>
+        </div>
+        <div class="chart-card">
+          <h3>产品线地域分布</h3>
+          <div id="productRegionChart" class="chart-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Data Detail -->
+    <div id="detail" class="tab-content">
+      <div class="detail-toolbar">
+        <div class="detail-search">
+          <input type="text" id="searchInput" placeholder="搜索站点、供应商、城市..." onkeyup="searchData()">
+          <button class="btn" onclick="exportCSV()">导出 CSV</button>
+        </div>
+        <div class="detail-toggle">
+          <button class="active" onclick="toggleView('merged')">职场合并视图</button>
+          <button onclick="toggleView('raw')">原始记录</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <table id="detailTable">
+          <thead>
+            <tr>
+              <th>站点</th>
+              <th>供应商</th>
+              <th>职场</th>
+              <th>模式</th>
+              <th>项目</th>
+              <th>业务线</th>
+              <th>区域</th>
+              <th>省份</th>
+              <th>城市</th>
+              <th class="text-right">1月</th>
+              <th class="text-right">2月</th>
+              <th class="text-right">3月</th>
+              <th>风险标签</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Raw Data from 供应商站点.md
+    const rawData = [
+      {id:61,company:"河北锦瑞信息科技有限公司",short:"锦瑞",site:"南城站点",mode:"人工",project:"POP代付&生意卡",product:"其他",region:"华北",cityLevel:"三线",province:"河北省",city:"定州市",district:"南城区",m1:4,m2:4,m3:4},
+      {id:47,company:"曲靖翰锐信息技术有限公司",short:"翰锐",site:"盘龙站点",mode:"人工",project:"白条分期",product:"信用卡",region:"华西",cityLevel:"新一线",province:"云南省",city:"昆明市",district:"盘龙区",m1:15,m2:15,m3:18},
+      {id:89,company:"毛毛虫（昆山）商务咨询有限公司",short:"毛毛虫",site:"蚌山站点",mode:"人工",project:"白条分期",product:"信用卡",region:"华东",cityLevel:"三线",province:"安徽省",city:"蚌埠市",district:"蚌山区",m1:0,m2:0,m3:14},
+      {id:11,company:"北京创世伙伴科技有限公司",short:"嘉信",site:"西安高新站点",mode:"人工",project:"财富固收",product:"财富",region:"华西",cityLevel:"新一线",province:"陕西省",city:"西安市",district:"高新区",m1:60,m2:57,m3:52},
+      {id:12,company:"北京创世伙伴科技有限公司",short:"嘉信",site:"盐湖职场",mode:"人工",project:"财富固收",product:"财富",region:"华北",cityLevel:"三线",province:"山西省",city:"运城市",district:"盐湖区",m1:20,m2:12,m3:12},
+      {id:44,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"西陵站点",mode:"人工",project:"财富固收",product:"财富",region:"华中",cityLevel:"三线",province:"湖北省",city:"宜昌市",district:"西陵区",m1:30,m2:28,m3:25},
+      {id:58,company:"合肥毅航通信技术有限公司",short:"毅航",site:"蜀山站点",mode:"人工",project:"财富固收",product:"财富",region:"华东",cityLevel:"新一线",province:"安徽省",city:"合肥市",district:"蜀山区",m1:68,m2:68,m3:98},
+      {id:90,company:"毛毛虫（昆山）商务咨询有限公司",short:"毛毛虫",site:"庐阳站点",mode:"人工",project:"财富固收",product:"财富",region:"华东",cityLevel:"新一线",province:"安徽省",city:"合肥市",district:"庐阳区",m1:44,m2:41,m3:56},
+      {id:91,company:"毛毛虫（昆山）商务咨询有限公司",short:"毛毛虫",site:"蚌山站点",mode:"人工",project:"财富固收",product:"财富",region:"华东",cityLevel:"三线",province:"安徽省",city:"蚌埠市",district:"蚌山区",m1:15,m2:9,m3:11},
+      {id:17,company:"河北秦冀德辰科技有限公司",short:"德辰",site:"辛集站点",mode:"人工",project:"采购融资",product:"企金",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"辛集市",m1:2,m2:3,m3:5},
+      {id:100,company:"泉州市速腾网络科技有限公司",short:"速腾",site:"泰山站点",mode:"人工",project:"采购融资",product:"企金",region:"华东",cityLevel:"三线",province:"山东省",city:"泰安市",district:"泰山区",m1:0,m2:0,m3:5},
+      {id:96,company:"四川保全界企业管理有限公司",short:"保全界",site:"余姚职场",mode:"人工",project:"车抵贷",product:"车抵贷",region:"华东",cityLevel:"三线",province:"浙江省",city:"宁波市",district:"余姚市",m1:17,m2:11,m3:11},
+      {id:97,company:"四川保全界企业管理有限公司",short:"保全界",site:"包河职场",mode:"人工",project:"车抵贷",product:"车抵贷",region:"华东",cityLevel:"新一线",province:"安徽省",city:"合肥市",district:"包河区",m1:0,m2:16,m3:16},
+      {id:98,company:"浙江阅文企业管理咨询有限公司",short:"阅文",site:"义乌职场",mode:"人工",project:"车抵贷",product:"车抵贷",region:"华东",cityLevel:"三线",province:"浙江省",city:"金华市",district:"义乌市",m1:0,m2:0,m3:16},
+      {id:10,company:"上海岐力信息科技有限公司",short:"岐力",site:"红谷滩站点",mode:"人工",project:"金企融合",product:"金条",region:"华东",cityLevel:"二线",province:"江西省",city:"南昌市",district:"红谷滩区",m1:20,m2:35,m3:45},
+      {id:15,company:"河北秦冀德辰科技有限公司",short:"德辰",site:"辛集站点",mode:"人工",project:"金企融合",product:"金条",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"辛集市",m1:55,m2:35,m3:35},
+      {id:18,company:"河北秦冀德辰科技有限公司",short:"德辰",site:"无极站点",mode:"人工",project:"金企融合",product:"金条",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"无极县",m1:15,m2:15,m3:15},
+      {id:48,company:"湖北伽玛科技有限公司",short:"伽玛",site:"利辛站点",mode:"人工",project:"金企融合",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"亳州市",district:"利辛县",m1:86,m2:62,m3:70},
+      {id:102,company:"陕西华啸网络科技有限公司",short:"华啸",site:"华啸职场",mode:"人工",project:"金企融合",product:"金条",region:"华东",cityLevel:"三线",province:"江苏省",city:"苏州市",district:"昆山市花桥镇",m1:55,m2:20,m3:10},
+      {id:103,company:"陕西华啸网络科技有限公司",short:"华啸",site:"华啸职场",mode:"人工",project:"金企融合",product:"金条",region:"华东",cityLevel:"三线",province:"山东省",city:"临沂市",district:"沂水县",m1:0,m2:10,m3:30},
+      {id:8,company:"上海岐力信息科技有限公司",short:"岐力",site:"红谷滩站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"二线",province:"江西省",city:"南昌市",district:"红谷滩区",m1:55,m2:77,m3:69},
+      {id:9,company:"上海岐力信息科技有限公司",short:"岐力",site:"南昌县站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"二线",province:"江西省",city:"南昌市",district:"南昌县",m1:0,m2:0,m3:24},
+      {id:24,company:"河北博岳通信技术股份有限公司",short:"博岳",site:"新华站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"新华区",m1:35,m2:35,m3:35},
+      {id:25,company:"河北博岳通信技术股份有限公司",short:"博岳",site:"石家庄高新站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"高新区",m1:55,m2:60,m3:55},
+      {id:28,company:"石家庄赛维斯通信信息咨询有限公司",short:"赛维斯",site:"桥西站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"桥西区",m1:55,m2:50,m3:65},
+      {id:29,company:"石家庄赛维斯通信信息咨询有限公司",short:"赛维斯",site:"赵县站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"赵县",m1:45,m2:40,m3:50},
+      {id:30,company:"石家庄赛维斯通信信息咨询有限公司",short:"赛维斯",site:"中宁站点",mode:"人工",project:"金条",product:"金条",region:"华西",cityLevel:"三线",province:"宁夏回族自治区",city:"中卫市",district:"中宁县",m1:23,m2:20,m3:30},
+      {id:31,company:"石家庄赛维斯通信信息咨询有限公司",short:"赛维斯",site:"金凤站点",mode:"人机",project:"金条",product:"金条",region:"华西",cityLevel:"三线",province:"宁夏回族自治区",city:"银川市",district:"金凤区",m1:17,m2:20,m3:22},
+      {id:32,company:"石家庄赛维斯通信信息咨询有限公司",short:"赛维斯",site:"沙坡头站点",mode:"人机",project:"金条",product:"金条",region:"华西",cityLevel:"三线",province:"宁夏回族自治区",city:"中卫市",district:"沙坡头区",m1:15,m2:15,m3:17},
+      {id:33,company:"石家庄赛维斯通信信息咨询有限公司",short:"赛维斯",site:"中宁站点",mode:"人机",project:"金条",product:"金条",region:"华西",cityLevel:"三线",province:"宁夏回族自治区",city:"中卫市",district:"中宁县",m1:25,m2:26,m3:29},
+      {id:34,company:"重庆人和数据研究院有限公司",short:"人和",site:"鸡东站点",mode:"人工",project:"金条",product:"金条",region:"东北",cityLevel:"三线",province:"黑龙江省",city:"鸡西市",district:"鸡冠区",m1:50,m2:40,m3:40},
+      {id:35,company:"重庆人和数据研究院有限公司",short:"人和",site:"晋城开发区站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"三线",province:"山西省",city:"晋城市",district:"开发区",m1:20,m2:20,m3:20},
+      {id:36,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"合肥站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"新一线",province:"安徽省",city:"合肥市",district:"庐阳区",m1:35,m2:28,m3:16},
+      {id:38,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"九原站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"三线",province:"内蒙古自治区",city:"包头市",district:"九原区",m1:30,m2:31,m3:30},
+      {id:43,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"西陵站点",mode:"人工",project:"金条",product:"金条",region:"华中",cityLevel:"三线",province:"湖北省",city:"宜昌市",district:"西陵区",m1:64,m2:47,m3:71},
+      {id:45,company:"曲靖翰锐信息技术有限公司",short:"翰锐",site:"盘龙站点",mode:"人工",project:"金条",product:"金条",region:"华西",cityLevel:"新一线",province:"云南省",city:"昆明市",district:"盘龙区",m1:42,m2:50,m3:44},
+      {id:46,company:"曲靖翰锐信息技术有限公司",short:"翰锐",site:"曲靖经开站点",mode:"人工",project:"金条",product:"金条",region:"华西",cityLevel:"三线",province:"云南省",city:"曲靖市",district:"经开区",m1:54,m2:44,m3:50},
+      {id:49,company:"湖北伽玛科技有限公司",short:"伽玛",site:"利辛站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"亳州市",district:"利辛县",m1:46,m2:52,m3:58},
+      {id:50,company:"湖北伽玛科技有限公司",short:"伽玛",site:"樊城站点",mode:"人工",project:"金条",product:"金条",region:"华中",cityLevel:"三线",province:"湖北省",city:"襄阳市",district:"樊城区",m1:64,m2:48,m3:49},
+      {id:51,company:"湖北伽玛科技有限公司",short:"伽玛",site:"宜城站点",mode:"人工",project:"金条",product:"金条",region:"华中",cityLevel:"三线",province:"湖北省",city:"襄阳市",district:"宜城市",m1:20,m2:18,m3:22},
+      {id:52,company:"湖北伽玛科技有限公司",short:"伽玛",site:"廊坊开发区站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"三线",province:"河北省",city:"廊坊市",district:"开发区",m1:50,m2:42,m3:57},
+      {id:53,company:"湖北伽玛科技有限公司",short:"伽玛",site:"廊坊开发区站点",mode:"人机",project:"金条",product:"金条",region:"华北",cityLevel:"三线",province:"河北省",city:"廊坊市",district:"开发区",m1:32,m2:32,m3:30},
+      {id:54,company:"合肥毅航通信技术有限公司",short:"毅航",site:"埇桥站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"宿州市",district:"埇桥区",m1:170,m2:171,m3:190},
+      {id:55,company:"合肥毅航通信技术有限公司",short:"毅航",site:"埇桥站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"宿州市",district:"埇桥区",m1:100,m2:91,m3:109},
+      {id:56,company:"合肥毅航通信技术有限公司",short:"毅航",site:"蜀山站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"新一线",province:"安徽省",city:"合肥市",district:"蜀山区",m1:30,m2:29,m3:35},
+      {id:57,company:"合肥毅航通信技术有限公司",short:"毅航",site:"埇桥站点",mode:"人机",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"宿州市",district:"埇桥区",m1:49,m2:48,m3:49},
+      {id:75,company:"陕西广达信息服务有限公司",short:"广达",site:"正定站点",mode:"人工",project:"金条",product:"金条",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"正定县",m1:49,m2:49,m3:46},
+      {id:76,company:"陕西广达信息服务有限公司",short:"广达",site:"宿豫站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"江苏省",city:"宿迁市",district:"宿豫区",m1:5,m2:5,m3:11},
+      {id:77,company:"陕西广达信息服务有限公司",short:"广达",site:"鸡冠站点",mode:"人工",project:"金条",product:"金条",region:"东北",cityLevel:"三线",province:"黑龙江省",city:"鸡西市",district:"鸡冠区",m1:15,m2:10,m3:11},
+      {id:85,company:"毛毛虫（昆山）商务咨询有限公司",short:"毛毛虫",site:"庐阳站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"新一线",province:"安徽省",city:"合肥市",district:"庐阳区",m1:97,m2:72,m3:83},
+      {id:86,company:"毛毛虫（昆山）商务咨询有限公司",short:"毛毛虫",site:"蚌山站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"蚌埠市",district:"蚌山区",m1:63,m2:51,m3:56},
+      {id:87,company:"毛毛虫（昆山）商务咨询有限公司",short:"毛毛虫",site:"舒城站点",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"六安市",district:"舒城县",m1:82,m2:78,m3:98},
+      {id:88,company:"毛毛虫（昆山）商务咨询有限公司",short:"毛毛虫",site:"蚌山站点",mode:"人机",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"蚌埠市",district:"蚌山区",m1:32,m2:29,m3:30},
+      {id:104,company:"陕西华啸网络科技有限公司",short:"华啸",site:"华啸职场",mode:"人工",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"山东省",city:"临沂市",district:"沂水县",m1:20,m2:25,m3:15},
+      {id:105,company:"陕西华啸网络科技有限公司",short:"华啸",site:"华啸职场",mode:"人工",project:"金条",product:"金条",region:"华西",cityLevel:"三线",province:"重庆市",city:"重庆市",district:"永川区",m1:0,m2:0,m3:0},
+      {id:106,company:"安徽信晨通信技术有限公司",short:"零犀",site:"舒城站点",mode:"人机",project:"金条",product:"金条",region:"华东",cityLevel:"三线",province:"安徽省",city:"六安市",district:"舒城县",m1:70,m2:78,m3:73},
+      {id:107,company:"安徽信晨通信技术有限公司",short:"零犀",site:"东湖站点",mode:"人机",project:"金条",product:"金条",region:"华中",cityLevel:"新一线",province:"湖北省",city:"武汉市",district:"东湖高新区",m1:25,m2:24,m3:21},
+      {id:7,company:"承德新动力电子商务有限公司",short:"新动力",site:"平泉站点",mode:"人工",project:"京小贷",product:"企金",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"平泉市",m1:4,m2:4,m3:4},
+      {id:69,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"西工站点",mode:"人工",project:"京小贷",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"西工区",m1:4,m2:4,m3:4},
+      {id:78,company:"陕西广达信息服务有限公司",short:"广达",site:"雁塔站点",mode:"人工",project:"京小贷",product:"企金",region:"华西",cityLevel:"新一线",province:"陕西省",city:"西安市",district:"雁塔区",m1:7,m2:7,m3:7},
+      {id:73,company:"湖北靖涵信息科技有限公司",short:"靖涵",site:"建始站点",mode:"人工",project:"菁卡分期",product:"信用卡",region:"华中",cityLevel:"三线",province:"湖北省",city:"恩施市",district:"建始县",m1:10,m2:10,m3:10},
+      {id:20,company:"河北创博信息技术有限公司",short:"创博",site:"承德站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"承德县",m1:140,m2:125,m3:110},
+      {id:21,company:"河北创博信息技术有限公司",short:"创博",site:"正定站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"正定县",m1:20,m2:20,m3:20},
+      {id:22,company:"河北创博信息技术有限公司",short:"创博",site:"滦平站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"滦平县",m1:22,m2:20,m3:20},
+      {id:26,company:"艾斯欧艾斯信息科技有限公司",short:"艾斯",site:"魏县站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"魏县",m1:36,m2:34,m3:27},
+      {id:27,company:"艾斯欧艾斯信息科技有限公司",short:"斯",site:"赵县站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"赵县",m1:29,m2:23,m3:23},
+      {id:41,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"陇西站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华西",cityLevel:"三线",province:"甘肃省",city:"定西市",district:"陇西县",m1:32,m2:15,m3:15},
+      {id:71,company:"长沙拓银电子科技有限公司",short:"拓银",site:"长沙站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华中",cityLevel:"新一线",province:"湖南省",city:"长沙市",district:"芙蓉区",m1:21,m2:24,m3:28},
+      {id:72,company:"湖北靖涵信息科技有限公司",short:"靖涵",site:"建始站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华中",cityLevel:"三线",province:"湖北省",city:"恩施市",district:"建始县",m1:26,m2:27,m3:22},
+      {id:74,company:"湖北靖涵信息科技有限公司",short:"靖涵",site:"滦州站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华北",cityLevel:"三线",province:"河北省",city:"唐山市",district:"滦州市",m1:25,m2:22,m3:23},
+      {id:83,company:"北京速讯达科技有限公司",short:"速讯达",site:"和平站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"东北",cityLevel:"新一线",province:"辽宁省",city:"沈阳市",district:"和平区",m1:59,m2:58,m3:34},
+      {id:84,company:"北京速讯达科技有限公司",short:"速讯达",site:"皇姑站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"东北",cityLevel:"新一线",province:"辽宁省",city:"沈阳市",district:"皇姑区",m1:46,m2:46,m3:42},
+      {id:92,company:"北京中弘智享科技有限公司",short:"中弘",site:"潍城站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"华东",cityLevel:"三线",province:"山东省",city:"潍坊市",district:"潍城区",m1:15,m2:10,m3:10},
+      {id:93,company:"北京中弘智享科技有限公司",short:"中弘",site:"沈河站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"东北",cityLevel:"新一线",province:"辽宁省",city:"沈阳市",district:"沈河区",m1:19,m2:19,m3:22},
+      {id:94,company:"北京中弘智享科技有限公司",short:"中弘",site:"林场站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"东北",cityLevel:"三线",province:"辽宁省",city:"北票市",district:"林场区",m1:23,m2:21,m3:19},
+      {id:95,company:"北京中弘智享科技有限公司",short:"中弘",site:"铁东站点",mode:"人机",project:"菁卡拉新",product:"信用卡",region:"东北",cityLevel:"三线",province:"辽宁省",city:"鞍山市",district:"铁东区",m1:18,m2:13,m3:15},
+      {id:67,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"西工站点",mode:"人工",project:"票据",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"西工区",m1:2,m2:2,m3:2},
+      {id:60,company:"河北锦瑞信息科技有限公司",short:"锦瑞",site:"南城站点",mode:"人工",project:"企业金采",product:"企金",region:"华北",cityLevel:"三线",province:"河北省",city:"定州市",district:"南城区",m1:8,m2:5,m3:5},
+      {id:66,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"嵩县站点",mode:"人工",project:"企业金采",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"嵩县",m1:29,m2:29,m3:29},
+      {id:1,company:"浙江衍生信息技术有限公司",short:"衍生",site:"颍州站点",mode:"人工",project:"企业主贷",product:"企金",region:"华东",cityLevel:"三线",province:"安徽省",city:"阜阳市",district:"颍州区",m1:12,m2:8,m3:13},
+      {id:2,company:"西安小蜜蜂智慧技术有限公司",short:"小蜜蜂",site:"雁塔站点",mode:"人工",project:"企业主贷",product:"企金",region:"华西",cityLevel:"新一线",province:"陕西省",city:"西安市",district:"雁塔区",m1:12,m2:12,m3:12},
+      {id:3,company:"承德新动力电子商务有限公司",short:"新动力",site:"平泉站点",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"平泉市",m1:6,m2:5,m3:15},
+      {id:4,company:"承德新动力电子商务有限公司",short:"新动力",site:"兴隆职场",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"兴隆县",m1:36,m2:42,m3:53},
+      {id:5,company:"承德新动力电子商务有限公司",short:"新动力",site:"承德站点",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"承德市",m1:7,m2:0,m3:9},
+      {id:13,company:"河北秦冀德辰科技有限公司",short:"德辰",site:"辛集站点",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"辛集市",m1:72,m2:72,m3:48},
+      {id:14,company:"河北秦冀德辰科技有限公司",short:"德辰",site:"辛集站点",mode:"人机",project:"企业主贷",product:"企金",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"辛集市",m1:18,m2:18,m3:18},
+      {id:16,company:"河北秦冀德辰科技有限公司",short:"德辰",site:"辛集站点",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"辛集市",m1:10,m2:21,m3:25},
+      {id:19,company:"河北秦冀德辰科技有限公司",short:"德辰",site:"无极站点",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"无极县",m1:0,m2:0,m3:5},
+      {id:37,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"洪山站点",mode:"人工",project:"企业主贷",product:"企金",region:"华中",cityLevel:"新一线",province:"湖北省",city:"武汉市",district:"洪山区",m1:39,m2:46,m3:65},
+      {id:39,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"相山站点",mode:"人工",project:"企业主贷",product:"企金",region:"华东",cityLevel:"三线",province:"安徽省",city:"淮北市",district:"相山区",m1:30,m2:31,m3:30},
+      {id:40,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"相山站点",mode:"人工",project:"企业主贷",product:"企金",region:"华东",cityLevel:"三线",province:"安徽省",city:"淮北市",district:"相山区",m1:5,m2:6,m3:19},
+      {id:59,company:"河北锦瑞信息科技有限公司",short:"锦瑞",site:"南城站点",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"三线",province:"河北省",city:"定州市",district:"南城区",m1:57,m2:57,m3:57},
+      {id:62,company:"河北锦瑞信息科技有限公司",short:"锦瑞",site:"裕华站点",mode:"人工",project:"企业主贷",product:"企金",region:"华北",cityLevel:"二线",province:"河北省",city:"石家庄市",district:"裕华区",m1:11,m2:21,m3:21},
+      {id:63,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"西工站点",mode:"人工",project:"企业主贷",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"西工区",m1:56,m2:56,m3:53},
+      {id:64,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"西工站点",mode:"人机",project:"企业主贷",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"西工区",m1:12,m2:12,m3:12},
+      {id:65,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"西工站点",mode:"人工",project:"企业主贷",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"西工区",m1:20,m2:20,m3:20},
+      {id:70,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"西工站点",mode:"人工",project:"企业主贷",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"西工区",m1:22,m2:22,m3:36},
+      {id:79,company:"陕西广达信息服务有限公司",short:"广达",site:"雁塔站点",mode:"人机",project:"企业主贷",product:"企金",region:"华西",cityLevel:"新一线",province:"陕西省",city:"西安市",district:"雁塔区",m1:17,m2:17,m3:17},
+      {id:80,company:"陕西广达信息服务有限公司",short:"广达",site:"雁塔站点",mode:"人机",project:"企业主贷",product:"企金",region:"华西",cityLevel:"新一线",province:"陕西省",city:"西安市",district:"雁塔区",m1:16,m2:16,m3:16},
+      {id:81,company:"陕西广达信息服务有限公司",short:"广达",site:"鸡冠站点",mode:"人工",project:"企业主贷",product:"企金",region:"东北",cityLevel:"三线",province:"黑龙江省",city:"鸡西市",district:"鸡冠区",m1:12,m2:12,m3:12},
+      {id:82,company:"陕西广达信息服务有限公司",short:"广达",site:"雁塔站点",mode:"人工",project:"企业主贷",product:"企金",region:"华西",cityLevel:"新一线",province:"陕西省",city:"西安市",district:"雁塔区",m1:42,m2:42,m3:37},
+      {id:99,company:"泉州市速腾网络科技有限公司",short:"速腾",site:"泰山站点",mode:"人工",project:"企业主贷",product:"企金",region:"华东",cityLevel:"三线",province:"山东省",city:"泰安市",district:"泰山区",m1:10,m2:10,m3:10},
+      {id:101,company:"四川九通信息科技有限公司",short:"九通",site:"东安职场",mode:"人工",project:"企业主贷",product:"企金",region:"东北",cityLevel:"三线",province:"黑龙江省",city:"牡丹江市",district:"东安区",m1:10,m2:10,m3:10},
+      {id:108,company:"安徽信晨通信技术有限公司",short:"零犀",site:"舒城站点",mode:"人机",project:"企业主贷",product:"企金",region:"华东",cityLevel:"三线",province:"安徽省",city:"六安市",district:"舒城县",m1:16,m2:18,m3:16},
+      {id:23,company:"河北创博信息技术有限公司",short:"创博",site:"承德站点",mode:"人工",project:"商家白条",product:"信用卡",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"承德县",m1:17,m2:17,m3:17},
+      {id:42,company:"汇讯（湖北）商务信息咨询有限公司",short:"汇讯",site:"陇西站点",mode:"人工",project:"商家白条",product:"信用卡",region:"华西",cityLevel:"三线",province:"甘肃省",city:"定西市",district:"陇西县",m1:10,m2:9,m3:9},
+      {id:6,company:"承德新动力电子商务有限公司",short:"新动力",site:"平泉站点",mode:"人工",project:"小微平台",product:"企金",region:"华北",cityLevel:"三线",province:"河北省",city:"承德市",district:"平泉市",m1:11,m2:11,m3:11},
+      {id:68,company:"中乾（深圳）投资控股有限公司",short:"中乾",site:"西工站点",mode:"人工",project:"小微平台",product:"企金",region:"华中",cityLevel:"三线",province:"河南省",city:"洛阳市",district:"西工区",m1:12,m2:15,m3:15}
+    ];
+
+    // Global State
+    let currentMonth = 3;
+    let filteredData = [...rawData];
+    let currentView = 'merged';
+    let currentPage = 1;
+    const pageSize = 20;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('updateTime').textContent = new Date().toLocaleDateString('zh-CN');
+      initFilters();
+      initTabs();
+      updateDashboard();
+    });
+
+    // Filter Options Init
+    function initFilters() {
+      const provinces = [...new Set(rawData.map(d => d.province))].sort();
+      const suppliers = [...new Set(rawData.map(d => d.short))].sort();
+      const products = [...new Set(rawData.map(d => d.product))].sort();
+
+      const provinceSelect = document.getElementById('provinceFilter');
+      provinces.forEach(p => provinceSelect.add(new Option(p, p)));
+
+      const supplierSelect = document.getElementById('supplierFilter');
+      suppliers.forEach(s => supplierSelect.add(new Option(s, s)));
+
+      const productSelect = document.getElementById('productFilter');
+      products.forEach(p => productSelect.add(new Option(p, p)));
+
+      // Event Listeners
+      document.getElementById('monthFilter').addEventListener('change', function() {
+        currentMonth = parseInt(this.value);
+        updateDashboard();
+      });
+      document.getElementById('provinceFilter').addEventListener('change', applyFilters);
+      document.getElementById('supplierFilter').addEventListener('change', applyFilters);
+      document.getElementById('productFilter').addEventListener('change', applyFilters);
+    }
+
+    function applyFilters() {
+      const province = document.getElementById('provinceFilter').value;
+      const supplier = document.getElementById('supplierFilter').value;
+      const product = document.getElementById('productFilter').value;
+
+      filteredData = rawData.filter(d => {
+        return (!province || d.province === province) &&
+               (!supplier || d.short === supplier) &&
+               (!product || d.product === product);
+      });
+
+      updateDashboard();
+    }
+
+    function resetFilters() {
+      document.getElementById('provinceFilter').value = '';
+      document.getElementById('supplierFilter').value = '';
+      document.getElementById('productFilter').value = '';
+      filteredData = [...rawData];
+      updateDashboard();
+    }
+
+    // Tab Switching
+    function initTabs() {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          this.classList.add('active');
+          document.getElementById(this.dataset.tab).classList.add('active');
+          updateDashboard();
+        });
+      });
+    }
+
+    // Dashboard Update
+    function updateDashboard() {
+      updateOverview();
+      updateWorkplaceAnalysis();
+      updateSupplierAnalysis();
+      updateProductAnalysis();
+      updateDetailTable();
+    }
+
+    // Helper: Get current month value
+    function getMonthValue(d, month) {
+      return month === 1 ? d.m1 : month === 2 ? d.m2 : d.m3;
+    }
+
+    // Risk Dimension Calculations
+    function calculateRisks(data) {
+      const risks = {
+        microSite: [],      // 1. 微小站点
+        megaSite: [],       // 2. 超大站点
+        supplierConcentration: [], // 3. 供应商集中度
+        thinSupply: [],     // 4. 供应链单薄
+        geoConcentration: [], // 5. 地理集中度
+        projectConcentration: [], // 6. 项目集中度
+        continuousDecline: [], // 7. 连续下降
+        lowFlexibility: [], // 8. 业务灵活性低
+        overDiversified: [], // 9. 业务分散风险
+        fluctuation: []     // 10. 站点波动
+      };
+
+      // 1. 微小站点 (<20)
+      // 2. 超大站点 (>100)
+      data.forEach(d => {
+        const headcount = getMonthValue(d, currentMonth);
+        if (headcount < 20) risks.microSite.push({...d, reason: '人力<20'});
+        if (headcount > 100) risks.megaSite.push({...d, reason: '人力>100'});
+      });
+
+      // 3. 供应商集中度 (>30% 单一项目)
+      const projectGroups = {};
+      data.forEach(d => {
+        if (!projectGroups[d.project]) projectGroups[d.project] = {};
+        if (!projectGroups[d.project][d.short]) projectGroups[d.project][d.short] = 0;
+        projectGroups[d.project][d.short] += getMonthValue(d, currentMonth);
+      });
+      Object.entries(projectGroups).forEach(([project, suppliers]) => {
+        const total = Object.values(suppliers).reduce((a, b) => a + b, 0);
+        Object.entries(suppliers).forEach(([supplier, count]) => {
+          if (total > 0 && count / total > 0.3) {
+            risks.supplierConcentration.push({project, supplier, percent: (count/total*100).toFixed(1)});
+          }
+        });
+      });
+
+      // 4. 供应链单薄 (<=2家)
+      Object.entries(projectGroups).forEach(([project, suppliers]) => {
+        if (Object.keys(suppliers).length <= 2) {
+          risks.thinSupply.push({project, count: Object.keys(suppliers).length});
+        }
+      });
+
+      // 5. 地理集中度 (>2站点同城)
+      const cityGroups = {};
+      data.forEach(d => {
+        const key = `${d.city}`;
+        if (!cityGroups[key]) cityGroups[key] = [];
+        cityGroups[key].push(d);
+      });
+      Object.entries(cityGroups).forEach(([city, sites]) => {
+        if (sites.length > 2) {
+          risks.geoConcentration.push({city, count: sites.length});
+        }
+      });
+
+      // 7. 连续下降 (>=2个月)
+      data.forEach(d => {
+        if (d.m1 > d.m2 && d.m2 > d.m3) {
+          risks.continuousDecline.push({...d, trend: `${d.m1}→${d.m2}→${d.m3}`});
+        }
+      });
+
+      // 8. 业务灵活性低 (只做1条产品线)
+      const supplierProducts = {};
+      data.forEach(d => {
+        if (!supplierProducts[d.short]) supplierProducts[d.short] = new Set();
+        supplierProducts[d.short].add(d.product);
+      });
+      Object.entries(supplierProducts).forEach(([supplier, products]) => {
+        if (products.size === 1) {
+          risks.lowFlexibility.push({supplier, product: [...products][0]});
+        }
+        if (products.size > 5) {
+          risks.overDiversified.push({supplier, count: products.size});
+        }
+      });
+
+      // 10. 站点波动 (>20%)
+      data.forEach(d => {
+        const maxVal = Math.max(d.m1, d.m2, d.m3);
+        const minVal = Math.min(d.m1, d.m2, d.m3);
+        if (maxVal > 0 && (maxVal - minVal) / maxVal > 0.2) {
+          const fluctuation = ((maxVal - minVal) / maxVal * 100).toFixed(1);
+          risks.fluctuation.push({...d, fluctuation});
+        }
+      });
+
+      return risks;
+    }
+
+    // Update Overview Tab
+    function updateOverview() {
+      const totalSites = filteredData.length;
+      const totalHeadcount = filteredData.reduce((sum, d) => sum + getMonthValue(d, currentMonth), 0);
+      const prevHeadcount = filteredData.reduce((sum, d) => sum + getMonthValue(d, currentMonth - 1 || 1), 0);
+      const totalSuppliers = new Set(filteredData.map(d => d.short)).size;
+
+      const risks = calculateRisks(filteredData);
+      const totalRisks = risks.microSite.length + risks.megaSite.length + risks.fluctuation.length;
+
+      document.getElementById('totalSites').textContent = totalSites;
+      document.getElementById('totalHeadcount').textContent = totalHeadcount.toLocaleString();
+      document.getElementById('totalSuppliers').textContent = totalSuppliers;
+      document.getElementById('riskSites').textContent = totalRisks;
+
+      const change = prevHeadcount > 0 ? ((totalHeadcount - prevHeadcount) / prevHeadcount * 100).toFixed(1) : 0;
+      document.getElementById('headcountChange').innerHTML = change >= 0 ?
+        `<span style="color:var(--teal)">↑ ${change}%</span> 环比` :
+        `<span style="color:var(--coral)">↓ ${Math.abs(change)}%</span> 环比`;
+      document.getElementById('riskPercent').textContent = totalSites > 0 ? (totalRisks/totalSites*100).toFixed(1) + '% 占比' : '0%';
+
+      // Risk Grid
+      const riskIcons = ['📍','🏢','⚡','🔗','🌍','📊','📉','🔒','⚠️','📈'];
+      const riskNames = ['微小站点','超大站点','供应商集中度','供应链单薄','地理集中度','项目集中度','连续下降','业务灵活性低','业务分散风险','站点波动'];
+      const riskKeys = ['microSite','megaSite','supplierConcentration','thinSupply','geoConcentration','projectConcentration','continuousDecline','lowFlexibility','overDiversified','fluctuation'];
+
+      let riskHtml = '';
+      riskKeys.forEach((key, i) => {
+        const count = risks[key].length;
+        const level = count > 10 ? 'high' : count > 5 ? 'medium' : 'low';
+        riskHtml += `
+          <div class="risk-card">
+            <div class="risk-icon risk-${level}">${riskIcons[i]}</div>
+            <div class="risk-info">
+              <div class="risk-name">${riskNames[i]}</div>
+              <div class="risk-count">${count}</div>
+              <div class="risk-label">${count > 10 ? '高风险' : count > 5 ? '中风险' : '低风险'}</div>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('riskGrid').innerHTML = riskHtml;
+
+      // Charts
+      renderTrendChart();
+      renderDistributionChart();
+
+      // Insights
+      let insights = [];
+      if (risks.microSite.length > 0) insights.push({level: 'medium', text: `发现 ${risks.microSite.length} 个微小站点（<20人），建议关注运营成本`});
+      if (risks.megaSite.length > 0) insights.push({level: 'high', text: `发现 ${risks.megaSite.length} 个超大站点（>100人），建议分散风险`});
+      if (risks.continuousDecline.length > 0) insights.push({level: 'high', text: `${risks.continuousDecline.length} 个站点连续下降，需重点关注`});
+      if (risks.geoConcentration.length > 0) insights.push({level: 'medium', text: `${risks.geoConcentration.length} 个城市站点过度集中`});
+      if (risks.thinSupply.length > 0) insights.push({level: 'high', text: `${risks.thinSupply.length} 个项目供应商<=2家，供应链单薄`});
+
+      if (insights.length === 0) insights.push({level: 'low', text: '当前数据未检测到明显风险点'});
+
+      document.getElementById('insightList').innerHTML = insights.map(i =>
+        `<li><span class="insight-badge badge-${i.level}">${i.level === 'high' ? '高风险' : i.level === 'medium' ? '中风险' : '提示'}</span><span class="insight-text">${i.text}</span></li>`
+      ).join('');
+    }
+
+    function renderTrendChart() {
+      const chart = echarts.init(document.getElementById('trendChart'));
+      const m1Total = filteredData.reduce((sum, d) => sum + d.m1, 0);
+      const m2Total = filteredData.reduce((sum, d) => sum + d.m2, 0);
+      const m3Total = filteredData.reduce((sum, d) => sum + d.m3, 0);
+
+      chart.setOption({
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: { type: 'category', data: ['1月', '2月', '3月'], axisLine: { lineStyle: { color: '#e8e4de' } }, axisLabel: { color: '#6f6960' } },
+        yAxis: { type: 'value', axisLine: { lineStyle: { color: '#e8e4de' } }, axisLabel: { color: '#6f6960' }, splitLine: { lineStyle: { color: '#f5f3f0' } } },
+        series: [{
+          data: [m1Total, m2Total, m3Total],
+          type: 'line',
+          smooth: true,
+          lineStyle: { color: '#c26d3a', width: 3 },
+          itemStyle: { color: '#c26d3a' },
+          areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(194,109,58,0.3)' }, { offset: 1, color: 'rgba(194,109,58,0.05)' }] } },
+          label: { show: true, position: 'top', color: '#2e2c2a', fontWeight: 'bold' }
+        }]
+      });
+    }
+
+    function renderDistributionChart() {
+      const chart = echarts.init(document.getElementById('distributionChart'));
+      const ranges = { '<20': 0, '20-50': 0, '50-100': 0, '>100': 0 };
+      filteredData.forEach(d => {
+        const v = getMonthValue(d, currentMonth);
+        if (v < 20) ranges['<20']++;
+        else if (v < 50) ranges['20-50']++;
+        else if (v < 100) ranges['50-100']++;
+        else ranges['>100']++;
+      });
+
+      chart.setOption({
+        tooltip: { trigger: 'item' },
+        color: ['#c25030', '#b88018', '#3a7ab8', '#2e8b6e'],
+        series: [{
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          itemStyle: { borderRadius: 2, borderColor: '#fff', borderWidth: 2 },
+          label: { show: true, formatter: '{b}: {c}' },
+          data: Object.entries(ranges).map(([name, value]) => ({ name, value }))
+        }]
+      });
+    }
+
+    // Update Workplace Analysis
+    function updateWorkplaceAnalysis() {
+      const workplaces = {};
+      filteredData.forEach(d => {
+        const key = d.site;
+        if (!workplaces[key]) workplaces[key] = { ...d, headcount: 0 };
+        workplaces[key].headcount += getMonthValue(d, currentMonth);
+      });
+
+      // Pie Chart
+      const chart1 = echarts.init(document.getElementById('workplacePieChart'));
+      const wpData = Object.entries(workplaces).map(([k, v]) => ({ name: k, value: v.headcount })).sort((a, b) => b.value - a.value).slice(0, 10);
+      chart1.setOption({
+        tooltip: { trigger: 'item' },
+        color: ['#c26d3a', '#2e8b6e', '#3a7ab8', '#c25030', '#b88018', '#8b6e2e', '#6e2e8b', '#2e6e8b', '#8b2e3a', '#3a8b2e'],
+        series: [{
+          type: 'pie',
+          radius: '65%',
+          data: wpData,
+          label: { show: true, formatter: '{b}', fontSize: 10 }
+        }]
+      });
+
+      // Geo Chart
+      const chart2 = echarts.init(document.getElementById('workplaceGeoChart'));
+      const provinceData = {};
+      filteredData.forEach(d => {
+        provinceData[d.province] = (provinceData[d.province] || 0) + getMonthValue(d, currentMonth);
+      });
+      chart2.setOption({
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: { type: 'value', axisLine: { lineStyle: { color: '#e8e4de' } }, axisLabel: { color: '#6f6960' }, splitLine: { lineStyle: { color: '#f5f3f0' } } },
+        yAxis: { type: 'category', data: Object.keys(provinceData).sort((a, b) => provinceData[a] - provinceData[b]), axisLine: { lineStyle: { color: '#e8e4de' } }, axisLabel: { color: '#6f6960' } },
+        series: [{ type: 'bar', data: Object.keys(provinceData).sort((a, b) => provinceData[a] - provinceData[b]).map(k => provinceData[k]), itemStyle: { color: '#c26d3a', borderRadius: [0, 2, 2, 0] } }]
+      });
+
+      // Workplace x Product Heatmap
+      const chart3 = echarts.init(document.getElementById('workplaceProductHeatmap'));
+      const products = [...new Set(filteredData.map(d => d.product))];
+      const wpList = Object.keys(workplaces).slice(0, 15);
+      const heatmapData = [];
+      wpList.forEach((wp, i) => {
+        products.forEach((prod, j) => {
+          const val = filteredData.filter(d => d.site === wp && d.product === prod).reduce((s, d) => s + getMonthValue(d, currentMonth), 0);
+          if (val > 0) heatmapData.push([j, i, val]);
+        });
+      });
+
+      chart3.setOption({
+        tooltip: { position: 'top' },
+        grid: { height: '70%', top: '10%' },
+        xAxis: { type: 'category', data: products, splitArea: { show: true }, axisLabel: { rotate: 45 } },
+        yAxis: { type: 'category', data: wpList, splitArea: { show: true } },
+        visualMap: { min: 0, max: 100, calculable: true, orient: 'horizontal', left: 'center', bottom: '0%', inRange: { color: ['#f5f3f0', '#c26d3a'] } },
+        series: [{ name: '人力', type: 'heatmap', data: heatmapData, label: { show: true }, emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0, 0, 0, 0.5)' } } }]
+      });
+
+      // Workplace Rank Table
+      const tbody = document.querySelector('#workplaceRankTable tbody');
+      const sortedWp = Object.entries(workplaces).sort((a, b) => b[1].headcount - a[1].headcount).slice(0, 20);
+      tbody.innerHTML = sortedWp.map((wp, i) => {
+        const d = wp[1];
+        let tags = [];
+        if (d.headcount < 20) tags.push('<span class="tag tag-warning">微小</span>');
+        if (d.headcount > 100) tags.push('<span class="tag tag-danger">超大</span>');
+        return `<tr>
+          <td>${i+1}</td>
+          <td>${d.site}</td>
+          <td>${d.short}</td>
+          <td>${d.project}</td>
+          <td>${d.product}</td>
+          <td class="text-right">${d.headcount}</td>
+          <td>${tags.join(' ')}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // Update Supplier Analysis
+    function updateSupplierAnalysis() {
+      const suppliers = {};
+      filteredData.forEach(d => {
+        if (!suppliers[d.short]) suppliers[d.short] = { name: d.short, m1: 0, m2: 0, m3: 0 };
+        suppliers[d.short].m1 += d.m1;
+        suppliers[d.short].m2 += d.m2;
+        suppliers[d.short].m3 += d.m3;
+      });
+
+      // Rank Chart
+      const chart1 = echarts.init(document.getElementById('supplierRankChart'));
+      const sortedSup = Object.values(suppliers).sort((a, b) => b.m3 - a.m3).slice(0, 15);
+      chart1.setOption({
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: { type: 'value', axisLine: { lineStyle: { color: '#e8e4de' } }, splitLine: { lineStyle: { color: '#f5f3f0' } } },
+        yAxis: { type: 'category', data: sortedSup.map(s => s.name).reverse(), axisLine: { lineStyle: { color: '#e8e4de' } } },
+        series: [{ type: 'bar', data: sortedSup.map(s => s.m3).reverse(), itemStyle: { color: '#c26d3a', borderRadius: [0, 2, 2, 0] }, label: { show: true, position: 'right' } }]
+      });
+
+      // Supplier x Product Heatmap
+      const chart2 = echarts.init(document.getElementById('supplierProductHeatmap'));
+      const products = [...new Set(filteredData.map(d => d.product))];
+      const supList = Object.keys(suppliers).slice(0, 12);
+      const heatmapData = [];
+      supList.forEach((sup, i) => {
+        products.forEach((prod, j) => {
+          const val = filteredData.filter(d => d.short === sup && d.product === prod).reduce((s, d) => s + getMonthValue(d, currentMonth), 0);
+          if (val > 0) heatmapData.push([j, i, val]);
+        });
+      });
+      chart2.setOption({
+        tooltip: { position: 'top' },
+        grid: { height: '70%', top: '10%' },
+        xAxis: { type: 'category', data: products, splitArea: { show: true }, axisLabel: { rotate: 45 } },
+        yAxis: { type: 'category', data: supList, splitArea: { show: true } },
+        visualMap: { min: 0, max: 200, calculable: true, orient: 'horizontal', left: 'center', bottom: '0%', inRange: { color: ['#f5f3f0', '#2e8b6e'] } },
+        series: [{ name: '人力', type: 'heatmap', data: heatmapData, label: { show: true } }]
+      });
+
+      // Supplier Trend Chart
+      const chart3 = echarts.init(document.getElementById('supplierTrendChart'));
+      const top10 = sortedSup.slice(0, 10);
+      chart3.setOption({
+        tooltip: { trigger: 'axis' },
+        legend: { data: top10.map(s => s.name), bottom: 0 },
+        grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+        xAxis: { type: 'category', data: ['1月', '2月', '3月'], axisLine: { lineStyle: { color: '#e8e4de' } } },
+        yAxis: { type: 'value', axisLine: { lineStyle: { color: '#e8e4de' } }, splitLine: { lineStyle: { color: '#f5f3f0' } } },
+        series: top10.map((s, i) => ({
+          name: s.name,
+          type: 'line',
+          data: [s.m1, s.m2, s.m3],
+          smooth: true,
+          lineStyle: { width: 2 },
+          symbol: 'circle',
+          symbolSize: 6
+        }))
+      });
+
+      // Growth/Decline Top 5
+      const growthData = Object.values(suppliers).map(s => ({
+        ...s,
+        change: s.m2 > 0 ? (s.m3 - s.m2) / s.m2 * 100 : 0
+      })).sort((a, b) => b.change - a.change);
+
+      document.getElementById('growthTop5').innerHTML = growthData.slice(0, 5).map((s, i) =>
+        `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span>${i+1}. ${s.name}</span>
+          <span style="color:var(--teal);font-weight:600">+${s.change.toFixed(1)}%</span>
+        </div>`
+      ).join('');
+
+      document.getElementById('declineTop5').innerHTML = growthData.slice(-5).reverse().map((s, i) =>
+        `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span>${i+1}. ${s.name}</span>
+          <span style="color:var(--coral);font-weight:600">${s.change.toFixed(1)}%</span>
+        </div>`
+      ).join('');
+    }
+
+    // Update Product Analysis
+    function updateProductAnalysis() {
+      const products = {};
+      filteredData.forEach(d => {
+        if (!products[d.product]) products[d.product] = { name: d.product, headcount: 0, suppliers: new Set(), modes: { '人工': 0, '人机': 0 }, regions: {} };
+        products[d.product].headcount += getMonthValue(d, currentMonth);
+        products[d.product].suppliers.add(d.short);
+        products[d.product].modes[d.mode] += getMonthValue(d, currentMonth);
+        products[d.product].regions[d.region] = (products[d.product].regions[d.region] || 0) + getMonthValue(d, currentMonth);
+      });
+
+      // Product Pie
+      const chart1 = echarts.init(document.getElementById('productPieChart'));
+      chart1.setOption({
+        tooltip: { trigger: 'item' },
+        color: ['#c26d3a', '#2e8b6e', '#3a7ab8', '#c25030', '#b88018', '#8b6e2e'],
+        series: [{
+          type: 'pie',
+          radius: '65%',
+          data: Object.values(products).map(p => ({ name: p.name, value: p.headcount })),
+          label: { formatter: '{b}: {d}%' }
+        }]
+      });
+
+      // Supplier Count Bar
+      const chart2 = echarts.init(document.getElementById('productSupplierChart'));
+      const prodList = Object.values(products).sort((a, b) => b.suppliers.size - a.suppliers.size);
+      chart2.setOption({
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: { type: 'category', data: prodList.map(p => p.name), axisLabel: { rotate: 30 } },
+        yAxis: { type: 'value' },
+        series: [{ type: 'bar', data: prodList.map(p => p.suppliers.size), itemStyle: { color: '#3a7ab8', borderRadius: [2, 2, 0, 0] } }]
+      });
+
+      // Mode Stacked Bar
+      const chart3 = echarts.init(document.getElementById('productModeChart'));
+      chart3.setOption({
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { data: ['人工', '人机'] },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: { type: 'value' },
+        yAxis: { type: 'category', data: prodList.map(p => p.name) },
+        series: [
+          { name: '人工', type: 'bar', stack: 'total', data: prodList.map(p => p.modes['人工']), itemStyle: { color: '#c26d3a' } },
+          { name: '人机', type: 'bar', stack: 'total', data: prodList.map(p => p.modes['人机']), itemStyle: { color: '#2e8b6e' } }
+        ]
+      });
+
+      // Region Distribution
+      const chart4 = echarts.init(document.getElementById('productRegionChart'));
+      const regions = [...new Set(filteredData.map(d => d.region))];
+      const series = prodList.slice(0, 5).map((p, i) => ({
+        name: p.name,
+        type: 'bar',
+        data: regions.map(r => p.regions[r] || 0)
+      }));
+      chart4.setOption({
+        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+        legend: { data: prodList.slice(0, 5).map(p => p.name), bottom: 0 },
+        grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+        xAxis: { type: 'category', data: regions },
+        yAxis: { type: 'value' },
+        series: series
+      });
+    }
+
+    // Update Detail Table
+    function updateDetailTable() {
+      const tbody = document.querySelector('#detailTable tbody');
+      let displayData = currentView === 'merged' ? mergeWorkplaces(filteredData) : filteredData;
+
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      if (searchTerm) {
+        displayData = displayData.filter(d =>
+          (d.site && d.site.toLowerCase().includes(searchTerm)) ||
+          (d.short && d.short.toLowerCase().includes(searchTerm)) ||
+          (d.city && d.city.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      const totalPages = Math.ceil(displayData.length / pageSize);
+      const start = (currentPage - 1) * pageSize;
+      const pageData = displayData.slice(start, start + pageSize);
+
+      tbody.innerHTML = pageData.map(d => {
+        const headcount = getMonthValue(d, currentMonth);
+        let tags = [];
+        if (headcount < 20) tags.push('<span class="tag tag-warning">微小</span>');
+        if (headcount > 100) tags.push('<span class="tag tag-danger">超大</span>');
+        if (d.m1 > d.m2 && d.m2 > d.m3) tags.push('<span class="tag tag-danger">连续降</span>');
+        return `<tr>
+          <td>${d.site}</td>
+          <td>${d.short}</td>
+          <td>${d.site}</td>
+          <td>${d.mode}</td>
+          <td>${d.project}</td>
+          <td>${d.product}</td>
+          <td>${d.region}</td>
+          <td>${d.province}</td>
+          <td>${d.city}</td>
+          <td class="text-right">${d.m1}</td>
+          <td class="text-right">${d.m2}</td>
+          <td class="text-right">${d.m3}</td>
+          <td>${tags.join(' ')}</td>
+        </tr>`;
+      }).join('');
+
+      // Pagination
+      let pagHtml = `<button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage-1})">上一页</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        pagHtml += `<button class="${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+      }
+      pagHtml += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage+1})">下一页</button>`;
+      document.getElementById('pagination').innerHTML = pagHtml;
+    }
+
+    function mergeWorkplaces(data) {
+      const merged = {};
+      data.forEach(d => {
+        const key = d.short + '|' + d.site;
+        if (!merged[key]) {
+          merged[key] = { ...d, m1: 0, m2: 0, m3: 0 };
+        }
+        merged[key].m1 += d.m1;
+        merged[key].m2 += d.m2;
+        merged[key].m3 += d.m3;
+      });
+      return Object.values(merged);
+    }
+
+    function toggleView(view) {
+      currentView = view;
+      currentPage = 1;
+      document.querySelectorAll('.detail-toggle button').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      updateDetailTable();
+    }
+
+    function changePage(page) {
+      currentPage = page;
+      updateDetailTable();
+    }
+
+    function searchData() {
+      currentPage = 1;
+      updateDetailTable();
+    }
+
+    function exportCSV() {
+      let csv = '站点,供应商,职场,模式,项目,业务线,区域,省份,城市,1月,2月,3月\n';
+      const data = currentView === 'merged' ? mergeWorkplaces(filteredData) : filteredData;
+      data.forEach(d => {
+        csv += `${d.site},${d.short},${d.site},${d.mode},${d.project},${d.product},${d.region},${d.province},${d.city},${d.m1},${d.m2},${d.m3}\n`;
+      });
+      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `供应商站点数据_${new Date().toLocaleDateString('zh-CN')}.csv`;
+      link.click();
+    }
+
+    // Window resize handler
+    window.addEventListener('resize', function() {
+      ['trendChart', 'distributionChart', 'workplacePieChart', 'workplaceGeoChart',
+       'workplaceProductHeatmap', 'supplierRankChart', 'supplierProductHeatmap',
+       'supplierTrendChart', 'productPieChart', 'productSupplierChart',
+       'productModeChart', 'productRegionChart'].forEach(id => {
+        const chart = echarts.getInstanceByDom(document.getElementById(id));
+        if (chart) chart.resize();
+      });
+    });
+  </script>
+</body>
+</html>

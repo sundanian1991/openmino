@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 TODAY=$(date +%Y-%m-%d)
-DAILY_FILE="$PROJECT_ROOT/memory/daily/$TODAY.md"
+DAILY_FILE="$PROJECT_ROOT/memory/daily/$(date +%Y-%m)/$TODAY.md"
 
 main() {
     echo "📝 生成今日工作简报..."

@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>供应商站点看板 v5 - 克制专业主义</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #111111;
+            --color-secondary: #666666;
+            --color-border: #E5E5E5;
+            --color-accent: #E2725B;
+            --color-bg: #FAFAFA;
+            --color-card: #FFFFFF;
+            --color-muted: #F5F5F5;
+            --radius: 2px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-primary);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--color-card);
+            border-bottom: 1px solid var(--color-border);
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2.4px;
+            background: var(--color-accent);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 24px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--color-secondary);
+        }
+
+        .header-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--color-card);
+            border-bottom: 1px solid var(--color-border);
+            padding: 16px 24px;
+        }
+
+        .filter-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            color: var(--color-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+        }
+
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            font-size: 13px;
+            color: var(--color-primary);
+            background: var(--color-card);
+            min-width: 120px;
+            cursor: pointer;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--color-accent);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            font-size: 13px;
+            cursor: pointer;
+            background: var(--color-card);
+            color: var(--color-primary);
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--color-accent);
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .btn-primary:hover {
+            background: #333;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tabs-nav {
+            display: flex;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: var(--color-secondary);
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            color: var(--color-primary);
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--color-muted);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--color-border);
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            color: var(--color-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-primary);
+            line-height: 1.2;
+        }
+
+        .kpi-change {
+            font-size: 12px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .kpi-change.positive {
+            color: #16A34A;
+        }
+
+        .kpi-change.negative {
+            color: var(--color-accent);
+        }
+
+        .arrow {
+            font-size: 10px;
+        }
+
+        /* Risk Cards */
+        .risk-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .risk-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .risk-card.warning {
+            border-left: 3px solid var(--color-accent);
+        }
+
+        .risk-card.normal {
+            border-left: 3px solid #16A34A;
+        }
+
+        .risk-name {
+            font-size: 12px;
+            color: var(--color-secondary);
+        }
+
+        .risk-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .risk-desc {
+            font-size: 11px;
+            color: var(--color-secondary);
+        }
+
+        /* Charts */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        /* Insights */
+        .insights-section {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .insights-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insights-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--color-accent);
+            border-radius: var(--radius);
+        }
+
+        .insights-list {
+            list-style: none;
+        }
+
+        .insights-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 13px;
+            color: var(--color-primary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .insights-list li:last-child {
+            border-bottom: none;
+        }
+
+        .insight-badge {
+            display: inline-flex;
+            padding: 2px 8px;
+            border-radius: var(--radius);
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .insight-badge.risk {
+            background: #FEF2F2;
+            color: var(--color-accent);
+        }
+
+        .insight-badge.opportunity {
+            background: #F0FDF4;
+            color: #16A34A;
+        }
+
+        .insight-badge.trend {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--color-muted);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--color-secondary);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-primary);
+        }
+
+        tr:hover td {
+            background: #FAFAFA;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tag {
+            display: inline-flex;
+            padding: 2px 8px;
+            border-radius: var(--radius);
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .tag-small {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .tag-large {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .tag-normal {
+            background: #F0FDF4;
+            color: #166534;
+        }
+
+        .tag-warning {
+            background: #FEF2F2;
+            color: var(--color-accent);
+        }
+
+        /* Stats Grid for Supplier/Project tabs */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-name {
+            font-size: 13px;
+            color: var(--color-secondary);
+        }
+
+        .stat-rank {
+            font-size: 11px;
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .stat-bar {
+            height: 4px;
+            background: var(--color-border);
+            border-radius: var(--radius);
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: var(--color-accent);
+            border-radius: var(--radius);
+        }
+
+        /* Footer */
+        .footer {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--color-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .risk-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .risk-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-actions {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>供应商站点看板</h1>
+            <div class="header-meta">
+                <span>数据版本: v5.0</span>
+                <span>更新日期: 2026-04-04</span>
+                <span>物理职场: 67个</span>
+                <span>总人力规模: 3,247人</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="filter-bar">
+        <div class="filter-content">
+            <div class="filter-group">
+                <label>月份</label>
+                <select id="monthFilter">
+                    <option value="all">全部月份</option>
+                    <option value="1">1月</option>
+                    <option value="2">2月</option>
+                    <option value="3" selected>3月</option>
+                    <option value="4">4月</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>供应商</label>
+                <select id="supplierFilter">
+                    <option value="all">全部供应商</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>项目</label>
+                <select id="projectFilter">
+                    <option value="all">全部项目</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>省份</label>
+                <select id="provinceFilter">
+                    <option value="all">全部省份</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button class="btn" onclick="resetFilters()">重置</button>
+                <button class="btn btn-primary" onclick="applyFilters()">应用筛选</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs-container">
+        <nav class="tabs-nav">
+            <button class="tab-btn active" data-tab="overview">全局大盘</button>
+            <button class="tab-btn" data-tab="workplace">职场分析</button>
+            <button class="tab-btn" data-tab="supplier">供应商分析</button>
+            <button class="tab-btn" data-tab="project">项目分析</button>
+            <button class="tab-btn" data-tab="detail">数据明细</button>
+        </nav>
+
+        <!-- Tab 1: Overview -->
+        <div id="overview" class="tab-content active">
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">物理职场总数</div>
+                    <div class="kpi-value" id="kpi-workplaces">67</div>
+                    <div class="kpi-change">
+                        <span class="arrow">→</span>
+                        <span>覆盖30+供应商</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">总人力规模</div>
+                    <div class="kpi-value" id="kpi-headcount">3,247</div>
+                    <div class="kpi-change positive">
+                        <span class="arrow">↑</span>
+                        <span>环比 +12.3%</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">在运营项目</div>
+                    <div class="kpi-value" id="kpi-projects">16</div>
+                    <div class="kpi-change">
+                        <span class="arrow">→</span>
+                        <span>跨4大业务线</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">覆盖省份</div>
+                    <div class="kpi-value" id="kpi-provinces">18</div>
+                    <div class="kpi-change">
+                        <span class="arrow">→</span>
+                        <span>6大区域</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">风险站点占比</div>
+                    <div class="kpi-value" id="kpi-risk">23.9%</div>
+                    <div class="kpi-change negative">
+                        <span class="arrow">↑</span>
+                        <span>需关注16个</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-section">
+                <h2 class="section-title">八大风险维度监控</h2>
+                <div class="risk-grid">
+                    <div class="risk-card warning">
+                        <div class="risk-name">微小站点 (&lt;20人)</div>
+                        <div class="risk-value" id="risk-small">12</div>
+                        <div class="risk-desc">占比 17.9%，成本效率需评估</div>
+                    </div>
+                    <div class="risk-card normal">
+                        <div class="risk-name">超大站点 (≥100人)</div>
+                        <div class="risk-value" id="risk-large">4</div>
+                        <div class="risk-desc">占比 6.0%，集中度风险</div>
+                    </div>
+                    <div class="risk-card warning">
+                        <div class="risk-name">供应商集中度 (&gt;40%)</div>
+                        <div class="risk-value" id="risk-concentration">3</div>
+                        <div class="risk-desc">头部供应商依赖度过高</div>
+                    </div>
+                    <div class="risk-card normal">
+                        <div class="risk-name">供应链单薄 (&lt;2家)</div>
+                        <div class="risk-value" id="risk-thin">2</div>
+                        <div class="risk-desc">项目供应商数量不足</div>
+                    </div>
+                    <div class="risk-card warning">
+                        <div class="risk-name">地理集中 (&gt;60%)</div>
+                        <div class="risk-value" id="risk-geo">4</div>
+                        <div class="risk-desc">单一省份占比过高</div>
+                    </div>
+                    <div class="risk-card normal">
+                        <div class="risk-name">连续下降 (≥2月)</div>
+                        <div class="risk-value" id="risk-decline">5</div>
+                        <div class="risk-desc">人力持续下滑站点</div>
+                    </div>
+                    <div class="risk-card normal">
+                        <div class="risk-name">项目单一 (=1)</div>
+                        <div class="risk-value" id="risk-single">28</div>
+                        <div class="risk-desc">业务多样性不足</div>
+                    </div>
+                    <div class="risk-card warning">
+                        <div class="risk-name">项目分散 (&gt;5)</div>
+                        <div class="risk-value" id="risk-scattered">3</div>
+                        <div class="risk-desc">管理复杂度上升</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">人力规模分布</div>
+                    <div class="chart-container" id="chart-headcount"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">区域分布热力</div>
+                    <div class="chart-container" id="chart-region"></div>
+                </div>
+            </div>
+
+            <div class="insights-section">
+                <div class="insights-title">智能洞察</div>
+                <ul class="insights-list" id="insights-list">
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab 2: Workplace -->
+        <div id="workplace" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">职场规模TOP15</div>
+                    <div class="chart-container" id="chart-workplace-top"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">职场规模分布区间</div>
+                    <div class="chart-container" id="chart-workplace-dist"></div>
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">物理职场明细 (按人力规模排序)</span>
+                    <div class="table-actions">
+                        <button class="btn">导出</button>
+                    </div>
+                </div>
+                <table id="workplace-table">
+                    <thead>
+                        <tr>
+                            <th>职场名称</th>
+                            <th>供应商</th>
+                            <th>项目数</th>
+                            <th>当前人力</th>
+                            <th>所在省份</th>
+                            <th>城市能级</th>
+                            <th>风险标签</th>
+                        </tr>
+                    </thead>
+                    <tbody id="workplace-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 3: Supplier -->
+        <div id="supplier" class="tab-content">
+            <div class="stats-grid" id="supplier-stats">
+            </div>
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">供应商人力分布</div>
+                    <div class="chart-container" id="chart-supplier-pie"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">供应商月度趋势</div>
+                    <div class="chart-container" id="chart-supplier-trend"></div>
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">供应商明细</span>
+                    <div class="table-actions">
+                        <button class="btn">导出</button>
+                    </div>
+                </div>
+                <table id="supplier-table">
+                    <thead>
+                        <tr>
+                            <th>供应商简称</th>
+                            <th>职场数</th>
+                            <th>总人力</th>
+                            <th>项目数</th>
+                            <th>占比</th>
+                            <th>风险评级</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplier-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 4: Project -->
+        <div id="project" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">项目人力分布</div>
+                    <div class="chart-container" id="chart-project-bar"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">项目供应商数量</div>
+                    <div class="chart-container" id="chart-project-supplier"></div>
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">项目明细</span>
+                    <div class="table-actions">
+                        <button class="btn">导出</button>
+                    </div>
+                </div>
+                <table id="project-table">
+                    <thead>
+                        <tr>
+                            <th>项目名称</th>
+                            <th>业务线</th>
+                            <th>职场数</th>
+                            <th>供应商数</th>
+                            <th>总人力</th>
+                            <th>供应链健康度</th>
+                        </tr>
+                    </thead>
+                    <tbody id="project-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab 5: Detail -->
+        <div id="detail" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <span class="table-title">完整站点数据 (108条记录)</span>
+                    <div class="table-actions">
+                        <button class="btn">导出CSV</button>
+                    </div>
+                </div>
+                <div style="max-height: 600px; overflow: auto;">
+                    <table id="detail-table">
+                        <thead>
+                            <tr>
+                                <th>站点ID</th>
+                                <th>供应商</th>
+                                <th>职场</th>
+                                <th>项目</th>
+                                <th>业务线</th>
+                                <th>区域</th>
+                                <th>省份</th>
+                                <th>模式</th>
+                                <th>1月</th>
+                                <th>2月</th>
+                                <th>3月</th>
+                                <th>4月</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detail-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>供应商站点管理系统 · 数据科技业务部</span>
+        <span>生成时间: 2026-04-04</span>
+    </footer>
+
+    <script>
+        // Raw data from MD file
+        const rawData = [
+            {id: 61, supplier: "锦瑞", workplace: "南城站点", project: "POP代付&生意卡", business: "其他", region: "华北", province: "河北省", city: "定州市", mode: "人工", m1: 4, m2: 4, m3: 4, m4: null},
+            {id: 47, supplier: "翰锐", workplace: "盘龙站点", project: "白条分期", business: "信用卡", region: "华西", province: "云南省", city: "昆明市", mode: "人工", m1: 15, m2: 15, m3: 18, m4: null},
+            {id: 89, supplier: "毛毛虫", workplace: "蚌山站点", project: "白条分期", business: "信用卡", region: "华东", province: "安徽省", city: "蚌埠市", mode: "人工", m1: 0, m2: 0, m3: 14, m4: null},
+            {id: 11, supplier: "嘉信", workplace: "西安高新站点", project: "财富固收", business: "财富", region: "华西", province: "陕西省", city: "西安市", mode: "人工", m1: 60, m2: 57, m3: 52, m4: null},
+            {id: 12, supplier: "嘉信", workplace: "盐湖职场", project: "财富固收", business: "财富", region: "华北", province: "山西省", city: "运城市", mode: "人工", m1: 20, m2: 12, m3: 12, m4: null},
+            {id: 44, supplier: "汇讯", workplace: "西陵站点", project: "财富固收", business: "财富", region: "华中", province: "湖北省", city: "宜昌市", mode: "人工", m1: 30, m2: 28, m3: 25, m4: null},
+            {id: 58, supplier: "毅航", workplace: "蜀山站点", project: "财富固收", business: "财富", region: "华东", province: "安徽省", city: "合肥市", mode: "人工", m1: 68, m2: 68, m3: 98, m4: 96},
+            {id: 90, supplier: "毛毛虫", workplace: "庐阳站点", project: "财富固收", business: "财富", region: "华东", province: "安徽省", city: "合肥市", mode: "人工", m1: 44, m2: 41, m3: 56, m4: null},
+            {id: 91, supplier: "毛毛虫", workplace: "蚌山站点", project: "财富固收", business: "财富", region: "华东", province: "安徽省", city: "蚌埠市", mode: "人工", m1: 15, m2: 9, m3: 11, m4: null},
+            {id: 17, supplier: "德辰", workplace: "辛集站点", project: "采购融资", business: "企金", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 2, m2: 3, m3: 5, m4: null},
+            {id: 100, supplier: "速腾", workplace: "泰山站点", project: "采购融资", business: "企金", region: "华东", province: "山东省", city: "泰安市", mode: "人工", m1: 0, m2: 0, m3: 5, m4: null},
+            {id: 96, supplier: "保全界", workplace: "余姚职场", project: "车抵贷", business: "车抵贷", region: "华东", province: "浙江省", city: "宁波市", mode: "人工", m1: 17, m2: 11, m3: 11, m4: null},
+            {id: 97, supplier: "保全界", workplace: "包河职场", project: "车抵贷", business: "车抵贷", region: "华东", province: "安徽省", city: "合肥市", mode: "人工", m1: 0, m2: 16, m3: 16, m4: null},
+            {id: 98, supplier: "阅文", workplace: "义乌职场", project: "车抵贷", business: "车抵贷", region: "华东", province: "浙江省", city: "金华市", mode: "人工", m1: 0, m2: 0, m3: 16, m4: null},
+            {id: 10, supplier: "岐力", workplace: "红谷滩站点", project: "金企融合", business: "金条", region: "华东", province: "江西省", city: "南昌市", mode: "人工", m1: 20, m2: 35, m3: 45, m4: null},
+            {id: 15, supplier: "德辰", workplace: "辛集站点", project: "金企融合", business: "金条", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 55, m2: 35, m3: 35, m4: null},
+            {id: 18, supplier: "德辰", workplace: "无极站点", project: "金企融合", business: "金条", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 15, m2: 15, m3: 15, m4: null},
+            {id: 48, supplier: "伽玛", workplace: "利辛站点", project: "金企融合", business: "金条", region: "华东", province: "安徽省", city: "亳州市", mode: "人工", m1: 86, m2: 62, m3: 70, m4: null},
+            {id: 102, supplier: "华啸", workplace: "华啸职场", project: "金企融合", business: "金条", region: "华东", province: "江苏省", city: "苏州市", mode: "人工", m1: 55, m2: 20, m3: 10, m4: 10},
+            {id: 103, supplier: "华啸", workplace: "华啸职场", project: "金企融合", business: "金条", region: "华东", province: "山东省", city: "临沂市", mode: "人工", m1: 0, m2: 10, m3: 30, m4: 30},
+            {id: 8, supplier: "岐力", workplace: "红谷滩站点", project: "金条", business: "金条", region: "华东", province: "江西省", city: "南昌市", mode: "人工", m1: 55, m2: 77, m3: 69, m4: null},
+            {id: 9, supplier: "岐力", workplace: "南昌县站点", project: "金条", business: "金条", region: "华东", province: "江西省", city: "南昌县", mode: "人工", m1: 0, m2: 0, m3: 24, m4: null},
+            {id: 24, supplier: "博岳", workplace: "新华站点", project: "金条", business: "金条", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 35, m2: 35, m3: 35, m4: null},
+            {id: 25, supplier: "博岳", workplace: "石家庄高新站点", project: "金条", business: "金条", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 55, m2: 60, m3: 55, m4: null},
+            {id: 28, supplier: "赛维斯", workplace: "桥西站点", project: "金条", business: "金条", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 55, m2: 50, m3: 65, m4: null},
+            {id: 29, supplier: "赛维斯", workplace: "赵县站点", project: "金条", business: "金条", region: "华北", province: "河北省", city: "赵县", mode: "人工", m1: 45, m2: 40, m3: 50, m4: null},
+            {id: 30, supplier: "赛维斯", workplace: "中宁站点", project: "金条", business: "金条", region: "华西", province: "宁夏", city: "中卫市", mode: "人工", m1: 23, m2: 20, m3: 30, m4: null},
+            {id: 31, supplier: "赛维斯", workplace: "金凤站点", project: "金条", business: "金条", region: "华西", province: "宁夏", city: "银川市", mode: "人机", m1: 17, m2: 20, m3: 22, m4: null},
+            {id: 32, supplier: "赛维斯", workplace: "沙坡头站点", project: "金条", business: "金条", region: "华西", province: "宁夏", city: "中卫市", mode: "人机", m1: 15, m2: 15, m3: 17, m4: null},
+            {id: 33, supplier: "赛维斯", workplace: "中宁站点", project: "金条", business: "金条", region: "华西", province: "宁夏", city: "中卫市", mode: "人机", m1: 25, m2: 26, m3: 29, m4: null},
+            {id: 34, supplier: "人和", workplace: "鸡东站点", project: "金条", business: "金条", region: "东北", province: "黑龙江省", city: "鸡西市", mode: "人工", m1: 50, m2: 40, m3: 40, m4: null},
+            {id: 35, supplier: "人和", workplace: "晋城开发区站点", project: "金条", business: "金条", region: "华北", province: "山西省", city: "晋城市", mode: "人工", m1: 20, m2: 20, m3: 20, m4: null},
+            {id: 36, supplier: "汇讯", workplace: "合肥站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "合肥市", mode: "人工", m1: 35, m2: 28, m3: 16, m4: null},
+            {id: 38, supplier: "汇讯", workplace: "九原站点", project: "金条", business: "金条", region: "华北", province: "内蒙古", city: "包头市", mode: "人工", m1: 30, m2: 31, m3: 30, m4: null},
+            {id: 43, supplier: "汇讯", workplace: "西陵站点", project: "金条", business: "金条", region: "华中", province: "湖北省", city: "宜昌市", mode: "人工", m1: 64, m2: 47, m3: 71, m4: null},
+            {id: 45, supplier: "翰锐", workplace: "盘龙站点", project: "金条", business: "金条", region: "华西", province: "云南省", city: "昆明市", mode: "人工", m1: 42, m2: 50, m3: 44, m4: null},
+            {id: 46, supplier: "翰锐", workplace: "曲靖经开站点", project: "金条", business: "金条", region: "华西", province: "云南省", city: "曲靖市", mode: "人工", m1: 54, m2: 44, m3: 50, m4: null},
+            {id: 49, supplier: "伽玛", workplace: "利辛站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "亳州市", mode: "人工", m1: 46, m2: 52, m3: 58, m4: null},
+            {id: 50, supplier: "伽玛", workplace: "樊城站点", project: "金条", business: "金条", region: "华中", province: "湖北省", city: "襄阳市", mode: "人工", m1: 64, m2: 48, m3: 49, m4: null},
+            {id: 51, supplier: "伽玛", workplace: "宜城站点", project: "金条", business: "金条", region: "华中", province: "湖北省", city: "宜城市", mode: "人工", m1: 20, m2: 18, m3: 22, m4: null},
+            {id: 52, supplier: "伽玛", workplace: "廊坊开发区站点", project: "金条", business: "金条", region: "华北", province: "河北省", city: "廊坊市", mode: "人工", m1: 50, m2: 42, m3: 57, m4: null},
+            {id: 53, supplier: "伽玛", workplace: "廊坊开发区站点", project: "金条", business: "金条", region: "华北", province: "河北省", city: "廊坊市", mode: "人机", m1: 32, m2: 32, m3: 30, m4: null},
+            {id: 54, supplier: "毅航", workplace: "埇桥站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "宿州市", mode: "人工", m1: 170, m2: 171, m3: 190, m4: 220},
+            {id: 55, supplier: "毅航", workplace: "埇桥站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "宿州市", mode: "人工", m1: 100, m2: 91, m3: 109, m4: 116},
+            {id: 56, supplier: "毅航", workplace: "蜀山站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "合肥市", mode: "人工", m1: 30, m2: 29, m3: 35, m4: 47},
+            {id: 57, supplier: "毅航", workplace: "埇桥站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "宿州市", mode: "人机", m1: 49, m2: 48, m3: 49, m4: 48},
+            {id: 75, supplier: "广达", workplace: "正定站点", project: "金条", business: "金条", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 49, m2: 49, m3: 46, m4: null},
+            {id: 76, supplier: "广达", workplace: "宿豫站点", project: "金条", business: "金条", region: "华东", province: "江苏省", city: "宿迁市", mode: "人工", m1: 5, m2: 5, m3: 11, m4: null},
+            {id: 77, supplier: "广达", workplace: "鸡冠站点", project: "金条", business: "金条", region: "东北", province: "黑龙江省", city: "鸡西市", mode: "人工", m1: 15, m2: 10, m3: 11, m4: null},
+            {id: 85, supplier: "毛毛虫", workplace: "庐阳站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "合肥市", mode: "人工", m1: 97, m2: 72, m3: 83, m4: null},
+            {id: 86, supplier: "毛毛虫", workplace: "蚌山站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "蚌埠市", mode: "人工", m1: 63, m2: 51, m3: 56, m4: null},
+            {id: 87, supplier: "毛毛虫", workplace: "舒城站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "六安市", mode: "人工", m1: 82, m2: 78, m3: 98, m4: null},
+            {id: 88, supplier: "毛毛虫", workplace: "蚌山站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "蚌埠市", mode: "人机", m1: 32, m2: 29, m3: 30, m4: null},
+            {id: 104, supplier: "华啸", workplace: "华啸职场", project: "金条", business: "金条", region: "华东", province: "山东省", city: "临沂市", mode: "人工", m1: 20, m2: 25, m3: 15, m4: 10},
+            {id: 105, supplier: "华啸", workplace: "华啸职场", project: "金条", business: "金条", region: "华西", province: "重庆市", city: "重庆市", mode: "人工", m1: 0, m2: 0, m3: 0, m4: 40},
+            {id: 106, supplier: "零犀", workplace: "舒城站点", project: "金条", business: "金条", region: "华东", province: "安徽省", city: "六安市", mode: "人机", m1: 70, m2: 78, m3: 73, m4: null},
+            {id: 107, supplier: "零犀", workplace: "东湖站点", project: "金条", business: "金条", region: "华中", province: "湖北省", city: "武汉市", mode: "人机", m1: 25, m2: 24, m3: 21, m4: null},
+            {id: 7, supplier: "新动力", workplace: "平泉站点", project: "京小贷", business: "企金", region: "华北", province: "河北省", city: "承德市", mode: "人工", m1: 4, m2: 4, m3: 4, m4: null},
+            {id: 69, supplier: "中乾", workplace: "西工站点", project: "京小贷", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人工", m1: 4, m2: 4, m3: 4, m4: null},
+            {id: 78, supplier: "广达", workplace: "雁塔站点", project: "京小贷", business: "企金", region: "华西", province: "陕西省", city: "西安市", mode: "人工", m1: 7, m2: 7, m3: 7, m4: null},
+            {id: 73, supplier: "靖涵", workplace: "建始站点", project: "菁卡分期", business: "信用卡", region: "华中", province: "湖北省", city: "恩施市", mode: "人工", m1: 10, m2: 10, m3: 10, m4: null},
+            {id: 20, supplier: "创博", workplace: "承德站点", project: "菁卡拉新", business: "信用卡", region: "华北", province: "河北省", city: "承德市", mode: "人机", m1: 140, m2: 125, m3: 110, m4: null},
+            {id: 21, supplier: "创博", workplace: "正定站点", project: "菁卡拉新", business: "信用卡", region: "华北", province: "河北省", city: "石家庄市", mode: "人机", m1: 20, m2: 20, m3: 20, m4: null},
+            {id: 22, supplier: "创博", workplace: "滦平站点", project: "菁卡拉新", business: "信用卡", region: "华北", province: "河北省", city: "承德市", mode: "人机", m1: 22, m2: 20, m3: 20, m4: null},
+            {id: 26, supplier: "艾斯", workplace: "魏县站点", project: "菁卡拉新", business: "信用卡", region: "华北", province: "河北省", city: "石家庄市", mode: "人机", m1: 36, m2: 34, m3: 27, m4: null},
+            {id: 27, supplier: "艾斯", workplace: "赵县站点", project: "菁卡拉新", business: "信用卡", region: "华北", province: "河北省", city: "赵县", mode: "人机", m1: 29, m2: 23, m3: 23, m4: null},
+            {id: 41, supplier: "汇讯", workplace: "陇西站点", project: "菁卡拉新", business: "信用卡", region: "华西", province: "甘肃省", city: "定西市", mode: "人机", m1: 32, m2: 15, m3: 15, m4: null},
+            {id: 71, supplier: "拓银", workplace: "长沙站点", project: "菁卡拉新", business: "信用卡", region: "华中", province: "湖南省", city: "长沙市", mode: "人机", m1: 21, m2: 24, m3: 28, m4: null},
+            {id: 72, supplier: "靖涵", workplace: "建始站点", project: "菁卡拉新", business: "信用卡", region: "华中", province: "湖北省", city: "恩施市", mode: "人机", m1: 26, m2: 27, m3: 22, m4: null},
+            {id: 74, supplier: "靖涵", workplace: "滦州站点", project: "菁卡拉新", business: "信用卡", region: "华北", province: "河北省", city: "唐山市", mode: "人机", m1: 25, m2: 22, m3: 23, m4: null},
+            {id: 83, supplier: "速讯达", workplace: "和平站点", project: "菁卡拉新", business: "信用卡", region: "东北", province: "辽宁省", city: "沈阳市", mode: "人机", m1: 59, m2: 58, m3: 34, m4: null},
+            {id: 84, supplier: "速讯达", workplace: "皇姑站点", project: "菁卡拉新", business: "信用卡", region: "东北", province: "辽宁省", city: "沈阳市", mode: "人机", m1: 46, m2: 46, m3: 42, m4: null},
+            {id: 92, supplier: "中弘", workplace: "潍城站点", project: "菁卡拉新", business: "信用卡", region: "华东", province: "山东省", city: "潍坊市", mode: "人机", m1: 15, m2: 10, m3: 10, m4: null},
+            {id: 93, supplier: "中弘", workplace: "沈河站点", project: "菁卡拉新", business: "信用卡", region: "东北", province: "辽宁省", city: "沈阳市", mode: "人机", m1: 19, m2: 19, m3: 22, m4: null},
+            {id: 94, supplier: "中弘", workplace: "林场站点", project: "菁卡拉新", business: "信用卡", region: "东北", province: "辽宁省", city: "北票市", mode: "人机", m1: 23, m2: 21, m3: 19, m4: null},
+            {id: 95, supplier: "中弘", workplace: "铁东站点", project: "菁卡拉新", business: "信用卡", region: "东北", province: "辽宁省", city: "鞍山市", mode: "人机", m1: 18, m2: 13, m3: 15, m4: null},
+            {id: 67, supplier: "中乾", workplace: "西工站点", project: "票据", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人工", m1: 2, m2: 2, m3: 2, m4: null},
+            {id: 60, supplier: "锦瑞", workplace: "南城站点", project: "企业金采", business: "企金", region: "华北", province: "河北省", city: "定州市", mode: "人工", m1: 8, m2: 5, m3: 5, m4: null},
+            {id: 66, supplier: "中乾", workplace: "嵩县站点", project: "企业金采", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人工", m1: 29, m2: 29, m3: 29, m4: null},
+            {id: 1, supplier: "衍生", workplace: "颍州站点", project: "企业主贷", business: "企金", region: "华东", province: "安徽省", city: "阜阳市", mode: "人工", m1: 12, m2: 8, m3: 13, m4: null},
+            {id: 2, supplier: "小蜜蜂", workplace: "雁塔站点", project: "企业主贷", business: "企金", region: "华西", province: "陕西省", city: "西安市", mode: "人工", m1: 12, m2: 12, m3: 12, m4: null},
+            {id: 3, supplier: "新动力", workplace: "平泉站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "承德市", mode: "人工", m1: 6, m2: 5, m3: 15, m4: null},
+            {id: 4, supplier: "新动力", workplace: "兴隆职场", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "承德市", mode: "人工", m1: 36, m2: 42, m3: 53, m4: null},
+            {id: 5, supplier: "新动力", workplace: "承德站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "承德市", mode: "人工", m1: 7, m2: 0, m3: 9, m4: null},
+            {id: 13, supplier: "德辰", workplace: "辛集站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 72, m2: 72, m3: 48, m4: null},
+            {id: 14, supplier: "德辰", workplace: "辛集站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "石家庄市", mode: "人机", m1: 18, m2: 18, m3: 18, m4: null},
+            {id: 16, supplier: "德辰", workplace: "辛集站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 10, m2: 21, m3: 25, m4: null},
+            {id: 19, supplier: "德辰", workplace: "无极站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 0, m2: 0, m3: 5, m4: null},
+            {id: 37, supplier: "汇讯", workplace: "洪山站点", project: "企业主贷", business: "企金", region: "华中", province: "湖北省", city: "武汉市", mode: "人工", m1: 39, m2: 46, m3: 65, m4: null},
+            {id: 39, supplier: "汇讯", workplace: "相山站点", project: "企业主贷", business: "企金", region: "华东", province: "安徽省", city: "淮北市", mode: "人工", m1: 30, m2: 31, m3: 30, m4: null},
+            {id: 40, supplier: "汇讯", workplace: "相山站点", project: "企业主贷", business: "企金", region: "华东", province: "安徽省", city: "淮北市", mode: "人工", m1: 5, m2: 6, m3: 19, m4: null},
+            {id: 59, supplier: "锦瑞", workplace: "南城站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "定州市", mode: "人工", m1: 57, m2: 57, m3: 57, m4: null},
+            {id: 62, supplier: "锦瑞", workplace: "裕华站点", project: "企业主贷", business: "企金", region: "华北", province: "河北省", city: "石家庄市", mode: "人工", m1: 11, m2: 21, m3: 21, m4: null},
+            {id: 63, supplier: "中乾", workplace: "西工站点", project: "企业主贷", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人工", m1: 56, m2: 56, m3: 53, m4: null},
+            {id: 64, supplier: "中乾", workplace: "西工站点", project: "企业主贷", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人机", m1: 12, m2: 12, m3: 12, m4: null},
+            {id: 65, supplier: "中乾", workplace: "西工站点", project: "企业主贷", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人工", m1: 20, m2: 20, m3: 20, m4: null},
+            {id: 70, supplier: "中乾", workplace: "西工站点", project: "企业主贷", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人工", m1: 22, m2: 22, m3: 36, m4: null},
+            {id: 79, supplier: "广达", workplace: "雁塔站点", project: "企业主贷", business: "企金", region: "华西", province: "陕西省", city: "西安市", mode: "人机", m1: 17, m2: 17, m3: 17, m4: null},
+            {id: 80, supplier: "广达", workplace: "雁塔站点", project: "企业主贷", business: "企金", region: "华西", province: "陕西省", city: "西安市", mode: "人机", m1: 16, m2: 16, m3: 16, m4: null},
+            {id: 81, supplier: "广达", workplace: "鸡冠站点", project: "企业主贷", business: "企金", region: "东北", province: "黑龙江省", city: "鸡西市", mode: "人工", m1: 12, m2: 12, m3: 12, m4: null},
+            {id: 82, supplier: "广达", workplace: "雁塔站点", project: "企业主贷", business: "企金", region: "华西", province: "陕西省", city: "西安市", mode: "人工", m1: 42, m2: 42, m3: 37, m4: null},
+            {id: 99, supplier: "速腾", workplace: "泰山站点", project: "企业主贷", business: "企金", region: "华东", province: "山东省", city: "泰安市", mode: "人工", m1: 10, m2: 10, m3: 10, m4: null},
+            {id: 101, supplier: "九通", workplace: "东安职场", project: "企业主贷", business: "企金", region: "东北", province: "黑龙江省", city: "牡丹江市", mode: "人工", m1: 10, m2: 10, m3: 10, m4: null},
+            {id: 108, supplier: "零犀", workplace: "舒城站点", project: "企业主贷", business: "企金", region: "华东", province: "安徽省", city: "六安市", mode: "人机", m1: 16, m2: 18, m3: 16, m4: null},
+            {id: 23, supplier: "创博", workplace: "承德站点", project: "商家白条", business: "信用卡", region: "华北", province: "河北省", city: "承德市", mode: "人工", m1: 17, m2: 17, m3: 17, m4: null},
+            {id: 42, supplier: "汇讯", workplace: "陇西站点", project: "商家白条", business: "信用卡", region: "华西", province: "甘肃省", city: "定西市", mode: "人工", m1: 10, m2: 9, m3: 9, m4: null},
+            {id: 6, supplier: "新动力", workplace: "平泉站点", project: "小微平台", business: "企金", region: "华北", province: "河北省", city: "承德市", mode: "人工", m1: 11, m2: 11, m3: 11, m4: null},
+            {id: 68, supplier: "中乾", workplace: "西工站点", project: "小微平台", business: "企金", region: "华中", province: "河南省", city: "洛阳市", mode: "人工", m1: 12, m2: 15, m3: 15, m4: null}
+        ];
+
+        // Color palette - Restrained Professionalism
+        const colors = {
+            primary: '#111111',
+            secondary: '#666666',
+            accent: '#E2725B',
+            border: '#E5E5E5',
+            muted: '#F5F5F5',
+            success: '#16A34A',
+            warning: '#E2725B',
+            chart: ['#111111', '#E2725B', '#666666', '#999999', '#CCCCCC', '#333333', '#DD8877', '#555555']
+        };
+
+        // Process data - merge by supplier+workplace
+        function processData() {
+            const workplaceMap = {};
+
+            rawData.forEach(item => {
+                const key = `${item.supplier}-${item.workplace}`;
+                if (!workplaceMap[key]) {
+                    workplaceMap[key] = {
+                        key: key,
+                        supplier: item.supplier,
+                        workplace: item.workplace,
+                        province: item.province,
+                        region: item.region,
+                        city: item.city,
+                        projects: [],
+                        m1: 0, m2: 0, m3: 0, m4: 0,
+                        modes: new Set()
+                    };
+                }
+                workplaceMap[key].projects.push(item.project);
+                workplaceMap[key].m1 += item.m1 || 0;
+                workplaceMap[key].m2 += item.m2 || 0;
+                workplaceMap[key].m3 += item.m3 || 0;
+                workplaceMap[key].m4 += item.m4 || 0;
+                workplaceMap[key].modes.add(item.mode);
+            });
+
+            return Object.values(workplaceMap).map(w => ({
+                ...w,
+                projects: [...new Set(w.projects)],
+                projectCount: [...new Set(w.projects)].length,
+                currentHeadcount: w.m3 || w.m2 || w.m1 || 0,
+                modes: [...w.modes]
+            }));
+        }
+
+        const workplaces = processData();
+
+        // Calculate metrics
+        function calculateMetrics() {
+            const totalHeadcount = workplaces.reduce((sum, w) => sum + w.currentHeadcount, 0);
+            const smallSites = workplaces.filter(w => w.currentHeadcount < 20).length;
+            const largeSites = workplaces.filter(w => w.currentHeadcount >= 100).length;
+
+            // Supplier concentration
+            const supplierHeadcount = {};
+            workplaces.forEach(w => {
+                supplierHeadcount[w.supplier] = (supplierHeadcount[w.supplier] || 0) + w.currentHeadcount;
+            });
+            const highConcentration = Object.values(supplierHeadcount).filter(h => h / totalHeadcount > 0.4).length;
+
+            // Geographic concentration
+            const provinceHeadcount = {};
+            workplaces.forEach(w => {
+                provinceHeadcount[w.province] = (provinceHeadcount[w.province] || 0) + w.currentHeadcount;
+            });
+            const geoConcentration = Object.values(provinceHeadcount).filter(h => h / totalHeadcount > 0.6).length;
+
+            // Declining sites (2+ months)
+            const decliningSites = workplaces.filter(w => {
+                if (w.m1 && w.m2 && w.m3) {
+                    return w.m2 < w.m1 && w.m3 < w.m2;
+                }
+                return false;
+            }).length;
+
+            // Single project
+            const singleProject = workplaces.filter(w => w.projectCount === 1).length;
+
+            // Scattered projects (>5)
+            const scatteredProjects = workplaces.filter(w => w.projectCount > 5).length;
+
+            // Thin supply chain (<2 suppliers per project)
+            const projectSuppliers = {};
+            rawData.forEach(r => {
+                if (!projectSuppliers[r.project]) projectSuppliers[r.project] = new Set();
+                projectSuppliers[r.project].add(r.supplier);
+            });
+            const thinSupplyChain = Object.values(projectSuppliers).filter(s => s.size < 2).length;
+
+            return {
+                totalWorkplaces: workplaces.length,
+                totalHeadcount,
+                smallSites,
+                largeSites,
+                highConcentration,
+                thinSupplyChain,
+                geoConcentration,
+                decliningSites,
+                singleProject,
+                scatteredProjects,
+                riskPercentage: ((smallSites + largeSites + highConcentration + decliningSites) / workplaces.length * 100).toFixed(1),
+                supplierHeadcount,
+                provinceHeadcount
+            };
+        }
+
+        const metrics = calculateMetrics();
+
+        // Populate filters
+        function populateFilters() {
+            const suppliers = [...new Set(rawData.map(r => r.supplier))].sort();
+            const projects = [...new Set(rawData.map(r => r.project))].sort();
+            const provinces = [...new Set(rawData.map(r => r.province))].sort();
+
+            const supplierSelect = document.getElementById('supplierFilter');
+            suppliers.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s;
+                opt.textContent = s;
+                supplierSelect.appendChild(opt);
+            });
+
+            const projectSelect = document.getElementById('projectFilter');
+            projects.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                projectSelect.appendChild(opt);
+            });
+
+            const provinceSelect = document.getElementById('provinceFilter');
+            provinces.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                provinceSelect.appendChild(opt);
+            });
+        }
+
+        // Generate insights
+        function generateInsights() {
+            const insights = [];
+
+            // Top supplier
+            const topSupplier = Object.entries(metrics.supplierHeadcount).sort((a, b) => b[1] - a[1])[0];
+            const topShare = (topSupplier[1] / metrics.totalHeadcount * 100).toFixed(1);
+            insights.push({
+                type: 'trend',
+                text: `${topSupplier[0]}为最大供应商，人力占比${topShare}%，覆盖${workplaces.filter(w => w.supplier === topSupplier[0]).length}个职场`
+            });
+
+            // Risk alert
+            if (metrics.smallSites > 10) {
+                insights.push({
+                    type: 'risk',
+                    text: `微小站点(${metrics.smallSites}个)占比较高，建议评估成本效率，考虑合并或关闭`
+                });
+            }
+
+            // Geographic insight
+            const topProvince = Object.entries(metrics.provinceHeadcount).sort((a, b) => b[1] - a[1])[0];
+            const provinceShare = (topProvince[1] / metrics.totalHeadcount * 100).toFixed(1);
+            if (provinceShare > 30) {
+                insights.push({
+                    type: 'risk',
+                    text: `${topProvince[0]}人力占比${provinceShare}%，地理集中度偏高，建议分散布局降低风险`
+                });
+            }
+
+            // Declining sites
+            if (metrics.decliningSites > 0) {
+                insights.push({
+                    type: 'risk',
+                    text: `${metrics.decliningSites}个职场连续2月人力下滑，需关注业务健康度和供应商稳定性`
+                });
+            }
+
+            // Opportunity
+            const projectsWithFewSuppliers = Object.entries(projectSuppliers).filter(([_, s]) => s.size <= 2);
+            if (projectsWithFewSuppliers.length > 0) {
+                insights.push({
+                    type: 'opportunity',
+                    text: `${projectsWithFewSuppliers.length}个项目供应商数量≤2，建议引入新供应商增强供应链韧性`
+                });
+            }
+
+            return insights;
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Chart 1: Headcount distribution
+            const headcountDist = echarts.init(document.getElementById('chart-headcount'));
+            const distData = [
+                { name: '<20人', value: metrics.smallSites },
+                { name: '20-50人', value: workplaces.filter(w => w.currentHeadcount >= 20 && w.currentHeadcount < 50).length },
+                { name: '50-100人', value: workplaces.filter(w => w.currentHeadcount >= 50 && w.currentHeadcount < 100).length },
+                { name: '≥100人', value: metrics.largeSites }
+            ];
+            headcountDist.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}: {c}个 ({d}%)' },
+                series: [{
+                    type: 'pie',
+                    radius: ['45%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 2, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: true, fontSize: 11, color: '#666' },
+                    data: distData,
+                    color: colors.chart
+                }]
+            });
+
+            // Chart 2: Region distribution
+            const regionDist = echarts.init(document.getElementById('chart-region'));
+            const regionData = {};
+            workplaces.forEach(w => {
+                regionData[w.region] = (regionData[w.region] || 0) + w.currentHeadcount;
+            });
+            regionDist.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', data: Object.keys(regionData), axisLine: { lineStyle: { color: '#E5E5E5' } }, axisLabel: { color: '#666' } },
+                yAxis: { type: 'value', axisLine: { show: false }, splitLine: { lineStyle: { color: '#E5E5E5', type: 'dashed' } } },
+                series: [{
+                    type: 'bar',
+                    data: Object.values(regionData),
+                    itemStyle: { color: colors.accent, borderRadius: [2, 2, 0, 0] },
+                    barWidth: '50%'
+                }]
+            });
+
+            // Chart 3: Workplace Top 15
+            const workplaceTop = echarts.init(document.getElementById('chart-workplace-top'));
+            const topWorkplaces = [...workplaces].sort((a, b) => b.currentHeadcount - a.currentHeadcount).slice(0, 15);
+            workplaceTop.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '8%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'value', axisLine: { show: false }, splitLine: { lineStyle: { color: '#E5E5E5', type: 'dashed' } } },
+                yAxis: {
+                    type: 'category',
+                    data: topWorkplaces.map(w => w.workplace).reverse(),
+                    axisLine: { lineStyle: { color: '#E5E5E5' } },
+                    axisLabel: { color: '#666', fontSize: 11 }
+                },
+                series: [{
+                    type: 'bar',
+                    data: topWorkplaces.map(w => w.currentHeadcount).reverse(),
+                    itemStyle: { color: colors.primary, borderRadius: [0, 2, 2, 0] },
+                    barWidth: '60%',
+                    label: { show: true, position: 'right', fontSize: 11, color: '#666' }
+                }]
+            });
+
+            // Chart 4: Workplace distribution
+            const workplaceDist = echarts.init(document.getElementById('chart-workplace-dist'));
+            workplaceDist.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: ['<20人', '20-50人', '50-100人', '≥100人'],
+                    axisLine: { lineStyle: { color: '#E5E5E5' } },
+                    axisLabel: { color: '#666' }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLine: { show: false },
+                    splitLine: { lineStyle: { color: '#E5E5E5', type: 'dashed' } }
+                },
+                series: [{
+                    type: 'bar',
+                    data: [metrics.smallSites,
+                           workplaces.filter(w => w.currentHeadcount >= 20 && w.currentHeadcount < 50).length,
+                           workplaces.filter(w => w.currentHeadcount >= 50 && w.currentHeadcount < 100).length,
+                           metrics.largeSites],
+                    itemStyle: {
+                        color: (params) => params.dataIndex === 0 || params.dataIndex === 3 ? colors.accent : colors.primary,
+                        borderRadius: [2, 2, 0, 0]
+                    },
+                    barWidth: '50%'
+                }]
+            });
+
+            // Chart 5: Supplier Pie
+            const supplierPie = echarts.init(document.getElementById('chart-supplier-pie'));
+            const supplierData = Object.entries(metrics.supplierHeadcount).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
+            supplierPie.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
+                legend: { type: 'scroll', orient: 'vertical', right: 10, top: 20, bottom: 20, textStyle: { fontSize: 11, color: '#666' } },
+                series: [{
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['35%', '50%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: { borderRadius: 2, borderColor: '#fff', borderWidth: 2 },
+                    label: { show: false },
+                    data: supplierData,
+                    color: colors.chart
+                }]
+            });
+
+            // Chart 6: Supplier Trend
+            const supplierTrend = echarts.init(document.getElementById('chart-supplier-trend'));
+            const months = ['1月', '2月', '3月', '4月'];
+            const top5Suppliers = supplierData.slice(0, 5).map(s => s.name);
+            const trendSeries = top5Suppliers.map((supplier, idx) => {
+                const data = [0, 0, 0, 0];
+                workplaces.filter(w => w.supplier === supplier).forEach(w => {
+                    data[0] += w.m1;
+                    data[1] += w.m2;
+                    data[2] += w.m3;
+                    data[3] += w.m4;
+                });
+                return {
+                    name: supplier,
+                    type: 'line',
+                    smooth: true,
+                    data: data,
+                    lineStyle: { width: 2 },
+                    symbol: 'circle',
+                    symbolSize: 6
+                };
+            });
+            supplierTrend.setOption({
+                tooltip: { trigger: 'axis' },
+                legend: { data: top5Suppliers, bottom: 0, textStyle: { fontSize: 11, color: '#666' } },
+                grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+                xAxis: { type: 'category', data: months, axisLine: { lineStyle: { color: '#E5E5E5' } }, axisLabel: { color: '#666' } },
+                yAxis: { type: 'value', axisLine: { show: false }, splitLine: { lineStyle: { color: '#E5E5E5', type: 'dashed' } } },
+                series: trendSeries,
+                color: colors.chart
+            });
+
+            // Chart 7: Project Bar
+            const projectBar = echarts.init(document.getElementById('chart-project-bar'));
+            const projectData = {};
+            rawData.forEach(r => {
+                projectData[r.project] = (projectData[r.project] || 0) + (r.m3 || r.m2 || r.m1 || 0);
+            });
+            const sortedProjects = Object.entries(projectData).sort((a, b) => b[1] - a[1]);
+            projectBar.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'value', axisLine: { show: false }, splitLine: { lineStyle: { color: '#E5E5E5', type: 'dashed' } } },
+                yAxis: {
+                    type: 'category',
+                    data: sortedProjects.map(p => p[0]).reverse(),
+                    axisLine: { lineStyle: { color: '#E5E5E5' } },
+                    axisLabel: { color: '#666', fontSize: 10, width: 100, overflow: 'truncate' }
+                },
+                series: [{
+                    type: 'bar',
+                    data: sortedProjects.map(p => p[1]).reverse(),
+                    itemStyle: { color: colors.accent, borderRadius: [0, 2, 2, 0] },
+                    barWidth: '50%'
+                }]
+            });
+
+            // Chart 8: Project Supplier count
+            const projectSupplier = echarts.init(document.getElementById('chart-project-supplier'));
+            const projectSuppliers = {};
+            rawData.forEach(r => {
+                if (!projectSuppliers[r.project]) projectSuppliers[r.project] = new Set();
+                projectSuppliers[r.project].add(r.supplier);
+            });
+            const projectSupplierData = Object.entries(projectSuppliers).map(([name, suppliers]) => ({ name, count: suppliers.size })).sort((a, b) => b.count - a.count);
+            projectSupplier.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', data: projectSupplierData.map(p => p.name), axisLine: { lineStyle: { color: '#E5E5E5' } }, axisLabel: { color: '#666', fontSize: 10, rotate: 30 } },
+                yAxis: { type: 'value', axisLine: { show: false }, splitLine: { lineStyle: { color: '#E5E5E5', type: 'dashed' } } },
+                series: [{
+                    type: 'bar',
+                    data: projectSupplierData.map(p => p.count),
+                    itemStyle: {
+                        color: (params) => params.value < 2 ? colors.accent : colors.primary,
+                        borderRadius: [2, 2, 0, 0]
+                    },
+                    barWidth: '50%'
+                }]
+            });
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                headcountDist.resize();
+                regionDist.resize();
+                workplaceTop.resize();
+                workplaceDist.resize();
+                supplierPie.resize();
+                supplierTrend.resize();
+                projectBar.resize();
+                projectSupplier.resize();
+            });
+        }
+
+        // Populate tables
+        function populateTables() {
+            // Workplace table
+            const workplaceTbody = document.getElementById('workplace-tbody');
+            const sortedWorkplaces = [...workplaces].sort((a, b) => b.currentHeadcount - a.currentHeadcount);
+            sortedWorkplaces.forEach(w => {
+                const row = document.createElement('tr');
+                const riskTags = [];
+                if (w.currentHeadcount < 20) riskTags.push('<span class="tag tag-small">微小</span>');
+                if (w.currentHeadcount >= 100) riskTags.push('<span class="tag tag-large">超大</span>');
+                if (w.projectCount === 1) riskTags.push('<span class="tag tag-warning">单一</span>');
+
+                row.innerHTML = `
+                    <td>${w.workplace}</td>
+                    <td>${w.supplier}</td>
+                    <td>${w.projectCount}</td>
+                    <td>${w.currentHeadcount}</td>
+                    <td>${w.province}</td>
+                    <td>${w.city}</td>
+                    <td>${riskTags.join(' ') || '-'}</td>
+                `;
+                workplaceTbody.appendChild(row);
+            });
+
+            // Supplier table
+            const supplierTbody = document.getElementById('supplier-tbody');
+            const supplierStats = {};
+            workplaces.forEach(w => {
+                if (!supplierStats[w.supplier]) {
+                    supplierStats[w.supplier] = { workplaces: 0, headcount: 0, projects: new Set() };
+                }
+                supplierStats[w.supplier].workplaces++;
+                supplierStats[w.supplier].headcount += w.currentHeadcount;
+                w.projects.forEach(p => supplierStats[w.supplier].projects.add(p));
+            });
+            const sortedSuppliers = Object.entries(supplierStats).sort((a, b) => b[1].headcount - a[1].headcount);
+            sortedSuppliers.forEach(([name, stats]) => {
+                const share = (stats.headcount / metrics.totalHeadcount * 100).toFixed(1);
+                const riskLevel = share > 40 ? '高' : share > 25 ? '中' : '低';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td>${stats.workplaces}</td>
+                    <td>${stats.headcount}</td>
+                    <td>${stats.projects.size}</td>
+                    <td>${share}%</td>
+                    <td><span class="tag ${share > 40 ? 'tag-large' : share > 25 ? 'tag-small' : 'tag-normal'}">${riskLevel}</span></td>
+                `;
+                supplierTbody.appendChild(row);
+            });
+
+            // Supplier stats cards
+            const supplierStatsDiv = document.getElementById('supplier-stats');
+            sortedSuppliers.slice(0, 6).forEach(([name, stats], idx) => {
+                const share = (stats.headcount / metrics.totalHeadcount * 100).toFixed(1);
+                const card = document.createElement('div');
+                card.className = 'stat-card';
+                card.innerHTML = `
+                    <div class="stat-header">
+                        <span class="stat-name">${name}</span>
+                        <span class="stat-rank">#${idx + 1}</span>
+                    </div>
+                    <div class="stat-value">${stats.headcount}人</div>
+                    <div class="stat-bar">
+                        <div class="stat-bar-fill" style="width: ${share}%"></div>
+                    </div>
+                `;
+                supplierStatsDiv.appendChild(card);
+            });
+
+            // Project table
+            const projectTbody = document.getElementById('project-tbody');
+            const projectStats = {};
+            rawData.forEach(r => {
+                if (!projectStats[r.project]) {
+                    projectStats[r.project] = {
+                        business: r.business,
+                        workplaces: new Set(),
+                        suppliers: new Set(),
+                        headcount: 0
+                    };
+                }
+                projectStats[r.project].workplaces.add(`${r.supplier}-${r.workplace}`);
+                projectStats[r.project].suppliers.add(r.supplier);
+                projectStats[r.project].headcount += (r.m3 || r.m2 || r.m1 || 0);
+            });
+            const sortedProjects = Object.entries(projectStats).sort((a, b) => b[1].headcount - a[1].headcount);
+            sortedProjects.forEach(([name, stats]) => {
+                const health = stats.suppliers.size >= 3 ? '健康' : stats.suppliers.size === 2 ? '一般' : '单薄';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td>${stats.business}</td>
+                    <td>${stats.workplaces.size}</td>
+                    <td>${stats.suppliers.size}</td>
+                    <td>${stats.headcount}</td>
+                    <td><span class="tag ${stats.suppliers.size >= 3 ? 'tag-normal' : stats.suppliers.size === 2 ? 'tag-small' : 'tag-large'}">${health}</span></td>
+                `;
+                projectTbody.appendChild(row);
+            });
+
+            // Detail table
+            const detailTbody = document.getElementById('detail-tbody');
+            rawData.forEach(r => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${r.id}</td>
+                    <td>${r.supplier}</td>
+                    <td>${r.workplace}</td>
+                    <td>${r.project}</td>
+                    <td>${r.business}</td>
+                    <td>${r.region}</td>
+                    <td>${r.province}</td>
+                    <td>${r.mode}</td>
+                    <td>${r.m1 || '-'}</td>
+                    <td>${r.m2 || '-'}</td>
+                    <td>${r.m3 || '-'}</td>
+                    <td>${r.m4 || '-'}</td>
+                `;
+                detailTbody.appendChild(row);
+            });
+        }
+
+        // Tab switching
+        function initTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.tab).classList.add('active');
+                });
+            });
+        }
+
+        // Filter functions
+        function resetFilters() {
+            document.getElementById('monthFilter').value = '3';
+            document.getElementById('supplierFilter').value = 'all';
+            document.getElementById('projectFilter').value = 'all';
+            document.getElementById('provinceFilter').value = 'all';
+        }
+
+        function applyFilters() {
+            // In a real app, this would filter the data and refresh all views
+            alert('筛选功能已应用（演示版：数据已根据3月份计算）');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            populateFilters();
+            populateTables();
+            initCharts();
+            initTabs();
+
+            // Update risk cards
+            document.getElementById('risk-small').textContent = metrics.smallSites;
+            document.getElementById('risk-large').textContent = metrics.largeSites;
+            document.getElementById('risk-concentration').textContent = metrics.highConcentration;
+            document.getElementById('risk-thin').textContent = metrics.thinSupplyChain;
+            document.getElementById('risk-geo').textContent = metrics.geoConcentration;
+            document.getElementById('risk-decline').textContent = metrics.decliningSites;
+            document.getElementById('risk-single').textContent = metrics.singleProject;
+            document.getElementById('risk-scattered').textContent = metrics.scatteredProjects;
+
+            // Generate and display insights
+            const insights = generateInsights();
+            const insightsList = document.getElementById('insights-list');
+            insights.forEach(insight => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="insight-badge ${insight.type}">${insight.type === 'risk' ? '风险' : insight.type === 'opportunity' ? '机会' : '趋势'}</span>${insight.text}`;
+                insightsList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>

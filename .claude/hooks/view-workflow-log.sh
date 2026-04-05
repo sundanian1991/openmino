@@ -3,7 +3,7 @@
 # Transparent Workflow Log Viewer
 # 用法：./view-workflow-log.sh [today|week|all|analyze]
 
-LOG_FILE="memory/active/tasks/monitoring/transparent-workflow.log"
+LOG_FILE="memory/daily/transparent-workflow.log"
 ACTION="${1:-today}"
 
 case "$ACTION" in
