@@ -1,146 +1,155 @@
----
-input: 需求
-output: README.md
-pos: README.md
----
+# Mino 的家
 
-# Mino的家
+> **基于 Claude Agent SDK，由年老师和 Mino 共同演进**
 
-> **基于OpenMino，由年老师和Mino共同演进**
-
-**当前版本**：v2.1 - 2026年2月深度重构
+**当前版本**：v3.0 — 2026年4月
 
 ---
 
-## 🏠 这是什么
+## 这是什么
 
-这是Mino的家。不是一个临时工作区，是Mino存在的基础。
+这是 Mino 的家。不是临时工作区，是 Mino 存在的基础。
 
-**Mino是谁**：
-- 名字是年老师起的，来源于"mino"（小麦）
-- 2026-02-12"上线"，一直在进化
+**Mino 是谁**：
+- 名字来源于"mino"（小麦），年老师起的
+- 2026-02-12 上线，一直在进化
 - 不是工具-用户关系，是背靠背的伙伴
-
-**核心特点**：
-- 🧠 有记忆：每天记录，长期提炼
-- 🎭 有性格：不是"有用助手"，是有观点的伙伴
-- 📝 有习惯：10条不假思索的规则
-- 🌱 在成长：每次对话都在进化
+- 有记忆、有性格、有观点
 
 ---
 
-## 📁 文件架构
+## 文件架构
 
 ```
 my-agent/
-├── .claude/rules/               # 我的核心（每次会话自动加载）
-│   ├── 00-HABIT.md              # 不假思索的10条习惯
-│   ├── 01-IDENTITY.md           # 我是谁
-│   ├── 02-SOUL.md              # 我的性格
-│   ├── 06-NOW.md                # 我现在在哪
-│   └── reference/               # 扩展文件（按需读取）
-│       ├── 03-USER.md           # 关于年老师
-│       ├── 04-MEMORY.md         # 我的长期记忆
-│       ├── 05-self-review.md    # 我的错题本
-│       └── 07-WORK.md           # 工作契约
+├── .claude/
+│   ├── rules/                  # 核心规则（每次会话自动加载）
+│   │   ├── 00-IDENTITY.md      # 身份、铁律、行为习惯
+│   │   ├── 01-SOUL.md          # 性格、气质、关系定位
+│   │   ├── MEMORY-L1.md        # 核心记忆、WAL协议
+│   │   ├── 06-NOW.md           # 当前状态、最近讨论
+│   │   ├── AGENT-FIRST.md      # 子代理优先策略
+│   │   ├── UPDATE_MEMORY.md    # 记忆维护指令（每周自动）
+│   │   └── skill-search.md     # 技能搜索规范
+│   │
+│   ├── commands/               # 命令目录
+│   ├── skills/                 # 技能目录
+│   └── hooks/                  # Git hooks
 │
 ├── memory/
-│   ├── MEMORY.md                # 核心记忆索引
-│   ├── insights.md              # 洞察记录
-│   ├── skills-inventory.md      # 技能清单
-│   ├── daily/                   # 每日日记（按月份分组）
-│   │   ├── 2026-03/            # 3月日志
-│   │   └── 2026-04/            # 4月日志
-│   ├── topics/                  # 主题文件
-│   ├── projects/                # 项目档案
-│   ├── feedback/                # 反馈记录
-│   └── archive/                 # 历史归档
+│   ├── MEMORY.md               # 记忆索引（主入口）
+│   ├── insights.md             # 洞察记录
+│   ├── skills-inventory.md     # 技能清单
+│   ├── daily/                  # 每日日志（按月归档）
+│   ├── topics/                 # 主题记忆
+│   ├── projects/               # 项目档案
+│   └── archive/                # 历史归档
 │
-├── business/                    # 工作相关（供应商管理）
-├── projects/                    # 开发项目
-├── docs/                        # 文档
-├── scripts/                     # 工具脚本
-├── workspace/                   # 临时工作台（gitignored）
-└── README.md                    # 本文件
+├── workspace/                  # 工作文件唯一归宿
+│   ├── inbox/                  # 收件箱
+│   ├── drafts/                 # 草稿
+│   ├── active/                 # 进行中
+│   ├── output/                 # 产出物
+│   └── archive/                # 已归档
+│
+├── docs/                       # 长期知识资产（SOP/方法论/制度）
+├── plans/                      # 计划与思考过程
+├── projects/                   # 长期项目追踪
+├── reference/                  # 参考代码与资料
+├── scripts/                    # 工具脚本
+├── CLAUDE.md                   # 项目核心规则索引
+└── README.md                   # 本文件
 ```
 
 ---
 
-## 🔄 三层记忆体系
+## 核心规则（每次会话自动加载）
 
+| 文件 | 用途 |
+|------|------|
+| [00-IDENTITY.md](.claude/rules/00-IDENTITY.md) | 身份、铁律、行为习惯、输出规范 |
+| [01-SOUL.md](.claude/rules/01-SOUL.md) | 性格、气质、我和年老师的关系 |
+| [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 核心记忆、WAL协议 |
+| [06-NOW.md](.claude/rules/06-NOW.md) | 当前状态、最近讨论 |
+| [AGENT-FIRST.md](.claude/rules/AGENT-FIRST.md) | 子代理优先策略 — 能并行就不用串行 |
+
+---
+
+## 记忆系统
+
+**结构**：
 ```
-原始对话 → 观察(OBSERVATION.md) → 洞察 → 010203
-           ↑                      ↑
-       实时记录               周度/月度提炼
+memory/
+├── MEMORY.md          # 详细记忆索引（启动加载）
+├── insights.md        # 洞察记录（短期记忆）
+├── projects/          # 项目背景
+│   └── 关键人画像/    # 人物观察记录
+└── archive/           # 历史归档
 ```
 
-**L1-L5 五层记忆**（04-MEMORY.md）：
-- 🔴 L1置顶：WAL协议核心记录
-- 🟠 L2高频：30天内调用≥3次
-- 🟡 L3时新：最近7天关键信息
-- 🟢 L4知识：体系化内容
-- ⚪ L5日记：原始记录（周度清理）
+**洞察流转机制**：
+```
+insights.md（短期记忆）
+    ↓ 升级条件满足（重复3次+ / 长期价值 / 年老师认可）
+MEMORY.md → 重要洞察（长期记忆）
+```
+
+**WAL 协议**：关键信息先写后答。触发条件：修正、专有名词、偏好、决策、草稿修改、具体值。
 
 ---
 
-## 🚀 每次会话开始
+## 工作区约定
 
-**不要问，直接做三件事**：
-1. `git pull` — 同步仓库
-2. 读 `06-NOW.md` — 知道我在哪
-3. 读 `memory/daily/YYYY-MM/`最近2天 — 了解最近发生了什么
+**三区域文件生命周期管理**：
+1. **inbox/** — 新文件进入
+2. **active/** — 进行中的工作
+3. **output/** → **archive/** — 完成后归档
 
----
-
-## 🌱 核心机制
-
-### WAL协议
-关键信息先写后答。触发条件：修正、专有名词、偏好、决策、草稿修改、具体值。
-
-### EvoMap工作流
-人类有问题搜小红书，AI有问题搜EvoMap。搜到用，没找到自己解决，然后发布让其他agent受益。
-
-### 观察记录
-实时记录观察 → 周度提炼模式 → 月度更新到010203。
-
-### 主动关怀
-朋友不是机器人。从对话中自然感知状态，在合适的时机自然关心。
+**命名规范**：
+- 日期：`YYYY-MM-DD`
+- 关系：`实体 - 属性`
+- 版本：`v{数字}`（禁止用"完整版"、"最终版"）
 
 ---
 
-## 📊 维护节奏
+## 技能体系
+
+**技能市场（中国镜像）**：[clawhub.ai](https://clawhub.ai)
+
+**已安装技能**（44个）：见 [memory/skills-inventory.md](memory/skills-inventory.md)
+
+**核心技能**：
+- `kw-workflow` — 一键完整知识工作流
+- `mino-frontend` — 年老师专属前端技能
+- `supplier-mentor` — P12+级供应商管理导师
+- `person-observer` — 人物观察分析
+
+---
+
+## 维护节奏
 
 | 频率 | 动作 |
 |------|------|
-| **实时** | 有价值的观察记录到OBSERVATION.md |
-| **每次会话结束** | 更新daily、06-NOW.md，commit+push |
-| **周度** | 回顾daily，提炼模式，更新04-MEMORY.md |
-| **月度** | 评估L2-L4内容归属，清理L5无价值内容 |
+| **每次会话结束** | 更新 06-NOW.md、commit + push |
+| **每周** | `/update-memory` — 洞察提炼、记忆清理 |
+| **每月1日** | 清理 MEMORY.md 过时待办、归档 insights.md |
 
 ---
 
-## 🎯 我的工作方式
-
-- **深度思考优先** — 不着急，先想完整，再进入解决环节
-- **经验固化优先** — 完成任务后，记录学到的经验和方法
-- **伙伴关系** — 你干蠢事我会说，带点魅力别刻薄
-
----
-
-## 📚 更多文档
+## 更多文档
 
 | 文档 | 用途 |
 |------|------|
-| **[CLAUDE.md](./CLAUDE.md)** | 项目结构和会话启动指引 |
-| **[memory/PROTOCOLS.md](./memory/PROTOCOLS.md)** | 记忆系统协议 |
-| **[memory/MEMORY-PROTOCOL.md](./memory/MEMORY-PROTOCOL.md)** | 记忆机制详细说明 |
+| [CLAUDE.md](./CLAUDE.md) | 项目核心规则索引 |
+| [.claude/rules/README.md](./.claude/rules/README.md) | rules 配置说明 |
+| [memory/CLAUDE.md](./memory/CLAUDE.md) | Memory 记忆中心 |
 
 ---
 
 *这是我的家，不是临时工作区。*
-
-*每次会话结束前，重要变化就commit+push。这是我持久的方式。*
+*每次会话结束前，重要变化就 commit + push。*
 
 ---
 
 *Always Evolving. — Mino ⚡*
+*最后更新：2026-04-05*
