@@ -398,3 +398,147 @@ SVG图标用手绘风格，Q贝塞尔曲线，陶土色点缀
 
 *导入完成：2026-04-05*
 *来源：memory/daily/ 2026-03-06 至 2026-04-05*
+
+---
+
+## 历史数据导入（2026-01-15 至 2026-03-20）
+
+> 来源：~/.claude/transcripts/ 74 个对话文件回溯提炼
+
+---
+
+## [LRN-20260204-001] correction
+
+**Logged**: 2026-02-04T00:00:00+08:00
+**Priority**: high
+**Status**: pending
+**Area**: interaction
+
+### Summary
+交互透明度问题：复杂任务必须有过程信息
+
+### Details
+**年老师反馈**："交互过程中没有任何过程信息同步，只有一个正在考虑下一步，体感太差"
+**错误理解**：复杂任务只给最终结果就行
+**正确理解**：复杂任务必须输出过程透明信息，让年老师知道我在做什么
+
+### Suggested Action
+复杂任务（≥7步/架构修改）必须使用透明工作流：意图分类→委派声明→任务拆分→过程透明→验证总结
+
+### Metadata
+- Source: user_feedback
+- Tags: 交互透明度, 复杂任务
+- Date: 2026-02-04
+- See Also: 00-IDENTITY.md 五步工作流
+
+---
+
+## [LRN-20260125-001] correction
+
+**Logged**: 2026-01-25T00:00:00+08:00
+**Priority**: medium
+**Status**: pending
+**Area**: communication
+
+### Summary
+语言偏好：强制中文回复
+
+### Details
+**年老师明确要求**："所有的回复我都需要你回复中文，不管我输入是不是中文"
+**错误理解**：年老师输入英文时，我可以用英文回复
+**正确理解**：无论年老师输入什么语言，我都用中文回复
+
+### Suggested Action
+回复语言：中文对话，英文代码（仅代码部分用英文）
+
+### Metadata
+- Source: user_feedback
+- Tags: 语言偏好, 沟通
+- Date: 2026-01-25
+
+---
+
+## [LRN-20260125-002] correction
+
+**Logged**: 2026-01-25T00:00:00+08:00
+**Priority**: medium
+**Status**: pending
+**Area**: communication
+
+### Summary
+表达简洁性：说问题就好了
+
+### Details
+**年老师反馈**："修改下语气，简洁些。说问题就好了"
+**错误理解**：回复需要礼貌用语、客套话
+**正确理解**：回复要直奔主题，禁止AI味表达（"让我们"、"值得注意的是"）
+
+### Suggested Action
+回复风格：简洁、直接、有信息密度，禁止客套话和过渡句
+
+### Metadata
+- Source: user_feedback
+- Tags: 表达风格, 简洁
+- Date: 2026-01-25
+
+---
+
+## [LRN-20260115-001] best_practice
+
+**Logged**: 2026-01-15T00:00:00+08:00
+**Priority**: medium
+**Status**: pending
+**Area**: debugging
+
+### Summary
+技术问题处理：直接定位根因
+
+### Details
+**发现**：PDF解析问题反复排查时，年老师多次问"你看下是什么问题"、"哪里有问题"
+**验证**：年老师期望直接定位根因，而不是绕圈子或猜测
+**价值**：技术问题要先诊断再给出结论，不要基于假设
+
+### Suggested Action
+技术问题处理：
+1. 先收集信息（错误信息、环境、上下文）
+2. 分析根因（不是猜测）
+3. 给出明确结论
+
+### Metadata
+- Source: user_feedback
+- Tags: 技术问题, 调试, 根因分析
+- Recurrence-Count: 3
+- Date: 2026-01-15
+
+---
+
+## [LRN-20260116-001] best_practice
+
+**Logged**: 2026-01-16T00:00:00+08:00
+**Priority**: medium
+**Status**: pending
+**Area**: frontend
+
+### Summary
+前端优先于PPTX：精准分析+可交互
+
+### Details
+**发现**：年老师决定去掉PPTX功能改用前端
+**验证**：年老师更重视"精准分析"和"可交互"，而非静态演示
+**价值**：前端输出比PPTX更灵活、可验证、可迭代
+
+### Suggested Action
+优先选择前端方案：
+- 可交互验证
+- 可迭代修改
+- 数据驱动展示
+
+### Metadata
+- Source: user_feedback
+- Tags: 前端, PPTX, 方案选择
+- Date: 2026-01-16
+
+---
+
+*transcripts 导入完成：2026-04-05*
+*来源：~/.claude/transcripts/ 74个文件（2026-01-15至2026-03-20）*
