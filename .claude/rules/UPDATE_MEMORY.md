@@ -10,10 +10,12 @@ description: >
 ## 要做什么
 
 1. **读近期日志** — 今天 + 上次维护以来的所有 `memory/daily/YYYY-MM/YYYY-MM-DD.md`
-2. **更新 topic 文件** — 最近工作过的项目，把新经验、状态变更、决策同步到 `memory/topics/<name>.md`
-3. **更新核心记忆** — 提炼跨项目的新教训到 `.claude/rules/MEMORY-L1.md`；更新当前状态；清理过时信息
-4. **整理工作区** — 把散落的临时文件归档整理
-5. **Commit + push** — 如果工作区是 git 仓库，仅 git add 你本次更新的记忆相关文件，提交并推送。不要动工作区里其他未暂存的变更
+2. **读 .learnings/** — 检查 `.learnings/LEARNINGS.md`、`ERRORS.md`、`FEATURE_REQUESTS.md` 的新记录
+3. **整理 .learnings/** — 有价值的 → `memory/insights.md`；高频模式 → `memory/MEMORY.md`；已转移的清空
+4. **更新 topic 文件** — 最近工作过的项目，把新经验、状态变更、决策同步到 `memory/topics/<name>.md`
+5. **更新核心记忆** — 提炼跨项目的新教训到 `.claude/rules/MEMORY-L1.md`；更新当前状态；清理过时信息
+6. **整理工作区** — 把散落的临时文件归档整理
+7. **Commit + push** — 如果工作区是 git 仓库，仅 git add 你本次更新的记忆相关文件，提交并推送。不要动工作区里其他未暂存的变更
 
 ## 原则
 
@@ -75,3 +77,42 @@ description: >
 - 先诊断再治理 — 检查阶段只读不写
 - 不自动删除 — 发现问题后在维护过程中确认处理
 - 轻量快速 — 检查阶段 3 分钟内完成
+
+---
+
+## .learnings/ 整理流程
+
+> 基于 self-improving-agent 的学习记录，每周提炼到记忆系统
+
+### 检查 .learnings/ 文件
+
+| 文件 | 用途 | 整理目标 |
+|------|------|----------|
+| `LEARNINGS.md` | 纠正、洞察、最佳实践 | → `memory/insights.md` 或 `MEMORY.md` |
+| `ERRORS.md` | 命令失败、异常 | → `reference/05-self-review.md` |
+| `FEATURE_REQUESTS.md` | 功能请求 | → 记录到 `06-NOW.md` 待办或关闭 |
+
+### 整理逻辑
+
+**LEARNINGS.md → insights.md**：
+- 每条记录独立判断
+- 有长期价值的 → 追加到 insights.md
+- 标注来源：`(来源：.learnings/ LRN-YYYYMMDD-XXX)`
+
+**LEARNINGS.md → MEMORY.md**（升级条件）：
+- 同类模式出现 ≥3 次
+- 跨场景适用（非单一项目）
+- 年老师明确认可
+
+**ERRORS.md → reference/05-self-review.md**：
+- 记录踩坑经验
+- 避免重复犯错
+
+**整理后清理**：
+- 已转移的记录在 `.learnings/` 中标注 `**Status**: transferred`
+- 定期清理已转移的旧记录
+
+### 执行频率
+
+- **默认**：每周执行一次（与 UPDATE_MEMORY 同步）
+- **手动触发**：`/update-memory`
