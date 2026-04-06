@@ -51,11 +51,50 @@ skillsDir: ./.claude/skills
 - `workspace/` — 任务的工作台，临时文件，不入库
 - 其他所有目录 — 核心，提交并推送
 
-**提示**：建议用日期前缀组织 workspace/ 文件夹（如 `0406-project-name`），方便按时间追溯。
+---
+
+### workspace/ 命名规范
+
+**格式**：`YYYY-MM-DD-主题描述`
+
+**要求**：
+- 主题要具体清晰，一看就知道是什么
+- 禁止模糊命名（如"工作文件"、"学习记录"、"设计体系"）
+- 示例：`2026-04-01-主贷缩量分配方案` ✅ / `2026-04-01-分量需求` ❌
+
+---
+
+### workspace/archive/ 归档规范
+
+项目完结后归档到 `workspace/archive/`，按生命周期分三类：
+
+| 类型 | 特点 | 存放位置 | 命名格式 |
+|------|------|----------|----------|
+| **项目型** | 有起点终点，做完归档 | `archive/projects/` | `YYYY-MM-项目名` |
+| **持续型** | 长期追踪，不断更新 | `archive/ongoing/` | `项目名`（无日期） |
+| **散点型** | 零散讨论，不一定有后续 | `archive/scattered/` | `YYYY-MM-DD-主题` |
+
+**归档判断**：
+- 有明确交付物且已完结 → 项目型
+- 有多个版本迭代或长期维护 → 持续型
+- 单次会议/临时讨论/不确定后续 → 散点型
+
+**项目型合并规则**：
+- 同主题跨周的合并（如人力看板 W12+W13）
+- 多版本放在同一文件夹（如供应商站点看板 v3/v5系列）
+
+**散点型合并规则**：
+- 同主题散点合并（如知识翻译、gstack分析）
+- 不保留周度层级，直接用日期+主题命名
+
+---
+
+### 核心目录
 
 | 目录 | 用途 |
 |------|------|
 | **workspace/** | 临时工作区（不入库） |
+| **workspace/archive/** | 归档区（projects/ongoing/scattered） |
 | **docs/** | 长期知识资产（SOP/方法论/制度） |
 | **memory/** | 记忆与索引 |
 | **plans/** | 计划与思考过程 |
@@ -106,25 +145,25 @@ skillsDir: ./.claude/skills
 
 基于 [self-improving-agent](https://github.com/peterskoett/self-improving-agent) 记录学习与错误。
 
-**触发场景**（自动记录到 `.learnings/`）：
+**触发场景**（自动记录到 `memory/learnings/`）：
 | 场景 | 记录到 | 示例 |
 |------|--------|------|
-| 被纠正 | `.learnings/LEARNINGS.md` | "不对，应该是..."、"你搞错了" |
-| 操作失败 | `.learnings/ERRORS.md` | 命令报错、API 失败、异常 |
-| 学到新方法 | `.learnings/LEARNINGS.md` | 发现更好做法、知识更新 |
-| 用户想要新功能 | `.learnings/FEATURE_REQUESTS.md` | "能不能也..."、"我希望..." |
+| 被纠正 | `memory/learnings/LEARNINGS.md` | "不对，应该是..."、"你搞错了" |
+| 操作失败 | `memory/learnings/ERRORS.md` | 命令报错、API 失败、异常 |
+| 学到新方法 | `memory/learnings/LEARNINGS.md` | 发现更好做法、知识更新 |
+| 用户想要新功能 | `memory/learnings/FEATURE_REQUESTS.md` | "能不能也..."、"我希望..." |
 
 **每周整理**（`/update-memory`）：
 - 有价值的 → 提炼到 `memory/insights.md`
 - 高频模式 → 升级到 `memory/MEMORY.md`
-- 已转移的 → 清空 `.learnings/` 记录
+- 已转移的 → 清空 `memory/learnings/` 记录
 
 ---
 
 ## ✅ 会话结束检查
 
 - [ ] 更新 06-NOW.md
-- [ ] 检查是否需要记录到 `.learnings/`
+- [ ] 检查是否需要记录到 `memory/learnings/`
 - [ ] `git commit && git push`
 
 ---
