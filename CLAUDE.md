@@ -47,22 +47,20 @@ skillsDir: ./.claude/skills
 
 ## 📁 目录约定
 
+**核心 vs 临时**：
+- `workspace/` — 任务的工作台，临时文件，不入库
+- 其他所有目录 — 核心，提交并推送
+
+**提示**：建议用日期前缀组织 workspace/ 文件夹（如 `0406-project-name`），方便按时间追溯。
+
 | 目录 | 用途 |
 |------|------|
-| **workspace/** | 工作文件的唯一归宿 — inbox → drafts → active → output → archive |
-| **output/** | 产出物统一放 workspace/output/，禁止挂在 workspace/ 根 |
+| **workspace/** | 临时工作区（不入库） |
 | **docs/** | 长期知识资产（SOP/方法论/制度） |
 | **memory/** | 记忆与索引 |
 | **plans/** | 计划与思考过程 |
 | **projects/** | 长期项目追踪 |
 | **reference/** | 参考代码与资料 |
-
-**新增文件规范**：
-- 所有新增文件先进入 `workspace/inbox/`
-- 命名统一用 `-` 连接主题，版本号用 `v{数字}`
-- 禁止用 `完整版`、`最终版`、`校准过的精确` 等描述性后缀
-
-详细约定：[workspace/CLAUDE.md](workspace/CLAUDE.md)
 
 ---
 
