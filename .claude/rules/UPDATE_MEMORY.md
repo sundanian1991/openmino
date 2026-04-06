@@ -10,8 +10,8 @@ description: >
 ## 要做什么
 
 1. **读近期日志** — 今天 + 上次维护以来的所有 `memory/daily/YYYY-MM/YYYY-MM-DD.md`
-2. **读 .learnings/** — 检查 `.learnings/LEARNINGS.md`、`ERRORS.md`、`FEATURE_REQUESTS.md` 的新记录
-3. **整理 .learnings/** — 有价值的 → `memory/insights.md`；高频模式 → `memory/MEMORY.md`；已转移的清空
+2. **读 learnings/** — 检查 `memory/learnings/LEARNINGS.md`、`ERRORS.md`、`FEATURE_REQUESTS.md` 的新记录
+3. **整理 learnings/** — 有价值的 → `memory/insights.md`；高频模式 → `memory/MEMORY.md`；已转移的清空
 4. **更新 topic 文件** — 最近工作过的项目，把新经验、状态变更、决策同步到 `memory/topics/<name>.md`
 5. **更新核心记忆** — 提炼跨项目的新教训到 `.claude/rules/MEMORY-L1.md`；更新当前状态；清理过时信息
 6. **整理工作区** — 把散落的临时文件归档整理
@@ -82,7 +82,7 @@ description: >
 
 ## 记忆流转机制（核心）
 
-> 从 `.learnings/` 自动流转到核心文件
+> 从 `memory/learnings/` 自动流转到核心文件
 
 ### 流转标准
 
@@ -98,7 +98,7 @@ description: >
 
 ### 执行方式
 
-1. 读 `.learnings/` 三类文件
+1. 读 `memory/learnings/` 三类文件
 2. 按标准判断每条记录的去向
 3. 更新目标文件
 4. 标记 `**Status**: transferred`
@@ -106,11 +106,11 @@ description: >
 
 ---
 
-## .learnings/ 整理流程
+## memory/learnings/ 整理流程
 
 > 基于 self-improving-agent 的学习记录，每周提炼到记忆系统
 
-### 检查 .learnings/ 文件
+### 检查 memory/learnings/ 文件
 
 | 文件 | 用途 | 整理目标 |
 |------|------|----------|
@@ -123,7 +123,7 @@ description: >
 **LEARNINGS.md → insights.md**：
 - 每条记录独立判断
 - 有长期价值的 → 追加到 insights.md
-- 标注来源：`(来源：.learnings/ LRN-YYYYMMDD-XXX)`
+- 标注来源：`(来源：memory/learnings/ LRN-YYYYMMDD-XXX)`
 
 **LEARNINGS.md → MEMORY.md**（升级条件）：
 - 同类模式出现 ≥3 次
@@ -135,7 +135,7 @@ description: >
 - 避免重复犯错
 
 **整理后清理**：
-- 已转移的记录在 `.learnings/` 中标注 `**Status**: transferred`
+- 已转移的记录在 `memory/learnings/` 中标注 `**Status**: transferred`
 - 定期清理已转移的旧记录
 
 ### 执行频率
