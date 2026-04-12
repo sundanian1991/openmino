@@ -31,7 +31,22 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-## 📍 最近讨论（2026-04-11）
+## 📍 最近讨论（2026-04-12）
+
+**每日书信 Skill 上线** — 每晚 20:30 自动从 my-agent + lily 两个工作区的完整对话（session JSONL）中提取想法种子，以李娟叙事 × 芒格洞察风格写信，归档到 `memory/daily-letter/`。
+
+核心设计：
+- 数据源：`~/.myagents/sessions/*.jsonl`（完整对话上下文，不是摘要日志）
+- 归档：`memory/daily-letter/YYYY-MM-DD.md`
+- 风格：李娟的人文叙事 + 芒格的智慧洞察
+- 空日处理：即使无对话也写 200 字短笺
+- 首封信：`memory/daily-letter/2026-04-12.md`
+
+**下一步**：连续跑几天验证效果，优化想法种子识别准确度
+
+---
+
+## 📍 上次讨论（2026-04-11）
 
 **Sprint Contract（验收合同）机制落地** — 从 Harness Engineering V2 引入的核心能力。
 
@@ -60,6 +75,7 @@ pos: .claude/rules/06-NOW.md
 
 ## 📅 近期关键事件
 
+- **04-12**：每日书信 Skill 上线（session JSONL 数据源 + 20:30 定时自动写信）
 - **04-11**：Sprint Contract 验收合同机制落地（00-IDENTITY + AGENT-FIRST 双文件修改）
 - **04-06**：电销知识库场景深挖（knowledge-distiller + 排名思维/人力效应/引导式设问）
 - **03-31**：mino-frontend 通报模式验证（固定宽度居中、圆角 2px、底部信息条）
@@ -86,4 +102,4 @@ pos: .claude/rules/06-NOW.md
 ---
 
 *每次会话结束前更新。*
-*最后更新：2026-04-11 — Sprint Contract 验收合同机制落地*
+*最后更新：2026-04-12 — 每日书信 Skill 上线 + session JSONL 完整对话数据源*
