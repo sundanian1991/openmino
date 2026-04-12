@@ -18,10 +18,23 @@
 
 | 数据源 | 路径 | 说明 |
 |--------|------|------|
-| my-agent 日志 | `memory/daily/YYYY-MM/YYYY-MM-DD.md` | 当日对话记录 |
-| lobsterai 日志 | `../lobsterai/memory/daily/` | 莉莉工作区日志 |
+| **Session 原始对话** | `~/.myagents/sessions/*.jsonl` | 完整对话上下文（**核心数据源**） |
+| **Session 索引** | `~/.myagents/sessions.json` | 按 agentDir 和 createdAt 筛选当日会话 |
+| my-agent 日志 | `memory/daily/YYYY-MM/YYYY-MM-DD.md` | 当日对话摘要 |
+| lily 日志 | `~/.myagents/projects/lily/memory/daily/` | 莉莉工作区日志（如存在） |
 | MemOS 记忆 | `search_memory(query="当天日期或关键词")` | 当日新增记忆 |
 | 文件变更 | `git diff --name-only --since="today"` | 今日改动的文件 |
+
+**关键：Session 文件是核心数据源**
+
+每日日志只是摘要，真正的对话细节在 `~/.myagents/sessions/` 的 `.jsonl` 文件中。
+必须读取 session 文件，否则无法获取完整的想法种子。
+
+**Session 读取方法**：
+1. 用 `sessions.json` 找到今天属于 my-agent 和 lily 的会话 ID
+2. 读取对应 `.jsonl` 文件，提取 user 和 assistant 消息
+3. 过滤系统消息（`<system-reminder>`、`<CRON_TASK>`、`<HEARTBEAT>`）
+4. 保留长度 >50 字的有意义对话
 
 ### Step 2：识别想法种子
 
@@ -105,8 +118,10 @@ YYYY-MM-DD 夜
 
 ## 验收标准
 
-- [ ] 读了 my-agent 当日日志
-- [ ] 读了 lobsterai 当日日志（如存在）
+- [ ] 读取了 `~/.myagents/sessions.json` 筛选当日 my-agent + lily 会话
+- [ ] 读取了对应 session `.jsonl` 文件，提取完整对话上下文
+- [ ] 读了 my-agent 当日日志（辅助参考）
+- [ ] 读了 lily 当日日志（如存在）
 - [ ] 查了 MemOS 当日记忆
 - [ ] 提取了 ≥1 个想法种子（或写了空日短信）
 - [ ] 书信体写作，非流水账
