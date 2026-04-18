@@ -7,6 +7,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 
 BASE = "/Users/sundanian/Documents/projects/ai-agents/my-agent/workspace/2026-04-18-供应商空间模板/[供应商名称]-工作空间"
+ROOT = "/Users/sundanian/Documents/projects/ai-agents/my-agent/workspace/2026-04-18-供应商空间模板"
 
 # 样式常量
 HEADER_FONT = Font(name="微软雅黑", bold=True, size=11, color="FFFFFF")
@@ -58,6 +59,43 @@ def add_title_desc(ws, title, desc, max_col):
     ws.cell(row=2, column=1).value = desc
     ws.cell(row=2, column=1).font = DESC_FONT
     return 3  # header starts at row 3
+
+# ============================================================
+# 根目录：供应商基础信息汇总表（年老师维护，从各供应商填报中汇总）
+# ============================================================
+def gen_root_summary_sheet():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "基础信息汇总"
+    ws.sheet_properties.tabColor = "4A90D9"
+
+    header_row = add_title_desc(ws, "供应商基础信息汇总", "数据来源：各供应商的 供应商基础信息表.xlsx，自动汇总", 13)
+
+    headers = ["供应商名称", "统一社会信用代码", "法人代表", "联系人姓名", "联系人职务",
+               "联系电话", "微信号", "邮箱", "合作起始日期", "服务业务线", "团队规模", "最近更新", "备注"]
+    for i, h in enumerate(headers, 1):
+        ws.cell(row=header_row, column=i).value = h
+    style_header(ws, len(headers))
+
+    examples = [
+        ["毅航科技有限公司", "91110000XXXXXXXX", "张三", "李四", "项目对接人", "13800000000", "lisi_wx", "lisi@example.com", "2024-01-15", "金条-电销", 520, "2026-04-15", ""],
+        ["毛毛虫信息服务有限公司", "91310000XXXXXXXX", "王五", "赵六", "项目主管", "13900000000", "zl_wx", "zhaoliu@example.com", "2023-06-01", "金条-电销", 380, "2026-04-10", ""],
+        ["伽玛数据科技有限公司", "91440000XXXXXXXX", "孙七", "周八", "项目对接人", "13700000000", "zb_wx", "zhoub@example.com", "2025-03-01", "信用卡-电销", 210, "2026-04-12", ""],
+        ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+    ]
+    for r_idx, row_data in enumerate(examples, header_row + 1):
+        for c_idx, val in enumerate(row_data, 1):
+            ws.cell(row=r_idx, column=c_idx).value = val
+        style_data_row(ws, len(headers), r_idx)
+
+    add_dv(ws, f"K3:K100", ["金条-电销", "金条-审批", "企金-电销", "信用卡-电销", "财富-电销", "多业务线"])
+
+    set_col_widths(ws, [22, 22, 10, 10, 12, 14, 12, 20, 12, 14, 10, 12, 20])
+    ws.freeze_panes = "A4"
+
+    path = os.path.join(ROOT, "供应商基础信息汇总表.xlsx")
+    wb.save(path)
+    print(f"OK: {path}")
 
 # ============================================================
 # 模板0：供应商基础信息表（准入时填写，后续变更时更新）
@@ -247,7 +285,7 @@ def gen_quality_ledger_sheet():
     set_col_widths(ws, [12, 12, 8, 8, 18, 12, 30, 10, 20, 20, 10, 15])
     ws.freeze_panes = "A4"
 
-    path = os.path.join(BASE, "03-质检合规", "质检台账.xlsx")
+    path = os.path.join(BASE, "02-质检合规", "质检台账.xlsx")
     wb.save(path)
     print(f"OK: {path}")
 
@@ -297,7 +335,7 @@ def gen_compliance_sheet():
     set_col_widths(ws, [18, 10, 12, 12, 12, 25, 10, 25, 25, 12])
     ws.freeze_panes = "A4"
 
-    path = os.path.join(BASE, "03-质检合规", "合规自查表.xlsx")
+    path = os.path.join(BASE, "02-质检合规", "合规自查表.xlsx")
     wb.save(path)
     print(f"OK: {path}")
 
@@ -339,7 +377,7 @@ def gen_rectification_plan_sheet():
     ws.row_dimensions[4].height = 50
     ws.row_dimensions[5].height = 50
 
-    path = os.path.join(BASE, "05-整改跟踪", "整改计划表.xlsx")
+    path = os.path.join(BASE, "04-整改跟踪", "整改计划表.xlsx")
     wb.save(path)
     print(f"OK: {path}")
 
@@ -378,7 +416,7 @@ def gen_rectification_progress_sheet():
     set_col_widths(ws, [12, 12, 25, 12, 35, 10, 20, 14])
     ws.freeze_panes = "A4"
 
-    path = os.path.join(BASE, "05-整改跟踪", "整改进度跟踪.xlsx")
+    path = os.path.join(BASE, "04-整改跟踪", "整改进度跟踪.xlsx")
     wb.save(path)
     print(f"OK: {path}")
 
@@ -386,6 +424,7 @@ def gen_rectification_progress_sheet():
 # 主函数
 # ============================================================
 if __name__ == "__main__":
+    gen_root_summary_sheet()
     gen_basic_info_sheet()
     gen_hr_sheet()
     gen_manager_sheet()
@@ -394,4 +433,4 @@ if __name__ == "__main__":
     gen_compliance_sheet()
     gen_rectification_plan_sheet()
     gen_rectification_progress_sheet()
-    print("\n全部 7 个模板生成完毕!")
+    print("\n全部 8 个模板生成完毕（1个根目录汇总 + 7个空间内模板）!")
