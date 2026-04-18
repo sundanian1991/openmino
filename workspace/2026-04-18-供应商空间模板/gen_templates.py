@@ -60,6 +60,42 @@ def add_title_desc(ws, title, desc, max_col):
     return 3  # header starts at row 3
 
 # ============================================================
+# 模板0：供应商基础信息表（准入时填写，后续变更时更新）
+# ============================================================
+def gen_basic_info_sheet():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "基础信息"
+    ws.sheet_properties.tabColor = "4A90D9"
+
+    header_row = add_title_desc(ws, "供应商基础信息表", "填报频率：准入时填写 / 人员变更时24小时内更新", 12)
+
+    headers = ["供应商名称", "统一社会信用代码", "法人代表", "联系人姓名", "联系人职务",
+               "联系电话", "微信号", "邮箱", "合作起始日期", "服务业务线", "团队规模", "备注"]
+    for i, h in enumerate(headers, 1):
+        ws.cell(row=header_row, column=i).value = h
+    style_header(ws, len(headers))
+
+    examples = [
+        ["XX科技有限公司", "91110000XXXXXXXX", "张三", "李四", "项目对接人", "13800000000", "lisi_wx", "lisi@example.com", "2025-06-01", "金条-电销", 190, ""],
+        ["XX科技有限公司", "91110000XXXXXXXX", "张三", "王五", "项目主管", "13900000000", "wwang", "wang@example.com", "2025-06-01", "金条-电销", 190, "2026-04-15更换主管"],
+        ["", "", "", "", "", "", "", "", "", "", "", ""],
+    ]
+    for r_idx, row_data in enumerate(examples, header_row + 1):
+        for c_idx, val in enumerate(row_data, 1):
+            ws.cell(row=r_idx, column=c_idx).value = val
+        style_data_row(ws, len(headers), r_idx)
+
+    add_dv(ws, f"J3:J100", ["金条-电销", "金条-审批", "企金-电销", "信用卡-电销", "财富-电销", "多业务线"])
+
+    set_col_widths(ws, [18, 22, 10, 10, 12, 14, 12, 20, 12, 14, 10, 20])
+    ws.freeze_panes = "A4"
+
+    path = os.path.join(BASE, "01-人力管理", "供应商基础信息表.xlsx")
+    wb.save(path)
+    print(f"OK: {path}")
+
+# ============================================================
 # 模板1：人力明细表
 # ============================================================
 def gen_hr_sheet():
@@ -178,7 +214,45 @@ def gen_resignation_sheet():
     print(f"OK: {path}")
 
 # ============================================================
-# 模板4：合规自查表
+# 模板4：质检台账（日常记录，有问题就记）
+# ============================================================
+def gen_quality_ledger_sheet():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "质检台账"
+    ws.sheet_properties.tabColor = "B88018"
+
+    header_row = add_title_desc(ws, "质检台账", "填报频率：日常记录，发现问题当日登记", 12)
+
+    headers = ["登记日期", "业务线", "坐席姓名", "工号", "通话/工单编号",
+               "问题类型", "问题描述", "严重程度", "处理结果", "整改措施", "质检来源", "备注"]
+    for i, h in enumerate(headers, 1):
+        ws.cell(row=header_row, column=i).value = h
+    style_header(ws, len(headers))
+
+    examples = [
+        ["2026-04-10", "金条-电销", "赵六", "ZL001", "TN20260410-001", "A类错误", "未核实客户身份即提供账户信息", "A类", "已警告+重新培训", "安排一对一辅导", "质检抽检", ""],
+        ["2026-04-11", "金条-电销", "孙七", "SQ002", "TN20260411-005", "B类错误", "话术不完整，缺少风险提示", "B类", "口头提醒", "晨会统一强调", "质检抽检", ""],
+        ["", "", "", "", "", "", "", "", "", "", "", ""],
+    ]
+    for r_idx, row_data in enumerate(examples, header_row + 1):
+        for c_idx, val in enumerate(row_data, 1):
+            ws.cell(row=r_idx, column=c_idx).value = val
+        style_data_row(ws, len(headers), r_idx)
+
+    add_dv(ws, f"F3:F100", ["A类错误", "B类错误", "C类错误", "服务态度", "流程违规", "其他"])
+    add_dv(ws, f"H3:H100", ["A类", "B类", "C类", "提醒"])
+    add_dv(ws, f"K3:K100", ["质检抽检", "客户投诉", "内部自查", "甲方反馈"])
+
+    set_col_widths(ws, [12, 12, 8, 8, 18, 12, 30, 10, 20, 20, 10, 15])
+    ws.freeze_panes = "A4"
+
+    path = os.path.join(BASE, "03-质检合规", "质检台账.xlsx")
+    wb.save(path)
+    print(f"OK: {path}")
+
+# ============================================================
+# 模板5：合规自查表
 # ============================================================
 def gen_compliance_sheet():
     wb = Workbook()
@@ -228,7 +302,7 @@ def gen_compliance_sheet():
     print(f"OK: {path}")
 
 # ============================================================
-# 模板5：整改计划表
+# 模板6：整改计划表
 # ============================================================
 def gen_rectification_plan_sheet():
     wb = Workbook()
@@ -270,7 +344,7 @@ def gen_rectification_plan_sheet():
     print(f"OK: {path}")
 
 # ============================================================
-# 模板6：整改进度跟踪表
+# 模板7：整改进度跟踪表
 # ============================================================
 def gen_rectification_progress_sheet():
     wb = Workbook()
@@ -312,10 +386,12 @@ def gen_rectification_progress_sheet():
 # 主函数
 # ============================================================
 if __name__ == "__main__":
+    gen_basic_info_sheet()
     gen_hr_sheet()
     gen_manager_sheet()
     gen_resignation_sheet()
+    gen_quality_ledger_sheet()
     gen_compliance_sheet()
     gen_rectification_plan_sheet()
     gen_rectification_progress_sheet()
-    print("\n全部 6 个模板生成完毕!")
+    print("\n全部 7 个模板生成完毕!")
