@@ -18,6 +18,7 @@ Memory 是**核心区**，存放：
 - 人物画像
 - 项目记忆
 - 对话日志
+- 学习记录
 
 **留存周期**：永久保留
 
@@ -28,30 +29,51 @@ Memory 是**核心区**，存放：
 ```
 memory/
 ├── MEMORY.md           # 记忆索引（主入口）
-├── insights.md         # 洞察记录（核心洞察）
+├── insights.md         # 洞察记录（长期）
 │
-├── projects/           # 项目记忆
-│   ├── 关键人画像/
-│   │   ├── 00_索引.md
-│   │   ├── {人物}/
-│   │   │   ├── 档案.md
-│   │   │   ├── _案例库.md
-│   │   │   └── ...
-│   │   └── ...
-│   └── {项目名}/
-│
-├── topics/             # 主题记忆（按主题归档）
-│   ├── {主题}.md
-│   └── ...
+├── learnings/          # 学习记录系统（临时→定期整理）
+│   ├── LEARNINGS.md
+│   ├── ERRORS.md
+│   └── FEATURE_REQUESTS.md
 │
 ├── daily/              # 日志（按月归档）
-│   ├── YYYY-MM/
-│   │   ├── YYYY-MM-DD.md
-│   │   └── ...
-│   └── ...
+│   ├── 2026-02/        # 11 个文件
+│   ├── 2026-03/        # 11 个文件
+│   └── 2026-04/
 │
-└── archive/            # 历史归档（不动）
+├── topics/             # 主题记忆（持续积累）
+│   ├── Mino成长思考/    # 19 个文件
+│   ├── 设计规范/        # Dashboard布局等
+│   ├── 工作规范/        # 数据处理、技能搜索、文档格式
+│   ├── 工作方法/        # 5311框架等
+│   ├── 供应商管理/      # 供应商管理：工具箱+看板+指标体系
+│   └── 电销知识库/
+│
+└── projects/           # 项目记忆
+    └── 关键人画像/
 ```
+
+---
+
+## 学习记录流转机制
+
+### learnings/ → 核心文件
+
+| 来源 | 触发条件 | 目标 | 频率 |
+|------|----------|------|------|
+| `learnings/LEARNINGS.md` | 每周整理或满 50 条 | `insights.md` | 每周 |
+| `learnings/ERRORS.md` | 踩坑经验积累 | `.claude/reference/05-self-review.md` | 按需 |
+| `learnings/FEATURE_REQUESTS.md` | 确认要实现 | `.claude/rules/06-NOW.md` 待办 | 按需 |
+
+### 流转执行方式
+
+**每周 `/update-memory` 时**：
+1. 读取 `learnings/LEARNINGS.md`
+2. 判断每条记录：
+   - 有长期价值 → 追加到 `insights.md`
+   - 高频模式（≥3次）→ 升级到 `MEMORY.md`
+   - 已转移 → 清空原记录
+3. 输出变更摘要
 
 ---
 
@@ -67,29 +89,25 @@ memory/
 - **内容**：职业洞察、工作方法、人际观察
 - **更新**：每次有新洞察时追加
 
-### projects/
-- **关键人画像/**：人物观察记录，由 person-observer 管理
-- **{项目名}/**：长期项目追踪
-
-### topics/
-- **用途**：主题记忆，独立成篇
-- **命名**：`{主题}.md`
-- **内容**：某个主题的完整记录
+### learnings/
+- **LEARNINGS.md**：会话中产生的学习记录（临时）
+- **ERRORS.md**：错误和失败记录
+- **FEATURE_REQUESTS.md**：功能请求
+- **维护**：由 `/update-memory` 定期整理
 
 ### daily/
 - **用途**：对话日志，按月归档
 - **命名**：`YYYY-MM/YYYY-MM-DD.md`
 - **内容**：当日对话记录、临时想法
 
----
+### topics/
+- **用途**：主题记忆，独立成篇
+- **命名**：`{主题}.md`
+- **内容**：某个主题的完整记录
 
-## 文件命名规范
-
-| 类型 | 格式 | 示例 |
-|------|------|------|
-| 主题记忆 | `{YYYYMMDD}-{主题}.md` | `20260401-定价委员会复盘.md` |
-| 日志 | `YYYY-MM/YYYY-MM-DD.md` | `2026-04/2026-04-05.md` |
-| 人物档案 | `{人物}/档案.md` | `刘乾坤/档案.md` |
+### projects/
+- **关键人画像/**：人物观察记录，由 person-observer 管理
+- **{项目名}/**：长期项目追踪
 
 ---
 
@@ -101,7 +119,10 @@ memory/
 
 | 文件类型 | 存放位置 | 命名规则 |
 |---------|---------|---------|
-| 洞察记录 | 追加到 insights.md | 无需新建文件 |
+| 学习记录 | memory/learnings/LEARNINGS.md | 追加 |
+| 错误记录 | memory/learnings/ERRORS.md | 追加 |
+| 功能请求 | memory/learnings/FEATURE_REQUESTS.md | 追加 |
+| 洞察记录 | memory/insights.md | 追加 |
 | 主题记忆 | memory/topics/ | `{主题}.md` |
 | 对话日志 | memory/daily/YYYY-MM/ | `YYYY-MM-DD.md` |
 | 项目记录 | memory/projects/{项目}/ | `{内容}.md` |
@@ -109,16 +130,13 @@ memory/
 ### 第二步：检查目录是否存在
 
 ```bash
-# 检查目录
-ls -la memory/topics/
-ls -la memory/daily/
-
 # 创建目录（如需要）
 mkdir -p memory/daily/$(date +%Y-%m)
 ```
 
 ### 第三步：创建或追加文件
 
+- **学习/错误/请求**：追加到 learnings/ 对应文件
 - **洞察**：追加到 insights.md
 - **日志**：创建 `YYYY-MM-DD.md`
 - **主题**：检查是否已存在，存在则追加，不存在则创建
@@ -131,20 +149,7 @@ mkdir -p memory/daily/$(date +%Y-%m)
 
 **触发条件**：修正、专有名词、偏好、决策、草稿修改、具体值
 
-**执行方式**：触发时立即写入 `memory/MEMORY.md` 或 `memory/insights.md`
-
----
-
-## 记忆提取
-
-当 workspace/ 或 docs/ 有以下内容时，考虑提炼到 memory/：
-
-| 内容类型 | 提取位置 | 判断标准 |
-|---------|---------|---------|
-| 职业洞察 | memory/insights.md | "原来如此"、"学到了" |
-| 决策记录 | memory/topics/{主题}.md | 重要决策及理由 |
-| 偏好变化 | memory/MEMORY.md | 年老师明确表达的偏好 |
-| 经验教训 | memory/insights.md | 踩坑、反思 |
+**执行方式**：触发时立即写入 `MEMORY.md` 或 `insights.md`
 
 ---
 
@@ -154,6 +159,8 @@ mkdir -p memory/daily/$(date +%Y-%m)
 |---------|--------|
 | 核心记忆概览 | memory/MEMORY.md |
 | 所有洞察 | memory/insights.md |
+| 最近学习记录 | memory/learnings/LEARNINGS.md |
+| 错误和踩坑 | memory/learnings/ERRORS.md |
 | 某个人物档案 | memory/projects/关键人画像/ |
 | 某天的对话 | memory/daily/YYYY-MM/YYYY-MM-DD.md |
 | 某主题记录 | memory/topics/{主题}.md |
@@ -162,11 +169,11 @@ mkdir -p memory/daily/$(date +%Y-%m)
 
 ## 整理触发条件
 
-| 条件 | 阈值 | 提醒级别 |
-|------|------|---------|
-| insights.md 长度 | > 500 行 | 💡 建议归档旧洞察 |
-| daily/ 未归档 | > 7 天 | 💡 建议按月归档 |
+| 条件 | 阈值 | 动作 |
+|------|------|------|
+| LEARNINGS.md | ≥ 50 条 | 执行 `/update-memory` |
+| insights.md | > 500 行 | 归档旧洞察到 archive/ |
 
 ---
 
-*最后更新：2026-04-05*
+*最后更新：2026-04-06 — 新增 learnings/ 目录 + 流转机制*
