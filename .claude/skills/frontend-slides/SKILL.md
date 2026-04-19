@@ -1,6 +1,6 @@
 ---
 name: frontend-slides
-description: Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files. Use when the user wants to build a presentation, convert a PPT/PPTX to web, or create slides for a talk/pitch. Helps non-designers discover their aesthetic through visual exploration rather than abstract choices.
+description: HTML 幻灯片生成 - 从零开始或转换 PowerPoint 文件创建惊艳的动画丰富 HTML 演示。用于用户想要构建演示文稿、转换 PPT/PPTX 到 web、或创建谈话/演讲的幻灯片。
 ---
 
 # Frontend Slides

@@ -1,6 +1,6 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions
+description: 超能力使用指南 - 在每次对话开始时使用，建立如何找到和使用技能的方法论。不是技能目录，而是使用技能的思维框架。
 ---
 
 <EXTREMELY-IMPORTANT>
