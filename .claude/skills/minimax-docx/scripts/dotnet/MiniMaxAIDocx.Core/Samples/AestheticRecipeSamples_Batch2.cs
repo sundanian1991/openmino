@@ -22,4 +22,5 @@ namespace MiniMaxAIDocx.Core.Samples;
 
 public static partial class AestheticRecipeSamples
 {
-    // ══════════════════════════════════════════════════�
+    // Batch2 placeholder - for APA/MLA academic styles
+}

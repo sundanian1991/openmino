@@ -122,4 +122,14 @@ public static class AnalyzeCommand
             else
             {
                 Console.WriteLine($"Sections:       {sections.Count} ({string.Join(", ", sectionBreaks)})");
-                Consol
+                Console.WriteLine($"Tables:         {tables.Count}");
+                Console.WriteLine($"Images:         {images}");
+                Console.WriteLine($"Paragraphs:     {paragraphs.Count}");
+                Console.WriteLine($"Word Estimate:  {wordCount}");
+                Console.WriteLine($"Styles:         {styleNames.Count} ({string.Join(", ", styleNames.Take(5))})");
+            }
+        });
+
+        return cmd;
+    }
+}

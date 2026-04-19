@@ -488,4 +488,113 @@ public static class ImageSamples
     /// entire Drawing XML tree.
     /// </summary>
     /// <param name="mainPart">The MainDocumentPart containing the image relationship.</param>
-    /// <param name="oldRelId">The existing relationship ID (e.g., "rId5") of the image to replace
+    /// <param name="oldRelId">The existing relationship ID (e.g., "rId5") of the image to replace.</param>
+    /// <param name="newImagePath">Path to the new image file.</param>
+    public static void ReplaceImage(MainDocumentPart mainPart, string oldRelId, string newImagePath)
+    {
+        if (mainPart == null) throw new ArgumentNullException(nameof(mainPart));
+        if (string.IsNullOrEmpty(oldRelId)) throw new ArgumentNullException(nameof(oldRelId));
+        if (string.IsNullOrEmpty(newImagePath)) throw new ArgumentNullException(nameof(newImagePath));
+
+        var imagePart = mainPart.GetPartById(oldRelId) as ImagePart;
+        if (imagePart == null)
+        {
+            throw new InvalidOperationException($"No image part found with relationship ID: {oldRelId}");
+        }
+
+        using (FileStream stream = new FileStream(newImagePath, FileMode.Open))
+        {
+            imagePart.FeedData(stream);
+        }
+    }
+
+    // ── Helper methods (private) ───────────────────────────────────────
+
+    private static DocumentFormat.OpenXml.Packaging.ImagePartTypeValues GetImagePartType(string imagePath)
+    {
+        var ext = Path.GetExtension(imagePath).ToLowerInvariant();
+        return ext switch
+        {
+            ".png" => DocumentFormat.OpenXml.Packaging.ImagePartTypeValues.Png,
+            ".jpg" or ".jpeg" => DocumentFormat.OpenXml.Packaging.ImagePartTypeValues.Jpeg,
+            ".gif" => DocumentFormat.OpenXml.Packaging.ImagePartTypeValues.Gif,
+            ".bmp" => DocumentFormat.OpenXml.Packaging.ImagePartTypeValues.Bmp,
+            ".emf" => DocumentFormat.OpenXml.Packaging.ImagePartTypeValues.Emf,
+            ".wmf" => DocumentFormat.OpenXml.Packaging.ImagePartTypeValues.Wmf,
+            _ => DocumentFormat.OpenXml.Packaging.ImagePartTypeValues.Png
+        };
+    }
+
+    private static Drawing BuildDrawingElement(
+        string relId, long cx, long cy,
+        uint docPropId, string name, string? description)
+    {
+        var extents = new DW.Extent { Cx = cx, Cy = cy };
+        var docPr = new DW.DocProperties { Id = docPropId, Name = name, Description = description ?? "" };
+        var cnvGraphic = new DW.NonVisualGraphicFrameDrawingProperties(
+            new A.GraphicFrameLocks { NoChangeAspect = true });
+        var graphicData = new A.GraphicData(new PIC.Picture(
+                new PIC.NonVisualPictureProperties(
+                    new PIC.NonVisualDrawingProperties { Id = docPropId, Name = name },
+                    new PIC.NonVisualPictureDrawingProperties()),
+                new PIC.BlipFill(new A.Blip { Embed = relId }),
+                new PIC.ShapeProperties(
+                    new A.Transform2D(new A.Offset { X = 0, Y = 0 }, new A.Extents { Cx = cx, Cy = cy }),
+                    new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle })))
+            { Uri = PicGraphicDataUri };
+        var inline = new DW.Inline(extents, docPr, cnvGraphic, new A.Graphic(graphicData))
+        {
+            DistanceFromTop = 0U, DistanceFromBottom = 0U, DistanceFromLeft = 0U, DistanceFromRight = 0U
+        };
+        return new Drawing(inline);
+    }
+
+    private static Drawing BuildAnchorElement(
+        string relId, long cx, long cy,
+        uint docPropId, string name, string? description,
+        bool allowOverlap = false)
+    {
+        var extents = new DW.Extent { Cx = cx, Cy = cy };
+        var docPr = new DW.DocProperties { Id = docPropId, Name = name };
+        var graphicData = new A.GraphicData(new PIC.Picture(
+                new PIC.NonVisualPictureProperties(
+                    new PIC.NonVisualDrawingProperties { Id = docPropId, Name = name },
+                    new PIC.NonVisualPictureDrawingProperties()),
+                new PIC.BlipFill(new A.Blip { Embed = relId }),
+                new PIC.ShapeProperties(
+                    new A.Transform2D(new A.Offset { X = 0, Y = 0 }, new A.Extents { Cx = cx, Cy = cy }),
+                    new A.PresetGeometry { Preset = A.ShapeTypeValues.Rectangle })))
+            { Uri = PicGraphicDataUri };
+        var anchor = new DW.Anchor(
+            new DW.SimplePosition { X = 0L, Y = 0L },
+            extents, docPr,
+            new DW.NonVisualGraphicFrameDrawingProperties(
+                new A.GraphicFrameLocks { NoChangeAspect = true }),
+            new A.Graphic(graphicData))
+        {
+            BehindDocument = false,
+            AllowOverlap = allowOverlap,
+            LayoutInCell = true,
+            RelativeHeight = 251657216U
+        };
+        return new Drawing(anchor);
+    }
+
+    private static (long cx, long cy) CalculateImageDimensions(
+        int widthPx, int heightPx, double? maxWidthCm = null)
+    {
+        long cx = widthPx * EmuPerPixel96Dpi;
+        long cy = heightPx * EmuPerPixel96Dpi;
+        if (maxWidthCm.HasValue)
+        {
+            long maxWidthEmu = (long)(maxWidthCm.Value * EmuPerCm);
+            if (cx > maxWidthEmu)
+            {
+                double ratio = (double)maxWidthEmu / cx;
+                cx = maxWidthEmu;
+                cy = (long)(cy * ratio);
+            }
+        }
+        return (cx, cy);
+    }
+}

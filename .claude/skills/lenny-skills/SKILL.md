@@ -1,6 +1,6 @@
 ---
 name: lenny-advisor
-description: |
+description: 商业决策顾问 - 基于 Lenny's Newsletter/Podcast 的商业决策顾问系统。整合 287 位专家智慧，覆盖产品、增长、管理、战略等领域。
   基于 Lenny's Newsletter/Podcast 的商业决策顾问系统。
   整合 287 位专家智慧，覆盖增长、产品、战略、领导力等领域。
   触发方式：/lenny、「增长问题」、「产品决策」、「商业策略」
