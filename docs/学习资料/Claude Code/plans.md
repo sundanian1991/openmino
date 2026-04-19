@@ -2,7 +2,6 @@
 input: prompt.md 定义的学习目标
 output: 分阶段学习计划 + 验收标准
 pos: docs/learning/，学习计划
-# 文件夹变化需同步注释及所属文件夹 md
 ---
 
 # 学习计划：Claude Code 七大核心组件
