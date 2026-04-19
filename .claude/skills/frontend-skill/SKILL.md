@@ -1,6 +1,6 @@
 ---
 name: frontend-skill
-description: Use when the task asks for a visually strong landing page, website, app, prototype, demo, or game UI. This skill enforces restrained composition, image-led hierarchy, cohesive content structure, and tasteful motion while avoiding generic cards, weak branding, and UI clutter.
+description: 前端设计助手 - 用于任务需要视觉强烈的落地页、网站、应用、原型、演示或游戏 UI。强制克制构图、图像优先层级、连贯内容结构、精美动效，避免通用卡片、弱品牌和 UI 杂乱。
 ---
 # Frontend Skill
 Use this skill when the quality of the work depends on art direction, hierarchy, restraint, imagery, and motion rather than component count.
