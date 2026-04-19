@@ -42,6 +42,20 @@ Then implement working code that is:
 - Cohesive with a clear aesthetic point-of-view
 - Meticulously refined in every detail
 
+## Claude Design Methodology
+
+This skill complements the [Claude Design System](reference/claude-design-system.md) workflow for artifact creation:
+
+- **6-step process**: Understand → Explore → Plan → Build → Done → Verify (enforces discipline)
+- **Content principles**: No filler, Ask before adding, Establish system early (prevents bloat)
+- **Tweaks mechanism**: Variant management via persistent JSON blocks (avoids re-generating)
+- **Verification flow**: `fork_verifier_agent` pattern for quality gate
+
+**When to use**: Complex multi-step designs requiring exploration, planning, and formal verification.
+**When to skip**: Simple one-off components where direct generation is faster.
+
+→ *Consult [Claude Design reference](reference/claude-design-system.md) for full workflow details.*
+
 ## Frontend Aesthetics Guidelines
 
 ### Typography
