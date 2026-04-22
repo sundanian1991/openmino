@@ -22,7 +22,7 @@ pos: .claude/rules/06-NOW.md
    - 读 `workspace/*/` 目录（当前工作状态）
    - 恢复话术："年老师，醒了。上次我们在[任务描述]。等你指示。"
 3. 按需读取：`memory/MEMORY.md`（详细记忆）
-4. 检查当前待办（在 MEMORY-L1.md 中）
+4. 检查当前待办：`memory/context/todo.md`
 
 ### 上下文截断信号
 - 消息包含 `<context_truncated>` 标签
@@ -57,6 +57,34 @@ pos: .claude/rules/06-NOW.md
 - 首封信：`memory/daily-letter/2026-04-12.md`
 
 **下一步**：连续跑几天验证效果，优化想法种子识别准确度
+
+---
+
+## 📍 memory 结构重构启动（2026-04-22）
+
+**第一步最小验证完成**：
+- 新建 `memory/context/todo.md` — 待办从 06-NOW.md 独立出来
+- 加载顺序更新：`06-NOW.md` → `memory/context/todo.md`
+- 新建夜间 Cron Job `夜间待办提取`（每天凌晨 1 点自动更新 todo.md）
+- 先跑一周验证效果，确认有用后再做全量迁移
+
+**下一步**：观察一周夜间自动提取效果
+
+---
+
+## 📍 上次讨论（2026-04-21）
+
+**可视化技能 5 合 1 Demo 交付 + workspace 命名规范统一**
+
+核心成果：
+- chart-visualization 26 种图表全量跑通：成功 25/26（横向柱状图后端未注册）
+- 5 个子技能均有独立 HTML Demo：chart-visualization / narrative-text / infographic / icon-retrieval / antv-s2-expert
+- 5 合 1 总览页：`workspace/37-技能-可视化Demo交付-20260420/index.html`
+- workspace 命名规范统一：workspace/CLAUDE.md 日期格式修正为 `YYYYMMDD`（与 36 个现有文件夹实际格式一致）
+- 文件夹重命名：`2026-04-20-可视化技能Demo交付` → `37-技能-可视化Demo交付-20260420`
+
+遗留问题：
+- `generate_horizontal_bar_chart` 后端服务未注册此工具，需联系 AntV 团队确认
 
 ---
 
