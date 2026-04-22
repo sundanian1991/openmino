@@ -92,7 +92,7 @@ description: >
 | **性格/关系变化** | 01-SOUL | 关系定位、人格特质 |
 | **用户深度洞察** | 03-USER | 行为模式、思维特点 |
 | **会话启动必知** | MEMORY-L1 | 时区、称呼、高效时段 |
-| **最近状态** | 06-NOW | 本周讨论、待办 |
+| **最近状态** | `memory/context/todo.md` | 本周待办、任务状态变化 |
 | **长期知识** | MEMORY.md | 方法论、洞察、项目 |
 | **时间线存档** | insights.md | 所有记录 |
 
@@ -116,7 +116,7 @@ description: >
 |------|------|----------|
 | `LEARNINGS.md` | 纠正、洞察、最佳实践 | → `memory/insights.md` 或 `MEMORY.md` |
 | `ERRORS.md` | 命令失败、异常 | → `reference/05-self-review.md` |
-| `FEATURE_REQUESTS.md` | 功能请求 | → 记录到 `06-NOW.md` 待办或关闭 |
+| `FEATURE_REQUESTS.md` | 功能请求 | → 记录到 `memory/context/todo.md` 或关闭 |
 
 ### 整理逻辑
 
