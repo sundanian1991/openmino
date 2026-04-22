@@ -63,7 +63,7 @@ memory/
 |------|----------|------|------|
 | `learnings/LEARNINGS.md` | 每周整理或满 50 条 | `insights.md` | 每周 |
 | `learnings/ERRORS.md` | 踩坑经验积累 | `.claude/reference/05-self-review.md` | 按需 |
-| `learnings/FEATURE_REQUESTS.md` | 确认要实现 | `.claude/rules/06-NOW.md` 待办 | 按需 |
+| `learnings/FEATURE_REQUESTS.md` | 确认要实现 | `memory/context/todo.md` | 按需 |
 
 ### 流转执行方式
 
