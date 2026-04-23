@@ -1,8 +1,12 @@
 # 技能搜索规范
 
-**技能市场（中国镜像）**：[clawhub.ai](https://clawhub.ai) — **优先使用**（国内访问稳定）
+**技能市场**：
 
-**备用市场**：[claw123.ai](https://claw123.ai) — OpenClaw 国际站
+| 优先级 | 平台 | 说明 |
+|--------|------|------|
+| 1 | [Tencent SkillHub](https://skillhub.tencent.com) | 腾讯出品，专为中国用户优化，1.3万个 Skills，精选推荐+高速下载 |
+| 2 | [ClawHub](https://clawhub.ai) | 中国镜像，国内访问稳定 |
+| 3 | [claw123.ai](https://claw123.ai) | OpenClaw 国际站（备用） |
 
 **搜索方法**：
 
