@@ -25,6 +25,7 @@ const CHART_TYPE_MAP = {
   generate_radar_chart: 'radar',
   generate_sankey_chart: 'sankey',
   generate_scatter_chart: 'scatter',
+  generate_spreadsheet: 'spreadsheet',
   generate_treemap_chart: 'treemap',
   generate_venn_chart: 'venn',
   generate_violin_chart: 'violin',
