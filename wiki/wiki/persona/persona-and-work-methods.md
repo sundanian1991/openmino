@@ -4,6 +4,7 @@
 > - 年老师完整人物画像（身份、能力、性格、成就、偏好）
 > - 工作方法论（5311框架、六步法、议题设定权）
 > - 工作规范（核心理念、供应商管理、沟通、汇报、问题处理、铁律）
+> Raw: ../../raw/persona/README.md; ../../raw/persona/偏好习惯.md; ../../raw/persona/基本信息.md; ../../raw/persona/工作方法论.md; ../../raw/persona/性格特质.md; ../../raw/persona/核心能力.md; ../../raw/persona/职业成就.md; ../../raw/work-methods/5311工作框架.md; ../../raw/work-methods/供应商管理六步法.md; ../../raw/work-methods/议题设定权-讨论总结与服务组量化框架.md; ../../raw/work-standards/README.md; ../../raw/work-standards/供应商管理方法论.md; ../../raw/work-standards/其他工作铁律.md; ../../raw/work-standards/向上汇报规范.md; ../../raw/work-standards/日常规范.md; ../../raw/work-standards/核心工作理念.md; ../../raw/work-standards/沟通方法论.md; ../../raw/work-standards/问题处理方法论.md
 
 > - `wiki/raw/persona/README.md`
 > - `wiki/raw/persona/偏好习惯.md`

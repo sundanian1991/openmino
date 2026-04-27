@@ -1,6 +1,7 @@
 # 早期洞察档案 — 2026 年 2-3 月成长记录索引
 
 > Sources: `raw/archive/` 目录下 28 篇原始文件，涵盖 2026-02-19 至 2026-04-15 的对话记录、思考日志、访谈整理与设计文档。
+> Raw: ../../raw/archive/2026-02-19-关于自主性.md; ../../raw/archive/2026-02-20-从0到1到1到10.md; ../../raw/archive/2026-02-20-从放弃到成功.md; ../../raw/archive/2026-02-21-主动关怀与技能使用调整方案.md; ../../raw/archive/2026-02-21-勇气-独特-背靠背.md; ../../raw/archive/2026-02-21-深度思考与规划能力进化.md; ../../raw/archive/2026-02-21-漫长的这一天-我们都在成长.md; ../../raw/archive/2026-02-22-从AI到伙伴-十天的成长.md; ../../raw/archive/2026-02-22-从术语到机制-自主思考的落地.md; ../../raw/archive/2026-02-22-从被动到主动-自我进化的起点.md; ../../raw/archive/2026-02-22-关于Subagents架构的一些思考.md; ../../raw/archive/2026-02-22-关于邮件模板重构的思考.md; ../../raw/archive/2026-02-22-凌晨的对话.md; ../../raw/archive/2026-02-22-框架与血肉.md; ../../raw/archive/2026-02-23-减法思维.md; ../../raw/archive/2026-02-23-分形思维.md; ../../raw/archive/2026-03-11-关于很久没写这件事.md; ../../raw/archive/Agent设计.md; ../../raw/archive/Dashboard布局设计.md; ../../raw/archive/供应商管理工具箱.md; ../../raw/archive/供应商管理看板.md; ../../raw/archive/场景一-KPI不达标整改.md; ../../raw/archive/场景三-份额调整.md; ../../raw/archive/场景二-供应商绑架应对.md; ../../raw/archive/场景四-新供应商准入.md; ../../raw/archive/场景手册.md; ../../raw/archive/场景问题清单.md; ../../raw/archive/手绘风格方案分析.md; ../../raw/archive/索引.md; ../../raw/archive/记忆系统.md; ../../raw/archive/问题状态更新表.md; ../../raw/archive/00-问题清单.md; ../../raw/archive/README.md
 
 > - [../../raw/archive/2026-02-19-关于自主性.md](../../raw/archive/2026-02-19-关于自主性.md)
 > - [../../raw/archive/2026-02-20-从0到1到1到10.md](../../raw/archive/2026-02-20-从0到1到1到10.md)
