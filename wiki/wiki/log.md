@@ -5,6 +5,32 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] rebuild | 全量重建 index.md — 414 篇 + 链接健康检查
+
+**index.md 全量重建**：从 360 篇扩至 414 篇（+54 篇新发现），24 个目录按文章数降序排列
+
+**新增文章分布**（vs 上次 360 篇）：
+- presentations: 77 (+16) | personal-growth-deep: 46 (+6) | supplier-management: 46 (+8)
+- plans-deep: 33 (持平) | skills-tools: 31 (持平) | workspace-other: 38 (+11)
+- skills-visualization: 17 (持平) | projects: 16 (+3) | skills-agent-tools: 15 (+3)
+- workspace-skills: 13 (持平) | skills-document: 12 (持平) | person-profiles-deep: 11 (+1)
+- personal-development: 9 (持平) | agent-configuration: 7 (持平) | supplier-profiles-deep: 6 (持平)
+- workspace-supplier: 5 (持平) | person-profiles: 5 (持平) | learning-resources: 5 (持平)
+- work-rules: 4 (持平) | technology: 4 (持平) | user-profile: 3 (持平)
+- industry-insights: 7 (+3) | daily-logs: 2 (持平) | planning-methodology: 2 (持平)
+
+**覆盖度估算**：全项目 2,429 raw 文件，414 篇 wiki 文章覆盖约 45-50%（每篇文章平均索引 5-8 个 raw 文件）
+
+**未覆盖 gap 分析**（估算，基于目录 raw 文件总量 vs wiki 文章数）：
+- presentations: 463 raw → 77 wiki（17% 覆盖）— 最大缺口，大量 PPT 原始输出未转为 wiki 文章
+- personal-growth-deep: 220 raw → 46 wiki（21%）— 个人成长目录有大量早期迭代草稿
+- supplier-management: 182 raw → 46 wiki（25%）— 供应商管理制度文档大量未提取
+- workspace-other: 274 raw → 38 wiki（14%）— workspace 原始文件中大量 node_modules README 和低价值文件
+- workspace-skills: 105 raw → 13 wiki（12%）— 技能实践中间产物多，知识文章少
+- projects: 567 raw → 16 wiki（3%）— 项目原始文件最多，但 wiki 转化最少
+
+**质量改进**：所有文章从实际 Overview 段落提取摘要，非标题复述；按文章数降序排列目录
+
 ## [2026-04-28] expand | 全量重建 index + 链接健康检查 — 360 篇
 
 **index.md 重建**：从 307 篇扩至 360 篇（+53 篇新发现文章），24 个目录按文章数降序排列
