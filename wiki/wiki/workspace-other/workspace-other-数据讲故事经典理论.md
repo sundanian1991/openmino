@@ -1,7 +1,7 @@
 # 数据讲故事经典理论：从 Knaflic 到 Tufte
 
 > Sources: Mino (AI), 2026-04-26
-> Raw: [Storytelling with Data - Cole Nussbaumer Knaflic](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling%20with%20Data%20-%20Cole%20Nussbaumer%20Knaflic.md); [The Visual Display of Quantitative Information - Edward Tufte](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-The%20Visual%20Display%20of%20Quantitative%20Information%20-%20Edward%20Tufte.md)
+> Raw: [Storytelling with Data - Cole Nussbaumer Knaflic](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling with Data - Cole Nussbaumer Knaflic.md); [The Visual Display of Quantitative Information - Edward Tufte](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-The Visual Display of Quantitative Information - Edward Tufte.md)
 
 ## 概述
 

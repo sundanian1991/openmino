@@ -144,7 +144,7 @@
 | [整改闭环流程与验收标准](supplier-management/supplier-management-整改闭环流程与验收标准.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [整改闭环手册](../../raw/docs-supplier/管理制度-供应商日�... | 2026-04-28 |
 | [管理制度校验与空间模板体系](supplier-management/管理制度校验与空间模板体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理制度-01-基础信息.md; ../../raw/docs-supplier/管�... | 2026-04-28 |
 | [管理规范体系与方法论速查](supplier-management/管理规范体系与方法论速查.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理规范-供应商引入管理规范.md; ../../raw/docs-s... | 2026-04-28 |
-| [赛马竞争机制与排名文化](supplier-management/supplier-management-赛马竞争机制与排名文化.md) | > Sources: 年老师, 2026-04-23 > Raw: [排名思维](../../raw/work-methods/排名思维.md); [场景三-份额调整]... | 2026-04-28 |
+| [赛马竞争机制与排名文化](supplier-management/supplier-management-赛马竞争机制与排名文化.md) | > Sources: 年老师, 2026-04-23 > Raw: [排名思维](../../raw/personal-growth/排名思维-与5311框架.md); [场景三-份额调整]... | 2026-04-28 |
 | [车抵贷项目复盘与经验教训](supplier-management/车抵贷项目复盘与经验教训.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-车抵贷复盘.md | 2026-04-28 |
 | [运营数据与 KPI 体系](supplier-management/operation-data-charts.md) | > Sources: 供应商管理岗, 2025~2026 > Raw: [成果数据](../../raw/docs-supplier/运营数据-03-成果数据.md);... | 2026-04-28 |
 | [风险预警机制与分级响应](supplier-management/supplier-management-风险预警机制与分级响应.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [预警约谈手册](../../raw/docs-supplier/管理制度-供应商日�... | 2026-04-28 |
@@ -225,8 +225,7 @@
 | [供应商站点项目](workspace-other/供应商站点项目.md) | > Sources: 供应商站点看板相关 workspace 文件 (2026-04); AI定价模式 PPT 相关 workspace 文件 (2026-04-2... | 2026-04-28 |
 | [供应商站点项目-需求演进与看板设计](workspace-other/供应商站点项目-需求演进与看板设计.md) | > Sources: mino, 2026-04-28 > Raw: [vwiehr项目档案](../../raw/presentations/projects-proj-1772979560848-vwiehr-proje... | 2026-04-28 |
 | [定价策略方法论：从 AI 定价到供应商管理](workspace-other/workspace-other-定价策略方法论.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-26 > Raw: [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-s... | 2026-04-28 |
-| [数据可视化之父-Tufte视觉显示理论精要](workspace-other/数据可视化之父-Tufte视觉显示理论精要.md) | > Sources: mino, 2026-04-28 > Raw: [The Visual Display of Quantitative Information](../../raw/workspace-other/ebooks--Us... | 2026-04-28 |
-| [数据可视化理论经典-Storytelling with Data核心框架](workspace-other/数据可视化理论经典-StorytellingwithData核心框架.md) | > Sources: mino, 2026-04-28 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-... | 2026-04-28 |
+| [数据可视化之父-Tufte视觉显示理论精要](workspace-other/数据可视化之父-Tufte视觉显示理论精要.md) | > Sources: mino, 2026-04-28 > Raw: [The Visual Display of Quantitative Information](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling with Data - Cole Nussbaumer Knaflic.md) | > Sources: mino, 2026-04-28 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-... | 2026-04-28 |
 | [数据可视化经典电子书精华](workspace-other/数据可视化经典电子书精华.md) | > Sources: mino, 2026-04-28 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-... | 2026-04-28 |
 | [数据可视化经典著作精华](workspace-other/数据可视化经典著作精华.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-age... | 2026-04-28 |
 | [数据可视化：从理论到实践的完整链路](workspace-other/workspace-other-数据可视化理论到实践.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Docum... | 2026-04-28 |
@@ -388,9 +387,9 @@
 | [Claude 架构分析与项目追踪](projects/Claude架构分析与项目追踪.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-archive/ (architecture-*.md 共 8 files); ../../raw/projects-claud... | 2026-04-28 |
 | [OpenWiki 知识库系统](projects/openwiki-system.md) | > Sources: Mino 文件架构分析, 2026-02 > Raw: [完整架构](../../raw/projects-archive/architecture-ARCHITECTURE-F... | 2026-04-28 |
 | [供应商管理可视化体系](projects/visualization-system.md) | > Sources: 年老师, 2026-04 > Raw: [供应商管理可视化体系](../../raw/projects/供应商管理可视化体系.... | 2026-04-28 |
-| [供应商管理工作体系建设](projects/供应商管理工作体系建设.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/projects-supplier/project.md; ../../raw/projects-supplier/CLAUDE.md; ../../... | 2026-04-28 |
-| [供应商管理核心机制与工具](projects/供应商管理核心机制与工具.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/projects-supplier/供应商ABC分层分级管理方案.md; ../../raw/projec... | 2026-04-28 |
-| [供应商项目与 BPO 联盟建设](projects/供应商项目与BPO联盟建设.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-supplier/notes-total.md; ../../raw/projects-supplier/CLAUDE.md; ..... | 2026-04-28 |
+| [供应商管理工作体系建设](projects/供应商管理工作体系建设.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/docs-supplier/project.md; ../../raw/docs-supplier/CLAUDE.md; ../../... | 2026-04-28 |
+| [供应商管理核心机制与工具](projects/供应商管理核心机制与工具.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/docs-supplier/供应商ABC分层分级管理方案.md; ../../raw/projec... | 2026-04-28 |
+| [供应商项目与 BPO 联盟建设](projects/供应商项目与BPO联盟建设.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/notes-total.md; ../../raw/docs-supplier/CLAUDE.md; ..... | 2026-04-28 |
 | [年老师的职业成就与成长路径](projects/年老师的职业成就与成长路径.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/persona/职业成就.md; ../../raw/projects-self-awareness/outputs-关键�... | 2026-04-28 |
 | [文件架构演进与历史项目归档](projects/文件架构演进与历史项目归档.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-archive/architecture-ARCHITECTURE-ANALYSIS.md; ../../raw/projects-... | 2026-04-28 |
 | [每日书信系统](projects/daily-letter-system.md) | > Sources: Mino, 2026-04-12 ~ 2026-04-26 > Raw: [daily-letter SKILL.md](../../raw/skills/daily-letter-SKILL.md) | 2026-04-28 |
@@ -519,7 +518,7 @@
 | [供应商历史合作记录](supplier-profiles-deep/供应商历史合作记录.md) | > Sources: 历史项目系列文档 (2026-03 ~ 2026-04); BPO 联盟项目; 定价委员会项目; 供应商引入扩项;... | 2026-04-28 |
 | [供应商档案库 — 17 家供应商全景概览](supplier-profiles-deep/供应商档案库-17家供应商全景概览.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/supplier-profiles/README.md; ../../raw/supplier-profiles/上海岐力信息... | 2026-04-28 |
 | [供应商评估与准入](supplier-profiles-deep/供应商评估与准入.md) | > Sources: 供应商管理办法系列 (2026); 供应商引入管理规范; 供应商清退管理规范; 供应商工作... | 2026-04-28 |
-| [信用卡产线供应商](supplier-profiles-deep/信用卡产线供应商.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27 > Raw: [供应商汇总](../../raw/projects-supplier/供应商库-汇... | 2026-04-28 |
+| [信用卡产线供应商](supplier-profiles-deep/信用卡产线供应商.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27 > Raw: [供应商汇总](../../raw/docs-supplier/供应商库-汇... | 2026-04-28 |
 | [金条产线供应商详解](supplier-profiles-deep/金条产线供应商详解.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27; 供应商ABC分层分级管理方案 2026-04-13 > Raw: [供应商汇... | 2026-04-28 |
 | [非金条产线供应商](supplier-profiles-deep/非金条产线供应商.md) | > Sources: 供应商库-供应商人力&站点盘点 2026; 供应商库-业务线汇总 2026Q1; 供应商库-各供应�... | 2026-04-28 |
 
@@ -579,9 +578,9 @@
 ## projects-supplier
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [BPO供应商联盟电销标准化运营方法论](projects-supplier/bpo供应商联盟电销标准化运营方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-supplier/sources-312下午供应商联盟.md; ../../raw/projects-s... | 2026-04-28 |
-| [供应商ABC分层分级管理方案详解](projects-supplier/供应商ABC分层分级管理方案详解.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-supplier/供应商ABC分层分级管理方案.md | 2026-04-28 |
-| [供应商管理工作体系建设全景](projects-supplier/供应商管理工作体系建设全景.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-supplier/project.md | 2026-04-28 |
+| [BPO供应商联盟电销标准化运营方法论](projects-supplier/bpo供应商联盟电销标准化运营方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/sources-312下午供应商联盟.md; ../../raw/projects-s... | 2026-04-28 |
+| [供应商ABC分层分级管理方案详解](projects-supplier/供应商ABC分层分级管理方案详解.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/供应商ABC分层分级管理方案.md | 2026-04-28 |
+| [供应商管理工作体系建设全景](projects-supplier/供应商管理工作体系建设全景.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/project.md | 2026-04-28 |
 | [供应商项目档案 — 准入评估、培训体系、站点看板](projects-supplier/supplier-projects-deep.md) | > Sources: > - 供应商ABC分层分级管理方案 > - BPO供应商联盟认证总结（14页PPT讲稿） > - 供应商... | 2026-04-28 |
 
 ## technology

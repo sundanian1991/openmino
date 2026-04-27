@@ -5,7 +5,6 @@
 > - 工作方法论（5311框架、六步法、议题设定权）
 > - 工作规范（核心理念、供应商管理、沟通、汇报、问题处理、铁律）
 
-> Raw:
 > - `wiki/raw/persona/README.md`
 > - `wiki/raw/persona/偏好习惯.md`
 > - `wiki/raw/persona/基本信息.md`
