@@ -2,7 +2,7 @@
 
 > Sources: Kami, 10+ files
 > Created: 2026-04-27
-> Raw: [SKILL](../../raw/skills/kami-SKILL.md); [README](../../raw/skills/kami-README.md); [CHEATSHEET](../../raw/skills/kami-CHEATSHEET.md); [design](../../raw/skills/kami-design.md); [diagrams](../../raw/skills/kami-diagrams.md); [production](../../raw/skills/kami-production.md); [writing](../../raw/skills/kami-writing.md)
+> Raw: [SKILL](../../raw/skills/kami-SKILL.md); [README](../../raw/skills/kami-README.md); [CHEATSHEET](../../raw/skills/kami-CHEATSHEET.md); [CLAUDE](../../raw/skills/kami-CLAUDE.md); [design](../../raw/skills/kami-design.md); [diagrams](../../raw/skills/kami-diagrams.md); [production](../../raw/skills/kami-production.md); [writing](../../raw/skills/kami-writing.md)
 
 ## 概述
 

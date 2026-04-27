@@ -1,7 +1,7 @@
 # 实用技能：Icon Retrieval / Markdown Converter / IMA Note / Daily Letter
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [icon-retrieval](../../raw/skills/icon-retrieval-SKILL.md); [markdown-converter](../../raw/skills/markdown-converter-SKILL.md); [ima-note](../../raw/skills/ima-note-SKILL.md); [ima-note-api](../../raw/skills/ima-note-api.md); [getnote](../../raw/skills/getnote-SKILL.md); [daily-letter](../../raw/skills/daily-letter-SKILL.md)
+> Raw: [icon-retrieval](../../raw/skills/icon-retrieval-SKILL.md); [markdown-converter](../../raw/skills/markdown-converter-SKILL.md); [ima-note](../../raw/skills/ima-note-SKILL.md); [ima-note-api](../../raw/skills/ima-note-api.md); [getnote](../../raw/skills/getnote-SKILL.md); [daily-letter](../../raw/skills/daily-letter-SKILL.md); [darwin-skill](../../raw/skills/darwin-skill-SKILL.md); [darwin-README](../../raw/skills/darwin-skill-README.md)
 
 ## 概述
 
