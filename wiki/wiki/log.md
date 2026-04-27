@@ -5,6 +5,24 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] complete | Wiki 深度化最终完成 — 509 篇 + ~99% 有效覆盖率
+
+**最终状态**：
+- 509 篇 wiki 文章，39 个主题目录
+- 2429 个 raw 源文件全部入库
+- 1873/1878 有效知识文件被引用（99% 覆盖）
+- 35/37 目录 100% 覆盖
+- 剩余 5 个边缘文件（frontend-slides 4 文件无对应文章 + hand-drawn 备份 1 文件）
+
+**本轮新增 11 篇**（498 → 509）：
+archive 早期洞察 | daily-letters 每日书信 | learning AI 学习资源
+| projects-long-term/self-awareness/career-coaching/ai-learning/supplier
+| supplier-profiles | workspace-records | persona
+
+**Skills 全覆盖修复**（~100 处 Raw: 补充 + 133 处路径修正）：
+minimax +21 | impeccable +8 | mino-frontend +25 | cinematic-ui +14
+| huashu-design +22 | official-doc +41 | antv-s2 +11 | 其余单文件修复
+
 ## [2026-04-28] expand | Wiki Gap 修复 — 498 篇 + ~98% 有效覆盖率
 
 **本轮新增 7 篇核心文章**（491 → 498 篇）：
