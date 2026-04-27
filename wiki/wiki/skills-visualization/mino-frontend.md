@@ -1,7 +1,7 @@
 # Mino Frontend (mino-frontend)
 
 > Sources: Mino, 2026-04-05 (v7.0)
-> Raw: [SKILL.md](../../raw/skills/mino-frontend/SKILL.md)
+> Raw: [SKILL.md](../../raw/skills/mino-frontend-SKILL.md)
 
 ## Overview
 

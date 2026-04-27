@@ -1,7 +1,7 @@
 # Markdown Converter — 文档格式转换
 
 > Sources: markdown-converter SKILL.md; markitdown 工具
-> Raw: [SKILL.md](../../raw/skills/markdown-converter/SKILL.md)
+> Raw: [SKILL.md](../../raw/skills/markdown-converter-SKILL.md)
 
 ## Overview
 

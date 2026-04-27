@@ -1,7 +1,7 @@
 # Memory Protocol
 
 > Sources: Mino, 2026-02-12 ~ 2026-04-24
-> Raw: [MEMORY-L1](../../raw/agent-rules/MEMORY-L1.md), [update-memory](../../raw/agent-commands/update-memory.md), [update-memory-rules](../../raw/agent-commands/update-memory-rules.md), [observer](../../raw/agent-commands/observer.md)
+> Raw: [MEMORY-L1](../../raw/agent-rules/MEMORY-L1.md), [update-memory](../../raw/agent-commands/update-memory.md), [update-memory-rules](../../raw/agent-commands/update-memory-rules.md), [observer](../../raw/agent-commands/observer.md), [core-memory/团队管理](../../raw/core-memory/02-团队管理与汇报.md), [core-memory/个人成长](../../raw/core-memory/04-个人成长.md), [core-memory/memos-upload-log](../../raw/core-memory/memos-upload-log.md)
 
 ## Overview
 

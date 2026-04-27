@@ -1,7 +1,7 @@
 # Ownership Skills — 端到端责任引擎
 
 > Sources: ownership-skills SKILL.md (MIT License); OWNER Method 方法论; 反模式识别与应对
-> Raw: [SKILL.md](../../raw/skills/ownership-skills/SKILL.md); [详细方法论](../../raw/skills/ownership-skills/references/methodology.md); [反模式大全](../../raw/skills/ownership-skills/references/anti-patterns.md); [展示协议](../../raw/skills/ownership-skills/references/display-protocol.md); [情境方法选择](../../raw/skills/ownership-skills/references/context-selector.md)
+> Raw: [SKILL.md](../../raw/skills/ownership-skills-SKILL.md); [详细方法论](../../raw/skills/ownership-skills-methodology.md); [反模式大全](../../raw/skills/ownership-skills-anti-patterns.md); [展示协议](../../raw/skills/ownership-skills-display-protocol.md); [情境方法选择](../../raw/skills/ownership-skills-context-selector.md)
 
 ## Overview
 
