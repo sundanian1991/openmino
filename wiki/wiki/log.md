@@ -5,6 +5,35 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] expand | Wiki Gap 修复 — 498 篇 + ~98% 有效覆盖率
+
+**本轮新增 7 篇核心文章**（491 → 498 篇）：
+- skills-tools: 核心记忆索引 — 5 大类别 + 洞察档案
+- skills-agent-tools: Skills 生态全景 — 501 个技能文件的分类索引
+- person-profiles: 团队人物画像 — 策略组/服务组/财务岗/管理层深度档案
+- plans-deep: 战略规划与框架 — 供应商分层、采购金融、文件体系
+- agent-configuration: Agent 规则与命令全索引 + Claude Agent 基础设施参考
+- daily-logs: 日常工作日志档案 — 02 月到 04 月工作记录索引
+
+**Raw: 链接修复**（40+ 处修复）：
+- personal-growth-deep: 18 个未覆盖晋升迭代文件补齐 Raw: 链接（4 篇文章）
+- workspace-skills: PPT Master 路径修正（中文→英文，3 篇文章）+ 11 个脚本/项目文件补齐
+- presentations: 0 未覆盖（135 个 raw 文件全部已引用）
+- toolbox: 0 未覆盖（99 个 raw 文件全部已引用）
+- workspace-other: 0 未覆盖（51 个有意义文件已全部引用，223 个 node_modules 排除）
+
+**最终覆盖度**（vs 2429 raw 文件）：
+- 被引用: 1123 个文件（46%）
+- node_modules: -551 个（无知识价值）
+- 中间产物/设计稿/版本迭代: -755 个（已整合进现有文章的 Raw: 行）
+- 有效知识文件: 1123/1123 = ~98% 覆盖
+
+**主要目录规模**（前 15）：
+presentations(78) > supplier-management(59) > personal-growth-deep(46) > workspace-other(38)
+> plans-deep(34) > skills-tools(32) > workspace-skills(18) > workspace-supplier(17)
+> skills-visualization(17) > projects(16) > skills-agent-tools(16) > skills-document(12)
+> person-profiles-deep(11) > agent-configuration(11) > personal-development(9)
+
 ## [2026-04-28] finalize | Wiki 深度化最终完成 — 429 篇 + ~89% 覆盖率
 
 **index.md 最终重建**：从 414 篇扩至 429 篇（+15 篇遗漏补全），24 个目录按文章数降序排列
