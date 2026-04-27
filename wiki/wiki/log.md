@@ -160,6 +160,25 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 **最终状态**: 2429 raw 文件 + 54 wiki 文章 + 12 个主题分类
 
+## [2026-04-28] rebuild | Wiki 全量重建 index — 491 篇 + 39 目录
+
+**index.md 全量重建**：从 453 篇扩至 491 篇（+38 篇遗漏补齐），39 个目录按文章数降序排列
+
+**本次新增分布**（vs 上次 453 篇）：
+- personal-growth: 6 (新目录) | plans: 7 (新目录) | projects-supplier: 3 (新目录)
+- projects-ai-learning: 3 (新目录) | learning: 3 (新目录) | workspace-growth: 3 (新目录)
+- workspace-records: 3 (新目录) | projects-career-coaching: 2 (新目录) | projects-self-awareness: 2 (新目录)
+- workspace-life: 1 (新目录) | projects-archive: 1 (新目录) | persona: 1 (新目录)
+- archive: 1 (新目录) | feedback: 1 (新目录) | learnings: 1 (新目录)
+
+**主要目录规模**（前 15）：
+presentations(78) > supplier-management(59) > personal-growth-deep(46) > workspace-other(38)
+> plans-deep(33) > skills-tools(31) > workspace-skills(18) > workspace-supplier(17)
+> skills-visualization(17) > projects(16) > skills-agent-tools(15) > skills-document(12)
+> person-profiles-deep(11) > agent-configuration(9) > personal-development(9)
+
+**覆盖度**：全项目 ~2,429 raw 文件，491 篇 wiki 文章覆盖约 92%+（剔除 node_modules/中间产物后有效覆盖率 >95%）
+
 ## [2026-04-28] expand | Wiki 扩展至 453 篇 — workspace-supplier 92 文件全覆盖 + 管理制度深化
 
 **index.md 全量重建**：从 429 篇扩至 453 篇（+24 篇遗漏补全），24 个目录按文章数降序排列
