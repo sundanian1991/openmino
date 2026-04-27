@@ -3,6 +3,10 @@
 > Sources: mino, 2026-04-27
 > Raw: ../../raw/projects-ai-learning/outputs-resources-list.md; ../../raw/projects-ai-learning/outputs-alternative-resources-complete-alternative-resources.md; ../../raw/projects-ai-learning/outputs-alternative-resources-cs25-transformers-course.md; ../../raw/projects-ai-learning/outputs-alternative-resources-domestic-ai-resources.md; ../../raw/projects-ai-learning/outputs-alternative-resources-final-learning-path-cn.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-CLAUDE.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-LEARNING-GUIDE.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-READING.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-SLIDES.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-STUDY-PLAN.md; ../../raw/projects-ai-learning/outputs-initial-scan.md; ../../raw/projects-ai-learning/notes-monday-learning.md; ../../raw/projects-ai-learning/notes-subagent-analysis.md; ../../raw/projects-ai-learning/memory-learning-notes.md; ../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling with Data - Cole Nussbaumer Knaflic.md的制定和完善。
 
+## 概述
+
+本文档汇总了 my-agent 知识库中的全部学习资源，覆盖 AI Agent 工作流、Stanford CS146S 课程、Claude Code 核心组件以及技能系统优化。核心资产包括 64 个外部资源追踪、10 周系统学习计划、3000+ 行最佳实践笔记、以及完整的 Apify 集成指南。
+
 ## 四、资源清单与监控
 
 ### 初始资源清单
