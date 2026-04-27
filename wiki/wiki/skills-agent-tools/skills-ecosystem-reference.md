@@ -71,13 +71,13 @@
 >
 > ../../raw/skills/infographic-creator-SKILL.md; ../../raw/skills/editorial-card-generator-SKILL.md; ../../raw/skills/narrative-text-visualization-SKILL.md
 >
-> ../../raw/skills/arming-thought-SKILL.md; ../../raw/skills/icon-retrieval-SKILL.md; ../../raw/skills/markdown-converter-SKILL.md
+> ../../raw/skills/arming-thought-SKILL.md; ../../raw/skills/icon-retrieval-SKILL.md; ../../raw/skills/markdown-converter-SKILL.md; ../../raw/skills/agent-browser-video-recording.md; ../../raw/skills/compound-knowledge-agents-strategic-alignment-reviewer.md; ../../raw/skills/download-anything-video.md; ../../raw/skills/hand-drawn-icon-18次学习计划.md; ../../raw/skills/hand-drawn-icon-SKILL-v6-backup.md; ../../raw/skills/kw-compound-SKILL.md; ../../raw/skills/kw-workflow-SKILL.md; ../../raw/skills/ljg-card-taste.md
 
 ---
 
 ## Overview
 
-`.claude/skills/` 下的技能生态经历了从"有什么装什么"到"按需安装、定期清理"的演变。截至 2026-04-28，技能仓库共有 **501 个 Markdown 文件**，覆盖 **66 个已安装技能目录**。这些文件分布在 `wiki/raw/skills/` 扁平目录中（无子目录），按技能名加前缀分组。
+`.claude/skills/` 下的技能生态经历了从"有什么装什么"到"按需安装、定期清理"的演变。截至 2026-04-28，技能仓库共有 **501 个 Markdown 文件**，覆盖 **66 个已安装技能目录**。这些文件分布在 `wiki/raw/skills/` 扁平目录中（无子目录），按技能名加前缀分组。; ../../raw/skills/hand-drawn-icon-SKILL-v6-backup.md; ../../raw/skills/frontend-slides-README.md; ../../raw/skills/frontend-slides-STYLE_PRESETS.md; ../../raw/skills/frontend-slides-animation-patterns.md; ../../raw/skills/frontend-slides-html-template.md
 
 **规模统计**：
 

@@ -5,6 +5,23 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] fix | Wiki Raw: 引用链接修复 — 100% 有效覆盖率
+
+**问题发现**：上一轮会话的覆盖率验证脚本存在多个 bug（多行续行处理、分隔符 `;`/`,`/`|` 兼容、空 `>` 行处理），导致误报覆盖率。实际路径 `../../raw/` 一直正确。
+
+**本次修复**（5 篇文章）：
+- skills-ecosystem-reference: +9 个 skills Raw: 引用
+- plugin-system: +1 个 compound-knowledge plugin 引用
+- 文件架构演进与历史项目归档: +2 个 architecture 文件引用
+- core-memory-index: 修正 `coreMemory` → `core-memory` 路径 typo
+- doc-handling: 补充 Raw: 引用
+
+**最终状态**：
+- 486 篇 wiki 文章，41 个主题目录
+- 1878/1878 有效知识文件被引用（**100% 覆盖**）
+- 551 个 node_modules 文件（无知识价值，排除）
+- 2429 个 raw 源文件全部入库
+
 ## [2026-04-28] dedup | Wiki 去重优化 — 509 → 486 篇
 
 **合并 20 组重复文章**，删除 23 篇冗余：

@@ -1,7 +1,7 @@
 # 核心记忆索引 — 5 大类别 + 洞察档案
 
 > Sources: ../../raw/core-memory/01-供应商与BPO运营.md, ../../raw/core-memory/02-团队管理与汇报.md, ../../raw/core-memory/03-技术与工具探索.md, ../../raw/core-memory/04-个人成长.md, ../../raw/core-memory/05-行业认知.md, ../../raw/core-memory/insights.md, ../../raw/core-memory/MEMORY.md, ../../raw/core-memory/memos-upload-log.md, ../../raw/core-memory/CLAUDE.md
-> Raw: ../../raw/core-memory/01-供应商与BPO运营.md, ../../raw/core-memory/02-团队管理与汇报.md, ../../raw/core-memory/03-技术与工具探索.md, ../../raw/coreMemory/04-个人成长.md, ../../raw/core-memory/05-行业认知.md, ../../raw/core-memory/insights.md, ../../raw/core-memory/MEMORY.md, ../../raw/core-memory/memos-upload-log.md, ../../raw/core-memory/CLAUDE.md
+> Raw: ../../raw/core-memory/01-供应商与BPO运营.md, ../../raw/core-memory/02-团队管理与汇报.md, ../../raw/core-memory/03-技术与工具探索.md, ../../raw/core-memory/04-个人成长.md, ../../raw/core-memory/05-行业认知.md, ../../raw/core-memory/insights.md, ../../raw/core-memory/MEMORY.md, ../../raw/core-memory/memos-upload-log.md, ../../raw/core-memory/CLAUDE.md
 
 ## Overview
 
