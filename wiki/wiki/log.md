@@ -159,3 +159,19 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 - projects/: 5 篇 (演讲稿模式、每日书信、电影叙事、AI 学习监控、OpenWiki)
 
 **最终状态**: 2429 raw 文件 + 54 wiki 文章 + 12 个主题分类
+
+## [2026-04-28] expand | Wiki 扩展至 453 篇 — workspace-supplier 92 文件全覆盖 + 管理制度深化
+
+**index.md 全量重建**：从 429 篇扩至 453 篇（+24 篇遗漏补全），24 个目录按文章数降序排列
+
+**本次新增分布**（vs 上次 429 篇）：
+- supplier-management: 59 (+12) — 供应商管理制度深化：合规管理、绩效评估、约谈整改、成本谈判
+- workspace-supplier: 17 (+12) — V7体系、成本缩量、联盟月报、数据汇报深度分析
+- presentations: 78 (+3) — 定价方法论、MCP基础设施、职业导师系统补充
+- personal-growth-deep: 46 (持平) | plans-deep: 33 (持平) | skills-tools: 31 (持平)
+- 其余目录小幅增长或持平
+
+**覆盖度**：全项目 ~2,429 raw 文件，453 篇 wiki 文章覆盖约 92%（workspace-supplier 92 文件实现全覆盖）
+
+**主要目录规模**：presentations(78) > supplier-management(59) > personal-growth-deep(46) > workspace-other(38) > plans-deep(33) > skills-tools(31)
+
