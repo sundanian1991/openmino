@@ -5,6 +5,24 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] expand | 全量重建 index + 链接健康检查 — 360 篇
+
+**index.md 重建**：从 307 篇扩至 360 篇（+53 篇新发现文章），24 个目录按文章数降序排列
+- presentations: 61 (+18) | personal-growth-deep: 40 (+7) | plans-deep: 33 (+7)
+- skills-tools: 31 (+6) | workspace-other: 27 (+8) | skills-visualization: 17 (+5)
+- 其余目录小幅增长，新增 article 均来自 raw 文件未映射到 index 的遗漏
+
+**链接健康检查**（30 篇随机抽样）：
+- 22/30 篇存在 broken Raw 链接（73%），共 141 处断裂
+- 全量扫描：1,573 处 broken links
+- 主要断裂原因：
+  1. memory/ 目录文件被引用但已迁移至 wiki/raw/core-memory/
+  2. .claude/commands/ 路径变更（observer、think、plan5 等命令文件）
+  3. workspace/ 路径重组后旧路径失效
+  4. presentations/projects- 前缀文件名部分丢失
+  5. docs-supplier/ 中部分管理制度文件缺失
+  6. echarts-visualization 文章引用 29 个 skills/ 子目录文件（skills 已清理）
+
 ## [2026-04-28] expand | Wiki 深度化扩展 — 307 篇 + 全目录覆盖
 
 **本轮新增**：从初始 54 篇扩展至 307 篇（+253 篇），覆盖 2,429 个 raw 文件的 ~41%
