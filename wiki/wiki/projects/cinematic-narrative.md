@@ -1,7 +1,7 @@
 # 电影叙事项目
 
 > Sources: Mino, 2026-04-11
-> Raw: [神秘岛v2](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-README.md), [cinematic-ui SKILL](../../raw/skills/cinematic-ui-SKILL.md)
+> Raw: [神秘岛v2](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-README.md), [cinematic-ui SKILL](../../raw/skills/cinematic-ui-SKILL.md), [电影版叙事素材](../../raw/plans/电影版叙事-素材-20260424-AI产品定价模式演变-从Coding Plan到Token Plan.md)
 
 ## 概述
 

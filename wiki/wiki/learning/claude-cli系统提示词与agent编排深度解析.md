@@ -1,7 +1,7 @@
 # Claude CLI系统提示词与Agent编排深度解析
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/learning/Claude Code-claude-cli-system-prompt.md; ../../raw/learning/Claude Code-plans.md; ../../raw/learning/Claude Code-architecture.md; ../../raw/learning/Claude Code-cheatsheet.md; ../../raw/learning/Claude Code-documentation.md; ../../raw/learning/Claude Code-implement.md; ../../raw/learning/Claude Code-prompt.md
+> Raw: ../../raw/learning/Claude Code-claude-cli-system-prompt.md; ../../raw/learning/Claude Code-plans.md; ../../raw/learning/Claude Code-architecture.md; ../../raw/learning/Claude Code-cheatsheet.md; ../../raw/learning/Claude Code-documentation.md; ../../raw/learning/Claude Code-implement.md; ../../raw/learning/Claude Code-prompt.md; ../../raw/learning/Claude Code-CLAUDE.md; ../../raw/learning/Claude Code-TRANSPARENT-WORKFLOW.md; ../../raw/learning/Claude Code-claude-code-guide.md; ../../raw/learning/Claude Code-personalization-upgrade-summary.md; ../../raw/learning/Claude Code-plan5-lessons.md; ../../raw/learning/Claude Code-use-claude-code.md
 
 ## 概述
 

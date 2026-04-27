@@ -1,7 +1,7 @@
 # Huashu Design (花叔设计)
 
 > Sources: Mino, 2026-04-25
-> Raw: [SKILL.md](../../raw/skills/huashu-design/SKILL.md)
+> Raw: [SKILL.md](../../raw/skills/huashu-design-SKILL.md)
 
 ## Overview
 
