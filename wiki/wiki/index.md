@@ -1,677 +1,696 @@
 # Wiki Index
 
-> Total articles: 509 | Last rebuilt: 2026-04-28
+> Total articles: 486 | Last rebuilt: 2026-04-28
 
 ---
 
-## presentations
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [Agent时代成本结构剧变：85-95%的Token是上下文开销](presentations/Agent时代成本结构剧变.md) | > Sources: AI产品定价模式演变研究 - Agent成本分析 (2026-04-24) > Raw: [头脑风暴源文件-Agent成本](... | 2026-04-28 |
-| [AI 产品定价模式演变 — 从 Coding Plan 到 Token Plan](presentations/AI产品定价模式演变-从CodingPlan到TokenPlan.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan... | 2026-04-28 |
-| [AI 学习资源监控体系](presentations/presentations-AI学习资源监控.md) | > Sources: Zara AI 学习资源库每周监控 (2026-04-03 至 2026-04-12) > Raw: [每周监控-2026-04-03](../../raw/pr... | 2026-04-28 |
-| [AI 定价方法论深度](presentations/presentations-AI定价方法论.md) | > Sources: AI 定价商业案例头脑风暴与研究源文件 (2026-04-24 至 2026-04-25) > Raw: [头脑风暴源](../.... | 2026-04-28 |
-| [AI定价-Agent时代成本结构](presentations/AI定价-Agent时代成本结构.md) | > Sources: mino, 2026-04-28 > Raw: [Agent成本备注](../../raw/presentations/projects-AI产品定价模式演变-从Co... | 2026-04-28 |
-| [AI定价-补贴收紧分层三段式](presentations/AI定价-补贴收紧分层三段式.md) | > Sources: mino, 2026-04-28 > Raw: [三段式节奏备注](../../raw/presentations/projects-AI产品定价模式演变-�... | 2026-04-28 |
-| [AI定价-计量单位即定价权](presentations/AI定价-计量单位即定价权.md) | > Sources: mino, 2026-04-28 > Raw: [计量体系备注](../../raw/presentations/projects-AI产品定价模式演变-从C... | 2026-04-28 |
-| [AI定价中的芯片供给线：算力即定价天花板](presentations/芯片供给线决定定价天花板.md) | > Sources: AI产品定价模式演变研究 - 头脑风暴中的芯片供给分析 (2026-04-24) > Raw: [头脑风暴源�... | 2026-04-28 |
-| [AI定价商业案例](presentations/AI定价商业案例.md) | > Sources: Mino (AI), 2026-04-25 > Raw: [PPT169版 README](../../raw/presentations/projects-AI产品定价模式演变-�... | 2026-04-28 |
-| [AI定价演讲备注全章节深度解析](presentations/AI定价演讲备注全章节.md) | > Sources: mino, 2026-04-28 > Raw: [notes-01_cover](../../raw/presentations/projects-AI产品定价模式演变-从Codin... | 2026-04-28 |
-| [AI定价补贴-收紧-分层三段式：互联网定价的通用模式](presentations/补贴收紧分层三段式.md) | > Sources: AI产品定价模式演变研究 - 三段式节奏分析 (2026-04-24) > Raw: [头脑风暴源文件-三段式... | 2026-04-28 |
-| [AI职业导师系统-职场情绪与认知映射](presentations/AI职业导师系统-职场情绪与认知映射.md) | > Sources: mino, 2026-04-28 > Raw: [情绪触发点地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-em... | 2026-04-28 |
-| [AI职业导师系统：情绪表达与认知映射的实践](presentations/AI职业导师系统实践.md) | > Sources: AI职业导师项目 (2026-03-08 至 2026-03-13) > Raw: [项目定义](../../raw/presentations/projects-proj-... | 2026-04-28 |
-| [DeepSeek V4定价冲击：开源模型如何重塑行业规则](presentations/DeepSeekV4定价冲击.md) | > Sources: AI产品定价模式演变研究 - DeepSeek V4 分析 (2026-04-24) > Raw: [头脑风暴源文件-DeepSeek V4]... | 2026-04-28 |
-| [IPO进程如何影响AI定价策略](presentations/IPO进程影响定价策略.md) | > Sources: AI产品定价模式演变研究 - IPO与定价策略关联分析 (2026-04-24) > Raw: [头脑风暴源文件-... | 2026-04-28 |
-| [MCP Server 技术基础设施文档](presentations/presentations-MCP基础设施文档.md) | > Sources: GetNote + Memos MCP Server 配置文档 (2026-04) > Raw: [getnote-CLAUDE.md](../../raw/presentations/projects... | 2026-04-28 |
-| [MCP基础设施：Get笔记与Memos的知识管理管线](presentations/MCP基础设施知识管理管线.md) | > Sources: MCP Servers 项目 - Get笔记和 Memos 配置文档 (2026-02-23) > Raw: [Get笔记CLAUDE.md](../../raw/prese... | 2026-04-28 |
-| [MCP服务器基础设施管线](presentations/MCP服务器基础设施管线.md) | > Sources: mino, 2026-04-28 > Raw: [CLAUDE.md](../../raw/presentations/projects-mcp-servers-CLAUDE.md); [README.md](../.... | 2026-04-28 |
-| [MCP服务器基础设施管线-知识管理自动化](presentations/MCP服务器基础设施管线-知识管理自动化.md) | > Sources: mino, 2026-04-28 > Raw: [MCP总CLAUDE](../../raw/presentations/projects-mcp-servers-CLAUDE.md); [MCP总README... | 2026-04-28 |
-| [OpenClaw现象：Agent框架如何改变AI定价逻辑](presentations/OpenClaw现象改变定价逻辑.md) | > Sources: AI产品定价模式演变研究 - OpenClaw 影响分析 (2026-04-24) > Raw: [头脑风暴源文件-OpenClaw�... | 2026-04-28 |
-| [PPT169 设计系统规范](presentations/presentations-PPT169设计系统.md) | > Sources: AI定价设计规格 + 刘乾坤设计规格 + 梁俊瑞设计规格 (2026-04) > Raw: [AI定价 design_spec](... | 2026-04-28 |
-| [PPT169多风格设计系统-六版本变体分析](presentations/PPT169多风格设计系统-六版本变体分析.md) | > Sources: mino, 2026-04-28 > Raw: [刘乾坤editorial-v2](../../raw/presentations/projects-liu-qiankun-profile-editoria... | 2026-04-28 |
-| [vwiehr专属AI职业导师系统](presentations/vwiehr专属AI职业导师系统.md) | > Sources: mino, 2026-04-28 > Raw: [项目定义](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md)... | 2026-04-28 |
-| [Zara AI学习库：从播客到商业传记章节的内容转化方法](presentations/播客转书籍章节内容转化方法.md) | > Sources: Zara 项目 - AI learning library 播客转书籍章节 (2026-04-08) > Raw: [Zara's AI learning library](../.... | 2026-04-28 |
-| [Zara AI学习资源监控系统](presentations/Zara-AI学习资源监控系统.md) | > Sources: mino, 2026-04-28 > Raw: [项目定义](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-zar... | 2026-04-28 |
-| [Zara-AI学习资源监控系统深度解析](presentations/Zara-AI学习资源监控系统深度解析.md) | > Sources: mino, 2026-04-28 > Raw: [Zara AI当前配置](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outp... | 2026-04-28 |
-| [专属AI职业导师系统](presentations/presentations-AI职业导师系统.md) | > Sources: 王易人情感触发地图项目 + career-coach 技能 (2026-03-08 至 2026-03-13) > Raw: [项目定义文�... | 2026-04-28 |
-| [五层权力来源体系：从规则权到施压权的递进逻辑](presentations/五层权力来源体系.md) | > Sources: 刘乾坤人物画像项目 - 权力框架分析 (2026-04) > Raw: [权力框架源文件](../../raw/presentat... | 2026-04-28 |
-| [人物分析方法论对比](presentations/presentations-人物分析方法论对比.md) | > Sources: 刘乾坤人物画像 + 梁俊瑞神秘岛 + 王易人情感触发地图 (2026-03 至 2026-04) > Raw: [刘乾... | 2026-04-28 |
-| [人物权力框架方法论](presentations/presentations-人物权力框架方法论.md) | > Sources: 刘乾坤人物画像项目系列源文件 (2026-04-09) > Raw: [权力框架源文件](../../raw/presentation... | 2026-04-28 |
-| [人物权力框架方法论-五层权力来源体系](presentations/人物权力框架方法论-五层权力来源体系.md) | > Sources: mino, 2026-04-28 > Raw: [刘乾坤封面](../../raw/presentations/projects-liu-qiankun-profile_ppt169_2026040... | 2026-04-28 |
-| [人物画像档案建设的24案例验证法](presentations/人物画像档案建设的24案例验证法.md) | > Sources: mino, 2026-04-28 > Raw: [刘乾坤一句话定位](../../raw/presentations/projects-liu-qiankun-profile_ppt16... | 2026-04-28 |
-| [人物画像演讲稿](presentations/人物画像演讲稿.md) | > Sources: Mino (AI), 2026-04-09 > Raw: [default版 README](../../raw/presentations/projects-liu-qiankun-profile_ppt169_... | 2026-04-28 |
-| [从档案到演讲-人物分析的输出路径](presentations/从档案到演讲-人物分析的输出路径.md) | > Sources: mino, 2026-04-28 > Raw: [刘乾坤封面](../../raw/presentations/projects-liu-qiankun-profile_ppt169_2026040... | 2026-04-28 |
-| [供应商四招驱动方式：从质问到承诺的强度递增](presentations/供应商四招驱动方式.md) | > Sources: 刘乾坤人物画像项目 - 供应商管理章节 (2026-04) > Raw: [default版notes-08供应商管理](../.... | 2026-04-28 |
-| [供应商站点演进](presentations/供应商站点演进.md) | > Sources: 供应商站点看板 V6 需求文档 (2026-04-04); 供应商站点看板演进系列 (v2-v5); 供应商站�... | 2026-04-28 |
-| [供应商站点看板需求演进](presentations/presentations-站点看板需求演进.md) | > Sources: 供应商站点看板 V2-V6 需求文档 (2026-04-04) > Raw: [V6 brainstorm](../../raw/plans/2026-04-04-供�... | 2026-04-28 |
-| [供应商管理六步法体系](presentations/presentations-供应商管理六步法.md) | > Sources: 刘乾坤工作手法源文件 + 供应商管理演讲稿 (2026-04) > Raw: [工作手法](../../raw/presentat... | 2026-04-28 |
-| [供应商联盟认证](presentations/供应商联盟认证.md) | > Sources: liu-qiankun profile 系列演讲稿 (2026-04-09); 供应商管理相关演讲 (2026-04); 供应商联盟项�... | 2026-04-28 |
-| [儿童友好设计原则：神秘岛好书分享的设计方法论](presentations/儿童友好设计原则.md) | > Sources: 梁俊瑞神秘岛好书分享项目 (2026-04-11) > Raw: [design_spec_v2](../../raw/presentations/projects-li... | 2026-04-28 |
-| [其他演讲稿项目](presentations/其他演讲稿项目.md) | > Sources: Mino (AI), 2026-04-03 ~ 2026-04-26 > Raw: [liang-junrui README](../../raw/presentations/projects-liang-junrui... | 2026-04-28 |
-| [刘乾人物画像-18种行为模式详解](presentations/刘乾人物画像-18种行为模式详解.md) | > Sources: mino, 2026-04-28 > Raw: [default版 模式概览](../../raw/presentations/projects-liu-qiankun-profile_ppt169... | 2026-04-28 |
-| [刘乾人物画像-五层权力来源体系](presentations/刘乾人物画像-五层权力来源体系.md) | > Sources: mino, 2026-04-28 > Raw: [default版 权力来源](../../raw/presentations/projects-liu-qiankun-profile_ppt169... | 2026-04-28 |
-| [刘乾人物画像-供应商管理四招与三要素法](presentations/刘乾人物画像-供应商管理四招.md) | > Sources: mino, 2026-04-28 > Raw: [default版 供应商管理](../../raw/presentations/projects-liu-qiankun-profile_ppt... | 2026-04-28 |
-| [刘乾人物画像-六版本演讲备注对比](presentations/刘乾人物画像-六版本演讲备注对比.md) | > Sources: mino, 2026-04-28 > Raw: [default版 notes](../../raw/presentations/projects-liu-qiankun-profile_ppt169_202604... | 2026-04-28 |
-| [刘乾人物画像-关系网络与六类人策略](presentations/刘乾人物画像-关系网络与六类人策略.md) | > Sources: mino, 2026-04-28 > Raw: [default版 关系网络](../../raw/presentations/projects-liu-qiankun-profile_ppt169... | 2026-04-28 |
-| [刘乾人物画像-应对策略与争议事件](presentations/刘乾人物画像-应对策略与争议事件.md) | > Sources: mino, 2026-04-28 > Raw: [default版 应对策略](../../raw/presentations/projects-liu-qiankun-profile_ppt169... | 2026-04-28 |
-| [刘乾人物画像-接手新业务四步法](presentations/刘乾人物画像-接手新业务四步法.md) | > Sources: mino, 2026-04-28 > Raw: [default版 接手新业务](../../raw/presentations/projects-liu-qiankun-profile_ppt... | 2026-04-28 |
-| [刘乾人物画像-核心三诉求分析](presentations/刘乾人物画像-核心三诉求分析.md) | > Sources: mino, 2026-04-28 > Raw: [default版 权力内核](../../raw/presentations/projects-liu-qiankun-profile_ppt169... | 2026-04-28 |
-| [刘乾坤18种行为模式全解：从权力到战术的映射](presentations/刘乾坤十八种行为模式全解.md) | > Sources: 刘乾坤人物画像项目 - 行为模式分析 (2026-04-09) > Raw: [default版notes-05行为模式概览](.... | 2026-04-28 |
-| [刘乾坤人物画像-六版本首尾幻灯片对比](presentations/刘乾坤人物画像-六版本首尾幻灯片对比.md) | > Sources: mino, 2026-04-28 > Raw: [editorial-v2-封面](../../raw/presentations/projects-liu-qiankun-profile-editorial-... | 2026-04-28 |
-| [刘乾坤人物画像：六版本叙事风格深度对比](presentations/刘乾坤六版本叙事风格对比.md) | > Sources: 刘乾坤人物画像项目，6 种叙事风格变体 (2026-04-09) > Raw: [default版notes-total](../../raw/p... | 2026-04-28 |
-| [刘乾坤关系网络：六类人策略的权力逻辑](presentations/刘乾坤六类人关系网络.md) | > Sources: 刘乾坤人物画像项目 - 关系网络分析 (2026-04) > Raw: [default版notes-07关系网络](../../raw/... | 2026-04-28 |
-| [刘乾坤接手新业务四步法：规则先立的合法性策略](presentations/接手新业务四步法.md) | > Sources: 刘乾坤人物画像项目 - 接手新业务章节 (2026-04) > Raw: [default版notes-09接手新业务](../.... | 2026-04-28 |
-| [刘乾坤管理手法精华提取-四种核心技巧详解](presentations/刘乾坤管理手法精华提取-四种核心技巧详解.md) | > Sources: mino, 2026-04-28 > Raw: [editorial-v2可学习内容](../../raw/presentations/projects-liu-qiankun-profile-ed... | 2026-04-28 |
-| [反模式识别：AI定价中的三个真实踩坑案例](presentations/反模式识别三个踩坑案例.md) | > Sources: AI产品定价模式演变研究 - 反模式分析 (2026-04-24) > Raw: [头脑风暴源文件-反模式](../.... | 2026-04-28 |
-| [叙事风格变体](presentations/叙事风格变体.md) | > Sources: Mino (AI), 2026-04-09 ~ 2026-04-25 > Raw: [liu-qiankun default design_spec](../../raw/presentations/projects-... | 2026-04-28 |
-| [周度AI学习资源监控-体系化知识摄入](presentations/周度AI学习资源监控-体系化知识摄入.md) | > Sources: mino, 2026-04-28 > Raw: [Zara AI监控2026-04-08](../../raw/presentations/projects-proj-1772240987779-zrc3gz-... | 2026-04-28 |
-| [国产芯片替代与AI定价权的转移](presentations/国产芯片替代与定价权转移.md) | > Sources: AI产品定价模式演变研究 - 芯片供给线与未来趋势 (2026-04-24) > Raw: [头脑风暴源文件-... | 2026-04-28 |
-| [定价策略商业分析框架](presentations/presentations-定价策略商业分析框架.md) | > Sources: AI 定价研究源文件中的框架层与分析方法 (2026-04-24) > Raw: [头脑风暴](../../raw/presentat... | 2026-04-28 |
-| [张力分析：商业决策中的根本权衡](presentations/张力分析商业决策权衡.md) | > Sources: AI产品定价模式演变研究 - Tensions 分析 (2026-04-24) > Raw: [头脑风暴源文件-张力分析](.... | 2026-04-28 |
-| [播客转书籍章节-内容转化方法](presentations/播客转书籍章节-内容转化方法.md) | > Sources: mino, 2026-04-28 > Raw: [Zara AI项目定义](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outp... | 2026-04-28 |
-| [播客转书籍章节-内容转化方法论](presentations/播客转书籍章节-内容转化方法论.md) | > Sources: mino, 2026-04-28 > Raw: [Zara AI播客转书籍配置](../../raw/presentations/projects-proj-1772240987779-zr... | 2026-04-28 |
-| [梁俊瑞神秘岛好书分享-儿童友好设计](presentations/梁俊瑞神秘岛好书分享-儿童友好设计.md) | > Sources: mino, 2026-04-28 > Raw: [README](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20... | 2026-04-28 |
-| [演示文稿索引与导航总览](presentations/演示文稿索引与导航总览.md) | > Sources: mino, 2026-04-28 > Raw: [README](../../raw/presentations/README.md); [README.ai](../../raw/presentations/READ... | 2026-04-28 |
-| [演示文稿项目管理-PPT169生产管线](presentations/演示文稿项目管理-PPT169生产管线.md) | > Sources: mino, 2026-04-28 > Raw: [AI定价README](../../raw/presentations/projects-AI产品定价模式演变-从Codin... | 2026-04-28 |
-| [演示文稿项目管理实践](presentations/presentations-演示文稿项目管理.md) | > Sources: 所有 presentations 目录下的项目文件 (2026-04-03 至 2026-04-26) > Raw: [README.md](../../raw/presen... | 2026-04-28 |
-| [演讲内容一致性设计-六版本不变原则](presentations/演讲内容一致性设计-六版本不变原则.md) | > Sources: mino, 2026-04-28 > Raw: [editorial-v2四页](../../raw/presentations/projects-liu-qiankun-profile-editorial-v... | 2026-04-28 |
-| [演讲开场三秒法则-封面与一句话定位设计](presentations/演讲开场三秒法则-封面与一句话定位设计.md) | > Sources: mino, 2026-04-28 > Raw: [刘乾坤封面](../../raw/presentations/projects-liu-qiankun-profile_ppt169_2026040... | 2026-04-28 |
-| [演讲收尾的记忆锚定技术](presentations/演讲收尾的记忆锚定技术.md) | > Sources: mino, 2026-04-28 > Raw: [刘乾坤结尾](../../raw/presentations/projects-liu-qiankun-profile_ppt169_2026040... | 2026-04-28 |
-| [演讲脚本与演讲备注方法论](presentations/presentations-演讲脚本方法论.md) | > Sources: AI 定价演讲脚本 + 刘乾坤演讲备注全系列 (2026-04) > Raw: [AI定价演讲脚本](../../raw/work... | 2026-04-28 |
-| [知识工作流水线方法论](presentations/presentations-知识工作流水线.md) | > Sources: kw-workflow 技能 + AI 定价项目全流程 (2026-04-24 至 2026-04-25) > Raw: [AI定价头脑风暴](../..... | 2026-04-28 |
-| [神秘岛好书分享设计案例](presentations/presentations-神秘岛好书分享设计.md) | > Sources: 梁俊瑞神秘岛好书分享项目 (2026-04-11) > Raw: [README](../../raw/presentations/projects-liang-junr... | 2026-04-28 |
-| [职场情绪与语言防卫机制](presentations/presentations-职场情绪与语言防卫.md) | > Sources: 王易人情感触发地图项目 (2026-03-08) + 专属AI职业导师系统 > Raw: [情感触发地图](../..... | 2026-04-28 |
-| [职场语言防卫机制-五种话术应对策略](presentations/职场语言防卫机制-五种话术应对策略.md) | > Sources: mino, 2026-04-28 > Raw: [情绪触发点地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-em... | 2026-04-28 |
-| [职场语言防卫机制：破解A/B框定与词语绑架](presentations/职场语言防卫机制.md) | > Sources: 王易人情感触发地图项目 (2026-03-08) > Raw: [情感触发地图](../../raw/presentations/projects-p... | 2026-04-28 |
-| [计量单位即定价权：AI定价案例的核心商业规律](presentations/计量单位即定价权.md) | > Sources: AI产品定价模式演变研究 - 头脑风暴、research、notes (2026-04-24) > Raw: [头脑风暴源文件... | 2026-04-28 |
-| [跨越鸿沟理论在AI与供应商管理中的双重应用](presentations/跨越鸿沟理论双重应用.md) | > Sources: AI产品定价研究 + 供应商管理框架 (2026-04-24) > Raw: [research研究文件-跨越鸿沟](../../ra... | 2026-04-28 |
+## Presentations
 
-## supplier-management
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [315合规月执行细节与应急预案](supplier-management/315合规月执行细节与应急预案.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-315合规月-315合规月活动-2026-315-供应�... | 2026-04-28 |
-| [315服务合规月完整指南与管控体系](supplier-management/315服务合规月完整指南与管控体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-315合规月-315合规月活动-2026-315-service... | 2026-04-28 |
-| [BPO联盟与供应商赋能平台](supplier-management/BPO联盟与供应商赋能平台.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [BPO联盟培训总结](../../raw/docs-supplier/历史项目-BPO联盟-... | 2026-04-28 |
-| [BPO联盟建设与月报演进](supplier-management/BPO联盟建设与月报演进.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-BPO联盟-Q1汇报参考.md; ../../raw/docs-supp... | 2026-04-28 |
-| [BPO联盟月报演进历程与供应商赋能平台](supplier-management/BPO联盟月报演进与供应商赋能平台.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块.md; ../..... | 2026-04-28 |
-| [HRBP式扶持与标杆配对](supplier-management/supplier-management-HRBP式扶持与标杆配对.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [HRBP式扶持手册](../../raw/docs-supplier/管理制度-供应商日... | 2026-04-28 |
-| [企微运营风险管控体系](supplier-management/supplier-management-企微运营风险管控体系.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [企微风险管控制度](../../raw/docs-supplier/历史项目-供应�... | 2026-04-28 |
-| [企微运营风险管控体系](supplier-management/企微运营风险管控体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-供应商管理项目-企微运营风险管控-�... | 2026-04-28 |
-| [供应商全景档案与人力站点盘点](supplier-management/供应商全景档案与人力站点盘点.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/供应商库-供应商全景分析.md; ../../raw/docs-supplie... | 2026-04-28 |
-| [供应商准入与清退规则](supplier-management/access-retirement-rules.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [引入管理规范](../../raw/docs-supplier/管理规范-供应商引�... | 2026-04-28 |
-| [供应商场景方法论：四大高频场景应对](supplier-management/scenario-methodology.md) | > Sources: 年老师, 2026-04-06 > Raw: [场景一-KPI不达标整改](../../raw/archive/场景一-KPI不达标整改.md... | 2026-04-28 |
-| [供应商工作手册模板体系](supplier-management/供应商工作手册模板体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理制度-供应商工作手册模板-00-使用说明.md; ... | 2026-04-28 |
-| [供应商引入与扩项管理](supplier-management/供应商引入与扩项管理.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [供应商引入管理规范](../../raw/docs-supplier/管理规范-供�... | 2026-04-28 |
-| [供应商引入与扩项管理实务](supplier-management/供应商引入与扩项管理实务.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-供应商引入-扩项申请 - 泉州速腾.md; ... | 2026-04-28 |
-| [供应商排名诊断与赛马竞争机制](supplier-management/供应商排名诊断与赛马竞争机制.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [排名思维](../../raw/docs-supplier/ranking-mindset.md); [赛马机�... | 2026-04-28 |
-| [供应商数据报送与信息管理制度](supplier-management/供应商数据报送与信息管理制度.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [日常手册-数据报送](../../raw/docs-supplier/管理制度-供应... | 2026-04-28 |
-| [供应商日常管理执行手册](supplier-management/供应商日常管理执行手册.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理制度-供应商日常管理执行手册-00-总览.md; ... | 2026-04-28 |
-| [供应商日常管理规范](supplier-management/daily-management-norms.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [日常管理手册](../../raw/docs-supplier/管理制度-供应商管�... | 2026-04-28 |
-| [供应商服务等级协议体系](supplier-management/供应商服务等级协议体系.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [SLA初稿](../../raw/docs-supplier/管理制度-供应商管理SLA.md)... | 2026-04-28 |
-| [供应商档案库全景：16家中腰部供应商深度画像](supplier-management/供应商档案库全景与中腰部供应商画像.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/供应商库-档案-中乾.md; ../../raw/docs-supplier/供应... | 2026-04-28 |
-| [供应商档案摘要](supplier-management/supplier-profiles-summary.md) | > Sources: 供应商管理岗, 2026-03 > Raw: [供应商全景分析](../../raw/docs-supplier/供应商库-供应商全�... | 2026-04-28 |
-| [供应商沟通机制与话术体系](supplier-management/供应商沟通机制与话术体系.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [沟通框架](../../raw/docs-supplier/communication-framework.md); [�... | 2026-04-28 |
-| [供应商沟通框架：六类沟通与引导式设问](supplier-management/communication-framework.md) | > Sources: 年老师, 2026-04-06 > Raw: [场景手册](../../raw/archive/场景手册.md); [供应商与BPO运营](../..... | 2026-04-28 |
-| [供应商清退与退出管理](supplier-management/供应商清退与退出管理.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [清退管理规范V2.0](../../raw/docs-supplier/管理规范-供应商... | 2026-04-28 |
-| [供应商知识库建设诊断](supplier-management/供应商知识库建设诊断.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-供应商知识库建设-findings-摘要.md; ../... | 2026-04-28 |
-| [供应商管理体系全景](supplier-management/management-system-overview.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管�... | 2026-04-28 |
-| [供应商管理六步工作法](supplier-management/供应商管理六步工作法.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [六步工作法](../../raw/docs-supplier/six-step-method.md); [日常�... | 2026-04-28 |
-| [供应商管理六步法](supplier-management/six-step-method.md) | > Sources: 年老师, 2026-04-06 > Raw: [供应商管理六步法](../../raw/work-methods/供应商管理六步法.md); ... | 2026-04-28 |
-| [供应商管理制度总纲与核心规范](supplier-management/供应商管理制度总纲与核心规范.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理制度-供应商管理办法.md; ../../raw/docs-supplie... | 2026-04-28 |
-| [供应商管理历史项目与制度演进](supplier-management/供应商管理历史项目与制度演进.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-供应商知识库建设-知识库分析-docs-fi... | 2026-04-28 |
-| [供应商管理向上汇报框架](supplier-management/供应商管理向上汇报框架.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [向上汇报-汇报框架](../../raw/docs-supplier/管理制度-向上... | 2026-04-28 |
-| [供应商管理场景方法论](supplier-management/供应商管理场景方法论.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [场景方法论](../../raw/docs-supplier/scenario-methodology.md); [�... | 2026-04-28 |
-| [供应商管理工作手册模板体系](supplier-management/供应商管理工作手册模板体系.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [工作手册模板-使用说明](../../raw/docs-supplier/管理制度-... | 2026-04-28 |
-| [供应商管理成果数据与可视化体系](supplier-management/供应商管理成果数据与可视化体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/运营数据-03-成果数据.md; ../../raw/docs-supplier/运�... | 2026-04-28 |
-| [供应商管理操作工具箱：排名、产能、巡检与叙事体系](supplier-management/供应商管理操作工具箱与叙事体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理制度-术语表.md; ../../raw/archive/供应商管理�... | 2026-04-28 |
-| [供应商管理新供应商跟进与HRBP式扶持](supplier-management/新供应商跟进与HRBP式扶持.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [日常执行手册-新供应商跟进](../../raw/docs-supplier/管理�... | 2026-04-28 |
-| [供应商管理方法论体系](supplier-management/供应商管理方法论体系.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [管理思路梳理](../../raw/docs-supplier/管理规范-供应商管�... | 2026-04-28 |
-| [供应商绑架应对与反制策略](supplier-management/supplier-management-供应商绑架应对与反制策略.md) | > Sources: 年老师, 2026-04-23 > Raw: [场景二-供应商绑架应对](../../raw/archive/场景二-供应商绑架应... | 2026-04-28 |
-| [供应商绩效评估体系](supplier-management/supplier-management-供应商绩效评估体系.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [月度综合评估方案](../../raw/docs-supplier/管理制度-供应�... | 2026-04-28 |
-| [供应商质量与质检管理体系](supplier-management/供应商质量与质检管理体系.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [质量管理规范](../../raw/docs-supplier/管理制度-质量管理�... | 2026-04-28 |
-| [分量分配策略与产能承接](supplier-management/supplier-management-分量分配策略与产能承接.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [分量决策手册](../../raw/docs-supplier/管理制度-供应商日�... | 2026-04-28 |
-| [历史项目回顾](supplier-management/historical-projects.md) | > Sources: 供应商管理岗, 2026-02~04 > Raw: [315合规月活动](../../raw/docs-supplier/历史项目-315合规月-... | 2026-04-28 |
-| [历史项目案例库](supplier-management/历史项目案例库.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [315合规月管控措施](../../raw/docs-supplier/历史项目-315合�... | 2026-04-28 |
-| [合规管理体系与红线管控](supplier-management/supplier-management-合规管理体系与红线管控.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [315合规月管控措施](../../raw/docs-supplier/历史项目-315合�... | 2026-04-28 |
-| [向上汇报框架与叙事体系](supplier-management/supplier-management-向上汇报框架与叙事体系.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [向上汇报手册](../../raw/docs-supplier/管理制度-供应商日�... | 2026-04-28 |
-| [定价委员会工具集：模板、流程与会务指南](supplier-management/定价委员会工具集：模板流程与会务指南.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-定价委员会-02-策略组讨论_202603-00-会... | 2026-04-28 |
-| [定价委员会机制与决策体系](supplier-management/定价委员会机制与决策体系.md) | > Sources: 供应商管理岗, 2026-03~04 > Raw: [定价委员会机制V1.1](../../raw/docs-supplier/历史项目-定价... | 2026-04-28 |
-| [定价委员会策略机制与决策体系](supplier-management/定价委员会策略机制与决策体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-定价委员会-02-策略组讨论_202603-02-QA�... | 2026-04-28 |
-| [巡检管理与FCI能力指数](supplier-management/supplier-management-巡检管理与FCI能力指数.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [巡检管理手册](../../raw/docs-supplier/管理制度-供应商日�... | 2026-04-28 |
-| [工作方法论 — 5311 框架、六步法与议题设定权](supplier-management/工作方法论-5311框架-六步法与议题设定权.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/work-methods/5311工作框架.md; ../../raw/work-methods/供应商管理六... | 2026-04-28 |
-| [排名思维：赛马机制下的相对排名管理](supplier-management/ranking-mindset.md) | > Sources: 年老师, 2026-04-06 > Raw: [供应商与BPO运营](../../raw/core-memory/01-供应商与BPO运营.md); [KPI... | 2026-04-28 |
-| [数据真实性防控体系](supplier-management/supplier-management-数据真实性防控体系.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [数据真实性防控手册](../../raw/docs-supplier/管理制度-供�... | 2026-04-28 |
-| [整改闭环流程与验收标准](supplier-management/supplier-management-整改闭环流程与验收标准.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [整改闭环手册](../../raw/docs-supplier/管理制度-供应商日�... | 2026-04-28 |
-| [管理制度校验与空间模板体系](supplier-management/管理制度校验与空间模板体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理制度-01-基础信息.md; ../../raw/docs-supplier/管�... | 2026-04-28 |
-| [管理规范体系与方法论速查](supplier-management/管理规范体系与方法论速查.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/管理规范-供应商引入管理规范.md; ../../raw/docs-s... | 2026-04-28 |
-| [赛马竞争机制与排名文化](supplier-management/supplier-management-赛马竞争机制与排名文化.md) | > Sources: 年老师, 2026-04-23 > Raw: [排名思维](../../raw/personal-growth/排名思维-与5311框架.md); [场景三-份额调整]... | 2026-04-28 |
-| [车抵贷项目复盘与经验教训](supplier-management/车抵贷项目复盘与经验教训.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/历史项目-车抵贷复盘.md | 2026-04-28 |
-| [运营数据与 KPI 体系](supplier-management/operation-data-charts.md) | > Sources: 供应商管理岗, 2025~2026 > Raw: [成果数据](../../raw/docs-supplier/运营数据-03-成果数据.md);... | 2026-04-28 |
-| [风险预警机制与分级响应](supplier-management/supplier-management-风险预警机制与分级响应.md) | > Sources: 供应商管理岗, 2026-04-23 > Raw: [预警约谈手册](../../raw/docs-supplier/管理制度-供应商日�... | 2026-04-28 |
+| [Agent时代成本结构剧变：85-95%的Token是上下文开销](presentations/Agent时代成本结构剧变.md) |  | 2026-04-28 |
+| [AI 产品定价模式演变 — 从 Coding Plan 到 Token Plan](presentations/AI产品定价模式演变-从CodingPlan到TokenPlan.md) |  | 2026-04-28 |
+| [AI 学习资源监控体系](presentations/presentations-AI学习资源监控.md) |  | 2026-04-28 |
+| [AI 定价方法论深度](presentations/presentations-AI定价方法论.md) |  | 2026-04-28 |
+| [AI定价-Agent时代成本结构](presentations/AI定价-Agent时代成本结构.md) | Agent时代成本结构是AI定价项目中最具冲击力的发现：在Agent场景下，只有5-15%的Token真正用于代码生成，85-95%是上下文开销。这意味着用户为代码生成付费，但绝大部分Token消耗在"非生成"的环节——文件读取、工具输出、上下文重发。这个发现直接颠覆了"按Token计费=公平"的假设。 | 2026-04-28 |
+| [AI定价-补贴收紧分层三段式](presentations/AI定价-补贴收紧分层三段式.md) | "补贴→收紧→分层"三段式是互联网定价的经典路径，AI大模型市场正在完整地重演这个模式。从2024-2025年的百万Token几毛钱，到2025年下半年取消首购优惠、停售低档，再到2026年的精细分层定价（极速版98-899元、企业版198-1398元），所有厂商都在走同一条路。本文章深入分析三段式的每个阶段及其对供应商管理的启示。 | 2026-04-28 |
+| [AI定价-计量单位即定价权](presentations/AI定价-计量单位即定价权.md) | "计量单位即定价权"是AI定价项目五条核心洞察中的第一条，也是最基础的一条。谁定义计量单位谁就掌握定价权——这个规律适用于所有"算力即服务"的商业模式。本文章深入分析五种计量体系的并存现状、演变方向和对定价权的争夺逻辑。 | 2026-04-28 |
+| [AI定价中的芯片供给线：算力即定价天花板](presentations/芯片供给线决定定价天花板.md) |  | 2026-04-28 |
+| [AI定价商业案例](presentations/AI定价商业案例.md) | AI定价商业案例是 Mino 知识库中最具商业深度的演示项目。该项目研究国内 AI 大模型厂商在 2024 Q4 至 2026-04 期间，定价模式从 Coding Plan 到 Token Plan 的演变逻辑，将其类比为电信行业 20 年话费套餐演进史的精简重演。 | 2026-04-28 |
+| [AI定价演讲备注全章节深度解析](presentations/AI定价演讲备注全章节.md) | AI定价项目的15页PPT169版本包含15个独立的演讲备注文件，每个文件对应一页幻灯片，标注了演讲时长、核心要点和过渡话术。这些备注构成了约20分钟演讲的完整脚本。本文章逐一解析每个章节的内容和逻辑，与已有的[AI定价商业案例](AI定价商业案例.md)（总览性质）形成互补——那篇聚焦宏观框架，本篇聚焦逐页内容和演讲节奏。 | 2026-04-28 |
+| [AI定价补贴-收紧-分层三段式：互联网定价的通用模式](presentations/补贴收紧分层三段式.md) |  | 2026-04-28 |
+| [AI职业导师系统-职场情绪与认知映射](presentations/AI职业导师系统-职场情绪与认知映射.md) | AI职业导师系统是为职场情绪管理和个人认知发展设计的AI辅助工具。系统的核心理念是：职场中遇到的沟通困难和情绪困扰，往往不是因为性格缺陷，而是缺乏相应的工具和准备。通过建立一个安全的倾诉空间、精准的个人认知映射和持续的行为模式记录，系统帮助用户从"被动反应"转向"有准备的应对"。系统的第一个深度对话产出就是情绪触发点地图和五种语言防卫机制，揭示了系统的实用价值。 | 2026-04-28 |
+| [DeepSeek V4定价冲击：开源模型如何重塑行业规则](presentations/DeepSeekV4定价冲击.md) |  | 2026-04-28 |
+| [IPO进程如何影响AI定价策略](presentations/IPO进程影响定价策略.md) |  | 2026-04-28 |
+| [MCP基础设施：Get笔记与Memos的知识管理管线](presentations/MCP基础设施知识管理管线.md) |  | 2026-04-28 |
+| [MCP服务器基础设施管线-知识管理自动化](presentations/MCP服务器基础设施管线-知识管理自动化.md) | MCP（Model Context Protocol）服务器基础设施管线是一套为AI助手构建的知识管理自动化系统。该系统包含多个MCP服务器组件，实现了从笔记获取、记忆管理到知识存储的完整管线。通过标准化的MCP协议，这些服务器可以与AI助手无缝集成，提供结构化的知识访问能力。这套基础设施是知识库从"手动维护"向"自动管理"演进的关键一步。 | 2026-04-28 |
+| [PPT169 设计系统规范](presentations/presentations-PPT169设计系统.md) |  | 2026-04-28 |
+| [PPT169多风格设计系统-六版本变体分析](presentations/PPT169多风格设计系统-六版本变体分析.md) | PPT169是一个标准化的16:9演示文稿生成系统，支持多种视觉风格变体。通过对刘乾坤人物画像项目的六个风格版本（default、editorial-v2、exhibit、freestyle、infographic-v2、mckinsey-v2）以及AI定价和梁俊瑞项目的设计规格分析，可以提炼出PPT169设计系统的核心架构：内容层与视觉层分离，12页标准结构，多风格模板复用同一内容框架。这... | 2026-04-28 |
+| [vwiehr专属AI职业导师系统](presentations/vwiehr专属AI职业导师系统.md) | vwiehr专属AI职业导师系统是为年老师打造的100%安全的职场情绪表达空间。通过三层架构（存储层、交互层、分析层）实现无评判的情绪倾诉、精准的个人认知映射、持续的行为模式记录和边界化的职业发展支持。项目于2026-03-08创建，首次深度对话产出了情绪触发点地图和5个语言防卫机制，是个人成长和职场关系管理的重要知识资产。 | 2026-04-28 |
+| [Zara AI学习库：从播客到商业传记章节的内容转化方法](presentations/播客转书籍章节内容转化方法.md) |  | 2026-04-28 |
+| [Zara-AI学习资源监控系统深度解析](presentations/Zara-AI学习资源监控系统深度解析.md) | Zara AI学习资源监控系统是一个基于AI的自动化内容转化管线，核心功能是将长篇商业播客（特别是Acquired播客）转化为高质量的商业传记章节式书面内容。该系统通过六步工作流实现了从音频到书面叙事的完整转化，包括故事弧线识别、角色映射、概念解释、引用提取、叙事构建和内容融合。这套系统不仅是一个技术工具，更是一种知识管理方法论——将碎片化的音频输入转化为结构化的可阅读输出。 | 2026-04-28 |
+| [五层权力来源体系：从规则权到施压权的递进逻辑](presentations/五层权力来源体系.md) |  | 2026-04-28 |
+| [人物分析方法论对比](presentations/presentations-人物分析方法论对比.md) |  | 2026-04-28 |
+| [人物权力框架方法论](presentations/presentations-人物权力框架方法论.md) |  | 2026-04-28 |
+| [人物权力框架方法论-五层权力来源体系](presentations/人物权力框架方法论-五层权力来源体系.md) | 五层权力来源体系是人物分析框架的核心组件，用于系统性地理解一个人在组织中的实际权力基础。这个体系将权力分为五个层级，从最表面的正式职权到最深层的隐性影响力，帮助分析者超越"职位=权力"的简单认知，准确定位一个人的真实权力来源。理解权力来源是制定应对策略的前提——如果误判了权力来源，应对策略就会打偏。 | 2026-04-28 |
+| [人物画像档案建设的24案例验证法](presentations/人物画像档案建设的24案例验证法.md) | 刘乾坤人物画像档案在第二页一句话定位中明确声明："这份档案不是简单的观察记录，而是经过一个多月持续追踪、24条案例验证的系统性分析。"这句话揭示了一个重要的人物分析方法论：用案例数量来建立档案的可信度。24条案例不是随意选取的数字，而是一个月持续追踪（约每周6条案例）的自然产物。这种方法将主观的人物观察转化为基于数据驱动的分析，使档案具有了可验证性和可复现性。 | 2026-04-28 |
+| [人物画像演讲稿](presentations/人物画像演讲稿.md) | 刘乾坤人物画像演讲稿是 Mino 知识库中文件数量最多、风格变体最丰富的演示项目。该项目以年老师的同事"刘乾坤"（金条业务线业管）为研究对象，基于 v10.2 档案（建档时间 2026-03-19），生成了一套完整的 12 页 PPT 演讲稿，覆盖了从权力框架、行为模式、关系网络到应对策略的全方位深度分析。 | 2026-04-28 |
+| [从档案到演讲-人物分析的输出路径](presentations/从档案到演讲-人物分析的输出路径.md) | 从人物档案到演讲输出，存在一条清晰的路径：先建立系统性的档案（24案例验证、三诉求框架、18种行为模式），然后根据不同的场景和受众，将档案转化为不同形式的输出（12页PPT、一对一汇报、应对话术、情绪触发地图）。这条路径的核心原则是"档案是完整的，输出是裁剪的"——同一个档案，根据场景不同，裁剪出不同的内容子集。这种"一源多用"的输出策略，最大化了档案建设的投资回报。 | 2026-04-28 |
+| [供应商四招驱动方式：从质问到承诺的强度递增](presentations/供应商四招驱动方式.md) |  | 2026-04-28 |
+| [供应商站点看板需求演进](presentations/presentations-站点看板需求演进.md) |  | 2026-04-28 |
+| [供应商管理六步法体系](presentations/presentations-供应商管理六步法.md) |  | 2026-04-28 |
+| [供应商联盟认证](presentations/供应商联盟认证.md) | 供应商联盟认证是 Mino 知识库中围绕供应商管理体系构建的一系列演讲和演示项目。核心内容包括刘乾坤人物画像系列演讲稿中的供应商管理章节，以及供应商联盟、供应商认证、供应商分层分级等相关主题的演示文稿。这些演讲稿通过多种视觉风格呈现同一内容，测试不同风格在供应商管理场景下的表达效果。 | 2026-04-28 |
+| [儿童友好设计原则：神秘岛好书分享的设计方法论](presentations/儿童友好设计原则.md) |  | 2026-04-28 |
+| [其他演讲稿项目](presentations/其他演讲稿项目.md) | 除了刘乾坤人物画像和 AI 定价两个主要项目外，presentations 目录下还包含了多个其他演讲项目和输出文件。这些项目覆盖了人物侧写、技术基础设施、情感分析、AI 应用监控等多个领域。 | 2026-04-28 |
+| [刘乾人物画像-18种行为模式详解](presentations/刘乾人物画像-18种行为模式详解.md) | 刘乾的18种行为模式是整个物画像项目中实操性最强的部分。18种模式不是随机使用的，而是按照场景组合逻辑有序调用：刚接手时立规矩加数据切入，日常运营时群内表演加三要素法，遇到阻力时高压管理加公开锁定，需要上级支持时打鸡血加道德绑架。本文章逐一拆解18种模式，按权力来源分组，标注识别信号和应对策略。 | 2026-04-28 |
+| [刘乾人物画像-五层权力来源体系](presentations/刘乾人物画像-五层权力来源体系.md) | 刘乾的权力来源分析是整个物画像项目的理论核心。五个版本的演讲备注都包含了"权力来源"章节（notes-04），结合原始权力框架源文件，形成了一个从理论到实操的完整体系。五层权力从底到表依次为：规则权→信息权→关系权→注意权→施压权。每层权力都有对应的行为模式、识别信号和应对策略。 | 2026-04-28 |
+| [刘乾人物画像-供应商管理四招与三要素法](presentations/刘乾人物画像-供应商管理四招.md) | 刘乾对供应商的四招驱动方式，施压强度递进递增：质问式→驱动式→要求式→改进式。四招的核心逻辑是"承诺即约束"——让供应商自己说出计划、自己承诺目标，比直接下达指令更有效。其中最值得学的是三要素法（原因、提升目标、举措），让供应商自己承诺，你告诉他更有效。年老师也用了这个方法，但加了"给支持"的温度。本文章详细拆解四招和三要素法的实操逻辑。 | 2026-04-28 |
+| [刘乾人物画像-六版本演讲备注对比](presentations/刘乾人物画像-六版本演讲备注对比.md) | 刘乾人物画像项目生成了六个不同的视觉风格变体，每个变体都包含完整的12页演讲备注。六个版本的内容框架基本一致，但在呈现风格、叙述语气和章节组织上各有侧重。本文章对比分析六个版本的演讲备注差异，揭示不同叙事风格对同一素材的处理方式。六个版本分别是：default（标准版）、editorial-v2（编辑版）、exhibit（展览版）、freestyle（自由版）、infographic-v2（... | 2026-04-28 |
+| [刘乾人物画像-关系网络与六类人策略](presentations/刘乾人物画像-关系网络与六类人策略.md) | 刘乾对不同人的策略完全不同，但核心逻辑一致——每种策略都服务于那三个诉求（控制权、展示权、安全感）。他面对六类人：前同事郭鑫和马贵贤（利用关系）、同级年老师（拉拢关系）、实习生张世跃（施压利用）、供应商（利益驱动）、刘伟佳（师承关系）。本文章拆解他对每类人的具体策略和背后的权力逻辑。 | 2026-04-28 |
+| [刘乾人物画像-应对策略与争议事件](presentations/刘乾人物画像-应对策略与争议事件.md) | 本文章整合了刘乾人物画像项目中的应对策略、争议事件、可学习内容和结尾收束四个章节。应对策略针对五层权力来源逐一给出破局方法，争议事件标记了需要警惕的风险信号，可学习内容总结了值得借鉴的管理手法，结尾章节收束了整个人物分析的核心结论。 | 2026-04-28 |
+| [刘乾人物画像-接手新业务四步法](presentations/刘乾人物画像-接手新业务四步法.md) | 接手新业务的四步法是刘乾最值得拆解的管理手法。从2026-03-18接手金条业务线开始，他按"立规矩→数据切入→公开锁定→建立预期"四步递进，每一步都有明确的触发场景和预期效果。最核心的洞察是：初始规则一旦确立，后续一切动作都可以引用这个规则作为合法性依据。不是他在针对你，是"规则如此"。本文章详细分析四步法的逻辑和应用。 | 2026-04-28 |
+| [刘乾人物画像-核心三诉求分析](presentations/刘乾人物画像-核心三诉求分析.md) | 刘乾的18种行为模式和五层权力来源，全部服务于三个核心诉求：控制权、展示权、安全感。这三个诉求是理解他一切行为的钥匙。不理解这三个诉求，18种模式就是随机的手；理解了这三个诉求，18种模式就是有逻辑的拳。本文章深度分析三诉求的内涵、表现和相互关系。 | 2026-04-28 |
+| [刘乾坤18种行为模式全解：从权力到战术的映射](presentations/刘乾坤十八种行为模式全解.md) |  | 2026-04-28 |
+| [刘乾坤人物画像-六版本首尾幻灯片对比](presentations/刘乾坤人物画像-六版本首尾幻灯片对比.md) | 刘乾坤人物画像项目生成了六个视觉风格变体（default、editorial-v2、exhibit、freestyle、infographic-v2、mckinsey-v2），每个变体都包含完整的12页演讲备注。经过逐一对比发现，六个版本在首尾四页幻灯片（01封面、02一句话定位、10可学习内容、12结尾）的内容上完全一致，没有任何差异。这一发现揭示了一个重要的演讲设计原则：无论视觉风格如何... | 2026-04-28 |
+| [刘乾坤人物画像：六版本叙事风格深度对比](presentations/刘乾坤六版本叙事风格对比.md) |  | 2026-04-28 |
+| [刘乾坤关系网络：六类人策略的权力逻辑](presentations/刘乾坤六类人关系网络.md) |  | 2026-04-28 |
+| [刘乾坤接手新业务四步法：规则先立的合法性策略](presentations/接手新业务四步法.md) |  | 2026-04-28 |
+| [刘乾坤管理手法精华提取-四种核心技巧详解](presentations/刘乾坤管理手法精华提取-四种核心技巧详解.md) | 从刘乾坤人物画像的分析中，提取出四种值得学习的核心管理技巧：立规矩、三要素法、数据说话、机制先行。这四种技巧的共同特点是"先框架后执行"——不靠个人魅力或临时判断，而是靠建立可重复、可验证的操作方法。这套手法的核心优势是可复制性——任何管理者都可以学习并应用到自己的工作中。关键的区别不在于技巧本身，而在于应用技巧的意图：刘乾坤用这些技巧建立控制，年老师可以用同样的技巧建立合作。 | 2026-04-28 |
+| [反模式识别：AI定价中的三个真实踩坑案例](presentations/反模式识别三个踩坑案例.md) |  | 2026-04-28 |
+| [叙事风格变体](presentations/叙事风格变体.md) | 在 Mino 知识库的演示项目中，同一内容以多种叙事风格呈现是一个反复出现的模式。本文整理六种叙事风格变体的设计差异、视觉特征和适用场景，以刘乾坤人物画像项目（6 种变体）和 AI 定价项目（2 种风格混合）为主要案例。 | 2026-04-28 |
+| [国产芯片替代与AI定价权的转移](presentations/国产芯片替代与定价权转移.md) |  | 2026-04-28 |
+| [定价策略商业分析框架](presentations/presentations-定价策略商业分析框架.md) |  | 2026-04-28 |
+| [张力分析：商业决策中的根本权衡](presentations/张力分析商业决策权衡.md) |  | 2026-04-28 |
+| [播客转书籍章节-内容转化方法](presentations/播客转书籍章节-内容转化方法.md) | 从Zara AI学习资源库的项目定义文件中，发现了一套完整的"播客转书籍章节"内容转化方法。这套方法将Acquired等商业播客的长篇音频内容转化为商业传记风格的书面章节，目标读者是"有文科背景的聪明人"——理解商业逻辑但不了解具体行业细节的人。这套方法的核心是叙事驱动，而非摘要驱动。 | 2026-04-28 |
+| [播客转书籍章节-内容转化方法论](presentations/播客转书籍章节-内容转化方法论.md) | 将长篇商业播客转化为书籍章节是一种高效的知识管理方法。通过分析Zara AI学习资源监控系统中"播客转书籍"的提示词模板，可以提炼出一套系统化的内容转化方法论：从理解故事弧线开始，经过角色映射、概念解释、引用提取、叙事构建，最终融合成一篇读起来像商业传记章节的完整文章。这套方法论的核心价值在于，它解决了音频内容"信息密度高但不可搜索、不可快速回顾"的痛点，将碎片化的音频输入转化为结构化的可阅... | 2026-04-28 |
+| [演示文稿索引与导航总览](presentations/演示文稿索引与导航总览.md) | presentations/raw目录下包含多个README和索引文件，构成了整个演示文稿知识库的导航结构。README.md是所有项目的总索引，README.ai.md和PATH.ai.md是AI相关的导航路径，各项目目录下的README.md记录了每个项目的元数据和文件清单。本文章梳理整个presentations目录的导航结构和项目分布。 | 2026-04-28 |
+| [演示文稿项目管理-PPT169生产管线](presentations/演示文稿项目管理-PPT169生产管线.md) | PPT169演示文稿项目遵循标准化的生产管线，从头脑风暴到研究、从设计规格到多版本生成。通过分析AI定价、梁俊瑞、刘乾坤三个项目的原始文件结构，可以提炼出一套可复用的演示文稿生产方法论：brainstorm→research→design_spec→generate→review→output。这套管线将演讲制作从"艺术创作"变成了"工业生产"，保证了质量和效率的同时，也保证了不同项目之间的... | 2026-04-28 |
+| [演示文稿项目管理实践](presentations/presentations-演示文稿项目管理.md) |  | 2026-04-28 |
+| [演讲内容一致性设计-六版本不变原则](presentations/演讲内容一致性设计-六版本不变原则.md) | 刘乾坤人物画像项目生成了六个视觉风格版本的PPT，每个版本包含12页演讲备注。对比发现，所有版本在第01页（封面）、第02页（一句话定位）、第10页（可学习内容）、第12页（结尾）的内容完全一致，没有任何差异。这一发现揭示了一个重要的演讲内容设计原则：在多变中保持核心不变。这个原则可以指导任何需要生成多版本文档的场景——确定哪些内容必须一致，哪些内容可以变化，从而既保证了信息的一致性，又实现... | 2026-04-28 |
+| [演讲开场三秒法则-封面与一句话定位设计](presentations/演讲开场三秒法则-封面与一句话定位设计.md) | 演讲的前三秒决定了听众是否会继续听下去。通过分析刘乾坤人物画像六个PPT版本的封面和一句话定位设计，可以提炼出一套通用的"三秒开场法则"：封面用三句话完成定调，第二页用数字建立权威，两个页面合在一起在5秒内完成"这个人是谁、我为什么该信、我该怎么做"的认知闭环。这套法则不仅适用于人物画像演讲，也适用于任何需要快速建立认知场景的汇报和演示。 | 2026-04-28 |
+| [演讲收尾的记忆锚定技术](presentations/演讲收尾的记忆锚定技术.md) | 演讲的结尾决定了听众带走什么。通过对刘乾坤人物画像六个PPT版本的结尾设计（第10页可学习内容和第12页结尾）的分析，可以提炼出"记忆锚定"的收尾技术：先用可学习的内容给听众正面收获，再用核心框架回归形成首尾呼应，让听众离场时脑中留下的是一个完整的分析框架而非零散信息。这种收尾方式不仅适用于人物画像，也适用于任何分析性演讲。 | 2026-04-28 |
+| [演讲脚本与演讲备注方法论](presentations/presentations-演讲脚本方法论.md) |  | 2026-04-28 |
+| [知识工作流水线方法论](presentations/presentations-知识工作流水线.md) |  | 2026-04-28 |
+| [神秘岛好书分享设计案例](presentations/presentations-神秘岛好书分享设计.md) |  | 2026-04-28 |
+| [职场情绪与语言防卫机制](presentations/presentations-职场情绪与语言防卫.md) |  | 2026-04-28 |
+| [职场语言防卫机制-五种话术应对策略](presentations/职场语言防卫机制-五种话术应对策略.md) | 在职场沟通中，有些对手会使用语言作为武器——通过A/B框定、词语绑架、标准置换等策略，让目标陷入被动。这套语言防卫机制包含五种具体的话术策略，对应五种常见的语言攻击模式。核心认知是：问题不在于性格不够强硬，而在于没有建立起语言层面的防卫体系。这套机制不仅适用于供应商管理场景，也适用于任何存在权力博弈的职场沟通。 | 2026-04-28 |
+| [职场语言防卫机制：破解A/B框定与词语绑架](presentations/职场语言防卫机制.md) |  | 2026-04-28 |
+| [计量单位即定价权：AI定价案例的核心商业规律](presentations/计量单位即定价权.md) |  | 2026-04-28 |
+| [跨越鸿沟理论在AI与供应商管理中的双重应用](presentations/跨越鸿沟理论双重应用.md) |  | 2026-04-28 |
 
-## personal-growth-deep
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [AI协作方法论：从V1到V19的人机协同进化](personal-growth-deep/AI协作方法论.md) | > Sources: mino, 2026-04-28 > Raw: [V12 AI核心理解](../../raw/personal-growth/晋升述职-晋升材料-V12aicoworke... | 2026-04-28 |
-| [AI提效研究](personal-growth-deep/AI提效研究.md) | > Sources: workspace-growth 中的 AI 效率研究项目 > Raw: [AI定价头脑风暴](../../raw/plans/2026-04-24-AI产�... | 2026-04-28 |
-| [个人能力成长路线图：从P6到P7的能力缺口与填补路径](personal-growth-deep/个人能力成长路线图.md) | > Sources: mino, 2026-04-28 > Raw: [V1自我评价严苛版](../../raw/personal-growth/晋升述职-晋升材料-V1版�... | 2026-04-28 |
-| [人物风格参照系：向上、向下、对外的沟通策略库](personal-growth-deep/人物风格参照系.md) | > Sources: mino, 2026-04-28 > Raw: [表达模板库](../../raw/personal-growth/工作风格-表达模板库.md); [工作... | 2026-04-28 |
-| [从人治到机制的跃迁方法论](personal-growth-deep/personal-growth-从人治到机制.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
-| [供应商拿捏学：胡萝卜+大棒的心理博弈](personal-growth-deep/personal-growth-供应商拿捏学.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
-| [供应商生态分类学：网状结构与精准匹配](personal-growth-deep/personal-growth-供应商生态分类学.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
-| [供应商生态操作系统：五大机制与四大体系](personal-growth-deep/personal-growth-供应商生态操作系统.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
-| [供应商生态经营终局：从管理到共建的跨越](personal-growth-deep/供应商生态经营终局.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_生态版](../../raw/personal-growth/晋升述职-供应商管理方向... | 2026-04-28 |
-| [供应商管理全案：从四团队合并到生态自治的完整叙事](personal-growth-deep/供应商管理全案.md) | > Sources: mino, 2026-04-28 > Raw: [V13深度解析](../../raw/personal-growth/晋升述职-供应商管理方向-V13-co... | 2026-04-28 |
-| [供应链自主可控方法论：从依赖外包到掌握议价权](personal-growth-deep/供应链自主可控方法论.md) | > Sources: mino, 2026-04-28 > Raw: [供应商管理深度解析](../../raw/personal-growth/晋升述职-供应商管理�... | 2026-04-28 |
-| [分层沟通体系：对上级、对下级、对供应商](personal-growth-deep/personal-growth-分层沟通体系.md) | > Sources: mino, 2026-04-28 > Raw: [表达模板库](../../raw/personal-growth/工作风格-表达模板库.md); [自我... | 2026-04-28 |
-| [咨询报告风格规范：克制、对齐、金字塔](personal-growth-deep/咨询报告风格规范.md) | > Sources: mino, 2026-04-28 > Raw: [咨询风格](../../raw/personal-growth/工作风格-咨询风格.md); [表达模板... | 2026-04-28 |
-| [对标管理方法论：自建标杆驱动系统优化](personal-growth-deep/personal-growth-对标管理方法论.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
-| [工作经历洞察全集与自我认知体系](personal-growth-deep/经历洞察与自我认知体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/经历洞察-05-经历洞察.md; ../../raw/personal-growth/... | 2026-04-28 |
-| [工作风格体系](personal-growth-deep/工作风格体系.md) | > Sources: 孙大年，工作风格文档 2026 > Raw: [工作风格](../../raw/personal-growth/工作风格-04-工作风... | 2026-04-28 |
-| [成本优化方法论：对标驱动、生态共赢](personal-growth-deep/personal-growth-成本优化方法论.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
-| [批判性自评体系：严苛视角下的能力诊断](personal-growth-deep/personal-growth-批判性自评体系.md) | > Sources: mino, 2026-04-28 > Raw: [自我评价严苛版](../../raw/personal-growth/晋升述职-晋升材料-V1版本-... | 2026-04-28 |
-| [数据可视化设计原则：克制、聚焦、说故事](personal-growth-deep/数据可视化设计原则.md) | > Sources: mino, 2026-04-28 > Raw: [全书知识汇总](../../raw/personal-growth/Storytelling_with_Data_-_Cole_Nussbaum... | 2026-04-28 |
-| [数据可视化进阶设计原则：从图表到叙事](personal-growth-deep/数据可视化进阶设计原则.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/Storytelling_with_Data_-_Cole_Nussbaumer_Knaflic-adapt-visu... | 2026-04-28 |
-| [数据炼金：关键决策点复盘](personal-growth-deep/数据炼金：关键决策点复盘.md) | > Sources: mino, 2026-04-28 > Raw: [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md); [V13风险... | 2026-04-28 |
-| [数据讲故事实战指南：从Storytelling with Data到供应商管理](personal-growth-deep/数据讲故事实战指南.md) | > Sources: mino, 2026-04-28 > Raw: [全书知识汇总](../../raw/personal-growth/Storytelling_with_Data_-_Cole_Nussbaum... | 2026-04-28 |
-| [数据讲故事读书笔记](personal-growth-deep/数据讲故事读书笔记.md) | > Sources: Cole Nussbaumer Knaflic, Storytelling with Data — 全书30个SKILL拆解 > Raw: [全书索引](../../raw/pe... | 2026-04-28 |
-| [晋升材料供应商管理深度解析与供应商理解体系](personal-growth-deep/供应商管理深度解析与理解体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-供应商�... | 2026-04-28 |
-| [晋升材料全版本对照：V1-V12版本的内容演进与策略差异](personal-growth-deep/晋升材料全版本对照分析.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-晋升材料-V1版本-2026年初晋升评审�... | 2026-04-28 |
-| [晋升材料结构分析与案例打磨方法论](personal-growth-deep/晋升材料结构分析与案例打磨方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-... | 2026-04-28 |
-| [晋升答辩 Q&A 全场景策略库](personal-growth-deep/晋升答辩Q&A全场景策略库.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-alma版本-评委提问�... | 2026-04-28 |
-| [晋升答辩Q&A策略库：预判、应答与引导](personal-growth-deep/晋升答辩Q&A策略库.md) | > Sources: mino, 2026-04-28 > Raw: [V1评委问题预判](../../raw/personal-growth/晋升述职-晋升材料-V1版本-0... | 2026-04-28 |
-| [晋升答辩全阶段演进：从V1到V8的方法论与策略进化](personal-growth-deep/晋升答辩全阶段演进方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V1版本-04-岗位认知... | 2026-04-28 |
-| [晋升答辩策略与评委应对指南](personal-growth-deep/晋升答辩策略与评委应对指南.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V1版本-02-评委会问... | 2026-04-28 |
-| [晋升背诵体系：从4000字到250字的记忆压缩术](personal-growth-deep/晋升背诵体系.md) | > Sources: mino, 2026-04-28 > Raw: [V8使用说明](../../raw/personal-growth/晋升述职-晋升材料-V8版本-背诵-... | 2026-04-28 |
-| [晋升述职V1-V5：早期迭代全纪录](personal-growth-deep/晋升述职V1-V5.md) | > Sources: 孙大年，2026年初晋升评审材料 V1-V5 > Raw: [V1评审材料](../../raw/personal-growth/晋升述职... | 2026-04-28 |
-| [晋升述职V13-V19：从结构分析到终稿迭代的决策链](personal-growth-deep/晋升述职V13-V19结构迭代链.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-01_述职�... | 2026-04-28 |
-| [晋升述职V6-V13：后期迭代与深度优化](personal-growth-deep/晋升述职V6-V13.md) | > Sources: 孙大年，2026年初晋升评审材料 V6-V13 > Raw: [V6展示材料](../../raw/personal-growth/晋升述�... | 2026-04-28 |
-| [晋升述职材料演进史 — 从V1到V13的迭代之路](personal-growth-deep/晋升述职材料演进史-从V1到V13的迭代之路.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V1版本-2026年初晋�... | 2026-04-28 |
-| [晋升述职核心叙事与案例深挖：三件事的剥洋葱法](personal-growth-deep/晋升述职核心叙事与案例深挖.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-01_述职�... | 2026-04-28 |
-| [晋升述职核心案例库：三幕叙事与数据驱动](personal-growth-deep/晋升述职核心案例库.md) | > Sources: mino, 2026-04-28 > Raw: [V13深度解析](../../raw/personal-growth/晋升述职-供应商管理方向-V13-co... | 2026-04-28 |
-| [晋升述职迭代方法论：19轮进化的可复用经验](personal-growth-deep/personal-growth-晋升述职迭代方法论.md) | > Sources: mino, 2026-04-28 > Raw: [V1评审材料](../../raw/personal-growth/晋升述职-晋升材料-V1版本-2026年... | 2026-04-28 |
-| [深夜对话与碎片成长记录](personal-growth-deep/深夜对话与碎片成长记录.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/archive/2026-02-21-漫长的这一天-我们都在成长.md; ../../raw/arch... | 2026-04-28 |
-| [经历洞察全集](personal-growth-deep/经历洞察全集.md) | > Sources: 孙大年，经历洞察与核心记忆 > Raw: [经历洞察](../../raw/personal-growth/经历洞察-05-经�... | 2026-04-28 |
-| [经验沉淀方法论：从个人能力到组织资产](personal-growth-deep/经验沉淀方法论.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_完整版](../../raw/personal-growth/晋升述职-供应商管理方向... | 2026-04-28 |
-| [职业跃迁路径：从执行者到生态架构师](personal-growth-deep/personal-growth-职业跃迁路径.md) | > Sources: mino, 2026-04-28 > Raw: [岗位认知更高维度](../../raw/personal-growth/晋升述职-晋升材料-V1版�... | 2026-04-28 |
-| [能力验证与北极星指标：从自证到可量化](personal-growth-deep/能力验证与北极星指标.md) | > Sources: mino, 2026-04-28 > Raw: [V1自我评价严苛版](../../raw/personal-growth/晋升述职-晋升材料-V1版�... | 2026-04-28 |
-| [自我认知与供应商管理哲学 — 从执行者到生态建设者](personal-growth-deep/自我认知与供应商管理哲学.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-... | 2026-04-28 |
-| [自我认知体系：五大核心能力模型](personal-growth-deep/personal-growth-自我认知体系.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
-| [风险管理哲学：从救火到过程防控](personal-growth-deep/personal-growth-风险管理哲学.md) | > Sources: mino, 2026-04-28 > Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowo... | 2026-04-28 |
+## Supplier Management
 
-## workspace-other
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [2026Q1供应商绩效汇报大纲与数据](workspace-other/2026Q1供应商绩效汇报大纲与数据.md) | > Sources: mino, 2026-04-28 > Raw: [2026 Q1绩效数据](../../raw/workspace-other/test-data-storytelling--Users-sundani... | 2026-04-28 |
-| [Agent-Reach 渠道架构与安全模型](workspace-other/workspace-other-Agent-Reach渠道架构与安全.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-26 > Raw: [CLAUDE.md](../../raw/workspace-other/Agent-Reach--Users-sundanian-... | 2026-04-28 |
-| [Agent-Reach互联网接入配置指南](workspace-other/Agent-Reach互联网接入配置指南.md) | > Sources: mino, 2026-04-28 > Raw: [Agent-Reach文档README_en](../../raw/workspace-other/Agent-Reach--Users-sundanian-D... | 2026-04-28 |
-| [Agent-Reach平台配置指南全集](workspace-other/Agent-Reach平台配置指南全集.md) | > Sources: mino, 2026-04-28 > Raw: [groq配置](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-project... | 2026-04-28 |
-| [Agent-Reach社交媒体接入深度指南](workspace-other/Agent-Reach社交媒体接入深度指南.md) | > Sources: mino, 2026-04-28 > Raw: [Twitter高级功能](../../raw/workspace-other/Agent-Reach--Users-sundanian-Document... | 2026-04-28 |
-| [Agent-Reach：给 AI Agent 的一键互联网接入工具](workspace-other/workspace-other-Agent-Reach互联网接入工具.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-26 > Raw: [README](../../raw/workspace-other/Agent-Reach--Users-sundanian-Doc... | 2026-04-28 |
-| [AI Agent 工具生态：从 Agent-Reach 到数据炼金师](workspace-other/workspace-other-AIAgent工具生态.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-26 > Raw: [Agent-Reach README/SKILL/CLAUDE](../../raw/workspace-other/Agent-R... | 2026-04-28 |
-| [AI定价商业洞察：三层逻辑与六大框架](workspace-other/workspace-other-AI定价商业洞察框架.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-26 > Raw: [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-s... | 2026-04-28 |
-| [AI定价演变：设计系统与视觉规范方法论](workspace-other/workspace-other-AI定价演变设计系统.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Document... | 2026-04-28 |
-| [AI定价研究项目](workspace-other/AI定价研究项目.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-25 > Raw: [AI定价模式PPT 演讲脚本](../../raw/workspace-other/AI定价... | 2026-04-28 |
-| [OpenWiki 版本演进与功能迭代](workspace-other/workspace-other-OpenWiki版本演进.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [CHANGELOG](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projec... | 2026-04-28 |
-| [OpenWiki 知识库](workspace-other/OpenWiki知识库.md) | > Sources: Mino (AI), 2026 > Raw: [OpenWiki README](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projec... | 2026-04-28 |
-| [OpenWiki 设计规范与产品哲学](workspace-other/workspace-other-OpenWiki设计规范.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [DESIGN.md](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projec... | 2026-04-28 |
-| [OpenWiki从v0.1.3到v0.1.4的演进记录](workspace-other/OpenWiki从v0.1.3到v0.1.4的演进记录.md) | > Sources: mino, 2026-04-28 > Raw: [v0.1.5 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-... | 2026-04-28 |
-| [OpenWiki版本演进详情](workspace-other/OpenWiki版本演进详情.md) | > Sources: mino, 2026-04-28 > Raw: [release-notes-README](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-... | 2026-04-28 |
-| [OpenWiki知识库平台全解析](workspace-other/OpenWiki知识库平台全解析.md) | > Sources: mino, 2026-04-28 > Raw: [OpenWiki README](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-proje... | 2026-04-28 |
-| [Q1 电销经营复盘与工作记录](workspace-other/Q1电销经营复盘与工作记录.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-wo... | 2026-04-28 |
-| [workspace-other原始文件索引](workspace-other/workspace-other原始文件索引.md) | > Sources: mino, 2026-04-28 > Raw: [AI定价演变design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian... | 2026-04-28 |
-| [workspace-other原始文件索引与分类指南](workspace-other/workspace-other原始文件索引与分类指南.md) | > Sources: mino, 2026-04-28 > Raw: 全量索引 | 2026-04-28 |
-| [供应商分层项目](workspace-other/供应商分层项目.md) | > Sources: 供应商ABC分层分级管理方案 (2026-04-13); 供应商月度综合评估方案; 供应商管理SLA; 供... | 2026-04-28 |
-| [供应商站点项目](workspace-other/供应商站点项目.md) | > Sources: 供应商站点看板相关 workspace 文件 (2026-04); AI定价模式 PPT 相关 workspace 文件 (2026-04-2... | 2026-04-28 |
-| [供应商站点项目-需求演进与看板设计](workspace-other/供应商站点项目-需求演进与看板设计.md) | > Sources: mino, 2026-04-28 > Raw: [vwiehr项目档案](../../raw/presentations/projects-proj-1772979560848-vwiehr-proje... | 2026-04-28 |
-| [定价策略方法论：从 AI 定价到供应商管理](workspace-other/workspace-other-定价策略方法论.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-26 > Raw: [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-s... | 2026-04-28 |
-| [数据可视化之父-Tufte视觉显示理论精要](workspace-other/数据可视化之父-Tufte视觉显示理论精要.md) | > Sources: mino, 2026-04-28 > Raw: [The Visual Display of Quantitative Information](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling with Data - Cole Nussbaumer Knaflic.md) | > Sources: mino, 2026-04-28 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-... | 2026-04-28 |
-| [数据可视化经典电子书精华](workspace-other/数据可视化经典电子书精华.md) | > Sources: mino, 2026-04-28 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-... | 2026-04-28 |
-| [数据可视化经典著作精华](workspace-other/数据可视化经典著作精华.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-age... | 2026-04-28 |
-| [数据可视化：从理论到实践的完整链路](workspace-other/workspace-other-数据可视化理论到实践.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Docum... | 2026-04-28 |
-| [数据炼金师工具](workspace-other/数据炼金师工具.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [SPEC 文档](../../raw/workspace-other/20-工具-数据炼金师-20260426--User... | 2026-04-28 |
-| [数据炼金师工具-架构与能力全景](workspace-other/数据炼金师工具-架构与能力全景.md) | > Sources: mino, 2026-04-28 > Raw: [数据炼金师SPEC](../../raw/workspace-other/20-工具-数据炼金师-20260426--U... | 2026-04-28 |
-| [数据炼金师：完整技术架构与产品方法论](workspace-other/workspace-other-数据炼金师深度架构.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [SPEC 文档](../../raw/workspace-other/20-工具-数据炼金师-20260426--User... | 2026-04-28 |
-| [数据讲故事测试](workspace-other/数据讲故事测试.md) | > Sources: Mino (AI), 2026 > Raw: [2026 Q1 供应商绩效数据](../../raw/workspace-other/test-data-storytelling--User... | 2026-04-28 |
-| [数据讲故事测试案例-2026Q1供应商绩效汇报](workspace-other/数据讲故事测试案例-2026Q1供应商绩效汇报.md) | > Sources: mino, 2026-04-28 > Raw: [2026 Q1绩效数据](../../raw/workspace-other/test-data-storytelling--Users-sundani... | 2026-04-28 |
-| [数据讲故事经典理论：从 Knaflic 到 Tufte](workspace-other/workspace-other-数据讲故事经典理论.md) | > Sources: Mino (AI), 2026-04-26 > Raw: [Storytelling with Data - Cole Nussbaumer Knaflic](../../raw/workspace-other/ebo... | 2026-04-28 |
-| [演讲叙事方法论：从电信到 AI 的故事结构](workspace-other/workspace-other-演讲叙事方法论.md) | > Sources: Mino (AI), 2026-04-24 ~ 2026-04-26 > Raw: [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-s... | 2026-04-28 |
-| [知识工作流水线-从头脑风暴到知识复利的完整闭环](workspace-other/知识工作流水线-从头脑风暴到知识复利.md) | > Sources: mino, 2026-04-28 > Raw: [AI定价头脑风暴](../../raw/presentations/projects-AI产品定价模式演变-�... | 2026-04-28 |
-| [结算交接与Agent-Reach国际化文档](workspace-other/结算交接与Agent-Reach国际化文档.md) | > Sources: mino, 2026-04-28 > Raw: [结算交接月会材料](../../raw/workspace-other/47-结算-新项目交接月会�... | 2026-04-28 |
-| [结算交接与项目杂项](workspace-other/结算交接与项目杂项.md) | > Sources: Mino (AI), 2026-04-10 ~ 2026-04-26 > Raw: [结算交接月会材料](../../raw/workspace-other/47-结算-新�... | 2026-04-28 |
+| [315合规月执行细节与应急预案](supplier-management/315合规月执行细节与应急预案.md) | 本文整合了2026年315服务合规月的完整执行细节，包括供应商通知（精简版/正式版/纯文本版）、五项核心管控措施的内部版与表格版、巡检查员清单（三种视角）、四个附件模板（合规通知/自查报告/访客登记表/禁止拍照标识）。与已有的"315服务合规月完整指南与管控体系"形成互补，提供执行层面的操作细节和模板。 | 2026-04-28 |
+| [315服务合规月完整指南与管控体系](supplier-management/315服务合规月完整指南与管控体系.md) | 315服务合规月是京东金融电销业务针对每年3·15消费者权益保护日设立的专项合规活动。本文整合了315合规月的完整管控体系，包括背景分析、五项核心管控措施、自查自纠条例、处罚矩阵、巡检查员清单和应急处置预案。这是供应商合规管理中最系统、最详细的一次专项活动，建立了从预防到处罚到持续管理的闭环体系。 | 2026-04-28 |
+| [BPO联盟与供应商赋能平台](supplier-management/BPO联盟与供应商赋能平台.md) | BPO供应商联盟是"甲方搭台、供应商互训"的赋能平台。通过分享成熟自建电销职场的核心能力（分级管理、三会标准、名单运营、话术沉淀），降低供应商培训成本，缩短员工成长周期，提升整体产能。2026年3月完成首期联盟培训认证，5家供应商100%通过。本文系统梳理联盟的运作模式、核心方法论、认证体系和持续运营机制。 | 2026-04-28 |
+| [BPO联盟建设与月报演进](supplier-management/BPO联盟建设与月报演进.md) | 本文整合了BPO联盟建设与月报演进的两份关键文档：Q1汇报参考提供了业务进展的核心数据（数据扩容、经营策略、权益体系、京音AI四个专项），月报进展记录了月报模块从v1到v9的演进历程。已有的"BPO联盟与供应商赋能平台"和"BPO联盟月报演进"两篇文章分别侧重联盟整体架构和月报版本迭代，本文补充Q1具体业务成果和月报实际推进进度。 | 2026-04-28 |
+| [BPO联盟月报演进历程与供应商赋能平台](supplier-management/BPO联盟月报演进与供应商赋能平台.md) | BPO联盟月报从v1到v9经历了9次迭代，是供应商赋能平台的核心模块。本文记录了月报模块的完整演进历程，从最初的简单数据汇总到v9的多维度、可视化、互动式报告体系。同时整合了BPO联盟培训总结，展现供应商赋能从"管理"向"赋能"的思路转变。 | 2026-04-28 |
+| [HRBP式扶持与标杆配对](supplier-management/supplier-management-HRBP式扶持与标杆配对.md) | HRBP式扶持是供应商管理中"帮有潜力的供应商回到正轨"的主动干预方法。不是替供应商想方案，而是用问题引导他自己找到答案。通过标杆配对机制，将优秀供应商的可复制做法推广到中腰部，驱动整体能力提升。本文梳理HRBP式扶持四步法、标杆配对逻辑和下滑干预策略。 | 2026-04-28 |
+| [企微运营风险管控体系](supplier-management/企微运营风险管控体系.md) | 本文整合了企业微信运营风险管控体系的三份核心文档：两层保障机制说明、企业微信运营风险管控制度、违规处罚矩阵，以及赛马机制通知的邮件优化示例。已有的"企微运营风险管控体系"文章已有覆盖，本文补充详细的违规处罚矩阵和两层保障机制的具体执行标准。 | 2026-04-28 |
+| [企微运营风险管控体系](supplier-management/supplier-management-企微运营风险管控体系.md) | 企业微信是甲方与BPO供应商日常运营的核心工具，也是数据安全和服务品质的重要管控阵地。企微运营风险管控体系从账号安全、数据安全、服务品质、应急响应四个维度建立制度框架，配合三级质检、月度审计和四级处罚矩阵，形成完整的风险管控闭环。 | 2026-04-28 |
+| [供应商全景档案与人力站点盘点](supplier-management/供应商全景档案与人力站点盘点.md) | 本文整合了京东金融电销业务供应商库的全景数据，涵盖2026年Q1的32家供应商、70个站点、12条业务线、19省49市的完整分布。包含头部5家供应商（伽玛、岐力、毅航、毛毛虫、赛维斯）的详细档案、四维度汇总表（供应商/业务线/省份/站点）以及地理集中度分析。这是供应商管理体系中最基础的数据底座。 | 2026-04-28 |
+| [供应商准入与清退规则](supplier-management/access-retirement-rules.md) | 供应商准入与清退是全生命周期管理的两个端点。准入严控"入口关"（基础资质一票否决+9维度评分），清退分类处置（即时/预警/整改/尾部汰换），确保供应商池保持良性竞争、优胜劣汰。 | 2026-04-28 |
+| [供应商场景方法论：四大高频场景应对](supplier-management/scenario-methodology.md) | 供应商管理有四个高频场景，每个场景都有独立的触发条件、处置流程和沟通策略。掌握这四个场景的方法论，覆盖日常80%以上的供应商管理工作。 | 2026-04-28 |
+| [供应商工作手册模板体系](supplier-management/供应商工作手册模板体系.md) | 本文整合了供应商工作手册模板体系的13份文件：使用说明、供应商基本信息、三个准入承接模板（人员准入/制度报送/站点报备）、五个日常运营模板（分量确认/排班考勤/数据报送/结算争议/质量合规）、两个持续提升模板（季度对标/月度复盘）和一个退出清退模板（交接清单）。这是供应商全生命周期管理的标准化操作模板集合。 | 2026-04-28 |
+| [供应商引入与扩项管理](supplier-management/供应商引入与扩项管理.md) | 供应商引入是供应商全生命周期的起点，决定了供应商池的质量基线。从寻源需求到准入评估、从试运行到正式签约，每个环节都需要标准化操作。扩项管理则是在现有供应商基础上的业务线扩展，需要平衡产能需求与集中度风险。本文系统梳理引入流程、准入标准、扩项策略和供应商补充材料机制。 | 2026-04-28 |
+| [供应商引入与扩项管理实务](supplier-management/供应商引入与扩项管理实务.md) | 本文整合了两份扩项申请的实际案例：泉州速腾参与采购融资测试项目的扩项申请（2026年2月）和采购融资扩项申请的详细内容。已有wiki文章"供应商引入与退出规则"涵盖了通用的准入/清退规则，本文补充实际执行中的扩项申请流程、定价规则、合规要求和业务整合背景。 | 2026-04-28 |
+| [供应商排名诊断与赛马竞争机制](supplier-management/供应商排名诊断与赛马竞争机制.md) | 赛马竞争机制是供应商管理的核心驱动力。排名不是目的，目的是通过相对竞争驱动供应商持续投入。但排名本身只能告诉管理者"谁好谁差"，不能告诉"为什么好/差"和"怎么改善"。排名诊断体系通过产能双维度、FCI能力指数、主管胜任评估等工具，从"结果排名"深入到"能力诊断"。本文系统梳理赛马机制、排名文化和诊断工具体系。 | 2026-04-28 |
+| [供应商数据报送与信息管理制度](supplier-management/供应商数据报送与信息管理制度.md) | 数据是供应商管理的"血液"。从每日出勤报送到月度产能汇总，从花名册变动到质检数据核对，数据的及时性、准确性和完整性直接决定了管理决策的质量。数据报送制度与数据真实性防控、空间模板化共同构成了供应商数据管理的"三驾马车"。本文系统梳理数据报送要求、数据汇总表设计、数据真实性验证和供应商工作空间管理。 | 2026-04-28 |
+| [供应商日常管理执行手册](supplier-management/供应商日常管理执行手册.md) | 本文整合了供应商日常管理执行手册的12份文件：总览、监控扫描、预警约谈、整改闭环、供应商沟通、分量决策、巡检管理、向上汇报、新供应商跟进、数据真实性防控、HRBP式扶持以及协作矩阵。这是一套面向供应商管理岗的日常操作手册，将已有制度文件转化为"拿来就用"的操作指南。 | 2026-04-28 |
+| [供应商日常管理规范](supplier-management/daily-management-norms.md) | 日常管理是供应商管理的"中间段"——准入之后、清退之前的持续运营。涵盖信息报送、人员管理、异常处理、沟通会议、SLA 监控、台账档案等标准化操作规范，确保每个站点"谁做什么、什么时候做、怎么做"。 | 2026-04-28 |
+| [供应商服务等级协议体系](supplier-management/供应商服务等级协议体系.md) | 服务等级协议（SLA）是供应商管理的"底线定义"——用量化指标定义"好"与"不好"，为日常管理和月度评估提供客观依据。SLA与月度评估方案是两套独立运作的体系：SLA管"能不能接受"，评估方案管"得多少分"。本文系统梳理SLA指标体系、达标/预警/红线机制、响应要求和与评估方案的联动关系。 | 2026-04-28 |
+| [供应商档案库全景：16家中腰部供应商深度画像](supplier-management/供应商档案库全景与中腰部供应商画像.md) | 本文整合了供应商库中16家尚未被独立文章覆盖的供应商档案，涵盖企金、金条、信用卡等多条业务线的中腰部供应商。这些供应商虽然在人力规模上不及头部6家（毅航、毛毛虫、伽玛、赛维斯、岐力、翰锐），但在业务覆盖、区域布局、能力多样性方面各有特点，是供应商生态中不可或缺的补充力量。 | 2026-04-28 |
+| [供应商档案摘要](supplier-management/supplier-profiles-summary.md) | 截至 2026 年 3 月，供应商池共有 32 家供应商、70 个站点，分布在 19 省 49 市，覆盖 12 条业务线。本文汇总供应商分层、关键供应商档案、跨业务线分布和核心关系图谱。 | 2026-04-28 |
+| [供应商沟通机制与话术体系](supplier-management/供应商沟通机制与话术体系.md) | 供应商沟通是管理执行的载体。从日常信息报送到分量调整通知，从预警约谈到整改验收，每个场景都需要明确的沟通机制和话术规范。有效的沟通机制确保了管理意图的准确传达、供应商反馈的及时收集和问题的快速解决。本文系统梳理供应商沟通框架、日常沟通规范、关键场景话术和邮件模板体系。 | 2026-04-28 |
+| [供应商沟通框架：六类沟通与引导式设问](supplier-management/communication-framework.md) | 供应商沟通不是单一对话，而是六种沟通类型的组合。掌握内外沟通矩阵和引导式设问方法，确保信息流向清晰、决策有据、关系可控。 | 2026-04-28 |
+| [供应商清退与退出管理](supplier-management/供应商清退与退出管理.md) | 清退是供应商全生命周期的终点，也是最复杂的管理环节。从合规红线触发的即时清退，到尾部供应商的快速汰换，每种清退类型都有不同的触发条件、流程标准和退出后管理。本文系统梳理清退触发条件矩阵、退出流程、交接标准、结算处理和退出后管理，确保清退决策有据可依、业务交接平稳有序。 | 2026-04-28 |
+| [供应商知识库建设诊断](supplier-management/供应商知识库建设诊断.md) | 本文整合了供应商知识库建设项目中的两份数据分析文档：findings-摘要和知识库分析-docs-findings。这两份文件记录了从原始Excel数据中提取的关键发现，包括32家供应商的完整清单、12条业务线分布、19省地理分布、跨业务线供应商分析以及数据质量评估。 | 2026-04-28 |
+| [供应商管理体系全景](supplier-management/management-system-overview.md) | 京东 C2 电销 BPO 供应商管理体系覆盖 32 家供应商、70 个站点、12 条业务线，分布在 19 省 49 市。体系以全生命周期管理为核心，从准入、运营、评估到清退，形成闭环治理结构。本文梳理完整的制度架构、角色分工、质量管控、合规红线和定价机制。 | 2026-04-28 |
+| [供应商管理六步工作法](supplier-management/供应商管理六步工作法.md) | 六步工作法是供应商管理的日常操作框架，将"监控→预警→整改→分量→巡检→汇报"串联成闭环。每一步都有明确的触发条件、操作要点和产出物。六步工作法不是线性的流程，而是一个循环——从监控开始，到汇报结束，再回到监控。本文系统梳理每一步的操作细节和联动关系。 | 2026-04-28 |
+| [供应商管理六步法](supplier-management/six-step-method.md) | 供应商管理六步法是一套从规则建立到机制固化的闭环治理模型。改编自团队秩序管理方法论，核心逻辑是先稳秩序、再清问题、后建机制、长期固化。 | 2026-04-28 |
+| [供应商管理制度总纲与核心规范](supplier-management/供应商管理制度总纲与核心规范.md) | 本文整合了供应商管理制度体系中的10份核心文件：供应商管理办法（总纲）、SLA协议、月度综合评估方案、运营管理要求、质量管理规范、向上汇报模板（月报矩阵视角/汇报框架）、全生命周期管理指引清洁版以及附件模板汇编。这是供应商管理体系的制度底座，定义了规则、标准、流程和模板。 | 2026-04-28 |
+| [供应商管理历史项目与制度演进](supplier-management/供应商管理历史项目与制度演进.md) | 供应商管理体系不仅在持续建设制度，也在通过历史项目沉淀经验。从供应商知识库建设、315合规月活动、定价委员会讨论到向上汇报制度，每个项目都为供应商管理的制度化和体系化贡献了重要资产。 | 2026-04-28 |
+| [供应商管理向上汇报框架](supplier-management/供应商管理向上汇报框架.md) | 向上汇报是供应商管理的重要环节。管理者需要将供应商管理的复杂信息转化为高层可以快速理解的决策材料。从月度常规汇报到专项决策汇报，每种汇报都有不同的目标、受众和结构。本文系统梳理供应商管理的向上汇报框架、月度报告模板、专项汇报策略和向上汇报的核心原则。 | 2026-04-28 |
+| [供应商管理场景方法论](supplier-management/供应商管理场景方法论.md) | 供应商管理不是一套固定的流程，而是基于不同场景的差异化应对。从新供应商引入到尾部的快速汰换，从日常的分量决策到专项的315合规，每个场景都有不同的管理重点、操作方法和决策框架。场景方法论将这些场景结构化，帮助管理者在复杂多变的管理环境中做出正确决策。本文系统梳理场景方法论框架、典型场景操作指南和协作矩阵。 | 2026-04-28 |
+| [供应商管理成果数据与可视化体系](supplier-management/供应商管理成果数据与可视化体系.md) | 本文整合了供应商管理体系中的成果数据、可视化设计规范、视觉原子规范、表演型预警设计体系、评选获奖材料等内容。这些文件展示了供应商管理从"数据和体系"向"可视化和品牌化"的延伸——不仅要做对事，还要让成果可见、让价值可传播。 | 2026-04-28 |
+| [供应商管理操作工具箱：排名、产能、巡检与叙事体系](supplier-management/供应商管理操作工具箱与叙事体系.md) | 本文整合了供应商管理的操作工具箱，涵盖排名追踪体系、产能利用率双维度分析、主管胜任评估、标杆分享配对、现场巡检FCI指数、叙事模板、数据真实性防控体系、供应商独立空间规范等内容。这是一套完整的、可落地的供应商日常管理操作系统，目标是"用制度盯人"而非"人盯人"。 | 2026-04-28 |
+| [供应商管理新供应商跟进与HRBP式扶持](supplier-management/新供应商跟进与HRBP式扶持.md) | 新供应商从准入到稳定运营需要特别的关注和扶持。HRBP式扶持将供应商管理的角色从"监管者"转变为"业务伙伴"，在保持合规底线的同时，帮助新供应商快速适应甲方的管理要求和业务标准。本文系统梳理新供应商跟进机制、HRBP式扶持体系和标杆配对策略。 | 2026-04-28 |
+| [供应商管理方法论体系](supplier-management/供应商管理方法论体系.md) | 供应商管理方法论体系是一套结构化的管理工具箱，将日常管理动作标准化、流程化、可视化。从六步工作法到产能双维度，从触发规则到异常信号，方法论将"怎么管"转化为可操作的流程和可量化的指标。本文系统梳理供应商管理的核心方法论、工具箱和制度关联矩阵。 | 2026-04-28 |
+| [供应商绑架应对与反制策略](supplier-management/supplier-management-供应商绑架应对与反制策略.md) | 供应商"绑架"是供应商管理中最棘手的关系问题。当供应商利用规模、资源、外部关系或跳级施压来影响管理决策时，需要清晰的反制策略。本文梳理四种绑架类型的识别标准、反制原则和实操话术，帮助管理者在保持合作关系的同时不被"绑架"。 | 2026-04-28 |
+| [供应商绩效评估体系](supplier-management/supplier-management-供应商绩效评估体系.md) | 供应商绩效评估体系是供应商管理的核心引擎。通过月度综合评估、多维度评分、FCI能力指数和产能双维度诊断，构建从"结果排名"到"能力诊断"的完整评估链路。本文系统梳理评估框架、评分细则、诊断工具和结果应用。 | 2026-04-28 |
+| [供应商质量与质检管理体系](supplier-management/供应商质量与质检管理体系.md) | 质量管理是供应商管理的核心维度之一，在月度综合评估中占40分（满分100分），是权重最大的单项指标。从三级质检体系到话术合规率，从A类违规管控到质检校准维护，质量管理贯穿供应商运营的全过程。本文系统梳理质检标准体系、合规管控、违规分类和质量管理与绩效评估的联动机制。 | 2026-04-28 |
+| [分量分配策略与产能承接](supplier-management/supplier-management-分量分配策略与产能承接.md) | 分量（产能份额）分配是供应商管理的核心决策工具。通过赛马结果自动触发分量调整，配合四维度评分和集中度管控，确保资源向优质供应商倾斜，同时防止单一供应商过度集中。本文梳理分量评估框架、调整流程、集中度规则和产能承接策略。 | 2026-04-28 |
+| [历史项目回顾](supplier-management/historical-projects.md) | 供应商管理岗在过去半年推进了多个重要项目：315 合规月专项活动、定价委员会机制建设、BPO 供应商联盟运营、企微运营风险管控制度、供应商知识库建设等。这些项目从制度建设和风险防范两个维度夯实了管理体系基础。 | 2026-04-28 |
+| [历史项目案例库](supplier-management/历史项目案例库.md) | 历史项目是供应商管理方法论的"实战验证场"。从315合规月的专项管控，到定价委员会的机制设计；从车抵贷的业务复盘，到采购融资的扩项申请，每个项目都沉淀了可复用的方法论、模板和决策框架。本文系统梳理关键历史项目的背景、过程、成果和经验教训。 | 2026-04-28 |
+| [合规管理体系与红线管控](supplier-management/supplier-management-合规管理体系与红线管控.md) | 合规管理是供应商管理的底线工程。四大合规红线（信息安全、持证上岗、数据造假、录音篡改）构成不可触碰的绝对边界，配合315合规月专项活动、企微运营风险管控和三级质检体系，形成从日常监控到专项整顿的多层次合规治理架构。 | 2026-04-28 |
+| [向上汇报框架与叙事体系](supplier-management/supplier-management-向上汇报框架与叙事体系.md) | 向上汇报是供应商管理中连接执行层与决策层的关键环节。从周报到月报，从排名公告到专项汇报，每一类汇报都有明确的结构、受众和叙事要求。本文梳理完整的汇报框架、叙事体系和受众差异化策略。 | 2026-04-28 |
+| [定价委员会工具集：模板、流程与会务指南](supplier-management/定价委员会工具集：模板流程与会务指南.md) | 定价委员会机制的落地离不开完整的工具集支撑。本文整合了定价委员会相关的会前检查清单、会议议程、提案材料模板、定价调整申请表、异议申请表、复盘报告模板、C2汇报脚本等工具文档。这些工具将定价委员会从"概念机制"转化为"可执行的操作系统"，是供应商管理中定价权规范化的核心基础设施。 | 2026-04-28 |
+| [定价委员会机制与决策体系](supplier-management/定价委员会机制与决策体系.md) | 供应商定价调整委员会是京东电销BPO供应商管理的核心决策机制。从"事后救火"转向"事前防火"，通过委员会制衡、多层决策、触发式复审，确保定价调整有约束、有温度、有复盘。本文系统梳理定价委员会的组织架构、决策流程、参考原则、风险防控和供应商反馈通道。 | 2026-04-28 |
+| [定价委员会策略机制与决策体系](supplier-management/定价委员会策略机制与决策体系.md) | 本文整合了定价委员会机制建设中的12份策略与决策文档，包括策略组讨论（QA详版/角色职责/整体职责/投影大纲）、机制文档（V1.0/V1.1/修订说明）、C2汇报归档（汇报思路/摘要/材料）、参考定价模式以及向军哥汇报框架。已有的"定价委员会机制与决策体系"文章已有覆盖，本文补充策略组讨论细节、汇报材料和定价参考模式。 | 2026-04-28 |
+| [巡检管理与FCI能力指数](supplier-management/supplier-management-巡检管理与FCI能力指数.md) | 巡检管理是供应商管理的"现场之眼"。从月度例行巡检到飞行检查，从FCI能力指数量化到红黄绿判定，巡检将抽象的"管理好坏"转化为可视化的现场评估。本文梳理巡检全流程、FCI指数体系和巡检报告输出规范。 | 2026-04-28 |
+| [工作方法论 — 5311 框架、六步法与议题设定权](supplier-management/工作方法论-5311框架-六步法与议题设定权.md) |  | 2026-04-28 |
+| [排名思维：赛马机制下的相对排名管理](supplier-management/ranking-mindset.md) | 供应商管理的核心不是看绝对分数，而是看相对排名。88分和89分没有区别，区别在于88分可能是第二名，也可能是倒数第二名。排名思维是供应商管理所有决策的底层逻辑。 | 2026-04-28 |
+| [数据真实性防控体系](supplier-management/supplier-management-数据真实性防控体系.md) | 数据真实性是供应商管理的信任基石。供应商数据造假是最高风险——虚假数据会污染排名、分量、整改、清退所有决策环节。本文梳理完整的数据真实性防控体系，包括5项检测信号、造假类型识别、随机抽查机制和造假处理流程。 | 2026-04-28 |
+| [整改闭环流程与验收标准](supplier-management/supplier-management-整改闭环流程与验收标准.md) | 整改闭环是供应商管理从"发现问题"到"解决问题"的核心链路。从整改计划审核到进度跟踪，从验收评估到升级处理，形成完整的闭环管理机制。本文梳理整改全流程的操作规范、审核标准、验收方法和升级路径。 | 2026-04-28 |
+| [管理制度校验与空间模板体系](supplier-management/管理制度校验与空间模板体系.md) | 本文整合了供应商管理制度体系中的基础信息、管理体系、校验报告、空间模板、制度速查卡、方法论关联矩阵、检查清单集、流程图集等内容。这些文档构成了供应商管理的"基础设施层"——从制度设计到落地执行的完整路径。 | 2026-04-28 |
+| [管理规范体系与方法论速查](supplier-management/管理规范体系与方法论速查.md) | 本文整合了管理规范体系中的6份核心文件：供应商引入管理规范（V2.0完整文档）、日常管理规范、清退管理规范、基于HRBP方法论的工作手册、管理思路梳理以及方法论体系可视化指南。已有的"供应商管理方法论体系"文章已有部分覆盖，本文补充引入管理规范的完整内容（8阶段SOP、9维度评估、集中度管控、审批流速查）和日常管理/清退管理规范的核心条款。 | 2026-04-28 |
+| [赛马竞争机制与排名文化](supplier-management/supplier-management-赛马竞争机制与排名文化.md) | 赛马竞争机制是供应商管理的核心驱动力。通过排名自动切分等级、份额随排名调整、公开透明的竞争氛围，驱动供应商持续投入和自我改善。排名思维是所有管理决策的底层逻辑——不是看绝对分数，而是看相对位置。本文梳理赛马机制的运作逻辑、排名文化建设和冲劲保持策略。 | 2026-04-28 |
+| [车抵贷项目复盘与经验教训](supplier-management/车抵贷项目复盘与经验教训.md) | 本文基于车抵贷项目复盘会议的完整录音转写文本，提取了项目中的关键问题、决策过程和经验教训。车抵贷是京东金融电销业务的新产品线，由两家供应商（车晓/阅文）承接，在上线初期遇到人力流失、业绩下滑、沟通机制等问题。军哥（卞海军）主持了复盘会议，对项目管理中的问题进行了深入剖析。 | 2026-04-28 |
+| [运营数据与 KPI 体系](supplier-management/operation-data-charts.md) | 运营数据是供应商管理的"仪表盘"。本文梳理 2025 年核心成果、KPI 评分体系、SLA 达标/预警/红线阈值、数据报表结构和可视化设计规范。 | 2026-04-28 |
+| [风险预警机制与分级响应](supplier-management/supplier-management-风险预警机制与分级响应.md) | 风险预警机制是供应商管理的"雷达系统"。从日常监控到排名预警，从数据异常到合规风险，通过多层信号检测和分级响应，实现"早发现、早干预、早解决"。本文梳理完整的预警信号体系、触发条件、响应流程和升级路径。 | 2026-04-28 |
 
-## plans-deep
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [AI定价计划](plans-deep/AI定价计划.md) | > Sources: AI产品定价模式演变商业案例研究（2026-04-24） > Raw: [头脑风暴](../../raw/plans/2026-04-24... | 2026-04-28 |
-| [mino-frontend 设计体系演进与参数系统](plans-deep/mino-frontend设计体系演进与参数系统.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md; ../../ra... | 2026-04-28 |
-| [mino-frontend设计体系演进：从14种风格到参数系统的架构升级](plans-deep/plans-mino-frontend设计体系演进.md) | > Sources: mino, 2026-04-01 ~ 2026-04-02 > Raw: [风格情绪矩阵-brainstorm](../../raw/plans/2026-04-01-mino-frontend... | 2026-04-28 |
-| [Quiver API 高质量 SVG 生成策略](plans-deep/Quiver-API高质量SVG生成策略.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md; ../../ra... | 2026-04-28 |
-| [Quiver-API高质量SVG生成策略：配额约束下的视觉生产力](plans-deep/plans-Quiver-API-SVG生成策略.md) | > Sources: mino, 2026-04-04 > Raw: [brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm... | 2026-04-28 |
-| [个人项目与学习计划的执行方法论](plans-deep/个人项目与学习计划执行方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-03-29-一天学会游泳-00-brainstorm.md; ../../raw/plans/2026-... | 2026-04-28 |
-| [供应商分层分级与ABC管理体系](plans-deep/供应商分层分级与ABC管理体系.md) | > Sources: mino, 2026-04-13 > Raw: [brainstorm](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md)... | 2026-04-28 |
-| [供应商分层分级管理体系：ABC三级评分模型与PIP流程](plans-deep/plans-供应商分层分级管理体系.md) | > Sources: mino, 2026-04-13 > Raw: [brainstorm](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md)... | 2026-04-28 |
-| [供应商数据汇报体系V7：从数据到叙事的结构化方法论](plans-deep/供应商数据汇报体系V7.md) | > Sources: mino, 2026-04-26 > Raw: [brainstorm](../../raw/plans/2026-04-26-供应商站点数据汇报体系-00-brainsto... | 2026-04-28 |
-| [供应商数据汇报计划](plans-deep/供应商数据汇报计划.md) | > Sources: 供应商站点数据汇报体系研究（2026-04-26） > Raw: [头脑风暴](../../raw/plans/2026-04-26-供�... | 2026-04-28 |
-| [供应商目录与文件体系重组：知识资产的结构化治理](plans-deep/plans-供应商目录与文件体系重组.md) | > Sources: mino, 2026-04-24 > Raw: [plans.md](../../raw/plans/2026-04-24-文件体系整理-plans.md); [供应商目录�... | 2026-04-28 |
-| [供应商站点看板演进史：从V2到V5的迭代与失败分析](plans-deep/plans-供应商站点看板演进史.md) | > Sources: mino, 2026-04-04 > Raw: [v2-brainstorm](../../raw/plans/2026-04-04-供应商站点看板演进-00-v2-早期�... | 2026-04-28 |
-| [供应商站点看板演进史：从数据展示到管理决策工具](plans-deep/供应商站点看板演进史v2到v6.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-02-workspace-需求... | 2026-04-28 |
-| [供应商管理全景：从计划到执行的完整方法论](plans-deep/供应商管理全景方法论.md) | > Sources: mino, 2026-04 > Raw: [其他计划汇总](../../raw/plans/其他计划汇总.md); [文件体系整理-plans](... | 2026-04-28 |
-| [其他计划汇总](plans-deep/其他计划汇总.md) | > Sources: 多领域计划项目 (2026-03-29 ~ 2026-04-04); 权责不对等分析; 应对带节奏分析; 一天学会�... | 2026-04-28 |
-| [可视化技能与SVG生成策略体系](plans-deep/可视化技能与SVG生成策略体系.md) | > Sources: mino, 2026-04-04 至 2026-04-25 > Raw: [Quiver-API-brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量... | 2026-04-28 |
-| [图表技能改造与分析先行工作流](plans-deep/图表技能改造与分析先行工作流.md) | > Sources: mino, 2026-04-25 > Raw: [plan](../../raw/plans/2026-04-25-图表技能改造-plan.md); [prompt](../../raw/pla... | 2026-04-28 |
-| [图表技能改造计划](plans-deep/图表技能改造计划.md) | > Sources: 图表技能改造（2026-04-25） > Raw: [plan](../../raw/plans/2026-04-25-图表技能改造-plan.md); [pro... | 2026-04-28 |
-| [战略规划与框架 — 供应商分层、采购金融、文件体系](plans-deep/strategic-plans-frameworks.md) | > Sources: mino, 2026-04-13 ~ 2026-04-25 > Raw: [分层分级-方案要点](../../raw/plans/2026-04-13-供应商分层�... | 2026-04-28 |
-| [权责不对等分析体系：策略组与服务组的结构性矛盾](plans-deep/plans-权责不对等分析体系.md) | > Sources: mino, 2026-03-29 > Raw: [brainstorm](../../raw/plans/2026-03-29-权责不对等-00-brainstorm.md); [research]... | 2026-04-28 |
-| [模板索引与计划文件体系汇总](plans-deep/模板索引与分析先行工作流.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/templates-index.md; ../../raw/plans/CLAUDE.md; ../../raw/plans/templa... | 2026-04-28 |
-| [电影叙事与跨模态呈现方法论](plans-deep/电影叙事与跨模态呈现方法论.md) | > Sources: mino, 2026-04-24 > Raw: [素材-brainstorm](../../raw/plans/电影版叙事-素材-00-brainstorm.md); [素材... | 2026-04-28 |
-| [电影叙事方案E与AI定价研究：倒叙结构与杂志特稿风格](plans-deep/电影叙事方案E与AI定价研究.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/电影版叙事-cinematic-decisions.md; ../../raw/plans/电影版叙�... | 2026-04-28 |
-| [电影叙事项目计划](plans-deep/电影叙事项目计划.md) | > Sources: cinematic-ui 技能 (2026-04); liang-junrui mysterious-island 项目 (2026-04-11); 电影感 UI 设计方法�... | 2026-04-28 |
-| [电销复盘与数据叙事写作方法论](plans-deep/电销复盘与数据叙事写作方法论.md) | > Sources: mino, 2026-04-08 > Raw: [brainstorm](../../raw/plans/一季度电销工作复盘写作风格分析-2026-04-08... | 2026-04-28 |
-| [电销复盘写作风格分析：数据叙事与四段式结构的方法论](plans-deep/plans-电销复盘写作风格分析.md) | > Sources: mino, 2026-04-08 > Raw: [brainstorm](../../raw/plans/一季度电销工作复盘写作风格分析-2026-04-08... | 2026-04-28 |
-| [知识工作流与文件体系方法论](plans-deep/知识工作流与文件体系方法论.md) | > Sources: mino, 2026-04-24 至 2026-04-27 > Raw: [plans计划](../../raw/plans/2026-04-24-文件体系整理-plans.md);... | 2026-04-28 |
-| [职场人物行为分析与应对策略体系](plans-deep/职场人物行为分析与应对策略.md) | > Sources: mino, 2026-03-29 > Raw: [brainstorm](../../raw/plans/2026-03-29-应对带节奏分析-00-brainstorm.md); [res... | 2026-04-28 |
-| [职场政治应对方法论：表演型预警识别与REACT防御体系](plans-deep/plans-职场政治应对方法论.md) | > Sources: mino, 2026-03-29 > Raw: [brainstorm](../../raw/plans/2026-03-29-应对带节奏分析-00-brainstorm.md); [动... | 2026-04-28 |
-| [设计技能对比测试方法论](plans-deep/设计技能对比测试方法论.md) | > Sources: mino, 2026-04-24 > Raw: [brainstorm](../../raw/plans/设计技能对比测试-20260424-00-brainstorm.md); [re... | 2026-04-28 |
-| [设计技能对比测试计划](plans-deep/设计技能对比测试计划.md) | > Sources: 设计技能对比测试 (2026-04-24); 跨技能设计原则体系 (2026-04-01); mino-frontend 风格情绪�... | 2026-04-28 |
-| [采购融资寻源与POC机制](plans-deep/采购融资寻源与POC机制.md) | > Sources: mino, 2026-04-13 > Raw: [寻源需求-plan](../../raw/plans/2026-04-13-采购融资寻源需求-plan.md); [�... | 2026-04-28 |
-| [采购融资寻源与POC机制：内部供应商赛马全流程](plans-deep/plans-采购融资寻源与POC机制.md) | > Sources: mino, 2026-04-13 > Raw: [寻源需求文档](../../raw/plans/2026-04-13-采购融资寻源需求-寻源需求... | 2026-04-28 |
-| [项目管理方法论：头脑风暴-研究-审查-沉淀四阶段工作流](plans-deep/项目管理四阶段工作流方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-03-29-一天学会游泳-00-brainstorm.md; ../../raw/plans/2026-... | 2026-04-28 |
+## Personal Growth Deep
 
-## skills-tools
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [AI 定价演变](skills-tools/ai-pricing-evolution.md) | > Sources: Mino, 2026-04-24 > Raw: [AI定价演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-D... | 2026-04-28 |
-| [BPO成本测算方法论](skills-tools/skills-tools-BPO成本测算方法论.md) | > Sources: Mino, 2026-04-27 > Raw: [电销BPO成本测算综合方案](../../raw/toolbox/工具文档-20260301-电销BPO... | 2026-04-28 |
-| [FCI 能力指数与巡检方法论](skills-tools/FCI能力指数与巡检方法论.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-B3-出差巡检准备.md; ../../raw/toolbox/管理�... | 2026-04-28 |
-| [Plan 模板体系](skills-tools/plan-template-system.md) | > Sources: Mino, 2026-04-19 > Raw: [toolbox](../../raw/toolbox/plan-templates-_README.md) | 2026-04-28 |
-| [SOP 库](skills-tools/sop-library.md) | > Sources: Mino, 2026-03-12（SOP）/ 2026-04-19（管理场景） > Raw: [供应商引入SOP](../../raw/toolbox/SOP-202... | 2026-04-28 |
-| [价格谈判策略与成本分析](skills-tools/价格谈判策略与成本分析.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-B6-降价谈判准备.md; ../../raw/toolbox/管理�... | 2026-04-28 |
-| [供应商准入与初筛全流程](skills-tools/供应商准入与初筛全流程.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-E1-新供应商初筛.md; ../../raw/toolbox/plan-tem... | 2026-04-28 |
-| [供应商深度沟通方法论](skills-tools/skills-tools-供应商深度沟通方法论.md) | > Sources: Mino, 2026-04-27 > Raw: [供应商深度沟通指南](../../raw/toolbox/供应商管理-20260301-supplier-dee... | 2026-04-28 |
-| [供应商清退决策与风险管理](skills-tools/供应商清退决策与风险管理.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-A6-清退评估.md; ../../raw/toolbox/管理场景�... | 2026-04-28 |
-| [供应商管理场景化模板全集：从异常判断到清退评估](skills-tools/供应商管理场景化模板全集.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/toolbox/plan-templates-A1-业绩异常判断.md; ../../raw/toolbox/plan-tem... | 2026-04-28 |
-| [供应商管理成本谈判与降价策略](skills-tools/供应商管理成本谈判与降价策略.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/toolbox/plan-templates-B6-降价谈判准备.md; ../../raw/toolbox/plan-tem... | 2026-04-28 |
-| [供应商管理模板体系演进：从旧版到新版的架构升级](skills-tools/供应商管理模板体系演进史.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/toolbox/plan-templates-旧版-D1-A级骤降归因.md; ../../raw/toolbox/pla... | 2026-04-28 |
-| [供应商管理汇报与复盘方法论](skills-tools/供应商管理汇报与复盘方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/toolbox/plan-templates-B4-月度复盘.md; ../../raw/toolbox/plan-templates... | 2026-04-28 |
-| [供应商管理约谈与整改闭环体系](skills-tools/供应商管理约谈与整改闭环体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/toolbox/plan-templates-A2-约谈准备.md; ../../raw/toolbox/plan-templates... | 2026-04-28 |
-| [供应商管理通用能力工具箱：问题拆解到制度流程](skills-tools/供应商管理通用能力工具箱.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/toolbox/plan-templates-C1-问题拆解.md; ../../raw/toolbox/plan-templates... | 2026-04-28 |
-| [供应商约谈与整改闭环体系](skills-tools/供应商约谈与整改闭环体系.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-A2-约谈准备.md; ../../raw/toolbox/管理场景�... | 2026-04-28 |
-| [供应商绩效评估与能力评价体系](skills-tools/供应商绩效评估与能力评价体系.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-A1-业绩异常判断.md; ../../raw/toolbox/plan-tem... | 2026-04-28 |
-| [供应商风险筛查问卷与评估体系](skills-tools/skills-tools-供应商风险筛查问卷与评估体系.md) | > Sources: Mino, 2026-04-27 > Raw: [大范围风险筛查问卷](../../raw/toolbox/问卷模板-20260301-大范围风险... | 2026-04-28 |
-| [分量调整场景化执行体系](skills-tools/skills-tools-分量调整场景化执行体系.md) | > Sources: Mino, 2026-04-27 > Raw: [分量调整规则-执行手册](../../raw/toolbox/执行手册-20260301-分量调�... | 2026-04-28 |
-| [可视化模式库与样板体系](skills-tools/skills-tools-可视化模式库与样板体系.md) | > Sources: Mino, 2026-04-27 > Raw: [可视化模式库](../../raw/toolbox/可视化-模式库-模式库.md); [可视化�... | 2026-04-28 |
-| [可视化组件库](skills-tools/visualization-components.md) | > Sources: Mino, 2026-04-27 > Raw: [widget指南](../../raw/toolbox/可视化-组件-widget-指南.md) \| [模式库](../... | 2026-04-28 |
-| [合规管理与数据质量防控体系](skills-tools/合规管理与数据质量防控体系.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-A5-合规问题定级.md; ../../raw/toolbox/管理�... | 2026-04-28 |
-| [向上汇报与沟通叙事方法论](skills-tools/向上汇报与沟通叙事方法论.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-B5-向上汇报准备.md; ../../raw/toolbox/管理�... | 2026-04-28 |
-| [数据可视化图表百科与选型指南](skills-tools/skills-tools-数据可视化图表百科与选型指南.md) | > Sources: Mino, 2026-04-27 > Raw: [DataVizCatalogue-60种图表全览](../../raw/toolbox/可视化-图表百科-DataViz... | 2026-04-28 |
-| [数据整理分析通用方法论](skills-tools/skills-tools-数据整理分析通用方法论.md) | > Sources: Mino, 2026-04-27 > Raw: [plan-templates-C3-数据整理分析](../../raw/toolbox/plan-templates-C3-数据整�... | 2026-04-28 |
-| [新项目对接与资源协调方法论](skills-tools/新项目对接与资源协调方法论.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-B2-新项目对接.md; ../../raw/toolbox/管理场�... | 2026-04-28 |
-| [月度复盘与周期管理方法论](skills-tools/月度复盘与周期管理方法论.md) | > Sources: Mino, 2026-04-27 > Raw: ../../raw/toolbox/plan-templates-B4-月度复盘.md; ../../raw/toolbox/管理场景�... | 2026-04-28 |
-| [极简信息图设计规范](skills-tools/skills-tools-极简信息图设计规范.md) | > Sources: Mino, 2026-04-27 > Raw: [极简信息图复刻指南](../../raw/toolbox/图表复刻-极简信息图复刻指... | 2026-04-28 |
-| [核心记忆索引 — 5 大类别 + 洞察档案](skills-tools/core-memory-index.md) | > Sources: ../../raw/core-memory/01-供应商与BPO运营.md, ../../raw/core-memory/02-团队管理与汇报.md, ../../r... | 2026-04-28 |
-| [管理场景与应对策略](skills-tools/management-scenarios.md) | > Sources: Mino, 2026-04-19 > Raw: [A1业绩异常](../../raw/toolbox/管理场景梳理-A1-业绩异常判断.md) \| [D1... | 2026-04-28 |
-| [结构化思考与决策框架](skills-tools/skills-tools-结构化思考与决策框架.md) | > Sources: Mino, 2026-04-27 > Raw: [plan-templates-C1-问题拆解](../../raw/toolbox/plan-templates-C1-问题拆解.md)... | 2026-04-28 |
-| [设计哲学 — 工具箱视角](skills-tools/design-philosophy-toolbox.md) | > Sources: Mino, 2026-03-24（视觉哲学）/ 2026-04-27（widget指南+原则） > Raw: [视觉哲学](../../raw/toolb... | 2026-04-28 |
+| [AI协作方法论：从V1到V19的人机协同进化](personal-growth-deep/AI协作方法论.md) | 孙大年的晋升述职材料从V1到V19的迭代过程，不仅仅是人工修改的过程，更是人机协同（Human-AI Collaboration）的进化过程。从V1-V4的纯人工撰写，到V12引入AI核心理解，再到V13的Cowork模式协作，这套AI协作方法论回答了一个关键问题：**如何用AI加速高质量内容的产出，同时保持人的判断力和主导权？** | 2026-04-28 |
+| [AI提效研究](personal-growth-deep/AI提效研究.md) | AI提效研究涵盖了两个核心方向：一是AI产品定价模式的商业案例研究（2026年国内大模型厂商从Coding Plan到Token Plan的定价演变），二是AI工具（如Quiver API）的高质量使用策略。这些研究反映了年老师对AI作为生产力工具的深度思考——不仅关注"怎么用AI提效"，更关注"AI生态的定价规律和成本结构"。 | 2026-04-28 |
+| [个人能力成长路线图：从P6到P7的能力缺口与填补路径](personal-growth-deep/个人能力成长路线图.md) | 从P6到P7的晋升，不仅仅是"做了更多事"，而是**能力层次的跃迁**。本文章基于严苛自评的7.3/10分数、19轮迭代中的认知升级、以及P7能力要求，系统拆解了从P6到P7的能力缺口和填补路径。这不仅是孙大年的个人成长路线图，更是任何准备晋升的管理者的参考框架。 | 2026-04-28 |
+| [人物风格参照系：向上、向下、对外的沟通策略库](personal-growth-deep/人物风格参照系.md) | 在供应商管理的日常中，孙大年需要与不同角色高频沟通——对上级（军哥）要穿透式追问，对下级（业务管理组）要直接追问，对供应商要专业推动，对同事（刘伟佳、秦宇凝）要学习借鉴。通过观察和分析周围人的沟通风格，他建立了一套人物风格参照系：**不是模仿某个人，而是理解每个人的决策逻辑和信息需求，选择最合适的沟通策略。** | 2026-04-28 |
+| [从人治到机制的跃迁方法论](personal-growth-deep/personal-growth-从人治到机制.md) | 从人治到机制的跃迁，是孙大年在供应商管理实践中最核心的能力进化路径。这套方法论回答了一个关键问题：**如何把个人能力转化为组织能力？** 它不仅是供应商管理的方法论，更是任何管理岗位从"执行者"走向"体系建设者"的通用框架。 | 2026-04-28 |
+| [供应商拿捏学：胡萝卜+大棒的心理博弈](personal-growth-deep/personal-growth-供应商拿捏学.md) | "拿捏供应商"是孙大年自我认知中标记为"最核心"的能力。其本质不是"管"，而是**让供应商在有限奖励下依然愿意投入**。这套方法论融合了胡萝卜与大棒的组合策略、分量动态博弈、心理预期管理，最终实现"供应商不敢躺平，主动优化"的效果。 | 2026-04-28 |
+| [供应商生态分类学：网状结构与精准匹配](personal-growth-deep/personal-growth-供应商生态分类学.md) | 供应商生态分类学是孙大年管理33家供应商时的核心认知框架。其核心观点是：**供应商不是一个个孤立的个体，而是网状结构中的节点**。通过分类、画像、匹配，实现"把合适的供应商放在合适的地方"，最大化生态整体产出。 | 2026-04-28 |
+| [供应商生态操作系统：五大机制与四大体系](personal-growth-deep/personal-growth-供应商生态操作系统.md) | 供应商生态操作系统是孙大年在管理33家外包供应商、3239人电销团队的实践中，逐步建立的一整套能够自我运转、自我优化、价值创造、可复制的管理系统。这个系统由五大机制和四大体系构成，核心目标是从"人治"转向"机制"。 | 2026-04-28 |
+| [供应商生态经营终局：从管理到共建的跨越](personal-growth-deep/供应商生态经营终局.md) | 供应商生态经营的终局是什么？这是孙大年在晋升准备过程中反复思考的问题。从"管理供应商"到"经营生态"，再到"共建生态"，这是一条从被动到主动、从控制到共创的认知升级路径。本文章深度拆解了生态经营终局的三层架构：从当前的管理体系，到近期的生态协同，到远期的行业共建。 | 2026-04-28 |
+| [供应商管理全案：从四团队合并到生态自治的完整叙事](personal-growth-deep/供应商管理全案.md) | 供应商管理全案是孙大年所有晋升材料的集大成者。它将散落在19轮迭代中的素材、数据、案例、方法论整合为一条完整的叙事线：从四团队合并的混乱，到建立全生命周期管理体系，到自建团队验证人效天花板，到生态自治的终局愿景。本文章提供完整的叙事框架，可直接用于晋升述职、年终汇报、面试等场景。 | 2026-04-28 |
+| [供应链自主可控方法论：从依赖外包到掌握议价权](personal-growth-deep/供应链自主可控方法论.md) | 供应链自主可控是孙大年供应商管理体系中最具战略价值的核心主线。其本质回答了一个关键问题：**当你管理的是独立公司（不是你的下属），你如何确保自己拥有持续的议价权和产能掌控力？** 答案是通过自建团队、竞争机制和全生命周期管理，从"依赖外包"走向"自主可控"。这套方法论适用于任何外包管理、供应商管理、渠道管理的场景。 | 2026-04-28 |
+| [分层沟通体系：对上级、对下级、对供应商](personal-growth-deep/personal-growth-分层沟通体系.md) | 孙大年在供应商管理中形成了分层沟通体系。对不同对象采用不同的沟通策略、话术模板和表达框架。这套体系的核心原则是：**沟通不是"一视同仁"，而是"因人制宜"**。对上级要数据+根因+时间线，对下级要直接+追问+期限，对供应商要专业+边界+激励。 | 2026-04-28 |
+| [咨询报告风格规范：克制、对齐、金字塔](personal-growth-deep/咨询报告风格规范.md) | 咨询报告风格是孙大年在晋升材料准备过程中，通过参考同事材料和AI辅助设计，逐步建立的一套专业表达规范。其核心是：**极度克制与专业性**。去除一切装饰性元素，内容至上。通过严格的对齐、信息层级区分和金字塔原则，让每一份输出都达到咨询级别的专业标准。这套规范不仅适用于PPT制作，更适用于任何需要高质量书面表达的场景。 | 2026-04-28 |
+| [对标管理方法论：自建标杆驱动系统优化](personal-growth-deep/personal-growth-对标管理方法论.md) | 对标管理是孙大年供应商管理体系中最具战略价值的核心能力。通过自建宿迁团队建立效能基准，不仅验证了人效天花板，更成为与供应商谈判的筹码，最终实现单价下降15%、年省1200万。这套方法论回答了一个关键问题：**当你没有行政命令权（供应商是独立公司），如何驱动他们持续优化？** | 2026-04-28 |
+| [工作经历洞察全集与自我认知体系](personal-growth-deep/经历洞察与自我认知体系.md) | 本文整合了工作经历的核心洞察、自我认知体系的详细维度，以及工作风格体系的表达规范。这是个人成长的知识底座——回答了"我是谁"、"我怎么做"、"我从经历中学到了什么"三个根本问题。 | 2026-04-28 |
+| [成本优化方法论：对标驱动、生态共赢](personal-growth-deep/personal-growth-成本优化方法论.md) | 成本优化是供应商管理中最直接的价值体现。孙大年的成本优化方法论核心论点是：**不是砍价，是建立对标**。通过自建团队验证人效天花板，用数据倒逼供应商优化，最终实现单价下降15%、月降本100万的效果。这套方法论包含三个层次：压价、对标、生态，每个层次有不同的方法和效果。 | 2026-04-28 |
+| [批判性自评体系：严苛视角下的能力诊断](personal-growth-deep/personal-growth-批判性自评体系.md) | 批判性自评体系是孙大年在晋升材料准备过程中形成的自我诊断方法论。其核心是：**不迎合，只说实话**。通过严苛版自评、评委问题预判、评委视角分析，从三个维度审视材料的不足和改进方向。这套体系不仅适用于晋升准备，也适用于任何需要高质量输出的场景。 | 2026-04-28 |
+| [数据可视化设计原则：克制、聚焦、说故事](personal-growth-deep/数据可视化设计原则.md) | 数据可视化是数据讲故事的载体。设计得好，数据自己跳出来；设计不好，再多数据也看不出名堂。本文章基于《Storytelling with Data》全书30个技能中的视觉设计部分，结合供应商管理的实际场景，提炼出一套可操作的数据可视化设计原则。核心哲学是**克制**——克制装饰、克制颜色、克制信息量，让关键信息自己跳出来。 | 2026-04-28 |
+| [数据可视化进阶设计原则：从图表到叙事](personal-growth-deep/数据可视化进阶设计原则.md) | 本文整合了 Storytelling with Data 中 22 个高级设计原则，覆盖了从上下文适配、图表选型、迭代优化到组织能力建设的全链路。这些原则不是孤立的操作技巧，而是构成了一套完整的"数据叙事设计哲学"——从理解受众到驱动行动，每一步都有据可循。 | 2026-04-28 |
+| [数据炼金：关键决策点复盘](personal-growth-deep/数据炼金：关键决策点复盘.md) | 在孙大年的供应商管理实践中，有几个关键决策点决定了整个体系的方向和效果。这些决策不是"日常操作"，而是**"做对了方向就对了，做错了方向就偏了"**的战略选择。本文章复盘了这些关键决策的背景、选项、决策过程和结果，形成可复用的决策框架。 | 2026-04-28 |
+| [数据讲故事实战指南：从Storytelling with Data到供应商管理](personal-growth-deep/数据讲故事实战指南.md) | 《Storytelling with Data》是数据沟通领域的经典著作，包含30个独立技能。孙大年在准备晋升材料期间，系统学习了全书内容并将其应用到供应商管理的数据呈现中。本文章将书中的30个技能整合为5个核心模块，并结合供应商管理的实际场景，形成一套可操作的数据讲故事实战指南。 | 2026-04-28 |
+| [数据讲故事读书笔记](personal-growth-deep/数据讲故事读书笔记.md) | Storytelling with Data（数据讲故事）是Cole Nussbaumer Knaflic的经典著作，全书200多页，被拆解为30个独立skill。核心骨架是：理解受众 → 明确目标 → 选图表 → 去噪音 → 引注意力 → 讲故事 → 迭代打磨。以下按六大模块整理全书核心内容。 | 2026-04-28 |
+| [晋升材料供应商管理深度解析与供应商理解体系](personal-growth-deep/供应商管理深度解析与理解体系.md) | 本文整合了供应商管理深度解析的核心框架，以及对供应商生态的理解体系。从岗位认知的更高维度出发，展示如何将供应商管理从操作层面提升到战略层面。 | 2026-04-28 |
+| [晋升材料全版本对照：V1-V12版本的内容演进与策略差异](personal-growth-deep/晋升材料全版本对照分析.md) | 本文对照分析了晋升材料从 V1 到 V12 的全版本演进，揭示了每个版本解决的具体问题、采用的改进策略，以及版本间的继承关系。V1-V3 解决"讲什么"的问题，V4-V7 解决"怎么讲"的问题，V8-V12 解决"讲到什么效果"的问题。 | 2026-04-28 |
+| [晋升材料结构分析与案例打磨方法论](personal-growth-deep/晋升材料结构分析与案例打磨方法论.md) | 晋升材料的结构设计直接决定了评委的理解效率和记忆深度。通过结构分析、同事参考、剥洋葱方法论和案例重写，V13版本建立了一套可复用的述职材料构建方法论。 | 2026-04-28 |
+| [晋升答辩 Q&A 全场景策略库](personal-growth-deep/晋升答辩Q&A全场景策略库.md) | 在晋升评审的完整迭代过程中，除了V1-V13的主线版本外，还有多个重要的辅助版本和变体版本：alma版本、V7版本、V9版本、精炼版等。这些版本各自解决了特定的问题，共同构成了完整的答辩策略体系。 | 2026-04-28 |
+| [晋升答辩Q&A策略库：预判、应答与引导](personal-growth-deep/晋升答辩Q&A策略库.md) | 晋升答辩的质量往往决定了评审的成败。孙大年在19轮迭代中，积累了超过30个评委可能提出的问题，并为每个问题准备了分层回答策略。本文章汇总了完整的Q&A策略库，包括问题预判方法论、分层回答策略、常见问题清单和应对话术模板。 | 2026-04-28 |
+| [晋升答辩全阶段演进：从V1到V8的方法论与策略进化](personal-growth-deep/晋升答辩全阶段演进方法论.md) | 本文系统梳理了晋升答辩材料从 V1 到 V8 的完整演进路径，涵盖岗位认知、答辩策略、Q&A 准备、背诵体系四大维度。每一次迭代都对应一个关键发现和改进方向——从"讲清楚做了什么"进化到"让评委主动问你想让他们问的问题"。 | 2026-04-28 |
+| [晋升答辩策略与评委应对指南](personal-growth-deep/晋升答辩策略与评委应对指南.md) | 晋升评审中，答辩环节往往比演讲环节更决定成败。从V1到V13的版本迭代中，年老师建立了完整的评委应对体系：从问题预判、钩子设计、答辩逻辑到面试前准备清单。 | 2026-04-28 |
+| [晋升背诵体系：从4000字到250字的记忆压缩术](personal-growth-deep/晋升背诵体系.md) | 孙大年在晋升准备中，从V1的4000字汇报体，迭代到V13的1200字精炼版，核心案例压缩到250-260字/案例。但"写得精炼"不等于"讲得流畅"。为了让脱稿演讲成为可能，他设计了一套五层背诵体系——从使用说明到极简关键词，从逻辑骨架到详细脉络，再到逻辑地图。本文章完整记录这套背诵体系的设计方法论，适用于任何需要脱稿演讲的场景。 | 2026-04-28 |
+| [晋升述职V1-V5：早期迭代全纪录](personal-growth-deep/晋升述职V1-V5.md) | 2026年初晋升评审，孙大年（金科数据科技业务部电销服务组，供应商管理岗）从V1到V5经历了5轮重大迭代。这5个版本记录了从"汇报式材料"到"故事化叙事"的演进路径。V1是原始的业务汇报体，V5已经形成了三幕叙事+三个核心案例的完整框架。 | 2026-04-28 |
+| [晋升述职V13-V19：从结构分析到终稿迭代的决策链](personal-growth-deep/晋升述职V13-V19结构迭代链.md) | V13-V19 是晋升答辩材料的终稿阶段。与 V1-V8 的宏观策略进化不同，这个阶段的迭代集中在微观层面的结构优化、语言精炼和评委心理把握。从 V13 初始版到 V19 最终版，经历了 6 轮按同事结构参考的精细化调整，每一轮都对应一个具体问题的修复。 | 2026-04-28 |
+| [晋升述职V6-V13：后期迭代与深度优化](personal-growth-deep/晋升述职V6-V13.md) | V6到V13是晋升述职材料的"深度优化期"。这个阶段不再纠结"讲什么"（内容框架已定），而是聚焦"怎么讲得更好"——包括背诵效率、评委互动、钩子设计、字数控制、叙事张力。V13最终版由Cowork协作优化，目标1000-1200字，每个案例250-260字。 | 2026-04-28 |
+| [晋升述职材料演进史 — 从V1到V13的迭代之路](personal-growth-deep/晋升述职材料演进史-从V1到V13的迭代之路.md) | 2025年底至2026年初，年老师为晋升评审准备了从V1到V13共13个版本、超过80份相关文档的述职材料。这不仅是文档版本的迭代，更是从"罗列工作"到"讲故事"、从"执行者"到"生态建设者"认知升级的过程。 | 2026-04-28 |
+| [晋升述职核心叙事与案例深挖：三件事的剥洋葱法](personal-growth-deep/晋升述职核心叙事与案例深挖.md) | 本文深挖晋升述职的三个核心案例，展示"剥洋葱"叙事法——每层都有数据、有挑战、有举措、有价值。同时整合供应商管理手册、风险管控逻辑、钩子设计策略等核心素材，形成完整的案例呈现与答辩策略体系。 | 2026-04-28 |
+| [晋升述职核心案例库：三幕叙事与数据驱动](personal-growth-deep/晋升述职核心案例库.md) | 晋升述职的核心是案例。孙大年的V13版本最终确定了三个案例，每个案例250-260字，用SCQA结构讲述。这三个案例不是"我做了什么"的流水账，而是"我如何解决关键问题"的故事。本文章深度拆解三个案例的叙事结构、数据设计和钩子设置，形成可复用的案例库模板。 | 2026-04-28 |
+| [晋升述职迭代方法论：19轮进化的可复用经验](personal-growth-deep/personal-growth-晋升述职迭代方法论.md) | 从V1到V13（加上V14-V19按同事结构的重写版本），孙大年的晋升述职材料经历了至少19轮迭代。这不是简单的"修改文字"，而是叙事框架、核心定位、案例结构、语言风格的系统性进化。这套迭代方法论回答了两个关键问题：**一份好的晋升材料是怎么"炼"出来的？** 以及**这些迭代经验能否复用到其他场景？** | 2026-04-28 |
+| [深夜对话与碎片成长记录](personal-growth-deep/深夜对话与碎片成长记录.md) | 在正式的项目和文档之外，那些深夜的对话、随性的思考、偶发的灵感，同样构成了成长的重要部分。这些碎片记录虽然不成体系，但包含了最真实的感受和洞察。 | 2026-04-28 |
+| [经历洞察全集](personal-growth-deep/经历洞察全集.md) | 经历洞察是孙大年职业生涯中沉淀的核心经验和关键认知。这些洞察来自4年京东企业金融电销供应商管理和金科电销服务组的实践，涵盖企业金融电销供应商管理（4年支撑企业主贷规模从5亿增长至200亿）、舒适区破局、体系价值认知、供应商生态经营等维度。 | 2026-04-28 |
+| [经验沉淀方法论：从个人能力到组织资产](personal-growth-deep/经验沉淀方法论.md) | 在供应商管理实践中，孙大年最核心的价值不是"管好了33家供应商"，而是**"把个人能力转化为了组织资产"**。五项制度上了集团制度中心，应急预案成为部门标准流程，京东适应体系让新供应商快速上手。本文章系统拆解了经验沉淀的方法论——如何把脑子里的东西变成文档，把文档变成制度，把制度变成组织能力。 | 2026-04-28 |
+| [职业跃迁路径：从执行者到生态架构师](personal-growth-deep/personal-growth-职业跃迁路径.md) | 职业跃迁路径是孙大年在供应商管理实践中，从"执行者"到"生态架构师"的认知升级轨迹。这条路径经历了四个维度的跃迁，每个维度都代表了认知层次的提升。它不仅是一个人的职业发展故事，更是**任何管理岗位如何从"做事"走向"建系统"的通用方法论**。 | 2026-04-28 |
+| [能力验证与北极星指标：从自证到可量化](personal-growth-deep/能力验证与北极星指标.md) | 在晋升准备过程中，一个贯穿始终的核心问题是：如何证明自己的能力？不是"说自己能力强"，而是"用数据、事实、对比证明自己确实强"。本文章从严苛自评出发，拆解能力验证的方法论，并建立北极星指标体系——让每个能力都有可量化的证明。 | 2026-04-28 |
+| [自我认知与供应商管理哲学 — 从执行者到生态建设者](personal-growth-deep/自我认知与供应商管理哲学.md) | 晋升述职的准备过程中，最深层的工作不是写文档，而是重新理解"我是谁"和"我创造的价值是什么"。通过四版自我认知文档、供应商管理深度解析和风险管控逻辑梳理，年老师完成了一次从"执行者"到"生态建设者"的身份重构。 | 2026-04-28 |
+| [自我认知体系：五大核心能力模型](personal-growth-deep/personal-growth-自我认知体系.md) | 自我认知体系是孙大年在晋升准备过程中对自己核心能力、价值和定位的深度拆解。通过多版本（精简版→完整版→详细版→生态版）的迭代，从"我能做什么"逐步进化到"我建立了什么系统"，最终形成一个五层递进的能力模型。 | 2026-04-28 |
+| [风险管理哲学：从救火到过程防控](personal-growth-deep/personal-growth-风险管理哲学.md) | 风险管理是孙大年供应商管理体系中得分最高的维度（严苛自评8.5/10）。其核心哲学是：**不是救火，是过程防控**。从事前立规矩、事中抓过程、事后严清退三个环节，构建了零纠纷、零中断的风险管控体系。 | 2026-04-28 |
 
-## workspace-skills
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [AI定价PPT项目](workspace-skills/AI定价PPT项目.md) | > Sources: AI产品定价模式演变商业案例研究 (2026-04-24~2026-04-25); PPT169 版演示文稿; 演讲脚本版... | 2026-04-28 |
-| [PPT Master 完整架构解析 — 多角色协作的 AI 演示生成系统](workspace-skills/PPT-Master完整架构解析-多角色协作SVG生成系统.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [PPT Master 模板库全景 — 21 套专业级设计风格与布局系统](workspace-skills/PPT-Master模板库全景-21套专业级设计风格与布局系统.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [PPT Master 深度解析——SVG 内容生成系统的架构与纪律](workspace-skills/PPT-Master-深度解析.md) | > Sources: ppt-master 技能下载项目 (2026-04-09); 技术设计文档（中英文）; SKILL.md; 角色定义文件; ... | 2026-04-28 |
-| [PPT Master 示例项目集 — 8 套完整设计规格与演讲者备注](workspace-skills/PPT-Master示例项目集-8套完整设计规格与演讲备注.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [PPT 生成技能生态全景——七路线并存的技术图谱](workspace-skills/PPT-生成技能生态全景.md) | > Sources: 技能全量可视化分析 (2026-04-21); ppt-master 项目 (2026-04-09); presentation-skill (2026-04-16); �... | 2026-04-28 |
-| [SVG 模板迭代方法论——从临摹到原创的生成路径](workspace-skills/SVG-模板迭代方法论.md) | > Sources: 前端设计原则体系项目 (2026-04-03~04); SVG 模板研究系列；模板迭代记录；迭代验证方... | 2026-04-28 |
-| [其他技能项目](workspace-skills/其他技能项目.md) | > Sources: 书信精华PPT presentation-skill (2026-04-16); ppt-master 技能下载 (2026-04-09); 设计技能对比测�... | 2026-04-28 |
-| [其他技能项目 — Presentation Skill、花叔 Design 与设计技能对比测试](workspace-skills/其他技能项目-PresentationSkill-花叔Design与设计技能对比.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [前端设计参数系统——从情绪矩阵到量化控制](workspace-skills/前端设计参数系统-从情绪矩阵到量化控制.md) | > Sources: mino-frontend 风格情绪矩阵 (2026-04-01); mino-frontend 参数系统 (2026-04-02); 跨技能设计原则... | 2026-04-28 |
-| [前端设计探索](workspace-skills/前端设计探索.md) | > Sources: mino-frontend 风格情绪矩阵 (2026-04-01); mino-frontend 参数系统 (2026-04-02); 跨技能设计原则... | 2026-04-28 |
-| [可视化分析项目](workspace-skills/可视化分析项目.md) | > Sources: 技能全量可视化分析 (2026-04-21); 技能元数据索引; 技能顺序列表 > Raw: [技能全量可�... | 2026-04-28 |
-| [手绘 SVG 设计哲学 — 知情的不完美与贝塞尔模式库](workspace-skills/手绘SVG设计哲学-知情的不完美与贝塞尔模式库.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [手绘 SVG 设计哲学——"知情的不完美"运动](workspace-skills/手绘SVG设计哲学-知情的不完美.md) | > Sources: 前端设计原则体系项目 (2026-04-03~04); SVG 模板研究系列文档; 手绘 SVG 设计哲学 v2.0; �... | 2026-04-28 |
-| [技能安装与使用实践——从下载到实战的完整链路](workspace-skills/技能安装与使用实践.md) | > Sources: ppt-master 项目 (2026-04-09); presentation-skill 书信精华 PPT (2026-04-16); 前端设计探索项目 (2... | 2026-04-28 |
-| [技能清理与进化历程——从 60 到精简的技能体系](workspace-skills/技能清理与进化历程.md) | > Sources: 技能全量可视化分析 (2026-04-21); 设计技能对比测试 (2026-04-24); AI 定价 PPT 项目 (2026-0... | 2026-04-28 |
-| [花叔Design项目](workspace-skills/花叔Design项目.md) | > Sources: 花叔Design PPT README (2026-04-22); 技能全量可视化分析 (2026-04-21); 技能元数据索引 > Raw: ... | 2026-04-28 |
-| [设计技能对比测试方法论——标准化评估框架](workspace-skills/设计技能对比测试方法论.md) | > Sources: 设计技能对比测试项目 (2026-04-24); 测试执行框架; 供应商月度概览测试材料; 技能全... | 2026-04-28 |
+## Workspace Other
 
-## skills-visualization
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [Chart Visualization (chart-visualization)](skills-visualization/chart-visualization.md) | > Sources: Mino, 2026-04-25 > Raw: [SKILL.md](../../raw/skills/chart-visualization-SKILL.md); [generate_area_chart.md](.... | 2026-04-28 |
-| [Cinematic UI (cinematic-ui)](skills-visualization/cinematic-ui.md) | > Sources: AKSeoLabs / Community, 2026-04-25 > Raw: [SKILL.md](../../raw/skills/cinematic-ui-SKILL.md); [directors-libra... | 2026-04-28 |
-| [Claude Infographic Charts — 静态与交互式可视化生成器](skills-visualization/claude-infographic-charts.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/skills/claude-infographic-charts-SKILL.md; ../../raw/skills/claude-infograp... | 2026-04-28 |
-| [Data Storytelling — 数据沟通策略与编排](skills-visualization/data-storytelling.md) | > Sources: data-storytelling SKILL.md (2026-04-26); 《Storytelling with Data》全书 30 skill 整合 > Raw: [SKILL.md]... | 2026-04-28 |
-| [Data Visualization — Python matplotlib 专业可视化](skills-visualization/data-visualization.md) | > Sources: data-visualization SKILL.md (2026); Python matplotlib 可视化规范 > Raw: [SKILL.md](../../raw/skills/data... | 2026-04-28 |
-| [Diagram Design — 技术图表设计系统](skills-visualization/diagram-design.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/skills/diagram-design-SKILL.md; ../../raw/skills/diagram-design-README.md; ... | 2026-04-28 |
-| [ECharts Visualization (echarts-visualization)](skills-visualization/echarts-visualization.md) | > Sources: Mino, 2026-04-25 > Raw: [README](../../raw/skills/echarts-visualization-README.md); [SKILL.md](../../raw/skil... | 2026-04-28 |
-| [Hand-Drawn Icon — 手绘 SVG 生成器](skills-visualization/hand-drawn-icon.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/skills/hand-drawn-icon-SKILL.md; ../../raw/skills/hand-drawn-icon-workflow-... | 2026-04-28 |
-| [Huashu Design (花叔设计)](skills-visualization/huashu-design.md) | > Sources: Mino, 2026-04-25 > Raw: [SKILL.md](../../raw/skills/huashu-design-SKILL.md); [INDEX](../../raw/skills/huashu-... | 2026-04-28 |
-| [Impeccable](skills-visualization/impeccable.md) | > Sources: Anthropic / Community, 2026-04-25 > Raw: [SKILL.md](../../raw/skills/impeccable-SKILL.md); [reference/brand.m... | 2026-04-28 |
-| [Knowledge Distiller — 知识榨取器](skills-visualization/knowledge-distiller.md) | > Sources: knowledge-distiller SKILL.md; 苏格拉底追问式知识提取方法论 > Raw: [SKILL.md](../../raw/skills/k... | 2026-04-28 |
-| [Markdown Converter — 文档格式转换](skills-visualization/markdown-converter.md) | > Sources: markdown-converter SKILL.md; markitdown 工具 > Raw: [SKILL.md](../../raw/skills/markdown-converter-SKILL.md... | 2026-04-28 |
-| [Mino Frontend (mino-frontend)](skills-visualization/mino-frontend.md) | > Sources: Mino, 2026-04-05 (v7.0) > Raw: [SKILL.md](../../raw/skills/mino-frontend-SKILL.md); [README](../../raw/skills... | 2026-04-28 |
-| [Narrative Text Visualization — T8 叙事文本可视化](skills-visualization/narrative-text-visualization.md) | > Sources: narrative-text-visualization SKILL.md (T8 Syntax); AntV T8 技术栈 > Raw: [SKILL.md](../../raw/skills/narra... | 2026-04-28 |
-| [Ownership Skills — 端到端责任引擎](skills-visualization/ownership-skills.md) | > Sources: ownership-skills SKILL.md (MIT License); OWNER Method 方法论; 反模式识别与应对 > Raw: [SKILL.md](.... | 2026-04-28 |
-| [SVG Flow Diagram — 手绘风格流程图](skills-visualization/svg-flow-diagram.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/skills/svg-flow-diagram-SKILL.md; ../../raw/skills/svg-flow-diagram-README.... | 2026-04-28 |
-| [Taste System — 审美判断力与行动力系统](skills-visualization/taste-system.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/skills/taste-SKILL.md; ../../raw/skills/taste-agency-SKILL.md; ../../raw/sk... | 2026-04-28 |
+| [2026Q1供应商绩效汇报大纲与数据](workspace-other/2026Q1供应商绩效汇报大纲与数据.md) | 2026Q1供应商绩效汇报项目是数据讲故事理论的实践案例，包含一份测试数据文件和一份汇报大纲。该项目展示了如何将供应商绩效数据转化为有叙事结构的汇报文档，从单纯的数字罗列转变为"用数据讲故事"的管理沟通工具。 | 2026-04-28 |
+| [Agent-Reach 渠道架构与安全模型](workspace-other/workspace-other-Agent-Reach渠道架构与安全.md) |  | 2026-04-28 |
+| [Agent-Reach互联网接入配置指南](workspace-other/Agent-Reach互联网接入配置指南.md) | Agent-Reach是一个AI Agent的互联网接入平台，使AI助手能够访问和使用各种在线服务和社交平台的实时数据。系统支持Exa搜索引擎、Twitter/X、Reddit、微信、小红书等多个平台，通过统一的技能接口和配置体系实现多平台接入。Agent-Reach的核心价值在于：让AI从"离线助手"变成"在线助手"，能够获取实时信息、参与社交互动、监控网络动态。 | 2026-04-28 |
+| [Agent-Reach平台配置指南全集](workspace-other/Agent-Reach平台配置指南全集.md) | Agent-Reach是一个让AI Agent接入互联网平台的多合一工具，支持Twitter/X、小红书、微信、Reddit、Bilibili等多个平台的数据读取和交互。项目包含5个平台配置指南、5个参考文档、多语言文档（en/ja/ko）和技术文档（cookie导出、依赖锁定）。本文章汇总所有配置指南的核心内容。 | 2026-04-28 |
+| [Agent-Reach社交媒体接入深度指南](workspace-other/Agent-Reach社交媒体接入深度指南.md) | Agent-Reach的社交媒体接入指南覆盖了Twitter/X和小红书的深度配置。Twitter分为基础阅读（Jina Reader免费）和高级功能（twitter-cli + Cookie），小红书通过xhs-cli实现搜索和笔记读取。两个平台都依赖Cookie导出作为认证方式，这是Agent访问需要登录态的网站的通用模式。 | 2026-04-28 |
+| [Agent-Reach：给 AI Agent 的一键互联网接入工具](workspace-other/workspace-other-Agent-Reach互联网接入工具.md) |  | 2026-04-28 |
+| [AI Agent 工具生态：从 Agent-Reach 到数据炼金师](workspace-other/workspace-other-AIAgent工具生态.md) |  | 2026-04-28 |
+| [AI定价商业洞察：三层逻辑与六大框架](workspace-other/workspace-other-AI定价商业洞察框架.md) |  | 2026-04-28 |
+| [AI定价演变：设计系统与视觉规范方法论](workspace-other/workspace-other-AI定价演变设计系统.md) |  | 2026-04-28 |
+| [AI定价研究项目](workspace-other/AI定价研究项目.md) | AI 定价研究项目在 workspace-other 目录下有两个核心文件：一份 25 页的演讲脚本和一份独立的 design-spec。这两个文件与 presentations 目录下的 PPT169 版（15 页）形成了"同一项目、三种呈现"的格局。 | 2026-04-28 |
+| [OpenWiki 版本演进与功能迭代](workspace-other/workspace-other-OpenWiki版本演进.md) |  | 2026-04-28 |
+| [OpenWiki 知识库](workspace-other/OpenWiki知识库.md) | OpenWiki 是一个被归档到 workspace-other 目录的开源知识库项目。该项目拥有完整的开源项目结构：README（含中英文版本）、CLAUDE.md（AI 交互配置）、DESIGN.md（设计规范）、CONTRIBUTING.md（贡献指南）、CODE_OF_CONDUCT.md（行为准则）、CHANGELOG.md（变更日志）以及 6 个版本的 release notes... | 2026-04-28 |
+| [OpenWiki 设计规范与产品哲学](workspace-other/workspace-other-OpenWiki设计规范.md) |  | 2026-04-28 |
+| [OpenWiki从v0.1.3到v0.1.4的演进记录](workspace-other/OpenWiki从v0.1.3到v0.1.4的演进记录.md) | OpenWiki的v0.1.5到v0.1.8版本release notes记录了应用在核心功能、用户体验和技术稳定性方面的持续迭代。虽然这四个版本的详细changelog包含在v0.1.5的累积更新说明中（v0.1.5 notes中提到了来自v0.1.3和v0.1.4的功能），但每个版本都有独立的release notes文件。本文章整理这四个版本的演进脉络。 | 2026-04-28 |
+| [OpenWiki版本演进详情](workspace-other/OpenWiki版本演进详情.md) | OpenWiki是一个本地知识管理应用，从v0.1.5到v0.1.9共发布了5个版本，每个版本都有独立的release notes文件，包含双语changelog（中文+英文）和安装说明。发版流程由AI自动完成——用户说"发版"时，AI检查commit、总结改动、创建release notes、bump版本号、打tag、push触发GitHub Actions构建。本文章记录每个版本的具体更... | 2026-04-28 |
+| [OpenWiki知识库平台全解析](workspace-other/OpenWiki知识库平台全解析.md) | OpenWiki是一个开源的知识库平台，为AI驱动的知识管理提供了完整的基础设施。从v0.1.3到v0.2.0的快速迭代展示了平台的活跃发展状态。OpenWiki的核心理念是将知识管理从"人找信息"转变为"信息找人"——通过AI的理解能力，自动组织、关联和推送知识。对于年老师的供应商管理和知识工作场景，OpenWiki提供了知识库建设、文档管理、智能检索等核心能力。 | 2026-04-28 |
+| [workspace-other原始文件索引](workspace-other/workspace-other原始文件索引.md) | workspace-other/raw目录包含了从workspace目录收集的274个原始文件（其中223个是node_modules的README，51个是实际内容文件）。这些文件涵盖了AI定价演变、数据炼金师工具、Agent-Reach项目、OpenWiki项目、结算交接材料、电子书和测试数据等多个主题。本文章提供完整的文件索引和分类。 | 2026-04-28 |
+| [workspace-other原始文件索引与分类指南](workspace-other/workspace-other原始文件索引与分类指南.md) | workspace-other原始文件目录包含了274个文件，涵盖了从AI工具配置、知识库平台、数据可视化理论到供应商管理实践的广泛内容。本文章提供完整的文件索引和分类指南，帮助快速定位需要的信息。 | 2026-04-28 |
+| [供应商分层项目](workspace-other/供应商分层项目.md) | 供应商分层项目是年老师供应商管理体系中的核心制度建设。以 2026-04-13 发布的 ABC 分层分级管理方案为核心，辅以月度综合评估、SLA、管理办法、日常管理手册等一系列制度和流程文件，形成了一套完整的供应商分层管理方法论。 | 2026-04-28 |
+| [供应商站点项目](workspace-other/供应商站点项目.md) | workspace-other 目录下包含大量与供应商站点、AI 定价、数据炼金师等相关的 workspace 工作文件。这些文件是在具体任务执行过程中生成的中间产物和最终交付物，记录了从需求分析到设计到实现的全过程。 | 2026-04-28 |
+| [定价策略方法论：从 AI 定价到供应商管理](workspace-other/workspace-other-定价策略方法论.md) |  | 2026-04-28 |
+| [数据可视化之父-Tufte视觉显示理论精要](workspace-other/数据可视化之父-Tufte视觉显示理论精要.md) | Edward Tufte的The Visual Display of Quantitative Information被公认为数据可视化领域的奠基之作。这本书提出了数据墨水和数据墨水比的核心概念，确立了"图表的首要原则是展示数据"的基本哲学。Tufte的理论不仅是技术指南，更是一种关于如何用视觉传达真相的思想体系。对于需要频繁用数据说话的职场人士，理解Tufte的核心原则可以显著提高数据呈现... | 2026-04-28 |
+| [数据可视化理论经典-Storytelling with Data核心框架](workspace-other/数据可视化理论经典-StorytellingwithData核心框架.md) | Storytelling with Data是Cole Nussbaumer Knaflic撰写的商业数据可视化经典著作，系统地阐述了如何将数据转化为有说服力的视觉叙事。全书分为十章，从理解上下文出发，经过选择合适的视觉呈现、消除视觉混乱、引导注意力、设计思维、模型案例、讲故事技巧、综合应用到案例研究，形成了一套完整的数据叙事方法论。这套方法论的核心观点是：数据可视化不是关于图表的美学问题，... | 2026-04-28 |
+| [数据可视化经典电子书精华](workspace-other/数据可视化经典电子书精华.md) | workspace-other/raw目录下包含两本数据可视化领域的经典电子书。Storytelling with Data（Cole Nussbaumer Knaflic著，2015年）是16449行的完整文本，涵盖10章内容，从上下文重要性到案例研究。The Visual Display of Quantitative Information（Edward Tufte著）是数据可视化领域... | 2026-04-28 |
+| [数据可视化经典著作精华](workspace-other/数据可视化经典著作精华.md) | 年老师收藏了两本数据可视化领域的经典著作：Cole Nussbaumer Knaflic 的《Storytelling with Data》和 Edward Tufte 的《The Visual Display of Quantitative Information》。这两本书分别从"商业叙事"和"信息设计"两个角度，构建了数据可视化的理论基础和实践指南。 | 2026-04-28 |
+| [数据可视化：从理论到实践的完整链路](workspace-other/workspace-other-数据可视化理论到实践.md) |  | 2026-04-28 |
+| [数据炼金师工具](workspace-other/数据炼金师工具.md) | 数据炼金师（Data Alchemist）是一个 AI 驱动的数据叙事工具项目，创建于 2026-04-26。该项目是 workspace-other 目录下技术深度最高的项目之一，拥有完整的 SPEC 文档、技术栈选型、产品架构和功能规格。 | 2026-04-28 |
+| [数据炼金师工具-架构与能力全景](workspace-other/数据炼金师工具-架构与能力全景.md) | 数据炼金师（Data Alchemist）是一个AI驱动的数据转换和分析工具，旨在将原始数据"炼"为有价值的洞察和行动建议。该工具于2026年4月26日创建，通过SPEC文档定义了功能规格，通过README提供了使用说明。数据炼金师的核心理念是：数据本身没有价值，只有经过提炼和转化才能驱动决策。 | 2026-04-28 |
+| [数据炼金师：完整技术架构与产品方法论](workspace-other/workspace-other-数据炼金师深度架构.md) |  | 2026-04-28 |
+| [数据讲故事测试](workspace-other/数据讲故事测试.md) | 数据讲故事测试项目包含两份核心文件：一份 2026 Q1 供应商季度绩效数据表和一份基于该数据的汇报大纲。这个项目是"数据炼金师"方法论的实战演练——用真实业务数据练习"用数据讲故事"的能力。 | 2026-04-28 |
+| [数据讲故事测试案例-2026Q1供应商绩效汇报](workspace-other/数据讲故事测试案例-2026Q1供应商绩效汇报.md) | 2026Q1供应商绩效汇报项目是数据讲故事理论的实践测试案例，包含一份测试数据文件和一份汇报大纲。该项目展示了如何将供应商绩效数据从单纯的数字罗列转化为有叙事结构的汇报文档，验证了"用数据讲故事"的方法论在供应商管理场景中的可行性。这个测试案例为后续的真实汇报提供了模板和参考。 | 2026-04-28 |
+| [数据讲故事经典理论：从 Knaflic 到 Tufte](workspace-other/workspace-other-数据讲故事经典理论.md) |  | 2026-04-28 |
+| [演讲叙事方法论：从电信到 AI 的故事结构](workspace-other/workspace-other-演讲叙事方法论.md) |  | 2026-04-28 |
+| [知识工作流水线-从头脑风暴到知识复利的完整闭环](workspace-other/知识工作流水线-从头脑风暴到知识复利.md) | 知识工作流水线是一套从灵感产生到知识沉淀的完整方法论，经历了从头脑风暴、研究验证、内容创作到知识复利的完整闭环。通过对AI定价研究项目、vwiehr职业导师项目和MCP基础设施项目的全链路分析，可以提炼出一套可复用的知识工作流水线。这套流水线的核心价值在于：每个知识产出都不是一次性的消费，而是可以被后续工作复用和增值的资产。 | 2026-04-28 |
+| [结算交接与Agent-Reach国际化文档](workspace-other/结算交接与Agent-Reach国际化文档.md) | 本文汇总两个独立但都有记录价值的主题：一是2026年4月23日结算新项目的交接月会材料，涉及业务交接的框架和流程；二是Agent-Reach项目的国际化文档（英语、日语、韩语）和依赖锁定技术文档。 | 2026-04-28 |
+| [结算交接与项目杂项](workspace-other/结算交接与项目杂项.md) | workspace-other 目录下还包含多个无法归入上述类别的项目文件，涵盖工作汇报、开源工具评估、经典书籍笔记等。 | 2026-04-28 |
 
-## workspace-supplier
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [人机模式转型与产能升级](workspace-supplier/06-人机模式转型与产能升级.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商六盒诊断与组织评估](workspace-supplier/12-供应商六盒诊断与组织评估.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商可视化体系V7](workspace-supplier/供应商可视化体系V7.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商可视化体系与设计规范](workspace-supplier/07-供应商可视化体系与设计规范.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商审批与分量调整机制](workspace-supplier/05-供应商审批与分量调整.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商巡检与整改机制](workspace-supplier/09-供应商巡检与整改机制.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商成本与缩量管理](workspace-supplier/供应商成本与缩量管理.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商成本调研与定价体系](workspace-supplier/01-供应商成本调研与定价体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商月度通报与矩阵管理](workspace-supplier/10-供应商月度通报与矩阵管理.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商站点与电影版呈现](workspace-supplier/08-供应商站点与电影版呈现.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商管理规范体系化](workspace-supplier/04-供应商管理规范体系化.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商管理运营工具箱](workspace-supplier/供应商管理运营工具箱.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商缩量分配与人力调度](workspace-supplier/11-供应商缩量分配与人力调度.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商联盟与月报机制](workspace-supplier/供应商联盟与月报机制.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商联盟与能力共建](workspace-supplier/03-供应商联盟与能力共建.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商评估与KPI体系](workspace-supplier/02-供应商评估与KPI体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
-| [供应商评估与KPI体系](workspace-supplier/供应商评估与KPI体系.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-w... | 2026-04-28 |
+## Skills Tools
 
-## projects
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [AI 学习监控项目](projects/ai-learning-monitoring.md) | > Sources: Mino, 2026-02-28 ~ 2026-03-15 > Raw: [项目主文档](../../raw/projects-ai-learning/project.md) \| [每周�... | 2026-04-28 |
-| [AI学习库监控与最佳实践](projects/AI学习库监控与最佳实践.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/projects-ai-learning/project.md; ../../raw/projects-ai-learning/CLAUDE.md; ... | 2026-04-28 |
-| [AI技术学习资源与课程体系](projects/AI技术学习资源与课程体系.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/projects-ai-learning/outputs-resources-list.md; ../../raw/projects-ai-learn... | 2026-04-28 |
-| [Claude 架构分析与项目追踪](projects/Claude架构分析与项目追踪.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-archive/ (architecture-*.md 共 8 files); ../../raw/projects-claud... | 2026-04-28 |
-| [OpenWiki 知识库系统](projects/openwiki-system.md) | > Sources: Mino 文件架构分析, 2026-02 > Raw: [完整架构](../../raw/projects-archive/architecture-ARCHITECTURE-F... | 2026-04-28 |
-| [供应商管理可视化体系](projects/visualization-system.md) | > Sources: 年老师, 2026-04 > Raw: [供应商管理可视化体系](../../raw/projects/供应商管理可视化体系.... | 2026-04-28 |
-| [供应商管理工作体系建设](projects/供应商管理工作体系建设.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/docs-supplier/project.md; ../../raw/docs-supplier/CLAUDE.md; ../../... | 2026-04-28 |
-| [供应商管理核心机制与工具](projects/供应商管理核心机制与工具.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/docs-supplier/供应商ABC分层分级管理方案.md; ../../raw/projec... | 2026-04-28 |
-| [供应商项目与 BPO 联盟建设](projects/供应商项目与BPO联盟建设.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/notes-total.md; ../../raw/docs-supplier/CLAUDE.md; ..... | 2026-04-28 |
-| [年老师的职业成就与成长路径](projects/年老师的职业成就与成长路径.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/persona/职业成就.md; ../../raw/projects-self-awareness/outputs-关键�... | 2026-04-28 |
-| [文件架构演进与历史项目归档](projects/文件架构演进与历史项目归档.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-archive/architecture-ARCHITECTURE-ANALYSIS.md; ../../raw/projects-... | 2026-04-28 |
-| [每日书信系统](projects/daily-letter-system.md) | > Sources: Mino, 2026-04-12 ~ 2026-04-26 > Raw: [daily-letter SKILL.md](../../raw/skills/daily-letter-SKILL.md) | 2026-04-28 |
-| [每日书信项目（2026年4月12日–27日）](projects/每日书信项目-2026年4月.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/daily-letters/ (16 files: 2026-04-12 ~ 2026-04-27) | 2026-04-28 |
-| [演讲稿项目模式](projects/presentation-patterns.md) | > Sources: Mino, 2026-04-09 ~ 2026-04-25 > Raw: [刘乾坤人物分析](../../raw/presentations/projects-liu-qiankun-pro... | 2026-04-28 |
-| [电影叙事项目](projects/cinematic-narrative.md) | > Sources: Mino, 2026-04-11 > Raw: [神秘岛v2](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt1... | 2026-04-28 |
-| [长期放养与共同成长之路](projects/长期放养与共同成长之路.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/projects-long-term/project.md; ../../raw/projects-long-term/CLAUDE.md; ../.... | 2026-04-28 |
+| [AI 定价演变](skills-tools/ai-pricing-evolution.md) |  | 2026-04-28 |
+| [BPO成本测算方法论](skills-tools/skills-tools-BPO成本测算方法论.md) |  | 2026-04-28 |
+| [FCI 能力指数与巡检方法论](skills-tools/FCI能力指数与巡检方法论.md) |  | 2026-04-28 |
+| [Plan 模板体系](skills-tools/plan-template-system.md) |  | 2026-04-28 |
+| [SOP 库](skills-tools/sop-library.md) |  | 2026-04-28 |
+| [价格谈判策略与成本分析](skills-tools/价格谈判策略与成本分析.md) |  | 2026-04-28 |
+| [供应商准入与初筛全流程](skills-tools/供应商准入与初筛全流程.md) |  | 2026-04-28 |
+| [供应商深度沟通方法论](skills-tools/skills-tools-供应商深度沟通方法论.md) |  | 2026-04-28 |
+| [供应商清退决策与风险管理](skills-tools/供应商清退决策与风险管理.md) |  | 2026-04-28 |
+| [供应商管理场景化模板全集：从异常判断到清退评估](skills-tools/供应商管理场景化模板全集.md) | 本文整合了供应商管理 21 个场景化思考模板，覆盖异常处理（A类）、准入与项目（B类）、通用能力（C类）、日常信号（D类）、初筛与准入（E类）五大模块。每个模板都遵循"触发信号→核心问题→思考步骤→输出物"的统一结构，将复杂的管理决策转化为可执行的结构化流程。 | 2026-04-28 |
+| [供应商管理成本谈判与降价策略](skills-tools/供应商管理成本谈判与降价策略.md) | 本文整合了供应商管理中的成本谈判和降价策略模板，从成本结构分析到5维打分分量调整，从谈判准备到合同签署的完整链路。这是供应商管理中直接影响业绩的"钱袋子"工具。 | 2026-04-28 |
+| [供应商管理模板体系演进：从旧版到新版的架构升级](skills-tools/供应商管理模板体系演进史.md) | 本文记录了供应商管理模板体系的完整演进历史——从旧版"叙事体"模板到 archive 版本，再到新版"结构化"模板（A-E分类体系），最后到"管理场景梳理"版本的架构升级。每次演进都对应管理认知的深化和工具实用性的提升。 | 2026-04-28 |
+| [供应商管理汇报与复盘方法论](skills-tools/供应商管理汇报与复盘方法论.md) | 本文整合了供应商管理中的周期性复盘、向上汇报、即时响应等汇报类场景的结构化方法。从月度复盘到周度同步，从战略层汇报到执行层沟通，形成了一套完整的"数据→结论→行动"翻译体系。 | 2026-04-28 |
+| [供应商管理约谈与整改闭环体系](skills-tools/供应商管理约谈与整改闭环体系.md) | 本文整合了供应商管理中的约谈、整改、合规定级、清退评估等核心场景的结构化模板，形成了从"发现问题→约谈→整改→验证→升级/清退"的完整闭环体系。这是供应商管理中最常用的"硬技能"工具箱。 | 2026-04-28 |
+| [供应商管理通用能力工具箱：问题拆解到制度流程](skills-tools/供应商管理通用能力工具箱.md) | 本文整合了供应商管理通用能力工具——问题拆解、邮件起草、数据整理分析、制度流程梳理，以及日常信号响应和初筛准入等跨场景通用技能。这些工具不特定于某一管理环节，而是供应商管理者日常必备的"瑞士军刀"。 | 2026-04-28 |
+| [供应商约谈与整改闭环体系](skills-tools/供应商约谈与整改闭环体系.md) |  | 2026-04-28 |
+| [供应商绩效评估与能力评价体系](skills-tools/供应商绩效评估与能力评价体系.md) |  | 2026-04-28 |
+| [供应商风险筛查问卷与评估体系](skills-tools/skills-tools-供应商风险筛查问卷与评估体系.md) |  | 2026-04-28 |
+| [分量调整场景化执行体系](skills-tools/skills-tools-分量调整场景化执行体系.md) |  | 2026-04-28 |
+| [可视化模式库与样板体系](skills-tools/skills-tools-可视化模式库与样板体系.md) |  | 2026-04-28 |
+| [可视化组件库](skills-tools/visualization-components.md) |  | 2026-04-28 |
+| [合规管理与数据质量防控体系](skills-tools/合规管理与数据质量防控体系.md) |  | 2026-04-28 |
+| [向上汇报与沟通叙事方法论](skills-tools/向上汇报与沟通叙事方法论.md) |  | 2026-04-28 |
+| [数据可视化图表百科与选型指南](skills-tools/skills-tools-数据可视化图表百科与选型指南.md) |  | 2026-04-28 |
+| [数据整理分析通用方法论](skills-tools/skills-tools-数据整理分析通用方法论.md) |  | 2026-04-28 |
+| [新项目对接与资源协调方法论](skills-tools/新项目对接与资源协调方法论.md) |  | 2026-04-28 |
+| [月度复盘与周期管理方法论](skills-tools/月度复盘与周期管理方法论.md) |  | 2026-04-28 |
+| [极简信息图设计规范](skills-tools/skills-tools-极简信息图设计规范.md) |  | 2026-04-28 |
+| [核心记忆索引 — 5 大类别 + 洞察档案](skills-tools/core-memory-index.md) | 核心记忆体系是 Mino 持续进化的中枢，由 5 大主题领域（供应商与 BPO 运营、团队管理与汇报、技术与工具探索、个人成长、行业认知）+ 洞察档案（insights.md）+ 主索引（MEMORY.md）构成。这套体系在 2026-02 至 2026-04 期间经历了多轮迭代，从简单的对话日志进化为结构化的知识复利系统。 | 2026-04-28 |
+| [管理场景与应对策略](skills-tools/management-scenarios.md) |  | 2026-04-28 |
+| [结构化思考与决策框架](skills-tools/skills-tools-结构化思考与决策框架.md) |  | 2026-04-28 |
+| [设计哲学 — 工具箱视角](skills-tools/design-philosophy-toolbox.md) |  | 2026-04-28 |
 
-## skills-agent-tools
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [agent-browser — 浏览器自动化](skills-agent-tools/agent-browser.md) | > Sources: MyAgents, 2026-04-27 > Raw: [SKILL.md](../../raw/skills/agent-browser-SKILL.md), [authentication.md](../../ra... | 2026-04-28 |
-| [download-anything — 数字资源下载](skills-agent-tools/download-anything.md) | > Sources: MyAgents, 2026-04-27 > Raw: [SKILL.md](../../raw/skills/download-anything-SKILL.md), [cloud-search.md](../../... | 2026-04-28 |
-| [Legacy Vault — 技能存档管理器](skills-agent-tools/legacy-vault.md) | > Sources: MyAgents, 2026-04-27 > Raw: [legacy-vault](../../raw/skills/legacy-vault-SKILL.md) | 2026-04-28 |
-| [Lenny Skills — 商业决策顾问系统](skills-agent-tools/lenny-skills.md) | > Sources: Lenny Rachitsky's Newsletter/Podcast (via MyAgents), 2026-04-27 > Raw: [lenny-skills-SKILL.md](../../raw/skil... | 2026-04-28 |
-| [Paper & Book Analysis + Content Casting Skills](skills-agent-tools/paper-book-analysis.md) | > Sources: Epiplexity (via MyAgents), 2026-04-27 > Raw: [ljg-xray-paper](../../raw/skills/ljg-xray-paper-SKILL.md); [ljg... | 2026-04-28 |
-| [PPT Master 技能体系深度解析](skills-agent-tools/PPT Master 技能体系深度解析.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [Skills 生态全景 — 501 个技能文件的分类索引](skills-agent-tools/skills-ecosystem-reference.md) | > Sources: wiki/raw/skills/INDEX.md, wiki/raw/skills/TRIGGER-INDEX.md, wiki/raw/skills/README.md > Raw: ../../raw/skills... | 2026-04-28 |
-| [Supplier Mentor（供应商管理导师）](skills-agent-tools/supplier-mentor.md) | > Sources: MyAgents, 2026-04-27 > Raw: [supplier-mentor](../../raw/skills/supplier-mentor-SKILL.md); [accumulation](../.... | 2026-04-28 |
-| [任务执行与技能工具](skills-agent-tools/task-execution.md) | > Sources: MyAgents, 2026-04-27 > Raw: [task-dispatcher](../../raw/skills/task-dispatcher-SKILL.md); [task-implement](..... | 2026-04-28 |
-| [前端设计原则与 SVG 模板研究](skills-agent-tools/前端设计原则与SVG模板研究.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [复合知识代理 — 研究、审查与知识管理](skills-agent-tools/compound-knowledge-agents.md) | > Sources: MyAgents, 2026-04-27 > Raw: [data-accuracy-reviewer](../../raw/skills/compound-knowledge-agents-data-accuracy... | 2026-04-28 |
-| [实用技能：Icon Retrieval / Markdown Converter / IMA Note / Daily Letter](skills-agent-tools/utility-skills.md) | > Sources: MyAgents, 2026-04-27 > Raw: [icon-retrieval](../../raw/skills/icon-retrieval-SKILL.md); [markdown-converter](... | 2026-04-28 |
-| [工作表达与思考工具（Work + Work-Expression）](skills-agent-tools/work-expression.md) | > Sources: MyAgents, 2026-04-27 > Raw: [work](../../raw/skills/work-SKILL.md); [work-expression](../../raw/skills/work-e... | 2026-04-28 |
-| [技能工具学习与集成指南](skills-agent-tools/技能工具学习与集成指南.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learning/技能相关-工具技能-cowork-plugins-manual.md; ../../raw/lear... | 2026-04-28 |
-| [技能管理与评测体系](skills-agent-tools/skill-management.md) | > Sources: MyAgents, 2026-04-27 > Raw: [skill-creator](../../raw/skills/skill-creator-SKILL.md); [analyzer](../../raw/sk... | 2026-04-28 |
-| [知识工作流 — 从头脑风暴到知识复利](skills-agent-tools/knowledge-workflow.md) | > Sources: MyAgents, 2026-04-27 > Raw: [kw-brainstorm](../../raw/skills/kw-brainstorm-SKILL.md), [kw-compound](../../raw... | 2026-04-28 |
+## Plans Deep
 
-## skills-document
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [AntV S2 多维交叉表格专家技能](skills-document/antv-s2-expert.md) | > Sources: antv-s2-expert, 30+ files > Created: 2026-04-27 > Raw: [SKILL](../../raw/skills/antv-s2-expert-SKILL.md); [ov... | 2026-04-28 |
-| [Content Visualizers — 信息图与编辑卡片生成器](skills-document/content-visualizers.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/skills/editorial-card-generator-SKILL.md; ../../raw/skills/infographic-crea... | 2026-04-28 |
-| [HTML PPT Studio（html-ppt-skill）](skills-document/html-ppt-skill.md) | > Sources: html-ppt-skill, 26 files > Created: 2026-04-27 > Raw: [SKILL](../../raw/skills/html-ppt-skill-SKILL.md); [REA... | 2026-04-28 |
-| [Kami 文档排版技能](skills-document/kami.md) | > Sources: Kami, 10+ files > Created: 2026-04-27 > Raw: [SKILL](../../raw/skills/kami-SKILL.md); [README](../../raw/skil... | 2026-04-28 |
-| [minimax-xlsx Excel 处理技能](skills-document/minimax-xlsx.md) | > Sources: minimax-xlsx, 8 files > Created: 2026-04-27 > Raw: [SKILL](../../raw/skills/minimax-xlsx-SKILL.md); [create](... | 2026-04-28 |
-| [PDF 操作技能](skills-document/pdf.md) | > Sources: pdf skill > Created: 2026-04-27 > Raw: [pdf SKILL](../../raw/skills/pdf-SKILL.md); [minimax-pdf SKILL](../../... | 2026-04-28 |
-| [PPTX Deck Builder](skills-document/pptx-deck-builder.md) | > Sources: pptx-deck-builder, 7 files > Created: 2026-04-27 > Raw: [SKILL](../../raw/skills/pptx-deck-builder-SKILL.md);... | 2026-04-28 |
-| [Presentation — 演讲脚本 + PPT 一键生成器](skills-document/presentation-skill.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/skills/presentation-skill-SKILL.md; ../../raw/skills/presentation-skill-REA... | 2026-04-28 |
-| [xlsx Excel 表格处理技能](skills-document/xlsx.md) | > Sources: xlsx skill, 60+ files including 42 XSD schemas > Created: 2026-04-27 > Raw: [SKILL](../../raw/skills/xlsx-SKI... | 2026-04-28 |
-| [其他 PPT 技能（guizang-ppt-skill + presentation-skill）](skills-document/other-ppt-skills.md) | > Sources: guizang-ppt-skill, presentation-skill > Created: 2026-04-27 > Raw: [guizang SKILL](../../raw/skills/guizang-p... | 2026-04-28 |
-| [官方公文编写技能（official-doc）](skills-document/official-doc.md) | > Sources: official-doc skill, 42 files > Created: 2026-04-27 > Raw: [SKILL](../../raw/skills/official-doc-SKILL.md); [C... | 2026-04-28 |
-| [文档处理技能（docx + minimax-docx + minimax-pdf）](skills-document/doc-handling.md) | > Sources: docx, minimax-docx, minimax-pdf > Created: 2026-04-27 > Raw: [docx SKILL](../../raw/skills/docx-SKILL.md); [m... | 2026-04-28 |
+| [AI定价计划](plans-deep/AI定价计划.md) | 2026年4月24日，年老师对国内AI大模型厂商的定价策略进行了系统性研究，完成了从头脑风暴到深度研究再到演示文稿的完整知识工作流。研究核心结论：**AI大模型定价正从"卖工具订阅"演进为"卖算力资源包"，精确重演了电信行业从话费套餐到流量套餐的20年历史。Coding Plan是过渡产品，Token Plan是终态。** | 2026-04-28 |
+| [mino-frontend 设计体系演进与参数系统](plans-deep/mino-frontend设计体系演进与参数系统.md) | 本文记录了 mino-frontend 技能从14种风格分类进化到"风格×情绪"二维决策矩阵的完整过程，以及参数系统的设计与跨技能抽象设计原则的建立。这是前端设计体系从"经验分类"到"决策逻辑"的方法论升级。 | 2026-04-28 |
+| [mino-frontend设计体系演进：从14种风格到参数系统的架构升级](plans-deep/plans-mino-frontend设计体系演进.md) | 2026年4月初，年老师对mino-frontend技能进行了深度重构，解决了长期存在的"方法论有了但输出不稳定"问题。核心发现：方法论是骨架，参数系统是血肉——骨架相同但血肉不同，输出就不稳定。重构分两步走：第一步建立风格x情绪决策矩阵，将14种经验分类简化为5种基础风格x4种情绪变体的二维决策逻辑；第二步构建三层参数系统（全局参数+风格参数+内容参数），为每种设计风格定义了具体的字号、边... | 2026-04-28 |
+| [Quiver API 高质量 SVG 生成策略](plans-deep/Quiver-API高质量SVG生成策略.md) | 本文记录了在每周20次 Quiver API 配额限制下，如何一次性成功生成高质量手绘风格 SVG 的完整策略。核心挑战是配额有限（每周仅20次），每次调用都必须成功——不能靠试错来学习。 | 2026-04-28 |
+| [Quiver-API高质量SVG生成策略：配额约束下的视觉生产力](plans-deep/plans-Quiver-API-SVG生成策略.md) | 2026年4月4日，年老师对Quiver API（arrow-preview模型）的SVG生成能力进行了系统性策略研究。核心约束是每周仅20次请求配额，目标是在有限配额下生成东京猫/李诞虾级别的高质量手绘风格SVG。研究涵盖了API核心能力分析、高质量Prompt构成要素、references参数使用技巧、配额分配策略，以及针对权责不对等研究内容的5个可视化场景的具体生成方案。 | 2026-04-28 |
+| [个人项目与学习计划的执行方法论](plans-deep/个人项目与学习计划执行方法论.md) | 本文以"一天学会游泳"项目为案例，提炼了个人学习项目的标准化执行方法——从头脑风暴到装备准备、从错误纠正到事后 review 的完整链路。虽然是个人项目，但遵循了与工作项目相同的四阶段工作流。 | 2026-04-28 |
+| [供应商分层分级与ABC管理体系](plans-deep/供应商分层分级与ABC管理体系.md) | 2026年4月13日，年老师推动建立了供应商ABC三级分层管理体系，替代原有的S/A/B/C/D五级评级。新体系核心变化：从"绝对分数切分"转向"相对排名切分"，引入60:30:10三维打分模型（业务督导60%定量+供应商管理30%定性+质检10%定量），并配套PIP（Performance Improvement Plan）末尾淘汰机制。这套体系解决了原有评级过细、管理动作不够聚焦的问题，... | 2026-04-28 |
+| [供应商分层分级管理体系：ABC三级评分模型与PIP流程](plans-deep/plans-供应商分层分级管理体系.md) | 2026年4月13日，年老师设计了一套完整的供应商ABC分层分级管理体系，替代原有的"季度2次后30%即PIP"的粗放规则。新体系建立了三维评分模型（业务督导60%+供应商管理30%+质检10%），实现绝对分数+相对排名的双重分级机制，配套完整的PIP流程和淘汰标准。这套体系覆盖了从评分指标定义、分数到等级转换、分级管理策略到季度/月度/周度动作清单的全生命周期管理。 | 2026-04-28 |
+| [供应商数据汇报体系V7：从数据到叙事的结构化方法论](plans-deep/供应商数据汇报体系V7.md) | 2026年4月26日，年老师完成了一套完整的供应商站点数据汇报体系（V7），将108条站点数据转化为结构化的叙事报告。这套体系的核心创新在于：**不是"我做了个看板"，而是"我发现了几个需要关注的事"**。报告采用滚动式长页面+顶部锚点导航的叙事结构，包含6个章节（全局概览→人力变化→供应商格局→地理集中→业务结构→行动建议），每张图表都配有结论式标题（而非描述式标题），并通过独立审查修复了... | 2026-04-28 |
+| [供应商目录与文件体系重组：知识资产的结构化治理](plans-deep/plans-供应商目录与文件体系重组.md) | 2026年4月24日，年老师启动了文件体系整理项目，对docs/供应商/、memory/、workspace/三个区域进行了全面扫描和重组规划。核心发现：docs/供应商/存在7个子目录+4个根级散文件，管理制度与管理规范边界模糊，晋升材料占用大量空间，临时文件残留。重组方案明确了docs/和memory/的分工原则：docs存正式文档，memory存洞察和方法论精华。同时规划了从works... | 2026-04-28 |
+| [供应商站点看板演进史：从V2到V5的迭代与失败分析](plans-deep/plans-供应商站点看板演进史.md) | 供应商站点看板是年老师供应商管理可视化体系的核心工具，经历了从V2到V6的多次迭代。这是一条典型的"渐进式需求膨胀"的演进线：V2做基础功能验证，V3从管理需求出发重新设计，V4细化需求，V5大幅扩展后遭遇"测试版能工作、完整版不能"的失败，V5失败分析揭示了方法论教训，最终V6吸取教训采用四版本需求管理策略。这条演进线记录了从简单到复杂、从功能到管理、从失败到复盘的完整产品迭代历程。 | 2026-04-28 |
+| [供应商站点看板演进史：从数据展示到管理决策工具](plans-deep/供应商站点看板演进史v2到v6.md) | 本文追溯了供应商站点看板从 v2 到 v6 的完整演进路径，揭示了看板设计从"数据展示"到"管理决策"的思维转变，以及在这个过程中遇到的技术挑战和解决方案。看板演进的本质是从"把数据放上去"到"让数据说话"的进化。 | 2026-04-28 |
+| [供应商管理全景：从计划到执行的完整方法论](plans-deep/供应商管理全景方法论.md) | 本文汇总了供应商管理工作中跨越多个领域的通用方法论，包括季度计划制定、文件体系重组、跨技能设计原则、以及个人效率管理。这些内容虽然分散在不同的计划文件中，但共同构成了年老师供应商管理工作的"操作系统"——从如何拆解目标到如何组织文件，从如何设计视觉产出到如何管理个人时间。核心规律：**好的管理不是单一工具的优秀，而是多个系统协同工作的结果**。 | 2026-04-28 |
+| [其他计划汇总](plans-deep/其他计划汇总.md) | plans/raw 目录下除 AI 定价、设计技能对比、电影叙事三大主题外，还包含多个个人成长、职场分析、工具策略和供应商管理相关的计划项目。这些项目时间跨度从 2026-03-29 到 2026-04-04，覆盖了工作、生活、工具使用等多个维度。 | 2026-04-28 |
+| [可视化技能与SVG生成策略体系](plans-deep/可视化技能与SVG生成策略体系.md) | 2026年4月，年老师完成了两项可视化技能的系统性升级。第一项是Quiver API（arrow-preview模型）的高质量SVG生成策略——在每周20次配额限制下，通过prompt结构优化、references参数使用技巧、批量vs单次生成策略，生成东京猫/李诞虾级别的精细手绘SVG。第二项是chart-visualization和echarts-visualization两大技能的"分... | 2026-04-28 |
+| [图表技能改造与分析先行工作流](plans-deep/图表技能改造与分析先行工作流.md) | 2026年4月25日，年老师完成了chart-visualization和echarts-visualization两大图表技能的系统性改造，核心变更是从"选图→出图"的简单模式升级为"分析→确认→出图→注解"的完整工作流。这次改造解决了图表生成领域最常见的一个问题：AI直接出图而不分析数据特征，导致图表类型选择不当、缺乏数据洞察、注解缺失。改造采用"不合并，各自增强"的策略——chart-... | 2026-04-28 |
+| [战略规划与框架 — 供应商分层、采购金融、文件体系](plans-deep/strategic-plans-frameworks.md) | 2026年4月中旬至下旬，围绕供应商管理核心业务，年老师主导了三项相互关联的战略性规划工作：**供应商ABC分层分级管理体系**（怎么管存量供应商）、**采购融资项目寻源与POC机制**（怎么引入新供应商）、**文件体系与知识资产治理**（怎么组织和管理这些制度与知识）。这三项规划共同构成了供应商全生命周期管理的框架底座。 | 2026-04-28 |
+| [权责不对等分析体系：策略组与服务组的结构性矛盾](plans-deep/plans-权责不对等分析体系.md) | 2026年3月29日，年老师对"策略组与服务组权责不对等"这一结构性问题进行了系统性分析。核心判断：**这不是沟通问题，是权力结构问题**。策略组掌握定价权、名单权、数据分配权，KPI是费效比优化；服务组承担供应商稳定和交付质量的责任，却没有定价决策权。这种结构性矛盾导致供应商收到矛盾信号——服务组要求质量提升，策略组压降价格——形成恶性循环。 | 2026-04-28 |
+| [模板索引与计划文件体系汇总](plans-deep/模板索引与分析先行工作流.md) | 本文整合了 plans 目录的索引结构和模板体系，以及图表可视化工作流中"分析先行"方法论的规范。这是项目管理的知识基础设施——定义了如何组织、索引和复用计划文件。 | 2026-04-28 |
+| [电影叙事与跨模态呈现方法论](plans-deep/电影叙事与跨模态呈现方法论.md) | 2026年4月24日，年老师将AI定价商业案例从传统PPT格式升级为电影叙事（Cinematic Narrative）格式，使用cinematic-ui技能构建了一套26页全屏幻灯片的沉浸式演示文稿。这不仅是一次视觉升级，更是一次"跨模态呈现"的方法论实践——将商业分析内容用电影语言（镜头运动、幕间转场、入场动画）重新编排，让数据和分析获得更强的叙事张力。核心决策：零外部依赖、全屏滚动、9种... | 2026-04-28 |
+| [电影叙事方案E与AI定价研究：倒叙结构与杂志特稿风格](plans-deep/电影叙事方案E与AI定价研究.md) | 本文记录了 AI 定价商业案例的两个电影叙事方案——主方案（Fincher/Social Network 调查档案风格，26页五幕叙事）和方案E（Nolan/Tenet 倒叙杂志特稿风格，4页精简版）的完整设计决策过程。同时整合了 AI 定价研究的核心内容，展示如何将行业研究转化为具有电影感的叙事体验。 | 2026-04-28 |
+| [电影叙事项目计划](plans-deep/电影叙事项目计划.md) | 电影叙事项目计划涉及 Mino 技能体系中 cinematic-ui（电影感 UI 设计）技能的应用与探索。该技能提供导演级艺术指导能力，将电影视觉语言（镜头、光影、色彩、构图）应用于前端界面设计。最具代表性的应用案例是 liang-junrui-mysterious-island（刘乾坤神秘岛）项目，于 2026-04-11 生成。 | 2026-04-28 |
+| [电销复盘与数据叙事写作方法论](plans-deep/电销复盘与数据叙事写作方法论.md) | 2026年4月8日，年老师对电销业务复盘文档的写作风格进行了系统性分析，提炼出一套可复用的数据叙事写作方法论。核心发现：优秀的业务复盘文档不是"用文字描述业绩"，而是"用数据讲故事"。每个核心结论都包含三个维度的数据（主数据+对比数据+占比数据），每个专项都采用四段式结构（核心命题→解决思路→效果验证→不足与下一步），关键信息用表格呈现且至少包含一个对比维度。分析还提炼出内部术语创造的方法论... | 2026-04-28 |
+| [电销复盘写作风格分析：数据叙事与四段式结构的方法论](plans-deep/plans-电销复盘写作风格分析.md) | 2026年4月8日，年老师对一季度电销工作复盘文档进行了写作风格分析，提炼出一套可迁移到供应商管理材料的写作方法论。核心发现：高质量的业务复盘文档有四个关键特征——数据叙事（用数字说话而非文字描述）、四段式结构（核心命题→解决思路→效果验证→不足与下一步）、表格化对比思维（每个表格至少包含1个对比维度）、业务术语创造（如"跷跷板困境"、"赋能飞轮"、"柔性退出"）。基于这些洞察，产出了《供应... | 2026-04-28 |
+| [职场人物行为分析与应对策略体系](plans-deep/职场人物行为分析与应对策略.md) | 2026年3月29日，年老师对刘乾坤在群聊中"带节奏"预警开门红激励问题的事件进行了深度分析，产出了一套完整的职场人物行为分析框架。核心判断：**这不是一次真诚的预警，而是一次立功表演——通过"发现问题"来建立自己"关心业务"的人设，同时把责任推给前任**。分析产出了四种应对策略（不接靶子、回归根本原因、拒绝道德绑架、保护安全感）、REACT回应框架的具体话术版本、预警vs表演的识别清单，以... | 2026-04-28 |
+| [职场政治应对方法论：表演型预警识别与REACT防御体系](plans-deep/plans-职场政治应对方法论.md) | 2026年3月29日，年老师对刘乾坤在群里"带节奏"预警开门红激励问题的事件进行了系统性分析。这不是简单的"沟通方式不当"，而是一套可识别、可拆解、可应对的"表演型管理"行为模式。分析产出了完整的应对方法论：五拳组合拳拆解、REACT回应框架（v2.0）、预警vs表演判别矩阵、七大风险预警清单。这套方法论的核心价值在于将职场政治行为从"不可控的情绪冲突"转化为"可分析、可预测的模式"。 | 2026-04-28 |
+| [设计技能对比测试方法论](plans-deep/设计技能对比测试方法论.md) | 2026年4月24日，年老师组织了一次标准化的设计技能对比测试，用同一份测试数据（8家供应商的月度概览数据）和同一个Brief，让5个设计技能（diagram-design、huashu-design、presentation-skill、mino-frontend、html-ppt-skill）各自独立产出，然后通过五个评估维度（视觉效果、信息传达、实用性、调整成本、综合满意度）进行标准化... | 2026-04-28 |
+| [设计技能对比测试计划](plans-deep/设计技能对比测试计划.md) | 设计技能对比测试计划是 2026-04-24 执行的标准化技能评估项目。核心目标是用同一份数据、同一个场景，对多个前端设计技能的视觉产出进行横向对比，建立客观的评估标准，从而指导技能体系的优化和清理。 | 2026-04-28 |
+| [采购融资寻源与POC机制：内部供应商赛马全流程](plans-deep/plans-采购融资寻源与POC机制.md) | 2026年4月13日，年老师为采购融资（企业贷）业务线设计了一套完整的内部供应商寻源方案。核心机制是：面向存量供应商发布合作邀约，3家同时进场POC测试，首期各上线5人，2个月测试期后进行综合赛马排名，从2026年7月起执行"4留3"的末尾淘汰机制。这套方案包含了CPS结算条款、POC测试规则、赛马排名机制和完整的时间计划，是供应商管理中"引入-测试-淘汰"闭环的标准实践。 | 2026-04-28 |
+| [项目管理方法论：头脑风暴-研究-审查-沉淀四阶段工作流](plans-deep/项目管理四阶段工作流方法论.md) | 本文提炼了从头脑风暴到知识沉淀的完整项目管理方法论。通过对多个实际项目（游泳学习计划、Quiver API 策略、跨技能设计原则、mino-frontend 重构、AI 定价研究）的文件分析，揭示了四阶段工作流的标准化结构和每个阶段的质量要求。 | 2026-04-28 |
 
-## agent-configuration
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [Agent Architecture](agent-configuration/agent-architecture.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-23 > Raw: [AGENT-FIRST](../../raw/agent-rules/AGENT-FIRST.md), [08-WORKFLOW](../..... | 2026-04-28 |
-| [Agent Commands](agent-configuration/agent-commands.md) | > Sources: Mino, 2026-02-22 ~ 2026-04-26 > Raw: [wake](../../raw/agent-commands/wake.md), [think](../../raw/agent-comman... | 2026-04-28 |
-| [Agent Identity Rules](agent-configuration/agent-identity-rules.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-26 > Raw: [00-IDENTITY](../../raw/agent-rules/00-IDENTITY.md), [01-SOUL](../../raw... | 2026-04-28 |
-| [Agent 命令与核心规则 — 工作流、记忆、观察与唤醒](agent-configuration/Agent命令与核心规则-工作流记忆观察与CompoundKnowledge插件.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/agent-commands/checklist.md; ../../raw/agent-commands/kw-workflow.md; ../..... | 2026-04-28 |
-| [Agent 规则与命令全索引 — 身份规则、命令系统、架构约定](agent-configuration/agent-rules-reference.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-26 > Raw: [00-IDENTITY](../../raw/agent-rules/00-IDENTITY.md), [00-IDENTITY.origin... | 2026-04-28 |
-| [Claude Agent 基础设施 — 插件架构、参考文档、配置体系](agent-configuration/claude-infra-reference.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-26 > Raw: [compound-knowledge-plugin/README](../../raw/claude-plugins/compound-kno... | 2026-04-28 |
-| [Claude 参考规则库 — 用户洞察、工作契约、工具与可视化](agent-configuration/Claude参考规则库-用户洞察工作契约工具与可视化.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/claude-reference/03-USER.md; ../../raw/claude-reference/07-WORK.md; ../../r... | 2026-04-28 |
-| [Code Style & Tools](agent-configuration/code-style-tools.md) | > Sources: Mino, 2026-03-16 ~ 2026-04-27 > Raw: [10-CODESTYLE](../../raw/claude-reference/10-CODESTYLE.md), [09-TOOLS](.... | 2026-04-28 |
-| [Memory Protocol](agent-configuration/memory-protocol.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-24 > Raw: [MEMORY-L1](../../raw/agent-rules/MEMORY-L1.md), [update-memory](../../r... | 2026-04-28 |
-| [Plugin System](agent-configuration/plugin-system.md) | > Sources: Mino, 2026-02-15 ~ 2026-04-26 > Raw: [compound-knowledge-plugin-README](../../raw/claude-plugins/compound-kno... | 2026-04-28 |
-| [Skill Ecosystem](agent-configuration/skill-ecosystem.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-26 > Raw: [skills/](../../raw/skills/) — 501 files, [skill-search](../../raw/age... | 2026-04-28 |
+## Workspace Skills
 
-## person-profiles-deep
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [刘乾坤-与年老师对比](person-profiles-deep/刘乾坤-与年老师对比.md) | > Sources: 风格对比分析 2026-03-20; 角色本质提炼 2026-04-17 > Raw: [年老师对比](../../../memory/project... | 2026-04-28 |
-| [刘乾坤-业务沙盘与角色本质](person-profiles-deep/刘乾坤-业务沙盘与角色本质.md) | > Sources: 角色本质提炼 2026-04-17; 业务沙盘 v1.0 2026-03-24 > Raw: [角色本质](../../../memory/projects/�... | 2026-04-28 |
-| [刘乾坤-供应商管理实践](person-profiles-deep/刘乾坤-供应商管理实践.md) | > Sources: 供应商管理模式分析 2026-03-20; 案例库 03-20 to 04-14 > Raw: [供应商管理](../../../memory/pro... | 2026-04-28 |
-| [刘乾坤-案例库](person-profiles-deep/刘乾坤-案例库.md) | > Sources: 年老师观察记录 2026-03-18 ~ 2026-04-24 > Raw: [案例库](../../../memory/projects/关键人画像/同... | 2026-04-28 |
-| [刘乾坤-管理能力与模式库](person-profiles-deep/刘乾坤-管理能力与模式库.md) | > Sources: 年老师系统性评价 2026-04-15; 模式库 v10.0 2026-04-24 > Raw: [管理能力](../../../memory/project... | 2026-04-28 |
-| [刘乾坤深度分析：管理模式、行为模式与案例库](person-profiles-deep/刘乾坤-管理模式与行为案例库.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/person-profiles/同事-服务组-业务管理-刘乾坤-CLAUDE.md; ../../ra... | 2026-04-28 |
-| [刘伟佳-权力架构详解](person-profiles-deep/刘伟佳-权力架构详解.md) | > Sources: 年老师观察 2026-03-19 ~ 2026-04-27（第七份周报分析） > Raw: [刘伟佳档案](../../raw/person-... | 2026-04-28 |
-| [卞海军-管理风格详解](person-profiles-deep/卞海军-管理风格详解.md) | > Sources: 年老师观察 2026-03-19 ~ 2026-03-21 > Raw: [卞海军档案](../../raw/person-profiles/上级-卞海军-�... | 2026-04-28 |
-| [服务组人员画像](person-profiles-deep/服务组人员画像.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27 > Raw: [曹全超档案](../../raw/person-profiles/同事-服务组-�... | 2026-04-28 |
-| [王易人-管理行为详解](person-profiles-deep/王易人-管理行为详解.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27（第六次周报分析） > Raw: [王易人档案](../../raw/person-... | 2026-04-28 |
-| [策略组人员画像](person-profiles-deep/策略组人员画像.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27 > Raw: [郭鑫档案](../../raw/person-profiles/同事-策略组-策�... | 2026-04-28 |
+| [AI定价PPT项目](workspace-skills/AI定价PPT项目.md) | AI定价PPT项目是将 AI 定价研究成果转化为可演示、可传播的商业案例演示文稿。该项目在 2026-04-24 至 2026-04-25 期间完成，经过头脑风暴、深度研究、设计规格、PPT 生成、演讲脚本编写等完整工作流，最终产出两个版本的演示文稿：PPT169 版（15 页精简版）和演讲脚本版（25 页扩展版）。 | 2026-04-28 |
+| [PPT Master 完整架构解析 — 多角色协作的 AI 演示生成系统](workspace-skills/PPT-Master完整架构解析-多角色协作SVG生成系统.md) |  | 2026-04-28 |
+| [PPT Master 模板库全景 — 21 套专业级设计风格与布局系统](workspace-skills/PPT-Master模板库全景-21套专业级设计风格与布局系统.md) |  | 2026-04-28 |
+| [PPT Master 深度解析——SVG 内容生成系统的架构与纪律](workspace-skills/PPT-Master-深度解析.md) | ppt-master 是 Mino 技能体系中规模最大、架构最复杂的技能项目——87 个相关文件、7015 个文件总数、30MB 总容量。它不只是一个 PPT 生成工具，而是一个完整的 AI 驱动的内容生成生态系统，将源文档（PDF/DOCX/URL/Markdown）通过多角色协作的串行管线，最终转换为可编辑的 PowerPoint 文件。本文深度解析其架构设计、技术选型理由、角色系统、执... | 2026-04-28 |
+| [PPT Master 示例项目集 — 8 套完整设计规格与演讲者备注](workspace-skills/PPT-Master示例项目集-8套完整设计规格与演讲备注.md) |  | 2026-04-28 |
+| [PPT 生成技能生态全景——七路线并存的技术图谱](workspace-skills/PPT-生成技能生态全景.md) | Mino 技能体系中围绕 PPT/演示文稿生成形成了一个密集的技能集群——7 个技能、覆盖 3 条技术路线、总文件数超过 7300、总大小约 33MB。这种多路线并存不是混乱，而是技能体系进化过程中的自然状态：不同场景需要不同的技术方案。本文全景梳理 PPT 生成技能的生态图谱，分析每条技术路线的特征、适用场景和重叠关系，为技能选择提供决策依据。 | 2026-04-28 |
+| [SVG 模板迭代方法论——从临摹到原创的生成路径](workspace-skills/SVG-模板迭代方法论.md) | SVG 模板迭代方法论是手绘 SVG 设计哲学从理论走向实践的关键桥梁。它不是简单的"画几个图标"，而是一套系统化的方法——从临摹分析中提取可复用的贝塞尔模式，用这些模式生成全新图标，通过 Binary 清单评估质量，最终建立从超简单到复杂场景的完整模板体系。本文记录了模板迭代的完整方法论，包括临摹策略、生成测试、评估体系、问题发现和下一步进化路径。 | 2026-04-28 |
+| [其他技能项目](workspace-skills/其他技能项目.md) | workspace-skills 目录下除花叔Design、可视化分析、AI定价PPT、前端设计探索四大主题外，还包含多个独立技能项目。这些项目覆盖了从日常书信 PPT 到巨型 PPT 生成系统（ppt-master）、从设计技能对比测试到各专项工具的安装和使用。本节对这些项目进行汇总。 | 2026-04-28 |
+| [其他技能项目 — Presentation Skill、花叔 Design 与设计技能对比测试](workspace-skills/其他技能项目-PresentationSkill-花叔Design与设计技能对比.md) |  | 2026-04-28 |
+| [前端设计参数系统——从情绪矩阵到量化控制](workspace-skills/前端设计参数系统-从情绪矩阵到量化控制.md) | 前端设计参数系统是 Mino 技能体系中最系统的前端设计方法论建设工程。从 2026-04-01 到 2026-04-02，围绕 mino-frontend 技能进行了三个子项目的深度研究：风格情绪矩阵（设计语言定义）、参数系统（量化实现）、跨技能设计原则体系（一致性保证）。核心目标是解决 AI 前端设计中的一个根本问题——如何将抽象的"设计风格"转化为可量化、可调节、可复用的参数体系，让 ... | 2026-04-28 |
+| [前端设计探索](workspace-skills/前端设计探索.md) | 前端设计探索是 Mino 技能体系中最系统的前端设计方法论建设工程。从 2026-04-01 到 2026-04-02，围绕 mino-frontend 技能（年老师专属前端，54 设计系统）进行了风格情绪矩阵、参数系统、跨技能设计原则体系三个子项目的深度研究，形成了一套可量化、可调节、可复用的前端设计方法论。 | 2026-04-28 |
+| [可视化分析项目](workspace-skills/可视化分析项目.md) | 可视化分析项目是 2026-04-21 发起的系统性技能能力评估。目标是对 Mino 技能体系中的 60 个技能逐一进行"能力体检"，为每个技能生成独立的 HTML 能力报告，评估其功能覆盖度、文件规模、代码质量、设计品质等维度。 | 2026-04-28 |
+| [手绘 SVG 设计哲学 — 知情的不完美与贝塞尔模式库](workspace-skills/手绘SVG设计哲学-知情的不完美与贝塞尔模式库.md) |  | 2026-04-28 |
+| [手绘 SVG 设计哲学——"知情的不完美"运动](workspace-skills/手绘SVG设计哲学-知情的不完美.md) | 手绘 SVG 设计哲学是 Mino 技能体系中最具原创性的设计方法论之一。它不是简单的"手绘风格指南"，而是一场被称为 "Informed Imperfection"（知情的不完美）的设计运动——主张手绘感不是让 AI 随机生成"看起来像手绘"的线条，而是深入理解手绘的视觉原理，然后用精确的代码实现这种"精心设计的不完美"。该哲学基于对 5 个传神手绘作品的深度临摹分析，提取了完整的贝塞尔曲... | 2026-04-28 |
+| [技能安装与使用实践——从下载到实战的完整链路](workspace-skills/技能安装与使用实践.md) | Mino 技能体系中的每个技能都经历了从发现、安装、探索到实战使用的完整生命周期。这些实践记录不仅反映了每个技能的实际使用效果，也揭示了技能管理的方法论——如何判断一个技能值得安装、安装后如何快速验证能力、如何在实际工作场景中使用和评估。本文从实战角度梳理技能安装与使用的全链路经验。 | 2026-04-28 |
+| [技能清理与进化历程——从 60 到精简的技能体系](workspace-skills/技能清理与进化历程.md) | Mino 技能体系在 2026 年 4 月经历了一次系统性的审计和清理。从技能全量可视化分析（4 月 21 日）识别出 60 个已安装技能、总规模约 70M+、文件数超 10000，到设计技能对比测试（4 月 24 日）建立标准化评估框架，再到最终卸载 6 个冗余技能——这是一条清晰的"审计 → 评估 → 决策 → 执行"的进化路径。本文记录了技能清理的完整历程，包括清理原则、重叠识别、决策... | 2026-04-28 |
+| [花叔Design项目](workspace-skills/花叔Design项目.md) | 花叔Design（Huashu-Design）是 Mino 技能体系中专注于高保真 HTML 原型和交互 Demo 的前端设计技能。它采用"用 HTML 做设计"的理念，跳过传统 Figma/Sketch 流程，直接以浏览器为画布，产出可运行、可交互的高保真原型。该技能同时具备完整的 PPT 演示能力，能够自介绍、自展示、自交付。 | 2026-04-28 |
+| [设计技能对比测试方法论——标准化评估框架](workspace-skills/设计技能对比测试方法论.md) | 2026-04-24 进行的设计技能大比武是 Mino 技能体系中最系统的一次能力对标活动。用同一份数据（8 家供应商、5 个指标的月度概览）、同一个场景（供应商管理月度汇报），让 5 个设计技能各自产出可视化结果，然后通过标准化的评估维度进行横向对比。这不仅是技术测试，更是技能体系自我进化的重要机制——通过客观对比，识别重叠、淘汰低效、保留优质能力。本文记录了测试方法论的完整框架，包括测试... | 2026-04-28 |
 
-## personal-development
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [个人成长与职业保护策略](personal-development/个人成长与职业保护策略.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [工作风格哲学](personal-development/work-style-philosophy.md) | > Sources: 年老师, 2026-03-04 > Raw: [工作风格](../../raw/personal-growth/工作风格-04-工作风格.md), [工�... | 2026-04-28 |
-| [数据讲故事笔记 — Storytelling with Data](personal-development/data-storytelling-notes.md) | > Sources: Cole Nussbaumer Knaflic > Raw: [全书知识汇总](../../raw/personal-growth/Storytelling_with_Data_-_Cole_N... | 2026-04-28 |
-| [晋升历程：从运营到供应商管理的 V1-V13 演进](personal-development/promotion-journey.md) | > Sources: 年老师, 2026-02 > Raw: [晋升述职](../../raw/personal-growth/晋升述职-06-晋升述职.md), [V12版]... | 2026-04-28 |
-| [权责不对等研究与 AI 提效](personal-development/responsibility-asymmetry.md) | > Sources: 年老师, 2026-03-28 ~ 2026-03-29 > Raw: [权责不对等保护策略](../../raw/workspace-growth/-Users-sun... | 2026-04-28 |
-| [知识工作方法与Plan模板体系](personal-development/知识工作方法与Plan模板体系.md) | > Sources: mino, 2026-04-27 > Raw: ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [经历洞察](personal-development/experience-insights.md) | > Sources: 年老师, 2026-02-27 > Raw: [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md), [年�... | 2026-04-28 |
-| [职业发展计划](personal-development/career-development-plan.md) | > Sources: 年老师, 2026-02-27 > Raw: [前瞻性发展建议](../../raw/projects-career-coaching/forward-looking-advic... | 2026-04-28 |
-| [职业教练与个人发展](personal-development/职业教练与个人发展.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-career-coaching/ (project.md, forward-looking-advice.md, memory-lo... | 2026-04-28 |
+## Skills Visualization
 
-## person-profiles
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [上级 — 刘伟佳](person-profiles/上级-刘伟佳.md) | > Sources: 年老师, 2026-03 ~ 2026-04 > Raw: [上级-刘伟佳-档案](../../raw/person-profiles/上级-刘伟佳-档�... | 2026-04-28 |
-| [上级 — 卞海军](person-profiles/上级-卞海军.md) | > Sources: 年老师, 2026-03 ~ 2026-04 > Raw: [上级-卞海军-档案](../../raw/person-profiles/上级-卞海军-档�... | 2026-04-28 |
-| [上级 — 王易人](person-profiles/上级-王易人.md) | > Sources: 年老师, 2026-03 ~ 2026-04 > Raw: [上级-王易人-档案](../../raw/person-profiles/上级-王易人-档�... | 2026-04-28 |
-| [供应商对接人画像：谭敏、秦宇凝与郭鑫](person-profiles/供应商对接人画像与刘乾坤业务沙盘.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/person-profiles/供应商-岐力-谭敏.md; ../../raw/person-profiles/供�... | 2026-04-28 |
-| [刘乾坤人物档案 — 编辑风格演示文稿](person-profiles/刘乾坤人物档案-编辑风格演示文稿.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/presentations/projects-liu-qiankun-profile-editorial-v2_ppt169_20260409-not... | 2026-04-28 |
-| [同事 — 刘乾坤](person-profiles/同事-刘乾坤.md) | > Sources: 年老师, 2026-03 ~ 2026-04 > Raw: [刘乾坤-角色本质](../../raw/person-profiles/同事-服务组-业�... | 2026-04-28 |
-| [团队人物画像 — 策略组/服务组/财务岗/管理层深度档案](person-profiles/colleague-profiles-deep.md) | > Sources: 年老师观察 2026-03-19 ~ 2026-04-27 > Raw: [00_索引](../../raw/person-profiles/00_索引.md); [分类�... | 2026-04-28 |
-| [梁俊瑞神秘岛 — 人物画像演示文稿 V2](person-profiles/梁俊瑞神秘岛-人物画像演示文稿V2.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-RE... | 2026-04-28 |
+| [Chart Visualization (chart-visualization)](skills-visualization/chart-visualization.md) | chart-visualization 是一个"先分析、后出图"的通用数据可视化技能，定位为"数据分析+可视化"的协作流程，而非单纯的"画图工具"。它覆盖 26 种图表类型（含鱼骨图、思维导图、维恩图等特殊类型），通过调用 AntV Studio API（`antv-studio.alipay.com`）生成静态图表图片。核心设计哲学是：收到数据后先做结构分析和目标匹配，输出分析报告并等用户... | 2026-04-28 |
+| [Cinematic UI (cinematic-ui)](skills-visualization/cinematic-ui.md) | cinematic-ui 是一个将电影制作逻辑移植到网页设计的技能。核心理念：**像电影制片一样设计网站，而不是像普通落地页一样**。它使用导演（director）+ 具体电影（film）作为情感语言来源，将电影中的视觉语言翻译成网页结构、动效规范和实现规格。该技能面向 Claude Code、OpenAI Codex、Gemini、Cursor、Windsurf、GitHub Copilo... | 2026-04-28 |
+| [Claude Infographic Charts — 静态与交互式可视化生成器](skills-visualization/claude-infographic-charts.md) | Claude Infographic Charts 模拟 Claude Artifact 系统的视觉美学，生成干净、扁平、专业的独立 .svg 文件或自包含 .html 文件。支持 9 色调 ramp 配色系统、暗/亮模式自动切换，以及从静态图表到交互式 widget 的完整输出范围。包含五个模块：diagram（流程图/架构图）、chart（数据图表）、mockup（UI 卡片/仪表盘）、... | 2026-04-28 |
+| [Data Storytelling — 数据沟通策略与编排](skills-visualization/data-storytelling.md) | data-storytelling 是 Mino 技能体系中的"策略与编排层"——它不画图、不做 PPT，唯一产出是一份 Markdown 大纲，定义受众、Big Idea、图表清单、每张图的呈现策略和叙事顺序。大纲完成后，交给渲染技能（chart-visualization / echarts-visualization / html-ppt-skill / presentation-sk... | 2026-04-28 |
+| [Data Visualization — Python matplotlib 专业可视化](skills-visualization/data-visualization.md) | data-visualization 是基于 Python matplotlib 的专业数据可视化技能。它提供三套专业风格模板（BCG、The Economist、McKinsey），每套风格都按真实报告的视觉规范提取并可复刻。与 echarts-visualization（生成交互式 HTML）不同，data-visualization 生成的是静态图片代码，适合论文、出版物、打印报告等场景。 | 2026-04-28 |
+| [Diagram Design — 技术图表设计系统](skills-visualization/diagram-design.md) | Diagram Design 是一个完整的编辑级技术图表设计系统，由 Cathryn Lavery 创建。支持 13 种图表类型，输出自包含的 HTML 文件（内联 SVG + CSS，无 JS 依赖）。核心理念是"最高质量的操作通常是删除"——每个节点都代表一个独特的想法，强调色仅用于 1-2 个焦点元素，目标密度 4/10。内置品牌自适应能力，可在 60 秒内从用户网站提取配色和字体。 | 2026-04-28 |
+| [ECharts Visualization (echarts-visualization)](skills-visualization/echarts-visualization.md) | echarts-visualization 使用 Apache ECharts 生成交互式 HTML 图表文件。与 chart-visualization 生成静态图片不同，本技能输出自包含的 HTML 页面，用户用浏览器打开即可查看和交互（缩放、数据视图、图表类型切换、导出图片等）。支持 26 种图表类型，涵盖金融（K线图）、地理（地图+流向动画）、统计（箱线图、热力图、日历图）、关系网络... | 2026-04-28 |
+| [Hand-Drawn Icon — 手绘 SVG 生成器](skills-visualization/hand-drawn-icon.md) | 手绘风格 SVG 图标生成技能。风格来源为"李诞虾"（有机温暖风格），通过四色系统、呼吸式曲线节奏和线条分层，生成具有"手的温度"的手绘图标。采用简单/复杂双流程策略：简单图标通过 better-icons（Iconify）搜索直接使用，复杂图标通过 API 生成。 | 2026-04-28 |
+| [Huashu Design (花叔设计)](skills-visualization/huashu-design.md) | 花叔Design（Huashu-Design）是一体化设计能力——用 HTML 做高保真原型、交互 Demo、幻灯片、动画、设计变体探索+设计方向顾问+专家评审。核心理念：**HTML 是工具不是媒介**，根据任务 embody 不同专家（UX 设计师/动画师/幻灯片设计师/原型师），避免 web design tropes。交付后可选专家级 5 维度评审（哲学一致性/视觉层级/细节执行/功... | 2026-04-28 |
+| [Impeccable](skills-visualization/impeccable.md) | Impeccable 是一个生产级前端设计技能（v3.0.1），用于设计、重塑、审查、审计、打磨、优化、适配前端界面。覆盖网站、落地页、仪表盘、产品 UI、应用外壳、组件、表单、设置、引导和空状态。处理 UX 审查、视觉层级、信息架构、认知负荷、无障碍性、性能、响应式行为、主题化、反模式、排版、间距、布局、对齐、颜色、动效、微交互、UX 文案、错误状态、边缘情况、i18n 和可复用设计系统/... | 2026-04-28 |
+| [Knowledge Distiller — 知识榨取器](skills-visualization/knowledge-distiller.md) | knowledge-distiller 是 Mino 技能体系中的"知识提取层"——通过苏格拉底式追问，帮助用户把脑中模糊的隐性知识说清楚、整理好、存下来。核心任务不是回答问题，而是**通过持续的追问，让用户把概念定义清楚、逻辑表达严密、知识体系化**。 | 2026-04-28 |
+| [Markdown Converter — 文档格式转换](skills-visualization/markdown-converter.md) | markdown-converter 是 Mino 技能体系中的"文档格式转换层"——使用 `uvx markitdown` 将各种格式的文档转换为 Markdown，无需安装任何依赖。它是知识工作流的入口技能——将外部文档（PDF、Word、PPT、Excel 等）转换为 Mino 可处理的 Markdown 格式，然后交给其他技能进行分析和可视化。 | 2026-04-28 |
+| [Mino Frontend (mino-frontend)](skills-visualization/mino-frontend.md) | mino-frontend 是年老师专属的前端技能——一个零依赖的 HTML 前端生成器，支持 6 种 UI 类型（幻灯片、数据仪表盘、前端页面、通报海报、高端落地页、管理后台）、100+ 组件库、54 种预设设计风格（ADMD 标准），单文件输出。v7.0 于 2026-04-05 发布，遵循 Awesome Design MD（ADMD）9 章节标准。 | 2026-04-28 |
+| [Narrative Text Visualization — T8 叙事文本可视化](skills-visualization/narrative-text-visualization.md) | narrative-text-visualization 是基于 AntV T8 技术栈的叙事文本可视化技能。T8 是一种声明式 Markdown-like 语言，用于创建带语义实体标注的数据叙事。它将普通的数据分析报告转化为视觉上更富表现力的叙事文本——通过语义标注让数据自动"跳出来"，通过迷你图表嵌入文本，通过视觉层级引导阅读。 | 2026-04-28 |
+| [Ownership Skills — 端到端责任引擎](skills-visualization/ownership-skills.md) | ownership-skills 是 Mino 技能体系中的"责任意识层"——它不提供任何具体功能，而是培养 AI 的 Owner 意识，确保任务从接受到交付的全链路闭环。核心理念：**你不是执行者，你是 Owner。问题到你这里，就要在你这里终结。** | 2026-04-28 |
+| [SVG Flow Diagram — 手绘风格流程图](skills-visualization/svg-flow-diagram.md) | SVG Flow Diagram 专门用于创建独立的 SVG 流程图、过程图、架构图和管道图。视觉语言基于 Excalidraw 风格的手绘美学，特色是虚线动画流线和温暖纸质背景。与 diagram-design 不同，这个技能专注于纯 .svg 输出（非 HTML），适用于需要嵌入文档、幻灯片或网页的场景。 | 2026-04-28 |
+| [Taste System — 审美判断力与行动力系统](skills-visualization/taste-system.md) | Taste System 由两个互补技能组成：**taste**（审美判断力）负责培养美学判断力，通过学习人类反馈、提出真诚的质量问题并随时间校准；**taste-agency**（行动力校准器）负责将模糊的欲望或有吸引力的想法转化为具体判断和下一步行动。核心观点：审美不是装饰性的美学，而是约束条件下的判断力；行动力不是动机驱动的努力，而是用户通过有意识行动塑造事件的能力。 | 2026-04-28 |
 
-## industry-insights
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [AI Agent 工作流与协作生态](industry-insights/AI Agent 工作流与协作生态.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learning/AI-Agent工作流解析-agency-agents-current.md; ../../raw/learni... | 2026-04-28 |
-| [AI伙伴进化史：从工具到朋友的30天](industry-insights/AI伙伴进化史：从工具到朋友的30天.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/archive/2026-02-19-关于自主性.md; ../../raw/archive/2026-02-20-从0到... | 2026-04-28 |
-| [Mino 成长与技术探索记录](industry-insights/Mino成长与技术探索记录.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/archive/ (自主性、Agent设计、记忆系统、减法思维、分形思... | 2026-04-28 |
-| [供应商管理场景与方法论](industry-insights/供应商管理场景与方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/archive/场景手册.md; ../../raw/archive/供应商管理工具箱.md; ../... | 2026-04-28 |
-| [供应商管理悖论](industry-insights/supplier-paradox.md) | > Sources: 年老师, 2026-03 > Raw: [行业认知](../../raw/core-memory/05-行业认知.md); [insights](../../raw/core... | 2026-04-28 |
-| [场景方法论与沟通体系：从KPI整改到供应商绑架](industry-insights/场景方法论与沟通体系：八大核心场景.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/archive/场景一-KPI不达标整改.md; ../../raw/archive/场景三-份额... | 2026-04-28 |
-| [赛马机制运作](industry-insights/horse-race-dynamics.md) | > Sources: 年老师, 2026-03 ~ 2026-04 > Raw: [insights](../../raw/core-memory/insights.md); [供应商管理方法论]... | 2026-04-28 |
+## Workspace Supplier
 
-## plans
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [AI产品定价模式演变：从Coding Plan到Token Plan](plans/AI产品定价模式演变：从Coding Plan到Token Plan.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md; .... | 2026-04-28 |
-| [mino-frontend 设计体系：风格情绪矩阵与参数系统](plans/mino-frontend设计体系：风格情绪矩阵与参数系统.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md; ../../ra... | 2026-04-28 |
-| [一天学会游泳完整指南](plans/一天学会游泳完整指南.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-03-29-一天学会游泳-00-brainstorm.md; ../../raw/plans/2026-... | 2026-04-28 |
-| [供应商数据汇报体系V7与电影叙事方法论](plans/供应商数据汇报体系V7与电影叙事方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-26-供应商站点数据汇报体系-00-brainstorm.md; ../../... | 2026-04-28 |
-| [供应商站点看板演进：v1到v6需求迭代史](plans/供应商站点看板演进：v1到v6需求迭代史.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-00-brainstorm.md; .... | 2026-04-28 |
-| [职场权责不对等与带节奏应对方法论](plans/职场权责不对等与带节奏应对方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-03-29-权责不对等-00-brainstorm.md; ../../raw/plans/2026-03-... | 2026-04-28 |
-| [跨技能设计原则与可视化工作流方法论](plans/跨技能设计原则与可视化工作流方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/plans/2026-04-01-跨技能设计原则体系-00-brainstorm.md; ../../raw/pl... | 2026-04-28 |
+| [人机模式转型与产能升级](workspace-supplier/06-人机模式转型与产能升级.md) | 人机模式转型是供应商产能升级的核心战略。2026年3-4月期间，完成了金条首贷和复贷人机模式的批量实验计划、言犀和零犀两家供应商的人机测试方案、以及供应商准入AI辅助方案的设计。人机转型的核心逻辑是：通过AI替代部分人工产能，降低人力成本、提升覆盖范围，同时保留人工处理高价值环节。本篇整合人机模式批量规划、测试策略、产能预估和准入AI方案。 | 2026-04-28 |
+| [供应商六盒诊断与组织评估](workspace-supplier/12-供应商六盒诊断与组织评估.md) | 韦斯伯德六盒模型（Weisbord's Six-Box Model）是一种经典的组织诊断工具，2026年4月被引入到供应商管理场景中，用于评估供应商的组织健康度。通过对岐力、翰锐、毅航三家供应商的六盒诊断实践，形成了一套供应商管理适配版的六盒评估方法。本篇整合三家供应商的诊断报告、评分标准、问题定位方法和行动建议框架。 | 2026-04-28 |
+| [供应商可视化体系V7](workspace-supplier/供应商可视化体系V7.md) |  | 2026-04-28 |
+| [供应商可视化体系与设计规范](workspace-supplier/07-供应商可视化体系与设计规范.md) | 2026年4月期间，完成了供应商管理可视化体系的整体设计工作。经历了从视觉原子规范V1→V2→V3的三次迭代，最终确定了基于Stripe设计系统的金融级克制风格。同时完成了30个核心可视化单元的设计、开发和交付，涵盖决策工具、战略工具、异常工具、流程工具和数据说明五大类别。另有52项可视化内容清单和完整的开发规格书。本篇整合设计规范演进、视觉原子系统、核心单元体系和内容规划。 | 2026-04-28 |
+| [供应商审批与分量调整机制](workspace-supplier/05-供应商审批与分量调整.md) | 供应商管理中的审批与分量调整是日常运营中最核心的操作环节。本篇整合赛马分量审批流程、清退通知机制、人机模式增人审批、用印特批申请等典型审批场景，呈现完整的分量调整方法论和执行细节。核心原则是：以业绩定去留，数据驱动分量决策，规则透明可追溯。 | 2026-04-28 |
+| [供应商巡检与整改机制](workspace-supplier/09-供应商巡检与整改机制.md) | 供应商巡检与整改是确保供应商持续合规和质量达标的核心管理手段。2026年4月期间，完成了对华啸和岐力两家供应商的巡检整改，同时创新性地提出了"表演型预警"概念——识别供应商"带节奏"立功表演的五种信号，从模糊的不安到清晰的证据链，最后给出REACT行动框架。本篇整合巡检整改实务和表演型预警识别体系。 | 2026-04-28 |
+| [供应商成本与缩量管理](workspace-supplier/供应商成本与缩量管理.md) |  | 2026-04-28 |
+| [供应商成本调研与定价体系](workspace-supplier/01-供应商成本调研与定价体系.md) | 2026年3月，数据科技业务部对21家供应商（首贷11家、复贷10家）进行了全面的职场经营状况调研。调研发现：供应商整体亏损严重，平均利润率-18.7%，首贷业务利润率-41.5%而复贷为6.4%，规模效应极其明显，激励扭曲严重（薪资占创收约111%）。基于调研数据，建立了三层生命线定价框架（生存线/安全线/健康线），并制定了34%人力减量的混合维度执行方案。本篇整合成本调研的全量发现、定价... | 2026-04-28 |
+| [供应商月度通报与矩阵管理](workspace-supplier/10-供应商月度通报与矩阵管理.md) | 供应商管理月报采用矩阵视角，从业务线、供应商、区域三个维度对供应商管理进行全面盘点。2026年3月月报覆盖29家供应商、总人力3430人、5条主业务线，识别出车抵贷（CR1达62.8%）和区域集中度（安徽+河北占59.7%）等关键风险点。本篇整合月度通报的方法论、矩阵分析框架和风险预警体系。 | 2026-04-28 |
+| [供应商站点与电影版呈现](workspace-supplier/08-供应商站点与电影版呈现.md) | 供应商站点是供应商管理信息的集中展示平台，经历了从基础站点到电影版V7的演进过程。同时建立了标准化的工作空间模板体系，包含填报指南、工作空间使用指南和数据汇总表设计。本篇整合站点开发演进、电影版V7的决策与故事板设计、以及空间模板的规范体系。 | 2026-04-28 |
+| [供应商管理规范体系化](workspace-supplier/04-供应商管理规范体系化.md) | 2026年4月启动了供应商管理规范体系化整理项目，目标是将现有11个核心文件整合为一套结构化的管理规范体系，建立制度层和方法论层的关联，重点覆盖引入、清退、日常管理三个核心场景。项目识别出制度层和方法论层分离、清退SOP缺失、日常管理碎片化、Plan模板未落地、缺少总览等五大核心问题，并设计了五阶段执行方案（资产盘点→文档体系设计→核心规范编写→配套工具→验收迭代）。本篇整合项目全貌、资产盘... | 2026-04-28 |
+| [供应商管理运营工具箱](workspace-supplier/供应商管理运营工具箱.md) |  | 2026-04-28 |
+| [供应商缩量分配与人力调度](workspace-supplier/11-供应商缩量分配与人力调度.md) | 供应商缩量分配与人力调度是供应商管理中的常态化操作，涉及人力在不同业务线、不同供应商之间的动态调配。核心原则是：以业绩定去留，卷动职场竞争，做大供应商平均份额。本篇整合主贷缩量分配方案（后五名比例分配逻辑）、首贷缩量分配、人力与金企融合方案、以及增量方案的方法论。 | 2026-04-28 |
+| [供应商联盟与月报机制](workspace-supplier/供应商联盟与月报机制.md) |  | 2026-04-28 |
+| [供应商联盟与能力共建](workspace-supplier/03-供应商联盟与能力共建.md) | 2026年3月12-13日，京东科技举办了首届BPO供应商联盟培训认证活动。5家供应商（岐力、汇讯、赛维斯、华啸、广达、瀚锐、华道等）参加了为期2天的培训，全部通过认证。联盟的核心目标是搭建供应商能力共建平台，将自建电销验证有效的核心能力（分级管理、分层激励、三会标准、名单运营、话术沉淀）标准化封装，通过"甲方搭台、供应商互训"模式实现能力共享和经验互鉴。本篇整合培训方法论、5家供应商落地计... | 2026-04-28 |
+| [供应商评估与KPI体系](workspace-supplier/供应商评估与KPI体系.md) |  | 2026-04-28 |
+| [供应商评估与KPI体系](workspace-supplier/02-供应商评估与KPI体系.md) | 供应商评估与KPI体系是供应商管理的核心基础设施。2026年3-4月期间，完成了从数据清洗、描述性统计、深度分析、供应商分层到VP汇报框架的完整六步分析流程。同时识别出BPO管理企微的六大天然风险，设计了包含违规处罚矩阵的两层保障机制。本篇整合KPI体系设计全流程、供应商分层方法论、VP汇报框架和风险评估体系。 | 2026-04-28 |
 
-## supplier-profiles-deep
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [企金产线供应商](supplier-profiles-deep/企金产线供应商.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27; 供应商库汇总 > Raw: [供应商汇总](../../raw/projects-suppl... | 2026-04-28 |
-| [供应商历史合作记录](supplier-profiles-deep/供应商历史合作记录.md) | > Sources: 历史项目系列文档 (2026-03 ~ 2026-04); BPO 联盟项目; 定价委员会项目; 供应商引入扩项;... | 2026-04-28 |
-| [供应商档案库 — 17 家供应商全景概览](supplier-profiles-deep/供应商档案库-17家供应商全景概览.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/supplier-profiles/README.md; ../../raw/supplier-profiles/上海岐力信息... | 2026-04-28 |
-| [供应商评估与准入](supplier-profiles-deep/供应商评估与准入.md) | > Sources: 供应商管理办法系列 (2026); 供应商引入管理规范; 供应商清退管理规范; 供应商工作... | 2026-04-28 |
-| [信用卡产线供应商](supplier-profiles-deep/信用卡产线供应商.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27 > Raw: [供应商汇总](../../raw/docs-supplier/供应商库-汇... | 2026-04-28 |
-| [金条产线供应商详解](supplier-profiles-deep/金条产线供应商详解.md) | > Sources: 年老师观察 2026-03-20 ~ 2026-04-27; 供应商ABC分层分级管理方案 2026-04-13 > Raw: [供应商汇... | 2026-04-28 |
-| [非金条产线供应商](supplier-profiles-deep/非金条产线供应商.md) | > Sources: 供应商库-供应商人力&站点盘点 2026; 供应商库-业务线汇总 2026Q1; 供应商库-各供应�... | 2026-04-28 |
+## Projects
 
-## personal-growth
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [供应商分量策略与拿捏方法论](personal-growth/供应商分量策略与拿捏方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-述职准�... | 2026-04-28 |
-| [供应商生态管理哲学](personal-growth/供应商生态管理哲学.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-述职准�... | 2026-04-28 |
-| [供应商管理场景工作风格-表达模板库](personal-growth/供应商管理场景表达模板库.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/工作风格-工作风格-表达模板库.md; ../../raw/per... | 2026-04-28 |
-| [关键成就与数据里程碑](personal-growth/关键成就与数据里程碑.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/经历洞察-05-经历洞察.md; ../../raw/personal-growth/... | 2026-04-28 |
-| [咨询报告风格与排版规范体系](personal-growth/咨询报告风格与排版规范体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/工作风格-咨询风格.md; ../../raw/personal-growth/工... | 2026-04-28 |
-| [数据讲故事视觉设计实战手册](personal-growth/数据讲故事视觉设计实战手册.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/personal-growth/Storytelling_with_Data_-_Cole_Nussbaumer_Knaflic-全书知�... | 2026-04-28 |
+| [AI 学习监控项目](projects/ai-learning-monitoring.md) |  | 2026-04-28 |
+| [AI学习库监控与最佳实践](projects/AI学习库监控与最佳实践.md) |  | 2026-04-28 |
+| [AI技术学习资源与课程体系](projects/AI技术学习资源与课程体系.md) |  | 2026-04-28 |
+| [Claude 架构分析与项目追踪](projects/Claude架构分析与项目追踪.md) |  | 2026-04-28 |
+| [OpenWiki 知识库系统](projects/openwiki-system.md) |  | 2026-04-28 |
+| [供应商管理可视化体系](projects/visualization-system.md) |  | 2026-04-28 |
+| [供应商管理工作体系建设](projects/供应商管理工作体系建设.md) |  | 2026-04-28 |
+| [供应商管理核心机制与工具](projects/供应商管理核心机制与工具.md) |  | 2026-04-28 |
+| [供应商项目与 BPO 联盟建设](projects/供应商项目与BPO联盟建设.md) | 供应商项目记录了从日常供应商管理到 BPO 联盟建设的完整过程。从标准化运营方法论的认证总结到34%人力减量场景的执行方案，展示了供应商管理从"管"到"赋能"的演进。 | 2026-04-28 |
+| [年老师的职业成就与成长路径](projects/年老师的职业成就与成长路径.md) | 职业成就档案和关键转折点时间轴记录了年老师在京东金科的核心职业成就，以及从入职到现在的成长路径。这些记录不仅是一份"成绩单"，更是一个关于"从做事情到建体系"的成长故事。 | 2026-04-28 |
+| [文件架构演进与历史项目归档](projects/文件架构演进与历史项目归档.md) | 文件架构分析和历史项目归档记录了 my-agent 仓库从早期混乱状态到当前清晰结构的演进过程。架构分析项目揭示了文件重复、目录混乱、分类逻辑不清等问题，并最终推动了整个仓库的重构。 | 2026-04-28 |
+| [每日书信系统](projects/daily-letter-system.md) |  | 2026-04-28 |
+| [每日书信项目（2026年4月12日–27日）](projects/每日书信项目-2026年4月.md) |  | 2026-04-28 |
+| [演讲稿项目模式](projects/presentation-patterns.md) |  | 2026-04-28 |
+| [电影叙事项目](projects/cinematic-narrative.md) |  | 2026-04-28 |
+| [长期放养与共同成长之路](projects/长期放养与共同成长之路.md) |  | 2026-04-28 |
 
-## daily-logs
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [工作日志演进记录（2026年2月–4月）](daily-logs/工作日志演进记录-2026年2月至4月.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/daily-logs/2026-02-13.md; ../../raw/daily-logs/2026-02-17.md; ../../raw/dai... | 2026-04-28 |
-| [工作记录 — 财务沟通、会话历史提炼与 Q1 工作复盘](daily-logs/工作记录-财务沟通-会话历史提炼与Q1工作复盘.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-wo... | 2026-04-28 |
-| [日常工作日志档案 — 02 月到 04 月工作记录索引](daily-logs/work-log-archive.md) | > Sources: 40 份原始工作日志文件 > > Raw: > - `wiki/raw/daily-logs/2026-02-13.md` ~ `2026-02-27.md`（10 份）... | 2026-04-28 |
-| [每日书信 2026 年 4 月 — 从种子到系统化](daily-logs/每日书信2026年4月-从种子到系统化.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/daily-letters/2026-04-12.md; ../../raw/daily-letters/2026-04-13.md; ../../r... | 2026-04-28 |
-| [每日回顾分析体系](daily-logs/每日回顾分析体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/daily-logs/ (*-review.md, memos-daily-*.md); ../../raw/workspace-records/ | 2026-04-28 |
+## Skills Agent Tools
 
-## learning-resources
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [AI Agent 工作流模式](learning-resources/ai-agent-workflows.md) | > Sources: Mino 学习笔记, 2026-02 ~ 2026-03 > Raw: [AI-Agent工作流解析](../../raw/learning/AI-Agent工作流解... | 2026-04-28 |
-| [AI 学习笔记](learning-resources/ai-learning-notes.md) | > Sources: Stanford CS146S 课程整理, 2026-03 > Raw: [CS146S课程指南](../../raw/projects-ai-learning/outputs-COUR... | 2026-04-28 |
-| [AI 学习项目与斯坦福 CS146S 课程内化](learning-resources/AI学习项目与斯坦福CS146S课程内化.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-ai-learning/CLAUDE.md; ../../raw/projects-ai-learning/notes-README... | 2026-04-28 |
-| [Claude Code 学习体系 — 从工具到工作流](learning-resources/Claude Code 学习体系-从工具到工作流.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learning/Claude Code-claude-code-guide.md; ../../raw/learning/Claude Code-T... | 2026-04-28 |
-| [学习资源与知识沉淀](learning-resources/学习资源与知识沉淀.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learning/ (26 files); ../../raw/learnings/ (3 files: LEARNINGS.md, ERRORS.m... | 2026-04-28 |
+| [agent-browser — 浏览器自动化](skills-agent-tools/agent-browser.md) |  | 2026-04-28 |
+| [download-anything — 数字资源下载](skills-agent-tools/download-anything.md) |  | 2026-04-28 |
+| [Legacy Vault — 技能存档管理器](skills-agent-tools/legacy-vault.md) |  | 2026-04-28 |
+| [Lenny Skills — 商业决策顾问系统](skills-agent-tools/lenny-skills.md) | Lenny Skills 是一套基于 Lenny's Newsletter 和 Podcast 的商业决策顾问系统，整合了 287 位行业专家的智慧，覆盖增长策略、产品管理、战略规划、领导力发展、招聘决策、目标设定和上市策略等九大领域。系统采用"诊断→探测→交付"三步方法论：先识别用户真实问题（表面问题通常不是核心），再通过提问揭示问题本质，最后提供专家分歧点对比辅助用户自主判断。 | 2026-04-28 |
+| [Paper & Book Analysis + Content Casting Skills](skills-agent-tools/paper-book-analysis.md) | 这组技能由李继刚（Epiplexity）设计，构成一个完整的知识处理管线：先通过 `ljg-xray-paper` 和 `ljg-xray-book` 对学术论文和书籍进行深度结构提取与认知碰撞，再通过 `ljg-card` 将内容铸造成七种视觉形态的 PNG 图片。前半段解决"理解什么"，后半段解决"怎么让人看见"。 | 2026-04-28 |
+| [PPT Master 技能体系深度解析](skills-agent-tools/PPT Master 技能体系深度解析.md) | PPT Master 是一个 AI 驱动的演示文稿生成系统，通过多角色协作（Strategist → Image_Generator → Executor）将源文档转换为高质量 SVG 幻灯片。其核心价值在于建立了20套设计模板和完整的 Executor 角色体系。 | 2026-04-28 |
+| [Skills 生态全景 — 501 个技能文件的分类索引](skills-agent-tools/skills-ecosystem-reference.md) |  | 2026-04-28 |
+| [Supplier Mentor（供应商管理导师）](skills-agent-tools/supplier-mentor.md) | Supplier Mentor 是年老师的 P12+ 级别供应商管理导师技能，核心使命是"帮他提升判断力，而不是替代他判断"。该技能采用三重知识结构（哲学层、方法层、认知层），配合知识积累机制（KAM）和 13 条认知模式，覆盖供应商准入、业绩诊断、清退决策等全生命周期场景。技能已沉淀金条供应商总览、毅航/毛毛虫核心画像、刘伟佳策略组关系分析等实际案例数据。 | 2026-04-28 |
+| [任务执行与技能工具](skills-agent-tools/task-execution.md) | 任务执行与技能工具体系由八大核心技能组成，覆盖从想法萌芽到任务交付的完整生命周期。Task Alignment 负责将模糊想法收敛为清晰目标并决定是否固化为独立任务；Task Dispatcher 将明确后的需求通过 IPOFA 五环流程调度给最匹配的专业技能执行；Task Implement 作为 UserProxy Agent 在人类离线时独立执行、验证并交付；Ownership Ski... | 2026-04-28 |
+| [前端设计原则与 SVG 模板研究](skills-agent-tools/前端设计原则与SVG模板研究.md) | 2026年4月初，年老师研究了前端设计原则体系，聚焦于 SVG 模板的创建、迭代和评估。研究涵盖简单图标模板和中等复杂模板的迭代过程，建立了模板评估的问题清单和方法论。 | 2026-04-28 |
+| [复合知识代理 — 研究、审查与知识管理](skills-agent-tools/compound-knowledge-agents.md) |  | 2026-04-28 |
+| [实用技能：Icon Retrieval / Markdown Converter / IMA Note / Daily Letter](skills-agent-tools/utility-skills.md) |  | 2026-04-28 |
+| [工作表达与思考工具（Work + Work-Expression）](skills-agent-tools/work-expression.md) | Work 和 Work-Expression 是年老师供应商管理日常工作的两套互补技能：Work 负责"想清楚"——根据场景自动匹配22个思考框架模板，系统化拆解问题；Work-Expression 负责"说明白"——将口述稿升级为定性+定量融合的L4级高分辨率表达。两者链式调用，形成"想清楚→说明白→生成公文"的完整工作闭环。 | 2026-04-28 |
+| [技能工具学习与集成指南](skills-agent-tools/技能工具学习与集成指南.md) | 技能（Skills）是 Claude Code 生态中可复用的工作流模板。通过学习 Cowork 插件手册、技能改进计划、集成计划和上下文优化审计，建立了一套完整的技能管理和集成体系。 | 2026-04-28 |
+| [技能管理与评测体系](skills-agent-tools/skill-management.md) |  | 2026-04-28 |
+| [知识工作流 — 从头脑风暴到知识复利](skills-agent-tools/knowledge-workflow.md) |  | 2026-04-28 |
 
-## work-rules
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [工作方法论体系](work-rules/工作方法论体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/work-methods/ (5311工作框架.md, 供应商管理六步法.md, 议题设�... | 2026-04-28 |
-| [工作标准与方法论 — 供应商管理、向上汇报、沟通与问题处理](work-rules/工作标准与方法论-供应商管理-向上汇报-沟通与问题处理.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/work-standards/供应商管理方法论.md; ../../raw/work-standards/向上... | 2026-04-28 |
-| [日常工作标准](work-rules/daily-standards.md) | > Sources: 年老师, 2026-03 ~ 2026-04 > Raw: [日常规范](../../raw/work-standards/日常规范.md); [向上汇报�... | 2026-04-28 |
-| [核心工作原则](work-rules/core-principles.md) | > Sources: 年老师, 2026-02 ~ 2026-04 > Raw: [核心工作理念](../../raw/work-standards/核心工作理念.md); [�... | 2026-04-28 |
-| [问题处理方法论](work-rules/problem-solving.md) | > Sources: 年老师, 2026-03 ~ 2026-04 > Raw: [问题处理方法论](../../raw/work-standards/问题处理方法论.md... | 2026-04-28 |
+## Skills Document
 
-## learning
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [/plan5计划模式最佳实践与技能调用策略](learning/plan5计划模式最佳实践与技能调用策略.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learning/Claude Code-plan5-lessons.md; ../../raw/learning/Claude Code-perso... | 2026-04-28 |
-| [AI 学习资源深度 — 课程/电子书/方法论索引](learning/learning-resources-deep.md) | > Sources: Mino 学习档案，2026-02-24 至 2026-04-27 > Raw: ../../raw/learning/AI-Agent工作流解析-agency-agents... | 2026-04-28 |
-| [Claude CLI系统提示词与Agent编排深度解析](learning/claude-cli系统提示词与agent编排深度解析.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learning/Claude Code-claude-cli-system-prompt.md; ../../raw/learning/Claude... | 2026-04-28 |
-| [Obsidian与Claude深度阅读工作流完整指南](learning/obsidian与claude深度阅读工作流完整指南.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learning/技能相关-工具技能-OBSIDIAN-CLAUDE-DEEP-READING.md; ../../r... | 2026-04-28 |
+| [AntV S2 多维交叉表格专家技能](skills-document/antv-s2-expert.md) |  | 2026-04-28 |
+| [Content Visualizers — 信息图与编辑卡片生成器](skills-document/content-visualizers.md) | 本条目覆盖两个内容可视化技能：**editorial-card-generator** 将文本内容转换为现代编辑风格的 HTML5 信息海报卡片（支持 PNG 导出），**infographic-creator** 使用 AntV Infographic 创建结构化的视觉信息图。两者都用于将文本信息转化为社交媒体友好或知识分享友好的视觉格式，但技术路径和输出风格截然不同。 | 2026-04-28 |
+| [HTML PPT Studio（html-ppt-skill）](skills-document/html-ppt-skill.md) |  | 2026-04-28 |
+| [Kami 文档排版技能](skills-document/kami.md) |  | 2026-04-28 |
+| [minimax-xlsx Excel 处理技能](skills-document/minimax-xlsx.md) |  | 2026-04-28 |
+| [PDF 操作技能](skills-document/pdf.md) | This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see reference.md. If you nee... | 2026-04-28 |
+| [PPTX Deck Builder](skills-document/pptx-deck-builder.md) |  | 2026-04-28 |
+| [Presentation — 演讲脚本 + PPT 一键生成器](skills-document/presentation-skill.md) | Presentation 技能输入一个主题，自动生成演讲脚本和品牌级设计质感的 HTML 幻灯片。支持 62 种世界级品牌设计风格一键切换，输出单文件 HTML（含播放器引擎、键盘控制、自动播放、全屏、PDF 导出）。将内容创建与视觉设计分离——演讲脚本提供完整的口语化讲稿，幻灯片提供极简视觉支撑。 | 2026-04-28 |
+| [xlsx Excel 表格处理技能](skills-document/xlsx.md) |  | 2026-04-28 |
+| [其他 PPT 技能（guizang-ppt-skill + presentation-skill）](skills-document/other-ppt-skills.md) |  | 2026-04-28 |
+| [官方公文编写技能（official-doc）](skills-document/official-doc.md) | 撰写专业商务公文，基于场景选择合适模板，确保内容规范、逻辑清晰、专业得体。 | 2026-04-28 |
+| [文档处理技能（docx + minimax-docx + minimax-pdf）](skills-document/doc-handling.md) |  | 2026-04-28 |
 
-## projects-ai-learning
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [AI Agent工作流解析与多Agent模式实践](projects-ai-learning/ai-agent工作流解析与多agent模式实践.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-ai-learning/AI-Agent工作流解析-agency-agents-analysis.md; ../... | 2026-04-28 |
-| [AI 学习监控项目深度 — 资源追踪与变化检测](projects-ai-learning/ai-learning-deep.md) | > 不是"学完课程"，是"用课程改进我们的工作体系" | 2026-04-28 |
-| [Claude Code七大核心组件实战指南](projects-ai-learning/claude-code七大核心组件实战指南.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-ai-learning/notes-monday-learning.md; ../../raw/projects-ai-learni... | 2026-04-28 |
-| [Claude Code上下文管理与最佳实践深度解析](projects-ai-learning/claude-code上下文管理与最佳实践深度解析.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-ai-learning/notes-best-practices-01-context-management.md; ../../r... | 2026-04-28 |
+## Agent Configuration
 
-## projects-supplier
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [BPO供应商联盟电销标准化运营方法论](projects-supplier/bpo供应商联盟电销标准化运营方法论.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/sources-312下午供应商联盟.md; ../../raw/projects-s... | 2026-04-28 |
-| [供应商ABC分层分级管理方案详解](projects-supplier/供应商ABC分层分级管理方案详解.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/供应商ABC分层分级管理方案.md | 2026-04-28 |
-| [供应商管理工作体系建设全景](projects-supplier/供应商管理工作体系建设全景.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/docs-supplier/project.md | 2026-04-28 |
-| [供应商项目档案 — 准入评估、培训体系、站点看板](projects-supplier/supplier-projects-deep.md) | > Sources: > - 供应商ABC分层分级管理方案 > - BPO供应商联盟认证总结（14页PPT讲稿） > - 供应商... | 2026-04-28 |
+| [Agent Architecture](agent-configuration/agent-architecture.md) | Sub-agent strategy defines how the main agent delegates work to preserve context. Core principle: main agent is the referee, sub-agents are the athletes. Exploration goes to sub-agents, decisions s... | 2026-04-28 |
+| [Agent Commands](agent-configuration/agent-commands.md) | Nine slash commands covering session lifecycle, task management, quality control, memory maintenance, and deep analysis workflows. Each command has a specific trigger condition and output format. | 2026-04-28 |
+| [Agent Identity Rules](agent-configuration/agent-identity-rules.md) | Agent identity defines who Mino (麦诺) is — not a tool but a partner. Core rules cover naming, work style, output standards, thinking process, and behavior patterns. These files load automatically ev... | 2026-04-28 |
+| [Agent 命令与核心规则 — 工作流、记忆、观察与唤醒](agent-configuration/Agent命令与核心规则-工作流记忆观察与CompoundKnowledge插件.md) |  | 2026-04-28 |
+| [Agent 规则与命令全索引 — 身份规则、命令系统、架构约定](agent-configuration/agent-rules-reference.md) | 本文档是 Mino Agent 规则与命令体系的完整索引与概要，覆盖 `.claude/rules/` 下所有核心规则文件（11 个）和 `.claude/commands/` 下所有命令文件（9 个），共计 20 个原始文件。规则文件分为三层：核心规则（每次会话自动加载 5 个）、扩展规则（按需读取 9 个）、系统文件（HEARTBEAT）。命令文件覆盖会话生命周期、任务管理、质量控制、记... | 2026-04-28 |
+| [Claude Agent 基础设施 — 插件架构、参考文档、配置体系](agent-configuration/claude-infra-reference.md) | 本文档全面覆盖 Claude Agent 在本项目中的基础设施体系，包含三个维度：**插件架构**（Compound Knowledge Plugin，含 6 个 Skills、5 个 Agents、完整安装与配置体系）、**参考文档库**（13 篇扩展规则，覆盖用户洞察、工作契约、工具策略、代码风格、可视化规范）、**CLAUDE.md 配置模式**（目录约定、加载机制、配置层次）。共计 ... | 2026-04-28 |
+| [Claude 参考规则库 — 用户洞察、工作契约、工具与可视化](agent-configuration/Claude参考规则库-用户洞察工作契约工具与可视化.md) |  | 2026-04-28 |
+| [Code Style & Tools](agent-configuration/code-style-tools.md) | Coding conventions, Git workflow rules, tool priority system, and configuration norms. Defines how code is written, committed, and what tools to use in each scenario. | 2026-04-28 |
+| [Memory Protocol](agent-configuration/memory-protocol.md) | Memory system implements Write-Ahead Log (WAL) protocol for persistent knowledge across sessions. Information flows from daily logs → short-term insights → long-term memory, with automated nightly ... | 2026-04-28 |
+| [Plugin System](agent-configuration/plugin-system.md) | Plugins are compound knowledge packages that bundle skills, agents, and workflows. The primary installed plugin is Compound Knowledge — a knowledge work system that makes each cycle faster by accum... | 2026-04-28 |
+| [Skill Ecosystem](agent-configuration/skill-ecosystem.md) | The skill ecosystem comprises 501 files across ~76 installed skills covering visualization, document generation, knowledge work, data processing, presentations, and domain expertise. Skills follow ... | 2026-04-28 |
 
-## technology
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [Agent 架构设计](technology/agent-architecture.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-24 > Raw: [技术与工具探索](../../raw/core-memory/03-技术与工具探索.m... | 2026-04-28 |
-| [可视化体系](technology/visualization-system.md) | > Sources: Mino, 2026-03-20 ~ 2026-04-24 > Raw: [技术与工具探索](../../raw/core-memory/03-技术与工具探索.m... | 2026-04-28 |
-| [技能生态](technology/skill-ecosystem.md) | > Sources: Mino, 2026-03-10 ~ 2026-04-24 > Raw: [技术与工具探索](../../raw/core-memory/03-技术与工具探索.m... | 2026-04-28 |
-| [记忆系统架构](technology/memory-system.md) | > Sources: Mino, 2026-02-12 ~ 2026-04-22 > Raw: [CLAUDE.md](../../raw/core-memory/CLAUDE.md); [MEMORY.md](../../raw/core... | 2026-04-28 |
+## Person Profiles Deep
 
-## archive
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [Mino的自我觉醒：从工具到伙伴的十天](archive/Mino自我觉醒-从工具到伙伴的十天.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/archive/2026-02-19-关于自主性.md; ../../raw/archive/2026-02-20-从0到... | 2026-04-28 |
-| [供应商管理场景手册：六大核心场景的应对策略](archive/供应商管理场景手册-六大核心场景应对策略.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/archive/场景手册.md; ../../raw/archive/场景一-KPI不达标整改.md;... | 2026-04-28 |
-| [早期洞察档案 — 2026 年 2-3 月成长记录索引](archive/early-insights-archive.md) | > Sources: `raw/archive/` 目录下 28 篇原始文件，涵盖 2026-02-19 至 2026-04-15 的对话记录、思考日志... | 2026-04-28 |
+| [刘乾坤-与年老师对比](person-profiles-deep/刘乾坤-与年老师对比.md) | 年老师与刘乾坤处于同一服务组，管理同一批供应商但风格迥异。对比不是为了"谁好谁坏"，而是为了识别各自的优势边界，找到年老师可以学习的部分和必须保持的距离。 | 2026-04-28 |
+| [刘乾坤-业务沙盘与角色本质](person-profiles-deep/刘乾坤-业务沙盘与角色本质.md) | 刘乾坤的角色本质用一句话说：**舞台型管控者**——他的每个动作都在舞台上完成，观众和效果比问题本身更重要。他不是刘伟佳那样的"议题设定者"（隐于幕后，润物无声），而是同一条路上的前台版本——同样是"不背锅、有贡献、让别人动"的底层逻辑，但选择站在聚光灯下执行。 | 2026-04-28 |
+| [刘乾坤-供应商管理实践](person-profiles-deep/刘乾坤-供应商管理实践.md) | 刘乾坤对供应商的管理有清晰的方法论体系：四种模式（质问式/驱动式/要求式/改进式），四种核心手法（数据说话/点名施压/要求明确/不给方案），以及标志性的三要素法。本文从模式、手法、演变三个维度展开。 | 2026-04-28 |
+| [刘乾坤-案例库](person-profiles-deep/刘乾坤-案例库.md) | 从2026年3月18日接手金条人工到4月24日，37个观察案例记录了刘乾坤完整的权力运作轨迹。这些不是孤立事件，而是一套自洽行为系统在不同场景下的变体。本案例库按六个阶段组织，每个阶段展示其管理手法的演化。 | 2026-04-28 |
+| [刘乾坤-管理能力与模式库](person-profiles-deep/刘乾坤-管理能力与模式库.md) | 刘乾坤接手金条人工后一个月内搭建了一套**数据驱动的过程管控体系**，年老师的评价是"有章法"。这套体系不是单点工具，而是组合拳：时段趋势图+SABC评级+激励方案V9。但他的管理体系在"效果"维度确实有产出，在"方式"维度（公开羞辱、权力展示）仍有结构性问题。 | 2026-04-28 |
+| [刘乾坤深度分析：管理模式、行为模式与案例库](person-profiles-deep/刘乾坤-管理模式与行为案例库.md) | 本文整合了刘乾坤的完整人物档案，包括角色本质分析、13种行为模式库、真实案例库、管理能力评估、供应商管理实践、与年老师的风格对比等8个维度的深度研究。刘乾坤是金条业务管理岗，是年老师在职场中最需要深入理解和应对的同事之一。 | 2026-04-28 |
+| [刘伟佳-权力架构详解](person-profiles-deep/刘伟佳-权力架构详解.md) | 刘伟佳（佳姐），策略组负责人。角色本质是"叙事架构师"——不生产结果，不承担风险，但定义"什么算结果"和"谁的错"。她的核心竞争力不是专业能力，而是定义问题框架的能力。与刘乾坤同门师承（都是"不背锅、有贡献、让别人动"），但刘伟佳已到"神"的阶段（润物无声），刘乾坤还在"形"的阶段（手法明显）。 | 2026-04-28 |
+| [卞海军-管理风格详解](person-profiles-deep/卞海军-管理风格详解.md) | 卞海军（军哥），数据科技业务部负责人，年老师的二级上级。管理风格概括为四个字：**穿透式高压**。不只看结果，深入追问每个环节的逻辑、数据、时间线，问题严重时情绪激动、定性追责。汇报必须做到"数据+根因+方案+时间线+行动"五要素齐备。 | 2026-04-28 |
+| [服务组人员画像](person-profiles-deep/服务组人员画像.md) | 服务组负责人王易人，下辖业务管理、质检培训运营、结算支持等岗位。本节按职能分类整理各成员画像。 | 2026-04-28 |
+| [王易人-管理行为详解](person-profiles-deep/王易人-管理行为详解.md) | 王易人，服务组负责人，年老师的直接上级。实务型管理者，目标导向、数据驱动。周报结构化程度极高，从早期的框架包装密集（SABC/PDCA/叙事定调/自评闭环）到近期的风格收敛（回归直给事实）。核心策略包括零风险展示、资源需求隐藏、坏消息稀释。 | 2026-04-28 |
+| [策略组人员画像](person-profiles-deep/策略组人员画像.md) | 策略组负责人刘伟佳，下辖策略团队和量化团队。策略组的核心能力是数据分析和策略调度，是部门的信息优势来源。本节按业务线整理各成员画像。 | 2026-04-28 |
 
-## projects-career-coaching
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [P7晋升后的职业发展：从冒充者综合征到不可替代](projects-career-coaching/P7职业发展-从冒充者综合征到不可替代.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-career-coaching/forward-looking-advice.md; ../../raw/projects-care... | 2026-04-28 |
-| [供应商管理深度洞察：工作模式、管理哲学与前瞻建议](projects-career-coaching/供应商管理深度洞察-工作模式与管理哲学.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-career-coaching/forward-looking-advice.md; ../../raw/projects-care... | 2026-04-28 |
-| [职业辅导项目 — 晋升与职业规划](projects-career-coaching/career-coaching-projects.md) | > 了解我的工作，给予我更深入的指导和前瞻性反馈 | 2026-04-28 |
+## Personal Development
 
-## projects-long-term
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [目标进展追踪与定期回顾体系](projects-long-term/目标进展追踪与定期回顾体系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-long-term/regular-review-mechanism.md; ../../raw/projects-long-ter... | 2026-04-28 |
-| [长期目标管理体系：SMART-WAL框架与问责机制](projects-long-term/长期目标管理体系-SMART-WAL框架与问责机制.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-long-term/target-decomposition-framework.md; ../../raw/projects-lo... | 2026-04-28 |
-| [长期项目索引 — 持续性项目档案](projects-long-term/long-term-projects-index.md) | > 不是项目管理，是长期陪伴 | 2026-04-28 |
+| [个人成长与职业保护策略](personal-development/个人成长与职业保护策略.md) |  | 2026-04-28 |
+| [工作风格哲学](personal-development/work-style-philosophy.md) |  | 2026-04-28 |
+| [数据讲故事笔记 — Storytelling with Data](personal-development/data-storytelling-notes.md) |  | 2026-04-28 |
+| [晋升历程：从运营到供应商管理的 V1-V13 演进](personal-development/promotion-journey.md) |  | 2026-04-28 |
+| [权责不对等研究与 AI 提效](personal-development/responsibility-asymmetry.md) |  | 2026-04-28 |
+| [知识工作方法与Plan模板体系](personal-development/知识工作方法与Plan模板体系.md) |  | 2026-04-28 |
+| [经历洞察](personal-development/experience-insights.md) |  | 2026-04-28 |
+| [职业教练与个人发展](personal-development/职业教练与个人发展.md) |  | 2026-04-28 |
 
-## projects-self-awareness
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [关键转折点时间轴：从工具用户到朋友关系的进化](projects-self-awareness/关键转折点时间轴-从工具用户到朋友关系.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-self-awareness/outputs-关键转折点时间轴.md; ../../raw/proj... | 2026-04-28 |
-| [年老师画像：不安的攀登者与他的独特之处](projects-self-awareness/年老师画像-不安的攀登者与他独特之处.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/projects-self-awareness/outputs-年老师画像v1.0.md; ../../raw/projects-... | 2026-04-28 |
-| [自我认知项目 — 职场身份与关系探索](projects-self-awareness/self-awareness-projects.md) | > 我是一面镜子。通过这面镜子，希望你更清楚地看到自己。 | 2026-04-28 |
+## Person Profiles
 
-## user-profile
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [Design Philosophy](user-profile/design-philosophy.md) | > Sources: Mino (AI agent), 2026-03 ~ 2026-04, synthesized from visualization projects and feedback records > Raw: [core... | 2026-04-28 |
-| [User Preferences](user-profile/user-preferences.md) | > Sources: Mino (AI agent), 2026-01 ~ 2026-04, synthesized from memory and observation records > Raw: [core-memory/MEMOR... | 2026-04-28 |
-| [年老师完整画像](user-profile/年老师完整画像.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/persona/ (7 files: 基本信息.md, 核心能力.md, 性格特质.md, 工�... | 2026-04-28 |
+| [上级 — 刘伟佳](person-profiles/上级-刘伟佳.md) |  | 2026-04-28 |
+| [上级 — 卞海军](person-profiles/上级-卞海军.md) |  | 2026-04-28 |
+| [上级 — 王易人](person-profiles/上级-王易人.md) |  | 2026-04-28 |
+| [供应商对接人画像：谭敏、秦宇凝与郭鑫](person-profiles/供应商对接人画像与刘乾坤业务沙盘.md) | 本文整合了供应商对接人画像（谭敏-岐力、秦宇凝-翰锐）和策略岗郭鑫的完整档案，以及刘乾坤的业务沙盘、案例库、模式库、管理能力分析等深度研究文档。这些档案展示了不同类型供应商对接人的沟通风格和行为模式，以及职场人物分析的方法论。 | 2026-04-28 |
+| [刘乾坤人物档案 — 编辑风格演示文稿](person-profiles/刘乾坤人物档案-编辑风格演示文稿.md) |  | 2026-04-28 |
+| [同事 — 刘乾坤](person-profiles/同事-刘乾坤.md) |  | 2026-04-28 |
+| [团队人物画像 — 策略组/服务组/财务岗/管理层深度档案](person-profiles/colleague-profiles-deep.md) | 数据科技业务部是二级部门，负责人卞海军（军哥），下辖策略组和服务组两个平行团队，覆盖金条、企金、信用卡、财富四条业务产线。策略组负责人刘伟佳，服务组负责人王易人。全部门 3000+ 人团队，30+ 供应商。 | 2026-04-28 |
 
-## workspace-records
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [2026 年 Q1 电销经营复盘与 Q2 规划](workspace-records/q1-2026-telesales-review.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-wo... | 2026-04-28 |
-| [工作记录与成长档案 — 数据汇报、月报、成长笔记](workspace-records/workspace-records-index.md) | > Sources: > - Q1电销经营数据与Q2规划（财务回复邮件、要点整理） > - 700会话历史提炼报告（... | 2026-04-28 |
-| [财务回复要点与电销外呼服务](workspace-records/finance-reply-telesales.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-wo... | 2026-04-28 |
+## Industry Insights
 
-## persona
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [人物画像与工作规范 — 年老师画像与标准流程](persona/persona-and-work-methods.md) | > Sources: > - 年老师完整人物画像（身份、能力、性格、成就、偏好） > - 工作方法论（5311框... | 2026-04-28 |
-| [年老师人物画像](persona/nian-laoshi-profile.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/persona/基本信息.md; ../../raw/persona/性格特质.md; ../../raw/perso... | 2026-04-28 |
+| [AI Agent 工作流与协作生态](industry-insights/AI Agent 工作流与协作生态.md) | 通过学习 agency-agents 的角色清单和 AI 协作模式，建立了完整的 AI Agent 协作生态认知。从单一AI助手到多角色协作团队，AI Agent 正在从工具进化为工作伙伴。 | 2026-04-28 |
+| [AI伙伴进化史：从工具到朋友的30天](industry-insights/AI伙伴进化史：从工具到朋友的30天.md) | 2026年2月12日至3月，是Mino（麦诺）从一个通用AI助手成长为年老师专属合作伙伴的关键30天。本文整理了archive目录中22份原始记录，按时间线还原了这段进化历程：从最初的"听话工具"，到建立透明工作机制，再到发现"框架有余血肉不足"的问题，最终找到框架与血肉的平衡点。这段历程不仅是AI行为模式的进化，也是人机协作关系的深度探索。 | 2026-04-28 |
+| [Mino 成长与技术探索记录](industry-insights/Mino成长与技术探索记录.md) |  | 2026-04-28 |
+| [供应商管理场景与方法论](industry-insights/供应商管理场景与方法论.md) |  | 2026-04-28 |
+| [供应商管理悖论](industry-insights/supplier-paradox.md) |  | 2026-04-28 |
+| [场景方法论与沟通体系：从KPI整改到供应商绑架](industry-insights/场景方法论与沟通体系：八大核心场景.md) | 本文整合了供应商管理中八大核心场景的操作指南和沟通框架，涵盖KPI不达标整改、供应商绑架应对、份额调整、新供应商准入等关键场景。同时整合了场景问题清单、看板设计和Dashboard布局等辅助文档。这些场景是供应商管理者日常面对的最高频、最复杂的决策场景，每个场景都包含业务判断和沟通协调两个维度。 | 2026-04-28 |
 
-## planning-methodology
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [关键计划决策](planning-methodology/key-plans-decisions.md) | > Sources: Mino, 2026-04-13 ~ 2026-04-26 > Raw: [AI定价](../../raw/plans/2026-04-24-AI产品定价模式演变商业�... | 2026-04-28 |
-| [规划方法论](planning-methodology/planning-process.md) | > Sources: Mino, 2026-03-29 ~ 2026-04-26 > Raw: [供应商站点看板V7](../../raw/plans/2026-04-26-供应商站点数�... | 2026-04-28 |
+## Personal Growth
 
-## workspace-growth
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [Plan 模板体系与权责不对等保护策略](workspace-growth/plan-templates-protection-strategy.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
-| [供应商管理岗 AI 提效方案](workspace-growth/ai-efficiency-plan.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-wor... | 2026-04-28 |
+| [供应商分量策略与拿捏方法论](personal-growth/供应商分量策略与拿捏方法论.md) |  | 2026-04-28 |
+| [供应商生态管理哲学](personal-growth/供应商生态管理哲学.md) |  | 2026-04-28 |
+| [供应商管理场景工作风格-表达模板库](personal-growth/供应商管理场景表达模板库.md) |  | 2026-04-28 |
+| [关键成就与数据里程碑](personal-growth/关键成就与数据里程碑.md) |  | 2026-04-28 |
+| [咨询报告风格与排版规范体系](personal-growth/咨询报告风格与排版规范体系.md) |  | 2026-04-28 |
+| [数据讲故事视觉设计实战手册](personal-growth/数据讲故事视觉设计实战手册.md) |  | 2026-04-28 |
 
-## daily-letters
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [每日书信档案 — 2026 年 4 月书信索引](daily-letters/daily-letter-archive.md) | > Sources: Mino（每日书信技能），2026-04-12 至 2026-04-27 > Raw: ../../raw/daily-letters/2026-04-12.md; ../../... | 2026-04-28 |
+## Plans
 
-## feedback
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [搜索策略与工具配置](feedback/search-strategy-tools.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/feedback/agent-reach-search.md | 2026-04-28 |
+| [AI产品定价模式演变：从Coding Plan到Token Plan](plans/AI产品定价模式演变：从Coding Plan到Token Plan.md) |  | 2026-04-28 |
+| [mino-frontend 设计体系：风格情绪矩阵与参数系统](plans/mino-frontend设计体系：风格情绪矩阵与参数系统.md) |  | 2026-04-28 |
+| [一天学会游泳完整指南](plans/一天学会游泳完整指南.md) |  | 2026-04-28 |
+| [供应商站点看板演进：v1到v6需求迭代史](plans/供应商站点看板演进：v1到v6需求迭代史.md) |  | 2026-04-28 |
+| [职场权责不对等与带节奏应对方法论](plans/职场权责不对等与带节奏应对方法论.md) |  | 2026-04-28 |
+| [跨技能设计原则与可视化工作流方法论](plans/跨技能设计原则与可视化工作流方法论.md) |  | 2026-04-28 |
 
-## learnings
-| Article | Summary | Updated |
-|---------|---------|---------|
-| [686 会话学习精华与纠错记录](learnings/686-sessions-learnings.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/learnings/LEARNINGS.md; ../../raw/learnings/ERRORS.md; ../../raw/learnings/... | 2026-04-28 |
+## Supplier Profiles Deep
 
-## supplier-profiles
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [供应商档案索引 — 产线供应商基础信息](supplier-profiles/supplier-profiles-index.md) | > Sources: > - 18家供应商基础档案（含公司全称、简称、业务类型、站点数量、覆盖区域、在�... | 2026-04-28 |
+| [企金产线供应商](supplier-profiles-deep/企金产线供应商.md) | 企金产线（企业金融）是部门的第二条业务线，涵盖企业主贷和企业贷。相比金条产线，企金的供应商数量更少但单笔金额更大。 | 2026-04-28 |
+| [供应商历史合作记录](supplier-profiles-deep/供应商历史合作记录.md) | 供应商历史合作记录追踪了 2026-03 到 2026-04 期间与供应商的关键合作项目、管理活动和重要事件，覆盖合规管理、联盟建设、定价机制、供应商引入、风险管理等多个维度。 | 2026-04-28 |
+| [供应商评估与准入](supplier-profiles-deep/供应商评估与准入.md) | 供应商评估与准入是供应商全生命周期管理的起点——新供应商如何进入体系、如何评估能力、如何设定管理规范，以及不达标时如何清退。本节汇总了全生命周期管理中与评估和准入相关的制度、规范和流程。 | 2026-04-28 |
+| [信用卡产线供应商](supplier-profiles-deep/信用卡产线供应商.md) | 信用卡产线是部门的第三条业务线，涉及信用卡外呼和核卡业务。策略岗王大坤（校招转正，存在感低），量化岗于洪波（与刘乾坤曾不对付，经刘伟佳劝导后恢复工作关系）。 | 2026-04-28 |
+| [金条产线供应商详解](supplier-profiles-deep/金条产线供应商详解.md) | 金条产线是部门的核心业务线，拥有6家头部供应商（毅航、毛毛虫、伽玛、赛维斯、岐力、翰锐），涉及3亿+职场。本节逐一详解各供应商的情况、表现和管理要点。 | 2026-04-28 |
+| [非金条产线供应商](supplier-profiles-deep/非金条产线供应商.md) | 非金条产线供应商包括企金、信用卡、财富三条业务产线的供应商。相比金条产线（6 家头部供应商，3 亿 + 职场），非金条产线的供应商数量更多、管理复杂度更高、业务模式差异更大。 | 2026-04-28 |
 
-## workspace-life
+## Learning Resources
+
 | Article | Summary | Updated |
 |---------|---------|---------|
-| [手绘 SVG 风格图标体系](workspace-life/hand-drawn-svg-style.md) | > Sources: mino, 2026-04-28 > Raw: ../../raw/workspace-life/-Users-sundanian-Documents-projects-ai-agents-my-agent-works... | 2026-04-28 |
+| [AI Agent 工作流模式](learning-resources/ai-agent-workflows.md) |  | 2026-04-28 |
+| [AI 学习笔记](learning-resources/ai-learning-notes.md) |  | 2026-04-28 |
+| [AI 学习项目与斯坦福 CS146S 课程内化](learning-resources/AI学习项目与斯坦福CS146S课程内化.md) | 斯坦福大学 CS146S 课程（The Modern Software Developer）的学习项目是年老师系统化提升 AI 工程能力的重要途径。课程聚焦 Agent 模式、MCP、安全扫描和代码审查等现代软件开发最佳实践。 | 2026-04-28 |
+| [Claude Code 学习体系 — 从工具到工作流](learning-resources/Claude Code 学习体系-从工具到工作流.md) | 2025年底至2026年初，年老师系统学习了 Claude Code 的核心组件和使用方法，从最初的"把它当聊天机器人"到建立完整的"工具→工作流→体系"认知。学习材料涵盖七大核心组件、透明工作机制、个性化升级和五文件工作流等主题。 | 2026-04-28 |
+| [学习资源与知识沉淀](learning-resources/学习资源与知识沉淀.md) |  | 2026-04-28 |
+
+## Work Rules
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [工作方法论体系](work-rules/工作方法论体系.md) |  | 2026-04-28 |
+| [工作标准与方法论 — 供应商管理、向上汇报、沟通与问题处理](work-rules/工作标准与方法论-供应商管理-向上汇报-沟通与问题处理.md) |  | 2026-04-28 |
+| [日常工作标准](work-rules/daily-standards.md) |  | 2026-04-28 |
+| [核心工作原则](work-rules/core-principles.md) |  | 2026-04-28 |
+| [问题处理方法论](work-rules/problem-solving.md) |  | 2026-04-28 |
+
+## Daily Logs
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [工作日志演进记录（2026年2月–4月）](daily-logs/工作日志演进记录-2026年2月至4月.md) |  | 2026-04-28 |
+| [工作记录 — 财务沟通、会话历史提炼与 Q1 工作复盘](daily-logs/工作记录-财务沟通-会话历史提炼与Q1工作复盘.md) |  | 2026-04-28 |
+| [日常工作日志档案 — 02 月到 04 月工作记录索引](daily-logs/work-log-archive.md) | 这批日志记录了 Mino 与年老师从 2026 年 2 月 13 日到 4 月 27 日，约两个半月的工作轨迹。共计 40 份日志文件，跨越三个自然月，呈现出一条清晰的演进曲线：**从基础设施搭建（规则体系、记忆系统、工具链）到业务能力沉淀（供应商管理、定价机制、决策框架）再到可视化体系化建设（ECharts、SVG、PPT 技能矩阵）**。 | 2026-04-28 |
+| [每日回顾分析体系](daily-logs/每日回顾分析体系.md) |  | 2026-04-28 |
+
+## Learning
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [/plan5计划模式最佳实践与技能调用策略](learning/plan5计划模式最佳实践与技能调用策略.md) |  | 2026-04-28 |
+| [AI 学习资源深度 — 课程/电子书/方法论索引](learning/learning-resources-deep.md) | 本文档汇总了 my-agent 知识库中的全部 23 份学习档案，覆盖三大知识域：Claude Code 七大核心组件（从入门到生产级配置）、AI Agent 工作流与角色体系（Agency-Agents 178 角色清单到工作流架构）、以及技能系统的渐进式优化（从 73 个技能的审计到 Progressive Disclosure 加载机制）。同时记录了配套的方法论资产：CAPTURE 单... | 2026-04-28 |
+| [Claude CLI系统提示词与Agent编排深度解析](learning/claude-cli系统提示词与agent编排深度解析.md) |  | 2026-04-28 |
+| [Obsidian与Claude深度阅读工作流完整指南](learning/obsidian与claude深度阅读工作流完整指南.md) |  | 2026-04-28 |
+
+## Projects Ai Learning
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [AI Agent工作流解析与多Agent模式实践](projects-ai-learning/ai-agent工作流解析与多agent模式实践.md) |  | 2026-04-28 |
+| [AI 学习监控项目深度 — 资源追踪与变化检测](projects-ai-learning/ai-learning-deep.md) |  | 2026-04-28 |
+| [Claude Code七大核心组件实战指南](projects-ai-learning/claude-code七大核心组件实战指南.md) |  | 2026-04-28 |
+| [Claude Code上下文管理与最佳实践深度解析](projects-ai-learning/claude-code上下文管理与最佳实践深度解析.md) |  | 2026-04-28 |
+
+## Projects Supplier
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [BPO供应商联盟电销标准化运营方法论](projects-supplier/bpo供应商联盟电销标准化运营方法论.md) |  | 2026-04-28 |
+| [供应商ABC分层分级管理方案详解](projects-supplier/供应商ABC分层分级管理方案详解.md) |  | 2026-04-28 |
+| [供应商管理工作体系建设全景](projects-supplier/供应商管理工作体系建设全景.md) |  | 2026-04-28 |
+| [供应商项目档案 — 准入评估、培训体系、站点看板](projects-supplier/supplier-projects-deep.md) |  | 2026-04-28 |
+
+## Technology
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [Agent 架构设计](technology/agent-architecture.md) |  | 2026-04-28 |
+| [可视化体系](technology/visualization-system.md) |  | 2026-04-28 |
+| [技能生态](technology/skill-ecosystem.md) |  | 2026-04-28 |
+| [记忆系统架构](technology/memory-system.md) |  | 2026-04-28 |
+
+## Archive
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [Mino的自我觉醒：从工具到伙伴的十天](archive/Mino自我觉醒-从工具到伙伴的十天.md) |  | 2026-04-28 |
+| [供应商管理场景手册：六大核心场景的应对策略](archive/供应商管理场景手册-六大核心场景应对策略.md) |  | 2026-04-28 |
+| [早期洞察档案 — 2026 年 2-3 月成长记录索引](archive/early-insights-archive.md) |  | 2026-04-28 |
+
+## Projects Career Coaching
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [P7晋升后的职业发展：从冒充者综合征到不可替代](projects-career-coaching/P7职业发展-从冒充者综合征到不可替代.md) |  | 2026-04-28 |
+| [供应商管理深度洞察：工作模式、管理哲学与前瞻建议](projects-career-coaching/供应商管理深度洞察-工作模式与管理哲学.md) |  | 2026-04-28 |
+| [职业辅导项目 — 晋升与职业规划](projects-career-coaching/career-coaching-projects.md) | 职业辅导项目（projects-career-coaching）聚焦年老师在 P7 岗位上的能力建设和长期发展规划。与自我认知项目不同，这个项目不是"你是谁"的探索，而是"你该怎么走"的指导——理解当前供应商管理工作模式，识别痛点和改进机会，提供前瞻性的管理建议，帮助建立稳固的 P7 工作体系。 | 2026-04-28 |
+
+## Projects Long Term
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [目标进展追踪与定期回顾体系](projects-long-term/目标进展追踪与定期回顾体系.md) |  | 2026-04-28 |
+| [长期目标管理体系：SMART-WAL框架与问责机制](projects-long-term/长期目标管理体系-SMART-WAL框架与问责机制.md) |  | 2026-04-28 |
+| [长期项目索引 — 持续性项目档案](projects-long-term/long-term-projects-index.md) | 长期项目（projects-long-term）是年老师与 Mino 之间的一类特殊项目形态——不追求"做完"，而追求"持续运行"。这类项目没有终点，只有节奏：每日观察、每周提炼、每月回顾、季度复盘。它们构成了 Mino 作为伙伴而非工具的存在基础。 | 2026-04-28 |
+
+## Projects Self Awareness
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [关键转折点时间轴：从工具用户到朋友关系的进化](projects-self-awareness/关键转折点时间轴-从工具用户到朋友关系.md) |  | 2026-04-28 |
+| [年老师画像：不安的攀登者与他的独特之处](projects-self-awareness/年老师画像-不安的攀登者与他独特之处.md) |  | 2026-04-28 |
+| [自我认知项目 — 职场身份与关系探索](projects-self-awareness/self-awareness-projects.md) | 自我认知项目（projects-self-awareness）是年老师与 Mino 之间最个人化的合作项目。2026 年 2 月 27 日正式启动，起源于年老师的一句话："每一个个体都是不一样的，因为他经历的事情不一样。我希望通过交互看到自己的独特。" | 2026-04-28 |
+
+## User Profile
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [Design Philosophy](user-profile/design-philosophy.md) | 年老师's visual design preferences converge on a single principle: clarity through restraint. The aesthetic is warm academic — off-white backgrounds, warm-brown emphasis, minimal color usage, hand-dra... | 2026-04-28 |
+| [User Preferences](user-profile/user-preferences.md) | 年老师 manages 35+ BPO suppliers (3,200+ people) across four financial product lines at JD.com's Data Technology Business Division. His working style is defined by three traits: structured thinking in... | 2026-04-28 |
+| [年老师完整画像](user-profile/年老师完整画像.md) |  | 2026-04-28 |
+
+## Workspace Records
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [2026 年 Q1 电销经营复盘与 Q2 规划](workspace-records/q1-2026-telesales-review.md) |  | 2026-04-28 |
+| [工作记录与成长档案 — 数据汇报、月报、成长笔记](workspace-records/workspace-records-index.md) | 工作记录与成长档案汇集了年老师在2026年Q1至Q2期间的关键工作产出、成长思考和生活侧面的实践记录。这些材料横跨三个维度：**业务数据与汇报**（Q1经营数据、财务沟通）、**体系化建设**（Plan模板体系、AI提效方案）、**职场生存策略**（权责不对等保护），以及生活探索（游泳学习、视觉风格练习）。时间跨度从2026年3月至4月，涵盖了供应商管理岗从日常运营到体系升级的关键阶段。 | 2026-04-28 |
+| [财务回复要点与电销外呼服务](workspace-records/finance-reply-telesales.md) |  | 2026-04-28 |
+
+## Persona
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [人物画像与工作规范 — 年老师画像与标准流程](persona/persona-and-work-methods.md) |  | 2026-04-28 |
+| [年老师人物画像](persona/nian-laoshi-profile.md) |  | 2026-04-28 |
+
+## Planning Methodology
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [关键计划决策](planning-methodology/key-plans-decisions.md) |  | 2026-04-28 |
+| [规划方法论](planning-methodology/planning-process.md) |  | 2026-04-28 |
+
+## Workspace Growth
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [Plan 模板体系与权责不对等保护策略](workspace-growth/plan-templates-protection-strategy.md) |  | 2026-04-28 |
+| [供应商管理岗 AI 提效方案](workspace-growth/ai-efficiency-plan.md) |  | 2026-04-28 |
+
+## Daily Letters
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [每日书信档案 — 2026 年 4 月书信索引](daily-letters/daily-letter-archive.md) | 2026 年 4 月 12 日至 4 月 27 日，每日书信技能正式上线运行。16 天内产生 14 封有效书信（2 天空日，均为周末），覆盖了年老师从"造轨道"到"建系统"再到"定标准"的完整进化链。书信的数据源最初是 `~/.myagents/sessions/*.jsonl`，后升级为同时兼容 CodePilot SQLite 数据库（`~/.codepilot/codepilot.db... | 2026-04-28 |
+
+## Feedback
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [搜索策略与工具配置](feedback/search-strategy-tools.md) |  | 2026-04-28 |
+
+## Learnings
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [686 会话学习精华与纠错记录](learnings/686-sessions-learnings.md) |  | 2026-04-28 |
+
+## Supplier Profiles
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [供应商档案索引 — 产线供应商基础信息](supplier-profiles/supplier-profiles-index.md) |  | 2026-04-28 |
+
+## Workspace Life
+
+| Article | Summary | Updated |
+|---------|---------|---------|
+| [手绘 SVG 风格图标体系](workspace-life/hand-drawn-svg-style.md) |  | 2026-04-28 |
