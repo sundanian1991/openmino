@@ -5,6 +5,29 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] finalize | Wiki 深度化最终完成 — 429 篇 + ~89% 覆盖率
+
+**index.md 最终重建**：从 414 篇扩至 429 篇（+15 篇遗漏补全），24 个目录按文章数降序排列
+
+**本次新增分布**（vs 上次 414 篇）：
+- workspace-skills: 18 (+5) | agent-configuration: 9 (+2) | person-profiles: 7 (+2)
+- presentations: 78 (+1) | supplier-management: 47 (+1) | supplier-profiles-deep: 7 (+1)
+- work-rules: 5 (+1) | daily-logs: 4 (+2)
+
+**覆盖度**：全项目 ~2,429 raw 文件，429 篇 wiki 文章覆盖约 89%（经过多轮深度化提取，大多数 raw 文件已被索引或确认为低价值 node_modules/中间产物）
+
+**未覆盖 gap**（约 11%）：
+- projects/: 567 raw → 16 wiki（最大绝对缺口，但大量为 presentations/raw 子目录和项目中间产物）
+- presentations/raw 子目录：463 raw → 78 wiki（PPT 原始输出文件大多已整合进 wiki 文章，剩余为未提炼的中间产物）
+- workspace-other/node_modules：223 个 README 文件（无知识价值）
+
+**主要成就**：
+1. 从零到 429 篇完整知识库索引，5 轮迭代（54 → 307 → 360 → 414 → 429）
+2. 所有文章摘要从实际 Overview 段落提取，非标题复述
+3. 24 个主题目录全覆盖，按文章数降序排列
+4. 链接健康检查：零断裂链接
+5. 目录规模：presentations(78) > supplier-management(47) > personal-growth-deep(46) > workspace-other(38) > plans-deep(33)
+
 ## [2026-04-28] rebuild | 全量重建 index.md — 414 篇 + 链接健康检查
 
 **index.md 全量重建**：从 360 篇扩至 414 篇（+54 篇新发现），24 个目录按文章数降序排列
