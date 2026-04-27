@@ -4,7 +4,6 @@
 > - 18家供应商基础档案（含公司全称、简称、业务类型、站点数量、覆盖区域、在职人力）
 > - 供应商分级体系（Tier 1核心 / Tier 2成长 / Tier 3储备）
 
-> Raw:
 > - `wiki/raw/supplier-profiles/README.md`
 > - `wiki/raw/supplier-profiles/上海岐力信息科技有限公司.md`
 > - `wiki/raw/supplier-profiles/中乾（深圳）投资控股有限公司.md`

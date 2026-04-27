@@ -1,7 +1,7 @@
 # BPO供应商联盟电销标准化运营方法论
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/projects-supplier/sources-312下午供应商联盟.md; ../../raw/projects-supplier/sources-313上午供应商联盟.md; ../../raw/projects-supplier/notes-total.md
+> Raw: ../../raw/docs-supplier/sources-312下午供应商联盟.md; ../../raw/docs-supplier/sources-313上午供应商联盟.md; ../../raw/docs-supplier/notes-total.md
 
 ## 概述
 

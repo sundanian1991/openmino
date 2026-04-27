@@ -8,7 +8,6 @@
 > - AI提效方案
 > - 游泳学习style icon练习
 
-> Raw:
 > - `wiki/raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-要点整理.md`
 > - `wiki/raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-回复邮件草稿.md`
 > - `wiki/raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-29-记录-700会话历史提炼-20260405-learning-records-v2-20260405.md`

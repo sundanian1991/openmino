@@ -1,7 +1,7 @@
 # 供应商项目与 BPO 联盟建设
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/projects-supplier/notes-total.md; ../../raw/projects-supplier/CLAUDE.md; ../../raw/projects-supplier/project.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-44-供应商-成本调研-20260324-05-执行方案-34%人力减量-场景执行方案.md
+> Raw: ../../raw/docs-supplier/notes-total.md; ../../raw/docs-supplier/CLAUDE.md; ../../raw/docs-supplier/project.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-44-供应商-成本调研-20260324-05-执行方案-34%人力减量-场景执行方案.md
 
 ## Overview
 
