@@ -1,7 +1,7 @@
 # Knowledge Distiller — 知识榨取器
 
 > Sources: knowledge-distiller SKILL.md; 苏格拉底追问式知识提取方法论
-> Raw: [SKILL.md](../../raw/skills/knowledge-distiller-SKILL.md); [模式说明](../../raw/skills/knowledge-distiller-modes.md); [输出模板](../../raw/skills/knowledge-distiller-output_template.md); [领域档案模板](../../raw/skills/knowledge-distiller-domain_template.md)
+> Raw: [SKILL.md](../../raw/skills/knowledge-distiller-SKILL.md); [README](../../raw/skills/knowledge-distiller-README.md); [模式说明](../../raw/skills/knowledge-distiller-modes.md); [输出模板](../../raw/skills/knowledge-distiller-output_template.md); [领域档案模板](../../raw/skills/knowledge-distiller-domain_template.md); [PROMPT](../../raw/skills/knowledge-distiller-PROMPT.md); [电销知识库](../../raw/skills/knowledge-distiller-电销知识库.md)
 
 ## Overview
 

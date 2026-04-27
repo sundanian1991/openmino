@@ -1,7 +1,7 @@
 # Data Visualization — Python matplotlib 专业可视化
 
 > Sources: data-visualization SKILL.md (2026); Python matplotlib 可视化规范
-> Raw: [SKILL.md](../../raw/skills/data-visualization-SKILL.md); [图表选择](../../raw/skills/data-visualization-chart_selection.md); [可视化规范](../../raw/skills/data-visualization-visualization_spec.md)
+> Raw: [SKILL.md](../../raw/skills/data-visualization-SKILL.md); [README](../../raw/skills/data-visualization-README.md); [图表选择](../../raw/skills/data-visualization-chart_selection.md); [可视化规范](../../raw/skills/data-visualization-visualization_spec.md)
 
 ## Overview
 

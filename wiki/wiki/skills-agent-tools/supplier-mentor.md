@@ -1,7 +1,7 @@
 # Supplier Mentor（供应商管理导师）
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [supplier-mentor](../../raw/skills/supplier-mentor-SKILL.md); [accumulation](../../raw/skills/supplier-mentor-accumulation-mechanism.md); [cognitive-patterns](../../raw/skills/supplier-mentor-cognitive-patterns.md); [growth](../../raw/skills/supplier-mentor-growth.md); [methods](../../raw/skills/supplier-mentor-methods.md); [philosophy](../../raw/skills/supplier-mentor-philosophy.md); [profile-template](../../raw/skills/supplier-mentor-supplier-profile-template.md); [case files](../../raw/skills/supplier-mentor-*.md)
+> Raw: [supplier-mentor](../../raw/skills/supplier-mentor-SKILL.md); [accumulation](../../raw/skills/supplier-mentor-accumulation-mechanism.md); [cognitive-patterns](../../raw/skills/supplier-mentor-cognitive-patterns.md); [growth](../../raw/skills/supplier-mentor-growth.md); [methods](../../raw/skills/supplier-mentor-methods.md); [philosophy](../../raw/skills/supplier-mentor-philosophy.md); [profile-template](../../raw/skills/supplier-mentor-supplier-profile-template.md); [2026-03-22 毅航毛毛虫困境](../../raw/skills/supplier-mentor-2026-03-22-毅航毛毛虫困境.md); [刘伟佳](../../raw/skills/supplier-mentor-刘伟佳.md); [毅航](../../raw/skills/supplier-mentor-毅航.md); [毛毛虫](../../raw/skills/supplier-mentor-毛毛虫.md); [金条供应商总览](../../raw/skills/supplier-mentor-金条供应商总览.md)
 
 ## Overview
 
