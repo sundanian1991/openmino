@@ -2,6 +2,10 @@
 
 > Sources: docx, minimax-docx, minimax-pdf, 2026-04-28
 > Raw:[docx SKILL](../../raw/skills/docx-SKILL.md); [minimax-docx SKILL](../../raw/skills/minimax-docx-SKILL.md); [CJK typography](../../raw/skills/minimax-docx-cjk_typography.md); [university template](../../raw/skills/minimax-docx-cjk_university_template_guide.md); [comments guide](../../raw/skills/minimax-docx-comments_guide.md); [good bad examples](../../raw/skills/minimax-docx-design_good_bad_examples.md); [minimax-pdf SKILL](../../raw/skills/minimax-pdf-SKILL.md)
+> [design principles](../../raw/skills/minimax-docx-design_principles.md); [typography](../../raw/skills/minimax-docx-typography_guide.md); [track changes](../../raw/skills/minimax-docx-track_changes_guide.md); [troubleshooting](../../raw/skills/minimax-docx-troubleshooting.md)
+> [scenario A create](../../raw/skills/minimax-docx-scenario_a_create.md); [scenario B edit](../../raw/skills/minimax-docx-scenario_b_edit_content.md); [scenario C template](../../raw/skills/minimax-docx-scenario_c_apply_template.md)
+> [OOXML element order](../../raw/skills/minimax-docx-openxml_element_order.md); [OOXML namespaces](../../raw/skills/minimax-docx-openxml_namespaces.md); [OOXML units](../../raw/skills/minimax-docx-openxml_units.md)
+> [OOXML encyclopedia p1](../../raw/skills/minimax-docx-openxml_encyclopedia_part1.md); [p2](../../raw/skills/minimax-docx-openxml_encyclopedia_part2.md); [p3](../../raw/skills/minimax-docx-openxml_encyclopedia_part3.md); [XSD validation](../../raw/skills/minimax-docx-xsd_validation_guide.md)
 
 ## 概述
 
