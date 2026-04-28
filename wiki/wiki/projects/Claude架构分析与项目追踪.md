@@ -1,6 +1,9 @@
 # Claude 架构分析与项目追踪
 
 > Sources: mino, 2026-04-28
+> Raw:../../raw/projects-archive/CLAUDE.md; ../../raw/projects-archive/README.md; ../../raw/projects-archive/architecture-ARCHITECTURE-ANALYSIS.md; ../../raw/projects-archive/architecture-ARCHITECTURE-EXECUTION-PLAN.md; ../../raw/projects-archive/architecture-ARCHITECTURE-FULL.md
+>
+> ../../raw/projects-archive/architecture-ARCHITECTURE-SUMMARY.md; ../../raw/projects-archive/architecture-ARCHITECTURE-TREE.md; ../../raw/projects-archive/architecture-ARCHITECTURE-VISUAL.md; ../../raw/projects-claude-trace/CLAUDE.md; ../../raw/projects-claude-trace/README.md
 
 ## 概述
 
