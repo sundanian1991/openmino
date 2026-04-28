@@ -5,6 +5,18 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] merge | Wiki 去重第三轮 — 468 → 467 篇
+
+**跨目录同名合并 1 组**：
+- visualization-system.md（technology → projects）：33% Raw: 重叠，projects 版聚焦 30 单元交付项目，technology 版覆盖完整设计哲学与工具生态。合并后保留 technology 版标题"可视化体系"，补充项目统计表、5 层内容架构、方法论价值
+
+**3 对跨目录同名文件保持独立**（0% 重叠，内容方向不同）：
+- agent-architecture.md：agent-configuration（sub-agent 策略）vs technology（执行引擎演进）
+- skill-ecosystem.md：agent-configuration（技能搜索）vs technology（记忆与学习）
+- 设计技能对比测试方法论.md：plans-deep（plans/ 文件）vs workspace-skills（workspace-skills/ 文件）
+
+**状态**：467 篇，维持 100% Raw: 覆盖率
+
 ## [2026-04-28] complete | Wiki Raw: 引用全覆盖 — 17 篇无引用文章补充完毕
 
 **17 篇无 Raw: 引用的文章补充**：
