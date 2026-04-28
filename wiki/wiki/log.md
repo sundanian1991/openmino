@@ -5,6 +5,18 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] fix | Wiki Raw: 覆盖率补全 — 1878/1878 100%
+
+**带空格文件名精确匹配修复**：正则 `[^\s>"\)]+` 在文件名含空格时截断，改用 `../../raw/([^;\n>"]+)` 匹配完整路径。
+
+**skills-document/ 9 篇 Raw dump 重写为 wiki 文章**（~50MB → ~15KB）：
+- doc-handling（681K 行→1.5KB）、html-ppt-skill（97K→2.2KB）、kami（517K→1.3KB）
+- other-ppt-skills（672K→1.7KB）、antv-s2-expert（202K→2.8KB）、official-doc（242K→1.7KB）
+- xlsx（151K→1.4KB）、minimax-xlsx（99K→1.1KB）、pdf（65K→804B）
+- 所有文章保留完整 Raw: 引用链，零断裂
+
+**最终状态**：1878/1878 = 100% | 零断裂链接 | 462 篇 wiki 文章
+
 ## [2026-04-28] merge | Wiki 去重第三轮 — 468 → 462 篇
 
 **跨目录同名合并 1 组**：
