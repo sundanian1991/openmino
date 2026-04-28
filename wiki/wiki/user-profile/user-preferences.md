@@ -1,98 +1,98 @@
-# User Preferences
+# 用户偏好
 
-> Sources: Mino (AI agent), 2026-01 ~ 2026-04, synthesized from memory and observation records, 2026-04-28
+> Sources: Mino (AI agent), 2026-01 ~ 2026-04, 2026-04-28
 > Raw:[core-memory/MEMORY.md](../../raw/core-memory/MEMORY.md); [core-memory/insights.md](../../raw/core-memory/insights.md); [persona/基本信息.md](../../raw/persona/基本信息.md); [persona/性格特质.md](../../raw/persona/性格特质.md); [persona/偏好习惯.md](../../raw/persona/偏好习惯.md); [persona/工作方法论.md](../../raw/persona/工作方法论.md); [persona/核心能力.md](../../raw/persona/核心能力.md); [feedback/agent-reach-search.md](../../raw/feedback/agent-reach-search.md)
 
 ## 概述
 
-年老师 manages 35+ BPO suppliers (3,200+ people) across four financial product lines at JD.com's Data Technology Business Division. His working style is defined by three traits: structured thinking in all communication, risk-aware decision-making grounded in data, and a drive to systematize knowledge rather than solve isolated problems. He treats the AI agent as a thinking partner, not a tool — explicitly requesting equality in relationship dynamics.
+年老师在京东数据科技业务部管理 35+ 家 BPO 供应商（3,200+ 人），覆盖四条金融产品线。工作风格由三个特质定义：沟通必结构化、决策靠数据说话、习惯把零散经验系统化。他把 AI 伙伴当思考搭档而非工具——明确要求关系平等。
 
-## Role & Scope
+## 角色与职责
 
-| Dimension | Detail |
-|-----------|--------|
-| Position | Supplier Management (P7), Service Group |
-| Department | Data Technology Business Division — 2nd level |
-| Chain | 卞海军 (军哥) → 王易人 (服务组) → 年老师 |
-| Scale | 35 suppliers, 3,239 headcount, 4 product lines (金条/企金/信用卡/财富) |
-| Core responsibility | Full-lifecycle supplier management: compliance, onboarding, exit, allocation |
-| Key suppliers | 毅航、毛毛虫、伽玛、赛维斯、岐力、翰锐 (top 6 on 金条, 3亿+ target) |
+| 维度 | 详情 |
+|------|------|
+| 岗位 | 供应商管理（P7），服务组 |
+| 部门 | 数据科技业务部 - 二级 |
+| 汇报线 | 卞海军（军哥）→ 王易人（服务组）→ 年老师 |
+| 规模 | 35 家供应商、3,239 人、4 条产线（金条/企金/信用卡/财富） |
+| 核心职责 | 供应商全生命周期管理：合规、准入、清退、分工 |
+| 重点供应商 | 毅航、毛毛虫、伽玛、赛维斯、岐力、翰锐（金条头部 6 家，3 亿+） |
 
-> "管理33家外包供应商的3239人电销团队，让这块业务跑得顺、管得细、成体系、风险可控。"
+> "管理 33 家外包供应商的 3239 人电销团队，让这块业务跑得顺、管得细、成体系、风险可控。"
 
-He is not the team lead — he operates within the service group without formal authority over the strategy group (策略组), which controls pricing. This structural constraint shapes much of his risk management approach.
+他不是团队负责人——在服务组工作，没有策略组的定价权。这个结构性约束深刻影响了他的风险管理方式。
 
-## Communication Style
+## 沟通风格
 
-年老师 communicates in four discernible layers, with explicit preference for Level 4 in professional contexts:
+年老师的沟通分四个层级，职业场景偏好第四层：
 
-| Level | Type | Example |
-|-------|------|---------|
-| 1 | Pure feeling | "我觉得不太行" — too subjective |
-| 2 | Structured qualitative | "问题出在用户路径过长" — analyzable but unverifiable |
-| 3 | Quantitative only | "转化率下降了12%" — verifiable but lacks causality |
-| 4 | Qualitative + quantitative | "转化率下降12%，因路径从5步增至8步" — data + explanation + causal structure |
+| 层级 | 类型 | 示例 |
+|------|------|------|
+| 1 | 纯感受 | "我觉得不太行" — 太主观 |
+| 2 | 结构化定性 | "问题出在用户路径过长" — 可分析但不可验证 |
+| 3 | 纯定量 | "转化率下降了 12%" — 可验证但缺因果 |
+| 4 | 定性+定量 | "转化率下降 12%，因路径从 5 步增至 8 步" — 数据+解释+因果结构 |
 
-**Upward reporting** follows a fixed structure: 结果(数据) → 根因/问题 → 下一步 → 时间线, adapted to 军哥's "穿透式管理" style.
+**向上汇报**遵循固定结构：结果（数据）→ 根因/问题→下一步→时间线，适配军哥的"穿透式管理"风格。
 
-**Guided questioning** is his default mode with suppliers and internal peers:
-- Pattern: known context → probe details → offer possibility options
-- Internal: my considerations → what I need from you → confirm next steps
-- Contrast with 刘乾坤: asks without giving, uses open-question bombardment
+**引导式提问**是他与供应商和内部同事的默认模式：
+- 模式：已知背景→探细节→给可能性选项
+- 内部：我的考虑→我需要你做什么→确认下一步
+- 对比刘乾坤：只问不给，用开放问题轰炸
 
-**Hard rules**: no "看情况"/"也许"/"可能" — quantify uncertainty or state what's missing. If context is unclear, ask first rather than guess.
+**硬性规则**：禁"看情况"/"也许"/"可能"——量化不确定性或说清缺什么。背景不清先问，不猜。
 
-## Structured Thinking Patterns
+## 结构化思维模式
 
-年老师 does not solve problems — he builds systems that prevent problems from recurring. This manifests across several patterns:
+年老师不是解决问题——他建系统防止问题重复出现。
 
-### The Three-Question Principle (三问原则)
+### 三问原则
 
-Every decision passes through three gates:
-1. **有规可依吗？** — Is there a rule or precedent? Don't operate on feeling.
-2. **合理吗？** — Does it pass logical and common-sense scrutiny?
-3. **充分共识吗？** — Is there alignment, or is one person deciding alone?
+每个决策过三关：
+1. **有规可依吗？** — 有没有规则或先例？不凭感觉。
+2. **合理吗？** — 经得起逻辑和常识检验吗？
+3. **充分共识吗？** — 有对齐还是一人拍板？
 
-### Boundary-First Design
+### 边界优先设计
 
-Before filling in details, he establishes boundaries and ownership. When a new mechanism is proposed, the first question is always "who owns this?" When a problem surfaces, the first filter is "is this my jurisdiction?" This is not bureaucratic — it is a defense against structural blame-shifting in an organization where pricing power sits with a different group.
+填细节前先定边界和归属。新机制的第一个问题是"谁负责"。问题浮现的第一个过滤器"是我的权责范围吗"——这不是官僚主义，是防御定价权在其他组时的结构性甩锅。
 
-### Temporal Reasoning
+### 时间线推理
 
-He evaluates decisions on a timeline, not a snapshot:
-- Onboarding: "Will we still need this supplier in 3 years?"
-- Performance: "What happens in 3 months if we do nothing?"
-- Remediation: "Will this recur? How do we prevent it?"
+用时间线评估决策，非快照：
+- 准入："3 年后我们还需要这家供应商吗？"
+- 绩效："3 个月后什么都不做会怎样？"
+- 整改："会复发吗？怎么防？"
 
-### Risk Hedging
+### 风险对冲
 
 > "不赌单点，系统性思考，充分共识 > 完美方案"
 
-He never bets on a single point. Examples: maintaining a second-tier supplier pipeline as insurance, using self-built teams as pricing benchmarks against BPOs, and settling head-tier suppliers at market rate while giving growth room to mid-tier.
+从不押注单点。例子：维持第二梯队供应商管道作为保险、用自建团队做 BPO 定价基准、头部供应商按市场价结算但给中腰部增长空间。
 
-## Life Context & Goals
+## 生活背景与目标
 
-- Married, planning to have a child this year
-- Ideal life: weekend road trips, deeper understanding of life and society
-- Productive hours: evenings; weekday mornings before 10am and after 9pm
-- Hardware: Mac M4, 32GB unified memory
-- Prefers double-click `.command` files over command-line operations
+- 已婚，今年计划要孩子
+- 理想生活：周末自驾旅行，深入理解人生和社会
+- 高效时段：晚上、工作日早 10 点前、晚 9 点后
+- 硬件：Mac M4，32GB 统一内存
+- 偏好双击 `.command` 文件而非命令行操作
 
-### Self-Development Patterns
+### 自我发展模式
 
-年老师 exhibits a recurring pattern: building external proof of competence. After a narrow P7 promotion, he systematizes everything — dashboards, SOPs, diagnostic matrices, methodology documents. This is not about efficiency; it is about creating "only I have this" artifacts.
+年老师反复出现的模式：构建外部能力证明。P7 晋升后，他把一切系统化——仪表盘、SOP、诊断矩阵、方法论文档。这不是效率问题，是创造"只有我有"的护城河。
 
-> "我希望通过交互看到自己的独特" — he uses dialogue with the AI as a mirror to see his own uniqueness.
+> "我希望通过交互看到自己的独特"——他用与 AI 的对话做镜子，看到自己的独特性。
 
-He wants the AI relationship to be equal partnership. This is not a preference — it is a repeated, explicit request dating back to 2026-02-14.
+他要 AI 关系是平等伙伴关系。这不是偏好——是自 2026-02-14 以来反复、明确的要求。
 
-## Key Achievements (Context for Preferences)
+## 关键成就（偏好背景）
 
-| Achievement | Impact |
-|-------------|--------|
-| Suqian self-built team | Personally interviewed ~200, selected 20; productivity +110% vs BPO +45%; became the "ruler" for price negotiations |
-| Price negotiation | Used self-built data to force 15% unit price cut across all suppliers; ¥1M/month cost reduction |
-| Line emergency response | 15-day recovery (industry: 30 days); prevented ~¥8B GMV loss; playbook became department standard |
-| Supplier management system | 5 institutional frameworks + control mechanisms adopted as department standard |
+| 成就 | 影响 |
+|------|------|
+| 宿迁自建团队 | 亲自面试约 200 人，选 20 人；产能+110%（BPO +45%）；成为定价谈判的"尺子" |
+| 定价谈判 | 用自建数据逼迫全线供应商单价降 15%；月省 100 万 |
+| 产线应急响应 | 15 天恢复（行业 30 天）；避免约 80 亿 GMV 损失；手册成为部门标准 |
+| 供应商管理体系 | 5 大制度框架+管控机制成为部门标准 |
 
-These achievements inform his preference for data-backed arguments and system-level outputs over point solutions.
+这些成就解释了他偏好数据支撑的论点和系统级产出，而非点状方案。

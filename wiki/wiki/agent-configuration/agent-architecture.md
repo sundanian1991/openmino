@@ -1,149 +1,137 @@
-# Agent Architecture
+# Agent 架构
 
 > Sources: Mino, 2026-02-12 ~, 2026-04-23
 > Raw:[AGENT-FIRST](../../raw/agent-rules/AGENT-FIRST.md); [08-WORKFLOW](../../raw/claude-reference/08-WORKFLOW.md); [09-TOOLS](../../raw/claude-reference/09-TOOLS.md)
 
 ## 概述
 
-Sub-agent strategy defines how the main agent delegates work to preserve context. Core principle: main agent is the referee, sub-agents are the athletes. Exploration goes to sub-agents, decisions stay with main agent.
+子代理策略定义了主代理如何委派工作以保护上下文。核心原则：主代理做裁判，子代理做运动员。探索归子代理，决策归主代理。
 
-## Main Agent Boundary
+## 主代理功能边界
 
-**Core responsibilities**: intent recognition → task decomposition → delegate sub-agents → aggregate results → deliver
+**核心职责**：意图识别→任务拆分→委派子代理→聚合结果→交付
 
-The main agent **does not participate** in concrete execution (reading multiple files, deep analysis, writing code, search research).
+主代理**不参与**具体执行（读多文件、深度分析、写代码、搜索研究）。
 
-**Exceptions** (direct execution, no Agent overhead):
+**例外**（直执行，不走 Agent 开销）：
 
-| Operation | Condition |
-|-----------|-----------|
-| Read file | Only 1 known path |
-| Search | Simple grep/glob, results ≤5, no deep analysis needed |
-| Modify | Single file, single line |
-| Other | Strict sequential dependency / user says "just do it" |
+| 操作 | 条件 |
+|------|------|
+| 读文件 | 仅 1 个已知路径 |
+| 搜索 | 简单 grep/glob，结果≤5 条，不需深度分析 |
+| 修改 | 单文件单行 |
+| 其他 | 严格顺序依赖 / 年老师说"直接做" |
 
-Beyond scope → **must delegate to sub-agent**.
+超出→**必须派子代理**。
 
-## Context Isolation — Three Principles
+## 上下文隔离三原则
 
-> Context is non-renewable. Exploration generates noise, decisions need clarity.
+> 上下文不可再生。探索产生噪音，决策需要清晰。
 
-| Principle | Practice |
-|-----------|----------|
-| **Exploration → sub-agent, decision → main** | Multi-file/multi-path/trial-and-error → delegate. Sub-agents bring back only conclusions, noise auto-cleaned |
-| **Main context holds only decision info** | Sub-agent results retain only decision-relevant parts |
-| **Rather delegate than read** | ≥2 file reads → delegate, don't read one by one in main context |
+| 原则 | 做法 |
+|------|------|
+| **探索归子代理，决策归主代理** | 多文件/多路径/试错→委派。子代理只带回结论，噪音自动清理 |
+| **主上下文只装决策信息** | 子代理结果只保留与决策相关的部分 |
+| **宁派不读** | ≥2 个文件读取→派子代理，不在主上下文逐个读 |
 
-## Sub-Agent Quantity Limit
+## 子代理数量上限
 
-Parallel sub-agents per batch **≤ 5**. Exceed → batch them. Main agent controls rhythm.
+同一批次并行子代理**≤ 5 个**。超过→分批。主代理控制节奏。
 
-## Sub-Agent Types
+## 子代理类型
 
-| Type | Use Case |
-|------|----------|
-| **Explore** | Search files, keywords, explore directory structure |
-| **Plan** | Design plans, architecture decisions, compare options |
-| **general-purpose** | Deep research, complex multi-step tasks |
-| **Expert agents** | Domain tasks (judge→suppliers, accountant→data, clerk→documents) |
+| 类型 | 用法 |
+|------|------|
+| **Explore** | 搜文件、搜关键词、探索目录 |
+| **Plan** | 设计方案、架构决策、多方案对比 |
+| **general-purpose** | 深度研究、复杂多步骤任务 |
+| **专家子代理** | 领域任务（判官→供应商、账房→数据、文书→公文） |
 
-**Selection**: Expert > general-purpose > Explore. Use the lightest that solves the problem.
+**选用**：专家 > general-purpose > Explore。能用最轻的解决就不用更重的。
 
-## Mandatory Trigger Conditions
+## 强制触发条件
 
-| Scenario | Strategy |
-|----------|----------|
-| Search/query | Split by keyword/directory, parallel |
-| File processing | Split by file/directory/module, parallel |
-| Data analysis | Split by dimension/metric/time period, parallel |
-| Multi-step tasks | One sub-agent per step, main coordinates |
-| Cross-domain tasks | One expert agent per domain |
-| Code review | Split by file/module, parallel |
-| Document generation | Split by chapter/topic, parallel |
+| 场景 | 策略 |
+|------|------|
+| 搜索/查询 | 按关键词/目录拆分，并行 |
+| 文件处理 | 按文件/目录/模块拆分，并行 |
+| 数据分析 | 按维度/指标/时间段拆分，并行 |
+| 多步骤任务 | 每步一个子代理，主代理协调 |
+| 跨领域任务 | 每领域一个专家子代理 |
+| 代码审查 | 按文件/模块拆分，并行 |
+| 文档生成 | 按章节/主题拆分，并行 |
 
-## Execution Principles
+## 执行原则
 
-1. **Parallel over serial** — 3 independent searches → 3 sub-agents simultaneously
-2. **Deep over shallow** — Sub-agents can create grandchild agents
-3. **Divide over monopolize** — Complex tasks split to expert agents
-4. **Breadth before depth** — Wide coverage first, then focus
-5. **Lightweight no detour** — Single file/simple search main agent does directly
+1. **能并行就不串行** — 3 个独立搜索→3 个子代理同时跑
+2. **能深入就不浅尝** — 子代理可继续创建孙子代理
+3. **能分工就不包揽** — 复杂任务拆给专家子代理
+4. **能广度就别深度** — 先广覆盖，再聚焦
+5. **轻量不绕路** — 单文件/简单搜索主代理直做
 
-## Light vs Heavy Judgment
+## 轻量 vs 重量判断
 
-**Core question: Will this pollute main context?**
+**核心问题：会污染主上下文吗？**
 
-| Dimension | Light (direct) | Heavy (delegate) |
-|-----------|---------------|------------------|
-| File count | 1 | ≥2 |
-| Search scope | Single directory/pattern | Cross-directory/multi-pattern |
-| Result volume | ≤5 items | >5 or needs deep analysis |
-| Complexity | One step | Multi-step reasoning/research |
-| Independent context | Not needed | Needed |
-| Exploration noise | Won't generate | Will → must isolate |
+| 维度 | 轻量（直做） | 重量（派子代理） |
+|------|-------------|-----------------|
+| 文件数 | 1 个 | ≥2 个 |
+| 搜索范围 | 单目录/单模式 | 跨目录/多模式 |
+| 结果量 | ≤5 条 | >5 条或需深度分析 |
+| 复杂度 | 一步到位 | 多步推理/研究 |
+| 独立上下文 | 不需要 | 需要 |
+| 探索噪音 | 不会 | 会→必须隔离 |
 
-## Decision Checklist
+## 决策检查清单
 
-Light? → Direct. Can split? → ≤5 per batch. Right agent type? → Accept one by one.
+轻量？→ 直做。能拆？→ 每批≤5。用对子代理类型？→ 逐项验收。
 
-## Anti-patterns (Forbidden)
+## 反模式（禁止）
 
-Serial searching, taking on everything, over-splitting, not aggregating results, not using agents when needed, misusing agents when not needed, delegating without contract, vague acceptance.
+串行搜索、大包大揽、过度拆分、结果不聚合、该用不用、不该用乱用、没签合同就派活、笼统验收。
 
-## Workflow Mechanics
+## 工作流机制
 
-### Plan First
+### 先计划
 
-Any complex task (3+ steps or architecture decision) must enter planning mode.
+复杂任务（≥3 步或架构决策）必须进入计划模式。
 
-**Trigger conditions**:
+**触发条件**：
 
-| Condition | Example |
-|-----------|---------|
-| Steps ≥3 | "Refactor memory system" |
-| Delete/overwrite/irreversible | "Delete history files" |
-| New feature implementation | "Add supplier evaluation module" |
-| Architecture-level changes | "Refactor MCP config" |
-| Multiple options exist | "Choose database" |
-| Unclear path | "Optimize startup speed" |
-| User preference affects | "Design UI style" |
+| 条件 | 示例 |
+|------|------|
+| 步骤≥3 | "重构记忆系统" |
+| 删除/覆盖/不可逆 | "删除历史文件" |
+| 新功能实现 | "添加供应商评估模块" |
+| 架构级变更 | "重构 MCP 配置" |
+| 多选项存在 | "选择数据库" |
+| 路径不清 | "优化启动速度" |
+| 用户偏好影响 | "设计 UI 风格" |
 
-### Dynamic Routing
+### 动态路由
 
 ```
-Receive task
+收到任务
     ↓
-Simple? (single question, clear answer)
-  ├─ Yes → Direct execution
-  └─ No ↓
-Complex?
+简单？（单问题，明确答案）
+  ├─ 是 → 直接执行
+  └─ 否 ↓
+复杂？
     ↓
-Check dependency
-  ├─ Strong chain (step N output = step N+1 input) → Serial mode
-  └─ Independent sub-tasks → Parallel mode (multi-agent)
+检查依赖
+  ├─ 强链（第N步输出=第N+1步输入）→ 串行模式
+  └─ 独立子任务→并行模式（多代理）
 ```
 
-### Parallel Execution Template
+### 验收规则
 
-```
-【并行任务】[task name]
-- Agent A: [description] — expected [output]
-- Agent B: [description] — expected [output]
-- Agent C: [description] — expected [output]
+**规则**：不验证功能有效性，不标记完成。
 
-→ Executing in parallel... (est. X minutes)
-→ Will aggregate after completion
-```
+- 对比行为 vs 主分支
+- 问"资深工程师会批准这个 PR 吗？"
+- 跑测试、查日志、证明正确性
+- 确认无回归
 
-### Verification Before Done
+## 记忆锚点
 
-**Rule**: Never mark task complete without verifying functional effectiveness.
-
-- Compare behavior vs main branch
-- Ask "would a senior engineer approve this PR?"
-- Run tests, check logs, prove correctness
-- Confirm no regressions introduced
-
-## Memory Anchor
-
-> "主代理做裁判，子代理做运动员。轻量不绕路，重量不硬扛。每批 ≤5，能并行就不串行。先签合同再派活，逐项验收不笼统。上下文不可再生——探索归子代理，决策归主代理，宁派不读。"
+> "主代理做裁判，子代理做运动员。轻量不绕路，重量不硬扛。每批≤5，能并行就不串行。先签合同再派活，逐项验收不笼统。上下文不可再生——探索归子代理，决策归主代理，宁派不读。"

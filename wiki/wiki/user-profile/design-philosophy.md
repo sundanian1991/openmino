@@ -1,116 +1,116 @@
-# Design Philosophy
+# 设计哲学
 
-> Sources: Mino (AI agent), 2026-03 ~ 2026-04, synthesized from visualization projects and feedback records, 2026-04-28
+> Sources: Mino (AI agent), 2026-03 ~ 2026-04, 2026-04-28
 > Raw:[core-memory/MEMORY.md](../../raw/core-memory/MEMORY.md); [core-memory/insights.md](../../raw/core-memory/insights.md); [persona/偏好习惯.md](../../raw/persona/偏好习惯.md); [feedback/agent-reach-search.md](../../raw/feedback/agent-reach-search.md)
 
 ## 概述
 
-年老师's visual design preferences converge on a single principle: clarity through restraint. The aesthetic is warm academic — off-white backgrounds, warm-brown emphasis, minimal color usage, hand-drawn organic curves. Quality is measured by whether the core message lands in 3 seconds, not by visual complexity. This philosophy was crystallized through the delivery of 30 supplier-management visualization units in April 2026.
+年老师的视觉设计偏好收敛于一个原则：**克制带来清晰**。审美风格是"温暖学术风"——暖白底色、暖棕强调色、极少用色、手绘有机曲线。质量标准是核心信息 3 秒内传达到位，而非视觉复杂度。这个哲学在 2026 年 4 月交付 30 个供应商管理可视化单元时最终成型。
 
-## Style Identity: Warm Academic
+## 风格标识：温暖学术风
 
-The established design system (infographic-svg) defines a recognizable style:
+已建立的设计系统（infographic-svg）定义了可识别的风格：
 
-| Token | Value | Rationale |
-|-------|-------|-----------|
-| Background | `#faf9f7` (warm off-white) | Paper-like, not clinical white |
-| Primary text | `#1a1a1a` (near-black) | Readable, not harsh `#000` |
-| Emphasis color | `#c98a6a` (warm brown) | The *only* color — everything else is grayscale |
-| Semantic colors | ≤ 2 (olive green / burnt orange) | Reserved for meaning (good/bad/warning) |
-| Canvas width | 680px fixed | Consistent embed width |
-| Title font | Georgia, 18px bold | Academic serif |
-| Body font | system-ui, 10.5px | Clean sans-serif for readability |
-| Numeric font | monospace, 600 weight | Numbers must align and stand out |
+| 参数 | 值 | 理由 |
+|------|-----|------|
+| 背景 | `#faf9f7`（暖白） | 纸质感，非冷白 |
+| 主文字 | `#1a1a1a`（近黑） | 可读，不用刺眼的 `#000` |
+| 强调色 | `#c98a6a`（暖棕） | *唯一*彩色——其余全是灰阶 |
+| 语义色 | ≤2 种（橄榄绿/烧橙） | 仅用于含义（好/坏/警告） |
+| 画布宽度 | 680px 固定 | 一致的嵌入宽度 |
+| 标题字体 | Georgia, 18px 粗体 | 学术衬线 |
+| 正文字体 | system-ui, 10.5px | 清晰无衬线 |
+| 数字字体 | monospace, 600 粗细 | 数字必须对齐且突出 |
 
-The style preference order is: **Clean > Minimalist > Modern**, with Shadcn UI as the reference point.
+风格偏好顺序：**Clean > Minimalist > Modern**，Shadcn UI 为参考点。
 
-## Core Principles
+## 核心原则
 
-### No Emoji, Ever
+### 禁止 emoji
 
-Zero tolerance. Emoji are "太丑了" — they destroy the hand-crafted quality of visualizations. SVG icons replace all emoji use, and those SVGs must use Q Bézier curves for organic, hand-drawn feel. Geometric straight lines are forbidden in icon work.
+零容忍。emoji 太丑——破坏可视化作品的手工质感。SVG 图标替代所有 emoji，SVG 必须用 Q 贝塞尔曲线（二次贝塞尔）创造有机手绘感，禁几何直线。
 
-### Hand-Drawn Organic Aesthetic
+### 手绘有机美学
 
 > "SVG 必须有手工感（Q 贝塞尔曲线），禁几何直线"
 
-This is not about technical precision — it is about warmth and personality. The style emerged from studying specific reference pieces (the "李诞虾" icon) but the goal was never replication:
+这不是技术精度问题，而是温度和个性问题。风格源于特定参考（"李诞虾"图标），但目标从来不是复制：
 
 > "年老师要的不是'复制李诞虾'，而是'DNA+哲学能指导画任何东西'"
 
-The technical parameters (colors, strokes, curves) are the skeleton. Design philosophy (perspective choice, structure decomposition, color allocation) is the flesh. Both are needed for stable output.
+技术参数（颜色、笔触、曲线）是骨架。设计哲学（视角选择、结构分解、颜色分配）是血肉。两者都需要才能稳定输出。
 
-### Color Through Restraint
+### 克制用色
 
-The emphasis system is deliberately minimal:
-- One color (`#c98a6a`) carries all visual weight
-- Semantic colors (good/bad) are the only exceptions, capped at 2
-- Contrast comes from size, weight, and positioning — not from adding more colors
+强调色系统刻意极简：
+- 一种颜色（`#c98a6a`）承载所有视觉重量
+- 语义色（好/坏）是唯一例外，上限 2 种
+- 对比来自尺寸、粗细和位置——而非加更多颜色
 
-> "88分和89分没有区别" — the same logic applies to design: if everything is colored, nothing is colored.
+> "88 分和 89 分没有区别"——同样的逻辑适用于设计：如果一切都上了色，就等于什么都没上色。
 
-### Data Mode vs Brand Mode
+### 数据模式 vs 品牌模式
 
-When presenting data, the palette shifts to black/white/gray base with terracotta (`#E2725B`) accents. Pure terracotta monochrome is "too flat" — accent colors must create visual hierarchy and guide the eye.
+呈现数据时，配色切换为黑/白/灰底+赤陶色（`#E2725B`）点缀。纯赤陶单色"太平"——强调色必须创造视觉层次，引导视线。
 
-## Quality Standards: The Pyramid Verification Method
+## 质量标准：金字塔验证法
 
-Every visualization passes through three verification layers:
+每个可视化作品通过三层验证：
 
-### Layer 1: 3-Second Rule
+### 第一层：3 秒法则
 
-The core message must be understood within 3 seconds:
-- Title is the conclusion (e.g., "FCI速记卡" not "FCI相关卡片")
-- Focal element is center-positioned in warm-brown emphasis
-- Secondary information recedes (captions at 9px italic, `#6b6b6b`)
+核心信息必须 3 秒内被理解：
+- 标题就是结论（如"FCI 速记卡"而非"FCI 相关卡片"）
+- 焦点元素居中，暖棕色强调
+- 次要信息退后（说明文字 9px 斜体，`#6b6b6b`）
 
-### Layer 2: 3-Step Decision Chain
+### 第二层：3 步决策链
 
-Each visual answers three progressive questions:
-1. What is this? (title + core visual, ~1 second)
-2. What does it tell me? (logic chain, ~2 seconds)
-3. What should I do? (action hint, ~3 seconds)
+每个视觉回答三个递进问题：
+1. 这是什么？（标题+核心视觉，约 1 秒）
+2. 告诉我什么？（逻辑链，约 2 秒）
+3. 我该怎么做？（行动提示，约 3 秒）
 
-### Layer 3: 14-Point Quality Checklist
+### 第三层：14 点质量清单
 
-Covers font, container, color, layout, and logic dimensions. Key items:
-- Container radii: outer box rx=10 (stroke 1.5px), cards rx=8 (stroke 1px)
-- Left margin: 40px fixed
-- Baseline grid: 4pt
-- Information flow follows natural reading direction
-- No cross-contamination between hierarchy levels
+覆盖字体、容器、颜色、布局和逻辑维度。关键项：
+- 容器圆角：外框 rx=10（描边 1.5px），卡片 rx=8（描边 1px）
+- 左边距：40px 固定
+- 基线网格：4pt
+- 信息流遵循自然阅读方向
+- 层级间无交叉污染
 
-> "教科书级清晰度 = 3秒抓重点 × 3步逻辑链 × 14点质量清单 × 主题化视觉表达"
+> "教科书级清晰度 = 3 秒抓重点 × 3 步逻辑链 × 14 点质量清单 × 主题化视觉表达"
 
-## Output Conventions
+## 输出规范
 
-| Rule | Detail |
-|------|--------|
-| Markdown content | Use blockquotes (`>`), never code blocks for prose |
-| Flows/relationships/comparisons | Use generative-ui-widget; no `→↓│` text-symbol simulation |
-| Intercept rules > descriptive rules | Rules must block ("禁止", "零容忍", "必须"), not suggest |
-| Visualization explanation text | Place *after* the widget, never before (prevents rendering truncation) |
+| 规则 | 详情 |
+|------|------|
+| MD 内容 | 用引用块（`>`），禁止代码块呈现正文 |
+| 流程/关系/对比 | 用 generative-ui-widget，禁止 `→↓│` 文本符号 |
+| 拦截规则 > 描述性规则 | 规则必须是"禁止"、"零容忍"、"必须"，而非建议 |
+| 可视化说明文字 | 放在 widget *之后*，不要放在前面（防止渲染截断） |
 
-## Frontend Notification Pattern (mino-frontend)
+## 前端通知模式（mino-frontend）
 
-A validated pattern for business notifications, motivational posters, and policy announcements:
+已验证的业务通知、激励海报、政策公告模式：
 
-- Fixed-width centered: `min(820px, 100% - 2rem)`
-- Long-page scrolling (not 100vh pagination)
-- No shadows, no gradients, no emoji
-- Uniform 2px border radius
-- 3px top decorative line
-- Bottom info bar
-- Responsive card grid
+- 固定宽度居中：`min(820px, 100% - 2rem)`
+- 长页滚动（非 100vh 分页）
+- 无阴影、无渐变、无 emoji
+- 统一 2px 圆角
+- 3px 顶部装饰线
+- 底部信息栏
+- 响应式卡片网格
 
-Verified in production: `4月金条激励竞赛-v3.html`, `4月Q2变化通报_管理层版-v3.html`.
+已在生产环境验证：`4月金条激励竞赛-v3.html`、`4月Q2变化通报_管理层版-v3.html`。
 
-## Design System Philosophy
+## 设计系统哲学
 
-The underlying belief driving all visual work:
+驱动所有视觉工作的底层信念：
 
 > "技术是骨架，设计哲学是血肉。只有骨架没有血肉，输出不稳定。"
 
-Technical parameters are easy to codify. Design decisions — perspective, structure, color allocation — require philosophy. The goal is a reproducible "年老师 style" that can generate any subject matter, not a library of specific finished pieces.
+技术参数容易编码。设计决策——视角、结构、颜色分配——需要哲学。目标是可复现的"年老师风格"，能生成任何主题的素材，而非特定成品库。
 
-This applies beyond SVG: PPTX and HTML quality differences trace back to "design system execution degree," not style differences. Unified Design Tokens + shared grid system + consistent visual anchors produce stable output across any medium.
+这适用于 SVG 之外：PPTX 和 HTML 质量差异追溯到"设计系统执行度"，而非风格差异。统一设计 Token + 共享网格系统 + 一致视觉锚点，在任何媒介上都能产出稳定作品。
