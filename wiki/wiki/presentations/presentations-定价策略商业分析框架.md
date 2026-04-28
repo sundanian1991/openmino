@@ -1,6 +1,6 @@
 # 定价策略商业分析框架
 
-> Sources: AI 定价研究源文件中的框架层与分析方法 (2026-04-24)
+> Sources: AI 定价研究源文件中的框架层与分析方法 (2026-04-24), 2026-04-28
 > Raw: [头脑风暴](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research研究](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md); [notes-total](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-total.md)
 
 ## 概述

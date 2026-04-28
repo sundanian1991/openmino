@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [情绪触发点地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [专属AI职业导师项目](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md)
 
-## Overview
+## 概述
 
 AI职业导师系统是为职场情绪管理和个人认知发展设计的AI辅助工具。系统的核心理念是：职场中遇到的沟通困难和情绪困扰，往往不是因为性格缺陷，而是缺乏相应的工具和准备。通过建立一个安全的倾诉空间、精准的个人认知映射和持续的行为模式记录，系统帮助用户从"被动反应"转向"有准备的应对"。系统的第一个深度对话产出就是情绪触发点地图和五种语言防卫机制，揭示了系统的实用价值。
 

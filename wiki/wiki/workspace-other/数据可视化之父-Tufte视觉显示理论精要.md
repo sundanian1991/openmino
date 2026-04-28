@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [The Visual Display of Quantitative Information](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-The Visual Display of Quantitative Information - Edward Tufte.md)
 
-## Overview
+## 概述
 
 Edward Tufte的The Visual Display of Quantitative Information被公认为数据可视化领域的奠基之作。这本书提出了数据墨水和数据墨水比的核心概念，确立了"图表的首要原则是展示数据"的基本哲学。Tufte的理论不仅是技术指南，更是一种关于如何用视觉传达真相的思想体系。对于需要频繁用数据说话的职场人士，理解Tufte的核心原则可以显著提高数据呈现的专业性和说服力。
 

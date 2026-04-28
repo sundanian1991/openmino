@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [MCP总CLAUDE](../../raw/presentations/projects-mcp-servers-CLAUDE.md); [MCP总README](../../raw/presentations/projects-mcp-servers-README.md); [Get笔记CLAUDE](../../raw/presentations/projects-mcp-servers-getnote-CLAUDE.md); [Get笔记README](../../raw/presentations/projects-mcp-servers-getnote-README.md); [Get笔记源码CLAUDE](../../raw/presentations/projects-mcp-servers-getnote-src-CLAUDE.md); [Get笔记配置指南](../../raw/presentations/projects-mcp-servers-getnote-配置指南.md); [Memos CLAUDE](../../raw/presentations/projects-mcp-servers-memos-CLAUDE.md); [Memos README](../../raw/presentations/projects-mcp-servers-memos-README.md); [Memos源码CLAUDE](../../raw/presentations/projects-mcp-servers-memos-src-CLAUDE.md)
 
-## Overview
+## 概述
 
 MCP（Model Context Protocol）服务器基础设施管线是一套为AI助手构建的知识管理自动化系统。该系统包含多个MCP服务器组件，实现了从笔记获取、记忆管理到知识存储的完整管线。通过标准化的MCP协议，这些服务器可以与AI助手无缝集成，提供结构化的知识访问能力。这套基础设施是知识库从"手动维护"向"自动管理"演进的关键一步。
 

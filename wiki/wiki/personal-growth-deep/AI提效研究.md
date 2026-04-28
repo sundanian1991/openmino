@@ -1,9 +1,9 @@
 # AI提效研究
 
-> Sources: workspace-growth 中的 AI 效率研究项目
+> Sources: workspace-growth 中的 AI 效率研究项目, 2026-04-28
 > Raw: [AI定价头脑风暴](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md); [AI定价研究](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-01-research.md); [Quiver-API策略](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [AI定价compiled-spec](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec.md); [AI定价storyboard](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard.md)
 
-## Overview
+## 概述
 
 AI提效研究涵盖了两个核心方向：一是AI产品定价模式的商业案例研究（2026年国内大模型厂商从Coding Plan到Token Plan的定价演变），二是AI工具（如Quiver API）的高质量使用策略。这些研究反映了年老师对AI作为生产力工具的深度思考——不仅关注"怎么用AI提效"，更关注"AI生态的定价规律和成本结构"。
 

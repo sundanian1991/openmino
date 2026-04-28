@@ -1,6 +1,6 @@
 # 知识工作流水线方法论
 
-> Sources: kw-workflow 技能 + AI 定价项目全流程 (2026-04-24 至 2026-04-25)
+> Sources: kw-workflow 技能 + AI 定价项目全流程 (2026-04-24 至 2026-04-25), 2026-04-28
 > Raw: [AI定价头脑风暴](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [AI定价research](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md); [AI定价design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md); [AI定价notes-total](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-total.md); [workspace-AI定价演变-design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md)
 
 ## 概述

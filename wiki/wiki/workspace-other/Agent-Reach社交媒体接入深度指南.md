@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [Twitter高级功能](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-guides-setup-twitter.md); [小红书配置](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-guides-setup-xiaohongshu.md); [Cookie导出指南](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-docs-cookie-export.md); [SKILL英文版](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-skill-SKILL_en.md)
 
-## Overview
+## 概述
 
 Agent-Reach的社交媒体接入指南覆盖了Twitter/X和小红书的深度配置。Twitter分为基础阅读（Jina Reader免费）和高级功能（twitter-cli + Cookie），小红书通过xhs-cli实现搜索和笔记读取。两个平台都依赖Cookie导出作为认证方式，这是Agent访问需要登录态的网站的通用模式。
 

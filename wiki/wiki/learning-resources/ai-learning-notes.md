@@ -1,6 +1,6 @@
 # AI 学习笔记
 
-> Sources: Stanford CS146S 课程整理, 2026-03
+> Sources: Stanford CS146S 课程整理, 2026-03, 2026-04-28
 > Raw: [CS146S课程指南](../../raw/projects-ai-learning/outputs-COURSE-GUIDE.md) | [学习路线图](../../raw/projects-ai-learning/outputs-LEARNING-ROADMAP.md) | [CS146S阅读清单](../../raw/projects-ai-learning/outputs-stanford-cs146s-READING.md) | [AI学习库笔记](../../raw/projects-ai-learning/memory-learning-notes.md)
 
 ## 概述

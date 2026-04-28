@@ -3,7 +3,7 @@
 > Sources: 年老师, 2026-04-06
 > Raw: [供应商管理六步法](../../raw/work-methods/供应商管理六步法.md); [场景手册](../../raw/archive/场景手册.md); [insights](../../raw/core-memory/insights.md)
 
-## Overview
+## 概述
 
 供应商管理六步法是一套从规则建立到机制固化的闭环治理模型。改编自团队秩序管理方法论，核心逻辑是先稳秩序、再清问题、后建机制、长期固化。
 

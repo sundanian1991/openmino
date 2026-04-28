@@ -1,6 +1,6 @@
 # 演讲叙事方法论：从电信到 AI 的故事结构
 
-> Sources: Mino (AI), 2026-04-24 ~ 2026-04-26
+> Sources: Mino (AI), 2026-04-24 ~, 2026-04-26
 > Raw: [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md)
 
 ## 概述

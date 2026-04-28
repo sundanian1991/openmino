@@ -1,9 +1,9 @@
 # Data Storytelling — 数据沟通策略与编排
 
-> Sources: data-storytelling SKILL.md (2026-04-26); 《Storytelling with Data》全书 30 skill 整合
+> Sources: data-storytelling SKILL.md (2026-04-26); 《Storytelling with Data》全书 30 skill 整合, 2026-04-28
 > Raw: [SKILL.md](../../raw/skills/data-storytelling-SKILL.md)
 
-## Overview
+## 概述
 
 data-storytelling 是 Mino 技能体系中的"策略与编排层"——它不画图、不做 PPT，唯一产出是一份 Markdown 大纲，定义受众、Big Idea、图表清单、每张图的呈现策略和叙事顺序。大纲完成后，交给渲染技能（chart-visualization / echarts-visualization / html-ppt-skill / presentation-skill 等）完成图表和演示文稿。
 

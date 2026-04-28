@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-01-research.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-02-confidence.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-03-review.md; ../../raw/plans/2026-04-02-mino-frontend参数系统-02-review.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-00-brainstorm.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-01-research.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-03-review.md
 
-## Overview
+## 概述
 
 本文记录了 mino-frontend 技能从14种风格分类进化到"风格×情绪"二维决策矩阵的完整过程，以及参数系统的设计与跨技能抽象设计原则的建立。这是前端设计体系从"经验分类"到"决策逻辑"的方法论升级。
 

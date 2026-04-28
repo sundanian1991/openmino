@@ -1,9 +1,9 @@
 # 核心记忆索引 — 5 大类别 + 洞察档案
 
-> Sources: ../../raw/core-memory/01-供应商与BPO运营.md, ../../raw/core-memory/02-团队管理与汇报.md, ../../raw/core-memory/03-技术与工具探索.md, ../../raw/core-memory/04-个人成长.md, ../../raw/core-memory/05-行业认知.md, ../../raw/core-memory/insights.md, ../../raw/core-memory/MEMORY.md, ../../raw/core-memory/memos-upload-log.md, ../../raw/core-memory/CLAUDE.md
+> Sources: ../../raw/core-memory/01-供应商与BPO运营.md, ../../raw/core-memory/02-团队管理与汇报.md, ../../raw/core-memory/03-技术与工具探索.md, ../../raw/core-memory/04-个人成长.md, ../../raw/core-memory/05-行业认知.md, ../../raw/core-memory/insights.md, ../../raw/core-memory/MEMORY.md, ../../raw/core-memory/memos-upload-log.md, ../../raw/core-memory/CLAUDE.md, 2026-04-28
 > Raw: ../../raw/core-memory/01-供应商与BPO运营.md, ../../raw/core-memory/02-团队管理与汇报.md, ../../raw/core-memory/03-技术与工具探索.md, ../../raw/core-memory/04-个人成长.md, ../../raw/core-memory/05-行业认知.md, ../../raw/core-memory/insights.md, ../../raw/core-memory/MEMORY.md, ../../raw/core-memory/memos-upload-log.md, ../../raw/core-memory/CLAUDE.md
 
-## Overview
+## 概述
 
 核心记忆体系是 Mino 持续进化的中枢，由 5 大主题领域（供应商与 BPO 运营、团队管理与汇报、技术与工具探索、个人成长、行业认知）+ 洞察档案（insights.md）+ 主索引（MEMORY.md）构成。这套体系在 2026-02 至 2026-04 期间经历了多轮迭代，从简单的对话日志进化为结构化的知识复利系统。
 

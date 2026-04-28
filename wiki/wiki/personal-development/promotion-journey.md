@@ -1,6 +1,6 @@
 # 晋升历程：从运营到供应商管理的 V1-V13 演进
 
-> Sources: 年老师, 2026-02
+> Sources: 年老师, 2026-02, 2026-04-28
 > Raw: [晋升述职](../../raw/personal-growth/晋升述职-06-晋升述职.md), [V12版](../../raw/personal-growth/晋升述职-供应商管理方向-V12aicoworker版-晋升述职_V12aicoworker版.md), [V13最终版](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-晋升述职_V13-cowork版_最终.md)
 
 ## 概述

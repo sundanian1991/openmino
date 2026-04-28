@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [v0.1.5 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.5.md); [v0.1.6 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.6.md); [v0.1.7 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.7.md); [v0.1.8 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.8.md)
 
-## Overview
+## 概述
 
 OpenWiki的v0.1.5到v0.1.8版本release notes记录了应用在核心功能、用户体验和技术稳定性方面的持续迭代。虽然这四个版本的详细changelog包含在v0.1.5的累积更新说明中（v0.1.5 notes中提到了来自v0.1.3和v0.1.4的功能），但每个版本都有独立的release notes文件。本文章整理这四个版本的演进脉络。
 

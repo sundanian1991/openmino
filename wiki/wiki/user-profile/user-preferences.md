@@ -1,9 +1,9 @@
 # User Preferences
 
-> Sources: Mino (AI agent), 2026-01 ~ 2026-04, synthesized from memory and observation records
+> Sources: Mino (AI agent), 2026-01 ~ 2026-04, synthesized from memory and observation records, 2026-04-28
 > Raw: [core-memory/MEMORY.md](../../raw/core-memory/MEMORY.md); [core-memory/insights.md](../../raw/core-memory/insights.md); [persona/基本信息.md](../../raw/persona/基本信息.md); [persona/性格特质.md](../../raw/persona/性格特质.md); [persona/偏好习惯.md](../../raw/persona/偏好习惯.md); [persona/工作方法论.md](../../raw/persona/工作方法论.md); [persona/核心能力.md](../../raw/persona/核心能力.md); [feedback/agent-reach-search.md](../../raw/feedback/agent-reach-search.md)
 
-## Overview
+## 概述
 
 年老师 manages 35+ BPO suppliers (3,200+ people) across four financial product lines at JD.com's Data Technology Business Division. His working style is defined by three traits: structured thinking in all communication, risk-aware decision-making grounded in data, and a drive to systematize knowledge rather than solve isolated problems. He treats the AI agent as a thinking partner, not a tool — explicitly requesting equality in relationship dynamics.
 

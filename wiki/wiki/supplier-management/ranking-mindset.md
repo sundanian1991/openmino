@@ -3,7 +3,7 @@
 > Sources: 年老师, 2026-04-06
 > Raw: [供应商与BPO运营](../../raw/core-memory/01-供应商与BPO运营.md); [KPI不达标整改](../../raw/archive/场景一-KPI不达标整改.md); [insights](../../raw/core-memory/insights.md)
 
-## Overview
+## 概述
 
 供应商管理的核心不是看绝对分数，而是看相对排名。88分和89分没有区别，区别在于88分可能是第二名，也可能是倒数第二名。排名思维是供应商管理所有决策的底层逻辑。
 

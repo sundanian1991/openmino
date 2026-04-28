@@ -1,9 +1,6 @@
 # 人物画像与工作规范 — 年老师画像与标准流程
 
-> Sources:
-> - 年老师完整人物画像（身份、能力、性格、成就、偏好）
-> - 工作方法论（5311框架、六步法、议题设定权）
-> - 工作规范（核心理念、供应商管理、沟通、汇报、问题处理、铁律）
+> Sources: mino, 2026-04-28
 > Raw: ../../raw/persona/README.md; ../../raw/persona/偏好习惯.md; ../../raw/persona/基本信息.md; ../../raw/persona/工作方法论.md; ../../raw/persona/性格特质.md; ../../raw/persona/核心能力.md; ../../raw/persona/职业成就.md; ../../raw/work-methods/5311工作框架.md; ../../raw/work-methods/供应商管理六步法.md; ../../raw/work-methods/议题设定权-讨论总结与服务组量化框架.md; ../../raw/work-standards/README.md; ../../raw/work-standards/供应商管理方法论.md; ../../raw/work-standards/其他工作铁律.md; ../../raw/work-standards/向上汇报规范.md; ../../raw/work-standards/日常规范.md; ../../raw/work-standards/核心工作理念.md; ../../raw/work-standards/沟通方法论.md; ../../raw/work-standards/问题处理方法论.md
 
 > - `wiki/raw/persona/README.md`
@@ -25,7 +22,7 @@
 > - `wiki/raw/work-standards/沟通方法论.md`
 > - `wiki/raw/work-standards/问题处理方法论.md`
 
-## Overview
+## 概述
 
 人物画像与工作规范汇集了年老师的完整人物档案和工作方法论体系，是理解"年老师是谁"和"年老师怎么工作"的核心知识源。画像维度覆盖身份职责、核心能力、性格特质、职业成就和工作偏好；方法论维度包含5311时间框架、供应商管理六步法、议题设定权等决策工具；工作规范维度涵盖三问原则、培养悖论定律、高分辨率沟通、穿透式汇报等实操指南。这些材料创建于2026年2月至4月，是年老师从P7新人到体系搭建者转变过程中的自我认知和方法论沉淀。
 

@@ -1,12 +1,6 @@
 # 供应商项目档案 — 准入评估、培训体系、站点看板
 
-> Sources:
-> - 供应商ABC分层分级管理方案
-> - BPO供应商联盟认证总结（14页PPT讲稿）
-> - 供应商管理工作体系建设
-> - 供应商联盟认证设计规格
-> - 各供应商核心收获与落地方案
-> - 电销管理六大核心模块笔记
+> Sources: mino, 2026-04-28
 > Raw: ../../raw/projects-supplier/供应商ABC分层分级管理方案.md; ../../raw/projects-supplier/memory-long-term.md; ../../raw/projects-supplier/memory-CLAUDE.md; ../../raw/projects-supplier/project.md; ../../raw/projects-supplier/CLAUDE.md; ../../raw/projects-supplier/sources-312下午供应商联盟.md; ../../raw/projects-supplier/sources-313上午供应商联盟.md; ../../raw/projects-supplier/templates-design_spec.md; ../../raw/projects-supplier/README.md; ../../raw/projects-supplier/notes-13_关键成功要素.md; ../../raw/projects-supplier/notes-11_各供应商核心收获.md; ../../raw/projects-supplier/notes-04_坐席分级管理.md; ../../raw/projects-supplier/notes-total.md; ../../raw/projects-supplier/notes-03_方法论总览.md; ../../raw/projects-supplier/notes-05_激励体系设计.md; ../../raw/projects-supplier/notes-12_落地推进计划.md; ../../raw/projects-supplier/notes-08_认证规则与结果.md; ../../raw/projects-supplier/notes-07_三会管理流程.md; ../../raw/projects-supplier/notes-06_名单管控策略.md; ../../raw/projects-supplier/notes-01_封面.md; ../../raw/projects-supplier/notes-02_目录.md; ../../raw/projects-supplier/notes-09_岐力落地实施方案.md; ../../raw/projects-supplier/notes-14_总结.md; ../../raw/projects-supplier/notes-10_汇讯学习总结.md; ../../raw/projects-supplier/design_spec.md
 
 > - `wiki/raw/projects-supplier/供应商ABC分层分级管理方案.md`
@@ -35,7 +29,7 @@
 > - `wiki/raw/projects-supplier/notes-10_汇讯学习总结.md`
 > - `wiki/raw/projects-supplier/design_spec.md`
 
-## Overview
+## 概述
 
 供应商项目档案记录了年老师在供应商管理体系建设中的核心项目，涵盖从方法论沉淀到落地实践的全链路。这批材料的主体是2026年3月至4月期间完成的**供应商管理工作体系建设**项目和**BPO供应商联盟认证培训**项目。前者旨在将个人经验转化为可复制的组织能力，后者通过联盟培训形式推动各供应商标准化运营落地。管理规模覆盖35家供应商、3239人、4条业务线。
 

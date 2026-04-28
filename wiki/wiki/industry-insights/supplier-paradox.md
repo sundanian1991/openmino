@@ -1,6 +1,6 @@
 # 供应商管理悖论
 
-> Sources: 年老师, 2026-03
+> Sources: 年老师, 2026-03, 2026-04-28
 > Raw: [行业认知](../../raw/core-memory/05-行业认知.md); [insights](../../raw/core-memory/insights.md); [供应商管理方法论](../../raw/work-standards/供应商管理方法论.md)
 
 ## 概述

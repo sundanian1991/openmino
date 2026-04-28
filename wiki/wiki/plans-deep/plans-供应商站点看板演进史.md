@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-04
 > Raw: [v2-brainstorm](../../raw/plans/2026-04-04-供应商站点看板演进-00-v2-早期版本-00-brainstorm.md); [v2-research](../../raw/plans/2026-04-04-供应商站点看板演进-00-v2-早期版本-01-research.md); [v3-brainstorm](../../raw/plans/2026-04-04-供应商站点看板演进-01-v3-需求重构-00-brainstorm-v3.md); [v3-requirements](../../raw/plans/2026-04-04-供应商站点看板演进-01-v3-需求重构-01-requirements-v3.md); [v4-brainstorm](../../raw/plans/2026-04-04-供应商站点看板演进-02-v5-需求梳理-00-brainstorm-v4.md); [v5-brainstorm](../../raw/plans/2026-04-04-供应商站点看板演进-03-v5-失败分析-00-brainstorm.md); [v5-research](../../raw/plans/2026-04-04-供应商站点看板演进-03-v5-失败分析-01-research.md); [v5-compound](../../raw/plans/2026-04-04-供应商站点看板演进-03-v5-失败分析-03-compound.md); [v6-brainstorm](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-00-brainstorm.md); [v6-research](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-01-research.md); [v6-management](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-02-workspace-管理角度系统性梳理.md)
 
-## Overview
+## 概述
 
 供应商站点看板是年老师供应商管理可视化体系的核心工具，经历了从V2到V6的多次迭代。这是一条典型的"渐进式需求膨胀"的演进线：V2做基础功能验证，V3从管理需求出发重新设计，V4细化需求，V5大幅扩展后遭遇"测试版能工作、完整版不能"的失败，V5失败分析揭示了方法论教训，最终V6吸取教训采用四版本需求管理策略。这条演进线记录了从简单到复杂、从功能到管理、从失败到复盘的完整产品迭代历程。
 

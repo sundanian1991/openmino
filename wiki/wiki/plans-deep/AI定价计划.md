@@ -1,9 +1,9 @@
 # AI定价计划
 
-> Sources: AI产品定价模式演变商业案例研究（2026-04-24）
+> Sources: AI产品定价模式演变商业案例研究（2026-04-24）, 2026-04-28
 > Raw: [头脑风暴](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md); [研究文档](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-01-research.md); [compiled-spec](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec.md); [storyboard](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard.md); [decisions](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-decisions.md)
 
-## Overview
+## 概述
 
 2026年4月24日，年老师对国内AI大模型厂商的定价策略进行了系统性研究，完成了从头脑风暴到深度研究再到演示文稿的完整知识工作流。研究核心结论：**AI大模型定价正从"卖工具订阅"演进为"卖算力资源包"，精确重演了电信行业从话费套餐到流量套餐的20年历史。Coding Plan是过渡产品，Token Plan是终态。**
 

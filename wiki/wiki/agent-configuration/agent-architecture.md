@@ -1,9 +1,9 @@
 # Agent Architecture
 
-> Sources: Mino, 2026-02-12 ~ 2026-04-23
+> Sources: Mino, 2026-02-12 ~, 2026-04-23
 > Raw: [AGENT-FIRST](../../raw/agent-rules/AGENT-FIRST.md), [08-WORKFLOW](../../raw/claude-reference/08-WORKFLOW.md), [09-TOOLS](../../raw/claude-reference/09-TOOLS.md)
 
-## Overview
+## 概述
 
 Sub-agent strategy defines how the main agent delegates work to preserve context. Core principle: main agent is the referee, sub-agents are the athletes. Exploration goes to sub-agents, decisions stay with main agent.
 

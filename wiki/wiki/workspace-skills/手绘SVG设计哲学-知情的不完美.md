@@ -1,9 +1,9 @@
 # 手绘 SVG 设计哲学——"知情的不完美"运动
 
-> Sources: 前端设计原则体系项目 (2026-04-03~04); SVG 模板研究系列文档; 手绘 SVG 设计哲学 v2.0; 贝塞尔曲线模式库; 模板迭代记录
+> Sources: 前端设计原则体系项目 (2026-04-03~04); SVG 模板研究系列文档; 手绘 SVG 设计哲学 v2.0; 贝塞尔曲线模式库; 模板迭代记录, 2026-04-28
 > Raw: [手绘 SVG 设计哲学](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-手绘SVG设计哲学.md); [贝塞尔曲线模式库](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-贝塞尔曲线模式库.md); [模板汇总](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-模板迭代记录-模板汇总.md); [迭代验证方案](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-迭代验证方案.md); [物体观察库](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-物体观察库.md)
 
-## Overview
+## 概述
 
 手绘 SVG 设计哲学是 Mino 技能体系中最具原创性的设计方法论之一。它不是简单的"手绘风格指南"，而是一场被称为 "Informed Imperfection"（知情的不完美）的设计运动——主张手绘感不是让 AI 随机生成"看起来像手绘"的线条，而是深入理解手绘的视觉原理，然后用精确的代码实现这种"精心设计的不完美"。该哲学基于对 5 个传神手绘作品的深度临摹分析，提取了完整的贝塞尔曲线模式库、手绘感参数系统和质量评估清单，形成了从理论到实践的闭环。
 

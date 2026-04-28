@@ -1,6 +1,6 @@
 # Agent 架构设计
 
-> Sources: Mino, 2026-02-12 ~ 2026-04-24
+> Sources: Mino, 2026-02-12 ~, 2026-04-24
 > Raw: [技术与工具探索](../../raw/core-memory/03-技术与工具探索.md); [CLAUDE.md](../../raw/core-memory/CLAUDE.md); [MEMORY.md](../../raw/core-memory/MEMORY.md); [偏好习惯](../../raw/persona/偏好习惯.md); [insights](../../raw/core-memory/insights.md)
 
 ## 概述

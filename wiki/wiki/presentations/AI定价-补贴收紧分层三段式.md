@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [三段式节奏备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-10_three_phase_rhythm.md); [三层驱动备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-09_three_layer_drivers.md); [五力分析备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-08_five_forces.md)
 
-## Overview
+## 概述
 
 "补贴→收紧→分层"三段式是互联网定价的经典路径，AI大模型市场正在完整地重演这个模式。从2024-2025年的百万Token几毛钱，到2025年下半年取消首购优惠、停售低档，再到2026年的精细分层定价（极速版98-899元、企业版198-1398元），所有厂商都在走同一条路。本文章深入分析三段式的每个阶段及其对供应商管理的启示。
 

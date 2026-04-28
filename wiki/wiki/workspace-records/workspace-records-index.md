@@ -1,12 +1,6 @@
 # 工作记录与成长档案 — 数据汇报、月报、成长笔记
 
-> Sources:
-> - Q1电销经营数据与Q2规划（财务回复邮件、要点整理）
-> - 700会话历史提炼报告（V1+V2，2026-01至2026-04）
-> - Plan模板体系及可视化归档（22个模板、13个SVG）
-> - 权责不对等保护策略
-> - AI提效方案
-> - 游泳学习style icon练习
+> Sources: mino, 2026-04-28
 > Raw: ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-要点整理.md; ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-回复邮件草稿.md; ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-29-记录-700会话历史提炼-20260405-learning-records-v2-20260405.md; ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-29-记录-700会话历史提炼-20260405-learning-records-20260405.md; ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-37-记录-Q1电销汇总-20260331-Q1工作汇总.md; ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-37-记录-Q1电销汇总-20260331-一季度电销工作复盘.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-SVG索引.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-INDEX.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-交付清单.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-Claude-Design-系统提示词-中文版.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-41-成长-权责不对等研究-20260329-权责不对等保护策略-边界清单与留痕模板.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI提效方案-供应商管理岗.md; ../../raw/workspace-life/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-30-生活-游泳学习-20260404-CLAUDE.md
 
 > - `wiki/raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-要点整理.md`
@@ -23,7 +17,7 @@
 > - `wiki/raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI提效方案-供应商管理岗.md`
 > - `wiki/raw/workspace-life/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-30-生活-游泳学习-20260404-CLAUDE.md`
 
-## Overview
+## 概述
 
 工作记录与成长档案汇集了年老师在2026年Q1至Q2期间的关键工作产出、成长思考和生活侧面的实践记录。这些材料横跨三个维度：**业务数据与汇报**（Q1经营数据、财务沟通）、**体系化建设**（Plan模板体系、AI提效方案）、**职场生存策略**（权责不对等保护），以及生活探索（游泳学习、视觉风格练习）。时间跨度从2026年3月至4月，涵盖了供应商管理岗从日常运营到体系升级的关键阶段。
 

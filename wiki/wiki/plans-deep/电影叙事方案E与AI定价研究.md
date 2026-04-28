@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/plans/电影版叙事-cinematic-decisions.md; ../../raw/plans/电影版叙事-cinematic-storyboard.md; ../../raw/plans/电影版叙事-compiled-spec.md; ../../raw/plans/电影版叙事-素材-20260424-AI产品定价模式演变-从Coding Plan到Token Plan.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-decisions-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-03-review.md
 
-## Overview
+## 概述
 
 本文记录了 AI 定价商业案例的两个电影叙事方案——主方案（Fincher/Social Network 调查档案风格，26页五幕叙事）和方案E（Nolan/Tenet 倒叙杂志特稿风格，4页精简版）的完整设计决策过程。同时整合了 AI 定价研究的核心内容，展示如何将行业研究转化为具有电影感的叙事体验。
 

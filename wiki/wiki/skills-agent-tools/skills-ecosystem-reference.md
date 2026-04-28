@@ -1,6 +1,6 @@
 # Skills 生态全景 — 501 个技能文件的分类索引
 
-> Sources: wiki/raw/skills/INDEX.md, wiki/raw/skills/TRIGGER-INDEX.md, wiki/raw/skills/README.md
+> Sources: wiki/raw/skills/INDEX.md, wiki/raw/skills/TRIGGER-INDEX.md, wiki/raw/skills/README.md, 2026-04-28
 > Raw: ../../raw/skills/INDEX.md; ../../raw/skills/TRIGGER-INDEX.md; ../../raw/skills/README.md
 >
 > ../../raw/skills/agent-browser-SKILL.md; ../../raw/skills/agent-browser-authentication.md; ../../raw/skills/agent-browser-commands.md; ../../raw/skills/agent-browser-profiling.md; ../../raw/skills/agent-browser-proxy-support.md; ../../raw/skills/agent-browser-session-management.md; ../../raw/skills/agent-browser-snapshot-refs.md; ../../raw/skills/agent-browser-video-recording.md
@@ -75,7 +75,7 @@
 
 ---
 
-## Overview
+## 概述
 
 `.claude/skills/` 下的技能生态经历了从"有什么装什么"到"按需安装、定期清理"的演变。截至 2026-04-28，技能仓库共有 **501 个 Markdown 文件**，覆盖 **66 个已安装技能目录**。这些文件分布在 `wiki/raw/skills/` 扁平目录中（无子目录），按技能名加前缀分组。; ../../raw/skills/hand-drawn-icon-SKILL-v6-backup.md; ../../raw/skills/frontend-slides-README.md; ../../raw/skills/frontend-slides-STYLE_PRESETS.md; ../../raw/skills/frontend-slides-animation-patterns.md; ../../raw/skills/frontend-slides-html-template.md
 

@@ -1,6 +1,6 @@
 # 每日书信系统
 
-> Sources: Mino, 2026-04-12 ~ 2026-04-26
+> Sources: Mino, 2026-04-12 ~, 2026-04-26
 > Raw: [daily-letter SKILL.md](../../raw/skills/daily-letter-SKILL.md)
 
 ## 概述

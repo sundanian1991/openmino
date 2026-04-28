@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [Zara AI当前配置](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-zara-ai-current.md); [周度监控2026-04-03](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03.md); [周度监控2026-04-03-v2](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03-v2.md); [周度监控2026-04-08](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-08.md)
 
-## Overview
+## 概述
 
 Zara AI学习资源监控系统是一个基于AI的自动化内容转化管线，核心功能是将长篇商业播客（特别是Acquired播客）转化为高质量的商业传记章节式书面内容。该系统通过六步工作流实现了从音频到书面叙事的完整转化，包括故事弧线识别、角色映射、概念解释、引用提取、叙事构建和内容融合。这套系统不仅是一个技术工具，更是一种知识管理方法论——将碎片化的音频输入转化为结构化的可阅读输出。
 

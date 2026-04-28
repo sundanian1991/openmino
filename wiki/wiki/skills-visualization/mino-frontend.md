@@ -1,9 +1,9 @@
 # Mino Frontend (mino-frontend)
 
-> Sources: Mino, 2026-04-05 (v7.0)
+> Sources: Mino, 2026-04-05 (v7.0), 2026-04-28
 > Raw: [SKILL.md](../../raw/skills/mino-frontend-SKILL.md); [README](../../raw/skills/mino-frontend-README.md); [USAGE](../../raw/skills/mino-frontend-USAGE.md); [QUIVER-COMPARISON](../../raw/skills/mino-frontend-QUIVER-COMPARISON.md); [anthropic-design-guide](../../raw/skills/mino-frontend-anthropic-design-guide.md); [claude-design-system](../../raw/skills/mino-frontend-claude-design-system.md); [color-system](../../raw/skills/mino-frontend-color-system.md); [component-library](../../raw/skills/mino-frontend-component-library.md); [content-processing](../../raw/skills/mino-frontend-content-processing.md); [decision-matrix](../../raw/skills/mino-frontend-decision-matrix.md); [design-judgment](../../raw/skills/mino-frontend-design-judgment.md); [design-philosophy](../../raw/skills/mino-frontend-design-philosophy.md); [design-philosophy-12modes](../../raw/skills/mino-frontend-design-philosophy-12modes.md); [icon-semantic-list](../../raw/skills/mino-frontend-icon-semantic-list.md); [icon-syntax-four-modes](../../raw/skills/mino-frontend-icon-syntax-four-modes.md); [icon-syntax-twelve-modes](../../raw/skills/mino-frontend-icon-syntax-twelve-modes.md); [icon-usage](../../raw/skills/mino-frontend-icon-usage.md); [icons-index](../../raw/skills/mino-frontend-icons-index.md); [icons-vocabulary](../../raw/skills/mino-frontend-icons-vocabulary.md); [icons-vocabulary-v2](../../raw/skills/mino-frontend-icons-vocabulary-v2.md); [official-doc-templates](../../raw/skills/mino-frontend-official-doc-templates.md); [quality-checklist](../../raw/skills/mino-frontend-quality-checklist.md); [restrained-professional](../../raw/skills/mino-frontend-restrained-professional.md); [restrained-professional-usage](../../raw/skills/mino-frontend-restrained-professional-usage.md); [style-generator](../../raw/skills/mino-frontend-style-generator.md); [styles](../../raw/skills/mino-frontend-styles.md)
 
-## Overview
+## 概述
 
 mino-frontend 是年老师专属的前端技能——一个零依赖的 HTML 前端生成器，支持 6 种 UI 类型（幻灯片、数据仪表盘、前端页面、通报海报、高端落地页、管理后台）、100+ 组件库、54 种预设设计风格（ADMD 标准），单文件输出。v7.0 于 2026-04-05 发布，遵循 Awesome Design MD（ADMD）9 章节标准。
 

@@ -3,7 +3,7 @@
 > Sources: Mino (AI), 2026-04-25
 > Raw: [PPT169版 README](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-README.md); [PPT169版 design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md); [PPT169版 notes-total](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-total.md); [PPT169版 brainstorm源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [PPT169版 research源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md); [演讲脚本 workspace版](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md); [design-spec workspace版](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md)
 
-## Overview
+## 概述
 
 AI定价商业案例是 Mino 知识库中最具商业深度的演示项目。该项目研究国内 AI 大模型厂商在 2024 Q4 至 2026-04 期间，定价模式从 Coding Plan 到 Token Plan 的演变逻辑，将其类比为电信行业 20 年话费套餐演进史的精简重演。
 

@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/skills/taste-SKILL.md; ../../raw/skills/taste-agency-SKILL.md; ../../raw/skills/taste-development.md; ../../raw/skills/taste-learning.md; ../../raw/skills/taste-prompting.md; ../../raw/skills/taste-visual.md; ../../raw/skills/taste-writing.md; ../../raw/skills/taste-antipatterns.md; ../../raw/skills/taste-agency-thought-sources.md
 
-## Overview
+## 概述
 
 Taste System 由两个互补技能组成：**taste**（审美判断力）负责培养美学判断力，通过学习人类反馈、提出真诚的质量问题并随时间校准；**taste-agency**（行动力校准器）负责将模糊的欲望或有吸引力的想法转化为具体判断和下一步行动。核心观点：审美不是装饰性的美学，而是约束条件下的判断力；行动力不是动机驱动的努力，而是用户通过有意识行动塑造事件的能力。
 

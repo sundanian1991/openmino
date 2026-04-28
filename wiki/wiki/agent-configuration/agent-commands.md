@@ -1,9 +1,9 @@
 # Agent Commands
 
-> Sources: Mino, 2026-02-22 ~ 2026-04-26
+> Sources: Mino, 2026-02-22 ~, 2026-04-26
 > Raw: [wake](../../raw/agent-commands/wake.md), [think](../../raw/agent-commands/think.md), [checklist](../../raw/agent-commands/checklist.md), [observer](../../raw/agent-commands/observer.md), [plan5](../../raw/agent-commands/plan5.md), [ultrawork](../../raw/agent-commands/ultrawork.md), [update-memory](../../raw/agent-commands/update-memory.md), [update-memory-rules](../../raw/agent-commands/update-memory-rules.md), [kw-workflow](../../raw/agent-commands/kw-workflow.md)
 
-## Overview
+## 概述
 
 Nine slash commands covering session lifecycle, task management, quality control, memory maintenance, and deep analysis workflows. Each command has a specific trigger condition and output format.
 

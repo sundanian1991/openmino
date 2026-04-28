@@ -3,7 +3,7 @@
 > Sources: Epiplexity (via MyAgents), 2026-04-27
 > Raw: [ljg-xray-paper](../../raw/skills/ljg-xray-paper-SKILL.md); [ljg-xray-book](../../raw/skills/ljg-xray-book-SKILL.md); [ljg-card](../../raw/skills/ljg-card-SKILL.md) + modes + taste
 
-## Overview
+## 概述
 
 这组技能由李继刚（Epiplexity）设计，构成一个完整的知识处理管线：先通过 `ljg-xray-paper` 和 `ljg-xray-book` 对学术论文和书籍进行深度结构提取与认知碰撞，再通过 `ljg-card` 将内容铸造成七种视觉形态的 PNG 图片。前半段解决"理解什么"，后半段解决"怎么让人看见"。
 

@@ -1,9 +1,9 @@
 # Design Philosophy
 
-> Sources: Mino (AI agent), 2026-03 ~ 2026-04, synthesized from visualization projects and feedback records
+> Sources: Mino (AI agent), 2026-03 ~ 2026-04, synthesized from visualization projects and feedback records, 2026-04-28
 > Raw: [core-memory/MEMORY.md](../../raw/core-memory/MEMORY.md); [core-memory/insights.md](../../raw/core-memory/insights.md); [persona/偏好习惯.md](../../raw/persona/偏好习惯.md); [feedback/agent-reach-search.md](../../raw/feedback/agent-reach-search.md)
 
-## Overview
+## 概述
 
 年老师's visual design preferences converge on a single principle: clarity through restraint. The aesthetic is warm academic — off-white backgrounds, warm-brown emphasis, minimal color usage, hand-drawn organic curves. Quality is measured by whether the core message lands in 3 seconds, not by visual complexity. This philosophy was crystallized through the delivery of 30 supplier-management visualization units in April 2026.
 

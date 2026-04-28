@@ -1,9 +1,9 @@
 # Ownership Skills — 端到端责任引擎
 
-> Sources: ownership-skills SKILL.md (MIT License); OWNER Method 方法论; 反模式识别与应对
+> Sources: ownership-skills SKILL.md (MIT License); OWNER Method 方法论; 反模式识别与应对, 2026-04-28
 > Raw: [SKILL.md](../../raw/skills/ownership-skills-SKILL.md); [详细方法论](../../raw/skills/ownership-skills-methodology.md); [反模式大全](../../raw/skills/ownership-skills-anti-patterns.md); [展示协议](../../raw/skills/ownership-skills-display-protocol.md); [情境方法选择](../../raw/skills/ownership-skills-context-selector.md)
 
-## Overview
+## 概述
 
 ownership-skills 是 Mino 技能体系中的"责任意识层"——它不提供任何具体功能，而是培养 AI 的 Owner 意识，确保任务从接受到交付的全链路闭环。核心理念：**你不是执行者，你是 Owner。问题到你这里，就要在你这里终结。**
 

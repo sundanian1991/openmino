@@ -1,9 +1,9 @@
 # Markdown Converter — 文档格式转换
 
-> Sources: markdown-converter SKILL.md; markitdown 工具
+> Sources: markdown-converter SKILL.md; markitdown 工具, 2026-04-28
 > Raw: [SKILL.md](../../raw/skills/markdown-converter-SKILL.md)
 
-## Overview
+## 概述
 
 markdown-converter 是 Mino 技能体系中的"文档格式转换层"——使用 `uvx markitdown` 将各种格式的文档转换为 Markdown，无需安装任何依赖。它是知识工作流的入口技能——将外部文档（PDF、Word、PPT、Excel 等）转换为 Mino 可处理的 Markdown 格式，然后交给其他技能进行分析和可视化。
 

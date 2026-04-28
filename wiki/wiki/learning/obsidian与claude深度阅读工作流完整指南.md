@@ -261,8 +261,8 @@ Deep learning is a subset of machine learning that uses neural networks with mul
 请基于所有章节文件，生成一个目录（TOC）：
 # 目录
 
-- [第一章 导论](./01-第一章.md)
-- [第二章 基础概念](./02-第二章.md)
+- 第一章 导论
+- 第二章 基础概念
 ...
 ```
 

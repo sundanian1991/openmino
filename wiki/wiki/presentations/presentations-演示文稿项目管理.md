@@ -1,6 +1,6 @@
 # 演示文稿项目管理实践
 
-> Sources: 所有 presentations 目录下的项目文件 (2026-04-03 至 2026-04-26)
+> Sources: 所有 presentations 目录下的项目文件 (2026-04-03 至 2026-04-26), 2026-04-28
 > Raw: [README.md](../../raw/presentations/README.md); [README.ai.md](../../raw/presentations/README.ai.md); [PATH.ai.md](../../raw/presentations/PATH.ai.md); [AI定价README](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-README.md); [刘乾坤README](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-README.md); [梁俊瑞README](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-README.md)
 
 ## 概述

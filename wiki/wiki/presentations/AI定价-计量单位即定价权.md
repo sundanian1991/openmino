@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [计量体系备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-06_measurement_systems.md); [定价对比备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-05_pricing_comparison.md); [三层驱动备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-09_three_layer_drivers.md); [Agent成本备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-13_agent_cost.md); [头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md)
 
-## Overview
+## 概述
 
 "计量单位即定价权"是AI定价项目五条核心洞察中的第一条，也是最基础的一条。谁定义计量单位谁就掌握定价权——这个规律适用于所有"算力即服务"的商业模式。本文章深入分析五种计量体系的并存现状、演变方向和对定价权的争夺逻辑。
 

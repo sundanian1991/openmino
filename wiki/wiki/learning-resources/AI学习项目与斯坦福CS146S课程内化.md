@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/projects-ai-learning/CLAUDE.md; ../../raw/projects-ai-learning/notes-README.md; ../../raw/projects-ai-learning/notes-best-practices-CLAUDE.md; ../../raw/projects-ai-learning/outputs-CLAUDE.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-README.md; ../../raw/projects-ai-learning/outputs-alternative-resources-CLAUDE.md; ../../raw/projects-ai-learning/guides-CLAUDE.md
 
-## Overview
+## 概述
 
 斯坦福大学 CS146S 课程（The Modern Software Developer）的学习项目是年老师系统化提升 AI 工程能力的重要途径。课程聚焦 Agent 模式、MCP、安全扫描和代码审查等现代软件开发最佳实践。
 

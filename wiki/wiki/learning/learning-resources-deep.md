@@ -1,9 +1,9 @@
 # AI 学习资源深度 — 课程/电子书/方法论索引
 
-> Sources: Mino 学习档案，2026-02-24 至 2026-04-27
+> Sources: Mino 学习档案, 2026-02-24 至 2026-04-27
 > Raw: ../../raw/learning/AI-Agent工作流解析-agency-agents-analysis.md; ../../raw/learning/AI-Agent工作流解析-agency-agents-current.md; ../../raw/learning/AI协作-07-AI协作.md; ../../raw/learning/AI协作-Claude.md; ../../raw/learning/Claude Code-CLAUDE.md; ../../raw/learning/Claude Code-TRANSPARENT-WORKFLOW.md; ../../raw/learning/Claude Code-architecture.md; ../../raw/learning/Claude Code-cheatsheet.md; ../../raw/learning/Claude Code-claude-cli-system-prompt.md; ../../raw/learning/Claude Code-claude-code-guide.md; ../../raw/learning/Claude Code-documentation.md; ../../raw/learning/Claude Code-implement.md; ../../raw/learning/Claude Code-personalization-upgrade-summary.md; ../../raw/learning/Claude Code-plan5-lessons.md; ../../raw/learning/Claude Code-plans.md; ../../raw/learning/Claude Code-prompt.md; ../../raw/learning/Claude Code-use-claude-code.md; ../../raw/learning/技能加载优化-已完成-feature-request-progressive-disclosure.md; ../../raw/learning/技能相关-工具技能-CAPTURE.md; ../../raw/learning/技能相关-工具技能-OBSIDIAN-CLAUDE-DEEP-READING.md; ../../raw/learning/技能相关-工具技能-context-optimization-audit.md; ../../raw/learning/技能相关-工具技能-cowork-plugins-manual.md; ../../raw/learning/技能相关-工具技能-jiyi.md; ../../raw/learning/技能相关-工具技能-skill-improvement-plan.md; ../../raw/learning/技能相关-工具技能-skills-integration-plan.md; ../../raw/learning/技能相关-工具技能-verification-checklist.md
 
-## Overview
+## 概述
 
 本文档汇总了 my-agent 知识库中的全部 23 份学习档案，覆盖三大知识域：Claude Code 七大核心组件（从入门到生产级配置）、AI Agent 工作流与角色体系（Agency-Agents 178 角色清单到工作流架构）、以及技能系统的渐进式优化（从 73 个技能的审计到 Progressive Disclosure 加载机制）。同时记录了配套的方法论资产：CAPTURE 单文件快速记录法、Obsidian + Claude 深度阅读工作流、上下文优化审计流程、以及五层文档体系。核心价值：这不是一份书单或链接列表，而是一套经过实战检验的学习路径——从"知道 Claude Code 能做什么"到"把它配成一个 24 小时在线的夜班同事"。学习不是静态的知识储备，而是持续将知识转化为可执行的系统配置。
 

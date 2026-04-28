@@ -2,19 +2,13 @@
 
 > 了解我的工作，给予我更深入的指导和前瞻性反馈
 
-> Sources:
-> - `project.md` — 职业辅导项目主文档
-> - `forward-looking-advice.md` — 前瞻性发展建议
-> - `soul-insights.md` — 工作深度洞察
-> - `CLAUDE.md` — 项目目录配置
-> - `memory-CLAUDE.md` — memory 子目录配置
-> - `memory-long-term.md` — 长期记忆
+> Sources: mino, 2026-04-28
 
 > Raw: `/Users/sundanian/Documents/projects/ai-agents/my-agent/wiki/raw/projects-career-coaching/`
 
 ---
 
-## Overview
+## 概述
 
 职业辅导项目（projects-career-coaching）聚焦年老师在 P7 岗位上的能力建设和长期发展规划。与自我认知项目不同，这个项目不是"你是谁"的探索，而是"你该怎么走"的指导——理解当前供应商管理工作模式，识别痛点和改进机会，提供前瞻性的管理建议，帮助建立稳固的 P7 工作体系。
 

@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/skills/svg-flow-diagram-SKILL.md; ../../raw/skills/svg-flow-diagram-README.md; ../../raw/skills/svg-flow-diagram-style-guide.md; ../../raw/skills/svg-flow-diagram-svg-recipes.md
 
-## Overview
+## 概述
 
 SVG Flow Diagram 专门用于创建独立的 SVG 流程图、过程图、架构图和管道图。视觉语言基于 Excalidraw 风格的手绘美学，特色是虚线动画流线和温暖纸质背景。与 diagram-design 不同，这个技能专注于纯 .svg 输出（非 HTML），适用于需要嵌入文档、幻灯片或网页的场景。
 

@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v2.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v3.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v4.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v5.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v6.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v7.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v8.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v9.md; ../../raw/docs-supplier/历史项目-BPO联盟-BPO京东电销项目联盟培训总结.md
 
-## Overview
+## 概述
 
 BPO联盟月报从v1到v9经历了9次迭代，是供应商赋能平台的核心模块。本文记录了月报模块的完整演进历程，从最初的简单数据汇总到v9的多维度、可视化、互动式报告体系。同时整合了BPO联盟培训总结，展现供应商赋能从"管理"向"赋能"的思路转变。
 

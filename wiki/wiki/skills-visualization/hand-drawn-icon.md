@@ -4,7 +4,7 @@
 > Raw: ../../raw/skills/hand-drawn-icon-SKILL.md; ../../raw/skills/hand-drawn-icon-workflow-standard.md; ../../raw/skills/hand-drawn-icon-design-philosophy-color-table.md; ../../raw/skills/hand-drawn-icon-learning-summary-R1-R3.md; ../../raw/skills/hand-drawn-icon-curve-rhythm-analysis.md; ../../raw/skills/hand-drawn-icon-r3-analysis.md; ../../raw/skills/hand-drawn-icon-round1-analysis.md; ../../raw/skills/hand-drawn-icon-round2-analysis.md; ../../raw/skills/hand-drawn-icon-round3-analysis.md; ../../raw/skills/hand-drawn-icon-round3-final-analysis.md; ../../raw/skills/hand-drawn-icon-r3-spec-cup.md; ../../raw/skills/hand-drawn-icon-round3-spec-cup.md; ../../raw/skills/hand-drawn-icon-round3-spec-fan.md; ../../raw/skills/hand-drawn-icon-round1-spec-shrimp.md; ../../raw/skills/hand-drawn-icon-18次学习计划.md
 > [v6-backup](../../raw/skills/hand-drawn-icon-SKILL-v6-backup.md)
 
-## Overview
+## 概述
 
 手绘风格 SVG 图标生成技能。风格来源为"李诞虾"（有机温暖风格），通过四色系统、呼吸式曲线节奏和线条分层，生成具有"手的温度"的手绘图标。采用简单/复杂双流程策略：简单图标通过 better-icons（Iconify）搜索直接使用，复杂图标通过 API 生成。
 
