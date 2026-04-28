@@ -5,6 +5,26 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] enrich | Wiki 文章质量提升第三轮 — 8 篇 + 6 篇
+
+**8 篇**（1500 chars 以下多引用文章充实）：
+- AI学习项目+斯坦福课程：课程信息+8位嘉宾+评分体系+学习路线
+- 深夜对话与碎片成长：时间戳记录+架构重构+Token危机+HABIT重建+15天写作反思
+- work-rules/core-principles：可执行具体化+过程透明5步+共识优先
+- work-rules/problem-solving：分层干预+调试失败根因+权责保护8边界
+- supplier-paradox：供应商分类分层+沟通策略+流失完整因果链
+- AI学习监控：64资源基线扫描+周报分析+关键发现
+- cinematic叙事：反模式8条+独特性协议+交互预算规则
+- OpenWiki v0.1.3→v0.1.4：4版本演进对比+迭代趋势分析
+
+**6 篇**（剩余 2+ refs <1500 chars 文章充实）：
+- 5311框架：对比分析+六步法闭环+FCI完整权重表+叙事武器库
+- experience-insights：量化成就表+性格深层洞察+核心软肋
+- work-style-philosophy：L1-L4表达层级+6人物沟通风格+5场景模板
+- 企金产线供应商：14家全景表+人力分布+vs金条对比
+- Q1绩效汇报：6家数据表+伽玛异常分析+四幕叙事+行动建议
+- finance-reply：合同审批表+完整回复邮件+背景信息
+
 ## [2026-04-28] enrich | Wiki 文章质量提升 — skills-document 11 篇 + 人物/项目/供应商 4 篇
 
 **skills-document/ 11 篇全面充实**（每篇从 300-1000 chars 扩展至 2000-4500 chars）：
