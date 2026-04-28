@@ -1,6 +1,6 @@
 # 供应商评估与KPI体系
 
-> Sources: mino, 2026-04-27
+> Sources: mino, 2026-04-27（合并：02-供应商评估与KPI体系）
 > Raw:../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商KPI体系设计-findings.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商KPI体系设计-progress.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商KPI体系设计-task_plan.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商评估-01-数据清洗.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商评估-02-描述性统计.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商评估-03-深度分析.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商评估-04-供应商分层.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商评估-05-开放问题提炼.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商评估-06-VP汇报框架.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-供应商补充材料通知.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-审计.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-数据资料-difengxian.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-数据资料-shuju.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-数据资料-供应商评分表.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-视觉原子规范-V3.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-视觉原子规范-v2.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-视觉原子规范.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-视觉原子规范V3.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-supplier-six-box-test-iteration-1-eval-1-with_skill-岐力六盒诊断报告.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-supplier-six-box-test-iteration-1-eval-2-with_skill-翰锐六盒诊断报告.md; ../../raw/workspace-supplier/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-34-供应商-评估与KPI体系-20260402-supplier-six-box-test-iteration-1-eval-3-with_skill-毅航-六盒诊断报告.md
 
 ## 概述
@@ -140,3 +140,190 @@
 | 视觉原子规范（4文件） | 4 | V1/V2/V3迭代版本 |
 | 六盒诊断报告（3文件） | 3 | 岐力、翰锐、毅航三家供应商诊断 |
 | 审计（1文件） | 1 | 审计相关材料 |
+
+---
+
+## 合并补充（来自02-供应商评估与KPI体系.md）
+
+
+## 一、KPI体系设计：六步分析流程
+
+### 1.1 整体方法论
+
+从原始数据到管理决策的完整链路，分为六个阶段：
+
+| 步骤 | 产出 | 核心任务 |
+|------|------|---------|
+| Step 1：数据清洗 | 清洁数据集 | 剔除无效数据、极端值、格式标准化 |
+| Step 2：描述性统计 | 数据概览 | 均值、中位数、分布、成本结构 |
+| Step 3：深度分析 | 核心发现 | 相关性分析、规模效应、友商对比 |
+| Step 4：供应商分层 | 分层矩阵 | 四象限分类、管理策略匹配 |
+| Step 5：开放问题提炼 | 供应商诉求 | 关键词统计、痛点排序 |
+| Step 6：VP汇报框架 | 决策材料 | SCQA框架、可执行建议 |
+
+### 1.2 数据清洗规则
+
+剔除标准：
+- 城市填写"二、三线"等非具体城市名
+- 利润率<-100%的极端异常值
+- 结算金额<=0或坐席规模<=0
+- 过滤后有效样本：17家（首贷10家，复贷7家）
+
+### 1.3 描述性统计核心发现
+
+**首贷城市表现**：
+- 合肥/宿州：150人，结算170万，利润率31.2%，人均创收11,333元（最佳）
+- 昆明：65人，结算60万，利润率25.0%，人均创收9,231元
+- 石家庄：125人，结算114.5万，利润率4.1%
+- 南昌：20人，结算4万，利润率-25.0%（严重亏损）
+
+**复贷城市表现**：
+- 合肥/宿州：150人，结算93万，利润率16.1%
+- 石家庄：85人，结算55万，利润率8.5%
+- 鸡西/晋城：20人，利润率0.0%（盈亏平衡边缘）
+
+## 二、供应商分层方法论
+
+### 2.1 四象限分层矩阵
+
+| 分层 | 占比 | 特征 | 管理策略 |
+|------|------|------|---------|
+| A类（优质） | 22% | 总毛利>15%，规模大 | 优先分配增量业务 |
+| B类（健康） | 11% | 总毛利5-15%，成本可控 | 关注成本优化 |
+| C类（边缘） | 22% | 总毛利0-15%，极度敏感 | 建立风险预警 |
+| D类（问题） | 45% | 亏损或数据缺失 | 启动淘汰程序 |
+
+### 2.2 复贷分层更极端
+
+| 分层 | 数量 | 占比 | 特征 |
+|------|------|------|------|
+| A类（优质） | 1家 | 11% | 总毛利31.2%，规模较大 |
+| C类（边缘） | 3家 | 33% | 总毛利0-15.8%，极度敏感 |
+| D类（问题） | 5家 | 56% | 亏损或数据缺失 |
+
+复贷分层更极端，中间层缺失。说明复贷供应商要么健康要么问题，没有过渡带。
+
+### 2.3 规模效应验证
+
+| 规模 | 人均结算 | 人均成本 | 人均毛利 | 结论 |
+|------|---------|---------|---------|------|
+| 大型（>80人） | 0.97万 | 0.72万 | +0.25万 | 盈利 |
+| 中型（31-80人） | 0.88万 | 0.79万 | +0.09万 | 微利 |
+| 小型（<=30人） | 0.49万 | 0.66万 | -0.17万 | 亏损 |
+
+小型供应商人均每月亏损0.17万，长期难以存活。固定成本压力大（场地+设备占比小型17.4% vs 大型5.5%）。
+
+## 三、VP汇报框架（SCQA）
+
+### 3.1 汇报结构设计
+
+| 环节 | 时长 | 内容 |
+|------|------|------|
+| Situation 背景 | 1分钟 | 调研背景、目标、样本量 |
+| Complication 冲突 | 2分钟 | 核心发现、严重性、紧迫性 |
+| Question 问题 | 1分钟 | 核心问题：结算水平是生命线，如何管理？ |
+| Answer 方案 | 8分钟 | 数据概览、核心发现、分层、建议 |
+| 总结与下一步 | 3分钟 | 核心结论、可执行建议、Q&A |
+
+### 3.2 一页纸核心结论
+
+| 维度 | 数据 | 结论 |
+|------|------|------|
+| 风险敏感度 | 91%下降<10%就亏损 | 结算是生命线 |
+| 规模效应 | 大型毛利24%，小型-183% | 小供应商难以存活 |
+| 成本结构 | 人力占74% | 人力是最大支出 |
+| 供应商质量 | 优质仅22%，问题45% | 结构需优化 |
+
+### 3.3 Q&A准备
+
+**预期问题1：为什么有这么多问题供应商？**
+- 小型供应商先天劣势（人均亏损0.17万/月）
+- 固定成本压力大，规模效应明显
+- 建议：不再新增小型供应商，现有自然淘汰或整合
+
+**预期问题2：是否需要提升结算价格？**
+- 友商单价高15-25%，但薪资高27-64%，京东性价比更优
+- 供应商更在意的是"稳定"而非"更高"
+- 建议：优先调整频率（月度→季度），而非价格
+
+**预期问题3：结算调整频繁具体指什么？**
+- 7/9家供应商提到"结算调整频繁"
+- 现状：月度调整、当月生效、无过渡期
+- 诉求：季度调整、当月宣导次月生效、有过渡期
+
+## 四、BPO企微管理风险评估
+
+### 4.1 BPO做企微的六大天然风险
+
+| 风险类别 | 具体风险 | 后果 |
+|----------|----------|------|
+| 账号安全 | 员工流动大、账号易失控 | 账号流失、无法回收 |
+| 数据泄露 | 客户信息在个人设备上 | 客户信息外泄、合规问题 |
+| 服务品质 | 话术不当、响应不及时 | 客诉、品牌受损 |
+| 合规风险 | 私下加微信、过度营销 | 违反平台规则、封号 |
+| 舆情风险 | 个体行为影响品牌 | 负面舆情、商誉受损 |
+| 资产风险 | 客户资源被带走 | 资产流失、竞争风险 |
+
+### 4.2 两层保障机制
+
+**第一层 - 内部管控制度（我方自证可控）**：
+- 制度层面：SOP、红线、处罚标准
+- 流程层面：审批、质检、审计、应急
+- 技术层面：设备管控、登录监控、数据隔离
+
+**第二层 - 供应商管理手段（约束BPO）**：
+- 合同约束：违约责任、连带赔偿
+- 过程监督：定期审计、突击检查、数据分析
+- 违规处罚：警告→罚款→解约（梯度设计）
+- 优胜劣汰：评级机制、淘汰机制
+
+### 4.3 违规处罚矩阵
+
+| 违规等级 | 违规行为 | 处罚措施 |
+|----------|----------|----------|
+| 严重 | 泄露客户数据、私下收款、恶意删除客户 | 立即解约 + 全额赔偿 + 法律追责 |
+| 重度 | 私自导出数据、未授权换设备、连续3次不响应 | 罚款5000-20000元 + 警告 |
+| 中度 | 话术违规、响应超时、服务态度问题 | 罚款1000-5000元 + 通报 |
+| 轻度 | 首次轻微违规、操作失误 | 警告 + 培训 |
+
+### 4.4 制度模块设计
+
+- 模块A：账号安全管理（升级版）— 设备管控、登录监控、权限分级
+- 模块B：内容与服务品质管理 — 话术规范、响应时效、质检体系
+- 模块C：数据安全与隔离 — 数据不落地、敏感信息脱敏、操作留痕
+- 模块D：应急响应机制 — 0级立即封号、1级24小时、2级72小时
+- 模块E：供应商管理手段 — 月度审计制度、违规处罚矩阵
+
+## 五、供应商月度综合评估方案
+
+四维度100分制评估体系：
+- 交付质量：40分
+- 业务达成：30分
+- 合规表现：20分
+- 管理配合：10分
+
+## 六、核心管理建议
+
+### 6.1 短期可执行
+
+1. 设定首贷盈亏警戒线：人均创收低于7,500元的职场重点监控，月结算低于50万元的职场预警
+2. 分类管理：盈利职场（利润率>15%）维持现状，边缘职场（0-15%）专项帮扶，亏损职场（<0%）限期整改或退出
+
+### 6.2 中期需策略组配合
+
+1. 价格机制调整：首贷建议结算单价上浮10-15%，复贷保持当前价格但引入绩效激励机制
+2. 差异化定价：一线城市允许更高成本结构，三四线城市保持价格优势
+
+### 6.3 供应商核心诉求优先级排序
+
+| 优先级 | 建议 | 成本 | 预期效果 |
+|--------|------|------|---------|
+| P0 | 结算改为季度调整 | 低 | 大幅提升满意度 |
+| P1 | 赛马规则优化（增员保护期） | 低 | 降低供应商风险 |
+| P1 | 扣罚规则优化 | 低 | 提升供应商信心 |
+| P2 | 批次整合简化 | 低 | 降低复杂度 |
+| P2 | 通讯费甲方支付 | 中 | 降低成本3-5% |
+
+---
+
+*报告整理：Mino | 2026-04-28 | 基于2026年3-4月供应商评估与KPI体系系列文档*
