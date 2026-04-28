@@ -27,4 +27,21 @@
 
 ## 适用场景
 
-这条规则适用于所有需要外部信息获取的场景。核心原则是：用本地已安装的工具，避免网络请求失败。特别是在中国网络环境下，GitHub 等境外网站可能被拦截，应优先使用已认证的 CLI 工具。
+这条规则适用于所有需要外部信息获取的场景。核心原则是：用本地已安装的工具，避免网络请求失败。
+
+## 常见错误与正确做法对照
+
+| 错误做法 | 后果 | 正确做法 |
+|----------|------|----------|
+| `curl https://github.com/...` | GFW 拦截，超时失败 | `gh repo view owner/repo` |
+| Tavily 搜索 GitHub 仓库 | 消耗配额，返回网页摘要不完整 | `gh search repos --topic=xxx` |
+| Tavily 搜索小红书笔记 | 无法访问，返回空结果 | `agent-reach search xiaohongshu xxx` |
+| 直接用 WebFetch 抓 B 站视频 | 需要登录/JS 渲染，抓不到内容 | `agent-reach search bilibili xxx` |
+
+## 配额管理
+
+| 工具 | 配额 | 监控方式 |
+|------|------|----------|
+| Tavily MCP | 1000 次/月 | 月度检查，避免浪费在 GitHub 场景 |
+| Agent-Reach | 无限制 | 本地工具，调用稳定 |
+| gh CLI | 无限制 | GitHub API 速率限制（已认证账号） |
