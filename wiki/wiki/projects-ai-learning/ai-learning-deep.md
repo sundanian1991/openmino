@@ -2,50 +2,7 @@
 
 > 不是"学完课程"，是"用课程改进我们的工作体系"
 
-> Sources:
-> - `project.md` — AI 学习库监控项目主文档
-> - `outputs-COURSE-GUIDE.md` — 斯坦福 CS146S 课程完整整理（403 行）
-> - `outputs-LEARNING-ROADMAP.md` — 两周学习路线图（284 行）
-> - `outputs-WEEK1-AGENT-MCP.md` — 第一周详细计划（414 行）
-> - `outputs-2026-02-28-full-scan.md` — Zara 资源库首次完整扫描（176 行）
-> - `outputs-resources-list.md` — AI 学习资源清单
-> - `outputs-initial-scan.md` — 初始扫描结果
-> - `outputs-weekly-monitor-2026-03-01.md` — 第一周监控
-> - `outputs-weekly-monitor-2026-03-08.md` — 第二周监控
-> - `outputs-weekly-monitor-2026-03-15.md` — 第三周监控
-> - `outputs-2026-03-01-weekly-monitor.md` — 周度监控（另一格式）
-> - `outputs-LEARNING-ROADMAP.md` — 学习路线图
-> - `outputs-stanford-cs146s-README.md` — CS146S 课程 README
-> - `outputs-stanford-cs146s-READING.md` — 阅读材料清单（181 行）
-> - `outputs-stanford-cs146s-LEARNING-GUIDE.md` — 学习指南（516 行）
-> - `outputs-stanford-cs146s-STUDY-PLAN.md` — 学习计划（233 行）
-> - `outputs-stanford-cs146s-SLIDES.md` — 课程幻灯片
-> - `outputs-alternative-resources-complete-alternative-resources.md` — 替代资源完整版（264 行）
-> - `outputs-alternative-resources-cs25-transformers-course.md` — CS25 Transformers 课程
-> - `outputs-alternative-resources-domestic-ai-resources.md` — 国内 AI 资源（237 行）
-> - `outputs-alternative-resources-final-learning-path-cn.md` — 最终学习路径中文版（352 行）
-> - `outputs-alternative-resources-CLAUDE.md` — 替代资源目录配置
-> - `notes-best-practices-01-context-management.md` — Context 管理最佳实践（462 行）
-> - `notes-best-practices-02-planning-architecture.md` — 规划与架构最佳实践（682 行）
-> - `notes-best-practices-03-tools-automation.md` — 工具与自动化最佳实践（614 行）
-> - `notes-best-practices-04-code-quality.md` — 代码质量最佳实践（615 行）
-> - `notes-best-practices-05-anti-patterns.md` — 反模式与避坑指南（614 行）
-> - `notes-best-practices-CLAUDE.md` — 最佳实践目录配置
-> - `notes-best-practices-INDEX.md` — 最佳实践索引
-> - `notes-monday-learning.md` — Day 1 实践导向学习笔记（698 行）
-> - `notes-subagent-analysis.md` — Subagent 策略分析（237 行）
-> - `notes-CLAUDE.md` — notes 目录配置
-> - `notes-README.md` — notes 说明
-> - `memory-2026-03-01.md` — 3/1 学习记忆
-> - `memory-2026-03-08.md` — 3/8 学习记忆
-> - `memory-2026-03-15.md` — 3/15 学习记忆
-> - `memory-CLAUDE.md` — memory 目录配置
-> - `memory-learning-notes.md` — 学习笔记记忆
-> - `memory-long-term.md` — 长期记忆
-> - `guides-APIFY-GUIDE.md` — Apify 集成指南（416 行）
-> - `guides-CLAUDE.md` — guides 目录配置
-> - `guides-apify-demo-CLAUDE.md` — Apify Demo 配置
-> - `guides-apify-demo-README.md` — Apify Demo 说明
+> Sources: mino, 2026-04-28
 >
 > （共 46 个文件）
 
@@ -53,7 +10,7 @@
 
 ---
 
-## Overview
+## 概述
 
 AI 学习监控项目（projects-ai-learning）是该 wiki 中文件数量最多、结构最复杂的子项目。它不是单一项目，而是两个并行子项目的集合：一是对 Zara Zhang AI 资源库的长期监控与变化检测，二是对斯坦福大学 CS146S 课程的深度学习与实践转化。
 

@@ -3,7 +3,7 @@
 > Sources: Lenny Rachitsky's Newsletter/Podcast (via MyAgents), 2026-04-27
 > Raw: [lenny-skills-SKILL.md](../../raw/skills/lenny-skills-SKILL.md); [decision-maker](../../raw/skills/lenny-skills-decision-maker.md); [goal-setter](../../raw/skills/lenny-skills-goal-setter.md); [growth-advisor](../../raw/skills/lenny-skills-growth-advisor.md); [gtm-advisor](../../raw/skills/lenny-skills-gtm-advisor.md); [hiring-guide](../../raw/skills/lenny-skills-hiring-guide.md); [leadership-coach](../../raw/skills/lenny-skills-leadership-coach.md); [pm-coach](../../raw/skills/lenny-skills-pm-coach.md); [sop-library](../../raw/skills/lenny-skills-sop-library.md); [strategy-advisor](../../raw/skills/lenny-skills-strategy-advisor.md)
 
-## Overview
+## 概述
 
 Lenny Skills 是一套基于 Lenny's Newsletter 和 Podcast 的商业决策顾问系统，整合了 287 位行业专家的智慧，覆盖增长策略、产品管理、战略规划、领导力发展、招聘决策、目标设定和上市策略等九大领域。系统采用"诊断→探测→交付"三步方法论：先识别用户真实问题（表面问题通常不是核心），再通过提问揭示问题本质，最后提供专家分歧点对比辅助用户自主判断。
 

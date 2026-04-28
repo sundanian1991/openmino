@@ -1,9 +1,9 @@
 # Code Style & Tools
 
-> Sources: Mino, 2026-03-16 ~ 2026-04-27
+> Sources: Mino, 2026-03-16 ~, 2026-04-27
 > Raw: [10-CODESTYLE](../../raw/claude-reference/10-CODESTYLE.md), [09-TOOLS](../../raw/claude-reference/09-TOOLS.md), [11-CONFIG](../../raw/claude-reference/11-CONFIG.md), [13-VISUALIZATION](../../raw/claude-reference/13-VISUALIZATION.md)
 
-## Overview
+## 概述
 
 Coding conventions, Git workflow rules, tool priority system, and configuration norms. Defines how code is written, committed, and what tools to use in each scenario.
 

@@ -1,9 +1,9 @@
 # PPT Master 深度解析——SVG 内容生成系统的架构与纪律
 
-> Sources: ppt-master 技能下载项目 (2026-04-09); 技术设计文档（中英文）; SKILL.md; 角色定义文件; 模板系统
+> Sources: ppt-master 技能下载项目 (2026-04-09); 技术设计文档（中英文）; SKILL.md; 角色定义文件; 模板系统, 2026-04-28
 > Raw: [README](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-README.md); [SKILL.md](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-skills-ppt-master-SKILL.md); [中文技术设计](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-docs-zh-technical-design.md); [Strategist 角色](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-skills-ppt-master-references-strategist.md); [Executor General](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-skills-ppt-master-references-executor-general.md); [Executor Consultant Top](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-skills-ppt-master-references-executor-consultant-top.md)
 
-## Overview
+## 概述
 
 ppt-master 是 Mino 技能体系中规模最大、架构最复杂的技能项目——87 个相关文件、7015 个文件总数、30MB 总容量。它不只是一个 PPT 生成工具，而是一个完整的 AI 驱动的内容生成生态系统，将源文档（PDF/DOCX/URL/Markdown）通过多角色协作的串行管线，最终转换为可编辑的 PowerPoint 文件。本文深度解析其架构设计、技术选型理由、角色系统、执行纪律和设计风格体系。
 

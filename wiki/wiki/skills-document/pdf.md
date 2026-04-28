@@ -1,6 +1,6 @@
 # PDF 操作技能
 
-> Sources: pdf skill
+> Sources: pdf skill, 2026-04-28
 > Created: 2026-04-27
 > Raw: [pdf SKILL](../../raw/skills/pdf-SKILL.md); [minimax-pdf SKILL](../../raw/skills/minimax-pdf-SKILL.md); [design](../../raw/skills/minimax-pdf-design.md)
 
@@ -19,7 +19,7 @@ license: Proprietary. LICENSE.txt has complete terms
 
 # PDF Processing Guide
 
-## Overview
+## 概述
 
 This guide covers essential PDF processing operations using Python libraries and command-line tools. For advanced features, JavaScript libraries, and detailed examples, see reference.md. If you need to fill out a PDF form, read forms.md and follow its instructions.
 
@@ -526,7 +526,7 @@ This document contains advanced PDF processing features, detailed examples, and 
 
 ## pypdfium2 Library (Apache/BSD License)
 
-### Overview
+### 概述
 pypdfium2 is a Python binding for PDFium (Chromium's PDF library). It's excellent for fast PDF rendering, image generation, and serves as a PyMuPDF replacement.
 
 ### Render PDF to Images

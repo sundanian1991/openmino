@@ -1,6 +1,6 @@
 # 神秘岛好书分享设计案例
 
-> Sources: 梁俊瑞神秘岛好书分享项目 (2026-04-11)
+> Sources: 梁俊瑞神秘岛好书分享项目 (2026-04-11), 2026-04-28
 > Raw: [README](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-README.md); [design_spec](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-design_spec.md); [design_spec_v2](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-design_spec_v2.md)
 
 ## 概述

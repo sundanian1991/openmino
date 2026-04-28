@@ -1,7 +1,7 @@
 > Raw: ../../raw/daily-logs/2026-02-13.md; ../../raw/daily-logs/2026-03-18.md; ../../raw/daily-logs/2026-04-04.md; ../../raw/daily-logs/memos-daily-2026-04-24.md; ../../raw/daily-logs/2026-04-23-review.md
 # 日常工作日志档案 — 02 月到 04 月工作记录索引
 
-> Sources: 40 份原始工作日志文件
+> Sources: 40 份原始工作日志文件, 2026-04-28
 >
 > - `wiki/raw/daily-logs/2026-02-13.md` ~ `2026-02-27.md`（10 份）
 > - `wiki/raw/daily-logs/2026-03-18.md` ~ `2026-03-30.md`（10 份）
@@ -11,7 +11,7 @@
 >
 > 详见：[[log]]、[[supplier-management]]、[[skills-agent-tools]]、[[skills-visualization]]
 
-## Overview
+## 概述
 
 这批日志记录了 Mino 与年老师从 2026 年 2 月 13 日到 4 月 27 日，约两个半月的工作轨迹。共计 40 份日志文件，跨越三个自然月，呈现出一条清晰的演进曲线：**从基础设施搭建（规则体系、记忆系统、工具链）到业务能力沉淀（供应商管理、定价机制、决策框架）再到可视化体系化建设（ECharts、SVG、PPT 技能矩阵）**。
 

@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling with Data - Cole Nussbaumer Knaflic.md)
 
-## Overview
+## 概述
 
 Storytelling with Data是Cole Nussbaumer Knaflic撰写的商业数据可视化经典著作，系统地阐述了如何将数据转化为有说服力的视觉叙事。全书分为十章，从理解上下文出发，经过选择合适的视觉呈现、消除视觉混乱、引导注意力、设计思维、模型案例、讲故事技巧、综合应用到案例研究，形成了一套完整的数据叙事方法论。这套方法论的核心观点是：数据可视化不是关于图表的美学问题，而是关于如何用视觉帮助受众理解数据背后的故事并做出决策。
 

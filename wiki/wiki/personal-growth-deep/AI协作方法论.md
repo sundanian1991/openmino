@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [V12 AI核心理解](../../raw/personal-growth/晋升述职-晋升材料-V12aicoworker版-晋升材料准备-AI核心理解_全景梳理.md); [V13 cowork版](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-晋升述职_V13-cowork版_最终.md); [V13钩子梳理](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-钩子梳理与优化策略.md); [V13同事参考结构分析](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-述职准备资料-同事参考模板结构分析.md)
 
-## Overview
+## 概述
 
 孙大年的晋升述职材料从V1到V19的迭代过程，不仅仅是人工修改的过程，更是人机协同（Human-AI Collaboration）的进化过程。从V1-V4的纯人工撰写，到V12引入AI核心理解，再到V13的Cowork模式协作，这套AI协作方法论回答了一个关键问题：**如何用AI加速高质量内容的产出，同时保持人的判断力和主导权？**
 

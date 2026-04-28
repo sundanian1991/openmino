@@ -1,9 +1,9 @@
 # Skill Ecosystem
 
-> Sources: Mino, 2026-02-12 ~ 2026-04-26
+> Sources: Mino, 2026-02-12 ~, 2026-04-26
 > Raw:  — 501 files, [skill-search](../../raw/agent-rules/skill-search.md)
 
-## Overview
+## 概述
 
 The skill ecosystem comprises 501 files across ~76 installed skills covering visualization, document generation, knowledge work, data processing, presentations, and domain expertise. Skills follow on-demand installation — never batch install.
 

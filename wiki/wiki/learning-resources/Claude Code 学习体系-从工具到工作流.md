@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/learning/Claude Code-claude-code-guide.md; ../../raw/learning/Claude Code-TRANSPARENT-WORKFLOW.md; ../../raw/learning/Claude Code-claude-cli-system-prompt.md; ../../raw/learning/Claude Code-architecture.md; ../../raw/learning/Claude Code-documentation.md; ../../raw/learning/Claude Code-implement.md; ../../raw/learning/Claude Code-prompt.md; ../../raw/learning/Claude Code-use-claude-code.md; ../../raw/learning/Claude Code-personalization-upgrade-summary.md; ../../raw/learning/Claude Code-plan5-lessons.md; ../../raw/learning/Claude Code-plans.md; ../../raw/learning/Claude Code-CLAUDE.md
 
-## Overview
+## 概述
 
 2025年底至2026年初，年老师系统学习了 Claude Code 的核心组件和使用方法，从最初的"把它当聊天机器人"到建立完整的"工具→工作流→体系"认知。学习材料涵盖七大核心组件、透明工作机制、个性化升级和五文件工作流等主题。
 

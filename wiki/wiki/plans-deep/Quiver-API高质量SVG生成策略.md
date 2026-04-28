@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md; ../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md
 
-## Overview
+## 概述
 
 本文记录了在每周20次 Quiver API 配额限制下，如何一次性成功生成高质量手绘风格 SVG 的完整策略。核心挑战是配额有限（每周仅20次），每次调用都必须成功——不能靠试错来学习。
 

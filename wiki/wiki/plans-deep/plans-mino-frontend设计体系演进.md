@@ -1,9 +1,9 @@
 # mino-frontend设计体系演进：从14种风格到参数系统的架构升级
 
-> Sources: mino, 2026-04-01 ~ 2026-04-02
+> Sources: mino, 2026-04-01 ~, 2026-04-02
 > Raw: [风格情绪矩阵-brainstorm](../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md); [风格情绪矩阵-research](../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-01-research.md); [参数系统-brainstorm](../../raw/plans/2026-04-02-mino-frontend参数系统-00-brainstorm.md); [参数系统-research](../../raw/plans/2026-04-02-mino-frontend参数系统-01-research.md); [参数系统框架](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-参数系统框架.md); [克制专业主义参数](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-克制专业主义参数.md); [满意案例参数提取](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-满意案例参数提取.md)
 
-## Overview
+## 概述
 
 2026年4月初，年老师对mino-frontend技能进行了深度重构，解决了长期存在的"方法论有了但输出不稳定"问题。核心发现：方法论是骨架，参数系统是血肉——骨架相同但血肉不同，输出就不稳定。重构分两步走：第一步建立风格x情绪决策矩阵，将14种经验分类简化为5种基础风格x4种情绪变体的二维决策逻辑；第二步构建三层参数系统（全局参数+风格参数+内容参数），为每种设计风格定义了具体的字号、边框、间距、颜色值。这次重构将mino-frontend从"靠感觉调整"升级为"参数化控制"的设计系统。
 

@@ -1,6 +1,6 @@
 # xlsx Excel 表格处理技能
 
-> Sources: xlsx skill, 60+ files including 42 XSD schemas
+> Sources: xlsx skill, 60+ files including 42 XSD schemas, 2026-04-28
 > Created: 2026-04-27
 > Raw: [SKILL](../../raw/skills/xlsx-SKILL.md); [minimax-xlsx SKILL](../../raw/skills/minimax-xlsx-SKILL.md); [create](../../raw/skills/minimax-xlsx-create.md); [edit](../../raw/skills/minimax-xlsx-edit.md); [fix](../../raw/skills/minimax-xlsx-fix.md); [format](../../raw/skills/minimax-xlsx-format.md); [OOXML cheatsheet](../../raw/skills/minimax-xlsx-ooxml-cheatsheet.md); [read analyze](../../raw/skills/minimax-xlsx-read-analyze.md); [validate](../../raw/skills/minimax-xlsx-validate.md)
 
@@ -75,7 +75,7 @@ Unless otherwise stated by the user or existing template
 
 # XLSX creation, editing, and analysis
 
-## Overview
+## 概述
 
 A user may ask you to create, edit, or analyze the contents of an .xlsx file. You have different tools and workflows available for different tasks.
 

@@ -1,6 +1,6 @@
 # 其他 PPT 技能（guizang-ppt-skill + presentation-skill）
 
-> Sources: guizang-ppt-skill, presentation-skill
+> Sources: guizang-ppt-skill, presentation-skill, 2026-04-28
 > Created: 2026-04-27
 > Raw: [guizang SKILL](../../raw/skills/guizang-ppt-skill-SKILL.md); [checklist](../../raw/skills/guizang-ppt-skill-checklist.md); [components](../../raw/skills/guizang-ppt-skill-components.md); [layouts](../../raw/skills/guizang-ppt-skill-layouts.md); [themes](../../raw/skills/guizang-ppt-skill-themes.md); [frontend-slides SKILL](../../raw/skills/frontend-slides-SKILL.md)
 

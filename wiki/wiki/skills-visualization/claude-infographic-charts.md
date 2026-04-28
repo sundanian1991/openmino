@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/skills/claude-infographic-charts-SKILL.md; ../../raw/skills/claude-infographic-charts-README.md; ../../raw/skills/claude-infographic-charts-art.md; ../../raw/skills/claude-infographic-charts-chart-types.md; ../../raw/skills/claude-infographic-charts-diagram.md; ../../raw/skills/claude-infographic-charts-interactive.md; ../../raw/skills/claude-infographic-charts-mockup.md
 
-## Overview
+## 概述
 
 Claude Infographic Charts 模拟 Claude Artifact 系统的视觉美学，生成干净、扁平、专业的独立 .svg 文件或自包含 .html 文件。支持 9 色调 ramp 配色系统、暗/亮模式自动切换，以及从静态图表到交互式 widget 的完整输出范围。包含五个模块：diagram（流程图/架构图）、chart（数据图表）、mockup（UI 卡片/仪表盘）、interactive（交互控件/计算器）、art（SVG 插画）。
 

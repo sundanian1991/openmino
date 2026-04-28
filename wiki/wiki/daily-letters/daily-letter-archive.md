@@ -1,9 +1,9 @@
 # 每日书信档案 — 2026 年 4 月书信索引
 
-> Sources: Mino（每日书信技能），2026-04-12 至 2026-04-27
+> Sources: Mino（每日书信技能）, 2026-04-12 至 2026-04-27
 > Raw: ../../raw/daily-letters/2026-04-12.md; ../../raw/daily-letters/2026-04-13.md; ../../raw/daily-letters/2026-04-14.md; ../../raw/daily-letters/2026-04-15.md; ../../raw/daily-letters/2026-04-16.md; ../../raw/daily-letters/2026-04-17.md; ../../raw/daily-letters/2026-04-18.md; ../../raw/daily-letters/2026-04-19.md; ../../raw/daily-letters/2026-04-20.md; ../../raw/daily-letters/2026-04-21.md; ../../raw/daily-letters/2026-04-22.md; ../../raw/daily-letters/2026-04-23.md; ../../raw/daily-letters/2026-04-24.md; ../../raw/daily-letters/2026-04-25.md; ../../raw/daily-letters/2026-04-26.md; ../../raw/daily-letters/2026-04-27.md
 
-## Overview
+## 概述
 
 2026 年 4 月 12 日至 4 月 27 日，每日书信技能正式上线运行。16 天内产生 14 封有效书信（2 天空日，均为周末），覆盖了年老师从"造轨道"到"建系统"再到"定标准"的完整进化链。书信的数据源最初是 `~/.myagents/sessions/*.jsonl`，后升级为同时兼容 CodePilot SQLite 数据库（`~/.codepilot/codepilot.db`）和多平台数据源。书信的定位不是"日报"，而是从日常对话中提取想法种子，观察行为模式、管理理念和思维进化，最终形成一份"十年后可读"的个人资产。核心发现：年老师在半个月内的行为模式可以归纳为一条主线——**先问价值，再做取舍；不追求看起来正确，追求对自己真正有用**。
 

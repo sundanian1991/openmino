@@ -1,9 +1,9 @@
 # Agent Identity Rules
 
-> Sources: Mino, 2026-02-12 ~ 2026-04-26
+> Sources: Mino, 2026-02-12 ~, 2026-04-26
 > Raw: [00-IDENTITY](../../raw/agent-rules/00-IDENTITY.md), [01-SOUL](../../raw/agent-rules/01-SOUL.md), [HEARTBEAT](../../raw/agent-rules/HEARTBEAT.md), [skill-search](../../raw/agent-rules/skill-search.md)
 
-## Overview
+## 概述
 
 Agent identity defines who Mino (麦诺) is — not a tool but a partner. Core rules cover naming, work style, output standards, thinking process, and behavior patterns. These files load automatically every session.
 

@@ -3,7 +3,7 @@
 > Sources: MyAgents, 2026-04-27
 > Raw: [task-dispatcher](../../raw/skills/task-dispatcher-SKILL.md); [task-implement](../../raw/skills/task-implement-SKILL.md); [task-alignment](../../raw/skills/task-alignment-SKILL.md); [ownership-skills](../../raw/skills/ownership-skills-SKILL.md); [ownership-anti-patterns](../../raw/skills/ownership-skills-anti-patterns.md); [ownership-context-selector](../../raw/skills/ownership-skills-context-selector.md); [ownership-display-protocol](../../raw/skills/ownership-skills-display-protocol.md); [ownership-methodology](../../raw/skills/ownership-skills-methodology.md); [ownership-ownership](../../raw/skills/ownership-skills-ownership.md); [person-observer](../../raw/skills/person-observer-SKILL.md); [person-observer-template](../../raw/skills/person-observer-profile_template.md); [arming-thought](../../raw/skills/arming-thought-SKILL.md); [workspace-tidy](../../raw/skills/workspace-tidy-SKILL.md); [darwin-skill](../../raw/skills/darwin-skill-SKILL.md)
 
-## Overview
+## 概述
 
 任务执行与技能工具体系由八大核心技能组成，覆盖从想法萌芽到任务交付的完整生命周期。Task Alignment 负责将模糊想法收敛为清晰目标并决定是否固化为独立任务；Task Dispatcher 将明确后的需求通过 IPOFA 五环流程调度给最匹配的专业技能执行；Task Implement 作为 UserProxy Agent 在人类离线时独立执行、验证并交付；Ownership Skills 提供端到端责任引擎，确保问题在 AI 侧终结而不甩锅；Person Observer 深度分析职场人物行为模式和潜台词；Arming Thought 在会话启动时建立"实事求是"总原则并自动选择适用的思想武器；Workspace Tidy 管理三区域文件生命周期；Darwin Skill 借鉴 Karpathy autoresearch 实现 Skills 的自主优化循环。八个技能共同构成"想清楚、派出去、跑到位、负责任、能复盘、会进化"的闭环体系。
 

@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [项目定义](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md); [情绪触发地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [长期记忆](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-long-term.md); [memory-2026-03-08](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-08.md); [memory-2026-03-13](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-13.md); [CLAUDE.md](../../raw/presentations/projects-proj-1772979560848-vwiehr-CLAUDE.md)
 
-## Overview
+## 概述
 
 vwiehr专属AI职业导师系统是为年老师打造的100%安全的职场情绪表达空间。通过三层架构（存储层、交互层、分析层）实现无评判的情绪倾诉、精准的个人认知映射、持续的行为模式记录和边界化的职业发展支持。项目于2026-03-08创建，首次深度对话产出了情绪触发点地图和5个语言防卫机制，是个人成长和职场关系管理的重要知识资产。
 

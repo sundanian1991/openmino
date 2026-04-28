@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-04
 > Raw: [brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [research](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md)
 
-## Overview
+## 概述
 
 2026年4月4日，年老师对Quiver API（arrow-preview模型）的SVG生成能力进行了系统性策略研究。核心约束是每周仅20次请求配额，目标是在有限配额下生成东京猫/李诞虾级别的高质量手绘风格SVG。研究涵盖了API核心能力分析、高质量Prompt构成要素、references参数使用技巧、配额分配策略，以及针对权责不对等研究内容的5个可视化场景的具体生成方案。
 

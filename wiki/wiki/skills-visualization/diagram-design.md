@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/skills/diagram-design-SKILL.md; ../../raw/skills/diagram-design-README.md; ../../raw/skills/diagram-design-style-guide.md; ../../raw/skills/diagram-design-onboarding.md; ../../raw/skills/diagram-design-type-architecture.md; ../../raw/skills/diagram-design-type-flowchart.md; ../../raw/skills/diagram-design-type-sequence.md; ../../raw/skills/diagram-design-type-state.md; ../../raw/skills/diagram-design-type-er.md; ../../raw/skills/diagram-design-type-timeline.md; ../../raw/skills/diagram-design-type-swimlane.md; ../../raw/skills/diagram-design-type-quadrant.md; ../../raw/skills/diagram-design-type-nested.md; ../../raw/skills/diagram-design-type-tree.md; ../../raw/skills/diagram-design-type-layers.md; ../../raw/skills/diagram-design-type-venn.md; ../../raw/skills/diagram-design-type-pyramid.md; ../../raw/skills/diagram-design-primitive-annotation.md; ../../raw/skills/diagram-design-primitive-sketchy.md; ../../raw/skills/diagram-design-brand-skilljar.md
 
-## Overview
+## 概述
 
 Diagram Design 是一个完整的编辑级技术图表设计系统，由 Cathryn Lavery 创建。支持 13 种图表类型，输出自包含的 HTML 文件（内联 SVG + CSS，无 JS 依赖）。核心理念是"最高质量的操作通常是删除"——每个节点都代表一个独特的想法，强调色仅用于 1-2 个焦点元素，目标密度 4/10。内置品牌自适应能力，可在 60 秒内从用户网站提取配色和字体。
 

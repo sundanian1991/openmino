@@ -1,6 +1,6 @@
 # AntV S2 多维交叉表格专家技能
 
-> Sources: antv-s2-expert, 30+ files
+> Sources: antv-s2-expert, 30+ files, 2026-04-28
 > Created: 2026-04-27
 > Raw: [SKILL](../../raw/skills/antv-s2-expert-SKILL.md); [overview](../../raw/skills/antv-s2-expert-00-overview.md); [sheet types](../../raw/skills/antv-s2-expert-01-sheet-types.md); [framework](../../raw/skills/antv-s2-expert-02-framework-bindings.md); [theme](../../raw/skills/antv-s2-expert-03-theme-style.md); [custom cell](../../raw/skills/antv-s2-expert-04-custom-cell.md); [events](../../raw/skills/antv-s2-expert-05-events-interaction.md); [data config](../../raw/skills/antv-s2-expert-06-data-config.md); [sort](../../raw/skills/antv-s2-expert-07-sort.md); [totals](../../raw/skills/antv-s2-expert-08-totals.md); [copy export](../../raw/skills/antv-s2-expert-09-copy-export.md); [pagination](../../raw/skills/antv-s2-expert-10-pagination.md); [conditions](../../raw/skills/antv-s2-expert-11-conditions.md); [tooltip](../../raw/skills/antv-s2-expert-12-tooltip.md); [frozen](../../raw/skills/antv-s2-expert-13-frozen.md); [icon](../../raw/skills/antv-s2-expert-14-icon.md); [SSR](../../raw/skills/antv-s2-expert-15-ssr.md); [react](../../raw/skills/antv-s2-expert-16-react-components.md); [custom render](../../raw/skills/antv-s2-expert-custom-cell-render.md); [custom theme](../../raw/skills/antv-s2-expert-custom-theme.md); [interaction examples](../../raw/skills/antv-s2-expert-interaction-examples.md); [layout examples](../../raw/skills/antv-s2-expert-layout-examples.md); [pivot sheet basic](../../raw/skills/antv-s2-expert-pivot-sheet-basic.md); [react usage](../../raw/skills/antv-s2-expert-react-component-usage.md); [s2 data config](../../raw/skills/antv-s2-expert-s2-data-config.md); [s2 event](../../raw/skills/antv-s2-expert-s2-event.md); [s2 options](../../raw/skills/antv-s2-expert-s2-options.md); [s2 theme](../../raw/skills/antv-s2-expert-s2-theme.md); [sheet component](../../raw/skills/antv-s2-expert-sheet-component.md); [table sheet basic](../../raw/skills/antv-s2-expert-table-sheet-basic.md)
 
@@ -2206,7 +2206,7 @@ const s2Options = {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/04-custom-cell.md ===
 # Custom Cell Rendering
 
-## Overview
+## 概述
 
 S2 allows full customization of cell rendering through two main approaches:
 
@@ -2383,7 +2383,7 @@ targetCell.appendChild(icon);
 
 ## Custom Cell Size Configuration
 
-Cell sizes are controlled via `s2Options.style`. See the [Theme & Style](./03-theme-style.md) reference for full details.
+Cell sizes are controlled via `s2Options.style`. See the Theme & Style reference for full details.
 
 ### Quick Reference: Size Priority
 
@@ -2539,7 +2539,7 @@ const s2DataConfig = {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/05-events-interaction.md ===
 # Events & Interaction
 
-## Overview
+## 概述
 
 S2 provides a rich interaction system built on mouse and keyboard events. Common interactions (click, hover, brush selection, multi-select, resize) are built-in. All interactions emit events via `S2Event`, and you can create custom interactions by extending `BaseEvent`.
 
@@ -2809,7 +2809,7 @@ enum CellType {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/06-data-config.md ===
 # S2DataConfig — Data Configuration
 
-## Overview
+## 概述
 
 `S2DataConfig` defines the data source and field mappings for S2 tables. It includes raw data, field dimensions, metadata for formatting/naming, sort parameters, and filter parameters.
 
@@ -2963,7 +2963,7 @@ const s2DataConfig = {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/07-sort.md ===
 # Sorting
 
-## Overview
+## 概述
 
 S2 supports multiple sorting methods for table data: ascending/descending by field value, sorting by a custom list, sorting by measure values, and fully custom sort functions. Sorting is configured via `sortParams` in `S2DataConfig`.
 
@@ -3183,7 +3183,7 @@ const s2Options = {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/08-totals.md ===
 # Subtotals & Grand Totals
 
-## Overview
+## 概述
 
 S2 supports subtotals and grand totals for pivot tables. Row and column headers can each have independent aggregation configuration. Grand totals summarize all dimensions; subtotals summarize a specific dimension. Totals are **not available** when using custom row/column headers.
 
@@ -3337,7 +3337,7 @@ const s2DataConfig = {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/09-copy-export.md ===
 # Copy & Export
 
-## Overview
+## 概述
 
 S2 provides built-in copy and export functionality. Copy writes both `text/html` and `text/plain` to the clipboard. Export supports CSV format by default. For XLSX export, use external libraries like `exceljs` or `sheetjs`.
 
@@ -3522,7 +3522,7 @@ Per CSV spec and Excel rules:
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/10-pagination.md ===
 # Pagination
 
-## Overview
+## 概述
 
 S2 has built-in frontend pagination rendering. It handles data slicing internally but does **not** provide a pagination UI component — you need to implement or integrate one yourself (e.g., Ant Design's `Pagination` component).
 
@@ -3918,7 +3918,7 @@ const s2Options = {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/12-tooltip.md ===
 # Tooltip
 
-## Overview
+## 概述
 
 Tooltips display table information and analysis features through interactive overlays on cells.
 
@@ -4234,7 +4234,7 @@ const s2Options = {
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/13-frozen.md ===
 # Frozen Rows and Columns
 
-## Overview
+## 概述
 
 The frozen (freeze) feature pins specific rows and columns so they remain visible while scrolling. This is configured via the `s2Options.frozen` property.
 
@@ -4471,7 +4471,7 @@ When both condition icons and header action icons exist, the layout order is:
 === FILE: .claude/skills/antv-s2-expert/references/knowledge/15-ssr.md ===
 # Server-Side Rendering (SSR)
 
-## Overview
+## 概述
 
 `@antv/s2-ssr` enables rendering S2 tables in Node.js environments and exporting them as PNG, JPEG, SVG, or PDF. Common use cases:
 
@@ -5440,7 +5440,7 @@ type ConditionMapping<T = unknown> = (
 
 ### TextCondition
 
-Same as [Condition](#condition). `ConditionMappingResult` is consistent with [TextTheme](/api/general/s2-theme#texttheme), meaning you can control text color, opacity, alignment, font, etc.
+Same as [Condition](#condition). `ConditionMappingResult` is consistent with TextTheme, meaning you can control text color, opacity, alignment, font, etc.
 
 ```ts
 type TextConditionMappingResult = TextTheme;
@@ -6231,11 +6231,11 @@ React SheetComponent props.
 | --- | --- | --- | --- | --- |
 | sheetType | `"pivot" \| "table" \| "gridAnalysis" \| "strategy" \| "editable"` | | `pivot` | Table type: 1. `pivot`: Pivot table 2. `table`: Detail table 3. `gridAnalysis`: Grid analysis table 4. `strategy`: Trend analysis table 5. `editable`: Editable table |
 | spreadsheet | `(container: HTMLElement \| string, dataCfg: S2DataConfig, options: SheetComponentOptions) => SpreadSheet` | | | Custom spreadsheet constructor |
-| dataCfg | [S2DataConfig](/api/general/s2-data-config) | ✓ | | Data configuration |
+| dataCfg | S2DataConfig | ✓ | | Data configuration |
 | options | [SheetComponentOptions](#sheetcomponentoptions) | ✓ | | Table options configuration |
-| partDrillDown | [PartDrillDown](/api/components/drill-down) | | | Dimension drill-down properties |
+| partDrillDown | PartDrillDown | | | Dimension drill-down properties |
 | adaptive | `boolean \| { width?: boolean, height?: boolean, getContainer: () => HTMLElement }` | | `false` | Whether to auto-adapt to window size |
-| themeCfg | [ThemeCfg](/api/general/s2-theme) | | | Custom table theme style |
+| themeCfg | ThemeCfg | | | Custom table theme style |
 | loading | `boolean` | | | Control table loading state |
 | onMounted | `(spreadsheet: SpreadSheet) => void` | | | Table mounted event, provides the table instance |
 | onUpdate | `(renderOptions: S2RenderOptions) => S2RenderOptions \| void` | | | Table update event when data or options change. Allows manual control of render mode |
@@ -6377,7 +6377,7 @@ React SheetComponent props.
 
 ### SheetComponentOptions
 
-> `@antv/s2-react` component `options` inherits from [S2Options](/api/general/s2-options) with two differences:
+> `@antv/s2-react` component `options` inherits from S2Options with two differences:
 > - Type changed from `S2Options` to `SheetComponentOptions`
 > - Tooltip `content` changed from `Element | string` to `ReactNode` (any JSX element)
 

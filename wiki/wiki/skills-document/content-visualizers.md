@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/skills/editorial-card-generator-SKILL.md; ../../raw/skills/infographic-creator-SKILL.md
 
-## Overview
+## 概述
 
 本条目覆盖两个内容可视化技能：**editorial-card-generator** 将文本内容转换为现代编辑风格的 HTML5 信息海报卡片（支持 PNG 导出），**infographic-creator** 使用 AntV Infographic 创建结构化的视觉信息图。两者都用于将文本信息转化为社交媒体友好或知识分享友好的视觉格式，但技术路径和输出风格截然不同。
 

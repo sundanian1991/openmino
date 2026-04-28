@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/skills/presentation-skill-SKILL.md; ../../raw/skills/presentation-skill-README.md
 
-## Overview
+## 概述
 
 Presentation 技能输入一个主题，自动生成演讲脚本和品牌级设计质感的 HTML 幻灯片。支持 62 种世界级品牌设计风格一键切换，输出单文件 HTML（含播放器引擎、键盘控制、自动播放、全屏、PDF 导出）。将内容创建与视觉设计分离——演讲脚本提供完整的口语化讲稿，幻灯片提供极简视觉支撑。
 

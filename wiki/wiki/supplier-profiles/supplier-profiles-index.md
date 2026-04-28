@@ -1,8 +1,6 @@
 # 供应商档案索引 — 产线供应商基础信息
 
-> Sources:
-> - 18家供应商基础档案（含公司全称、简称、业务类型、站点数量、覆盖区域、在职人力）
-> - 供应商分级体系（Tier 1核心 / Tier 2成长 / Tier 3储备）
+> Sources: mino, 2026-04-28
 > Raw: ../../raw/supplier-profiles/README.md; ../../raw/supplier-profiles/上海岐力信息科技有限公司.md; ../../raw/supplier-profiles/中乾（深圳）投资控股有限公司.md; ../../raw/supplier-profiles/北京羽乐创新科技有限公司.md; ../../raw/supplier-profiles/四川九通信息科技有限公司.md; ../../raw/supplier-profiles/安徽信晨通信技术有限公司.md; ../../raw/supplier-profiles/广东九四智能科技有限公司.md; ../../raw/supplier-profiles/承德新动力电子商务有限公司.md; ../../raw/supplier-profiles/汇讯（湖北）商务信息咨询有限公司.md; ../../raw/supplier-profiles/河北秦冀德辰科技有限公司.md; ../../raw/supplier-profiles/河北锦瑞信息科技有限公司.md; ../../raw/supplier-profiles/泉州市速腾网络科技有限公司.md; ../../raw/supplier-profiles/浙江衍生信息技术有限公司.md; ../../raw/supplier-profiles/湖北伽玛科技有限公司.md; ../../raw/supplier-profiles/西安小蜜蜂智慧技术有限公司.md; ../../raw/supplier-profiles/言犀.md; ../../raw/supplier-profiles/陕西华啸网络科技有限公司.md; ../../raw/supplier-profiles/陕西海腾信息科技有限公司.md
 
 > - `wiki/raw/supplier-profiles/README.md`
@@ -24,7 +22,7 @@
 > - `wiki/raw/supplier-profiles/陕西华啸网络科技有限公司.md`
 > - `wiki/raw/supplier-profiles/陕西海腾信息科技有限公司.md`
 
-## Overview
+## 概述
 
 供应商档案索引收录了18家供应商的基础信息，按三级分层体系（Tier 1核心、Tier 2成长、Tier 3储备）组织。每家供应商档案包含公司全称、简称/别名、业务类型、站点数量、覆盖区域和2月在职人力六个维度。数据来源于2026年2月的在职人力统计，反映了供应商体系在某一时点的快照。
 

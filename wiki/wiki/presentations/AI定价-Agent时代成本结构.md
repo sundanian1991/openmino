@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [Agent成本备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-13_agent_cost.md); [未来趋势备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-14_future_trends.md); [五力分析备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-08_five_forces.md); [头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md)
 
-## Overview
+## 概述
 
 Agent时代成本结构是AI定价项目中最具冲击力的发现：在Agent场景下，只有5-15%的Token真正用于代码生成，85-95%是上下文开销。这意味着用户为代码生成付费，但绝大部分Token消耗在"非生成"的环节——文件读取、工具输出、上下文重发。这个发现直接颠覆了"按Token计费=公平"的假设。
 

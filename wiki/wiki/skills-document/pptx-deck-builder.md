@@ -1,6 +1,6 @@
 # PPTX Deck Builder
 
-> Sources: pptx-deck-builder, 7 files
+> Sources: pptx-deck-builder, 7 files, 2026-04-28
 > Created: 2026-04-27
 > Raw: [SKILL](../../raw/skills/pptx-deck-builder-SKILL.md); [README](../../raw/skills/pptx-deck-builder-README.md); [color palettes](../../raw/skills/pptx-deck-builder-color-palettes.md); [content strategy](../../raw/skills/pptx-deck-builder-content-strategy.md); [core patterns](../../raw/skills/pptx-deck-builder-core-patterns.md); [html2pptx](../../raw/skills/pptx-html2pptx.md); [OOXML](../../raw/skills/pptx-ooxml.md)
 
@@ -143,9 +143,9 @@ PptxGenJS mutates options objects. Always write fresh inline literals.
 
 这个 Skill 会先帮你设计 presentation 的故事结构，再进入正式制稿。
 
-![Storytelling frameworks 1](assets/storytelling-frameworks-1.png)
+*Storytelling frameworks 1*
 
-![Storytelling frameworks 2](assets/storytelling-frameworks-2.png)
+*Storytelling frameworks 2*
 
 ### 2）主题系统
 
@@ -153,19 +153,19 @@ PptxGenJS mutates options objects. Always write fresh inline literals.
 
 #### 主题示例：暗夜橙光
 
-![Theme example 1](assets/theme-dark-night-orange-glow.png)
+*Theme example 1*
 
 #### 主题示例：深蓝碧海
 
-![Theme example 2](assets/theme-deep-sea-blue.png)
+*Theme example 2*
 
 #### 主题示例：墨绿暖沙
 
-![Theme example 3](assets/theme-forest-green-warm-sand.png)
+*Theme example 3*
 
 #### 主题示例：暗紫金调
 
-![Theme example 4](assets/theme-deep-purple-gold.png)
+*Theme example 4*
 
 ---
 

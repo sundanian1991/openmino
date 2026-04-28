@@ -2,22 +2,13 @@
 
 > 不是项目管理，是长期陪伴
 
-> Sources:
-> - `accountability-system.md` — 提醒和问责系统（WAL）完整设计
-> - `progress-visualization-tool.md` — 目标进展可视化工具
-> - `regular-review-mechanism.md` — 定期回顾机制
-> - `target-adjustment-strategy.md` — 目标调整策略
-> - `target-decomposition-framework.md` — 长期目标分解框架
-> - `project.md` — 长期放养项目主文档
-> - `CLAUDE.md` — 项目目录配置
-> - `memory-CLAUDE.md` — memory 子目录配置
-> - `memory-long-term.md` — 长期记忆
+> Sources: mino, 2026-04-28
 
 > Raw: `/Users/sundanian/Documents/projects/ai-agents/my-agent/wiki/raw/projects-long-term/`
 
 ---
 
-## Overview
+## 概述
 
 长期项目（projects-long-term）是年老师与 Mino 之间的一类特殊项目形态——不追求"做完"，而追求"持续运行"。这类项目没有终点，只有节奏：每日观察、每周提炼、每月回顾、季度复盘。它们构成了 Mino 作为伙伴而非工具的存在基础。
 

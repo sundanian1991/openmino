@@ -1,9 +1,9 @@
 # 可视化技能与SVG生成策略体系
 
-> Sources: mino, 2026-04-04 至 2026-04-25
+> Sources: mino, 2026-04-04 至, 2026-04-25
 > Raw: [Quiver-API-brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [Quiver-API-research](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md); [图表技能改造-plan](../../raw/plans/2026-04-25-图表技能改造-plan.md); [图表技能改造-prompt](../../raw/plans/2026-04-25-图表技能改造-prompt.md); [图表技能改造-result](../../raw/plans/2026-04-25-图表技能改造-result.md); [图表技能改造-spec](../../raw/plans/2026-04-25-图表技能改造-spec.md)
 
-## Overview
+## 概述
 
 2026年4月，年老师完成了两项可视化技能的系统性升级。第一项是Quiver API（arrow-preview模型）的高质量SVG生成策略——在每周20次配额限制下，通过prompt结构优化、references参数使用技巧、批量vs单次生成策略，生成东京猫/李诞虾级别的精细手绘SVG。第二项是chart-visualization和echarts-visualization两大技能的"分析先行"工作流改造——从"选图→出图"的简单模式升级为"分析→确认→出图→注解"的完整工作流，包含14种分析目标、主题色palette传递、数据分析前摇等核心改进。这两项升级共同构建了一个从AI生成SVG到ECharts数据可视化的完整可视化技能矩阵。
 

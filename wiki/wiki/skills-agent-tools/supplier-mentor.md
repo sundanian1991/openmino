@@ -3,7 +3,7 @@
 > Sources: MyAgents, 2026-04-27
 > Raw: [supplier-mentor](../../raw/skills/supplier-mentor-SKILL.md); [accumulation](../../raw/skills/supplier-mentor-accumulation-mechanism.md); [cognitive-patterns](../../raw/skills/supplier-mentor-cognitive-patterns.md); [growth](../../raw/skills/supplier-mentor-growth.md); [methods](../../raw/skills/supplier-mentor-methods.md); [philosophy](../../raw/skills/supplier-mentor-philosophy.md); [profile-template](../../raw/skills/supplier-mentor-supplier-profile-template.md); [2026-03-22 毅航毛毛虫困境](../../raw/skills/supplier-mentor-2026-03-22-毅航毛毛虫困境.md); [刘伟佳](../../raw/skills/supplier-mentor-刘伟佳.md); [毅航](../../raw/skills/supplier-mentor-毅航.md); [毛毛虫](../../raw/skills/supplier-mentor-毛毛虫.md); [金条供应商总览](../../raw/skills/supplier-mentor-金条供应商总览.md)
 
-## Overview
+## 概述
 
 Supplier Mentor 是年老师的 P12+ 级别供应商管理导师技能，核心使命是"帮他提升判断力，而不是替代他判断"。该技能采用三重知识结构（哲学层、方法层、认知层），配合知识积累机制（KAM）和 13 条认知模式，覆盖供应商准入、业绩诊断、清退决策等全生命周期场景。技能已沉淀金条供应商总览、毅航/毛毛虫核心画像、刘伟佳策略组关系分析等实际案例数据。
 

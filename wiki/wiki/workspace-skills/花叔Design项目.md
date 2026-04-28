@@ -1,9 +1,9 @@
 # 花叔Design项目
 
-> Sources: 花叔Design PPT README (2026-04-22); 技能全量可视化分析 (2026-04-21); 技能元数据索引
+> Sources: 花叔Design PPT README (2026-04-22); 技能全量可视化分析 (2026-04-21); 技能元数据索引, 2026-04-28
 > Raw: [花叔Design PPT README](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-02-技能-huashu-design-PPT-20260422-README.md); [技能全量可视化分析](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-00-技能顺序列表.md); [技能元数据索引](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-_metadata-index.md)
 
-## Overview
+## 概述
 
 花叔Design（Huashu-Design）是 Mino 技能体系中专注于高保真 HTML 原型和交互 Demo 的前端设计技能。它采用"用 HTML 做设计"的理念，跳过传统 Figma/Sketch 流程，直接以浏览器为画布，产出可运行、可交互的高保真原型。该技能同时具备完整的 PPT 演示能力，能够自介绍、自展示、自交付。
 

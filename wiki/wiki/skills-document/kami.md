@@ -1,6 +1,6 @@
 # Kami 文档排版技能
 
-> Sources: Kami, 10+ files
+> Sources: Kami, 10+ files, 2026-04-28
 > Created: 2026-04-27
 > Raw: [SKILL](../../raw/skills/kami-SKILL.md); [README](../../raw/skills/kami-README.md); [CHEATSHEET](../../raw/skills/kami-CHEATSHEET.md); [CLAUDE](../../raw/skills/kami-CLAUDE.md); [design](../../raw/skills/kami-design.md); [diagrams](../../raw/skills/kami-diagrams.md); [production](../../raw/skills/kami-production.md); [writing](../../raw/skills/kami-writing.md)
 
@@ -381,7 +381,7 @@ Six document types (One-Pager, Long Doc, Letter, Portfolio, Resume, Slides) with
 
 **Fonts**: Each language uses a single serif font for the entire page. Chinese: TsangerJinKai02. Japanese: YuMincho. English: Charter. TsangerJinKai is free for personal use, commercial use requires a license from [tsanger.cn](https://tsanger.cn). All other fonts are system-bundled.
 
-Full spec: [design.md](references/design.md). Cheatsheet: [CHEATSHEET.md](CHEATSHEET.md).
+Full spec: design.md. Cheatsheet: CHEATSHEET.md.
 
 ## Background
 

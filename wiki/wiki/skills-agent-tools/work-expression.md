@@ -3,7 +3,7 @@
 > Sources: MyAgents, 2026-04-27
 > Raw: [work](../../raw/skills/work-SKILL.md); [work-expression](../../raw/skills/work-expression-SKILL.md); [templates](../../raw/skills/work-expression-templates.md); [accumulated](../../raw/skills/work-expression-accumulated.md)
 
-## Overview
+## 概述
 
 Work 和 Work-Expression 是年老师供应商管理日常工作的两套互补技能：Work 负责"想清楚"——根据场景自动匹配22个思考框架模板，系统化拆解问题；Work-Expression 负责"说明白"——将口述稿升级为定性+定量融合的L4级高分辨率表达。两者链式调用，形成"想清楚→说明白→生成公文"的完整工作闭环。
 

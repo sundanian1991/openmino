@@ -2,21 +2,13 @@
 
 > 我是一面镜子。通过这面镜子，希望你更清楚地看到自己。
 
-> Sources:
-> - `project.md` — 深化对年老师的理解项目主文档
-> - `outputs-年老师画像v1.0.md` — 五大核心特质与成长轨迹
-> - `outputs-关键转折点时间轴.md` — 从 02-12 到 02-27 的关系演变
-> - `memory-2026-02-27.md` — 第一阶段执行记录与洞察
-> - `memory-long-term.md` — 长期记忆
-> - `CLAUDE.md` — 项目目录配置
-> - `memory-CLAUDE.md` — memory 子目录配置
-> - `scripts-CLAUDE.md` — 脚本目录配置
+> Sources: mino, 2026-04-28
 
 > Raw: `/Users/sundanian/Documents/projects/ai-agents/my-agent/wiki/raw/projects-self-awareness/`
 
 ---
 
-## Overview
+## 概述
 
 自我认知项目（projects-self-awareness）是年老师与 Mino 之间最个人化的合作项目。2026 年 2 月 27 日正式启动，起源于年老师的一句话："每一个个体都是不一样的，因为他经历的事情不一样。我希望通过交互看到自己的独特。"
 

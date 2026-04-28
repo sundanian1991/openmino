@@ -1,9 +1,9 @@
 # OpenWiki 知识库
 
-> Sources: Mino (AI), 2026
+> Sources: Mino (AI), 2026, 2026-04-28
 > Raw: [OpenWiki README](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-README.md); [OpenWiki README.zh-CN](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-README.zh-CN.md); [OpenWiki CLAUDE](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CLAUDE.md); [OpenWiki DESIGN](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-DESIGN.md); [OpenWiki CONTRIBUTING](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CONTRIBUTING.md); [OpenWiki CODE_OF_CONDUCT](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CODE_OF_CONDUCT.md); [OpenWiki CHANGELOG](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CHANGELOG.md); [release notes v0.1.5-v0.2.0](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.2.0.md)
 
-## Overview
+## 概述
 
 OpenWiki 是一个被归档到 workspace-other 目录的开源知识库项目。该项目拥有完整的开源项目结构：README（含中英文版本）、CLAUDE.md（AI 交互配置）、DESIGN.md（设计规范）、CONTRIBUTING.md（贡献指南）、CODE_OF_CONDUCT.md（行为准则）、CHANGELOG.md（变更日志）以及 6 个版本的 release notes（v0.1.5 到 v0.2.0）。
 

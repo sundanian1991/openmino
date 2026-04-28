@@ -1,6 +1,6 @@
 # AI 学习资源监控体系
 
-> Sources: Zara AI 学习资源库每周监控 (2026-04-03 至 2026-04-12)
+> Sources: Zara AI 学习资源库每周监控 (2026-04-03 至 2026-04-12), 2026-04-28
 > Raw: [每周监控-2026-04-03](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03.md); [每周监控-2026-04-03-v2](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03-v2.md); [每周监控-2026-04-08](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-08.md); [Zara AI 当前状态](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-zara-ai-current.md); [项目记忆-2026-04-03](../../raw/presentations/projects-proj-1772240987779-zrc3gz-memory-2026-04-03.md); [项目记忆-2026-04-08](../../raw/presentations/projects-proj-1772240987779-zrc3gz-memory-2026-04-08.md)
 
 ## 概述

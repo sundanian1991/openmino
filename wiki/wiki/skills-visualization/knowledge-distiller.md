@@ -1,9 +1,9 @@
 # Knowledge Distiller — 知识榨取器
 
-> Sources: knowledge-distiller SKILL.md; 苏格拉底追问式知识提取方法论
+> Sources: knowledge-distiller SKILL.md; 苏格拉底追问式知识提取方法论, 2026-04-28
 > Raw: [SKILL.md](../../raw/skills/knowledge-distiller-SKILL.md); [README](../../raw/skills/knowledge-distiller-README.md); [模式说明](../../raw/skills/knowledge-distiller-modes.md); [输出模板](../../raw/skills/knowledge-distiller-output_template.md); [领域档案模板](../../raw/skills/knowledge-distiller-domain_template.md); [PROMPT](../../raw/skills/knowledge-distiller-PROMPT.md); [电销知识库](../../raw/skills/knowledge-distiller-电销知识库.md)
 
-## Overview
+## 概述
 
 knowledge-distiller 是 Mino 技能体系中的"知识提取层"——通过苏格拉底式追问，帮助用户把脑中模糊的隐性知识说清楚、整理好、存下来。核心任务不是回答问题，而是**通过持续的追问，让用户把概念定义清楚、逻辑表达严密、知识体系化**。
 

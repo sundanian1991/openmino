@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: [release-notes-README](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-README.md); [release-notes-TEMPLATE](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-TEMPLATE.md); [v0.1.5](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.5.md); [v0.1.6](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.6.md); [v0.1.7](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.7.md); [v0.1.8](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.8.md); [v0.1.9](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.9.md)
 
-## Overview
+## 概述
 
 OpenWiki是一个本地知识管理应用，从v0.1.5到v0.1.9共发布了5个版本，每个版本都有独立的release notes文件，包含双语changelog（中文+英文）和安装说明。发版流程由AI自动完成——用户说"发版"时，AI检查commit、总结改动、创建release notes、bump版本号、打tag、push触发GitHub Actions构建。本文章记录每个版本的具体更新内容和发版流程的设计。
 

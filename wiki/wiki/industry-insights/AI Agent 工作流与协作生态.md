@@ -3,7 +3,7 @@
 > Sources: mino, 2026-04-28
 > Raw: ../../raw/learning/AI-Agent工作流解析-agency-agents-current.md; ../../raw/learning/AI协作-Claude.md
 
-## Overview
+## 概述
 
 通过学习 agency-agents 的角色清单和 AI 协作模式，建立了完整的 AI Agent 协作生态认知。从单一AI助手到多角色协作团队，AI Agent 正在从工具进化为工作伙伴。
 

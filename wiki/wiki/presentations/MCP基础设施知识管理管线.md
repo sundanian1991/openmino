@@ -1,6 +1,6 @@
 # MCP基础设施：Get笔记与Memos的知识管理管线
 
-> Sources: MCP Servers 项目 - Get笔记和 Memos 配置文档 (2026-02-23)
+> Sources: MCP Servers 项目 - Get笔记和 Memos 配置文档 (2026-02-23), 2026-04-28
 > Raw: [Get笔记CLAUDE.md](../../raw/presentations/projects-mcp-servers-getnote-CLAUDE.md); [Get笔记README](../../raw/presentations/projects-mcp-servers-getnote-README.md); [Get笔记配置指南](../../raw/presentations/projects-mcp-servers-getnote-配置指南.md); [Get笔记源码CLAUDE.md](../../raw/presentations/projects-mcp-servers-getnote-src-CLAUDE.md); [Memos CLAUDE.md](../../raw/presentations/projects-mcp-servers-memos-CLAUDE.md); [Memos README](../../raw/presentations/projects-mcp-servers-memos-README.md); [Memos源码CLAUDE.md](../../raw/presentations/projects-mcp-servers-memos-src-CLAUDE.md)
 
 ## 概述

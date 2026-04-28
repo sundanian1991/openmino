@@ -1,9 +1,9 @@
 # Data Visualization — Python matplotlib 专业可视化
 
-> Sources: data-visualization SKILL.md (2026); Python matplotlib 可视化规范
+> Sources: data-visualization SKILL.md (2026); Python matplotlib 可视化规范, 2026-04-28
 > Raw: [SKILL.md](../../raw/skills/data-visualization-SKILL.md); [README](../../raw/skills/data-visualization-README.md); [图表选择](../../raw/skills/data-visualization-chart_selection.md); [可视化规范](../../raw/skills/data-visualization-visualization_spec.md)
 
-## Overview
+## 概述
 
 data-visualization 是基于 Python matplotlib 的专业数据可视化技能。它提供三套专业风格模板（BCG、The Economist、McKinsey），每套风格都按真实报告的视觉规范提取并可复刻。与 echarts-visualization（生成交互式 HTML）不同，data-visualization 生成的是静态图片代码，适合论文、出版物、打印报告等场景。
 

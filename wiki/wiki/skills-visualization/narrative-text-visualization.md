@@ -1,9 +1,9 @@
 # Narrative Text Visualization — T8 叙事文本可视化
 
-> Sources: narrative-text-visualization SKILL.md (T8 Syntax); AntV T8 技术栈
+> Sources: narrative-text-visualization SKILL.md (T8 Syntax); AntV T8 技术栈, 2026-04-28
 > Raw: [SKILL.md](../../raw/skills/narrative-text-visualization-SKILL.md); [T8 GitHub](https://github.com/antvis/T8); [T8 文档](https://github.com/antvis/T8/blob/main/site/en/tutorial/quick-start.md); [T8 Syntax 参考](https://github.com/antvis/T8/blob/main/prompt.md)
 
-## Overview
+## 概述
 
 narrative-text-visualization 是基于 AntV T8 技术栈的叙事文本可视化技能。T8 是一种声明式 Markdown-like 语言，用于创建带语义实体标注的数据叙事。它将普通的数据分析报告转化为视觉上更富表现力的叙事文本——通过语义标注让数据自动"跳出来"，通过迷你图表嵌入文本，通过视觉层级引导阅读。
 

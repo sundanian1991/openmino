@@ -1,6 +1,6 @@
 # AI 学习监控项目
 
-> Sources: Mino, 2026-02-28 ~ 2026-03-15
+> Sources: Mino, 2026-02-28 ~, 2026-03-15
 > Raw: [项目主文档](../../raw/projects-ai-learning/project.md) | [每周监控输出](../../raw/projects-ai-learning/outputs-weekly-monitor-2026-03-01.md) | [学习笔记](../../raw/projects-ai-learning/memory-learning-notes.md)
 
 ## 概述

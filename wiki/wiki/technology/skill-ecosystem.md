@@ -1,6 +1,6 @@
 # 技能生态
 
-> Sources: Mino, 2026-03-10 ~ 2026-04-24
+> Sources: Mino, 2026-03-10 ~, 2026-04-24
 > Raw: [技术与工具探索](../../raw/core-memory/03-技术与工具探索.md); [MEMORY.md](../../raw/core-memory/MEMORY.md); [insights](../../raw/core-memory/insights.md); [learnings](../../raw/learnings/LEARNINGS.md); [errors](../../raw/learnings/ERRORS.md); [feature requests](../../raw/learnings/FEATURE_REQUESTS.md)
 
 ## 概述
