@@ -1,7 +1,7 @@
 # 数据可视化图表百科与选型指南
 
 > Sources: Mino, 2026-04-27
-> Raw: [DataVizCatalogue-60种图表全览](../../raw/toolbox/可视化-图表百科-DataVizCatalogue-60种图表全览.md); [可视化原则](../../raw/toolbox/可视化-原则-原则.md)
+> Raw:[DataVizCatalogue-60种图表全览](../../raw/toolbox/可视化-图表百科-DataVizCatalogue-60种图表全览.md); [可视化原则](../../raw/toolbox/可视化-原则-原则.md)
 
 ## 概述
 

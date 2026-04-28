@@ -1,7 +1,7 @@
 # 赛马竞争机制与排名文化
 
 > Sources: 年老师, 2026-04-23
-> Raw: [场景三-份额调整](../../raw/archive/场景三-份额调整.md); [供应商管理六步法](../../raw/work-methods/供应商管理六步法.md); [供应商管理思路梳理](../../raw/docs-supplier/管理规范-供应商管理思路梳理.md); [BPO联盟月报](../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v9.md); [供应商管理办法（总纲）](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [日常执行手册-00-总览](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-00-总览.md)
+> Raw:[场景三-份额调整](../../raw/archive/场景三-份额调整.md); [供应商管理六步法](../../raw/work-methods/供应商管理六步法.md); [供应商管理思路梳理](../../raw/docs-supplier/管理规范-供应商管理思路梳理.md); [BPO联盟月报](../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v9.md); [供应商管理办法（总纲）](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [日常执行手册-00-总览](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-00-总览.md)
 
 ## 概述
 

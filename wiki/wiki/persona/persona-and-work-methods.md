@@ -1,7 +1,7 @@
 # 人物画像与工作规范 — 年老师画像与标准流程
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/persona/README.md; ../../raw/persona/偏好习惯.md; ../../raw/persona/基本信息.md; ../../raw/persona/工作方法论.md; ../../raw/persona/性格特质.md; ../../raw/persona/核心能力.md; ../../raw/persona/职业成就.md; ../../raw/work-methods/5311工作框架.md; ../../raw/work-methods/供应商管理六步法.md; ../../raw/work-methods/议题设定权-讨论总结与服务组量化框架.md; ../../raw/work-standards/README.md; ../../raw/work-standards/供应商管理方法论.md; ../../raw/work-standards/其他工作铁律.md; ../../raw/work-standards/向上汇报规范.md; ../../raw/work-standards/日常规范.md; ../../raw/work-standards/核心工作理念.md; ../../raw/work-standards/沟通方法论.md; ../../raw/work-standards/问题处理方法论.md
+> Raw:../../raw/persona/README.md; ../../raw/persona/偏好习惯.md; ../../raw/persona/基本信息.md; ../../raw/persona/工作方法论.md; ../../raw/persona/性格特质.md; ../../raw/persona/核心能力.md; ../../raw/persona/职业成就.md; ../../raw/work-methods/5311工作框架.md; ../../raw/work-methods/供应商管理六步法.md; ../../raw/work-methods/议题设定权-讨论总结与服务组量化框架.md; ../../raw/work-standards/README.md; ../../raw/work-standards/供应商管理方法论.md; ../../raw/work-standards/其他工作铁律.md; ../../raw/work-standards/向上汇报规范.md; ../../raw/work-standards/日常规范.md; ../../raw/work-standards/核心工作理念.md; ../../raw/work-standards/沟通方法论.md; ../../raw/work-standards/问题处理方法论.md
 
 > - `wiki/raw/persona/README.md`
 > - `wiki/raw/persona/偏好习惯.md`

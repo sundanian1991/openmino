@@ -1,7 +1,7 @@
 # 供应商管理可视化体系
 
 > Sources: 年老师, 2026-04, 2026-04-28
-> Raw: [供应商管理可视化体系](../../raw/projects/供应商管理可视化体系.md); [00_索引](../../raw/person-profiles/00_索引.md); [分类说明](../../raw/person-profiles/分类说明.md)
+> Raw:[供应商管理可视化体系](../../raw/projects/供应商管理可视化体系.md); [00_索引](../../raw/person-profiles/00_索引.md); [分类说明](../../raw/person-profiles/分类说明.md)
 
 ## 概述
 

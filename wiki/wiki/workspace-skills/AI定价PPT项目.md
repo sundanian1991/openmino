@@ -1,7 +1,7 @@
 # AI定价PPT项目
 
 > Sources: AI产品定价模式演变商业案例研究 (2026-04-24~2026-04-25); PPT169 版演示文稿; 演讲脚本版, 2026-04-28
-> Raw: [PPT169版 README](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-README.md); [PPT169版 design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md); [PPT169版 notes-total](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-total.md); [brainstorm源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md); [演讲脚本版](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-README.md); [模板设计](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-templates-design_spec.md)
+> Raw:[PPT169版 README](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-README.md); [PPT169版 design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md); [PPT169版 notes-total](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-total.md); [brainstorm源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md); [演讲脚本版](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-README.md); [模板设计](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-templates-design_spec.md)
 
 ## 概述
 

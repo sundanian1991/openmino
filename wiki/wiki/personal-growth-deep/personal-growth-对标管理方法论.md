@@ -1,7 +1,7 @@
 # 对标管理方法论：自建标杆驱动系统优化
 
 > Sources: mino, 2026-04-28
-> Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_详细版.md); [供应商管理深度解析](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-供应商管理深度解析.md); [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md)
+> Raw:[自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_详细版.md); [供应商管理深度解析](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-供应商管理深度解析.md); [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md)
 
 ## 概述
 

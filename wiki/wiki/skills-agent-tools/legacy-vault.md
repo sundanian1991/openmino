@@ -1,7 +1,7 @@
 # Legacy Vault — 技能存档管理器
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [legacy-vault](../../raw/skills/legacy-vault-SKILL.md)
+> Raw:[legacy-vault](../../raw/skills/legacy-vault-SKILL.md)
 
 ## 概述
 

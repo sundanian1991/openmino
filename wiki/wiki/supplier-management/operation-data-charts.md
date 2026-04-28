@@ -1,7 +1,7 @@
 # 运营数据与 KPI 体系
 
 > Sources: 供应商管理岗, 2025~2026, 2026-04-28
-> Raw: [成果数据](../../raw/docs-supplier/运营数据-03-成果数据.md); [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [质量管理规范](../../raw/docs-supplier/管理制度-质量管理规范.md); [可视化单元](../../raw/docs-supplier/图表-00-设计规范.md); [可视化形式说明书](../../raw/docs-supplier/图表-01-可视化单元-形式说明书.md)
+> Raw:[成果数据](../../raw/docs-supplier/运营数据-03-成果数据.md); [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [质量管理规范](../../raw/docs-supplier/管理制度-质量管理规范.md); [可视化单元](../../raw/docs-supplier/图表-00-设计规范.md); [可视化形式说明书](../../raw/docs-supplier/图表-01-可视化单元-形式说明书.md)
 
 ## 概述
 

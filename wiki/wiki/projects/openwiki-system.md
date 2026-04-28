@@ -1,7 +1,7 @@
 # OpenWiki 知识库系统
 
 > Sources: Mino 文件架构分析, 2026-02, 2026-04-28
-> Raw: [完整架构](../../raw/projects-archive/architecture-ARCHITECTURE-FULL.md) | [架构总结](../../raw/projects-archive/architecture-ARCHITECTURE-SUMMARY.md) | [执行计划](../../raw/projects-archive/architecture-ARCHITECTURE-EXECUTION-PLAN.md)
+> Raw:[完整架构](../../raw/projects-archive/architecture-ARCHITECTURE-FULL.md); [架构总结](../../raw/projects-archive/architecture-ARCHITECTURE-SUMMARY.md); [执行计划](../../raw/projects-archive/architecture-ARCHITECTURE-EXECUTION-PLAN.md)
 
 ## 概述
 

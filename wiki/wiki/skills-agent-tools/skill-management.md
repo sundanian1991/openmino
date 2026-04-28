@@ -1,7 +1,7 @@
 # 技能管理与评测体系
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [skill-creator](../../raw/skills/skill-creator-SKILL.md); [analyzer](../../raw/skills/skill-creator-analyzer.md); [comparator](../../raw/skills/skill-creator-comparator.md); [grader](../../raw/skills/skill-creator-grader.md); [schemas](../../raw/skills/skill-creator-schemas.md); [find-skills](../../raw/skills/find-skills-SKILL.md)
+> Raw:[skill-creator](../../raw/skills/skill-creator-SKILL.md); [analyzer](../../raw/skills/skill-creator-analyzer.md); [comparator](../../raw/skills/skill-creator-comparator.md); [grader](../../raw/skills/skill-creator-grader.md); [schemas](../../raw/skills/skill-creator-schemas.md); [find-skills](../../raw/skills/find-skills-SKILL.md)
 
 ## 概述
 

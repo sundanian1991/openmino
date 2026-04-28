@@ -1,7 +1,7 @@
 # 供应商档案摘要
 
 > Sources: 供应商管理岗, 2026-03, 2026-04-28
-> Raw: [供应商全景分析](../../raw/docs-supplier/供应商库-供应商全景分析.md); [供应商汇总-2026Q1](../../raw/docs-supplier/供应商库-汇总表-供应商汇总-2026Q1.md); [业务线汇总-2026Q1](../../raw/docs-supplier/供应商库-汇总表-业务线汇总-2026Q1.md); [供应商档案-毅航](../../raw/docs-supplier/供应商库-档案-毅航.md); [供应商档案-毛毛虫](../../raw/docs-supplier/供应商库-档案-毛毛虫.md); [供应商档案-伽玛](../../raw/docs-supplier/供应商库-档案-伽玛.md); [供应商档案-岐力](../../raw/docs-supplier/供应商库-档案-岐力.md); [供应商档案-赛维斯](../../raw/docs-supplier/供应商库-档案-赛维斯.md); [供应商档案-翰锐](../../raw/person-profiles/供应商-翰锐-秦宇凝.md)
+> Raw:[供应商全景分析](../../raw/docs-supplier/供应商库-供应商全景分析.md); [供应商汇总-2026Q1](../../raw/docs-supplier/供应商库-汇总表-供应商汇总-2026Q1.md); [业务线汇总-2026Q1](../../raw/docs-supplier/供应商库-汇总表-业务线汇总-2026Q1.md); [供应商档案-毅航](../../raw/docs-supplier/供应商库-档案-毅航.md); [供应商档案-毛毛虫](../../raw/docs-supplier/供应商库-档案-毛毛虫.md); [供应商档案-伽玛](../../raw/docs-supplier/供应商库-档案-伽玛.md); [供应商档案-岐力](../../raw/docs-supplier/供应商库-档案-岐力.md); [供应商档案-赛维斯](../../raw/docs-supplier/供应商库-档案-赛维斯.md); [供应商档案-翰锐](../../raw/person-profiles/供应商-翰锐-秦宇凝.md)
 
 ## 概述
 

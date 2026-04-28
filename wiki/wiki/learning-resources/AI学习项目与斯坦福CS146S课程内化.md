@@ -1,7 +1,7 @@
 # AI 学习项目与斯坦福 CS146S 课程内化
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/projects-ai-learning/CLAUDE.md; ../../raw/projects-ai-learning/notes-README.md; ../../raw/projects-ai-learning/notes-best-practices-CLAUDE.md; ../../raw/projects-ai-learning/outputs-CLAUDE.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-README.md; ../../raw/projects-ai-learning/outputs-alternative-resources-CLAUDE.md; ../../raw/projects-ai-learning/guides-CLAUDE.md
+> Raw:../../raw/projects-ai-learning/CLAUDE.md; ../../raw/projects-ai-learning/notes-README.md; ../../raw/projects-ai-learning/notes-best-practices-CLAUDE.md; ../../raw/projects-ai-learning/outputs-CLAUDE.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-README.md; ../../raw/projects-ai-learning/outputs-alternative-resources-CLAUDE.md; ../../raw/projects-ai-learning/guides-CLAUDE.md
 
 ## 概述
 

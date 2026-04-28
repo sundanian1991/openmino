@@ -1,7 +1,7 @@
 # 供应商ABC分层分级管理方案详解
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/projects-supplier/供应商ABC分层分级管理方案.md
+> Raw:../../raw/projects-supplier/供应商ABC分层分级管理方案.md
 
 ## 概述
 

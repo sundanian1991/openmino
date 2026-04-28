@@ -1,7 +1,7 @@
 # HRBP式扶持与标杆配对
 
 > Sources: 供应商管理岗, 2026-04-23
-> Raw: [HRBP式扶持手册](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-10-HRBP式扶持.md); [新供应商跟进](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-08-新供应商跟进.md); [供应商管理思路梳理](../../raw/docs-supplier/管理规范-供应商管理思路梳理.md); [供应商管理工作手册-HRBP方法论](../../raw/docs-supplier/管理规范-供应商管理工作手册-基于HRBP方法论.md); [标杆配对逻辑](../../raw/docs-supplier/管理规范-供应商管理方法论体系-可视化指南.md)
+> Raw:[HRBP式扶持手册](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-10-HRBP式扶持.md); [新供应商跟进](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-08-新供应商跟进.md); [供应商管理思路梳理](../../raw/docs-supplier/管理规范-供应商管理思路梳理.md); [供应商管理工作手册-HRBP方法论](../../raw/docs-supplier/管理规范-供应商管理工作手册-基于HRBP方法论.md); [标杆配对逻辑](../../raw/docs-supplier/管理规范-供应商管理方法论体系-可视化指南.md)
 
 ## 概述
 

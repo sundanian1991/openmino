@@ -1,7 +1,7 @@
 # 权责不对等研究与 AI 提效
 
 > Sources: 年老师, 2026-03-28 ~, 2026-03-29
-> Raw: [权责不对等保护策略](../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-41-成长-权责不对等研究-20260329-权责不对等保护策略-边界清单与留痕模板.md), [AI 提效方案](../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI提效方案-供应商管理岗.md)
+> Raw:[权责不对等保护策略](../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-41-成长-权责不对等研究-20260329-权责不对等保护策略-边界清单与留痕模板.md); [AI 提效方案](../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI提效方案-供应商管理岗.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 核心工作原则
 
 > Sources: 年老师, 2026-02 ~ 2026-04, 2026-04-28
-> Raw: [核心工作理念](../../raw/work-standards/核心工作理念.md); [其他工作铁律](../../raw/work-standards/其他工作铁律.md); [MEMORY](../../raw/core-memory/MEMORY.md)
+> Raw:[核心工作理念](../../raw/work-standards/核心工作理念.md); [其他工作铁律](../../raw/work-standards/其他工作铁律.md); [MEMORY](../../raw/core-memory/MEMORY.md)
 
 ## 概述
 

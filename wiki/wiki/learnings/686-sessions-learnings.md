@@ -1,7 +1,7 @@
 # 686 会话学习精华与纠错记录
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/learnings/LEARNINGS.md; ../../raw/learnings/ERRORS.md; ../../raw/learnings/FEATURE_REQUESTS.md
+> Raw:../../raw/learnings/LEARNINGS.md; ../../raw/learnings/ERRORS.md; ../../raw/learnings/FEATURE_REQUESTS.md
 
 ## 概述
 

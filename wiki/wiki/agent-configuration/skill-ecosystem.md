@@ -1,7 +1,7 @@
 # Skill Ecosystem
 
 > Sources: Mino, 2026-02-12 ~, 2026-04-26
-> Raw:  — 501 files, [skill-search](../../raw/agent-rules/skill-search.md)
+> Raw:[skill-search](../../raw/agent-rules/skill-search.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # Narrative Text Visualization — T8 叙事文本可视化
 
 > Sources: narrative-text-visualization SKILL.md (T8 Syntax); AntV T8 技术栈, 2026-04-28
-> Raw: [SKILL.md](../../raw/skills/narrative-text-visualization-SKILL.md); [T8 GitHub](https://github.com/antvis/T8); [T8 文档](https://github.com/antvis/T8/blob/main/site/en/tutorial/quick-start.md); [T8 Syntax 参考](https://github.com/antvis/T8/blob/main/prompt.md)
+> Raw:[SKILL.md](../../raw/skills/narrative-text-visualization-SKILL.md)
 
 ## 概述
 

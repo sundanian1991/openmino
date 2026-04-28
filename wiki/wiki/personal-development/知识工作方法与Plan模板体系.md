@@ -1,7 +1,7 @@
 # 知识工作方法与Plan模板体系
 
 > Sources: mino, 2026-04-27
-> Raw: ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-INDEX.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-SVG索引.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-交付清单.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-Claude-Design-系统提示词-中文版.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI增强工作流分析方案.md
+> Raw:../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-INDEX.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-SVG索引.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-交付清单.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-Claude-Design-系统提示词-中文版.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI增强工作流分析方案.md
 
 ## 概述
 

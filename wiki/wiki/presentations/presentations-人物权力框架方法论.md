@@ -1,7 +1,7 @@
 # 人物权力框架方法论
 
 > Sources: 刘乾坤人物画像项目系列源文件 (2026-04-09), 2026-04-28
-> Raw: [权力框架源文件](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_权力框架.md); [工作手法源文件](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_工作手法.md); [default版 notes-total](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-notes-total.md); [档案源文件](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-档案.md)
+> Raw:[权力框架源文件](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_权力框架.md); [工作手法源文件](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_工作手法.md); [default版 notes-total](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-notes-total.md); [档案源文件](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-档案.md)
 
 ## 概述
 

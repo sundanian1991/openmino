@@ -1,7 +1,7 @@
 # 结构化思考与决策框架
 
 > Sources: Mino, 2026-04-27
-> Raw: [plan-templates-C1-问题拆解](../../raw/toolbox/plan-templates-C1-问题拆解.md); [plan-templates-C2-邮件起草](../../raw/toolbox/plan-templates-C2-邮件起草.md); [plan-templates-C4-制度流程梳理](../../raw/toolbox/plan-templates-C4-制度流程梳理.md); [plan-templates-D1-D4系列](../../raw/toolbox/plan-templates-D1-被同事@数据进度.md)
+> Raw:[plan-templates-C1-问题拆解](../../raw/toolbox/plan-templates-C1-问题拆解.md); [plan-templates-C2-邮件起草](../../raw/toolbox/plan-templates-C2-邮件起草.md); [plan-templates-C4-制度流程梳理](../../raw/toolbox/plan-templates-C4-制度流程梳理.md); [plan-templates-D1-D4系列](../../raw/toolbox/plan-templates-D1-被同事@数据进度.md)
 
 ## 概述
 

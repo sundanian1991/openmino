@@ -1,7 +1,7 @@
 # 可视化组件库
 
 > Sources: Mino, 2026-04-27
-> Raw: [widget指南](../../raw/toolbox/可视化-组件-widget-指南.md) | [模式库](../../raw/toolbox/可视化-模式库-模式库.md) | [样板](../../raw/toolbox/可视化样板.md) | [原则](../../raw/toolbox/可视化-原则-原则.md)
+> Raw:[widget指南](../../raw/toolbox/可视化-组件-widget-指南.md); [模式库](../../raw/toolbox/可视化-模式库-模式库.md); [样板](../../raw/toolbox/可视化样板.md); [原则](../../raw/toolbox/可视化-原则-原则.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # Presentation — 演讲脚本 + PPT 一键生成器
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/skills/presentation-skill-SKILL.md; ../../raw/skills/presentation-skill-README.md
+> Raw:../../raw/skills/presentation-skill-SKILL.md; ../../raw/skills/presentation-skill-README.md
 
 ## 概述
 

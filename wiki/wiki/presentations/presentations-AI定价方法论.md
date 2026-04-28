@@ -1,7 +1,7 @@
 # AI 定价方法论深度
 
 > Sources: AI 定价商业案例头脑风暴与研究源文件 (2026-04-24 至 2026-04-25), 2026-04-28
-> Raw: [头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md); [notes-total](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-total.md); [design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md)
+> Raw:[头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md); [notes-total](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-total.md); [design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md)
 
 ## 概述
 

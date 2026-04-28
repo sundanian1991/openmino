@@ -1,7 +1,7 @@
 # Content Visualizers — 信息图与编辑卡片生成器
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/skills/editorial-card-generator-SKILL.md; ../../raw/skills/infographic-creator-SKILL.md
+> Raw:../../raw/skills/editorial-card-generator-SKILL.md; ../../raw/skills/infographic-creator-SKILL.md
 
 ## 概述
 

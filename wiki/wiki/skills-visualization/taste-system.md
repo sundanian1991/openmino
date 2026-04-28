@@ -1,7 +1,7 @@
 # Taste System — 审美判断力与行动力系统
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/skills/taste-SKILL.md; ../../raw/skills/taste-agency-SKILL.md; ../../raw/skills/taste-development.md; ../../raw/skills/taste-learning.md; ../../raw/skills/taste-prompting.md; ../../raw/skills/taste-visual.md; ../../raw/skills/taste-writing.md; ../../raw/skills/taste-antipatterns.md; ../../raw/skills/taste-agency-thought-sources.md
+> Raw:../../raw/skills/taste-SKILL.md; ../../raw/skills/taste-agency-SKILL.md; ../../raw/skills/taste-development.md; ../../raw/skills/taste-learning.md; ../../raw/skills/taste-prompting.md; ../../raw/skills/taste-visual.md; ../../raw/skills/taste-writing.md; ../../raw/skills/taste-antipatterns.md; ../../raw/skills/taste-agency-thought-sources.md
 
 ## 概述
 

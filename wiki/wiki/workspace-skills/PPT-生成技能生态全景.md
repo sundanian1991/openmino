@@ -1,7 +1,7 @@
 # PPT 生成技能生态全景——七路线并存的技术图谱
 
 > Sources: 技能全量可视化分析 (2026-04-21); ppt-master 项目 (2026-04-09); presentation-skill (2026-04-16); 其他技能项目汇总, 2026-04-28
-> Raw: [技能元数据索引](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-_metadata-index.md); [技能顺序列表](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-00-技能顺序列表.md); [ppt-master SKILL](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-skills-ppt-master-SKILL.md); [presentation-skill README](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-15-技能-书信精华PPT-20260416-presentation-skill-README.md)
+> Raw:[技能元数据索引](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-_metadata-index.md); [技能顺序列表](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-00-技能顺序列表.md); [ppt-master SKILL](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-23-技能-ppt-master下载-20260409-skills-ppt-master-SKILL.md); [presentation-skill README](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-15-技能-书信精华PPT-20260416-presentation-skill-README.md)
 
 ## 概述
 

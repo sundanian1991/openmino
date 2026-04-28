@@ -1,7 +1,7 @@
 # 搜索策略与工具配置
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/feedback/agent-reach-search.md
+> Raw:../../raw/feedback/agent-reach-search.md
 
 ## 概述
 

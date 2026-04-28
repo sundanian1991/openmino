@@ -1,7 +1,7 @@
 # 供应商目录与文件体系重组：知识资产的结构化治理
 
 > Sources: mino, 2026-04-24
-> Raw: [plans.md](../../raw/plans/2026-04-24-文件体系整理-plans.md); [供应商目录重组计划](../../raw/plans/2026-04-24-文件体系整理-供应商目录重组计划.md); [R3提炼清单](../../raw/plans/2026-04-24-文件体系整理-R3-workspace提炼清单.md); [prompt](../../raw/plans/2026-04-24-文件体系整理-prompt.md)
+> Raw:[plans.md](../../raw/plans/2026-04-24-文件体系整理-plans.md); [供应商目录重组计划](../../raw/plans/2026-04-24-文件体系整理-供应商目录重组计划.md); [R3提炼清单](../../raw/plans/2026-04-24-文件体系整理-R3-workspace提炼清单.md); [prompt](../../raw/plans/2026-04-24-文件体系整理-prompt.md)
 
 ## 概述
 

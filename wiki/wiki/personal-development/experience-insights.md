@@ -1,7 +1,7 @@
 # 经历洞察
 
 > Sources: 年老师, 2026-02-27
-> Raw: [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md), [年老师画像](../../raw/projects-self-awareness/outputs-年老师画像v1.0.md)
+> Raw:[经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md); [年老师画像](../../raw/projects-self-awareness/outputs-年老师画像v1.0.md)
 
 ## 概述
 

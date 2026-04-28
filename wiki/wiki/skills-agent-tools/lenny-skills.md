@@ -1,7 +1,7 @@
 # Lenny Skills — 商业决策顾问系统
 
 > Sources: Lenny Rachitsky's Newsletter/Podcast (via MyAgents), 2026-04-27
-> Raw: [lenny-skills-SKILL.md](../../raw/skills/lenny-skills-SKILL.md); [decision-maker](../../raw/skills/lenny-skills-decision-maker.md); [goal-setter](../../raw/skills/lenny-skills-goal-setter.md); [growth-advisor](../../raw/skills/lenny-skills-growth-advisor.md); [gtm-advisor](../../raw/skills/lenny-skills-gtm-advisor.md); [hiring-guide](../../raw/skills/lenny-skills-hiring-guide.md); [leadership-coach](../../raw/skills/lenny-skills-leadership-coach.md); [pm-coach](../../raw/skills/lenny-skills-pm-coach.md); [sop-library](../../raw/skills/lenny-skills-sop-library.md); [strategy-advisor](../../raw/skills/lenny-skills-strategy-advisor.md)
+> Raw:[lenny-skills-SKILL.md](../../raw/skills/lenny-skills-SKILL.md); [decision-maker](../../raw/skills/lenny-skills-decision-maker.md); [goal-setter](../../raw/skills/lenny-skills-goal-setter.md); [growth-advisor](../../raw/skills/lenny-skills-growth-advisor.md); [gtm-advisor](../../raw/skills/lenny-skills-gtm-advisor.md); [hiring-guide](../../raw/skills/lenny-skills-hiring-guide.md); [leadership-coach](../../raw/skills/lenny-skills-leadership-coach.md); [pm-coach](../../raw/skills/lenny-skills-pm-coach.md); [sop-library](../../raw/skills/lenny-skills-sop-library.md); [strategy-advisor](../../raw/skills/lenny-skills-strategy-advisor.md)
 
 ## 概述
 

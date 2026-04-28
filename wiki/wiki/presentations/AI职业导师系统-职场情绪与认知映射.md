@@ -1,7 +1,7 @@
 # AI职业导师系统-职场情绪与认知映射
 
 > Sources: mino, 2026-04-28
-> Raw: [情绪触发点地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [专属AI职业导师项目](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md)
+> Raw:[情绪触发点地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [专属AI职业导师项目](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md)
 
 ## 概述
 

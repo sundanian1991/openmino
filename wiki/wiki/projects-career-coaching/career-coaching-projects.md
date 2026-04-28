@@ -4,7 +4,6 @@
 
 > Sources: mino, 2026-04-28
 
-> Raw: `/Users/sundanian/Documents/projects/ai-agents/my-agent/wiki/raw/projects-career-coaching/`
 
 ---
 

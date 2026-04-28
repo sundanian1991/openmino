@@ -1,7 +1,7 @@
 # Obsidian与Claude深度阅读工作流完整指南
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/learning/技能相关-工具技能-OBSIDIAN-CLAUDE-DEEP-READING.md; ../../raw/learning/技能相关-工具技能-cowork-plugins-manual.md; ../../raw/learning/技能相关-工具技能-jiyi.md; ../../raw/learning/技能相关-工具技能-CAPTURE.md; ../../raw/learning/技能相关-工具技能-verification-checklist.md; ../../raw/learning/技能相关-工具技能-context-optimization-audit.md; ../../raw/learning/AI协作-07-AI协作.md; ../../raw/learning/AI协作-Claude.md
+> Raw:../../raw/learning/技能相关-工具技能-OBSIDIAN-CLAUDE-DEEP-READING.md; ../../raw/learning/技能相关-工具技能-cowork-plugins-manual.md; ../../raw/learning/技能相关-工具技能-jiyi.md; ../../raw/learning/技能相关-工具技能-CAPTURE.md; ../../raw/learning/技能相关-工具技能-verification-checklist.md; ../../raw/learning/技能相关-工具技能-context-optimization-audit.md; ../../raw/learning/AI协作-07-AI协作.md; ../../raw/learning/AI协作-Claude.md
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # AI定价-Agent时代成本结构
 
 > Sources: mino, 2026-04-28
-> Raw: [Agent成本备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-13_agent_cost.md); [未来趋势备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-14_future_trends.md); [五力分析备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-08_five_forces.md); [头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md)
+> Raw:[Agent成本备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-13_agent_cost.md); [未来趋势备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-14_future_trends.md); [五力分析备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-08_five_forces.md); [头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md)
 
 ## 概述
 

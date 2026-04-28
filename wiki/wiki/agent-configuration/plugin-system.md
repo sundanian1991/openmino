@@ -1,7 +1,7 @@
 # Plugin System
 
 > Sources: Mino, 2026-02-15 ~, 2026-04-26
-> Raw: [compound-knowledge-plugin-README](../../raw/claude-plugins/compound-knowledge-plugin-README.md), [compound-knowledge-plugin-AGENTS](../../raw/claude-plugins/compound-knowledge-plugin-plugins-compound-knowledge-AGENTS.md), [compound-knowledge-plugin-CHANGELOG](../../raw/claude-plugins/compound-knowledge-plugin-plugins-compound-knowledge-CHANGELOG.md), [compound-knowledge-plugin-PRIVACY](../../raw/claude-plugins/compound-knowledge-plugin-PRIVACY.md), [compound-knowledge-plugin-SECURITY](../../raw/claude-plugins/compound-knowledge-plugin-SECURITY.md), [compound-knowledge-plugin/agents/research/past-work-researcher](../../raw/claude-plugins/compound-knowledge-plugin-plugins-compound-knowledge-agents-research-past-work-researcher.md)
+> Raw:[compound-knowledge-plugin-README](../../raw/claude-plugins/compound-knowledge-plugin-README.md); [compound-knowledge-plugin-AGENTS](../../raw/claude-plugins/compound-knowledge-plugin-plugins-compound-knowledge-AGENTS.md); [compound-knowledge-plugin-CHANGELOG](../../raw/claude-plugins/compound-knowledge-plugin-plugins-compound-knowledge-CHANGELOG.md); [compound-knowledge-plugin-PRIVACY](../../raw/claude-plugins/compound-knowledge-plugin-PRIVACY.md); [compound-knowledge-plugin-SECURITY](../../raw/claude-plugins/compound-knowledge-plugin-SECURITY.md); [compound-knowledge-plugin/agents/research/past-work-researcher](../../raw/claude-plugins/compound-knowledge-plugin-plugins-compound-knowledge-agents-research-past-work-researcher.md)
 
 ## 概述
 

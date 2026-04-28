@@ -1,7 +1,7 @@
 # 手绘 SVG 设计哲学——"知情的不完美"运动
 
 > Sources: 前端设计原则体系项目 (2026-04-03~04); SVG 模板研究系列文档; 手绘 SVG 设计哲学 v2.0; 贝塞尔曲线模式库; 模板迭代记录, 2026-04-28
-> Raw: [手绘 SVG 设计哲学](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-手绘SVG设计哲学.md); [贝塞尔曲线模式库](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-贝塞尔曲线模式库.md); [模板汇总](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-模板迭代记录-模板汇总.md); [迭代验证方案](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-迭代验证方案.md); [物体观察库](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-物体观察库.md)
+> Raw:[手绘 SVG 设计哲学](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-手绘SVG设计哲学.md); [贝塞尔曲线模式库](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-贝塞尔曲线模式库.md); [模板汇总](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-模板迭代记录-模板汇总.md); [迭代验证方案](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-迭代验证方案.md); [物体观察库](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-物体观察库.md)
 
 ## 概述
 

@@ -2,7 +2,7 @@
 
 > Sources: pdf skill, 2026-04-28
 > Created: 2026-04-27
-> Raw: [pdf SKILL](../../raw/skills/pdf-SKILL.md); [minimax-pdf SKILL](../../raw/skills/minimax-pdf-SKILL.md); [design](../../raw/skills/minimax-pdf-design.md)
+> Raw:[pdf SKILL](../../raw/skills/pdf-SKILL.md); [minimax-pdf SKILL](../../raw/skills/minimax-pdf-SKILL.md); [design](../../raw/skills/minimax-pdf-design.md)
 
 ## 概述
 

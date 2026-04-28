@@ -1,7 +1,7 @@
 # 供应商管理岗 AI 提效方案
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI提效方案-供应商管理岗.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI增强工作流分析方案.md
+> Raw:../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI提效方案-供应商管理岗.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-42-成长-AI提效方案-20260328-AI增强工作流分析方案.md
 
 ## 概述
 

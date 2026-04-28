@@ -1,7 +1,7 @@
 # AI定价-补贴收紧分层三段式
 
 > Sources: mino, 2026-04-28
-> Raw: [三段式节奏备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-10_three_phase_rhythm.md); [三层驱动备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-09_three_layer_drivers.md); [五力分析备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-08_five_forces.md)
+> Raw:[三段式节奏备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-10_three_phase_rhythm.md); [三层驱动备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-09_three_layer_drivers.md); [五力分析备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-08_five_forces.md)
 
 ## 概述
 

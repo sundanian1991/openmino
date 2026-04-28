@@ -1,7 +1,7 @@
 # 可视化体系
 
 > Sources: Mino, 2026-03-20 ~, 2026-04-24
-> Raw: [技术与工具探索](../../raw/core-memory/03-技术与工具探索.md); [供应商管理可视化体系](../../raw/projects/供应商管理可视化体系.md); [MEMORY.md](../../raw/core-memory/MEMORY.md); [偏好习惯](../../raw/persona/偏好习惯.md); [insights](../../raw/core-memory/insights.md); [learnings](../../raw/learnings/LEARNINGS.md); [errors](../../raw/learnings/ERRORS.md)
+> Raw:[技术与工具探索](../../raw/core-memory/03-技术与工具探索.md); [供应商管理可视化体系](../../raw/projects/供应商管理可视化体系.md); [MEMORY.md](../../raw/core-memory/MEMORY.md); [偏好习惯](../../raw/persona/偏好习惯.md); [insights](../../raw/core-memory/insights.md); [learnings](../../raw/learnings/LEARNINGS.md); [errors](../../raw/learnings/ERRORS.md)
 
 ## 概述
 

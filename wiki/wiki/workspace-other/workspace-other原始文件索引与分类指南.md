@@ -1,7 +1,6 @@
 # workspace-other原始文件索引与分类指南
 
 > Sources: mino, 2026-04-28
-> Raw: 全量索引
 
 ## 概述
 

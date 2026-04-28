@@ -1,7 +1,7 @@
 # PPT169 设计系统规范
 
 > Sources: AI定价设计规格 + 刘乾坤设计规格 + 梁俊瑞设计规格 (2026-04), 2026-04-28
-> Raw: [AI定价 design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md); [刘乾坤 design_spec](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-design_spec.md); [梁俊瑞 design_spec](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-design_spec.md); [exhibit版 模板](../../raw/presentations/projects-liu-qiankun-profile-exhibit_ppt169_20260409-templates-design_spec.md)
+> Raw:[AI定价 design_spec](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-design_spec.md); [刘乾坤 design_spec](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-design_spec.md); [梁俊瑞 design_spec](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-design_spec.md); [exhibit版 模板](../../raw/presentations/projects-liu-qiankun-profile-exhibit_ppt169_20260409-templates-design_spec.md)
 
 ## 概述
 

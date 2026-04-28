@@ -2,7 +2,7 @@
 
 > Sources: pptx-deck-builder, 7 files, 2026-04-28
 > Created: 2026-04-27
-> Raw: [SKILL](../../raw/skills/pptx-deck-builder-SKILL.md); [README](../../raw/skills/pptx-deck-builder-README.md); [color palettes](../../raw/skills/pptx-deck-builder-color-palettes.md); [content strategy](../../raw/skills/pptx-deck-builder-content-strategy.md); [core patterns](../../raw/skills/pptx-deck-builder-core-patterns.md); [html2pptx](../../raw/skills/pptx-html2pptx.md); [OOXML](../../raw/skills/pptx-ooxml.md)
+> Raw:[SKILL](../../raw/skills/pptx-deck-builder-SKILL.md); [README](../../raw/skills/pptx-deck-builder-README.md); [color palettes](../../raw/skills/pptx-deck-builder-color-palettes.md); [content strategy](../../raw/skills/pptx-deck-builder-content-strategy.md); [core patterns](../../raw/skills/pptx-deck-builder-core-patterns.md); [html2pptx](../../raw/skills/pptx-html2pptx.md); [OOXML](../../raw/skills/pptx-ooxml.md)
 
 ## 概述
 

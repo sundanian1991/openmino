@@ -1,7 +1,7 @@
 # 手绘 SVG 风格图标体系
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/workspace-life/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-30-生活-游泳学习-20260404-CLAUDE.md
+> Raw:../../raw/workspace-life/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-30-生活-游泳学习-20260404-CLAUDE.md
 
 ## 概述
 

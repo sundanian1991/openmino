@@ -1,7 +1,7 @@
 # 供应商管理新供应商跟进与HRBP式扶持
 
 > Sources: 供应商管理岗, 2026-04-23
-> Raw: [日常执行手册-新供应商跟进](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-08-新供应商跟进.md); [日常执行手册-HRBP式扶持](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-10-HRBP式扶持.md); [HRBP方法论](../../raw/docs-supplier/管理规范-供应商管理工作手册-基于HRBP方法论.md); ; [供应商引入-扩项申请](../../raw/docs-supplier/历史项目-供应商引入-扩项申请 - 泉州速腾.md)
+> Raw:[日常执行手册-新供应商跟进](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-08-新供应商跟进.md); [日常执行手册-HRBP式扶持](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-10-HRBP式扶持.md); [HRBP方法论](../../raw/docs-supplier/管理规范-供应商管理工作手册-基于HRBP方法论.md); [供应商引入-扩项申请](../../raw/docs-supplier/历史项目-供应商引入-扩项申请 - 泉州速腾.md)
 
 ## 概述
 

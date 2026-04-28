@@ -1,7 +1,7 @@
 # 数据整理分析通用方法论
 
 > Sources: Mino, 2026-04-27
-> Raw: [plan-templates-C3-数据整理分析](../../raw/toolbox/plan-templates-C3-数据整理分析.md); [plan-templates-C1-问题拆解](../../raw/toolbox/plan-templates-C1-问题拆解.md); [plan-templates-C4-制度流程梳理](../../raw/toolbox/plan-templates-C4-制度流程梳理.md)
+> Raw:[plan-templates-C3-数据整理分析](../../raw/toolbox/plan-templates-C3-数据整理分析.md); [plan-templates-C1-问题拆解](../../raw/toolbox/plan-templates-C1-问题拆解.md); [plan-templates-C4-制度流程梳理](../../raw/toolbox/plan-templates-C4-制度流程梳理.md)
 
 ## 概述
 

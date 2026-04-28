@@ -1,7 +1,7 @@
 # agent-browser — 浏览器自动化
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [SKILL.md](../../raw/skills/agent-browser-SKILL.md), [authentication.md](../../raw/skills/agent-browser-authentication.md), [commands.md](../../raw/skills/agent-browser-commands.md), [profiling.md](../../raw/skills/agent-browser-profiling.md), [proxy-support.md](../../raw/skills/agent-browser-proxy-support.md), [session-management.md](../../raw/skills/agent-browser-session-management.md), [snapshot-refs.md](../../raw/skills/agent-browser-snapshot-refs.md), [video-recording.md](../../raw/skills/agent-browser-video-recording.md)
+> Raw:[SKILL.md](../../raw/skills/agent-browser-SKILL.md); [authentication.md](../../raw/skills/agent-browser-authentication.md); [commands.md](../../raw/skills/agent-browser-commands.md); [profiling.md](../../raw/skills/agent-browser-profiling.md); [proxy-support.md](../../raw/skills/agent-browser-proxy-support.md); [session-management.md](../../raw/skills/agent-browser-session-management.md); [snapshot-refs.md](../../raw/skills/agent-browser-snapshot-refs.md); [video-recording.md](../../raw/skills/agent-browser-video-recording.md)
 
 ## 概述
 

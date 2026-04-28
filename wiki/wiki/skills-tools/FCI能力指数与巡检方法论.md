@@ -1,7 +1,7 @@
 # FCI 能力指数与巡检方法论
 
 > Sources: Mino, 2026-04-27
-> Raw: ../../raw/toolbox/plan-templates-B3-出差巡检准备.md; ../../raw/toolbox/管理场景梳理-B3-出差巡检准备.md
+> Raw:../../raw/toolbox/plan-templates-B3-出差巡检准备.md; ../../raw/toolbox/管理场景梳理-B3-出差巡检准备.md
 
 ## 概述
 

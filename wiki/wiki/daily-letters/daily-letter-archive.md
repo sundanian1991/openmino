@@ -1,7 +1,7 @@
 # 每日书信档案 — 2026 年 4 月书信索引
 
 > Sources: Mino（每日书信技能）, 2026-04-12 至 2026-04-27
-> Raw: ../../raw/daily-letters/2026-04-12.md; ../../raw/daily-letters/2026-04-13.md; ../../raw/daily-letters/2026-04-14.md; ../../raw/daily-letters/2026-04-15.md; ../../raw/daily-letters/2026-04-16.md; ../../raw/daily-letters/2026-04-17.md; ../../raw/daily-letters/2026-04-18.md; ../../raw/daily-letters/2026-04-19.md; ../../raw/daily-letters/2026-04-20.md; ../../raw/daily-letters/2026-04-21.md; ../../raw/daily-letters/2026-04-22.md; ../../raw/daily-letters/2026-04-23.md; ../../raw/daily-letters/2026-04-24.md; ../../raw/daily-letters/2026-04-25.md; ../../raw/daily-letters/2026-04-26.md; ../../raw/daily-letters/2026-04-27.md
+> Raw:../../raw/daily-letters/2026-04-12.md; ../../raw/daily-letters/2026-04-13.md; ../../raw/daily-letters/2026-04-14.md; ../../raw/daily-letters/2026-04-15.md; ../../raw/daily-letters/2026-04-16.md; ../../raw/daily-letters/2026-04-17.md; ../../raw/daily-letters/2026-04-18.md; ../../raw/daily-letters/2026-04-19.md; ../../raw/daily-letters/2026-04-20.md; ../../raw/daily-letters/2026-04-21.md; ../../raw/daily-letters/2026-04-22.md; ../../raw/daily-letters/2026-04-23.md; ../../raw/daily-letters/2026-04-24.md; ../../raw/daily-letters/2026-04-25.md; ../../raw/daily-letters/2026-04-26.md; ../../raw/daily-letters/2026-04-27.md
 
 ## 概述
 

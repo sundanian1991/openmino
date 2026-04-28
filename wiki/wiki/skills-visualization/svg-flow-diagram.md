@@ -1,7 +1,7 @@
 # SVG Flow Diagram — 手绘风格流程图
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/skills/svg-flow-diagram-SKILL.md; ../../raw/skills/svg-flow-diagram-README.md; ../../raw/skills/svg-flow-diagram-style-guide.md; ../../raw/skills/svg-flow-diagram-svg-recipes.md
+> Raw:../../raw/skills/svg-flow-diagram-SKILL.md; ../../raw/skills/svg-flow-diagram-README.md; ../../raw/skills/svg-flow-diagram-style-guide.md; ../../raw/skills/svg-flow-diagram-svg-recipes.md
 
 ## 概述
 

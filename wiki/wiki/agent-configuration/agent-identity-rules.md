@@ -1,7 +1,7 @@
 # Agent Identity Rules
 
 > Sources: Mino, 2026-02-12 ~, 2026-04-26
-> Raw: [00-IDENTITY](../../raw/agent-rules/00-IDENTITY.md), [01-SOUL](../../raw/agent-rules/01-SOUL.md), [HEARTBEAT](../../raw/agent-rules/HEARTBEAT.md), [skill-search](../../raw/agent-rules/skill-search.md)
+> Raw:[00-IDENTITY](../../raw/agent-rules/00-IDENTITY.md); [01-SOUL](../../raw/agent-rules/01-SOUL.md); [HEARTBEAT](../../raw/agent-rules/HEARTBEAT.md); [skill-search](../../raw/agent-rules/skill-search.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # MCP服务器基础设施管线-知识管理自动化
 
 > Sources: mino, 2026-04-28
-> Raw: [MCP总CLAUDE](../../raw/presentations/projects-mcp-servers-CLAUDE.md); [MCP总README](../../raw/presentations/projects-mcp-servers-README.md); [Get笔记CLAUDE](../../raw/presentations/projects-mcp-servers-getnote-CLAUDE.md); [Get笔记README](../../raw/presentations/projects-mcp-servers-getnote-README.md); [Get笔记源码CLAUDE](../../raw/presentations/projects-mcp-servers-getnote-src-CLAUDE.md); [Get笔记配置指南](../../raw/presentations/projects-mcp-servers-getnote-配置指南.md); [Memos CLAUDE](../../raw/presentations/projects-mcp-servers-memos-CLAUDE.md); [Memos README](../../raw/presentations/projects-mcp-servers-memos-README.md); [Memos源码CLAUDE](../../raw/presentations/projects-mcp-servers-memos-src-CLAUDE.md)
+> Raw:[MCP总CLAUDE](../../raw/presentations/projects-mcp-servers-CLAUDE.md); [MCP总README](../../raw/presentations/projects-mcp-servers-README.md); [Get笔记CLAUDE](../../raw/presentations/projects-mcp-servers-getnote-CLAUDE.md); [Get笔记README](../../raw/presentations/projects-mcp-servers-getnote-README.md); [Get笔记源码CLAUDE](../../raw/presentations/projects-mcp-servers-getnote-src-CLAUDE.md); [Get笔记配置指南](../../raw/presentations/projects-mcp-servers-getnote-配置指南.md); [Memos CLAUDE](../../raw/presentations/projects-mcp-servers-memos-CLAUDE.md); [Memos README](../../raw/presentations/projects-mcp-servers-memos-README.md); [Memos源码CLAUDE](../../raw/presentations/projects-mcp-servers-memos-src-CLAUDE.md)
 
 ## 概述
 

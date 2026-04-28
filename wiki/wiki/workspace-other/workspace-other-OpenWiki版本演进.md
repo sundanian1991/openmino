@@ -1,7 +1,7 @@
 # OpenWiki 版本演进与功能迭代
 
 > Sources: Mino (AI), 2026-04-26
-> Raw: [CHANGELOG](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CHANGELOG.md); [release notes v0.1.5-v0.2.0](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.2.0.md); [CODE_OF_CONDUCT](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CODE_OF_CONDUCT.md); [CLAUDE.md](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CLAUDE.md)
+> Raw:[CHANGELOG](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CHANGELOG.md); [release notes v0.1.5-v0.2.0](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.2.0.md); [CODE_OF_CONDUCT](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CODE_OF_CONDUCT.md); [CLAUDE.md](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CLAUDE.md)
 
 ## 概述
 

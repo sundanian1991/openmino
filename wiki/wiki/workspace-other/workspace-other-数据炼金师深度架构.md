@@ -1,7 +1,7 @@
 # 数据炼金师：完整技术架构与产品方法论
 
 > Sources: Mino (AI), 2026-04-26
-> Raw: [SPEC 文档](../../raw/workspace-other/20-工具-数据炼金师-20260426--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-20-工具-数据炼金师-20260426-SPEC.md); [README](../../raw/workspace-other/20-工具-数据炼金师-20260426--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-20-工具-数据炼金师-20260426-data-alchemist-README.md)
+> Raw:[SPEC 文档](../../raw/workspace-other/20-工具-数据炼金师-20260426--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-20-工具-数据炼金师-20260426-SPEC.md); [README](../../raw/workspace-other/20-工具-数据炼金师-20260426--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-20-工具-数据炼金师-20260426-data-alchemist-README.md)
 
 ## 概述
 

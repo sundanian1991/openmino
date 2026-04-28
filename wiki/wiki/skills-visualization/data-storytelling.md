@@ -1,7 +1,7 @@
 # Data Storytelling — 数据沟通策略与编排
 
 > Sources: data-storytelling SKILL.md (2026-04-26); 《Storytelling with Data》全书 30 skill 整合, 2026-04-28
-> Raw: [SKILL.md](../../raw/skills/data-storytelling-SKILL.md)
+> Raw:[SKILL.md](../../raw/skills/data-storytelling-SKILL.md)
 
 ## 概述
 

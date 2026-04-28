@@ -1,7 +1,7 @@
 # DeepSeek V4定价冲击：开源模型如何重塑行业规则
 
 > Sources: AI产品定价模式演变研究 - DeepSeek V4 分析 (2026-04-24), 2026-04-28
-> Raw: [头脑风暴源文件-DeepSeek V4](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research研究文件-DeepSeek定价](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md)
+> Raw:[头脑风暴源文件-DeepSeek V4](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research研究文件-DeepSeek定价](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md)
 
 ## 概述
 

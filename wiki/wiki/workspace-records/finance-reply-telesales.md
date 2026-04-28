@@ -1,7 +1,7 @@
 # 财务回复要点与电销外呼服务
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-要点整理.md; ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-回复邮件草稿.md
+> Raw:../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-要点整理.md; ../../raw/workspace-records/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-03-记录-财务回邮件整理-20260422-回复邮件草稿.md
 
 ## 概述
 

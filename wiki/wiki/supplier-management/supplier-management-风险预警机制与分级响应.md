@@ -1,7 +1,7 @@
 # 风险预警机制与分级响应
 
 > Sources: 供应商管理岗, 2026-04-23
-> Raw: [预警约谈手册](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-02-预警约谈.md); [监控扫描](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-01-监控扫描.md); [异常信号](../../raw/docs-supplier/管理规范-表演型预警-设计决策.md); [数据真实性防控](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-09-数据真实性防控.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md)
+> Raw:[预警约谈手册](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-02-预警约谈.md); [监控扫描](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-01-监控扫描.md); [异常信号](../../raw/docs-supplier/管理规范-表演型预警-设计决策.md); [数据真实性防控](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-09-数据真实性防控.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md)
 
 ## 概述
 

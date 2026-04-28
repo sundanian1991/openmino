@@ -1,7 +1,7 @@
 # 分层沟通体系：对上级、对下级、对供应商
 
 > Sources: mino, 2026-04-28
-> Raw: [表达模板库](../../raw/personal-growth/工作风格-表达模板库.md); [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [工作风格](../../raw/personal-growth/工作风格-04-工作风格.md); [咨询风格](../../raw/personal-growth/工作风格-咨询风格.md)
+> Raw:[表达模板库](../../raw/personal-growth/工作风格-表达模板库.md); [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [工作风格](../../raw/personal-growth/工作风格-04-工作风格.md); [咨询风格](../../raw/personal-growth/工作风格-咨询风格.md)
 
 ## 概述
 

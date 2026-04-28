@@ -1,7 +1,7 @@
 # 工作表达与思考工具（Work + Work-Expression）
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [work](../../raw/skills/work-SKILL.md); [work-expression](../../raw/skills/work-expression-SKILL.md); [templates](../../raw/skills/work-expression-templates.md); [accumulated](../../raw/skills/work-expression-accumulated.md)
+> Raw:[work](../../raw/skills/work-SKILL.md); [work-expression](../../raw/skills/work-expression-SKILL.md); [templates](../../raw/skills/work-expression-templates.md); [accumulated](../../raw/skills/work-expression-accumulated.md)
 
 ## 概述
 

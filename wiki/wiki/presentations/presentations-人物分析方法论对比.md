@@ -1,7 +1,7 @@
 # 人物分析方法论对比
 
 > Sources: 刘乾坤人物画像 + 梁俊瑞神秘岛 + 王易人情感触发地图 (2026-03 至 2026-04), 2026-04-28
-> Raw: [刘乾坤权力框架](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_权力框架.md); [刘乾坤工作手法](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_工作手法.md); [刘乾坤notes-total](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-notes-total.md); [梁俊瑞design_spec](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-design_spec.md); [vwiehr情感触发地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [vwiehr项目定义](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md)
+> Raw:[刘乾坤权力框架](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_权力框架.md); [刘乾坤工作手法](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_工作手法.md); [刘乾坤notes-total](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-notes-total.md); [梁俊瑞design_spec](../../raw/presentations/projects-liang-junrui-mysterious-island-v2_ppt169_20260411-design_spec.md); [vwiehr情感触发地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [vwiehr项目定义](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md)
 
 ## 概述
 

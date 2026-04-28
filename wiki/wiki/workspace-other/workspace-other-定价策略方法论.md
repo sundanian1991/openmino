@@ -1,7 +1,7 @@
 # 定价策略方法论：从 AI 定价到供应商管理
 
 > Sources: Mino (AI), 2026-04-24 ~, 2026-04-26
-> Raw: [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md); [design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md); [结算交接材料](../../raw/workspace-other/47-结算-新项目交接月会材料-20260423--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-47-结算-新项目交接月会材料-20260423-结算交接月会材料-20260423.md)
+> Raw:[演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md); [design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md); [结算交接材料](../../raw/workspace-other/47-结算-新项目交接月会材料-20260423--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-47-结算-新项目交接月会材料-20260423-结算交接月会材料-20260423.md)
 
 ## 概述
 

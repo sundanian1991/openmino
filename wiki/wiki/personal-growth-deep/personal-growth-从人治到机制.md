@@ -1,7 +1,7 @@
 # 从人治到机制的跃迁方法论
 
 > Sources: mino, 2026-04-28
-> Raw: [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md); [岗位认知更高维度](../../raw/personal-growth/晋升述职-晋升材料-V1版本-04-岗位认知的更高维度.md)
+> Raw:[自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md); [岗位认知更高维度](../../raw/personal-growth/晋升述职-晋升材料-V1版本-04-岗位认知的更高维度.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 记忆系统架构
 
 > Sources: Mino, 2026-02-12 ~, 2026-04-22
-> Raw: [CLAUDE.md](../../raw/core-memory/CLAUDE.md); [MEMORY.md](../../raw/core-memory/MEMORY.md); [insights](../../raw/core-memory/insights.md); [learnings](../../raw/learnings/LEARNINGS.md)
+> Raw:[CLAUDE.md](../../raw/core-memory/CLAUDE.md); [MEMORY.md](../../raw/core-memory/MEMORY.md); [insights](../../raw/core-memory/insights.md); [learnings](../../raw/learnings/LEARNINGS.md)
 
 ## 概述
 

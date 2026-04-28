@@ -1,7 +1,7 @@
 # 职业跃迁路径：从执行者到生态架构师
 
 > Sources: mino, 2026-04-28
-> Raw: [岗位认知更高维度](../../raw/personal-growth/晋升述职-晋升材料-V1版本-04-岗位认知的更高维度.md); [自我评价严苛版](../../raw/personal-growth/晋升述职-晋升材料-V1版本-03-材料自我评价-严苛版.md); [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [晋升述职V1-V5](../../raw/personal-growth/晋升述职-晋升材料-V1版本-2026年初晋升评审材料.md)
+> Raw:[岗位认知更高维度](../../raw/personal-growth/晋升述职-晋升材料-V1版本-04-岗位认知的更高维度.md); [自我评价严苛版](../../raw/personal-growth/晋升述职-晋升材料-V1版本-03-材料自我评价-严苛版.md); [经历洞察](../../raw/personal-growth/经历洞察-05-经历洞察.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [晋升述职V1-V5](../../raw/personal-growth/晋升述职-晋升材料-V1版本-2026年初晋升评审材料.md)
 
 ## 概述
 

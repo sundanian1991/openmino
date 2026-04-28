@@ -1,7 +1,7 @@
 # Agent时代成本结构剧变：85-95%的Token是上下文开销
 
 > Sources: AI产品定价模式演变研究 - Agent成本分析 (2026-04-24), 2026-04-28
-> Raw: [头脑风暴源文件-Agent成本](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); 
+> Raw:[头脑风暴源文件-Agent成本](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 供应商沟通框架：六类沟通与引导式设问
 
 > Sources: 年老师, 2026-04-06
-> Raw: [场景手册](../../raw/archive/场景手册.md); [供应商与BPO运营](../../raw/core-memory/01-供应商与BPO运营.md); [insights](../../raw/core-memory/insights.md)
+> Raw:[场景手册](../../raw/archive/场景手册.md); [供应商与BPO运营](../../raw/core-memory/01-供应商与BPO运营.md); [insights](../../raw/core-memory/insights.md)
 
 ## 概述
 

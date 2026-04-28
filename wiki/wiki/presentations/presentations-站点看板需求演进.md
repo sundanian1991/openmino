@@ -1,7 +1,7 @@
 # 供应商站点看板需求演进
 
 > Sources: 供应商站点看板 V2-V6 需求文档 (2026-04-04), 2026-04-28
-> Raw: [V6 brainstorm](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-00-brainstorm.md); [V6 research](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-01-research.md); [V6 需求文档最终版](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-02-workspace-需求文档-最终版.md); [V2 早期版本](../../raw/plans/2026-04-04-供应商站点看板演进-00-v2-早期版本-00-brainstorm.md); [V3 需求重构](../../raw/plans/2026-04-04-供应商站点看板演进-01-v3-需求重构-00-brainstorm-v3.md); [V4-V5 需求梳理](../../raw/plans/2026-04-04-供应商站点看板演进-02-v5-需求梳理-00-brainstorm-v4.md)
+> Raw:[V6 brainstorm](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-00-brainstorm.md); [V6 research](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-01-research.md); [V6 需求文档最终版](../../raw/plans/2026-04-04-供应商站点看板V6四版本需求-02-workspace-需求文档-最终版.md); [V2 早期版本](../../raw/plans/2026-04-04-供应商站点看板演进-00-v2-早期版本-00-brainstorm.md); [V3 需求重构](../../raw/plans/2026-04-04-供应商站点看板演进-01-v3-需求重构-00-brainstorm-v3.md); [V4-V5 需求梳理](../../raw/plans/2026-04-04-供应商站点看板演进-02-v5-需求梳理-00-brainstorm-v4.md)
 
 ## 概述
 

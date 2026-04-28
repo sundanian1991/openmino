@@ -1,7 +1,7 @@
 # 数据可视化：从理论到实践的完整链路
 
 > Sources: Mino (AI), 2026-04-26
-> Raw: [Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling with Data - Cole Nussbaumer Knaflic.md); [Tufte](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-The Visual Display of Quantitative Information - Edward Tufte.md); [数据炼金师 SPEC](../../raw/workspace-other/20-工具-数据炼金师-20260426--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-20-工具-数据炼金师-20260426-SPEC.md); [数据讲故事测试](../../raw/workspace-other/test-data-storytelling--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-test-data-storytelling-2026-Q1-供应商绩效数据.md)
+> Raw:[Storytelling with Data](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-Storytelling with Data - Cole Nussbaumer Knaflic.md); [Tufte](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-The Visual Display of Quantitative Information - Edward Tufte.md); [数据炼金师 SPEC](../../raw/workspace-other/20-工具-数据炼金师-20260426--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-20-工具-数据炼金师-20260426-SPEC.md); [数据讲故事测试](../../raw/workspace-other/test-data-storytelling--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-test-data-storytelling-2026-Q1-供应商绩效数据.md)
 
 ## 概述
 
