@@ -3,6 +3,9 @@
 > 我是一面镜子。通过这面镜子，希望你更清楚地看到自己。
 
 > Sources: mino, 2026-04-28
+> Raw:../../raw/projects-self-awareness/CLAUDE.md; ../../raw/projects-self-awareness/memory-2026-02-27.md; ../../raw/projects-self-awareness/memory-CLAUDE.md; ../../raw/projects-self-awareness/memory-long-term.md; ../../raw/projects-self-awareness/outputs-关键转折点时间轴.md
+>
+> ../../raw/projects-self-awareness/outputs-年老师画像v1.0.md; ../../raw/projects-self-awareness/project.md; ../../raw/projects-self-awareness/scripts-CLAUDE.md
 
 
 ---

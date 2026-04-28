@@ -1,6 +1,27 @@
 # AI Agent工作流解析与多Agent模式实践
 
 > Sources: mino, 2026-04-28
+> Raw:../../raw/projects-ai-learning/CLAUDE.md; ../../raw/projects-ai-learning/guides-APIFY-GUIDE.md; ../../raw/projects-ai-learning/guides-CLAUDE.md; ../../raw/projects-ai-learning/guides-apify-demo-CLAUDE.md; ../../raw/projects-ai-learning/guides-apify-demo-README.md
+>
+> ../../raw/projects-ai-learning/memory-2026-03-01.md; ../../raw/projects-ai-learning/memory-2026-03-08.md; ../../raw/projects-ai-learning/memory-2026-03-15.md; ../../raw/projects-ai-learning/memory-CLAUDE.md; ../../raw/projects-ai-learning/memory-learning-notes.md
+>
+> ../../raw/projects-ai-learning/memory-long-term.md; ../../raw/projects-ai-learning/notes-CLAUDE.md; ../../raw/projects-ai-learning/notes-README.md; ../../raw/projects-ai-learning/notes-best-practices-01-context-management.md
+>
+> ../../raw/projects-ai-learning/notes-best-practices-02-planning-architecture.md; ../../raw/projects-ai-learning/notes-best-practices-03-tools-automation.md; ../../raw/projects-ai-learning/notes-best-practices-04-code-quality.md; ../../raw/projects-ai-learning/notes-best-practices-05-anti-patterns.md
+>
+> ../../raw/projects-ai-learning/notes-best-practices-CLAUDE.md; ../../raw/projects-ai-learning/notes-best-practices-INDEX.md; ../../raw/projects-ai-learning/notes-monday-learning.md; ../../raw/projects-ai-learning/notes-subagent-analysis.md
+>
+> ../../raw/projects-ai-learning/outputs-2026-02-28-full-scan.md; ../../raw/projects-ai-learning/outputs-2026-03-01-weekly-monitor.md; ../../raw/projects-ai-learning/outputs-CLAUDE.md; ../../raw/projects-ai-learning/outputs-COURSE-GUIDE.md; ../../raw/projects-ai-learning/outputs-LEARNING-ROADMAP.md
+>
+> ../../raw/projects-ai-learning/outputs-WEEK1-AGENT-MCP.md; ../../raw/projects-ai-learning/outputs-alternative-resources-CLAUDE.md; ../../raw/projects-ai-learning/outputs-alternative-resources-complete-alternative-resources.md
+>
+> ../../raw/projects-ai-learning/outputs-alternative-resources-cs25-transformers-course.md; ../../raw/projects-ai-learning/outputs-alternative-resources-domestic-ai-resources.md; ../../raw/projects-ai-learning/outputs-alternative-resources-final-learning-path-cn.md
+>
+> ../../raw/projects-ai-learning/outputs-initial-scan.md; ../../raw/projects-ai-learning/outputs-resources-list.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-CLAUDE.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-LEARNING-GUIDE.md
+>
+> ../../raw/projects-ai-learning/outputs-stanford-cs146s-READING.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-README.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-SLIDES.md; ../../raw/projects-ai-learning/outputs-stanford-cs146s-STUDY-PLAN.md
+>
+> ../../raw/projects-ai-learning/outputs-weekly-monitor-2026-03-01.md; ../../raw/projects-ai-learning/outputs-weekly-monitor-2026-03-08.md; ../../raw/projects-ai-learning/outputs-weekly-monitor-2026-03-15.md; ../../raw/projects-ai-learning/project.md; ../../raw/projects-ai-learning/scripts-CLAUDE.md
 
 ## 概述
 

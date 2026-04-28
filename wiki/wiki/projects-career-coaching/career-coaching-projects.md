@@ -3,6 +3,9 @@
 > 了解我的工作，给予我更深入的指导和前瞻性反馈
 
 > Sources: mino, 2026-04-28
+> Raw:../../raw/projects-career-coaching/CLAUDE.md; ../../raw/projects-career-coaching/forward-looking-advice.md; ../../raw/projects-career-coaching/memory-CLAUDE.md; ../../raw/projects-career-coaching/memory-long-term.md; ../../raw/projects-career-coaching/project.md
+>
+> ../../raw/projects-career-coaching/soul-insights.md
 
 
 ---

@@ -3,6 +3,9 @@
 > 不是项目管理，是长期陪伴
 
 > Sources: mino, 2026-04-28
+> Raw:../../raw/projects-long-term/CLAUDE.md; ../../raw/projects-long-term/accountability-system.md; ../../raw/projects-long-term/memory-CLAUDE.md; ../../raw/projects-long-term/memory-long-term.md; ../../raw/projects-long-term/progress-visualization-tool.md; ../../raw/projects-long-term/project.md
+>
+> ../../raw/projects-long-term/regular-review-mechanism.md; ../../raw/projects-long-term/target-adjustment-strategy.md; ../../raw/projects-long-term/target-decomposition-framework.md
 
 
 ---

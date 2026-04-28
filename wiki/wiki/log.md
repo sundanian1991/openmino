@@ -5,6 +5,19 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] fix | Wiki Raw: 引用路径修复 — 49 个错误引用清零
+
+**三类错误修复**：
+- skills-ecosystem-reference: 修复解析 bug（空 `>` 行导致相邻 ref 合并）
+- 5 篇 person-profiles-deep: `memory/projects/` → `raw/person-profiles/` 路径迁移
+- colleague-profiles-deep: `> Related:` 行从 Raw: block 中分离
+- 2 篇晋升述职: 移除 wiki/ 跨文章引用，补充 Sources: 缺失
+- core-memory-index: 补充缺失 Sources: 行
+
+**最终状态**：
+- 错误引用: 0 | 有效覆盖率: 1878/1878（551 个 node_modules 正确排除）
+- Sources: 合规率 100%
+
 ## [2026-04-28] dedup | Wiki 去重第二轮 — 486 → 468 篇
 
 **合并 18 组 100% Raw: 重叠文章**（小的完全包含在大的中）：
