@@ -6,19 +6,67 @@
 
 ## 概述
 
-HTML PPT Studio 是专业静态 HTML 演示文稿创作技能，支持作者模式、全屏模式、演讲者模式、以及温暖的编辑风格。通过模板系统驱动——一个主题文件=一个外观，一个布局文件=一种页面类型，一个动画类=一种入场效果。所有页面共享 `assets/base.css` 中的 token 化设计系统。
+HTML PPT Studio 是专业静态 HTML 演示文稿创作技能。模板系统驱动——一个主题文件=一个外观，一个布局文件=一种页面类型。所有页面共享 `assets/base.css` token 化设计系统。
 
 ## 核心架构
 
-- **主题系统**：每种风格有独立的 CSS 主题文件，定义颜色、字体、间距
-- **布局库**：基础幻灯片外壳、标题页、内容页、数据页、总结页等
-- **动画系统**：入场动画、过渡效果、可配置的动画复杂度
-- **演讲者模式**：键盘控制、自动播放、全屏、PDF 导出
+| 模块 | 数量 | 说明 |
+|------|------|------|
+| 主题系统 | 36 套 | `assets/themes/*.css`，T 键循环 |
+| 布局库 | 31 种 | `templates/single-page/*.html` |
+| 动画 | 27 CSS + 20 Canvas | `data-anim` / `data-fx` |
+| 演讲者模式 | 内置 | S 键：当前页/下一页/逐字稿/计时器 |
+| PNG 渲染 | render.sh | Headless Chrome 截图 |
+
+## 工作流
+
+### 1. 需求澄清 → 2. 创建 → 3. 逐页编写 → 4. 动画 → 5. 导出
+
+```bash
+./scripts/new-deck.sh my-talk    # 脚手架
+./scripts/render.sh my-talk all  # 全 deck → PNG
+```
+
+**主题推荐**：商务/融资 → `pitch-deck-vc` | 技术 → `tokyo-night` / `dracula` | 小红书 → `xiaohongshu-white` | 学术 → `academic-paper` | 赛博 → `cyberpunk-neon`
+
+**规则**：不从空白文件开始；用 token 颜色（`var(--text-1)`）不写 hex；不发明新布局。
+
+## 演讲者模式（逐字稿）
+
+适用：技术分享/演讲/课程。用 `presenter-mode-reveal` 模板，每页 `<aside class="notes">` 写 150-300 字。
+
+三规则：加粗核心词作提示信号 | 每页 150-300 字 | 用口语不用书面语。
+
+**禁止**：演讲者-only 文字放 `<div class="notes">`，不在幻灯片上。
+
+## Full-Deck 模板
+
+| 模板 | 风格 | 适用 |
+|------|------|------|
+| `xhs-white-editorial` | 白底杂志 | 小红书图文 |
+| `graphify-dark-graph` | 暗底知识图谱 | 开发工具/数据发布 |
+| `knowledge-arch-blueprint` | 奶油蓝图 | 系统架构/白皮书 |
+| `hermes-cyber-terminal` | 暗终端 | CLI/Agent 评测 |
+| `obsidian-claude-gradient` | GitHub 暗紫 | 开发者工作流 |
+| `testing-safety-alert` | 红琥珀警示 | 安全/事件回顾 |
+| `xhs-pastel-card` | 马卡龙慢生活 | 生活方式/情感 |
+| `dir-key-nav-minimal` | 8 色极简 | 极简演讲 |
+| `pitch-deck` | VC 风 | 融资 |
+| `product-launch` | 暗英雄 | 产品发布 |
+| `tech-sharing` | GitHub 暗色 | 技术分享 |
+| `weekly-report` | 企业 KPI | 周报 |
+| `xhs-post` | 3:4 竖版 | 小红书图文 |
+| `course-module` | 温暖教学 | 在线课程 |
+| `presenter-mode-reveal` | 演讲者模式 | 演讲/课程 |
+
+## 键盘快捷键
+
+| `←→Space` 翻页 | `F` 全屏 | `S` 演讲者模式 | `O` 总览 | `T` 循环主题 | `A` 循环动画 | `#/N` 深链接 |
+
+## 动画推荐
+
+封面 `rise-in` / `blur-in` | 正文 `fade-up` + `stagger-list` | 数据 `counter-up` | 章节 `perspective-zoom` | 收尾 `confetti-burst`。每页只选一个强调动画。
 
 ## 前端幻灯片（frontend-slides）
 
-另一个轻量前端幻灯片方案，提供多种预设风格（STYLE_PRESETS）和动画模式。与 html-ppt-skill 的区别是更轻量、更适合快速制作简单演示文稿。
-
-## 使用场景
-
-适合技术分享、产品发布、演讲汇报等需要"一次做完、不用翻页工具"的网页版 slides。不适合复杂数据可视化（应使用 ECharts 或独立图表方案）。
+轻量方案，12 种预设风格。零依赖单 HTML 文件、Viewport 拟合（100vh 不可滚动）。通过 3 个风格预览让用户"看了再选"。支持 PPTX 转换和 Vercel 部署。
