@@ -5,50 +5,113 @@
 
 ## 概述
 
-本文汇总两个独立但都有记录价值的主题：一是2026年4月23日结算新项目的交接月会材料，涉及业务交接的框架和流程；二是Agent-Reach项目的国际化文档（英语、日语、韩语）和依赖锁定技术文档。
+本文档汇总两个独立但都有记录价值的主题：一是 2026-04-23 结算新项目的交接月会材料，涉及业务交接的框架和卡点；二是 Agent-Reach 项目的国际化文档（英语、日语、韩语）和依赖锁定技术文档。
 
-## 结算交接月会材料
+---
 
-2026年4月23日的结算交接月会材料记录了新项目从旧团队向新团队的交接流程和关键信息。交接材料包含：
+## 一、结算交接月会材料（2026-04-23）
 
-### 交接框架
+### 背景与卡点
 
-结算项目的交接需要覆盖以下维度：
-- **业务背景**：项目来源、目标和当前状态
-- **人员分工**：谁是负责人、谁是接口人、谁需要被知会
-- **流程梳理**：现有的结算流程、审批链条、时间节点
-- **风险点**：已知的风险项和待解决的问题
-- **后续计划**：交接完成后的下一步行动
+宿迁结算小组目前人力已满负荷运转，无法承接新增业务结算。两个新项目（借钱+白条取现项目、信用卡 AI 促经营项目）均已正常立项，正按产线计划推进交付，但结算归属未明确。
 
-### 交接的关键原则
+### 需决策方案
 
-在供应商管理中，交接是最容易出问题的环节。关键原则包括：
-1. **信息完整**：交接不只是交接文件，还要交接context
-2. **责任明确**：每个待办项都要有明确的负责人
-3. **跟进机制**：交接后要有定期的跟进和review
+| 方案 | 内容 |
+|------|------|
+| 方案一 | 业务部门派人负责新增项目的结算工作 |
+| 方案二 | 继续由宿迁结算小组承接（需协调新增人力） |
 
-## Agent-Reach国际化文档
+### 交接框架维度
 
-Agent-Reach作为多平台接入工具，面向国际用户提供了多语言文档：
+结算项目交接需要覆盖五个维度：
 
-### 英语文档（README_en）
+1. **业务背景**：项目来源、目标和当前状态
+2. **人员分工**：谁是负责人、谁是接口人、谁需要被知会
+3. **流程梳理**：现有的结算流程、审批链条、时间节点
+4. **风险点**：已知的风险项和待解决的问题
+5. **后续计划**：交接完成后的下一步行动
 
-面向英语用户，包含完整的安装、配置和使用指南。
+### 交接关键原则
 
-### 日语文档（README_ja）
+在供应商管理中，交接是最容易出问题的环节：
+- **信息完整**：交接不只是交接文件，还要交接 context
+- **责任明确**：每个待办项都要有明确的负责人
+- **跟进机制**：交接后要有定期的跟进和 review
 
-面向日本用户，日语本地化的安装和使用说明。
+---
 
-### 韩语文档（README_ko）
+## 二、Agent-Reach 国际化文档
 
-面向韩国用户，韩语本地化的安装和使用说明。
+Agent-Reach 是一个 AI Agent 互联网接入脚手架工具（Python 3.10+，MIT 开源许可），让 AI Agent 一键接入 Twitter、Reddit、XiaoHongShu、Bilibili、YouTube、GitHub 等 17 个平台。项目提供了英语、日语、韩语三语言 README。
 
-## Agent-Reach依赖锁定
+### 设计哲学
 
-dependency-locking文档记录了项目的依赖管理策略：
+Agent-Reach 是**脚手架工具而非框架**。每次启动新 Agent 都要找工具、装依赖、调试配置，Agent-Reach 代替你做这些工具选型和配置决策。安装后 Agent 直接调用上游工具（twitter-cli、rdt-cli、yt-dlp 等），中间无 wrapper 层。
 
-- 使用lock文件锁定第三方依赖的版本
-- 定期更新依赖并测试兼容性
-- 安全漏洞修复的响应流程
+### 支持平台总览
 
-依赖锁定是桌面应用（Tauri/Node.js）安全性的基础保障，防止供应链攻击和版本不兼容问题。
+| 平台 | 能力 | 配置方式 | 上游工具 |
+|------|------|----------|----------|
+| Web | 读取 | 零配置 | Jina Reader |
+| Twitter/X | 读取/搜索/发布 | Cookie | twitter-cli |
+| XiaoHongShu | 读取/搜索/发布/评论 | Cookie | xhs-cli |
+| Douyin | 视频解析/无水印下载 | mcporter | douyin-mcp-server |
+| YouTube | 读取/搜索 | 零配置 | yt-dlp |
+| Bilibili | 读取/搜索 | 零配置/代理 | yt-dlp |
+| Reddit | 搜索/读取 | Cookie | rdt-cli |
+| GitHub | 读取/搜索 | 零配置 | gh CLI |
+| RSS | 读取 | 零配置 | feedparser |
+| Web Search | 搜索 | 自动配置 | Exa via mcporter |
+| LinkedIn | 搜索 | Cookie | linkedin-scraper-mcp |
+| WeChat Articles | 搜索/读取 | 零配置 | Exa + Camoufox |
+| Weibo | 趋势/搜索/评论 | 零配置 | mcporter |
+| V2EX | 话题/用户 | 零配置 | 公开 API |
+| Xueqiu | 股价/搜索 | 浏览器 Cookie | 公开 API |
+| Xiaoyuzhou Podcast | 语音转文字 | 免费 API | Groq Whisper |
+
+### 三语言文档结构
+
+| 语言 | 文件 | 特点 |
+|------|------|------|
+| 英语 | README_en.md | 面向国际用户，完整的平台说明和 FAQ |
+| 日语 | README_ja.md | 本地化安装指南和平台说明，术语采用日文惯用表达 |
+| 韩语 | README_ko.md | 韩语本地化，包含完整的安装/配置/FAQ 翻译 |
+
+安装命令统一：
+```
+Install Agent Reach: https://raw.githubusercontent.com/Panniantong/agent-reach/main/docs/install.md
+```
+
+也支持 Skill 安装：`npx skills add Panniantong/Agent-Reach@agent-reach`
+
+### 内置诊断工具
+
+`agent-reach doctor` 一键显示哪些平台可用、哪些需要配置、如何修复。
+
+---
+
+## 三、Agent-Reach 依赖锁定
+
+dependency-locking 文档记录了项目的依赖管理策略。
+
+### 策略
+
+使用 `constraints.txt` 作为可复现的依赖基线，而非固定版本锁定：
+
+- **保持本地/CI 依赖图稳定**，减少"works on my machine"漂移
+- **便于回归测试结果对比**
+
+### 安装与更新流程
+
+```bash
+# 安装
+pip install -c constraints.txt -e .[dev]
+
+# 更新流程
+1. 更新 pyproject.toml 依赖范围
+2. 本地验证最新兼容版本
+3. 更新 constraints.txt 中的固定版本
+4. 运行验证：pytest + ruff check + mypy
+5. 提交 PR 附带依赖变更说明
+```
