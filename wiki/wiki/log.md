@@ -5,10 +5,15 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
-## [2026-04-28] merge | Wiki 去重第三轮 — 468 → 467 篇
+## [2026-04-28] merge | Wiki 去重第三轮 — 468 → 465 篇
 
 **跨目录同名合并 1 组**：
-- visualization-system.md（technology → projects）：33% Raw: 重叠，projects 版聚焦 30 单元交付项目，technology 版覆盖完整设计哲学与工具生态。合并后保留 technology 版标题"可视化体系"，补充项目统计表、5 层内容架构、方法论价值
+- visualization-system.md（technology → projects）：33% Raw: 重叠，保留 technology 版标题"可视化体系"，补充项目统计表、5 层内容架构、方法论价值
+
+**同目录 mino-frontend 三连并**（plans/ + plans-deep × 2）：
+- plans/mino-frontend设计体系：风格情绪矩阵与参数系统.md 保留（14 refs 最全）
+- 合并 plans-deep/mino-frontend设计体系演进与参数系统.md（灰阶系统、P0/P1/P2 分层、反AI味清单）
+- 删除 plans-deep/plans-mino-frontend设计体系演进.md（7 refs 全部被 plans/ 包含）
 
 **3 对跨目录同名文件保持独立**（0% 重叠，内容方向不同）：
 - agent-architecture.md：agent-configuration（sub-agent 策略）vs technology（执行引擎演进）
