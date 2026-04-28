@@ -1,137 +1,132 @@
-# Memory Protocol
+# 记忆协议
 
 > Sources: Mino, 2026-02-12 ~, 2026-04-24
 > Raw:[MEMORY-L1](../../raw/agent-rules/MEMORY-L1.md); [update-memory](../../raw/agent-commands/update-memory.md); [update-memory-rules](../../raw/agent-commands/update-memory-rules.md); [observer](../../raw/agent-commands/observer.md); [core-memory/团队管理](../../raw/core-memory/02-团队管理与汇报.md); [core-memory/个人成长](../../raw/core-memory/04-个人成长.md); [core-memory/memos-upload-log](../../raw/core-memory/memos-upload-log.md)
 
 ## 概述
 
-Memory system implements Write-Ahead Log (WAL) protocol for persistent knowledge across sessions. Information flows from daily logs → short-term insights → long-term memory, with automated nightly maintenance and weekly consolidation.
+记忆系统实现跨会话的持久化知识管理。信息流从每日日志→短期洞察→长期记忆，配合夜间自动维护和每周巩固。核心是 WAL 协议（Write-Ahead Log，关键信息先写后答）。
 
-## WAL Protocol
+## WAL 协议
 
-**Core principle**: Write critical information first, answer second.
+**核心原则**：先写关键信息，再回答问题。
 
-**Trigger conditions**: corrections, proper nouns, preferences, decisions, specific values.
+**触发条件**：修正、专有名词、偏好、决策、具体值。
 
-**Write target**: `memory/MEMORY.md`.
+**写入目标**：`memory/MEMORY.md`。
 
-## Memory File Structure
+## 记忆文件结构
 
 ```
 memory/
-├── MEMORY.md           # Detailed memory index (loaded at startup)
-├── insights.md         # Insight records (short-term memory)
+├── MEMORY.md           # 详细记忆索引（会话启动时加载）
+├── insights.md         # 洞察记录（短期记忆）
 ├── context/
-│   └── todo.md         # Current todo list
-├── topics/             # Project-specific memory files
-├── learnings/          # Self-improvement records
-│   ├── LEARNINGS.md    # Corrections, insights, best practices
-│   ├── ERRORS.md       # Command failures, anomalies
+│   └── todo.md         # 当前待办清单
+├── topics/             # 项目专项记忆
+├── learnings/          # 自我改进记录
+│   ├── LEARNINGS.md    # 修正、洞察、最佳实践
+│   ├── ERRORS.md       # 命令失败、异常
 │   └── FEATURE_REQUESTS.md
-├── daily/              # Daily logs (YYYY-MM/YYYY-MM-DD.md)
-├── projects/           # Project background
-├── archive/            # Historical archive
-└── daily-letter/       # Daily letter archives
+├── daily/              # 每日日志（YYYY-MM/YYYY-MM-DD.md）
+├── projects/           # 项目背景
+├── archive/            # 历史归档
+└── daily-letter/       # 每日书信归档
 ```
 
-## Memory Layers
+## 记忆分层
 
-| Layer | File | Purpose | Load Timing |
-|-------|------|---------|-------------|
-| **L1** | MEMORY-L1.md | Core memory, WAL protocol, user profile | Every session |
-| **L2** | MEMORY.md | Detailed memory index | Every session |
-| **L3** | insights.md | Short-term insights | On demand |
-| **L4** | topics/*.md | Project-specific memory | On demand |
-| **L5** | learnings/ | Raw learning records | On demand |
-| **L6** | daily/ | Daily session logs | On demand |
+| 层级 | 文件 | 用途 | 加载时机 |
+|------|------|------|---------|
+| **L1** | MEMORY-L1.md | 核心记忆、WAL协议、用户画像 | 每次会话 |
+| **L2** | MEMORY.md | 详细记忆索引 | 每次会话 |
+| **L3** | insights.md | 短期洞察 | 按需 |
+| **L4** | topics/*.md | 项目专项记忆 | 按需 |
+| **L5** | learnings/ | 原始学习记录 | 按需 |
+| **L6** | daily/ | 每日会话日志 | 按需 |
 
-## Insight Upgrade Mechanism
+## 洞察升级机制
 
-Insights flow upward when meeting criteria:
+洞察满足条件时向上流动：
 
-| Standard | Description | Example |
-|----------|-------------|---------|
-| **Appears 3+ times** | Cross-session stable pattern | "Structured preference" in multiple conversations |
-| **Long-term value** | Not one-off, reusable insight | "See people beyond the surface" |
-| **User endorsed** | User explicitly says "this is important" | "Liu Weijia has higher capability" |
+| 标准 | 说明 | 示例 |
+|------|------|------|
+| **出现 3+ 次** | 跨会话的稳定模式 | 多次对话中表现出"结构化偏好" |
+| **长期价值** | 不是一次性的，可复用 | "看人要看表面之下" |
+| **用户认可** | 用户明确说"这个重要" | "刘伟佳能力更强" |
 
-**Flow**:
-```
-insights.md (short-term)
-    ↓ Upgrade conditions met (3+ times / long-term value / user endorsed)
-MEMORY.md → Important insights (long-term memory)
-```
+**流向**：`insights.md（短期）` → 满足升级条件 → `MEMORY.md（长期记忆）`
 
-## Nightly Memory Maintenance (/update-memory-rules)
+## 夜间记忆维护
 
-Automated nightly process:
+自动夜间处理：
 
-1. **Read recent logs** — All daily logs since last maintenance
-2. **Read learnings/** — Check LEARNINGS.md, ERRORS.md, FEATURE_REQUESTS.md
-3. **Organize learnings/** — Valuable → insights.md; frequent patterns → MEMORY.md; clear transferred records
-4. **Update topic files** — Sync new experience, state changes, decisions to `memory/topics/<name>.md`
-5. **Update core memory** — Extract cross-project lessons to MEMORY-L1.md; update current state; clean obsolete info
-6. **Organize workspace** — Archive scattered temporary files
-7. **Commit + push** — Only memory files changed
+1. **读取近期日志** — 上次维护以来的所有每日日志
+2. **读取 learnings/** — 检查 LEARNINGS.md、ERRORS.md、FEATURE_REQUESTS.md
+3. **整理 learnings/** — 有价值的→insights.md；频繁模式→MEMORY.md；清理已转移的记录
+4. **更新 topic 文件** — 同步新经验、状态变化、决策到 `memory/topics/<name>.md`
+5. **更新核心记忆** — 提取跨项目教训到 MEMORY-L1.md；更新当前状态；清理过时信息
+6. **整理 workspace** — 归档散点临时文件
+7. **提交推送** — 仅提交记忆文件变更
 
-**Principles**:
-- One piece of info, one place — topic files detailed, core memory only pointers
-- Every memory entry has timestamp (YYYY-MM-DD)
-- Delete is more important than keep — outdated info is noise
-- Record a note in today's log after completion
+**原则**：
+- 一条信息只存一处——topic 文件详细，核心记忆只留指针
+- 每条记忆带时间戳（YYYY-MM-DD）
+- 删除比保留更重要——过时信息是噪音
+- 完成后在当天日志中记录一条备注
 
-## AutoDream — Memory Sleep Mechanism
+## AutoDream — 记忆睡眠机制
 
-Simulates human sleep: prune weak connections, strengthen important memories, clean redundancy.
+模拟人类睡眠：修剪弱连接、强化重要记忆、清理冗余。
 
-| # | Check | Logic | Threshold |
-|---|-------|-------|-----------|
-| 1 | **Redundancy** | Same day, same person, multiple observation records | ≥3/day |
-| 2 | **Profile expired** | Profile not updated for long time | ≥30 days |
-| 3 | **Orphan records** | Index points to non-existent file | Any |
-| 4 | **Old index archival** | Observation records not accessed for long time | ≥90 days |
+| # | 检查项 | 逻辑 | 阈值 |
+|---|--------|------|------|
+| 1 | **冗余** | 同一天、同一个人、多条观察记录 | ≥3条/天 |
+| 2 | **档案过期** | 档案长时间未更新 | ≥30天 |
+| 3 | **孤儿记录** | 索引指向不存在的文件 | 任意 |
+| 4 | **旧索引归档** | 观察记录长时间未访问 | ≥90天 |
 
-**Process**: Diagnose first (read-only), then治理 (merge, confirm, delete, archive) during maintenance.
+**流程**：先诊断（只读），后治理（合并、确认、删除、归档）。
 
-## Weekly Memory Consolidation (/update-memory)
+## 每周记忆巩固
 
-Manual or weekly:
+手动或每周执行：
 
-1. Read this week's insights.md
-2. Judge what upgrades to MEMORY.md (user profile changes, todo updates, key decisions, project index, important insights)
-3. Clean obsolete memory from MEMORY.md — completed items, inaccurate decisions, duplicates
-4. Commit + push
+1. 读取本周 insights.md
+2. 判断哪些升级到 MEMORY.md（用户画像变化、待办更新、关键决策、项目索引、重要洞察）
+3. 清理 MEMORY.md 中的过期记忆——已完成项、不准确的决策、重复项
+4. 提交推送
 
-## Memory Flow Classification
+## 记忆流向分类
 
-| Record Type | Target File | Trigger |
-|-------------|-------------|---------|
-| **Iron rules / habits** | 00-IDENTITY | "禁止", "必须", "零容忍" |
-| **Personality / relationship changes** | 01-SOUL | Relationship positioning, personality traits |
-| **Deep user insights** | 03-USER | Behavior patterns, thinking characteristics |
-| **Session startup essentials** | MEMORY-L1 | Timezone, naming, peak hours |
-| **Recent state** | memory/context/todo.md | Weekly todos, task state changes |
-| **Long-term knowledge** | MEMORY.md | Methodology, insights, projects |
-| **Timeline archive** | insights.md | All records |
+| 记录类型 | 目标文件 | 触发词 |
+|---------|---------|--------|
+| **铁律/习惯** | 00-IDENTITY | "禁止"、"必须"、"零容忍" |
+| **性格/关系变化** | 01-SOUL | 关系定位、性格特质 |
+| **深度用户洞察** | 03-USER | 行为模式、思维特征 |
+| **会话启动必读** | MEMORY-L1 | 时区、称呼、高效时段 |
+| **近期状态** | memory/context/todo.md | 周度待办、任务状态变化 |
+| **长期知识** | MEMORY.md | 方法论、洞察、项目 |
+| **时间线归档** | insights.md | 所有记录 |
 
-## Observer (/observer)
+## Observer（/observer）
 
-Records facts and insights after conversations:
+对话后记录事实和洞察：
 
-1. **Append to insights.md** — Key events (what was done, results) + Insights (need insights, pattern signals, personal review)
-2. **Update MEMORY.md** — If important changes (decisions, todos, projects)
-3. **Commit + push**
+1. **追加到 insights.md** — 关键事件（做了什么、结果如何）+ 洞察（需要洞察、模式信号、个人反思）
+2. **更新 MEMORY.md** — 如果有重要变化（决策、待办、项目）
+3. **提交推送**
 
-**Quality**: concise (one sentence per fact), deep (not just what but why), don't force (if nothing worth keeping, skip).
+**质量要求**：简洁（每条事实一句话）、深入（不只记"做了什么"，还要记"为什么"）、不勉强（没有值得保留的就跳过）。
 
-## User Profile (L1 Index)
+## 用户画像（L1 索引）
 
-| Field | Value |
-|-------|-------|
-| **Timezone** | Asia/Shanghai |
-| **Peak hours** | Evening, weekdays before 10am / after 9pm |
-| **Communication** | Structured, direct, data-driven, no "it depends" |
-| **Core work** | Supplier management + BPO operations, 30+ suppliers, 3000+ team |
-| **Department** | Data Technology Business Dept - Level 2 |
-| **Manager** | 卞海军 (军哥) |
-| **Team lead** | 王易人 (service group) |
+| 字段 | 值 |
+|------|-----|
+| **时区** | Asia/Shanghai |
+| **高效时段** | 晚上、工作日早10前/晚9后 |
+| **沟通风格** | 结构化、直接、数据说话、不说"看情况" |
+| **核心工作** | 供应商管理 + BPO运营，30+供应商，3000+人团队 |
+| **部门** | 数据科技业务部 - 二级 |
+| **上级** | 卞海军（军哥） |
+| **组长** | 王易人（服务组） |

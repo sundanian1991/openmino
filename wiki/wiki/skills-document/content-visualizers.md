@@ -5,7 +5,7 @@
 
 ## 概述
 
-本条目覆盖两个内容可视化技能：**editorial-card-generator** 将文本内容转换为现代编辑风格的 HTML5 信息海报卡片（支持 PNG 导出），**infographic-creator** 使用 AntV Infographic 创建结构化的视觉信息图。两者都用于将文本信息转化为社交媒体友好或知识分享友好的视觉格式，但技术路径和输出风格截然不同。
+文本内容转视觉格式有两个主力技能，技术路径和输出风格截然不同：**editorial-card-generator** 输出社交媒体风格的 HTML5 信息图卡片（600x800px，支持 PNG 导出），适合微信/小红书等社交平台传播；**infographic-creator** 输出 AntV Infographic 结构化信息图（支持 SVG 导出），适合 PPT 演示、内部汇报、知识图谱展示。选型标准是"传播场景"而非"内容类型"——需要社交传播选 editorial-card，需要结构化呈现选 infographic。
 
 ## Editorial Card Generator — 编辑风格信息海报
 
@@ -108,3 +108,23 @@ theme
 ### 关键注意事项
 
 必须尊重用户输入语言（中文输入 → 中文语法）。HTML 文件需包含 SVG 导出功能。容器自适应（宽高 100%）。模板选择基于内容结构而非主题——严格序列用 sequence、观点罗列用 list、二元对比用 compare-binary。
+
+## 何时用哪个
+
+| 场景 | 选 editorial-card | 选 infographic |
+|------|-------------------|----------------|
+| 微信朋友圈/小红书传播 | ✅ | ❌ |
+| PPT 演示/内部汇报 | ❌ | ✅ |
+| 需要 PNG 导出 | ✅ | ❌ |
+| 需要 SVG 矢量导出 | ❌ | ✅ |
+| 3-6 个核心观点/数据 | ✅ | ✅ |
+| 复杂流程/树状结构 | ❌ | ✅ |
+| 瑞士国际主义设计美学 | ✅ | ❌ |
+| 数据图表（柱状/饼图） | ❌ | ✅ |
+
+## 相关文件索引
+
+| 技能 | 原始文件 | 用途 |
+|------|---------|------|
+| editorial-card-generator | SKILL.md | 信息图卡片生成 |
+| infographic-creator | SKILL.md | AntV 信息图渲染 |
