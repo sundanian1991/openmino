@@ -5,6 +5,21 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
+## [2026-04-28] dedup | Wiki 去重第二轮 — 486 → 468 篇
+
+**合并 18 组 100% Raw: 重叠文章**（小的完全包含在大的中）：
+- learning-resources-deep: +3 篇合并（claude-cli / obsidian / plan5 → learning-resources-deep）
+- early-insights-archive: +2 篇合并（Mino自我觉醒 / 供应商管理场景手册 → early-insights-archive）
+- 供应商管理运营工具箱: +2 篇合并（09-巡检 / 04-管理规范 → 工具箱）
+- 供应商评估与KPI体系: +1 篇合并（02- → 主文件）
+- 供应商成本与缩量管理: +1 篇合并（01-成本调研 → 主文件）
+- 供应商联盟与月报机制: +1 篇合并（03-联盟 → 主文件）
+- 其余单对合并：agent-commands→agent-rules-reference, work-log→工作日志, nian-laoshi→persona-and-work, 知识工作方法→个人成长保护策略, 职场政治→职场人物, 电销复盘→电销复盘与数据叙事, AI技术学习资源→AI学习库监控, 前端设计参数→前端设计探索
+
+**独特内容保留**：合并时提取小文件独有的章节（## 标题不重复的），追加到目标文件末尾「合并补充」区
+
+**状态**：468 篇，维持 100% Raw: 覆盖率
+
 ## [2026-04-28] quality | Wiki 全面质量审计 + 规范化 — 486 篇全量修复
 
 **三轮审计发现的问题及修复**：
