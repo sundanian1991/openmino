@@ -5,7 +5,7 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 
 ---
 
-## [2026-04-28] merge | Wiki 去重第三轮 — 468 → 463 篇
+## [2026-04-28] merge | Wiki 去重第三轮 — 468 → 462 篇
 
 **跨目录同名合并 1 组**：
 - visualization-system.md（technology → projects）：33% Raw: 重叠，保留 technology 版标题"可视化体系"，补充项目统计表、5 层内容架构、方法论价值
@@ -16,9 +16,13 @@ Recent entries: `grep "^## \[" log.md | tail -10`
 - 删除 plans-deep/plans-mino-frontend设计体系演进.md（7 refs 全部被 plans/ 包含）
 
 **播客转书籍 3→1**：
-- 保留 presentations/播客转书籍章节内容转化方法.md（2887 chars 最全，有项目定位+角色锚定示例）
-- 合并 presentations/播客转书籍章节-内容转化方法.md（补充 vwiehr 引用）
-- 删除 presentations/播客转书籍章节-内容转化方法论.md（100% 重叠，无独有内容）
+- 保留 presentations/播客转书籍章节内容转化方法.md（2887 chars 最全）
+- 补充 vwiehr 项目引用
+- 删除 presentations/播客转书籍章节-内容转化方法.md + 内容转化方法论.md
+
+**供应商分层分级 2→1**：
+- plans-deep/plans-供应商分层分级管理体系.md 保留（4 refs 更全，有管理动作清单）
+- 合并 plans-deep/供应商分层分级与ABC管理体系.md（补充 60:30:10模型、PIP详细流程、实施节奏、方法论总结）
 
 **3 对跨目录同名文件保持独立**（0% 重叠，内容方向不同）：
 - agent-architecture.md：agent-configuration（sub-agent 策略）vs technology（执行引擎演进）
