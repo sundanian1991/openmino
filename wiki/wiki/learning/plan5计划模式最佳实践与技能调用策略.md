@@ -1,7 +1,7 @@
 # /plan5计划模式最佳实践与技能调用策略
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/learning/Claude Code-plan5-lessons.md; ../../raw/learning/Claude Code-personalization-upgrade-summary.md; ../../raw/learning/技能加载优化-已完成-feature-request-progressive-disclosure.md; ../../raw/learning/技能相关-工具技能-skills-integration-plan.md; ../../raw/learning/技能相关-工具技能-skill-improvement-plan.md
+> Raw:../../raw/learning/Claude Code-plan5-lessons.md; ../../raw/learning/Claude Code-personalization-upgrade-summary.md; ../../raw/learning/技能加载优化-已完成-feature-request-progressive-disclosure.md; ../../raw/learning/技能相关-工具技能-skills-integration-plan.md; ../../raw/learning/技能相关-工具技能-skill-improvement-plan.md
 
 ## 概述
 

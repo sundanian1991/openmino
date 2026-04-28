@@ -1,7 +1,7 @@
 # 供应商管理体系全景
 
 > Sources: 供应商管理岗, 2026-03~04, 2026-04-28
-> Raw: [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [引入管理规范](../../raw/docs-supplier/管理规范-供应商引入管理规范.md); [清退管理规范](../../raw/docs-supplier/管理规范-供应商清退管理规范.md); [日常管理手册](../../raw/docs-supplier/管理制度-供应商管理日常手册.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [全景分析](../../raw/docs-supplier/供应商库-供应商全景分析.md)
+> Raw:[管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [引入管理规范](../../raw/docs-supplier/管理规范-供应商引入管理规范.md); [清退管理规范](../../raw/docs-supplier/管理规范-供应商清退管理规范.md); [日常管理手册](../../raw/docs-supplier/管理制度-供应商管理日常手册.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [全景分析](../../raw/docs-supplier/供应商库-供应商全景分析.md)
 
 ## 概述
 

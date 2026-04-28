@@ -1,7 +1,7 @@
 # 职场政治应对方法论：表演型预警识别与REACT防御体系
 
 > Sources: mino, 2026-03-29
-> Raw: [brainstorm](../../raw/plans/2026-03-29-应对带节奏分析-00-brainstorm.md); [动机分析](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-动机分析.md); [应对策略](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-应对策略.md); [开门红调研](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-开门红调研.md); [影响评估](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-影响评估.md); [行为模式拆解](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-行为模式拆解.md); [风险预警](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-风险预警.md)
+> Raw:[brainstorm](../../raw/plans/2026-03-29-应对带节奏分析-00-brainstorm.md); [动机分析](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-动机分析.md); [应对策略](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-应对策略.md); [开门红调研](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-开门红调研.md); [影响评估](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-影响评估.md); [行为模式拆解](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-行为模式拆解.md); [风险预警](../../raw/plans/2026-03-29-应对带节奏分析-02-workspace-风险预警.md)
 
 ## 概述
 

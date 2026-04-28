@@ -1,7 +1,7 @@
 # mino-frontend设计体系演进：从14种风格到参数系统的架构升级
 
 > Sources: mino, 2026-04-01 ~, 2026-04-02
-> Raw: [风格情绪矩阵-brainstorm](../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md); [风格情绪矩阵-research](../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-01-research.md); [参数系统-brainstorm](../../raw/plans/2026-04-02-mino-frontend参数系统-00-brainstorm.md); [参数系统-research](../../raw/plans/2026-04-02-mino-frontend参数系统-01-research.md); [参数系统框架](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-参数系统框架.md); [克制专业主义参数](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-克制专业主义参数.md); [满意案例参数提取](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-满意案例参数提取.md)
+> Raw:[风格情绪矩阵-brainstorm](../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md); [风格情绪矩阵-research](../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-01-research.md); [参数系统-brainstorm](../../raw/plans/2026-04-02-mino-frontend参数系统-00-brainstorm.md); [参数系统-research](../../raw/plans/2026-04-02-mino-frontend参数系统-01-research.md); [参数系统框架](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-参数系统框架.md); [克制专业主义参数](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-克制专业主义参数.md); [满意案例参数提取](../../raw/plans/2026-04-02-mino-frontend参数系统-02-workspace-满意案例参数提取.md)
 
 ## 概述
 

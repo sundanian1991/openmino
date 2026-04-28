@@ -1,7 +1,7 @@
 # 问题处理方法论
 
 > Sources: 年老师, 2026-03 ~ 2026-04, 2026-04-28
-> Raw: [问题处理方法论](../../raw/work-standards/问题处理方法论.md); [供应商管理方法论](../../raw/work-standards/供应商管理方法论.md); [其他工作铁律](../../raw/work-standards/其他工作铁律.md)
+> Raw:[问题处理方法论](../../raw/work-standards/问题处理方法论.md); [供应商管理方法论](../../raw/work-standards/供应商管理方法论.md); [其他工作铁律](../../raw/work-standards/其他工作铁律.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # Claude Infographic Charts — 静态与交互式可视化生成器
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/skills/claude-infographic-charts-SKILL.md; ../../raw/skills/claude-infographic-charts-README.md; ../../raw/skills/claude-infographic-charts-art.md; ../../raw/skills/claude-infographic-charts-chart-types.md; ../../raw/skills/claude-infographic-charts-diagram.md; ../../raw/skills/claude-infographic-charts-interactive.md; ../../raw/skills/claude-infographic-charts-mockup.md
+> Raw:../../raw/skills/claude-infographic-charts-SKILL.md; ../../raw/skills/claude-infographic-charts-README.md; ../../raw/skills/claude-infographic-charts-art.md; ../../raw/skills/claude-infographic-charts-chart-types.md; ../../raw/skills/claude-infographic-charts-diagram.md; ../../raw/skills/claude-infographic-charts-interactive.md; ../../raw/skills/claude-infographic-charts-mockup.md
 
 ## 概述
 

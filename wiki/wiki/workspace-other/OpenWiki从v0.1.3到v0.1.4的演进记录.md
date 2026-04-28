@@ -1,7 +1,7 @@
 # OpenWiki从v0.1.3到v0.1.4的演进记录
 
 > Sources: mino, 2026-04-28
-> Raw: [v0.1.5 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.5.md); [v0.1.6 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.6.md); [v0.1.7 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.7.md); [v0.1.8 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.8.md)
+> Raw:[v0.1.5 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.5.md); [v0.1.6 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.6.md); [v0.1.7 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.7.md); [v0.1.8 release notes](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-release-notes-v0.1.8.md)
 
 ## 概述
 

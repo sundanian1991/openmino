@@ -1,7 +1,7 @@
 # mino-frontend 设计体系演进与参数系统
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-01-research.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-02-confidence.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-03-review.md; ../../raw/plans/2026-04-02-mino-frontend参数系统-02-review.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-00-brainstorm.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-01-research.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-03-review.md
+> Raw:../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-00-brainstorm.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-01-research.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-02-confidence.md; ../../raw/plans/2026-04-01-mino-frontend风格情绪矩阵-03-review.md; ../../raw/plans/2026-04-02-mino-frontend参数系统-02-review.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-00-brainstorm.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-01-research.md; ../../raw/plans/2026-04-01-跨技能设计原则体系-03-review.md
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 数据可视化之父-Tufte视觉显示理论精要
 
 > Sources: mino, 2026-04-28
-> Raw: [The Visual Display of Quantitative Information](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-The Visual Display of Quantitative Information - Edward Tufte.md)
+> Raw:[The Visual Display of Quantitative Information](../../raw/workspace-other/ebooks--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-ebooks-The Visual Display of Quantitative Information - Edward Tufte.md)
 
 ## 概述
 

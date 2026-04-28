@@ -1,7 +1,7 @@
 # BPO联盟月报演进历程与供应商赋能平台
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v2.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v3.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v4.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v5.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v6.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v7.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v8.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v9.md; ../../raw/docs-supplier/历史项目-BPO联盟-BPO京东电销项目联盟培训总结.md
+> Raw:../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v2.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v3.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v4.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v5.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v6.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v7.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v8.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v9.md; ../../raw/docs-supplier/历史项目-BPO联盟-BPO京东电销项目联盟培训总结.md
 
 ## 概述
 

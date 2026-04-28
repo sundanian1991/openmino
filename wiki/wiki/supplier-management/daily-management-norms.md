@@ -1,7 +1,7 @@
 # 供应商日常管理规范
 
 > Sources: 供应商管理岗, 2026-03~04, 2026-04-28
-> Raw: [日常管理手册](../../raw/docs-supplier/管理制度-供应商管理日常手册.md); [日常管理执行手册](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-00-总览.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [企微风险管控](../../raw/docs-supplier/历史项目-供应商管理项目-企微运营风险管控-企业微信运营风险管控制度.md)
+> Raw:[日常管理手册](../../raw/docs-supplier/管理制度-供应商管理日常手册.md); [日常管理执行手册](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-00-总览.md); [SLA](../../raw/docs-supplier/管理制度-供应商管理SLA.md); [评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [企微风险管控](../../raw/docs-supplier/历史项目-供应商管理项目-企微运营风险管控-企业微信运营风险管控制度.md)
 
 ## 概述
 

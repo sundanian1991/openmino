@@ -1,7 +1,7 @@
 # 电影叙事方案E与AI定价研究：倒叙结构与杂志特稿风格
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/plans/电影版叙事-cinematic-decisions.md; ../../raw/plans/电影版叙事-cinematic-storyboard.md; ../../raw/plans/电影版叙事-compiled-spec.md; ../../raw/plans/电影版叙事-素材-20260424-AI产品定价模式演变-从Coding Plan到Token Plan.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-decisions-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-03-review.md
+> Raw:../../raw/plans/电影版叙事-cinematic-decisions.md; ../../raw/plans/电影版叙事-cinematic-storyboard.md; ../../raw/plans/电影版叙事-compiled-spec.md; ../../raw/plans/电影版叙事-素材-20260424-AI产品定价模式演变-从Coding Plan到Token Plan.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-decisions-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard-e.md; ../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-03-review.md
 
 ## 概述
 

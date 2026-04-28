@@ -1,7 +1,7 @@
 # 供应商深度沟通方法论
 
 > Sources: Mino, 2026-04-27
-> Raw: [供应商深度沟通指南](../../raw/toolbox/供应商管理-20260301-supplier-deep-dive-guide.md); [BPO供应商深度沟通指南](../../raw/toolbox/供应商管理-20260301-supplier-bpo-deep-dive-guide.md)
+> Raw:[供应商深度沟通指南](../../raw/toolbox/供应商管理-20260301-supplier-deep-dive-guide.md); [BPO供应商深度沟通指南](../../raw/toolbox/供应商管理-20260301-supplier-bpo-deep-dive-guide.md)
 
 ## 概述
 

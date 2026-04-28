@@ -1,7 +1,7 @@
 # download-anything — 数字资源下载
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [SKILL.md](../../raw/skills/download-anything-SKILL.md), [cloud-search.md](../../raw/skills/download-anything-cloud-search.md), [ebooks.md](../../raw/skills/download-anything-ebooks.md), [education.md](../../raw/skills/download-anything-education.md), [media-assets.md](../../raw/skills/download-anything-media-assets.md), [music.md](../../raw/skills/download-anything-music.md), [search-techniques.md](../../raw/skills/download-anything-search-techniques.md), [software.md](../../raw/skills/download-anything-software.md), [tools-reference.md](../../raw/skills/download-anything-tools-reference.md), [video.md](../../raw/skills/download-anything-video.md)
+> Raw:[SKILL.md](../../raw/skills/download-anything-SKILL.md); [cloud-search.md](../../raw/skills/download-anything-cloud-search.md); [ebooks.md](../../raw/skills/download-anything-ebooks.md); [education.md](../../raw/skills/download-anything-education.md); [media-assets.md](../../raw/skills/download-anything-media-assets.md); [music.md](../../raw/skills/download-anything-music.md); [search-techniques.md](../../raw/skills/download-anything-search-techniques.md); [software.md](../../raw/skills/download-anything-software.md); [tools-reference.md](../../raw/skills/download-anything-tools-reference.md); [video.md](../../raw/skills/download-anything-video.md)
 
 ## 概述
 

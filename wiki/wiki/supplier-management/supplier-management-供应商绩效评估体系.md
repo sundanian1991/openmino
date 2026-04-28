@@ -1,7 +1,7 @@
 # 供应商绩效评估体系
 
 > Sources: 供应商管理岗, 2026-04-23
-> Raw: [月度综合评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [质量管理规范](../../raw/docs-supplier/管理制度-质量管理规范.md); [预警约谈](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-02-预警约谈.md); [HRBP式扶持](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-10-HRBP式扶持.md); [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [FCI能力指数](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-06-巡检管理.md); [产能双维度](../../raw/docs-supplier/管理规范-供应商管理思路梳理.md)
+> Raw:[月度综合评估方案](../../raw/docs-supplier/管理制度-供应商月度综合评估方案.md); [质量管理规范](../../raw/docs-supplier/管理制度-质量管理规范.md); [预警约谈](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-02-预警约谈.md); [HRBP式扶持](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-10-HRBP式扶持.md); [管理办法总纲](../../raw/docs-supplier/管理制度-供应商管理办法（总纲）.md); [FCI能力指数](../../raw/docs-supplier/管理制度-供应商日常管理执行手册-06-巡检管理.md); [产能双维度](../../raw/docs-supplier/管理规范-供应商管理思路梳理.md)
 
 ## 概述
 

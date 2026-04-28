@@ -1,7 +1,7 @@
 # 知识工作流 — 从头脑风暴到知识复利
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [kw-brainstorm](../../raw/skills/kw-brainstorm-SKILL.md), [kw-compound](../../raw/skills/kw-compound-SKILL.md), [kw-confidence](../../raw/skills/kw-confidence-SKILL.md), [kw-plan](../../raw/skills/kw-plan-SKILL.md), [kw-review](../../raw/skills/kw-review-SKILL.md), [kw-work](../../raw/skills/kw-work-SKILL.md), [kw-workflow](../../raw/skills/kw-workflow-SKILL.md)
+> Raw:[kw-brainstorm](../../raw/skills/kw-brainstorm-SKILL.md); [kw-compound](../../raw/skills/kw-compound-SKILL.md); [kw-confidence](../../raw/skills/kw-confidence-SKILL.md); [kw-plan](../../raw/skills/kw-plan-SKILL.md); [kw-review](../../raw/skills/kw-review-SKILL.md); [kw-work](../../raw/skills/kw-work-SKILL.md); [kw-workflow](../../raw/skills/kw-workflow-SKILL.md)
 
 ## 概述
 

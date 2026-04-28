@@ -1,7 +1,7 @@
 # Agent-Reach社交媒体接入深度指南
 
 > Sources: mino, 2026-04-28
-> Raw: [Twitter高级功能](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-guides-setup-twitter.md); [小红书配置](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-guides-setup-xiaohongshu.md); [Cookie导出指南](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-docs-cookie-export.md); [SKILL英文版](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-skill-SKILL_en.md)
+> Raw:[Twitter高级功能](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-guides-setup-twitter.md); [小红书配置](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-guides-setup-xiaohongshu.md); [Cookie导出指南](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-docs-cookie-export.md); [SKILL英文版](../../raw/workspace-other/Agent-Reach--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-Agent-Reach-agent_reach-skill-SKILL_en.md)
 
 ## 概述
 

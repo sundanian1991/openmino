@@ -1,7 +1,7 @@
 # 工作风格哲学
 
 > Sources: 年老师, 2026-03-04
-> Raw: [工作风格](../../raw/personal-growth/工作风格-04-工作风格.md), [工作风格-表达模板库](../../raw/personal-growth/工作风格-表达模板库.md)
+> Raw:[工作风格](../../raw/personal-growth/工作风格-04-工作风格.md); [工作风格-表达模板库](../../raw/personal-growth/工作风格-表达模板库.md)
 
 ## 概述
 

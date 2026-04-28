@@ -1,7 +1,7 @@
 # BPO联盟建设与月报演进
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/docs-supplier/历史项目-BPO联盟-Q1汇报参考.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报进展.md
+> Raw:../../raw/docs-supplier/历史项目-BPO联盟-Q1汇报参考.md; ../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报进展.md
 
 ## 概述
 

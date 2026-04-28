@@ -1,7 +1,7 @@
 # Quiver-API高质量SVG生成策略：配额约束下的视觉生产力
 
 > Sources: mino, 2026-04-04
-> Raw: [brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [research](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md)
+> Raw:[brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [research](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md)
 
 ## 概述
 

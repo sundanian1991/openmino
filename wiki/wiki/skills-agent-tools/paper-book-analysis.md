@@ -1,7 +1,7 @@
 # Paper & Book Analysis + Content Casting Skills
 
 > Sources: Epiplexity (via MyAgents), 2026-04-27
-> Raw: [ljg-xray-paper](../../raw/skills/ljg-xray-paper-SKILL.md); [ljg-xray-book](../../raw/skills/ljg-xray-book-SKILL.md); [ljg-card](../../raw/skills/ljg-card-SKILL.md) + modes + taste
+> Raw:[ljg-xray-paper](../../raw/skills/ljg-xray-paper-SKILL.md); [ljg-xray-book](../../raw/skills/ljg-xray-book-SKILL.md); [ljg-card](../../raw/skills/ljg-card-SKILL.md) + modes + taste
 
 ## 概述
 

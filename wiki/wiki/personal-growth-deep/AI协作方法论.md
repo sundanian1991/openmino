@@ -1,7 +1,7 @@
 # AI协作方法论：从V1到V19的人机协同进化
 
 > Sources: mino, 2026-04-28
-> Raw: [V12 AI核心理解](../../raw/personal-growth/晋升述职-晋升材料-V12aicoworker版-晋升材料准备-AI核心理解_全景梳理.md); [V13 cowork版](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-晋升述职_V13-cowork版_最终.md); [V13钩子梳理](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-钩子梳理与优化策略.md); [V13同事参考结构分析](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-述职准备资料-同事参考模板结构分析.md)
+> Raw:[V12 AI核心理解](../../raw/personal-growth/晋升述职-晋升材料-V12aicoworker版-晋升材料准备-AI核心理解_全景梳理.md); [V13 cowork版](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-晋升述职_V13-cowork版_最终.md); [V13钩子梳理](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-钩子梳理与优化策略.md); [V13同事参考结构分析](../../raw/personal-growth/晋升述职-供应商管理方向-V13-cowork版-述职准备资料-同事参考模板结构分析.md)
 
 ## 概述
 

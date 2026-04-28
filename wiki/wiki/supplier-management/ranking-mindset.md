@@ -1,7 +1,7 @@
 # 排名思维：赛马机制下的相对排名管理
 
 > Sources: 年老师, 2026-04-06
-> Raw: [供应商与BPO运营](../../raw/core-memory/01-供应商与BPO运营.md); [KPI不达标整改](../../raw/archive/场景一-KPI不达标整改.md); [insights](../../raw/core-memory/insights.md)
+> Raw:[供应商与BPO运营](../../raw/core-memory/01-供应商与BPO运营.md); [KPI不达标整改](../../raw/archive/场景一-KPI不达标整改.md); [insights](../../raw/core-memory/insights.md)
 
 ## 概述
 

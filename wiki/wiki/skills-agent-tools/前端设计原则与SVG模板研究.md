@@ -1,7 +1,7 @@
 # 前端设计原则与 SVG 模板研究
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-对话总结-2026-04-04.md; ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-模板迭代记录-模板2-中等复杂-迭代1-评估报告.md; ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-模板迭代记录-模板1-简单图标-迭代1-问题清单.md
+> Raw:../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-对话总结-2026-04-04.md; ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-模板迭代记录-模板2-中等复杂-迭代1-评估报告.md; ../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-32-技能-前端设计原则体系-20260403-02-SVG模板研究-模板迭代记录-模板1-简单图标-迭代1-问题清单.md
 
 ## 概述
 

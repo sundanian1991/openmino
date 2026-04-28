@@ -1,7 +1,7 @@
 # Agent Architecture
 
 > Sources: Mino, 2026-02-12 ~, 2026-04-23
-> Raw: [AGENT-FIRST](../../raw/agent-rules/AGENT-FIRST.md), [08-WORKFLOW](../../raw/claude-reference/08-WORKFLOW.md), [09-TOOLS](../../raw/claude-reference/09-TOOLS.md)
+> Raw:[AGENT-FIRST](../../raw/agent-rules/AGENT-FIRST.md); [08-WORKFLOW](../../raw/claude-reference/08-WORKFLOW.md); [09-TOOLS](../../raw/claude-reference/09-TOOLS.md)
 
 ## 概述
 

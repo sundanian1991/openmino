@@ -1,7 +1,7 @@
 # AI提效研究
 
 > Sources: workspace-growth 中的 AI 效率研究项目, 2026-04-28
-> Raw: [AI定价头脑风暴](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md); [AI定价研究](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-01-research.md); [Quiver-API策略](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [AI定价compiled-spec](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec.md); [AI定价storyboard](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard.md)
+> Raw:[AI定价头脑风暴](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md); [AI定价研究](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-01-research.md); [Quiver-API策略](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [AI定价compiled-spec](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec.md); [AI定价storyboard](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard.md)
 
 ## 概述
 

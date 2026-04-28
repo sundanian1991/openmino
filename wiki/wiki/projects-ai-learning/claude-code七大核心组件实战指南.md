@@ -1,7 +1,7 @@
 # Claude Code七大核心组件实战指南
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/projects-ai-learning/notes-monday-learning.md; ../../raw/projects-ai-learning/outputs-COURSE-GUIDE.md; ../../raw/projects-ai-learning/outputs-WEEK1-AGENT-MCP.md; ../../raw/projects-ai-learning/notes-best-practices-01-context-management.md; ../../raw/projects-ai-learning/notes-best-practices-02-planning-architecture.md; ../../raw/projects-ai-learning/notes-best-practices-03-tools-automation.md; ../../raw/projects-ai-learning/notes-best-practices-04-code-quality.md; ../../raw/projects-ai-learning/notes-best-practices-05-anti-patterns.md
+> Raw:../../raw/projects-ai-learning/notes-monday-learning.md; ../../raw/projects-ai-learning/outputs-COURSE-GUIDE.md; ../../raw/projects-ai-learning/outputs-WEEK1-AGENT-MCP.md; ../../raw/projects-ai-learning/notes-best-practices-01-context-management.md; ../../raw/projects-ai-learning/notes-best-practices-02-planning-architecture.md; ../../raw/projects-ai-learning/notes-best-practices-03-tools-automation.md; ../../raw/projects-ai-learning/notes-best-practices-04-code-quality.md; ../../raw/projects-ai-learning/notes-best-practices-05-anti-patterns.md
 
 ## 概述
 

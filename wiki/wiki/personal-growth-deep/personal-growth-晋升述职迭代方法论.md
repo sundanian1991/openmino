@@ -1,7 +1,7 @@
 # 晋升述职迭代方法论：19轮进化的可复用经验
 
 > Sources: mino, 2026-04-28
-> Raw: [V1评审材料](../../raw/personal-growth/晋升述职-晋升材料-V1版本-2026年初晋升评审材料.md); [V1自我评价](../../raw/personal-growth/晋升述职-晋升材料-V1版本-03-材料自我评价-严苛版.md); [V8背诵体系](../../raw/personal-growth/晋升述职-晋升材料-V8版本-背诵-01_极简关键词.md); [V8逻辑骨架](../../raw/personal-growth/晋升述职-晋升材料-V8版本-背诵-02_逻辑骨架.md); [V9版本](../../raw/personal-growth/晋升述职-晋升材料-V8版本-V9版本.md); [V13最终版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-晋升述职_V13-cowork版_最终.md); [钩子梳理](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-钩子梳理与优化策略.md)
+> Raw:[V1评审材料](../../raw/personal-growth/晋升述职-晋升材料-V1版本-2026年初晋升评审材料.md); [V1自我评价](../../raw/personal-growth/晋升述职-晋升材料-V1版本-03-材料自我评价-严苛版.md); [V8背诵体系](../../raw/personal-growth/晋升述职-晋升材料-V8版本-背诵-01_极简关键词.md); [V8逻辑骨架](../../raw/personal-growth/晋升述职-晋升材料-V8版本-背诵-02_逻辑骨架.md); [V9版本](../../raw/personal-growth/晋升述职-晋升材料-V8版本-V9版本.md); [V13最终版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-晋升述职_V13-cowork版_最终.md); [钩子梳理](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-钩子梳理与优化策略.md)
 
 ## 概述
 

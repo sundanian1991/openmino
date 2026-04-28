@@ -1,7 +1,7 @@
 # 年老师人物画像
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/persona/基本信息.md; ../../raw/persona/性格特质.md; ../../raw/persona/核心能力.md; ../../raw/persona/工作方法论.md; ../../raw/persona/职业成就.md; ../../raw/persona/偏好习惯.md
+> Raw:../../raw/persona/基本信息.md; ../../raw/persona/性格特质.md; ../../raw/persona/核心能力.md; ../../raw/persona/工作方法论.md; ../../raw/persona/职业成就.md; ../../raw/persona/偏好习惯.md
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 供应商生态分类学：网状结构与精准匹配
 
 > Sources: mino, 2026-04-28
-> Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_详细版.md); [自我认知_精简版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [供应商理解Claude版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-供应商理解Claude版.md)
+> Raw:[自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_详细版.md); [自我认知_精简版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [供应商理解Claude版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-供应商理解Claude版.md)
 
 ## 概述
 

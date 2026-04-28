@@ -1,7 +1,7 @@
 # AI Agent 工作流模式
 
 > Sources: Mino 学习笔记, 2026-02 ~ 2026-03, 2026-04-28
-> Raw: [AI-Agent工作流解析](../../raw/learning/AI-Agent工作流解析-agency-agents-analysis.md) | [AI协作指南](../../raw/learning/AI协作-07-AI协作.md) | [Claude Code速查表](../../raw/learning/Claude Code-cheatsheet.md)
+> Raw:[AI-Agent工作流解析](../../raw/learning/AI-Agent工作流解析-agency-agents-analysis.md); [AI协作指南](../../raw/learning/AI协作-07-AI协作.md); [Claude Code速查表](../../raw/learning/Claude Code-cheatsheet.md)
 
 ## 概述
 

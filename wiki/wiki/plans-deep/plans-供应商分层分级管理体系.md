@@ -1,7 +1,7 @@
 # 供应商分层分级管理体系：ABC三级评分模型与PIP流程
 
 > Sources: mino, 2026-04-13
-> Raw: [brainstorm](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md); [research](../../raw/plans/2026-04-13-供应商分层分级体系-01-research.md); [方案要点](../../raw/plans/2026-04-13-供应商分层分级方案-方案要点.md); [result](../../raw/plans/2026-04-13-供应商分层分级方案-result.md)
+> Raw:[brainstorm](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md); [research](../../raw/plans/2026-04-13-供应商分层分级体系-01-research.md); [方案要点](../../raw/plans/2026-04-13-供应商分层分级方案-方案要点.md); [result](../../raw/plans/2026-04-13-供应商分层分级方案-result.md)
 
 ## 概述
 

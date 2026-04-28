@@ -1,7 +1,7 @@
 # Plan 模板体系与权责不对等保护策略
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-交付清单.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-INDEX.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-41-成长-权责不对等研究-20260329-权责不对等保护策略-边界清单与留痕模板.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-SVG索引.md
+> Raw:../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-11-成长-Plan模板体系-20260419-交付清单.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-INDEX.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-41-成长-权责不对等研究-20260329-权责不对等保护策略-边界清单与留痕模板.md; ../../raw/workspace-growth/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-10-成长-Plan模板可视化-20260419-SVG索引.md
 
 ## 概述
 

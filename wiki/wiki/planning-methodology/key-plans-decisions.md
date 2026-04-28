@@ -1,7 +1,7 @@
 # 关键计划决策
 
 > Sources: Mino, 2026-04-13 ~, 2026-04-26
-> Raw: [AI定价](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md), [供应商分层](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md), [供应商看板V7](../../raw/plans/2026-04-26-供应商站点数据汇报体系-00-brainstorm.md), [设计技能对比](../../raw/plans/设计技能对比测试-20260424-00-brainstorm.md)
+> Raw:[AI定价](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md); [供应商分层](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md); [供应商看板V7](../../raw/plans/2026-04-26-供应商站点数据汇报体系-00-brainstorm.md); [设计技能对比](../../raw/plans/设计技能对比测试-20260424-00-brainstorm.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 批判性自评体系：严苛视角下的能力诊断
 
 > Sources: mino, 2026-04-28
-> Raw: [自我评价严苛版](../../raw/personal-growth/晋升述职-晋升材料-V1版本-03-材料自我评价-严苛版.md); [评委问题预判V1](../../raw/personal-growth/晋升述职-晋升材料-V1版本-02-评委会问的问题预判.md); [评委视角分析V4](../../raw/personal-growth/晋升述职-晋升材料-V4版本-评委视角分析_V4版本.md); [V13钩子梳理](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-钩子梳理与优化策略.md)
+> Raw:[自我评价严苛版](../../raw/personal-growth/晋升述职-晋升材料-V1版本-03-材料自我评价-严苛版.md); [评委问题预判V1](../../raw/personal-growth/晋升述职-晋升材料-V1版本-02-评委会问的问题预判.md); [评委视角分析V4](../../raw/personal-growth/晋升述职-晋升材料-V4版本-评委视角分析_V4版本.md); [V13钩子梳理](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-钩子梳理与优化策略.md)
 
 ## 概述
 

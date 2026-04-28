@@ -1,7 +1,7 @@
 # 供应商管理六步法体系
 
 > Sources: 刘乾坤工作手法源文件 + 供应商管理演讲稿 (2026-04), 2026-04-28
-> Raw: [工作手法](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_工作手法.md); [权力框架](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_权力框架.md); [刘乾坤人物画像-供应商管理章节](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-notes-08_供应商管理.md); [供应商ABC分层分级管理方案](../../raw/projects-supplier/供应商ABC分层分级管理方案.md)
+> Raw:[工作手法](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_工作手法.md); [权力框架](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-sources-_权力框架.md); [刘乾坤人物画像-供应商管理章节](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-notes-08_供应商管理.md); [供应商ABC分层分级管理方案](../../raw/projects-supplier/供应商ABC分层分级管理方案.md)
 
 ## 概述
 

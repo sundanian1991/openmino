@@ -1,7 +1,7 @@
 # AI定价-计量单位即定价权
 
 > Sources: mino, 2026-04-28
-> Raw: [计量体系备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-06_measurement_systems.md); [定价对比备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-05_pricing_comparison.md); [三层驱动备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-09_three_layer_drivers.md); [Agent成本备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-13_agent_cost.md); [头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md)
+> Raw:[计量体系备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-06_measurement_systems.md); [定价对比备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-05_pricing_comparison.md); [三层驱动备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-09_three_layer_drivers.md); [Agent成本备注](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-notes-13_agent_cost.md); [头脑风暴源](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md)
 
 ## 概述
 

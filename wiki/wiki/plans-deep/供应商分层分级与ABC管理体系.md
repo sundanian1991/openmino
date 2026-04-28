@@ -1,7 +1,7 @@
 # 供应商分层分级与ABC管理体系
 
 > Sources: mino, 2026-04-13
-> Raw: [brainstorm](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md); [方案要点](../../raw/plans/2026-04-13-供应商分层分级方案-方案要点.md); [result](../../raw/plans/2026-04-13-供应商分层分级方案-result.md)
+> Raw:[brainstorm](../../raw/plans/2026-04-13-供应商分层分级体系-00-brainstorm.md); [方案要点](../../raw/plans/2026-04-13-供应商分层分级方案-方案要点.md); [result](../../raw/plans/2026-04-13-供应商分层分级方案-result.md)
 
 ## 概述
 

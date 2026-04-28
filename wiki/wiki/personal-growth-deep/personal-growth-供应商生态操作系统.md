@@ -1,7 +1,7 @@
 # 供应商生态操作系统：五大机制与四大体系
 
 > Sources: mino, 2026-04-28
-> Raw: [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [供应商理解Claude版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-供应商理解Claude版.md); [供应商管理手册](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-供应商管理手册.md); [供应商管理深度解析](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-供应商管理深度解析.md)
+> Raw:[自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md); [供应商理解Claude版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-供应商理解Claude版.md); [供应商管理手册](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-供应商管理手册.md); [供应商管理深度解析](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-供应商管理深度解析.md)
 
 ## 概述
 

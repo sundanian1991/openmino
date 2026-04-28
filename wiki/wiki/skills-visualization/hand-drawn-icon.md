@@ -1,7 +1,7 @@
 # Hand-Drawn Icon — 手绘 SVG 生成器
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/skills/hand-drawn-icon-SKILL.md; ../../raw/skills/hand-drawn-icon-workflow-standard.md; ../../raw/skills/hand-drawn-icon-design-philosophy-color-table.md; ../../raw/skills/hand-drawn-icon-learning-summary-R1-R3.md; ../../raw/skills/hand-drawn-icon-curve-rhythm-analysis.md; ../../raw/skills/hand-drawn-icon-r3-analysis.md; ../../raw/skills/hand-drawn-icon-round1-analysis.md; ../../raw/skills/hand-drawn-icon-round2-analysis.md; ../../raw/skills/hand-drawn-icon-round3-analysis.md; ../../raw/skills/hand-drawn-icon-round3-final-analysis.md; ../../raw/skills/hand-drawn-icon-r3-spec-cup.md; ../../raw/skills/hand-drawn-icon-round3-spec-cup.md; ../../raw/skills/hand-drawn-icon-round3-spec-fan.md; ../../raw/skills/hand-drawn-icon-round1-spec-shrimp.md; ../../raw/skills/hand-drawn-icon-18次学习计划.md
+> Raw:../../raw/skills/hand-drawn-icon-SKILL.md; ../../raw/skills/hand-drawn-icon-workflow-standard.md; ../../raw/skills/hand-drawn-icon-design-philosophy-color-table.md; ../../raw/skills/hand-drawn-icon-learning-summary-R1-R3.md; ../../raw/skills/hand-drawn-icon-curve-rhythm-analysis.md; ../../raw/skills/hand-drawn-icon-r3-analysis.md; ../../raw/skills/hand-drawn-icon-round1-analysis.md; ../../raw/skills/hand-drawn-icon-round2-analysis.md; ../../raw/skills/hand-drawn-icon-round3-analysis.md; ../../raw/skills/hand-drawn-icon-round3-final-analysis.md; ../../raw/skills/hand-drawn-icon-r3-spec-cup.md; ../../raw/skills/hand-drawn-icon-round3-spec-cup.md; ../../raw/skills/hand-drawn-icon-round3-spec-fan.md; ../../raw/skills/hand-drawn-icon-round1-spec-shrimp.md; ../../raw/skills/hand-drawn-icon-18次学习计划.md
 > [v6-backup](../../raw/skills/hand-drawn-icon-SKILL-v6-backup.md)
 
 ## 概述

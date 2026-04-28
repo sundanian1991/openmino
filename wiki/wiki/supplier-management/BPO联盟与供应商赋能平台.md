@@ -1,7 +1,7 @@
 # BPO联盟与供应商赋能平台
 
 > Sources: 供应商管理岗, 2026-03~04, 2026-04-28
-> Raw: [BPO联盟培训总结](../../raw/docs-supplier/历史项目-BPO联盟-BPO京东电销项目联盟培训总结.md); [联盟月报v9](../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v9.md); [月报进展](../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报进展.md); [Q1汇报参考](../../raw/docs-supplier/历史项目-BPO联盟-Q1汇报参考.md)
+> Raw:[BPO联盟培训总结](../../raw/docs-supplier/历史项目-BPO联盟-BPO京东电销项目联盟培训总结.md); [联盟月报v9](../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报模块v9.md); [月报进展](../../raw/docs-supplier/历史项目-BPO联盟-供应商联盟-月报进展.md); [Q1汇报参考](../../raw/docs-supplier/历史项目-BPO联盟-Q1汇报参考.md)
 
 ## 概述
 

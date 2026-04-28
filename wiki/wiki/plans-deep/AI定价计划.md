@@ -1,7 +1,7 @@
 # AI定价计划
 
 > Sources: AI产品定价模式演变商业案例研究（2026-04-24）, 2026-04-28
-> Raw: [头脑风暴](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md); [研究文档](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-01-research.md); [compiled-spec](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec.md); [storyboard](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard.md); [decisions](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-decisions.md)
+> Raw:[头脑风暴](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-00-brainstorm.md); [研究文档](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-01-research.md); [compiled-spec](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-compiled-spec.md); [storyboard](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-storyboard.md); [decisions](../../raw/plans/2026-04-24-AI产品定价模式演变商业案例-decisions.md)
 
 ## 概述
 

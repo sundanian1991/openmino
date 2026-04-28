@@ -1,7 +1,7 @@
 # 晋升答辩Q&A策略库：预判、应答与引导
 
 > Sources: mino, 2026-04-28
-> Raw: [V1评委问题预判](../../raw/personal-growth/晋升述职-晋升材料-V1版本-02-评委会问的问题预判.md); [V2评委问题预判更新](../../raw/personal-growth/晋升述职-晋升材料-V2版本-02-评委会问的问题预判-更新版.md); [V3评委问题预判](../../raw/personal-growth/晋升述职-晋升材料-V3版本-03-评委会问的问题预判-V3版本.md); [V6 Q&A答辩](../../raw/personal-growth/晋升述职-晋升材料-V6版本-Q&A答辩准备.md); [V8模拟答辩QA](../../raw/personal-growth/晋升述职-晋升材料-V8版本-模拟答辩QA.md); [V13评委问答](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-02_评委问答准备.md); [alma评委提问清单](../../raw/personal-growth/晋升述职-晋升材料-alma版本-评委提问准备清单.md)
+> Raw:[V1评委问题预判](../../raw/personal-growth/晋升述职-晋升材料-V1版本-02-评委会问的问题预判.md); [V2评委问题预判更新](../../raw/personal-growth/晋升述职-晋升材料-V2版本-02-评委会问的问题预判-更新版.md); [V3评委问题预判](../../raw/personal-growth/晋升述职-晋升材料-V3版本-03-评委会问的问题预判-V3版本.md); [V6 Q&A答辩](../../raw/personal-growth/晋升述职-晋升材料-V6版本-Q&A答辩准备.md); [V8模拟答辩QA](../../raw/personal-growth/晋升述职-晋升材料-V8版本-模拟答辩QA.md); [V13评委问答](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-02_评委问答准备.md); [alma评委提问清单](../../raw/personal-growth/晋升述职-晋升材料-alma版本-评委提问准备清单.md)
 
 ## 概述
 

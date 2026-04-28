@@ -1,7 +1,7 @@
 # IPO进程如何影响AI定价策略
 
 > Sources: AI产品定价模式演变研究 - IPO与定价策略关联分析 (2026-04-24), 2026-04-28
-> Raw: [头脑风暴源文件-IPO章节](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research研究文件-IPO数据](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md)
+> Raw:[头脑风暴源文件-IPO章节](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-00-brainstorm.md); [research研究文件-IPO数据](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-sources-01-research.md)
 
 ## 概述
 

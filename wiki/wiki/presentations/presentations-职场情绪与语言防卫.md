@@ -1,7 +1,7 @@
 # 职场情绪与语言防卫机制
 
 > Sources: 王易人情感触发地图项目 (2026-03-08) + 专属AI职业导师系统, 2026-04-28
-> Raw: [情感触发地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [项目定义文件](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md); [长期记忆](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-long-term.md); [memory-2026-03-08](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-08.md); [memory-2026-03-13](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-13.md)
+> Raw:[情感触发地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [项目定义文件](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md); [长期记忆](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-long-term.md); [memory-2026-03-08](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-08.md); [memory-2026-03-13](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-13.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # Zara-AI学习资源监控系统深度解析
 
 > Sources: mino, 2026-04-28
-> Raw: [Zara AI当前配置](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-zara-ai-current.md); [周度监控2026-04-03](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03.md); [周度监控2026-04-03-v2](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03-v2.md); [周度监控2026-04-08](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-08.md)
+> Raw:[Zara AI当前配置](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-zara-ai-current.md); [周度监控2026-04-03](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03.md); [周度监控2026-04-03-v2](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-03-v2.md); [周度监控2026-04-08](../../raw/presentations/projects-proj-1772240987779-zrc3gz-outputs-weekly-monitor-2026-04-08.md)
 
 ## 概述
 

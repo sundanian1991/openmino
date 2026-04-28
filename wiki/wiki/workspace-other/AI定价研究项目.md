@@ -1,7 +1,7 @@
 # AI定价研究项目
 
 > Sources: Mino (AI), 2026-04-24 ~, 2026-04-25
-> Raw: [AI定价模式PPT 演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md); [AI定价演变 design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md)
+> Raw:[AI定价模式PPT 演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md); [AI定价演变 design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md)
 
 ## 概述
 

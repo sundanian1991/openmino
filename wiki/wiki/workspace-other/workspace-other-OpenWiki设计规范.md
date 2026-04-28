@@ -1,7 +1,7 @@
 # OpenWiki 设计规范与产品哲学
 
 > Sources: Mino (AI), 2026-04-26
-> Raw: [DESIGN.md](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-DESIGN.md); [CLAUDE.md](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CLAUDE.md); [README.zh-CN](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-README.zh-CN.md); [CONTRIBUTING](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CONTRIBUTING.md)
+> Raw:[DESIGN.md](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-DESIGN.md); [CLAUDE.md](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CLAUDE.md); [README.zh-CN](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-README.zh-CN.md); [CONTRIBUTING](../../raw/workspace-other/OpenWiki--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-OpenWiki-CONTRIBUTING.md)
 
 ## 概述
 

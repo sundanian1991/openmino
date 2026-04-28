@@ -1,7 +1,7 @@
 # 自我认知体系：五大核心能力模型
 
 > Sources: mino, 2026-04-28
-> Raw: [自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_详细版.md); [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [自我认知_精简版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md)
+> Raw:[自我认知_详细版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_详细版.md); [自我认知_完整版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_完整版.md); [自我认知_精简版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知.md); [自我认知_生态版](../../raw/personal-growth/晋升述职-晋升材料-V13-cowork版-述职准备资料-自我认知_生态版.md)
 
 ## 概述
 

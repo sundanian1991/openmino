@@ -1,7 +1,7 @@
 # AI定价演变：设计系统与视觉规范方法论
 
 > Sources: Mino (AI), 2026-04-26
-> Raw: [design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md); [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md)
+> Raw:[design-spec](../../raw/workspace-other/AI定价演变--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价演变-design-spec.md); [演讲脚本](../../raw/workspace-other/AI定价模式PPT--Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-AI定价模式PPT-AI产品定价模式演变_演讲脚本.md)
 
 ## 概述
 

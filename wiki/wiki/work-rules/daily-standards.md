@@ -1,7 +1,7 @@
 # 日常工作标准
 
 > Sources: 年老师, 2026-03 ~ 2026-04, 2026-04-28
-> Raw: [日常规范](../../raw/work-standards/日常规范.md); [向上汇报规范](../../raw/work-standards/向上汇报规范.md); [沟通方法论](../../raw/work-standards/沟通方法论.md)
+> Raw:[日常规范](../../raw/work-standards/日常规范.md); [向上汇报规范](../../raw/work-standards/向上汇报规范.md); [沟通方法论](../../raw/work-standards/沟通方法论.md)
 
 ## 概述
 

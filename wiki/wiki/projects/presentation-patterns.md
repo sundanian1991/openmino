@@ -1,7 +1,7 @@
 # 演讲稿项目模式
 
 > Sources: Mino, 2026-04-09 ~, 2026-04-25
-> Raw: [刘乾坤人物分析](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-README.md), [AI定价演讲](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-README.md)
+> Raw:[刘乾坤人物分析](../../raw/presentations/projects-liu-qiankun-profile_ppt169_20260409-README.md); [AI定价演讲](../../raw/presentations/projects-AI产品定价模式演变-从CodingPlan到TokenPlan_ppt169_20260425-README.md)
 
 ## 概述
 

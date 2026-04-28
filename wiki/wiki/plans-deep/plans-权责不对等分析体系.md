@@ -1,7 +1,7 @@
 # 权责不对等分析体系：策略组与服务组的结构性矛盾
 
 > Sources: mino, 2026-03-29
-> Raw: [brainstorm](../../raw/plans/2026-03-29-权责不对等-00-brainstorm.md); [research](../../raw/plans/2026-03-29-权责不对等-01-research.md); [边界识别清单](../../raw/plans/2026-03-29-权责不对等-02-workspace-边界识别清单-2026-03-29.md); [自我保护策略](../../raw/plans/2026-03-29-权责不对等-02-workspace-自我保护策略-2026-03-29.md); [联盟可行性评估](../../raw/plans/2026-03-29-权责不对等-02-workspace-联盟可行性评估-王易人-2026-03-29.md); [调整触发条件](../../raw/plans/2026-03-29-权责不对等-02-workspace-调整触发条件-2026-03-29.md); [review](../../raw/plans/2026-03-29-权责不对等-03-review.md)
+> Raw:[brainstorm](../../raw/plans/2026-03-29-权责不对等-00-brainstorm.md); [research](../../raw/plans/2026-03-29-权责不对等-01-research.md); [边界识别清单](../../raw/plans/2026-03-29-权责不对等-02-workspace-边界识别清单-2026-03-29.md); [自我保护策略](../../raw/plans/2026-03-29-权责不对等-02-workspace-自我保护策略-2026-03-29.md); [联盟可行性评估](../../raw/plans/2026-03-29-权责不对等-02-workspace-联盟可行性评估-王易人-2026-03-29.md); [调整触发条件](../../raw/plans/2026-03-29-权责不对等-02-workspace-调整触发条件-2026-03-29.md); [review](../../raw/plans/2026-03-29-权责不对等-03-review.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 花叔Design项目
 
 > Sources: 花叔Design PPT README (2026-04-22); 技能全量可视化分析 (2026-04-21); 技能元数据索引, 2026-04-28
-> Raw: [花叔Design PPT README](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-02-技能-huashu-design-PPT-20260422-README.md); [技能全量可视化分析](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-00-技能顺序列表.md); [技能元数据索引](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-_metadata-index.md)
+> Raw:[花叔Design PPT README](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-02-技能-huashu-design-PPT-20260422-README.md); [技能全量可视化分析](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-00-技能顺序列表.md); [技能元数据索引](../../raw/workspace-skills/-Users-sundanian-Documents-projects-ai-agents-my-agent-workspace-06-技能-全量可视化分析-20260421-_metadata-index.md)
 
 ## 概述
 

@@ -1,7 +1,7 @@
 # 长期目标管理体系：SMART-WAL框架与问责机制
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/projects-long-term/target-decomposition-framework.md; ../../raw/projects-long-term/accountability-system.md; ../../raw/projects-long-term/target-adjustment-strategy.md; ../../raw/projects-long-term/project.md
+> Raw:../../raw/projects-long-term/target-decomposition-framework.md; ../../raw/projects-long-term/accountability-system.md; ../../raw/projects-long-term/target-adjustment-strategy.md; ../../raw/projects-long-term/project.md
 
 ## 概述
 

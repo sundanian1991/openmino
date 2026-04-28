@@ -1,7 +1,7 @@
 # 数据讲故事笔记 — Storytelling with Data
 
 > Sources: Cole Nussbaumer Knaflic, 2026-04-28
-> Raw: [全书知识汇总](../../raw/personal-growth/Storytelling_with_Data_-_Cole_Nussbaumer_Knaflic-全书知识汇总-中文版.md)
+> Raw:[全书知识汇总](../../raw/personal-growth/Storytelling_with_Data_-_Cole_Nussbaumer_Knaflic-全书知识汇总-中文版.md)
 
 ## 概述
 

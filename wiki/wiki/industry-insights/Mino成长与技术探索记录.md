@@ -1,7 +1,6 @@
 # Mino 成长与技术探索记录
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/archive/ (自主性、Agent设计、记忆系统、减法思维、分形思维、Dashboard布局设计等)
 
 ## 概述
 

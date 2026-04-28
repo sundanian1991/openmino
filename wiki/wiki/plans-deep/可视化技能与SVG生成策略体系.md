@@ -1,7 +1,7 @@
 # 可视化技能与SVG生成策略体系
 
 > Sources: mino, 2026-04-04 至, 2026-04-25
-> Raw: [Quiver-API-brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [Quiver-API-research](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md); [图表技能改造-plan](../../raw/plans/2026-04-25-图表技能改造-plan.md); [图表技能改造-prompt](../../raw/plans/2026-04-25-图表技能改造-prompt.md); [图表技能改造-result](../../raw/plans/2026-04-25-图表技能改造-result.md); [图表技能改造-spec](../../raw/plans/2026-04-25-图表技能改造-spec.md)
+> Raw:[Quiver-API-brainstorm](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md); [Quiver-API-research](../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md); [图表技能改造-plan](../../raw/plans/2026-04-25-图表技能改造-plan.md); [图表技能改造-prompt](../../raw/plans/2026-04-25-图表技能改造-prompt.md); [图表技能改造-result](../../raw/plans/2026-04-25-图表技能改造-result.md); [图表技能改造-spec](../../raw/plans/2026-04-25-图表技能改造-spec.md)
 
 ## 概述
 

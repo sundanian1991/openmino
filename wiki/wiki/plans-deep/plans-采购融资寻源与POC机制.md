@@ -1,7 +1,7 @@
 # 采购融资寻源与POC机制：内部供应商赛马全流程
 
 > Sources: mino, 2026-04-13
-> Raw: [寻源需求文档](../../raw/plans/2026-04-13-采购融资寻源需求-寻源需求文档.md); [spec](../../raw/plans/2026-04-13-采购融资寻源需求-spec.md); [plan](../../raw/plans/2026-04-13-采购融资寻源需求-plan.md); [result](../../raw/plans/2026-04-13-采购融资寻源需求-result.md)
+> Raw:[寻源需求文档](../../raw/plans/2026-04-13-采购融资寻源需求-寻源需求文档.md); [spec](../../raw/plans/2026-04-13-采购融资寻源需求-spec.md); [plan](../../raw/plans/2026-04-13-采购融资寻源需求-plan.md); [result](../../raw/plans/2026-04-13-采购融资寻源需求-result.md)
 
 ## 概述
 

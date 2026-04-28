@@ -1,7 +1,7 @@
 # vwiehr专属AI职业导师系统
 
 > Sources: mino, 2026-04-28
-> Raw: [项目定义](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md); [情绪触发地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [长期记忆](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-long-term.md); [memory-2026-03-08](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-08.md); [memory-2026-03-13](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-13.md); [CLAUDE.md](../../raw/presentations/projects-proj-1772979560848-vwiehr-CLAUDE.md)
+> Raw:[项目定义](../../raw/presentations/projects-proj-1772979560848-vwiehr-project.md); [情绪触发地图](../../raw/presentations/projects-proj-1772979560848-vwiehr-emotional-trigger-map.md); [长期记忆](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-long-term.md); [memory-2026-03-08](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-08.md); [memory-2026-03-13](../../raw/presentations/projects-proj-1772979560848-vwiehr-memory-2026-03-13.md); [CLAUDE.md](../../raw/presentations/projects-proj-1772979560848-vwiehr-CLAUDE.md)
 
 ## 概述
 

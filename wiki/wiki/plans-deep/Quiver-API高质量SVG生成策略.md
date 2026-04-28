@@ -1,7 +1,7 @@
 # Quiver API 高质量 SVG 生成策略
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md; ../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md
+> Raw:../../raw/plans/2026-04-04-Quiver-API高质量使用策略-00-brainstorm.md; ../../raw/plans/2026-04-04-Quiver-API高质量使用策略-01-research.md
 
 ## 概述
 

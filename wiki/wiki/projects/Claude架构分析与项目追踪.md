@@ -1,7 +1,6 @@
 # Claude 架构分析与项目追踪
 
 > Sources: mino, 2026-04-28
-> Raw: ../../raw/projects-archive/ (architecture-*.md 共 8 files); ../../raw/projects-claude-trace/ (2 files)
 
 ## 概述
 

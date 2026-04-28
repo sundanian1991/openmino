@@ -1,7 +1,7 @@
 # 复合知识代理 — 研究、审查与知识管理
 
 > Sources: MyAgents, 2026-04-27
-> Raw: [data-accuracy-reviewer](../../raw/skills/compound-knowledge-agents-data-accuracy-reviewer.md), [knowledge-base-researcher](../../raw/skills/compound-knowledge-agents-knowledge-base-researcher.md), [past-work-researcher](../../raw/skills/compound-knowledge-agents-past-work-researcher.md), [stale-knowledge-checker](../../raw/skills/compound-knowledge-agents-stale-knowledge-checker.md), [strategic-alignment-reviewer](../../raw/skills/compound-knowledge-agents-strategic-alignment-reviewer.md)
+> Raw:[data-accuracy-reviewer](../../raw/skills/compound-knowledge-agents-data-accuracy-reviewer.md); [knowledge-base-researcher](../../raw/skills/compound-knowledge-agents-knowledge-base-researcher.md); [past-work-researcher](../../raw/skills/compound-knowledge-agents-past-work-researcher.md); [stale-knowledge-checker](../../raw/skills/compound-knowledge-agents-stale-knowledge-checker.md); [strategic-alignment-reviewer](../../raw/skills/compound-knowledge-agents-strategic-alignment-reviewer.md)
 
 ## 概述
 
