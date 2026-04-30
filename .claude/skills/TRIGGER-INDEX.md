@@ -44,6 +44,7 @@ pos: .claude/skills/TRIGGER-INDEX.md
 
 | 技能 | 触发词 | 一句话描述 |
 |------|--------|-----------|
+| data-storytelling | 数据可视化、数据报告、数据沟通、图表设计、业绩汇报、可视化规范 | 端到端数据沟通流程（受众→选图→清晰→迭代） |
 | survey-analysis | 问卷、调研、数据分析 | 问卷分析全流程 |
 | supplier-capacity-adjustment | 分量调整、供应商人力 | 供应商分量调整 |
 | report-builder | 报告、数据报告 | 结构化报告构建 |

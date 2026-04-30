@@ -1,5 +1,5 @@
 ---
-name: task-dispatcher
+name: think:task-dispatcher
 description: 通用任务执行调度器 — IPOFA 五环流程。当需求不明确、需要跨技能协作、或年老师说"帮我搞定XX"时触发。使用 7 元素框架（上下文/目标/思考方式/约束/交付物/缺失处理/示例）澄清需求，替代 5W2H。
 type: skill
 ---
