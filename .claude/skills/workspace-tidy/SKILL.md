@@ -1,5 +1,5 @@
 ---
-name: workspace-tidy
+name: other:workspace-tidy
 description: 三区域文件生命周期管理 — 整理 docs/、memory/、workspace/ 三个文件夹，统一命名规范，归档散落文件。
 ---
 
