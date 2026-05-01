@@ -1,6 +1,6 @@
 ---
 name: waza:health
-description: "Audits the full six-layer Claude Code config stack when Claude ignores instructions, behaves inconsistently, hooks malfunction, or MCP servers need auditing. Flags issues by severity. Not for debugging code or reviewing PRs."
+description: Claude 健康检查 — 审计六层配置栈。适用于 Claude 忽略指令、行为不一致、钩子故障、MCP 服务器异常。不适用于调试代码或审查 PR。
 when_to_use: "检查claude, 健康度, 配置检查, 配置对不对, Claude ignoring instructions, check config, settings not working, audit config"
 metadata:
   version: "3.16.0"

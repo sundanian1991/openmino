@@ -1,6 +1,6 @@
 ---
 name: kw:confidence
-description: Gut-check what you know and don't know before proceeding. Use at any point to assess confidence, surface gaps, and decide whether to proceed or dig deeper.
+description: 信心检验 — 评估确定性、发现知识盲区，决定是继续推进还是深入挖掘。
 ---
 
 # Confidence

@@ -1,6 +1,6 @@
 ---
 name: viz:narrative-text-visualization
-description: Generate structured narrative text visualizations from data using T8 Syntax. Use when users want to create data interpretation reports, summaries, or structured articles with semantic entity annotations. T8 is designed for unstructured data visualization where T stands for Text and 8 represents a byte of 8 bits, symbolizing deep insights beneath the text.
+description: 用 T8 语法生成结构化叙事文本可视化。适用于数据解读报告、摘要、带语义标注的结构化文章等需求。
 ---
 
 # Narrative Text Visualization Skill

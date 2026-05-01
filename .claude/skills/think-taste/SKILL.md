@@ -1,6 +1,6 @@
 ---
 name: think:taste
-description: Develop refined aesthetic judgment by learning from human feedback, asking genuine questions about quality, and calibrating over time.
+description: 培养审美判断力 — 通过人类反馈、真实追问和持续校准来提升对品质的判断。
 ---
 
 ## Core Principle — Learn From the Human

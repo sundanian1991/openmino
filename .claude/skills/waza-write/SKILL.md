@@ -1,6 +1,6 @@
 ---
 name: waza:write
-description: "Strips AI writing patterns and rewrites prose to sound natural in Chinese or English. Only activates on explicit writing or editing requests. Not for code comments, commit messages, or inline docs."
+description: 去 AI 味写作 — 清除 AI 写作痕迹，让文章自然流畅（中英双语）。仅在明确写作/编辑请求时激活。不适用于代码注释、提交信息。
 when_to_use: "帮我写, 改稿, 润色, 去AI味, 写一段, draft, edit text, proofread, sound natural, polish, rewrite"
 metadata:
   version: "3.18.0"

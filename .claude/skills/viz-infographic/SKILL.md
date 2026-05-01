@@ -1,6 +1,6 @@
 ---
 name: viz:infographic-creator
-description: Create beautiful infographics based on given text content. Use when users request to create infographics.
+description: 创建精美信息图 — 基于给定文本内容，用 AntV Infographic 生成可视化信息图表。
 ---
 
 Infographics convert data, information, and knowledge into perceptible visual language. They combine visual design with data visualization, compressing complex information with intuitive symbols to help audiences quickly understand and remember key points.

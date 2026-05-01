@@ -1,6 +1,6 @@
 ---
 name: waza:hunt
-description: "Finds root cause of errors, crashes, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
+description: 根因分析 — 在修复前定位错误、崩溃、异常行为和失败测试的根因。不适用于代码审查或新功能开发。
 when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, debug, why broken, not working, what's wrong, fix error, stack trace"
 metadata:
   version: "3.17.0"

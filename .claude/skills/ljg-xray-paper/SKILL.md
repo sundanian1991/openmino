@@ -1,6 +1,6 @@
 ---
 name: ljg:xray-paper
-description: "Paper X-ray. Extracts what the paper says (problem-perspective-result) and what it means for lijigang (cognitive delta cards in ASCII art). Use when user shares an arxiv link, paper URL, PDF, or asks to analyze a research paper. Usually called via ljg-xray router. Do NOT use for blog posts or non-academic articles (use ljg-xray-article instead)."
+description: 论文解读 — 提取论文的问题→视角→结果，并生成认知启发卡片。适用于 arxiv 链接、论文 URL、PDF 或学术论文分析需求。
 user_invocable: true
 ---
 

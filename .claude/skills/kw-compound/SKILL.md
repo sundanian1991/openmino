@@ -1,6 +1,6 @@
 ---
 name: kw:compound
-description: Extract and save learnings from a completed knowledge work session. Saves to docs/knowledge/ so future plans automatically find them.
+description: 从已完成的知识工作中提取学习成果并保存到 docs/knowledge/，供未来计划自动发现。
 ---
 
 # Compound

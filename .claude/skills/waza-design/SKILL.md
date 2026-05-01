@@ -1,6 +1,6 @@
 ---
 name: waza:design
-description: "Produces distinctive, production-grade UI for any component, page, or visual interface. Handles screenshot-driven iteration when the user sends an image with a visual complaint. Not for backend logic or data pipelines."
+description: 产出独特的高品质 UI — 适用于组件、页面、视觉界面。支持截图驱动迭代。不适用于后端逻辑或数据管道。
 when_to_use: "设计, 做页面, 做组件, 不好看, 不和谐, 样式, 前端, UI, build page, create component, make it look good, style, design, screenshot with visual complaint"
 metadata:
   version: "3.18.0"

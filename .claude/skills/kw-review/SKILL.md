@@ -1,6 +1,6 @@
 ---
 name: kw:review
-description: Multi-reviewer quality check for knowledge work. Runs strategic alignment and data accuracy reviewers on plans, briefs, and strategy docs.
+description: 多角色质量审查 — 对知识工作进行战略对齐和数据准确性双重审查。适用于计划、简报、策略文档等。
 argument-hint: "[file path or content to review]"
 ---
 
