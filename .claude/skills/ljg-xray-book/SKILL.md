@@ -1,6 +1,6 @@
 ---
 name: ljg:xray-book
-description: Deep structure extraction from books using the Epiplexity principle - maximizing computational investment to extract maximum learnable structure from any book.
+description: 深度拆书 — 基于 Epiplexity 原理，最大化提取书籍中的认知结构和可学习框架。
 user_invocable: true
 ---
 

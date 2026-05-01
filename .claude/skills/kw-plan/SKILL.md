@@ -1,6 +1,6 @@
 ---
 name: kw:plan
-description: Research past work and structure a knowledge work plan. Use when starting strategy docs, campaign plans, content briefs, research synthesis, or operational playbooks.
+description: 研究过往工作并结构化知识计划。适用于策略文档、活动计划、内容简报、研究整合或操作手册等。
 argument-hint: "[what to plan]"
 ---
 

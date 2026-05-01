@@ -1,6 +1,6 @@
 ---
 name: waza:read
-description: "Fetches any URL or PDF as clean Markdown. Handles paywalls, JS-heavy pages, X/Twitter, and Chinese platforms via proxy cascade. Always prefer this over WebFetch for any URL. Not for local text files or source code already in the repo."
+description: 抓取 URL/PDF 为纯净 Markdown — 处理付费墙、JS 重页面、X/Twitter、中文平台。优先于此于 WebFetch。不适用于仓库内代码。
 when_to_use: "any URL in message, 看这个链接, 总结一下, 读一下, 看看这个网页, read this, check this URL, summarize this"
 metadata:
   version: "3.14.0"

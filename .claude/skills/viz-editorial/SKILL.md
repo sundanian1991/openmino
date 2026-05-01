@@ -1,6 +1,6 @@
 ---
 name: viz:editorial-card-generator
-description: Transform text content into modern editorial-style HTML5 informational posters (multiple cards, support PNG export). Use cases: users need to create infographics, knowledge cards, social media posters, or mention keywords like "generate poster", "create cards", "information visualization".
+description: 将文字内容转为杂志风 HTML5 信息海报（多卡片，支持导出 PNG）。适用于信息图、知识卡片、社交媒体海报等需求。
 allowed-tools: Read, Write
 ---
 
@@ -18,10 +18,19 @@ Transform user-provided text content into a set of 3-6 high-aesthetic, magazine-
 - **Size**: Strictly locked to width: 600px, height: 800px (3:4 ratio)
 
 ### Color Scheme
+
+**Default Theme — Hermès Orange:**
 - **Bg (Paper)**: #f2efe9 (off-white/warm gray)
 - **Text (Ink)**: #1a1a1a (dark gray)
-- **Accent (Emphasis)**: #d95e00 (Hermès orange) - allowed to fine-tune based on content theme
-- **Visual Rhythm**: Cards should have "light-light-dark-light" or "light-dark-light" rhythmic variation
+- **Accent (Emphasis)**: #d95e00 (Hermès orange)
+
+**Variant Theme — 合欢红 (Silk Tree Red):**
+- **Bg (Paper)**: #F1F0EC (silver white,严禁纯白)
+- **Text (Ink)**: #1a1a1a (dark gray)
+- **Accent (Emphasis)**: #E07563 (合欢红 — warm, slightly muted red)
+
+**Visual Rhythm**: Cards should have "light-light-dark-light" or "light-dark-light" rhythmic variation.
+通过色彩饱和度差异营造高级感，而非色相堆砌。
 
 ### Font Stack (CDN)
 Include Google Fonts in HTML Head:
@@ -39,8 +48,9 @@ Analyze the word count and logical structure of the [Input Content] to automatic
 
 ### Card 1: The Cover
 - **Content**: Extracted main title + very short subtitle/tagline
-- **Design**: Huge font size, minimalist, visual impact first
+- **Design**: Huge font size, minimalist, visual impact first. Use "破格" elements (text skew, color block切割)
 - **Key Elements**: Extra-large numbers/percentages, short powerful titles
+- **Required Elements**: Main title, subtitle, core symbol (FontAwesome decoration), author tag `作者：AI 启蒙小伙伴`（右下角小标签）
 
 ### Card 2 ~ N-1: The Content
 - **Splitting Principle**: Don't crowd! One core point/one chapter = one card
@@ -51,6 +61,7 @@ Analyze the word count and logical structure of the [Input Content] to automatic
 ### Card N: The Outro
 - **Content**: Concluding statement, CTA (Call to Action) or simple closing
 - **Design**: More whitespace, steady ending
+- **Required Elements**: Bottom bar with 小红书 + 微信 Logo placeholders (FontAwesome icons),署名 `AI 启蒙小伙伴`
 
 ## Output Requirements
 

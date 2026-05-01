@@ -1,6 +1,6 @@
 ---
 name: kw:brainstorm
-description: Brain dump and compile knowledge before structuring a plan. Use when starting any non-trivial knowledge work — after a meeting, when tackling a new problem, or when you need to pull together what you know before planning.
+description: 头脑风暴 — 在制定计划前，先梳理已知信息和知识。适用于会议后、面对新问题、或规划前需要整理思路时。
 argument-hint: "[topic, brain dump, or meeting notes]"
 ---
 

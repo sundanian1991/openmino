@@ -1,6 +1,6 @@
 ---
 name: waza:learn
-description: "Runs a six-phase research workflow to turn unfamiliar domains or collected sources into publish-ready output. Not for quick lookups or single-file reads."
+description: 六阶段研究工作流 — 将陌生领域或原始资料转化为可发布的研究成果。不适用于快速查询或单文件阅读。
 when_to_use: "学习一下, 深入研究, 研究一下, 整理成文章, research, deep dive, help me understand, compile sources, unfamiliar domain"
 metadata:
   version: "3.15.0"

@@ -1,6 +1,6 @@
 ---
 name: kw:work
-description: Execute a knowledge work plan. Break it into tasks, do the work, and track what happened. Use after planning to actually produce the deliverables.
+description: 执行知识工作计划 — 拆解任务、推进工作、追踪进度。适用于计划完成后实际产出交付物。
 argument-hint: "[plan file to execute]"
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: tool:icon-retrieval
-description: Search and retrieve icon SVG strings from icon library. Returns up to 5 matching icons by default, customizable via topK parameter.
+description: 搜索并获取图标 SVG 字符串。默认返回最多 5 个匹配图标，可通过 topK 参数自定义数量。
 dependency:
   nodejs: ">=18.0.0"
 ---
