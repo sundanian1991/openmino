@@ -1,6 +1,6 @@
 ---
 name: waza:read
-description: 抓取 URL/PDF 为纯净 Markdown — 处理付费墙、JS 重页面、X/Twitter、中文平台。优先于此于 WebFetch。不适用于仓库内代码。
+description: 网页/PDF 抓取 — 把 URL 或 PDF 转成干净 Markdown。不做分析、不写摘要、不讨论内容，只抓取。核心："给什么拿什么，不加戏"。
 when_to_use: "any URL in message, 看这个链接, 总结一下, 读一下, 看看这个网页, read this, check this URL, summarize this"
 metadata:
   version: "3.14.0"
