@@ -1,6 +1,6 @@
 ---
 name: waza:check
-description: 代码审查 — 实现后审查 diff，自动修复安全问题，大 diff 自动触发安全/架构专家审查。不适用于探索想法或调试。
+description: 代码审查 — 实现后审查 diff，自动修复安全问题，大 diff 触发安全/架构专家审查。核心："写完别急，先看一遍"。
 when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 看看issue, 看看PR, review my code, check changes, before merge, code review"
 metadata:
   version: "3.15.0"

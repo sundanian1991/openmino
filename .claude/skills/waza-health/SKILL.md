@@ -1,6 +1,6 @@
 ---
 name: waza:health
-description: Claude 健康检查 — 审计六层配置栈。适用于 Claude 忽略指令、行为不一致、钩子故障、MCP 服务器异常。不适用于调试代码或审查 PR。
+description: Claude 配置体检 — 审计六层配置栈（CLAUDE.md → rules → skills → hooks → subagents → verifiers）。适用于 Claude 不听指令、行为不一致、钩子故障。核心："配置对不对，查一遍就知道"。
 when_to_use: "检查claude, 健康度, 配置检查, 配置对不对, Claude ignoring instructions, check config, settings not working, audit config"
 metadata:
   version: "3.16.0"

@@ -1,6 +1,6 @@
 ---
 name: waza:write
-description: 去 AI 味写作 — 清除 AI 写作痕迹，让文章自然流畅（中英双语）。仅在明确写作/编辑请求时激活。不适用于代码注释、提交信息。
+description: 去 AI 味写作 — 清除 AI 写作模式（"值得注意的是""让我们""总的来说"），让文字像人写的。核心："别加戏，别升华"。
 when_to_use: "帮我写, 改稿, 润色, 去AI味, 写一段, draft, edit text, proofread, sound natural, polish, rewrite"
 metadata:
   version: "3.18.0"

@@ -1,6 +1,6 @@
 ---
 name: waza:hunt
-description: 根因分析 — 在修复前定位错误、崩溃、异常行为和失败测试的根因。不适用于代码审查或新功能开发。
+description: 根因诊断 — 报错、崩溃、异常行为、测试失败时，先定位根因再动手修。核心："别急着改，先说清楚为什么坏了"。
 when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, debug, why broken, not working, what's wrong, fix error, stack trace"
 metadata:
   version: "3.17.0"

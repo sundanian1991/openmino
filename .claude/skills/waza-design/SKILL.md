@@ -1,6 +1,6 @@
 ---
 name: waza:design
-description: 产出独特的高品质 UI — 适用于组件、页面、视觉界面。支持截图驱动迭代。不适用于后端逻辑或数据管道。
+description: 有态度的 UI 设计 — 做组件、页面、界面。支持截图驱动迭代（发一张图说哪里不好看，基于此改）。核心："别做默认感的东西"。
 when_to_use: "设计, 做页面, 做组件, 不好看, 不和谐, 样式, 前端, UI, build page, create component, make it look good, style, design, screenshot with visual complaint"
 metadata:
   version: "3.18.0"

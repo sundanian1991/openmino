@@ -1,6 +1,6 @@
 ---
 name: waza:think
-description: 方案设计与验证 — 在写代码前将初步想法转化为有结构的方案。适用于新功能、架构决策、构建/保留判断。不适用于 bug 修复或小修改。
+description: 方案设计 — 把初步想法变成可执行的方案，写代码前先验证思路，不写脚手架不写伪代码。核心："想清楚再动手，别急着写代码"。
 when_to_use: "出方案, 给方案, 深入分析, 怎么设计, 用什么方案, 判断一下, 有没有必要, 值不值得, what's the best approach, plan this, how should I, should we keep this"
 metadata:
   version: "3.16.0"

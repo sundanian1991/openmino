@@ -1,6 +1,6 @@
 ---
 name: waza:learn
-description: 六阶段研究工作流 — 将陌生领域或原始资料转化为可发布的研究成果。不适用于快速查询或单文件阅读。
+description: 深度学习 — 六阶段工作流把陌生领域或原始资料整理成结构化研究成果。核心："不替你想，帮你理清"。
 when_to_use: "学习一下, 深入研究, 研究一下, 整理成文章, research, deep dive, help me understand, compile sources, unfamiliar domain"
 metadata:
   version: "3.15.0"
