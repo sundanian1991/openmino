@@ -328,10 +328,122 @@ SPEC 是完整的可视化执行指令，必须包含以下要素：
 
 ---
 
-## 六、使用示例
+## 七、技能生态联动
 
-**示例：年老师问"怎么可视化供应商健康度？"**
+> viz-pattern 不是孤立的，是可视化技能链路的**上游决策层**。
+> 必须与以下文件/技能配合使用。
+
+### 与 13-VISUALIZATION.md 的关系
+
+**13-VISUALIZATION.md 是视觉执行的宪法**，viz-pattern 的 SPEC 必须符合 13 的硬规则：
+
+| 13 的规则 | viz-pattern 的 SPEC 中如何体现 |
+|----------|-------------------------------|
+| 标题写结论，不写描述 | SPEC 的【标题】项必须是结论性的 |
+| 颜色是信号不是装饰 | SPEC 的【视觉编码】必须说明颜色编码什么 |
+| 高亮 ≤10% | SPEC 的【标注策略】限定高亮范围 |
+| 默认 Warm，≤2 ramp | SPEC 中注明色系选择理由 |
+| 一个图一个核心洞察 | SPEC 的【叙事结构】只设 1 个核心结论 |
+| 标题 15-18px/600/Warm800 | SPEC 的【布局】遵循 13 的字号层级 |
+| 间距/边框/圆角 | SPEC 的【布局】引用 13 的间距标准 |
+| 禁止渐变/阴影/emoji | 决策规则第 3 条"可画性检查"过滤掉 |
+
+**流程**：viz-pattern 选模式 + 写 SPEC → 13-VISUALIZATION.md 校验 SPEC 合规 → 委托渲染。
+
+### 与其他可视化技能的分工
+
+```
+viz-data-story       ← 数据讲故事的策略层（大纲 → 几张图 → 叙事顺序）
+  ↓
+viz-pattern          ← 视觉模式翻译层（每张图 → 选什么模式 → 写 SPEC）
+  ↓
+viz-echarts          ← 数据图表渲染层（ECharts HTML）
+viz-chart            ← 通用图表渲染层（Chart.js）
+viz-svg-flow         ← SVG 手绘渲染层（流程图/架构图/抽象类比）
+viz-infographic      ← 信息图渲染层（长图/海报）
+viz-data-viz         ← Python matplotlib 渲染层
+viz-editorial        ← 编辑式图文渲染层
+```
+
+**调用时机**：
+
+| 场景 | 先走哪个技能 | 为什么 |
+|------|------------|--------|
+| "拿这批数据做个汇报" | viz-data-story → viz-pattern → viz-echarts | 先定叙事大纲，再定每张图的视觉方案 |
+| "这个概念怎么可视化" | viz-pattern → viz-echarts/svg-flow | 直接翻译概念为 SPEC |
+| "帮我画一张趋势图" | viz-pattern → viz-echarts | 简单场景跳过 data-story |
+| "做个信息图海报" | viz-pattern → viz-infographic | 抽象概念→视觉方案→信息图渲染 |
+
+### 与 viz-echarts 的交接
+
+委托 viz-echarts 时，传入 SPEC 并附加以下参数：
+
+```
+委托指令示例：
+"用 viz-echarts 渲染以下 SPEC：
+- 模式：22-雷达图
+- 标题：毅航健康度全面领先，3 家低于基准线
+- 数据字段：supplier_name, achievement_rate, peak_ratio, relative_efficiency, fci_score, turnover_rate, compliance_rate
+- 高亮：只高亮毅航（Warm 500），其余灰化（Stone 300）
+- 标注：毅航顶点标'综合得分 92，超基准 15 分'
+- 基准线：灰色虚线圆圈，标'行业基准线'
+- 画布：800×550
+请生成 ECharts HTML，遵循 13-VISUALIZATION.md 配色规范。"
+```
+
+### 与 viz-svg-flow 的交接
+
+委托 viz-svg-flow 时，需额外说明手绘风格细节：
+
+```
+委托指令示例：
+"用 viz-svg-flow 渲染以下 SPEC：
+- 模式：49-冰山
+- 标题：客诉问题冰山：表面 12% 可量化，88% 需深挖
+- 手绘要素：水线以上小三角（可见问题），水线以下大三角（隐藏根因）
+- 标注：水线标'可量化指标'，底部标'需深挖的根因'
+- 画布：600×500
+请生成 SVG，遵循 Warm 色系，线性克制风格。"
+```
+
+### 与 viz-data-story 的配合
+
+viz-data-story 产出大纲后，viz-pattern 负责将大纲中的"需要一张 XX 类型的图"翻译为具体模式：
+
+```
+viz-data-story 大纲说："需要一张图展示供应商分层"
+  ↓ viz-pattern 翻译：
+  - 概念 = 分层/层级
+  - 模式选择 = 31-金字塔（首选）或 03-同心图（备选）
+  - 理由 = 金字塔天然表达自下而上的层级关系
+  - SPEC = 完整编写
+  ↓ 委托 viz-echarts 或 viz-svg-flow 执行
+```
+
+---
+
+## 八、使用示例
+
+**示例 1：年老师问"怎么可视化供应商健康度？"**
 
 → Step 1: 意图识别 — 多维评估，无精确数据，需要整体态势感知
 → Step 2: 模式匹配 — 雷达图(22) 适合多维能力画像
-→ Step 3: SPEC → 委托 viz-echarts 执行
+→ Step 3: 编写 SPEC（8 项完整）
+→ Step 4: 委托 viz-echarts 执行
+→ Step 5: 验收：对照 SPEC 逐项检查
+
+**示例 2：年老师说"把供应商转化的问题可视化"**
+
+→ Step 1: 意图识别 — 流程+转化，有阶段数据
+→ Step 2: 模式匹配 — 漏斗(32) 表达递减转化
+→ Step 3: SPEC → 瓶颈环节用 Coral 色标注
+→ Step 4: 委托 viz-echarts（漏斗图原生支持）
+→ Step 5: 验收
+
+**示例 3：年老师说"我想表达我们供应商管理是系统工程"**
+
+→ Step 1: 意图识别 — 抽象概念，无数据，表达"系统运转"
+→ Step 2: 模式匹配 — 72-机器（表达系统化运作）或 39-齿轮（表达联动机制）
+→ Step 3: SPEC → 选择 72-机器，画布 600×500，SVG 手绘
+→ Step 4: 委托 viz-svg-flow 执行
+→ Step 5: 验收
