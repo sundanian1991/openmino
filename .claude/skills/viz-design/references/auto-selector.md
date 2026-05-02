@@ -1,6 +1,6 @@
 # 自动选择器
 
-> viz-pattern 的选择机制。对标 fe-cinematic 的 Director Preference Pool + hash selection。
+> viz-design 的选择机制。对标 fe-cinematic 的 Director Preference Pool + hash selection。
 > **核心原则：不是所有维度都能 hash。内容锁死的维度走意图匹配，风格自由的维度走 hash。**
 
 ---
@@ -317,6 +317,48 @@ L3 风格自由:
 | 模式独占约束 | 如甘特图只兼容甘特构图，直接选 |
 
 ---
+
+## 多图场景：全局继承规则
+
+> 当工作区存在 `global-style.md`（即多图场景走了 Phase 0）时，L2/L3 不再 hash，
+> 直接从全局锁定读取。本页其他规则（单图）不变。
+
+| 维度 | 原层级 | 有 global-style 时 |
+|------|--------|-------------------|
+| **模式** | L1 内容锁死 | 不变，独立意图匹配 |
+| **叙事弧线** | L1 内容锁死 | 不变，由叙事意图决定 |
+| **构图** | L1 内容锁死 | 不变，由图数量+关系决定 |
+| **风格学派** | L2 场景约束 | 从 global-style 读取，跳过 hash |
+| **开场骨架** | L2 场景约束 | 从 global-style 读取，跳过 hash |
+| **配色** | L3 风格自由 | 从 global-style 读取，跳过 hash |
+| **字体** | L3 风格自由 | 从 global-style 读取，跳过 hash |
+| **视觉节拍** | L3 风格自由 | 从 global-style 读取，跳过 hash |
+
+**例外**：如果 global-style 中某项未锁定（如开场骨架），则回退到原 hash 流程。
+
+### 多图场景选择示例
+
+```
+输入: "2025年度供应商评审报告"（6 张图）
+  ↓
+hash("年度供应商评审报告") = H
+  ↓
+Phase 0 全局锁定:
+  └── 风格学派: 02 贝恩（hash % 3 = 1）
+  └── 配色: color-themes #7（贝恩色系0）
+  └── 字体: typography #2（贝恩字体配对）
+  ↓
+L1 内容锁死（每张图独立）:
+  弧线: 06 全景式（综合汇报）
+  构图: 10 仪表盘（4+ 图）
+  ↓
+L2/L3 从全局继承:
+  风格: 02 贝恩（不 hash）
+  开场: hash % 2 = 1 → 05 漏斗开场（开场未在全局锁定时回退 hash）
+  配色: color-themes #7（不 hash）
+  字体: typography #2（不 hash）
+  节拍: 走弧线自带序列（不 hash）
+```
 
 ## 选择器速查
 
