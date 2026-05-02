@@ -1,6 +1,6 @@
 # 可视化风格学派
 
-> 32 种可视化风格流派，每种包含可执行的视觉参数。对标 fe-cinematic 的 directors-200，用于 viz-pattern 等可视化技能的风格定标。
+> 32 种可视化风格流派，每种包含可执行的视觉参数。对标 fe-cinematic 的 directors-200，用于 viz-design 等可视化技能的风格定标。
 
 ---
 
