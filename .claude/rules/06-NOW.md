@@ -32,6 +32,30 @@ pos: .claude/rules/06-NOW.md
 
 ## 最近讨论
 
+### 2026-05-02 viz-design 多图+多技能委派质量优化
+- 三层收口消除 SPEC → JSON → 渲染链路中的信息衰减
+- 第一层：spec.md 模板追加渲染契约 JSON（globalStyle + charts 数组），下游技能直接消费
+- 第二层：storyboard.md 强化 Phase 0 全局风格锁定，多图共享色系/字体/风格学派
+- 第三层：SKILL.md 追加委派收口铁律 4 条 + 反模式列表，禁止 viz-design 自行写渲染代码
+- 委派路径唯一：viz-design → JSON → viz-echarts / viz-svg-flow，不存在第二条路径
+
+### 2026-04-30 丁梓萌观察建档 + 知识库大清理
+- 丁梓萌（综合运营部结算岗）首次观察：与刘乾坤预提数据对话，展现"不接球+最短路径+先例锚定"
+- 刘乾坤新案例40：免责型防御（模式2+7变种），被丁梓萌完全化解
+- 丁梓萌建档：`memory/projects/关键人画像/同事/综合运营部/丁梓萌/`
+- **知识库大清理**：workspace 65→11 文件夹；docs 去重170+文件、命名规范化、版本收敛
+- **workspace 命名规范**写入 CLAUDE.md（序号-分类-主题-YYYYMMDD）
+- **workspace→docs 流转规则**写入 CLAUDE.md（触发条件+分类标准+执行流程）
+- Claude Code 源码移至 `/claude-code-source/`
+- docs/ 目录重命名：knowledge→知识库、SOP→SOP模板、plan-templates→计划模板
+
+### 2026-04-29 思考策略框架 + thinking-strategy skill + 认识论硬约束
+- 梳理26字母思考策略框架，拆解每个字母的实际应用场景
+- 设计策略组合逻辑：预设模板（80%）+ 动态组合（20%）
+- 创建 thinking-strategy skill，支持决策/分析/计划/表达/澄清/复盘/创新 7类问题
+- 首次测试：表达类问题（汇报供应商情况）引导流程跑通
+- 消化 Agent 行为宪章，整合入规则体系：00-IDENTITY 升级（克制+预判+认识论纪律），新建 EPISTEMIC.md（反幻觉协议+审计+失效判定）
+
 ### 2026-04-24 AI 定价案例 + 设计技能对比 + Skills 清理
 - kw-workflow 跑通 AI 定价从 coding plan 到 token plan 研究，文字版完成
 - PPT 呈现三次不满意（pptx-dark-cream/huashu-design/magazine）— 视觉标准未对齐
@@ -44,12 +68,15 @@ pos: .claude/rules/06-NOW.md
 
 ### 2026-04-21 可视化 5 合 1 Demo + workspace 规范
 - chart-visualization 25/26 跑通，5 合 1 总览页交付
-- workspace 命名统一为 `序号-主题-YYYYMMDD`
+- workspace 命名统一为 `序号-分类-主题-YYYYMMDD`，已写入 CLAUDE.md 强制规范
 
 ---
 
 ## 近期事件
 
+- 05-02：viz-design 多图+多技能委派质量优化（三层收口）
+- 04-30：丁梓萌建档 + 知识库大清理（workspace 65→11、docs 去重+命名规范化、流转规则入 CLAUDE.md）
+- 04-29：思考策略框架梳理 + thinking-strategy skill 创建 + 认识论硬约束整合
 - 04-24：AI 定价研究 + 设计技能对比 + MemOS 迁移 + Skills 清理
 - 04-23：上下文管理规则落地 + 供应商规范体系化
 - 04-21：可视化 5 合 1 Demo 交付
@@ -79,4 +106,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-04-26 — 补充 04-24 AI定价 + 设计对比 + MemOS + Skills 清理*
+*最后更新：2026-04-30 — 知识库大清理：workspace/docs/archive 全面规范化 + 流转规则入 CLAUDE.md*
