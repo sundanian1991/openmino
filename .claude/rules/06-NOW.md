@@ -93,6 +93,8 @@ pos: .claude/rules/06-NOW.md
 
 - 05-03：Proactive Agent 架构落地（三支柱 + 主动思考 Cron + workspace 整理）
 - 05-02：viz-design 多图+多技能委派质量优化（三层收口）
+- 05-04 ~05:30：技能上游同步检查 — 全部网络通，9 个技能均有本地修改保护不受影响。远程有更新但跳过的 3 个：fe-diagram（8 commits Codex 插件重构）、viz-svg-flow（2 commits draw.io 输出处理）、ppt-html（5 commits 缩略图渲染+GIF）。其余 6 个远程无新提交。0 个技能需要同步
+- 05-04 ~05:28：技能上游同步检查 — 9 个技能均有本地修改（SKILL.md 定制），全部跳过。远程有新提交但被本地修改保护的 2 个：fe-diagram（8 commits Codex 插件支持）、ppt-html（10 commits 缩略图渲染+主题隔离等）。viz-svg-flow/viz-claude fetch 网络被拒/超时，本地有修改不受影响。0 个技能需要同步
 - 05-04 ~05:00：技能上游同步检查 — 4 个网络通（fe-cinematic/doc-kami/ppt-presentation/fe-diagram）均无远程更新或已被本地修改保护。5 个网络不通（viz-svg-flow/viz-claude/ppt-aham/ppt-html/fe-huashu）连接被拒/超时。fe-diagram 远程 8 commits（Codex 插件重构），因本地有修改跳过。0 个技能需要同步
 - 05-04 04:30：技能上游同步检查 — 4 个网络通（fe-cinematic/doc-kami/ppt-presentation/fe-diagram）均无远程更新或已被本地修改保护。5 个网络不通（viz-svg-flow/viz-claude/ppt-aham/ppt-html/fe-huashu）均有本地修改，不受影响。fe-diagram 远程 8 commits（Codex 插件重构），因本地有修改跳过。0 个技能需要同步
 - 05-04 00:35：技能上游同步检查 — 9 个 git 技能全部有本地修改或已是最新，4 个网络不通（viz-svg-flow/viz-claude/ppt-aham/fe-huashu）。远程有更新但本地有修改保护的 2 个：fe-diagram（8 commits）、ppt-html（10 commits）。0 个技能需要同步
