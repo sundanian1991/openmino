@@ -93,7 +93,7 @@ pos: .claude/rules/06-NOW.md
 
 - 05-03：Proactive Agent 架构落地（三支柱 + 主动思考 Cron + workspace 整理）
 - 05-02：viz-design 多图+多技能委派质量优化（三层收口）
-- 05-03 19:53：技能上游同步检查 — 9 个 git 技能全部有本地修改，按规则全部跳过。本次远程更新：fe-diagram（7 commits，Codex 插件+品牌参考）、ppt-html（11 commits，v2 大版本+缩略图+模板+主题）、fe-huashu（1 commit，Showcase）。viz-svg-flow/viz-claude fetch 失败（Empty reply from server）。doc-kami/fe-cinematic/ppt-presentation/ppt-aham 远程无新提交。0 个技能需要同步
+- 05-03 22:50：技能上游同步检查 — 9 个 git 技能检查。远程有更新：fe-diagram(8 commits)、viz-svg-flow(2 commits)、ppt-html(13 commits)、fe-huashu(1 commit)。fe-huashu 无本地功能冲突已同步（+README +cinematic-patterns），其余 3 个有本地 SKILL.md 定制修改跳过保护。doc-kami/ppt-presentation/viz-claude/ppt-aham/fe-cinematic 远程无新提交。1 个技能已同步
 - 05-03 19:15：技能上游同步检查 — 9 个 git 技能全部有本地修改，按规则全部跳过。本次远程更新：fe-diagram（5 commits，Codex 插件支持）、viz-svg-flow（2 commits，draw.io 输出处理）、ppt-html（5 commits，缩略图渲染+GIF 展示）、fe-huashu（1 commit，Showcase）。doc-kami/viz-claude/fe-cinematic/ppt-presentation/ppt-aham 远程无新提交。0 个技能需要同步
 - 04-30：丁梓萌建档 + 知识库大清理（workspace 65→11、docs 去重+命名规范化、流转规则入 CLAUDE.md）
 - 04-29：思考策略框架梳理 + thinking-strategy skill 创建 + 认识论硬约束整合
