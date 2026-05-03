@@ -304,6 +304,12 @@ Gate: 图表有效性门禁（Rule 10）
 Phase 3: spec.md — 编译规格（渲染契约）
   11. 编写 SPEC — 读 templates/spec.md，按模板编写完整渲染契约
   11b. 编写渲染契约 JSON — 按 spec.md 中「渲染契约（机器可读）」模板生成 JSON
+  11c. JSON Schema 自检 — 验证以下硬约束（不通过则重写）：
+       ├── series 每条必须用 `values` 数组（禁止 `value` 单值字段）
+       ├── `grayscale` 必须为 true（禁止 false，非高亮元素一律 Stone 300 灰化）
+       ├── `maxHighlightRatio` ≤ 0.1（宁可多设几张图，也不在一图中高亮过多）
+       ├── `visualEncoding.highlight` 必须是对象数组 [{series, color}]（禁止字符串数组）
+       └── 禁止混入非 schema 字段（lineColor/yAxis/xAxis/footer 等渲染细节交给下游技能）
   12. Source ID 追溯 — 每项决策标注出处（DNA 案例/风格库/配色库）
   13. 委托渲染 — 将渲染契约 JSON 传入对应渲染技能（viz-echarts / viz-svg-flow / viz-chart）
   14. 写入 spec.md
@@ -701,11 +707,23 @@ viz-data-story 大纲说："需要一张图展示供应商分层"
 
 **铁律 4：委派路径唯一。** viz-design → 渲染契约 JSON → viz-echarts / viz-svg-flow。不存在第二条路径。
 
+**铁律 5：JSON 契约字段零偏差。** 渲染契约 JSON 必须严格遵循 viz-design-spec-v1 schema：
+- `data.series[].values` 必须是数组 `[v1, v2, ...]`，**禁止 `value` 单值**
+- `visualEncoding.grayscale` 必须为 `true`，**禁止 `false`**（非高亮 = Stone 300 灰化）
+- `visualEncoding.maxHighlightRatio` 必须 ≤ `0.1`，**超标 = 重设**（拆分多图或减少高亮）
+- `visualEncoding.highlight` 必须是 `[{series: "名称", color: "#hex"}]`，**禁止字符串数组**
+- 禁止混入 schema 未定义字段（`lineColor`/`yAxis`/`xAxis`/`footer`/`showArea`/`showPoints` 等渲染细节交给下游技能）
+
 **反模式（禁止）**：
 - 在 spec.md 中写 ECharts JSON option 然后自己调用脚本
 - 多图场景每张图各自选色，不锁全局
 - 用"口头描述 + 自然语言"代替 JSON 契约委托
 - 自行组装多图 HTML 页面（应委派容器技能）
+- `series` 使用 `value` 单值字段而非 `values` 数组（测试 #81/#82 已出现）
+- `grayscale` 设 `false` 违反灰度铁律（测试 #81/#82 已出现）
+- `maxHighlightRatio` 超 0.1（测试 #82 达 0.3，严重超标）
+- `visualEncoding.highlight` 写字符串数组而非 `[{series, color}]` 对象数组
+- 混入渲染细节字段（`lineColor`/`yAxis`/`xAxis`/`footer`/`showArea` 等），这些是下游技能的职责
 
 ---
 
