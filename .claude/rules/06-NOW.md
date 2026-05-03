@@ -54,6 +54,18 @@ pos: .claude/rules/06-NOW.md
 - Claude Code 源码移至 `/claude-code-source/`
 - docs/ 目录重命名：knowledge→知识库、SOP→SOP模板、plan-templates→计划模板
 
+### 2026-05-03 Proactive Agent 架构落地
+- **主动思考搭档**：从"定时检查文件"升级为"主动消化工作、推送思考和建议"
+- 晨间思考（9:00）+ 晚间复盘（21:00）Cron 任务创建，微信推送
+- HEARTBEAT.md 升级为主动思考指令
+- **Proactive Agent 三支柱落地**：
+  - Proactive：Reverse Prompting（01-SOUL.md）+ 深度版 Cron
+  - Persistent：Working Buffer（buffer.md）+ Compaction Recovery（结构化检查清单）
+  - Self-improving：待后续迭代
+- **思考日志** `memory/thinking/journal.md`：追踪线索、假设、关键句
+- **workspace 整理**：25→21 文件夹，3 个不规范文件夹处理，散落文件归位
+- 年老师原话："你这个回顾有足够的深度吗？还是每次都是固化的？"
+
 ### 2026-04-29 思考策略框架 + thinking-strategy skill + 认识论硬约束
 - 梳理26字母思考策略框架，拆解每个字母的实际应用场景
 - 设计策略组合逻辑：预设模板（80%）+ 动态组合（20%）
@@ -79,6 +91,7 @@ pos: .claude/rules/06-NOW.md
 
 ## 近期事件
 
+- 05-03：Proactive Agent 架构落地（三支柱 + 主动思考 Cron + workspace 整理）
 - 05-02：viz-design 多图+多技能委派质量优化（三层收口）
 - 05-03 19:53：技能上游同步检查 — 9 个 git 技能全部有本地修改，按规则全部跳过。本次远程更新：fe-diagram（7 commits，Codex 插件+品牌参考）、ppt-html（11 commits，v2 大版本+缩略图+模板+主题）、fe-huashu（1 commit，Showcase）。viz-svg-flow/viz-claude fetch 失败（Empty reply from server）。doc-kami/fe-cinematic/ppt-presentation/ppt-aham 远程无新提交。0 个技能需要同步
 - 05-03 19:15：技能上游同步检查 — 9 个 git 技能全部有本地修改，按规则全部跳过。本次远程更新：fe-diagram（5 commits，Codex 插件支持）、viz-svg-flow（2 commits，draw.io 输出处理）、ppt-html（5 commits，缩略图渲染+GIF 展示）、fe-huashu（1 commit，Showcase）。doc-kami/viz-claude/fe-cinematic/ppt-presentation/ppt-aham 远程无新提交。0 个技能需要同步
@@ -114,4 +127,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-05-03 19:53 — 技能上游同步检查：9 个技能全部跳过（均有本地修改）*
+*最后更新：2026-05-03 — Proactive Agent 架构落地 + workspace 整理*
