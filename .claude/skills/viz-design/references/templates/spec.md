@@ -47,6 +47,16 @@
 - **标注内容**（写原因+幅度，不写数字）：
 - **基准线/参考线**：
 
+### 视觉权重（读者视角）
+
+> 从 storyboard 视觉重量表继承，转为渲染端可执行的声明。
+
+- **主角元素**（hero）：[哪个元素] → symbolSize / fontSize / 颜色 / 标注内容
+- **上下文元素**（medium）：[哪些元素] → 参考线样式 / 背景区颜色
+- **背景元素**（light）：[哪些元素] → 灰色 / 小尺寸 / 无标注
+
+> 渲染管线自检规则：hero 元素必须有 label 且不依赖 hover；hero symbolSize ≥ light × 3；有 spatial narrative 必须有参考线或背景区。
+
 ### 入口映射（单图内部阅读路径）
 
 | 元素 | 视觉处理 | 为什么 |
@@ -137,17 +147,20 @@
     {
       "geom": "geom_bar",
       "aes": { "y": "GDP_万亿" },
-      "params": { "color": "#6b7280", "position": "dodge" }
+      "params": { "color": "#6b7280", "position": "dodge" },
+      "readerWeight": "light"
     },
     {
       "geom": "geom_line",
       "aes": { "y": "增速__pct" },
-      "params": { "color": "#c26d3a", "size": 2, "smooth": false }
+      "params": { "color": "#c26d3a", "size": 2, "smooth": false },
+      "readerWeight": "hero"
     },
     {
       "geom": "geom_label",
       "aes": { "x": "2021", "y": 114.9, "label": "新高" },
-      "params": { "color": "#c26d3a", "fontSize": 11 }
+      "params": { "color": "#c26d3a", "fontSize": 11 },
+      "readerWeight": "hero"
     }
   ],
   "scales": [
@@ -188,6 +201,8 @@
 | `geom_rect` | 高亮区域 | `markArea` |
 
 常见 params：`position` ("dodge"/"stack"/"identity")、`color`、`size`、`smooth`、`width`。
+
+**readerWeight**（可选）：`hero` / `medium` / `light`。标注每个层的视觉重量等级，渲染管线据此做读者体验自检。主角元素必须标 `hero`。
 
 #### scales（标度）
 

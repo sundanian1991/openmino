@@ -8,15 +8,118 @@ const path = require('path');
 
 const ECHARTS_CDN = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
 
-// ─── 配色 ──────────────────────────────────────────────
+// ─── 配色（对标 echarts-recipes.md + 13-VISUALIZATION.md）────────
 const THEMES = {
   default: {
-    bg: '#ffffff', title: '#374151', subtitle: '#9ca3af',
-    axisLine: '#e5e7eb', axisLabel: '#6b7280', splitLine: '#f3f4f6',
+    bg: '#ffffff',
+    title: '#374151', subtitle: '#9ca3af',
+    axisLine: '#ada599', axisLabel: '#857d74', splitLine: '#f2f0eb',
     tooltipBg: 'rgba(255,255,255,0.95)', borderColor: '#e5e7eb',
-    colors: ['#c26d3a', '#6b7280', '#8b95a5', '#a8b5c1', '#c4d0db', '#dce3e9']
+    colors: ['#c26d3a', '#857d74', '#2e8b6e', '#c25030', '#7a8a6e', '#b08968'],
+    fontFamily: 'system-ui, sans-serif',
+    grid: { top: 70, right: 30, bottom: 50, left: 50 }
   }
 };
+
+// 合并 theme 覆盖：palette / grid / fontFamily
+function resolveTheme(spec) {
+  const base = THEMES.default;
+  const t = spec.theme || {};
+  return {
+    ...base,
+    palette: t.palette || null,
+    gridShow: t.grid?.show !== false,
+    gridColor: t.grid?.major || base.splitLine,
+    fontFamily: t.fontFamily || base.fontFamily,
+    axisLabelSize: t.axisLabelSize || 10,
+    titleSize: t.titleSize || 16,
+    axisLabel: t.axisLabel || base.axisLabel,
+    title: t.title || base.title,
+    subtitle: t.subtitle || base.subtitle
+  };
+}
+
+// ─── 前注意觉 + 格式塔 后处理模块 ─────────────────────
+const WARM = '#c26d3a';
+const STONE = '#857d74';
+const TEAL = '#2e8b6e';
+
+/**
+ * 自动高亮：≥5 个系列时，1 彩 + 其余灰
+ * 查找 layers 中 highlight:true 的目标，分配 Warm 色，其余 Stone
+ */
+function autoHighlight(option, spec) {
+  const series = option.series;
+  if (!series || series.length < 5) return;
+
+  // v2 有 readerWeight 时，尊重图层颜色，不做自动高亮
+  if (spec.layers?.some(l => l.readerWeight)) return;
+
+  // 查找 highlight 目标
+  const layers = spec.layers || [];
+  let highlightIdx = -1;
+  for (let i = 0; i < layers.length; i++) {
+    if (layers[i].params && layers[i].params.highlight) { highlightIdx = i; break; }
+  }
+  // 无声明时自动选最大值系列
+  if (highlightIdx < 0) {
+    let maxSum = -Infinity;
+    for (let i = 0; i < series.length; i++) {
+      const sum = (series[i].data || []).reduce((a, b) => a + (typeof b === 'object' ? (b.value || 0) : b), 0);
+      if (sum > maxSum) { maxSum = sum; highlightIdx = i; }
+    }
+  }
+
+  for (let i = 0; i < series.length; i++) {
+    if (series[i].type === 'line' && series[i].markLine) continue; // 跳过参考线
+    if (i === highlightIdx) {
+      series[i].itemStyle = { ...(series[i].itemStyle || {}), color: WARM };
+    } else {
+      series[i].itemStyle = { ...(series[i].itemStyle || {}), color: STONE };
+    }
+  }
+  // 更新全局色板
+  option.color = series.map((_, i) => i === highlightIdx ? WARM : STONE);
+}
+
+/**
+ * 色阶截断：≤2 ramp，超出截断 + 灰色填充
+ */
+function resolveRampColor(option) {
+  const colors = option.color;
+  if (!colors || colors.length <= 3) return;
+  // 保留前 3 色（Warm/Stone/Teal），其余灰色填充
+  const maxColors = [WARM, STONE, TEAL];
+  option.color = colors.map((_, i) => i < 3 ? maxColors[i] : STONE);
+}
+
+/**
+ * 去噪：强制极简坐标轴 + 紧凑间距
+ * 始终执行，确保每张图符合 baseTheme 标准
+ */
+function deNoise(option) {
+  // Y 轴轴线隐藏
+  if (option.yAxis) {
+    const ya = Array.isArray(option.yAxis) ? option.yAxis : [option.yAxis];
+    ya.forEach(y => {
+      y.axisLine = { show: false };
+      y.splitLine = y.splitLine || {};
+      y.splitLine.lineStyle = { color: '#f2f0eb', type: 'dashed' };
+    });
+  }
+  // X 轴网格隐藏
+  if (option.xAxis) {
+    const xa = Array.isArray(option.xAxis) ? option.xAxis : [option.xAxis];
+    xa.forEach(x => {
+      x.splitLine = { show: false };
+      if (!x.axisLine) x.axisLine = { lineStyle: { color: '#ada599' } };
+    });
+  }
+  // 紧凑间距
+  option.grid = { ...(option.grid || {}), top: 70, right: 30, bottom: 50, left: 50 };
+  // 关闭动画
+  option.animation = false;
+}
 
 // ─── JSON Schema 校验 ──────────────────────────────────
 const V1_REQUIRED_FIELDS = ['version', 'chartType', 'title', 'data'];
@@ -29,7 +132,7 @@ const V2_REQUIRED_FIELDS = ['version', 'data', 'mapping', 'layers', 'title'];
 const VALID_GEOMS = [
   'geom_bar', 'geom_point', 'geom_line', 'geom_smooth',
   'geom_area', 'geom_label', 'geom_hline', 'geom_vline',
-  'geom_rect', 'geom_ribbon'
+  'geom_rect', 'geom_ribbon', 'geom_pie'
 ];
 
 function validateSpec(json) {
@@ -119,8 +222,8 @@ function validateV2(json) {
     });
   }
 
-  // coord 必须有
-  if (!json.coord) {
+  // coord 必须有（可以是 null，表示饼图等不需要坐标系）
+  if (json.coord === undefined) {
     errors.push('v2 缺少 coord 字段');
   }
 
@@ -222,10 +325,9 @@ function buildAnnotationMap(annotations, seriesName) {
  * 每种 geom 独立转为 ECharts series，零猜测
  */
 function renderV2Chart(spec) {
-  const theme = THEMES.default;
+  const theme = resolveTheme(spec);
   const { data, mapping, layers, scales = [], coord, facet, title, subtitle } = spec;
   const canvas = spec.theme?.canvas || { width: 800, height: 550 };
-  const themeOverrides = spec.theme || {};
 
   if (!data.rows || data.rows.length === 0) {
     throw new Error('v2 渲染需要 data.rows，当前为空');
@@ -237,7 +339,7 @@ function renderV2Chart(spec) {
   const fillField = mapping.fill; // 填充色/分组列（可选）
 
   // ─── 提取 X 轴数据 ──────────────────────────────────
-  const xLabels = xField ? rows.map(r => r[xField]) : rows.map((_, i) => String(i + 1));
+  let xLabels = xField ? rows.map(r => r[xField]) : rows.map((_, i) => String(i + 1));
 
   // ─── 从 scales 构建轴配置 ────────────────────────────
   let xAxisType = 'category';
@@ -274,24 +376,38 @@ function renderV2Chart(spec) {
   }
 
   // ─── 通用 option 骨架 ───────────────────────────────
+  const colorList = theme.palette ? (Array.isArray(theme.palette) ? theme.palette : theme.colors) : theme.colors;
   const option = {
-    backgroundColor: themeOverrides.background || theme.bg,
+    backgroundColor: theme.bg,
+    color: colorList,
     title: {
       text: title || '', subtext: subtitle || '', left: 'center', top: 10,
-      textStyle: { fontSize: themeOverrides.titleSize || 16, fontWeight: 600, color: theme.title },
-      subtextStyle: { fontSize: 11, color: theme.subtitle }
+      textStyle: { fontSize: 16, fontWeight: 600, color: theme.title, fontFamily: theme.fontFamily },
+      subtextStyle: { fontSize: 11, color: theme.subtitle, fontFamily: theme.fontFamily }
     },
     tooltip: {
       trigger: 'axis',
       backgroundColor: theme.tooltipBg, borderColor: theme.borderColor,
-      textStyle: { color: '#374151' }
+      textStyle: { color: '#374151', fontFamily: theme.fontFamily }
     },
-    grid: { top: 70, right: 30, bottom: 50, left: 50 }
+    grid: { ...(theme.grid || { top: 70, right: 30, bottom: 50, left: 50 }) },
+    animation: false
   };
 
   // ─── coord 处理 ────────────────────────────────────
   const isFlip = coord && coord.flip;
   const isPolar = coord && coord.type === 'polar';
+
+  // 鲁棒性：flip 模式下如果 xLabels 全是数值，说明 mapping.x/y 可能写反了
+  // 自动寻找第一个字符串字段作为类别标签
+  if (isFlip && xLabels.length > 0 && xLabels.every(v => typeof v === 'number')) {
+    const strField = fields.find(f => rows.length > 0 && typeof rows[0][f] === 'string');
+    if (strField) {
+      const corrected = rows.map(r => r[strField]);
+      Object.assign(xLabels, corrected); // reassign contents of const
+      xLabels.length = corrected.length;
+    }
+  }
 
   // ─── 按 geom 类型分组处理 layers ────────────────────
   const echartsSeries = [];
@@ -335,17 +451,32 @@ function renderV2Chart(spec) {
       case 'geom_label':
         ecType = 'scatter';
         ecExtra.symbolSize = 0;
-        ecExtra.label = {
+        // 同坐标标签堆叠：自动错位
+        {
+          const labelX = aes.x;
+          const labelY = aes.y;
+          let pos = params.position || (isFlip ? 'right' : 'top');
+          if (typeof labelX === 'number' && typeof labelY === 'number') {
+            const key = `${labelX},${labelY}`;
+            if (!globalThis.__labelStack) globalThis.__labelStack = {};
+            const stackIdx = (globalThis.__labelStack[key] = (globalThis.__labelStack[key] || 0) + 1);
+            if (stackIdx === 2) pos = 'right';
+            else if (stackIdx > 2) pos = 'bottom';
+          }
+          ecExtra.label = {
           show: true,
-          formatter: p => aes.label || (rows[p.dataIndex] ? rows[p.dataIndex][aes.labelField || xField] : ''),
-          position: params.position || 'top',
+          formatter: aes.label || '{b}',
+          position: pos,
           fontSize: params.fontSize || 11,
-          fontWeight: 600,
+          fontWeight: params.fontWeight || 600,
           color: params.color || theme.title,
-          backgroundColor: 'rgba(255,255,255,0.85)',
-          padding: [3, 6],
-          borderRadius: 3
+          backgroundColor: params.bgColor || 'rgba(255,255,255,0.9)',
+          padding: params.padding || [5, 8],
+          borderRadius: 4,
+          borderColor: params.borderColor,
+          borderWidth: params.borderWidth || 0
         };
+        }
         break;
       case 'geom_hline':
         // 水平参考线 → 放到后续 markLine 处理
@@ -355,7 +486,18 @@ function renderV2Chart(spec) {
         echartsSeries.push({ _markLine: { xAxis: aes.xValue, label: aes.label, color: params.color || '#ada599', dash: params.dash } });
         continue;
       case 'geom_rect':
-        echartsSeries.push({ _markArea: { xStart: aes.xStart, xEnd: aes.xEnd, yStart: aes.yStart, yEnd: aes.yEnd, label: aes.label, color: params.color || 'rgba(194,109,58,0.1)' } });
+        echartsSeries.push({
+          _markArea: {
+            xStart: aes.xStart,
+            xEnd: aes.xEnd,
+            yStart: aes.yStart,
+            yEnd: aes.yEnd,
+            label: aes.label,
+            color: params.color || 'rgba(194,109,58,0.1)',
+            borderColor: params.borderColor || null,
+            dash: params.dash
+          }
+        });
         continue;
       case 'geom_ribbon':
         ecType = 'line';
@@ -363,14 +505,38 @@ function renderV2Chart(spec) {
         ecExtra.showSymbol = false;
         ecExtra.areaStyle = { opacity: params.opacity || 0.15 };
         break;
+      case 'geom_pie':
+        // 饼图不走通用数据提取，直接构建 series 并跳过
+        {
+          // mapping.x 为 null 时，用 rows 中第一个字符串字段作为 name
+          const nameField = mapping.x || fields.find(f => rows.length > 0 && typeof rows[0][f] === 'string');
+          const pieData = rows.map(r => ({ name: String(r[nameField] || r.name || r.label || r.category || '未知'), value: r[yField] || r.value || 0 }));
+          const pieColor = params.color || (colorPalette ? colorPalette[colorIdx % colorPalette.length] : theme.colors[colorIdx % theme.colors.length]);
+          echartsSeries.push({
+            type: 'pie',
+            name: aes.label || '饼图',
+            radius: params.radius || ['40%', '65%'],
+            center: params.center || ['50%', '55%'],
+            avoidLabelOverlap: true,
+            data: pieData,
+            itemStyle: { color: pieColor, borderRadius: params.borderRadius || 4, borderColor: '#fff', borderWidth: 2 },
+            label: { show: true, formatter: params.labelFormat || '{d}%', fontSize: 12, fontWeight: 600 },
+            labelLine: { show: true }
+          });
+          if (layer.readerWeight) echartsSeries[echartsSeries.length - 1]._readerWeight = layer.readerWeight;
+          colorIdx++;
+        }
+        continue;
       default:
         throw new Error(`不支持的 geom: ${geom}`);
     }
 
     // ─── 从 rows 中提取该 layer 的数据 ─────────────────
     let seriesData = [];
-    const yCol = aes.y || yField;
-    const xCol = aes.x || xField;
+    // aes.x/y 可能是标注位置（字面量数值），不是列名
+    // 只有字符串才当作列引用，否则回退到 mapping 的主映射
+    const yCol = (typeof aes.y === 'string') ? aes.y : yField;
+    const xCol = (typeof aes.x === 'string') ? aes.x : xField;
 
     // layer 级别的 data 覆盖（用于高亮点等独立数据源）
     const layerRows = layer.data?.rows || null;
@@ -382,7 +548,14 @@ function renderV2Chart(spec) {
       const labelY = aes.y;
       // 如果 x/y 是显式数值，直接用
       if (typeof labelX === 'number' && typeof labelY === 'number') {
-        seriesData = [[labelX, labelY]];
+        seriesData = isFlip ? [[labelY, labelX]] : [[labelX, labelY]];
+      } else if (typeof labelX === 'number' && typeof labelY === 'string') {
+        // coord_flip 场景：x 是数值（value 轴），y 是类别字符串
+        const catIdx = xLabels.indexOf(labelY);
+        if (catIdx >= 0) {
+          // flip 后：xAxis=value, yAxis=category(index)，所以数据应为 [value, catIdx]
+          seriesData = isFlip ? [[labelX, catIdx]] : [[labelX, catIdx]];
+        }
       } else {
         // 否则尝试从 rows 匹配
         const rowIdx = rows.findIndex(r => String(r[xField]) === String(labelX) || r[xField] === labelX);
@@ -394,7 +567,7 @@ function renderV2Chart(spec) {
       // 散点按 fill 分组：需要按 fillField 拆分
       const uniqueFillValues = [...new Set(layerData.map(r => r[fillField]).filter(v => v !== null && v !== undefined))];
       for (const fillVal of uniqueFillValues) {
-        const filteredRows = layerData.filter(r => r[fillVal] === fillVal || r[fillField] === fillVal);
+        const filteredRows = layerData.filter(r => r[fillField] === fillVal);
         // 这里假设 fillField 是分组字段
         const pts = filteredRows.map(r => {
           const xv = xCol ? (typeof r[xCol] === 'number' ? r[xCol] : xLabels.indexOf(r[xCol])) : 0;
@@ -420,25 +593,40 @@ function renderV2Chart(spec) {
         return [xv !== null ? xv : 0, yv];
       });
     } else {
-      // 通用数据提取
+      // 通用数据提取（柱状/折线/面积用简单数值）
       seriesData = layerData.map(r => {
         const xv = xCol ? r[xCol] : null;
-        const yv = yCol ? r[yCol] : 0;
-        return yv; // 柱状/折线/面积用简单数值
+        let yv = yCol ? r[yCol] : 0;
+        // flip 模式鲁棒性：如果 yCol 是字符串而 xCol 是数值，说明 mapping 反了
+        if (isFlip && typeof yv === 'string' && typeof xv === 'number') return xv;
+        return yv;
       });
     }
 
     // 颜色
     const color = params.color || (colorPalette ? colorPalette[colorIdx % colorPalette.length] : theme.colors[colorIdx % theme.colors.length]);
 
+    // 光晕效果：color="none" + border → 空心圈
+    const itemStyle = {};
+    if (params.color === 'none' && params.border) {
+      itemStyle.color = 'transparent';
+      itemStyle.borderColor = params.border;
+      itemStyle.borderWidth = params.borderWidth || 2;
+    } else {
+      itemStyle.color = color;
+    }
+
     const seriesObj = {
       type: ecType,
-      name: aes.label || layer.geom,
+      name: layer.label || aes.label || yCol || layer.geom.replace('geom_', ''),
       data: seriesData,
-      itemStyle: { color },
+      itemStyle,
       lineStyle: { color, width: params.size || 2 },
       ...ecExtra
     };
+
+    // 传递 readerWeight 给自检用
+    if (layer.readerWeight) seriesObj._readerWeight = layer.readerWeight;
 
     // 双轴处理：根据 scales 中 secondary 的位置判断
     // 第二个 y-scale 如果有 secondary: true，则第二个使用 y 映射的 layer 用右轴
@@ -467,34 +655,40 @@ function renderV2Chart(spec) {
       type: 'category',
       data: xLabels,
       axisLine: { lineStyle: { color: theme.axisLine } },
-      axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10 },
+      axisLabel: { color: theme.axisLabel, fontSize: theme.axisLabelSize || 10 },
       inverse: true
     };
     option.grid.left = 80;
   } else if (isPolar) {
-    // 极坐标（雷达图等）— 暂用 radar 组件
+    // 极坐标：雷达图用 radar 组件，饼图保持 pie 类型不转换
+    // 从 scales 读取 max，若未声明则自动计算
+    const scaleMax = scales.find(s => s.aesthetic === 'y' && s.max)?.max;
+    const autoMax = Math.max(...rows.map(r => {
+      const rc = yField || (layers[0]?.aes?.y);
+      return r[rc] || 0;
+    }), 1);
+    const radarMax = scaleMax || Math.ceil(autoMax * 1.1);
+
     option.radar = {
-      indicator: xLabels.map(l => ({ name: l, max: Math.max(...rows.map(r => {
-        const yCol = yField || (layers[0]?.aes?.y);
-        return r[yCol] || 0;
-      }), 1) * 1.1 }))
+      indicator: xLabels.map(l => ({ name: l, max: radarMax }))
     };
-    // 把 echartsSeries 转为 radar 类型
+    // 仅将 line/smooth 类型转为 radar，pie 类型保持不变
     for (const s of echartsSeries) {
-      if (s.type && !s._markLine && !s._markArea) {
+      if (s.type === 'line' && !s._markLine && !s._markArea) {
         s.type = 'radar';
         s.data = [{ value: s.data, name: s.name }];
       }
     }
   } else {
     // 默认直角坐标
+    const xIsValue = xAxisType === 'value' || xLabels.every(v => typeof v === 'number');
     option.xAxis = {
-      type: xAxisType === 'value' ? 'value' : (xLabels.every(v => typeof v === 'number') ? 'value' : 'category'),
-      data: xAxisType === 'value' ? undefined : xLabels,
+      type: xIsValue ? 'value' : 'category',
       axisLine: { lineStyle: { color: theme.axisLine } },
-      axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10, rotate: xLabels.length > 12 ? 30 : 0 },
-      scale: xAxisType === 'value'
+      axisLabel: { color: theme.axisLabel, fontSize: theme.axisLabelSize || 10, rotate: !xIsValue && xLabels.length > 12 ? 30 : 0 },
+      scale: xIsValue
     };
+    if (!xIsValue) option.xAxis.data = xLabels;
     if (xAxisLog) option.xAxis.logBase = 10;
     if (xAxisType === 'log') {
       option.xAxis.logBase = 10;
@@ -504,14 +698,14 @@ function renderV2Chart(spec) {
     if (yAxisConfigs.length === 1) {
       option.yAxis = {
         ...yAxisConfigs[0],
-        axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10, formatter: fmtNum },
+        axisLabel: { color: theme.axisLabel, fontSize: theme.axisLabelSize || 10, formatter: fmtNum },
         splitLine: { show: true, lineStyle: { color: theme.splitLine } }
       };
     } else {
       // 双轴
       option.yAxis = yAxisConfigs.map((cfg, i) => ({
         ...cfg,
-        axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10, formatter: i === 1 ? v => v.toFixed(1) + '%' : fmtNum },
+        axisLabel: { color: theme.axisLabel, fontSize: theme.axisLabelSize || 10, formatter: i === 1 ? v => v.toFixed(1) + '%' : fmtNum },
         splitLine: { show: i === 0 }
       }));
     }
@@ -529,24 +723,127 @@ function renderV2Chart(spec) {
         if (ml.yAxis !== undefined) { entry.yAxis = ml.yAxis; }
         if (ml.xAxis !== undefined) { entry.xAxis = ml.xAxis; }
         entry.name = ml.label || '';
-        return entry;
+        return {
+          ...entry,
+          lineStyle: { color: ml.color || '#ada599', type: ml.dash ? 'dashed' : 'solid' }
+        };
       }),
-      lineStyle: { color: markLines[0].color || '#ada599', type: markLines[0].dash ? 'dashed' : 'solid' },
       label: { show: true, fontSize: 10, color: theme.axisLabel }
     };
   }
 
   if (markAreas.length > 0 && realSeries.length > 0) {
     realSeries[0].markArea = {
-      data: markAreas.map(ma => [
-        { xAxis: ma.xStart, yAxis: ma.yStart, name: ma.label },
-        { xAxis: ma.xEnd, yAxis: ma.yEnd }
-      ]),
-      itemStyle: { color: markAreas[0].color || 'rgba(194,109,58,0.1)' }
+      silent: true,
+      itemStyle: { borderWidth: 0 },
+      label: { show: false },
+      data: markAreas.flatMap(ma => {
+        // coord_flip：x 轴是数值轴，y 轴是分类索引
+        const areaData = [
+          {
+            xAxis: ma.xStart,
+            yAxis: isFlip ? (ma.yStart < 0 ? xLabels[0] : xLabels[Math.max(0, Math.round(ma.yStart))]) : ma.xStart,
+            name: ma.label,
+            itemStyle: {
+              color: ma.color || 'rgba(194,109,58,0.1)',
+              borderColor: ma.borderColor || 'transparent',
+              borderWidth: ma.borderColor ? 1 : 0,
+              borderType: ma.dash ? 'dashed' : 'solid',
+              opacity: ma.color ? 1 : 0.1
+            }
+          },
+          {
+            xAxis: ma.xEnd,
+            yAxis: isFlip ? (ma.yEnd < 0 ? xLabels[0] : xLabels[Math.min(xLabels.length - 1, Math.round(ma.yEnd))]) : ma.xEnd
+          }
+        ];
+        return areaData;
+      })
     };
   }
 
   option.series = realSeries;
+
+  // ─── 前注意觉 + 格式塔 后处理 ────────────────────────
+  deNoise(option);
+  autoHighlight(option, spec);
+  resolveRampColor(option);
+
+  // ─── geom_rect 背景区标注（图例+标签）──────────────
+  if (markAreas.length > 0) {
+    // 先提取 heroLayers（后续自检也需要）
+    const heroLayersForRect = echartsSeries.filter(s => s._readerWeight === 'hero' && !s._markLine && !s._markArea);
+    const heroColors = heroLayersForRect.map(s => s.itemStyle?.color).filter(Boolean);
+    const primaryColor = heroColors[0] || '#c26d3a';
+
+    const rectLabels = markAreas.filter(ma => ma.label);
+    if (rectLabels.length > 0) {
+      const firstLabel = rectLabels[0];
+      // 横向条形图 flip 模式：scatter data 是 [xValue, categoryIndex]
+      // 标注放在背景区右上方：x 靠近 xEnd，y 为覆盖区域的类别中心
+      let labelData;
+      if (isFlip) {
+        const midCatIdx = Math.round((firstLabel.yStart + firstLabel.yEnd) / 2);
+        labelData = [[firstLabel.xEnd * 0.95, midCatIdx]];
+      } else {
+        labelData = [[firstLabel.xStart, firstLabel.yEnd]];
+      }
+      const labelSeries = {
+        type: 'scatter',
+        name: '_area_label',
+        data: labelData,
+        symbolSize: 0,
+        silent: true,
+        label: {
+          show: true,
+          formatter: firstLabel.label,
+          position: isFlip ? 'right' : 'top',
+          fontSize: 11,
+          fontWeight: 700,
+          color: primaryColor,
+          backgroundColor: 'rgba(255,255,255,0.9)',
+          padding: [4, 10],
+          borderRadius: 4
+        },
+        _readerWeight: 'hero'
+      };
+      realSeries.push(labelSeries);
+    }
+
+    // 图例：用 hero 真实颜色 + 有意义的名称
+    const uniqueLegendColors = [...new Set(heroColors)];
+    if (uniqueLegendColors.length > 0) {
+      // 从 hero 层提取有意义的名称
+      const heroNames = heroLayersForRect
+        .filter(s => s.name && !s.name.startsWith('geom_') && s.name !== '_area_label')
+        .map(s => s.name);
+      // 如果有 geom_rect 标注，也加入图例
+      const rectNames = rectLabels.map(rl => rl.label).filter(Boolean);
+      // 合并并去重：hero 名称 + rect 标注
+      const seen = new Set();
+      const legendNames = [...heroNames, ...rectNames].filter(n => {
+        if (seen.has(n) || !n || n.length === 0) return false;
+        seen.add(n);
+        return true;
+      });
+      // 如果去重后为空，至少保留 rect 标注
+      const finalNames = legendNames.length > 0 ? legendNames : rectNames;
+      option.legend = {
+        show: true,
+        data: finalNames,
+        orient: 'horizontal',
+        left: 'center',
+        bottom: 5,
+        itemWidth: 14,
+        itemHeight: 8,
+        textStyle: { fontSize: 10, color: '#6b7280', fontWeight: 600 },
+        icon: 'roundRect',
+        selectedMode: false
+      };
+      // 确保 legend 项颜色与 hero 一致
+      option.color = [uniqueLegendColors[0], ...uniqueLegendColors.slice(1), STONE];
+    }
+  }
 
   // ─── facet 处理（多子图）─────────────────────────────
   if (facet && facet.type && realSeries.length > 0) {
@@ -561,23 +858,65 @@ function renderV2Chart(spec) {
     }
   }
 
+  // ─── 读者视角自检（渲染管线内置）─────────────────────
+  // 规则来源：checklist.md 读者体验验收（#16-20）
+  {
+    const heroLayers = echartsSeries.filter(s => s._readerWeight === 'hero' && !s._markLine && !s._markArea);
+    const bgLayers = echartsSeries.filter(s => s._readerWeight === 'light' && !s._markLine && !s._markArea);
+    const warnings = [];
+
+    // #17 hero 可见性：必须有 label，不依赖 hover
+    // 可以是自身的 label，也可以是独立的标注层（如 geom_label）
+    const hasVisibleLabel = echartsSeries.some(s => s.label && s.label.show);
+    heroLayers.forEach(s => {
+      if (!s.label || !s.label.show) {
+        // 如果有独立的标注层，也算 hero 有标注
+        if (!hasVisibleLabel) {
+          warnings.push('WARN [读者视角] hero 元素 "' + s.name + '" 缺少 label，读者不 hover 看不见');
+        }
+      }
+    });
+
+    // #18 视觉重量差：hero symbolSize ≥ light × 3
+    const heroSize = heroLayers.find(s => s.symbolSize);
+    const bgSize = bgLayers.find(s => s.symbolSize);
+    if (heroSize && bgSize && typeof heroSize.symbolSize === 'number' && typeof bgSize.symbolSize === 'number') {
+      if (heroSize.symbolSize < bgSize.symbolSize * 3) {
+        warnings.push('WARN [读者视角] hero symbolSize(' + heroSize.symbolSize + ') < background × 3(' + bgSize.symbolSize * 3 + ')，视觉重量不足');
+      }
+    }
+
+    // #20 上下文完整：有 spatial narrative 必须有参考线/背景区
+    const hasRectLayers = echartsSeries.some(s => s._markArea);
+    const hasLineLayers = echartsSeries.some(s => s._markLine);
+    // 只检查真正的散点（symbolSize > 0），排除 geom_label（symbolSize=0）
+    const hasScatter = echartsSeries.some(s => s.type === 'scatter' && (s.symbolSize || 0) > 0);
+    if (hasScatter && !hasRectLayers && !hasLineLayers) {
+      warnings.push('WARN [读者视角] 散点图缺少参考线或背景区，四象限叙事缺少空间锚点');
+    }
+
+    if (warnings.length > 0) {
+      console.warn(warnings.join('\n'));
+    }
+  }
+
   return { option, canvas };
 }
-
-// ─── 核心渲染引擎 ──────────────────────────────────────
 
 /**
  * 将 viz-design spec JSON 转换为 ECharts option
  * 每种 chartType 有独立的渲染分支，不做隐式猜测
  */
-function renderChart(spec) {
+function renderChart(spec, globalStyle) {
   // v2 分支：ggplot2 分层渲染
   if (spec.version === 'viz-design-spec-v2') {
+    // 合并 globalStyle 到 spec（如果 v2 没有 theme，用 globalStyle 兜底）
+    if (globalStyle && !spec.theme) spec.theme = globalStyle;
     return renderV2Chart(spec);
   }
 
   // v1 分支：声明式 chartType
-  const theme = THEMES.default;
+  const theme = globalStyle ? { ...THEMES.default, ...globalStyle, colors: globalStyle.palette || THEMES.default.colors } : THEMES.default;
   const { chartType, data, visualEncoding: ve = {}, annotations = [], title, subtitle, canvas = { width: 800, height: 550 } } = spec;
   const fields = data.fields || [];
   const series = data.series || [];
@@ -857,10 +1196,13 @@ function renderChart(spec) {
     };
   });
 
+  // v1 后处理：去噪 + 高亮 + 色阶
+  deNoise(option);
+  if (renderSeries.length >= 5) autoHighlight(option, { layers: [] });
+  resolveRampColor(option);
+
   return { option, canvas };
 }
-
-// ─── HTML 生成 ─────────────────────────────────────────
 
 function generateHTML(option, title, canvas) {
   const json = JSON.stringify(option);
@@ -903,7 +1245,7 @@ function main() {
     const charts = json.charts || [json];
     const chart = charts[0];
 
-    const { option, canvas } = renderChart(chart);
+    const { option, canvas } = renderChart(chart, json.globalStyle);
     const html = generateHTML(option, chart.title, canvas);
     fs.writeFileSync(outputPath, html, 'utf-8');
     const chartLabel = chart.chartType || 'v2:' + (chart.layers?.map(l => l.geom).join('+') || 'unknown');
@@ -993,7 +1335,7 @@ function main() {
         }
         const charts = json.charts || [json];
         const chart = charts[0];
-        const { option, canvas } = renderChart(chart);
+        const { option, canvas } = renderChart(chart, json.globalStyle);
         const html = generateHTML(option, chart.title, canvas);
         const outPath = args[args.indexOf('--stdin') + 1] || 'chart.html';
         fs.writeFileSync(outPath, html, 'utf-8');

@@ -31,6 +31,8 @@ pos: .claude/rules/reference/工具使用指南
 
 ## 搜索策略
 
+**Token 效率原则**：网页内容不直接灌入上下文。抓取→沙箱索引→按需搜索，只把摘要/结论带回主上下文。
+
 | 场景 | 工具 | 说明 |
 |------|------|------|
 | 已知文件路径 | `Read` | 直接读取 |
@@ -38,8 +40,9 @@ pos: .claude/rules/reference/工具使用指南
 | 搜索代码内容 | `Grep` | 支持正则，可过滤文件类型 |
 | 广泛探索代码库 | `Task(Explore)` | 3 轮以上搜索时启用子代理 |
 | 回答研究问题 | `Task(General)` | 需要多步推理、综合多个来源 |
-| 实时信息/新闻 | `tavily_search` | 超过知识截止日期的内容 |
-| 抓取网页内容 | `tavily_extract` | 优先于 webReader（配额更大） |
+| 实时信息/新闻 | `tavily_search` | 搜索摘要+URL，不带正文（`include_raw_content: false`） |
+| 读取网页详情 | `ctx_fetch_and_index` | 抓取内容存沙箱，只返回 3KB 预览，细节按需 `ctx_search` |
+| 多网页深度研究 | `tavily_research` | 综合多源，结果也应 index 后按需查 |
 
 **搜索决策树**：
 ```
@@ -54,7 +57,8 @@ pos: .claude/rules/reference/工具使用指南
 
 需要研究问题？
   ├─ 本地代码库 → Task(Explore)
-  ├─ 实时信息 → tavily_search
+  ├─ 实时信息 → tavily_search（摘要+URL，不带正文）
+  ├─ 需要读网页详情 → ctx_fetch_and_index（沙箱化，不灌全文）
   └─ 复杂多步骤 → Task(General)
 ```
 
@@ -241,7 +245,8 @@ pos: .claude/rules/reference/工具使用指南
   └─ 否 ↓
 需要搜索/研究？
   ├─ 本地代码库 → Glob/Grep 或 Task(Explore)
-  ├─ 实时信息 → tavily_search
+  ├─ 实时信息 → tavily_search（摘要+URL）
+  ├─ 读网页详情 → ctx_fetch_and_index（沙箱化）
   └─ 复杂研究 → Task(General)
     ↓
 需要写代码？

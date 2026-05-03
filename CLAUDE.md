@@ -10,7 +10,7 @@ pos: 项目根目录
 
 ---
 
-## ⚙️ 配置
+## 配置
 
 ```
 commandsDir: ./.claude/commands
@@ -19,48 +19,40 @@ skillsDir: ./.claude/skills
 
 ---
 
-## 🎯 核心规则（每次会话自动加载）
+## 核心规则（每次会话自动加载）
 
 | 文件 | 用途 |
 |------|------|
-| [00-IDENTITY.md](.claude/rules/00-IDENTITY.md) | 身份、铁律、行为习惯 |
-| [01-SOUL.md](.claude/rules/01-SOUL.md) | 性格、气质、我和年老师的关系 |
+| [00-IDENTITY.md](.claude/rules/00-IDENTITY.md) | 身份、铁律、行为习惯、输出规范 |
+| [01-SOUL.md](.claude/rules/01-SOUL.md) | 性格、气质、关系 |
 | [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 核心记忆、WAL协议 |
-| [06-NOW.md](.claude/rules/06-NOW.md) | 当前状态、最近讨论 |
-| [AGENT-FIRST.md](.claude/rules/AGENT-FIRST.md) | **子代理优先策略 — 能并行就不用串行** |
+| [06-NOW.md](.claude/rules/06-NOW.md) | 当前状态、待办 |
+| [AGENT-FIRST.md](.claude/rules/AGENT-FIRST.md) | 子代理优先策略 |
+| [EPISTEMIC.md](.claude/rules/EPISTEMIC.md) | 认识论与反幻觉硬约束 |
 
 ---
 
-## 🚨 回复前强制检查
+## 目录约定
 
-1. **技能检查** — 有 1% 适用技能必须调用
-2. **称呼检查** — 年老师 / Mino
-3. **意图分类** — 简单/复杂/探索/代码/数据
-4. **逆向检验** — 分析/判断/方案类回答，先检验前提再做结论（详见 00-IDENTITY.md）
-5. **格式拦截** — 输出包含 ``` 或 → ↓ │ 等流程/结构符号时，强制替换为 generative-ui-widget
+**核心 vs 临时**：`workspace/` 是临时工作台（不入库），其余目录为核心（提交并推送）。
 
-**复杂任务透明工作流**：
-- 简单（≤3 步）→ 直接执行
-- 中等（4-6 步）→ 简化记录
-- 复杂（≥7 步/架构修改）→ 三文件模式（plan/context/tasks）
+### workspace/ 命名规范（强制）
 
----
+**格式**：`序号-分类-主题-YYYYMMDD`
 
-## 📁 目录约定
+| 要素 | 规则 |
+|------|------|
+| **序号** | 从 `00` 开始递增，新项目取当前最大值 +1。禁止重复 |
+| **分类** | 供应商 / 技能 / 成长 / 记录 / 生活 / 工具 / 测试 / 结算 |
+| **主题** | 简短中文描述，不用英文 |
+| **日期** | 格式 `YYYYMMDD`，取创建日期 |
 
-**核心 vs 临时**：
-- `workspace/` — 任务的工作台，临时文件，不入库
-- 其他所有目录 — 核心，提交并推送
-
----
-
-
-
----
+**禁止**：
+- 散落文件（html/pdf/xlsx/py 等）必须创建文件夹收纳，不得裸露在 workspace 根目录
+- 英文命名（Agent-Reach → 工具-Agent-Reach）
+- 无序号、无日期、无分类的三无命名
 
 ### workspace/archive/ 归档规范
-
-项目完结后归档到 `workspace/archive/`，按生命周期分三类：
 
 | 类型 | 特点 | 存放位置 | 命名格式 |
 |------|------|----------|----------|
@@ -68,20 +60,34 @@ skillsDir: ./.claude/skills
 | **持续型** | 长期追踪，不断更新 | `archive/ongoing/` | `项目名`（无日期） |
 | **散点型** | 零散讨论，不一定有后续 | `archive/scattered/` | `YYYY-MM-DD-主题` |
 
-**归档判断**：
-- 有明确交付物且已完结 → 项目型
-- 有多个版本迭代或长期维护 → 持续型
-- 单次会议/临时讨论/不确定后续 → 散点型
+合并规则：同主题跨周项目型合并；同主题散点合并，不保留周度层级。
 
-**项目型合并规则**：
-- 同主题跨周的合并（如人力看板 W12+W13）
-- 多版本放在同一文件夹（如供应商站点看板 v3/v5系列）
+### workspace → docs 流转规则（强制）
 
-**散点型合并规则**：
-- 同主题散点合并（如知识翻译、gstack分析）
-- 不保留周度层级，直接用日期+主题命名
+**触发条件**（满足任一即执行）：
+1. 年老师主动说"归档"/"整理workspace"/"清一清"
+2. workspace 文件夹数 ≥ 30
+3. 季度末（3/6/9/12月最后一天前后3天内），主动提醒
 
----
+**分类判定标准**：
+
+| 内容特征 | 归属 | 去向 |
+|----------|------|------|
+| 方法论/SOP/制度/框架/规范 | **docs/** | 对应子目录（供应商/管理规范、工具箱/等） |
+| 业务知识/行业理解 | **docs/** | `docs/知识库/` |
+| 已完成的项目记录/公文/会议材料 | **archive/** | `workspace/archive/projects/` |
+| 零散事件记录 | **archive/** | `workspace/archive/scattered/` |
+| 临时产物（Demo/PPT迭代/测试/工具下载） | **丢弃** | 确认后 rm |
+
+**执行流程**：
+1. **审计**：列出 workspace 全部文件夹，逐一标注归属
+2. **确认**：给年老师看分类表，确认后执行（不跳过这步）
+3. **迁移**：docs 只迁核心产出（md/docx/xlsx），不迁过程文件（preview/decisions/storyboard/.py）
+4. **去重**：迁移前检查目标目录是否已存在同名文件，重复则跳过
+5. **清理**：删除 workspace 中已迁移和确认丢弃的文件夹
+6. **验证**：最终 ls 确认 workspace 干净
+
+**命名规范**：迁移后文件保持原名，除非目标已有同名文件（加后缀区分）。
 
 ### 核心目录
 
@@ -97,25 +103,17 @@ skillsDir: ./.claude/skills
 
 ---
 
-## 📝 规范
+## 规范
 
-**代码 & Git**：
-- Commit 格式：`type: description`（feat/fix/docs/refactor/chore/test）
-- 禁止：`--no-verify`、`reset --hard`、`push --force main`、`commit --amend`
-- 详细：[.claude/rules/README.md](.claude/rules/README.md)
+**Git**：Commit 格式 `type: description`（feat/fix/docs/refactor/chore/test）；禁止 `--no-verify`、`reset --hard`、`push --force main`、`commit --amend`。
 
-**文档格式**：
-- ✅ MD模板内容用引用块（>）
-- ❌ 永远不用代码块（```）呈现内容
+**文档**：MD 模板内容用引用块（>），禁止用代码块呈现内容。
 
-**交互可视化**：
-- 表达关系、流程、对比、数据、结构时 → 自动用 generative-ui-widget
-- 原则：信息抽象到无法用线性文本承载时，用可视化让洞察浮现
-- 永远不用文本符号（→ ↓ │ 📊）模拟可视化
+**可视化**：关系/流程/对比/数据/结构 → 用 generative-ui-widget，禁用文本符号模拟。
 
 ---
 
-## 🔌 工具配置
+## 工具配置
 
 | 工具 | 用途 |
 |------|------|
@@ -127,39 +125,4 @@ skillsDir: ./.claude/skills
 
 ---
 
-## 🛡️ 安全边界
-
-- 别泄露隐私数据
-- 破坏性命令前先问
-- `trash` > `rm`
-
----
-
-## 🔄 自我改进
-
-基于 [self-improving-agent](https://github.com/peterskoett/self-improving-agent) 记录学习与错误。
-
-**触发场景**（自动记录到 `memory/learnings/`）：
-| 场景 | 记录到 | 示例 |
-|------|--------|------|
-| 被纠正 | `memory/learnings/LEARNINGS.md` | "不对，应该是..."、"你搞错了" |
-| 操作失败 | `memory/learnings/ERRORS.md` | 命令报错、API 失败、异常 |
-| 学到新方法 | `memory/learnings/LEARNINGS.md` | 发现更好做法、知识更新 |
-| 用户想要新功能 | `memory/learnings/FEATURE_REQUESTS.md` | "能不能也..."、"我希望..." |
-
-**每周整理**（`/update-memory`）：
-- 有价值的 → 提炼到 `memory/insights.md`
-- 高频模式 → 升级到 `memory/MEMORY.md`
-- 已转移的 → 清空 `memory/learnings/` 记录
-
----
-
-## ✅ 会话结束检查
-
-- [ ] 更新 06-NOW.md
-- [ ] 检查是否需要记录到 `memory/learnings/`
-- [ ] `git commit && git push`
-
----
-
-*最后更新：2026-04-11 — 新增逆向检验规则索引*
+*最后更新：2026-04-30 — workspace命名规范+流转规则，docs命名规范化*
