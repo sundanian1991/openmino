@@ -241,12 +241,14 @@ function renderV2Chart(spec) {
 
   // ─── 从 scales 构建轴配置 ────────────────────────────
   let xAxisType = 'category';
+  let xAxisLog = false;
   let yAxisConfigs = [];
   let colorPalette = null;
 
   for (const sc of scales) {
     if (sc.aesthetic === 'x') {
       xAxisType = sc.type === 'log' ? 'value' : 'category';
+      if (sc.type === 'log') xAxisLog = true;
     }
     if (sc.aesthetic === 'y') {
       const axisCfg = {
@@ -370,20 +372,29 @@ function renderV2Chart(spec) {
     const yCol = aes.y || yField;
     const xCol = aes.x || xField;
 
+    // layer 级别的 data 覆盖（用于高亮点等独立数据源）
+    const layerRows = layer.data?.rows || null;
+    const layerData = layerRows ? layerRows : rows;
+
     if (geom === 'geom_label') {
       // 标注：使用 aes 中指定的 x/y 位置
       const labelX = aes.x;
       const labelY = aes.y;
-      // 找到对应行的索引
-      const rowIdx = rows.findIndex(r => String(r[xField]) === String(labelX) || r[xField] === labelX);
-      if (rowIdx >= 0 && labelY !== undefined) {
+      // 如果 x/y 是显式数值，直接用
+      if (typeof labelX === 'number' && typeof labelY === 'number') {
         seriesData = [[labelX, labelY]];
+      } else {
+        // 否则尝试从 rows 匹配
+        const rowIdx = rows.findIndex(r => String(r[xField]) === String(labelX) || r[xField] === labelX);
+        if (rowIdx >= 0 && labelY !== undefined) {
+          seriesData = [[labelX !== undefined ? labelX : rows[rowIdx][xField], labelY]];
+        }
       }
     } else if (geom === 'geom_point' && fillField) {
       // 散点按 fill 分组：需要按 fillField 拆分
-      const uniqueFillValues = [...new Set(rows.map(r => r[fillField]).filter(v => v !== null && v !== undefined))];
+      const uniqueFillValues = [...new Set(layerData.map(r => r[fillField]).filter(v => v !== null && v !== undefined))];
       for (const fillVal of uniqueFillValues) {
-        const filteredRows = rows.filter(r => r[fillVal] === fillVal || r[fillField] === fillVal);
+        const filteredRows = layerData.filter(r => r[fillVal] === fillVal || r[fillField] === fillVal);
         // 这里假设 fillField 是分组字段
         const pts = filteredRows.map(r => {
           const xv = xCol ? (typeof r[xCol] === 'number' ? r[xCol] : xLabels.indexOf(r[xCol])) : 0;
@@ -401,9 +412,16 @@ function renderV2Chart(spec) {
         colorIdx++;
       }
       continue; // 已处理，跳过下面的通用逻辑
+    } else if (geom === 'geom_point') {
+      // 散点图需要 [x, y] 坐标对
+      seriesData = layerData.map(r => {
+        const xv = xCol ? r[xCol] : null;
+        const yv = yCol ? r[yCol] : 0;
+        return [xv !== null ? xv : 0, yv];
+      });
     } else {
       // 通用数据提取
-      seriesData = rows.map(r => {
+      seriesData = layerData.map(r => {
         const xv = xCol ? r[xCol] : null;
         const yv = yCol ? r[yCol] : 0;
         return yv; // 柱状/折线/面积用简单数值
@@ -471,12 +489,13 @@ function renderV2Chart(spec) {
   } else {
     // 默认直角坐标
     option.xAxis = {
-      type: xAxisType === 'log' ? 'value' : (xLabels.every(v => typeof v === 'number') ? 'value' : 'category'),
-      data: xAxisType !== 'value' ? xLabels : undefined,
+      type: xAxisType === 'value' ? 'value' : (xLabels.every(v => typeof v === 'number') ? 'value' : 'category'),
+      data: xAxisType === 'value' ? undefined : xLabels,
       axisLine: { lineStyle: { color: theme.axisLine } },
       axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10, rotate: xLabels.length > 12 ? 30 : 0 },
       scale: xAxisType === 'value'
     };
+    if (xAxisLog) option.xAxis.logBase = 10;
     if (xAxisType === 'log') {
       option.xAxis.logBase = 10;
     }
