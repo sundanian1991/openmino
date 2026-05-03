@@ -75,6 +75,7 @@ pos: .claude/rules/06-NOW.md
 ## 近期事件
 
 - 05-02：viz-design 多图+多技能委派质量优化（三层收口）
+- 05-03 17:31：技能上游同步检查 — 9 个 git 技能全部有本地修改，按规则全部跳过。本次远程更新：ppt-html（10 commits，v2 大版本）、fe-diagram（8 commits，draw.io 支持）、viz-svg-flow（2 commits）、fe-huashu（1 commit，Showcase）。doc-kami/viz-claude/fe-cinematic/ppt-presentation/ppt-aham 远程无新提交。0 个技能需要同步
 - 04-30：丁梓萌建档 + 知识库大清理（workspace 65→11、docs 去重+命名规范化、流转规则入 CLAUDE.md）
 - 04-29：思考策略框架梳理 + thinking-strategy skill 创建 + 认识论硬约束整合
 - 04-24：AI 定价研究 + 设计技能对比 + MemOS 迁移 + Skills 清理
@@ -100,10 +101,11 @@ pos: .claude/rules/06-NOW.md
 
 ## 定期提醒
 
+- **周一 8:00**：技能上游同步检查（9 个 git 技能）
 - **周一**：5311 周度评估
 - **周末**：32 个问题深度对话
 - **每月 20 日**：职业资产清算
 
 ---
 
-*最后更新：2026-04-30 — 知识库大清理：workspace/docs/archive 全面规范化 + 流转规则入 CLAUDE.md*
+*最后更新：2026-05-03 17:31 — 技能上游同步检查：9 个技能全部跳过（均有本地修改）*
