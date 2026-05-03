@@ -250,3 +250,15 @@
 | `charts[].visualEncoding.grayscale` | 灰化标记 | **是** | true = 非高亮元素用 Stone 300 |
 | `charts[].annotations` | 标注列表 | 否 | 无标注时写空数组 `[]` |
 | `charts[].referenceLines` | 参考线 | 否 | 基准线/阈值线 |
+
+### JSON Schema 硬约束（Phase 3 自检必过）
+
+> **以下规则必须 100% 通过，不通过 = 重写 JSON，不得输出。**
+
+| 规则 | 正确写法 | 错误写法 |
+|------|----------|----------|
+| series 数据值 | `"values": [1, 2, 3]` 数组 | `"value": 1` 单值 |
+| 灰度标记 | `"grayscale": true` | `"grayscale": false` |
+| 高亮比例 | `"maxHighlightRatio": 0.1`（≤0.1） | `0.15`, `0.3` 等超标值 |
+| highlight 格式 | `[{ "series": "A", "color": "#c26d3a" }]` | `["A", "B"]` 字符串数组 |
+| 禁止字段 | 仅保留 schema 定义的字段 | 混入 `lineColor`/`yAxis`/`xAxis`/`footer`/`showArea`/`showPoints`/`share`/`yoy`/`note` |
