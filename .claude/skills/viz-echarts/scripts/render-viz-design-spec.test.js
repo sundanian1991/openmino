@@ -394,6 +394,221 @@ const TESTS = [
       assert(opt.xAxis.data.length === 5, '应生成 5 个数字索引');
       assert(opt.series.length === 1, '应有 1 个系列');
     }
+  },
+
+  // ========================================
+  // === v2 ggplot2 分层格式测试 ===
+  // ========================================
+
+  {
+    name: 'v2 geom_bar 柱状图',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: 'GDP 对比', subtitle: '2020-2022',
+      data: {
+        type: 'rows',
+        fields: ['国家', 'GDP_万亿'],
+        rows: [
+          { '国家': '美国', 'GDP_万亿': 27.36 },
+          { '国家': '中国', 'GDP_万亿': 17.79 },
+          { '国家': '德国', 'GDP_万亿': 4.43 }
+        ]
+      },
+      mapping: { x: '国家', y: 'GDP_万亿', fill: null, color: null, size: null },
+      layers: [
+        { geom: 'geom_bar', aes: { y: 'GDP_万亿' }, params: {} }
+      ],
+      scales: [{ aesthetic: 'y', type: 'linear', name: 'GDP（万亿美元）' }],
+      coord: { type: 'cartesian', flip: false },
+      theme: { palette: 'restrained-warm', canvas: { width: 800, height: 550 } }
+    },
+    check: opt => {
+      assert(opt.xAxis.type === 'category', 'X 轴应为 category');
+      assert(opt.xAxis.data.length === 3, 'X 轴应有 3 个标签');
+      assert(opt.series[0].type === 'bar', '应为 bar 类型');
+      assert(opt.series[0].data.length === 3, '应有 3 个数据点');
+    }
+  },
+
+  {
+    name: 'v2 geom_line 折线图',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: '月度股价', subtitle: '2024',
+      data: {
+        type: 'rows',
+        fields: ['月份', '收盘价'],
+        rows: [
+          { '月份': '2024-01', '收盘价': 150 },
+          { '月份': '2024-02', '收盘价': 155 },
+          { '月份': '2024-03', '收盘价': 160 },
+          { '月份': '2024-04', '收盘价': 165 },
+          { '月份': '2024-05', '收盘价': 170 }
+        ]
+      },
+      mapping: { x: '月份', y: '收盘价', fill: null, color: null, size: null },
+      layers: [
+        { geom: 'geom_line', aes: { y: '收盘价' }, params: { color: '#c26d3a', size: 2 } }
+      ],
+      scales: [{ aesthetic: 'y', type: 'linear', name: '收盘价（USD）' }],
+      coord: { type: 'cartesian', flip: false },
+      theme: { palette: 'restrained-warm', canvas: { width: 800, height: 550 } }
+    },
+    check: opt => {
+      assert(opt.xAxis.type === 'category', 'X 轴应为 category');
+      assert(opt.xAxis.data[0] === '2024-01', 'X 轴第一个标签应为 2024-01');
+      assert(opt.series[0].type === 'line', '应为 line 类型');
+      assert(opt.series[0].data.length === 5, '应有 5 个数据点');
+    }
+  },
+
+  {
+    name: 'v2 geom_bar + geom_line 双轴图',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: 'GDP 与增速', subtitle: '2020-2023',
+      data: {
+        type: 'rows',
+        fields: ['年份', 'GDP_万亿', '增速__pct'],
+        rows: [
+          { '年份': '2020', 'GDP_万亿': 101.4, '增速__pct': 2.3 },
+          { '年份': '2021', 'GDP_万亿': 114.9, '增速__pct': 8.6 },
+          { '年份': '2022', 'GDP_万亿': 121.0, '增速__pct': 3.1 },
+          { '年份': '2023', 'GDP_万亿': 126.1, '增速__pct': 5.4 }
+        ]
+      },
+      mapping: { x: '年份', y: 'GDP_万亿', fill: null, color: null, size: null },
+      layers: [
+        { geom: 'geom_bar', aes: { y: 'GDP_万亿' }, params: {} },
+        { geom: 'geom_line', aes: { y: '增速__pct' }, params: { color: '#c26d3a', size: 2 } }
+      ],
+      scales: [
+        { aesthetic: 'y', type: 'linear', name: 'GDP（万亿）' },
+        { aesthetic: 'y', type: 'linear', name: '增速（%）', secondary: true }
+      ],
+      coord: { type: 'cartesian', flip: false },
+      theme: { palette: 'restrained-warm', canvas: { width: 800, height: 550 } }
+    },
+    check: opt => {
+      assert(Array.isArray(opt.yAxis), '双轴图 Y 轴应为数组');
+      assert(opt.yAxis.length === 2, '应有 2 个 Y 轴');
+      assert(opt.series.length === 2, '应有 2 个数据系列');
+      assert(opt.series[0].type === 'bar', '第一个系列应为 bar');
+      assert(opt.series[1].type === 'line', '第二个系列应为 line');
+      assert(opt.series[1].yAxisIndex === 1, '线系列应使用右轴');
+    }
+  },
+
+  {
+    name: 'v2 geom_label 标注',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: '带标注的柱状图', subtitle: '测试',
+      data: {
+        type: 'rows',
+        fields: ['年份', '值'],
+        rows: [
+          { '年份': '2020', '值': 100 },
+          { '年份': '2021', '值': 150 },
+          { '年份': '2022', '值': 200 }
+        ]
+      },
+      mapping: { x: '年份', y: '值', fill: null, color: null, size: null },
+      layers: [
+        { geom: 'geom_bar', aes: { y: '值' }, params: {} },
+        { geom: 'geom_label', aes: { x: '2022', y: 200, label: '新高' }, params: { color: '#c26d3a', fontSize: 11 } }
+      ],
+      scales: [{ aesthetic: 'y', type: 'linear', name: '值' }],
+      coord: { type: 'cartesian', flip: false },
+      theme: { palette: 'restrained-warm', canvas: { width: 800, height: 550 } }
+    },
+    check: opt => {
+      assert(opt.series.length >= 2, '应有至少 2 个系列（bar + label）');
+      const labelSeries = opt.series.find(s => s.label && s.label.show);
+      assert(labelSeries !== undefined, '应有带 label.show=true 的系列');
+    }
+  },
+
+  {
+    name: 'v2 geom_area 面积图',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: '面积图测试', subtitle: '',
+      data: {
+        type: 'rows',
+        fields: ['月份', '值'],
+        rows: [
+          { '月份': '1月', '值': 10 },
+          { '月份': '2月', '值': 15 },
+          { '月份': '3月', '值': 12 }
+        ]
+      },
+      mapping: { x: '月份', y: '值', fill: null, color: null, size: null },
+      layers: [
+        { geom: 'geom_area', aes: { y: '值' }, params: {} }
+      ],
+      scales: [{ aesthetic: 'y', type: 'linear', name: '值' }],
+      coord: { type: 'cartesian', flip: false },
+      theme: { palette: 'restrained-warm', canvas: { width: 800, height: 550 } }
+    },
+    check: opt => {
+      assert(opt.series[0].type === 'line', '面积图应为 line 类型');
+      assert(opt.series[0].areaStyle !== undefined, '应有 areaStyle');
+    }
+  },
+
+  {
+    name: 'v2 coord_flip 水平条形',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: '水平条形', subtitle: '',
+      data: {
+        type: 'rows',
+        fields: ['项目', '值'],
+        rows: [
+          { '项目': 'A', '值': 100 },
+          { '项目': 'B', '值': 200 },
+          { '项目': 'C', '值': 150 }
+        ]
+      },
+      mapping: { x: '项目', y: '值', fill: null, color: null, size: null },
+      layers: [
+        { geom: 'geom_bar', aes: { y: '值' }, params: {} }
+      ],
+      scales: [{ aesthetic: 'y', type: 'linear', name: '值' }],
+      coord: { type: 'cartesian', flip: true },
+      theme: { palette: 'restrained-warm', canvas: { width: 800, height: 550 } }
+    },
+    check: opt => {
+      assert(opt.xAxis.type === 'value', '翻转后 X 轴应为 value');
+      assert(opt.yAxis.type === 'category', '翻转后 Y 轴应为 category');
+      assert(opt.yAxis.data.length === 3, 'Y 轴应有 3 个标签');
+    }
+  },
+
+  {
+    name: 'v2 校验失败：缺少 layers',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: 'test',
+      data: { type: 'rows', fields: ['a'], rows: [{ a: 1 }] },
+      mapping: { x: 'a', y: null },
+      coord: { type: 'cartesian' }
+    },
+    shouldFail: true
+  },
+
+  {
+    name: 'v2 校验失败：非法 geom',
+    spec: {
+      version: 'viz-design-spec-v2',
+      title: 'test',
+      data: { type: 'rows', fields: ['a'], rows: [{ a: 1 }] },
+      mapping: { x: 'a', y: 'a' },
+      layers: [{ geom: 'geom_pie', aes: {} }],
+      coord: { type: 'cartesian' }
+    },
+    shouldFail: true
   }
 ];
 

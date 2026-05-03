@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// viz-design-spec-v1 JSON → ECharts HTML 正式渲染管线
+// viz-design-spec JSON → ECharts HTML 正式渲染管线
+// 支持 v1（声明式 chartType）和 v2（ggplot2 分层）
 // 放置位置：.claude/skills/viz-echarts/scripts/render-viz-design-spec.js
 // 用法：node render-viz-design-spec.js [spec.json路径] 或 node render-viz-design-spec.js --batch [目录]
 const fs = require('fs');
@@ -18,18 +19,30 @@ const THEMES = {
 };
 
 // ─── JSON Schema 校验 ──────────────────────────────────
-const REQUIRED_FIELDS = ['version', 'chartType', 'title', 'data'];
-const VALID_CHART_TYPES = [
+const V1_REQUIRED_FIELDS = ['version', 'chartType', 'title', 'data'];
+const V1_CHART_TYPES = [
   'bar_chart', 'line_chart', 'multi_line', 'area_chart',
   'stacked_area', 'dual_axis', 'grouped_bar', 'stacked_bar',
   'scatter_chart', 'radar_chart'
+];
+const V2_REQUIRED_FIELDS = ['version', 'data', 'mapping', 'layers', 'title'];
+const VALID_GEOMS = [
+  'geom_bar', 'geom_point', 'geom_line', 'geom_smooth',
+  'geom_area', 'geom_label', 'geom_hline', 'geom_vline',
+  'geom_rect', 'geom_ribbon'
 ];
 
 function validateSpec(json) {
   const errors = [];
   if (!json || typeof json !== 'object') return ['JSON 解析失败'];
 
-  for (const f of REQUIRED_FIELDS) {
+  // v2 分支
+  if (json.version === 'viz-design-spec-v2') {
+    return validateV2(json);
+  }
+
+  // v1 分支
+  for (const f of V1_REQUIRED_FIELDS) {
     if (!json[f]) errors.push(`缺少必填字段: ${f}`);
   }
 
@@ -37,8 +50,8 @@ function validateSpec(json) {
     errors.push(`版本不匹配: ${json.version}，期望 viz-design-spec-v1`);
   }
 
-  if (json.chartType && !VALID_CHART_TYPES.includes(json.chartType)) {
-    errors.push(`非法 chartType: ${json.chartType}，允许: ${VALID_CHART_TYPES.join(', ')}`);
+  if (json.chartType && !V1_CHART_TYPES.includes(json.chartType)) {
+    errors.push(`非法 chartType: ${json.chartType}，允许: ${V1_CHART_TYPES.join(', ')}`);
   }
 
   // 兼容 data.rows 格式：将 rows 转换为 series
@@ -65,6 +78,55 @@ function validateSpec(json) {
     if (!Array.isArray(json.visualEncoding.highlight)) {
       errors.push('visualEncoding.highlight 必须是数组');
     }
+  }
+
+  return errors;
+}
+
+// ─── v2 校验 ───────────────────────────────────────────
+
+function validateV2(json) {
+  const errors = [];
+
+  for (const f of V2_REQUIRED_FIELDS) {
+    if (json[f] === undefined || json[f] === null) {
+      errors.push(`v2 缺少必填字段: ${f}`);
+    }
+  }
+
+  // mapping.x 必须存在（可以是 null）
+  if (json.mapping === undefined) {
+    errors.push('v2 缺少 mapping 字段');
+  }
+
+  // layers 校验
+  if (!json.layers || !Array.isArray(json.layers) || json.layers.length === 0) {
+    errors.push('v2 layers 必须是非空数组');
+  } else {
+    json.layers.forEach((l, i) => {
+      if (!l.geom) errors.push(`v2 layers[${i}] 缺少 geom`);
+      if (l.geom && !VALID_GEOMS.includes(l.geom)) {
+        errors.push(`v2 layers[${i}] 非法 geom: ${l.geom}，允许: ${VALID_GEOMS.join(', ')}`);
+      }
+    });
+  }
+
+  // scales 校验（如果有）
+  if (json.scales && Array.isArray(json.scales)) {
+    json.scales.forEach((s, i) => {
+      if (!s.aesthetic) errors.push(`v2 scales[${i}] 缺少 aesthetic`);
+      if (!s.type) errors.push(`v2 scales[${i}] 缺少 type`);
+    });
+  }
+
+  // coord 必须有
+  if (!json.coord) {
+    errors.push('v2 缺少 coord 字段');
+  }
+
+  // 兼容：如果 data 是 rows 格式，转为 series 供 v1 渲染引擎使用
+  if (json.data && json.data.rows && !json.data.series) {
+    json.data.series = convertRowsToSeries(json.data);
   }
 
   return errors;
@@ -153,6 +215,336 @@ function buildAnnotationMap(annotations, seriesName) {
   return map;
 }
 
+// ─── v2 渲染引擎（ggplot2 分层）────────────────────────
+
+/**
+ * 将 v2 spec（layers + mapping + scales + coord + theme）转换为 ECharts option
+ * 每种 geom 独立转为 ECharts series，零猜测
+ */
+function renderV2Chart(spec) {
+  const theme = THEMES.default;
+  const { data, mapping, layers, scales = [], coord, facet, title, subtitle } = spec;
+  const canvas = spec.theme?.canvas || { width: 800, height: 550 };
+  const themeOverrides = spec.theme || {};
+
+  if (!data.rows || data.rows.length === 0) {
+    throw new Error('v2 渲染需要 data.rows，当前为空');
+  }
+
+  const { fields, rows } = data;
+  const xField = mapping.x; // X 轴映射的列名
+  const yField = mapping.y; // Y 轴主映射（可选）
+  const fillField = mapping.fill; // 填充色/分组列（可选）
+
+  // ─── 提取 X 轴数据 ──────────────────────────────────
+  const xLabels = xField ? rows.map(r => r[xField]) : rows.map((_, i) => String(i + 1));
+
+  // ─── 从 scales 构建轴配置 ────────────────────────────
+  let xAxisType = 'category';
+  let yAxisConfigs = [];
+  let colorPalette = null;
+
+  for (const sc of scales) {
+    if (sc.aesthetic === 'x') {
+      xAxisType = sc.type === 'log' ? 'value' : 'category';
+    }
+    if (sc.aesthetic === 'y') {
+      const axisCfg = {
+        type: sc.type === 'log' ? 'value' : 'value',
+        name: sc.name || '',
+        splitLine: { show: !sc.secondary }
+      };
+      if (sc.type === 'log') axisCfg.logBase = sc.base || 10;
+      if (sc.secondary) axisCfg.secondary = true;
+      yAxisConfigs.push(axisCfg);
+    }
+    if (sc.aesthetic === 'fill' && sc.type === 'manual') {
+      colorPalette = sc.values;
+    }
+    if (sc.aesthetic === 'color' && sc.type === 'manual') {
+      colorPalette = sc.values;
+    }
+  }
+
+  // 默认 Y 轴
+  if (yAxisConfigs.length === 0) {
+    yAxisConfigs.push({ type: 'value', name: '', splitLine: { show: true } });
+  }
+
+  // ─── 通用 option 骨架 ───────────────────────────────
+  const option = {
+    backgroundColor: themeOverrides.background || theme.bg,
+    title: {
+      text: title || '', subtext: subtitle || '', left: 'center', top: 10,
+      textStyle: { fontSize: themeOverrides.titleSize || 16, fontWeight: 600, color: theme.title },
+      subtextStyle: { fontSize: 11, color: theme.subtitle }
+    },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: theme.tooltipBg, borderColor: theme.borderColor,
+      textStyle: { color: '#374151' }
+    },
+    grid: { top: 70, right: 30, bottom: 50, left: 50 }
+  };
+
+  // ─── coord 处理 ────────────────────────────────────
+  const isFlip = coord && coord.flip;
+  const isPolar = coord && coord.type === 'polar';
+
+  // ─── 按 geom 类型分组处理 layers ────────────────────
+  const echartsSeries = [];
+  let colorIdx = 0;
+
+  for (const layer of layers) {
+    const { geom, aes = {}, params = {} } = layer;
+
+    // 根据 geom 决定 ECharts type
+    let ecType = null;
+    let ecExtra = {};
+
+    switch (geom) {
+      case 'geom_bar':
+        ecType = 'bar';
+        if (params.position === 'stack') ecExtra.stack = 'total';
+        if (params.position === 'dodge') ecExtra.barGap = '20%';
+        break;
+      case 'geom_point':
+        ecType = 'scatter';
+        ecExtra.symbolSize = params.size || 8;
+        break;
+      case 'geom_line':
+        ecType = 'line';
+        ecExtra.smooth = params.smooth === true;
+        ecExtra.showSymbol = true;
+        ecExtra.symbolSize = params.size ? params.size * 4 : 4;
+        break;
+      case 'geom_smooth':
+        ecType = 'line';
+        ecExtra.smooth = true;
+        ecExtra.showSymbol = false;
+        break;
+      case 'geom_area':
+        ecType = 'line';
+        ecExtra.smooth = params.smooth !== false;
+        ecExtra.showSymbol = false;
+        ecExtra.areaStyle = { opacity: params.opacity || 0.3 };
+        if (params.position === 'stack') ecExtra.stack = 'total';
+        break;
+      case 'geom_label':
+        ecType = 'scatter';
+        ecExtra.symbolSize = 0;
+        ecExtra.label = {
+          show: true,
+          formatter: p => aes.label || (rows[p.dataIndex] ? rows[p.dataIndex][aes.labelField || xField] : ''),
+          position: params.position || 'top',
+          fontSize: params.fontSize || 11,
+          fontWeight: 600,
+          color: params.color || theme.title,
+          backgroundColor: 'rgba(255,255,255,0.85)',
+          padding: [3, 6],
+          borderRadius: 3
+        };
+        break;
+      case 'geom_hline':
+        // 水平参考线 → 放到后续 markLine 处理
+        echartsSeries.push({ _markLine: { yAxis: aes.yValue, label: aes.label, color: params.color || '#ada599', dash: params.dash } });
+        continue;
+      case 'geom_vline':
+        echartsSeries.push({ _markLine: { xAxis: aes.xValue, label: aes.label, color: params.color || '#ada599', dash: params.dash } });
+        continue;
+      case 'geom_rect':
+        echartsSeries.push({ _markArea: { xStart: aes.xStart, xEnd: aes.xEnd, yStart: aes.yStart, yEnd: aes.yEnd, label: aes.label, color: params.color || 'rgba(194,109,58,0.1)' } });
+        continue;
+      case 'geom_ribbon':
+        ecType = 'line';
+        ecExtra.smooth = true;
+        ecExtra.showSymbol = false;
+        ecExtra.areaStyle = { opacity: params.opacity || 0.15 };
+        break;
+      default:
+        throw new Error(`不支持的 geom: ${geom}`);
+    }
+
+    // ─── 从 rows 中提取该 layer 的数据 ─────────────────
+    let seriesData = [];
+    const yCol = aes.y || yField;
+    const xCol = aes.x || xField;
+
+    if (geom === 'geom_label') {
+      // 标注：使用 aes 中指定的 x/y 位置
+      const labelX = aes.x;
+      const labelY = aes.y;
+      // 找到对应行的索引
+      const rowIdx = rows.findIndex(r => String(r[xField]) === String(labelX) || r[xField] === labelX);
+      if (rowIdx >= 0 && labelY !== undefined) {
+        seriesData = [[labelX, labelY]];
+      }
+    } else if (geom === 'geom_point' && fillField) {
+      // 散点按 fill 分组：需要按 fillField 拆分
+      const uniqueFillValues = [...new Set(rows.map(r => r[fillField]).filter(v => v !== null && v !== undefined))];
+      for (const fillVal of uniqueFillValues) {
+        const filteredRows = rows.filter(r => r[fillVal] === fillVal || r[fillField] === fillVal);
+        // 这里假设 fillField 是分组字段
+        const pts = filteredRows.map(r => {
+          const xv = xCol ? (typeof r[xCol] === 'number' ? r[xCol] : xLabels.indexOf(r[xCol])) : 0;
+          const yv = yCol ? r[yCol] : 0;
+          return [xv, yv];
+        });
+        const color = colorPalette ? colorPalette[colorIdx % colorPalette.length] : theme.colors[colorIdx % theme.colors.length];
+        echartsSeries.push({
+          type: ecType,
+          name: String(fillVal),
+          data: pts,
+          itemStyle: { color },
+          ...ecExtra
+        });
+        colorIdx++;
+      }
+      continue; // 已处理，跳过下面的通用逻辑
+    } else {
+      // 通用数据提取
+      seriesData = rows.map(r => {
+        const xv = xCol ? r[xCol] : null;
+        const yv = yCol ? r[yCol] : 0;
+        return yv; // 柱状/折线/面积用简单数值
+      });
+    }
+
+    // 颜色
+    const color = params.color || (colorPalette ? colorPalette[colorIdx % colorPalette.length] : theme.colors[colorIdx % theme.colors.length]);
+
+    const seriesObj = {
+      type: ecType,
+      name: aes.label || layer.geom,
+      data: seriesData,
+      itemStyle: { color },
+      lineStyle: { color, width: params.size || 2 },
+      ...ecExtra
+    };
+
+    // 双轴处理：根据 scales 中 secondary 的位置判断
+    // 第二个 y-scale 如果有 secondary: true，则第二个使用 y 映射的 layer 用右轴
+    const secondaryScale = scales.find(s => s.secondary && s.aesthetic === 'y');
+    if (secondaryScale && aes.y && aes.y !== yField) {
+      // 如果此 layer 的 y 映射不是主映射字段，说明是次要轴
+      seriesObj.yAxisIndex = 1;
+    } else if (secondaryScale && colorIdx === 1) {
+      // 简化：第二个数据系列使用右轴
+      seriesObj.yAxisIndex = 1;
+    }
+
+    echartsSeries.push(seriesObj);
+    colorIdx++;
+  }
+
+  // ─── X 轴配置 ──────────────────────────────────────
+  if (isFlip) {
+    // coord_flip: 水平条形
+    option.xAxis = {
+      type: 'value',
+      scale: xAxisType === 'value',
+      splitLine: { show: true, lineStyle: { color: theme.splitLine } }
+    };
+    option.yAxis = {
+      type: 'category',
+      data: xLabels,
+      axisLine: { lineStyle: { color: theme.axisLine } },
+      axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10 },
+      inverse: true
+    };
+    option.grid.left = 80;
+  } else if (isPolar) {
+    // 极坐标（雷达图等）— 暂用 radar 组件
+    option.radar = {
+      indicator: xLabels.map(l => ({ name: l, max: Math.max(...rows.map(r => {
+        const yCol = yField || (layers[0]?.aes?.y);
+        return r[yCol] || 0;
+      }), 1) * 1.1 }))
+    };
+    // 把 echartsSeries 转为 radar 类型
+    for (const s of echartsSeries) {
+      if (s.type && !s._markLine && !s._markArea) {
+        s.type = 'radar';
+        s.data = [{ value: s.data, name: s.name }];
+      }
+    }
+  } else {
+    // 默认直角坐标
+    option.xAxis = {
+      type: xAxisType === 'log' ? 'value' : (xLabels.every(v => typeof v === 'number') ? 'value' : 'category'),
+      data: xAxisType !== 'value' ? xLabels : undefined,
+      axisLine: { lineStyle: { color: theme.axisLine } },
+      axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10, rotate: xLabels.length > 12 ? 30 : 0 },
+      scale: xAxisType === 'value'
+    };
+    if (xAxisType === 'log') {
+      option.xAxis.logBase = 10;
+    }
+
+    // Y 轴
+    if (yAxisConfigs.length === 1) {
+      option.yAxis = {
+        ...yAxisConfigs[0],
+        axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10, formatter: fmtNum },
+        splitLine: { show: true, lineStyle: { color: theme.splitLine } }
+      };
+    } else {
+      // 双轴
+      option.yAxis = yAxisConfigs.map((cfg, i) => ({
+        ...cfg,
+        axisLabel: { color: theme.axisLabel, fontSize: themeOverrides.axisLabelSize || 10, formatter: i === 1 ? v => v.toFixed(1) + '%' : fmtNum },
+        splitLine: { show: i === 0 }
+      }));
+    }
+  }
+
+  // 过滤掉 _markLine/_markArea 占位符，把它们附加到第一个真实 series 上
+  const realSeries = echartsSeries.filter(s => !s._markLine && !s._markArea);
+  const markLines = echartsSeries.filter(s => s._markLine).map(s => s._markLine);
+  const markAreas = echartsSeries.filter(s => s._markArea).map(s => s._markArea);
+
+  if (markLines.length > 0 && realSeries.length > 0) {
+    realSeries[0].markLine = {
+      data: markLines.map(ml => {
+        const entry = {};
+        if (ml.yAxis !== undefined) { entry.yAxis = ml.yAxis; }
+        if (ml.xAxis !== undefined) { entry.xAxis = ml.xAxis; }
+        entry.name = ml.label || '';
+        return entry;
+      }),
+      lineStyle: { color: markLines[0].color || '#ada599', type: markLines[0].dash ? 'dashed' : 'solid' },
+      label: { show: true, fontSize: 10, color: theme.axisLabel }
+    };
+  }
+
+  if (markAreas.length > 0 && realSeries.length > 0) {
+    realSeries[0].markArea = {
+      data: markAreas.map(ma => [
+        { xAxis: ma.xStart, yAxis: ma.yStart, name: ma.label },
+        { xAxis: ma.xEnd, yAxis: ma.yEnd }
+      ]),
+      itemStyle: { color: markAreas[0].color || 'rgba(194,109,58,0.1)' }
+    };
+  }
+
+  option.series = realSeries;
+
+  // ─── facet 处理（多子图）─────────────────────────────
+  if (facet && facet.type && realSeries.length > 0) {
+    // 简化实现：单 grid 内按 facet 分组，标注 facet 名
+    // 完整实现需要多 grid 布局，此处做最小可用
+    const facetCol = facet.by;
+    if (facetCol && rows[0] && rows[0][facetCol] !== undefined) {
+      const facetValues = [...new Set(rows.map(r => r[facetCol]))];
+      // 将数据按 facet 分组，每组一个 series
+      // 这里保持简单，仅标注
+      option.title.subtext = (subtitle || '') + ` | 分面: ${facetValues.join(', ')}`;
+    }
+  }
+
+  return { option, canvas };
+}
+
 // ─── 核心渲染引擎 ──────────────────────────────────────
 
 /**
@@ -160,6 +552,12 @@ function buildAnnotationMap(annotations, seriesName) {
  * 每种 chartType 有独立的渲染分支，不做隐式猜测
  */
 function renderChart(spec) {
+  // v2 分支：ggplot2 分层渲染
+  if (spec.version === 'viz-design-spec-v2') {
+    return renderV2Chart(spec);
+  }
+
+  // v1 分支：声明式 chartType
   const theme = THEMES.default;
   const { chartType, data, visualEncoding: ve = {}, annotations = [], title, subtitle, canvas = { width: 800, height: 550 } } = spec;
   const fields = data.fields || [];
@@ -489,7 +887,8 @@ function main() {
     const { option, canvas } = renderChart(chart);
     const html = generateHTML(option, chart.title, canvas);
     fs.writeFileSync(outputPath, html, 'utf-8');
-    console.log('OK: ' + outputPath + ' (' + chart.chartType + ')');
+    const chartLabel = chart.chartType || 'v2:' + (chart.layers?.map(l => l.geom).join('+') || 'unknown');
+    console.log('OK: ' + outputPath + ' (' + chartLabel + ')');
     return;
   }
 
@@ -532,7 +931,8 @@ function main() {
 
         const charts = json.charts || [json];
         const chart = charts[0];
-        if (!chart?.chartType) { skipped++; continue; }
+        // v2 用 version 判断，v1 需要 chartType
+        if (!chart?.chartType && chart.version !== 'viz-design-spec-v2') { skipped++; continue; }
 
         const { option, canvas } = renderChart(chart, json.globalStyle);
         const html = generateHTML(option, chart.title, canvas);

@@ -108,8 +108,118 @@
 > 下游渲染技能（viz-echarts / viz-svg-flow）直接消费此 JSON，不再从自然语言中翻译。
 > 多图场景下，所有图共享同一个 `globalStyle` 对象。
 > **viz-design 绝不自己写渲染代码，必须通过渲染契约 JSON 委托。**
+> 
+> **版本策略**：v2（ggplot2 分层）为首选格式。v1 格式仍兼容（渲染管线自动转 v2）。
 
-### 单图场景
+### v2 格式（ggplot2 分层，首选）
+
+> 7 层独立声明，渲染端零猜测。每种图表 = 数据 + 映射 + 几何图层 + 标度 + 分面 + 坐标系 + 主题的组合。
+
+```json
+{
+  "version": "viz-design-spec-v2",
+  "data": {
+    "type": "rows",
+    "fields": ["年份", "GDP_万亿", "增速__pct"],
+    "rows": [
+      { "年份": "2020", "GDP_万亿": 101.4, "增速__pct": 2.3 },
+      { "年份": "2021", "GDP_万亿": 114.9, "增速__pct": 8.6 }
+    ]
+  },
+  "mapping": {
+    "x": "年份",
+    "y": "GDP_万亿",
+    "fill": null,
+    "color": null,
+    "size": null
+  },
+  "layers": [
+    {
+      "geom": "geom_bar",
+      "aes": { "y": "GDP_万亿" },
+      "params": { "color": "#6b7280", "position": "dodge" }
+    },
+    {
+      "geom": "geom_line",
+      "aes": { "y": "增速__pct" },
+      "params": { "color": "#c26d3a", "size": 2, "smooth": false }
+    },
+    {
+      "geom": "geom_label",
+      "aes": { "x": "2021", "y": 114.9, "label": "新高" },
+      "params": { "color": "#c26d3a", "fontSize": 11 }
+    }
+  ],
+  "scales": [
+    { "aesthetic": "y", "type": "linear", "name": "GDP（万亿人民币）" },
+    { "aesthetic": "y", "type": "linear", "name": "增速（%）", "secondary": true },
+    { "aesthetic": "color", "type": "manual", "values": ["#6b7280", "#c26d3a"] }
+  ],
+  "coord": { "type": "cartesian", "flip": false },
+  "facet": null,
+  "theme": {
+    "palette": "restrained-warm",
+    "background": "#ffffff",
+    "grid": { "major": "#f3f4f6", "minor": false },
+    "fontFamily": "system-ui",
+    "titleSize": 16,
+    "axisLabelSize": 10,
+    "canvas": { "width": 800, "height": 550 }
+  },
+  "title": "增长引擎切换：服务业占比突破56%",
+  "subtitle": "2015-2024 | GDP从70.3万亿增至134.9万亿人民币"
+}
+```
+
+### v2 字段说明
+
+#### layers（几何图层）
+
+| geom | 描述 | ECharts 映射 |
+|------|------|-------------|
+| `geom_bar` | 柱状/条形图 | `type: "bar"` |
+| `geom_point` | 散点 | `type: "scatter"` |
+| `geom_line` | 折线（不平滑） | `type: "line", smooth: false` |
+| `geom_smooth` | 平滑曲线 | `type: "line", smooth: true` |
+| `geom_area` | 面积图 | `type: "line", areaStyle: {...}` |
+| `geom_label` | 标注文本 | `scatter + label` 或 `markPoint` |
+| `geom_hline` | 水平参考线 | `markLine` (yAxis) |
+| `geom_vline` | 垂直参考线 | `markLine` (xAxis) |
+| `geom_rect` | 高亮区域 | `markArea` |
+
+常见 params：`position` ("dodge"/"stack"/"identity")、`color`、`size`、`smooth`、`width`。
+
+#### scales（标度）
+
+| scale type | 说明 | ECharts 映射 |
+|------------|------|-------------|
+| `linear` | 线性刻度 | `type: "value"` |
+| `log` | 对数刻度 | `type: "value", logBase: 10` |
+| `manual` | 手动指定色值 | `itemStyle.color` |
+
+`secondary: true` 时映射到 `yAxis[1]`，天然支持双轴。
+
+#### coord（坐标系）
+
+| type | 说明 | ECharts 映射 |
+|------|------|-------------|
+| `cartesian` | 直角坐标 | 默认 |
+| `polar` | 极坐标 | `polar` + `radar` |
+| `flip` | 翻转XY（水平条形） | `xAxis.type="value"` + `yAxis.type="category"` |
+
+#### facet（分面，可选）
+
+```json
+"facet": { "type": "wrap", "by": "category_column", "ncol": 2, "scales": "fixed" }
+```
+
+`null` 表示不分面。
+
+### v1 格式（兼容，自动转 v2）
+
+> 新图优先用 v2。v1 格式仍可接受，渲染管线自动转换。
+
+### 单图场景（v1）
 
 ```json
 {
