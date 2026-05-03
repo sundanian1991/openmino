@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 大模型定价模式演变 — 从 Coding Plan 到 Token Plan</title>
+<style>
+/* ========== Global Tokens ========== */
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #0e0e16;
+  --bg-card: #111119;
+  --teal: #1a3a4a;
+  --teal-bright: #2a6a7a;
+  --teal-dim: rgba(26, 58, 74, 0.15);
+  --amber: #d4a35f;
+  --amber-bright: #e8c07a;
+  --amber-dim: #a67c3f;
+  --amber-glow: rgba(212, 163, 95, 0.12);
+  --text: #e8e8ec;
+  --text-dim: #8a8a95;
+  --text-muted: #55556a;
+  --red: #d44848;
+  --red-dim: rgba(212, 72, 72, 0.12);
+  --green: #4aaa6a;
+  --border: #1c1c2e;
+  --border-amber: rgba(212, 163, 95, 0.3);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --font-serif: Georgia, 'Noto Serif SC', 'Songti SC', serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow: hidden;
+}
+
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 10000;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px;
+}
+
+/* ========== Slides Container ========== */
+.slides-container {
+  position: relative;
+  width: 100%; height: 100vh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute; inset: 0;
+  width: 100vw; height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 60px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+  overflow-y: auto;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* Slide inner wrapper for vertical centering bias */
+.slide__inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========== Transition Overlay (fade-to-black) ========== */
+.transition-overlay {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 9000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.transition-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ========== Progress Bar ========== */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: var(--amber);
+  z-index: 5000;
+  transition: width 0.35s var(--ease);
+}
+
+/* ========== Page Indicator (bottom) ========== */
+.page-indicator {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+}
+
+.page-indicator .current {
+  color: var(--amber);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ========== Act Navigation Dots (right side) ========== */
+.act-nav {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.act-dot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+.act-dot:hover, .act-dot.active { opacity: 1; }
+.act-dot__dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: all 0.3s ease;
+}
+.act-dot.active .act-dot__dot {
+  background: var(--amber);
+  box-shadow: 0 0 8px rgba(212,163,95,0.5);
+}
+.act-dot__label {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.act-dot.active .act-dot__label { color: var(--amber); }
+
+/* ========== Typography ========== */
+.t-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 24px;
+}
+
+.t-title {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.t-subtitle {
+  font-size: clamp(15px, 2vw, 18px);
+  color: var(--text-dim);
+  line-height: 1.65;
+  max-width: 680px;
+}
+
+.t-mono { font-family: var(--font-mono); }
+.t-amber { color: var(--amber); }
+.t-dim { color: var(--text-dim); }
+.t-serif { font-family: var(--font-serif); }
+.t-italic { font-style: italic; }
+.t-bold { font-weight: 700; }
+
+/* ========== Layout Helpers ========== */
+.center { text-align: center; }
+.left { text-align: left; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  width: 100%;
+}
+.two-col--4060 {
+  grid-template-columns: 2fr 3fr;
+}
+.two-col--6040 {
+  grid-template-columns: 3fr 2fr;
+}
+.two-col--4555 {
+  grid-template-columns: 9fr 11fr;
+}
+
+.quote-block {
+  padding: 20px 24px;
+  border-left: 3px solid var(--teal-bright);
+  background: var(--teal-dim);
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.quote-block--amber {
+  border-left-color: var(--amber);
+  background: var(--amber-glow);
+}
+
+.data-number {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 24px;
+}
+
+.card--amber-top {
+  border-top: 2px solid var(--amber);
+}
+
+.table-simple {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.table-simple th {
+  text-align: left;
+  padding: 12px 14px;
+  background: var(--teal-dim);
+  color: var(--amber);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-bottom: 2px solid var(--teal);
+}
+.table-simple td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+}
+.table-simple td:first-child { color: var(--text); font-weight: 500; }
+
+/* ========== Entrance Animations ========== */
+.ent { opacity: 0; }
+.ent.go {
+  animation-fill-mode: forwards;
+}
+
+/* 1. fadeUp */
+.ent-fadeUp { animation: fadeUp 0.7s var(--ease) forwards; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. blurIn */
+.ent-blurIn { animation: blurIn 0.8s var(--ease) forwards; }
+@keyframes blurIn {
+  from { opacity: 0; filter: blur(12px); transform: scale(1.05); }
+  to   { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+/* 3. dollyIn */
+.ent-dollyIn { animation: dollyIn 0.9s var(--ease) forwards; }
+@keyframes dollyIn {
+  from { opacity: 0; transform: scale(0.85); filter: blur(4px); }
+  to   { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+/* 4. slideInLeft */
+.ent-slideLeft { animation: slideLeft 0.7s var(--ease) forwards; }
+@keyframes slideLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* 5. slideInRight */
+.ent-slideRight { animation: slideRight 0.7s var(--ease) forwards; }
+@keyframes slideRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* 6. splitSlide */
+.ent-splitL { animation: slideLeft 0.75s var(--ease) forwards; }
+.ent-splitR { animation: slideRight 0.75s var(--ease) forwards; }
+
+/* 7. wipeDown */
+.ent-wipeDown { animation: wipeDown 0.7s var(--ease) forwards; }
+@keyframes wipeDown {
+  from { opacity: 0; transform: translateY(-20px) scaleY(0); transform-origin: top; }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); transform-origin: top; }
+}
+
+/* 8. scaleIn */
+.ent-scaleIn { animation: scaleIn 0.6s var(--ease) forwards; }
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* 9. textFade */
+.ent-textFade { animation: textFade 1.2s ease forwards; }
+@keyframes textFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* 10. barGrow */
+.ent-barGrow .bar {
+  width: 0 !important;
+  animation: barGrow 1s var(--ease) forwards;
+}
+@keyframes barGrow {
+  to { width: var(--bar-w); }
+}
+
+/* Stagger delays */
+.d1 { animation-delay: 0.08s !important; }
+.d2 { animation-delay: 0.16s !important; }
+.d3 { animation-delay: 0.24s !important; }
+.d4 { animation-delay: 0.32s !important; }
+.d5 { animation-delay: 0.40s !important; }
+.d6 { animation-delay: 0.48s !important; }
+.d7 { animation-delay: 0.56s !important; }
+
+/* ========== Transition Pages ========== */
+.transition-page .t-quote {
+  font-size: clamp(20px, 3vw, 28px);
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text);
+  text-align: center;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.transition-page .t-svg-anchor {
+  margin-top: 32px;
+  opacity: 0.6;
+}
+
+/* ========== Act Color Progression ========== */
+.act-1 { --act-bg: var(--bg); }
+.act-2 { --act-bg: var(--bg); }
+.act-3 { --act-bg: var(--bg); }
+.act-4 { --act-bg: var(--bg); }
+.act-5 { --act-bg: var(--bg); }
+
+/* ========== Bar Chart ========== */
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.bar-label {
+  width: 100px;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: right;
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1;
+  height: 24px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.bar {
+  height: 100%;
+  border-radius: 3px;
+  width: 0;
+  transition: width 0s;
+}
+.bar--teal { background: linear-gradient(90deg, var(--teal), var(--teal-bright)); }
+.bar--amber { background: var(--amber); }
+.bar--dim { background: var(--text-muted); }
+.bar-pct {
+  width: 50px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+
+/* ========== Timeline ========== */
+.tl { position: relative; padding-left: 40px; }
+.tl::before {
+  content: '';
+  position: absolute; left: 8px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--teal-bright), var(--teal), transparent);
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 18px;
+  padding-left: 20px;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -36px; top: 8px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.tl-item--key::before {
+  background: var(--amber);
+  box-shadow: 0 0 8px rgba(212,163,95,0.5);
+}
+.tl-time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--amber);
+  margin-bottom: 2px;
+}
+.tl-event {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.tl-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ========== Hint ========== */
+.nav-hint {
+  position: fixed;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4000;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  opacity: 0.5;
+  transition: opacity 2s ease;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 900px) {
+  .slide { padding: 40px 24px; }
+  .two-col { grid-template-columns: 1fr; gap: 24px; }
+  .act-nav { right: 12px; }
+  .act-dot__label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="transition-overlay" id="transOverlay"></div>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="act-nav" id="actNav">
+  <div class="act-dot active" data-act="1"><span class="act-dot__dot"></span><span class="act-dot__label">幻觉</span></div>
+  <div class="act-dot" data-act="2"><span class="act-dot__dot"></span><span class="act-dot__label">崩塌</span></div>
+  <div class="act-dot" data-act="3"><span class="act-dot__dot"></span><span class="act-dot__label">调查</span></div>
+  <div class="act-dot" data-act="4"><span class="act-dot__dot"></span><span class="act-dot__label">规律</span></div>
+  <div class="act-dot" data-act="5"><span class="act-dot__dot"></span><span class="act-dot__label">未来</span></div>
+</div>
+
+<div class="slides-container" id="slidesContainer">
+
+<!-- ===== S01: Cover ===== -->
+<div class="slide act-1 a1 s01 active" data-slide="1" data-act="1">
+  <div class="slide__inner center">
+    <div class="t-label ent-fadeUp">2024 — 2026 商业案例研究</div>
+    <h1 class="t-title ent-dollyIn d1">
+      AI 大模型定价，精确重演了手机流量套餐的 <span class="t-amber">20年</span> 历史
+    </h1>
+    <p class="t-subtitle ent-fadeUp d3" style="margin:24px auto 0;">
+      从 Coding Plan 到 Token Plan<br>
+      一场"卖工具订阅" → "卖算力资源包"的商业变革
+    </p>
+    <div style="margin-top:48px; width:60px; height:1px; background:var(--amber); opacity:0.3; margin-left:auto; margin-right:auto;"></div>
+  </div>
+</div>
+
+<!-- ===== S02: Personal Experience ===== -->
+<div class="slide act-1 a1 s02" data-slide="2" data-act="1">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">第一幕 · 幻觉</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:36px;">你的一天：从"随便用"到"精打细算"</h2>
+    <div class="two-col two-col--4060">
+      <div>
+        <div class="quote-block ent-slideLeft d2">
+          <p class="t-italic">"2月份随便用都不心疼，到了12月每次调用都要想想——这个 Prompt 值不值。"</p>
+          <p style="margin-top:12px; font-size:13px; color:var(--text-dim);">一个日耗 10 亿 Token 的工程师</p>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; justify-content:center;">
+        <div style="display:flex; gap:48px; align-items:baseline;">
+          <div class="ent-slideRight d3">
+            <div class="data-number" style="font-size:64px; color:var(--teal-bright);">2月</div>
+            <div style="font-size:13px; color:var(--text-dim); margin-top:4px;">日耗 1.5 亿 Token</div>
+          </div>
+          <div style="font-size:36px; color:var(--amber); font-weight:800;" class="ent-scaleIn d4">&times;6</div>
+          <div class="ent-slideRight d4">
+            <div class="data-number" style="font-size:64px; color:var(--amber);">12月</div>
+            <div style="font-size:13px; color:var(--text-dim); margin-top:4px;">日耗 10 亿 Token</div>
+          </div>
+        </div>
+        <p style="margin-top:24px; font-size:14px; color:var(--text-dim);" class="ent-fadeUp d5">Coding Plan 消耗增长 10 倍+</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S03: Timeline ===== -->
+<div class="slide act-1 a1 s03" data-slide="3" data-act="1">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">全景时间线</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">18 个月发生了什么</h2>
+    <div class="tl" style="max-height:520px; overflow-y:auto;">
+      <div class="tl-item ent-wipeDown d1">
+        <div class="tl-time">2024 Q4</div>
+        <div class="tl-event">DeepSeek 带头降价</div>
+        <div class="tl-desc">百万 Token 从几十元降到几毛钱 → 抢用户规模</div>
+      </div>
+      <div class="tl-item tl-item--key ent-wipeDown d2">
+        <div class="tl-time">2025 Q4</div>
+        <div class="tl-event">Coding Plan 涌现</div>
+        <div class="tl-desc">智谱 GLM 率先推出固定月费 Coding Plan → 从按量转向订阅</div>
+      </div>
+      <div class="tl-item ent-wipeDown d3">
+        <div class="tl-time">2025 H2</div>
+        <div class="tl-event">补贴收紧</div>
+        <div class="tl-desc">首购优惠取消、低档停售、限时抢购 → 利润压力显现</div>
+      </div>
+      <div class="tl-item ent-wipeDown d4">
+        <div class="tl-time">2026-01</div>
+        <div class="tl-event">Kimi 切换计量</div>
+        <div class="tl-desc">从 Prompt 计量切换为 Token 计量 → 计量单位统一化</div>
+      </div>
+      <div class="tl-item tl-item--key ent-wipeDown d5">
+        <div class="tl-time">2026-02</div>
+        <div class="tl-event">OpenClaw 爆火</div>
+        <div class="tl-desc">GitHub 355K stars → Token 消耗 6-10 倍增长</div>
+      </div>
+      <div class="tl-item tl-item--key ent-wipeDown d6">
+        <div class="tl-time">2026-03</div>
+        <div class="tl-event">MiniMax 改名 Token Plan</div>
+        <div class="tl-desc">从"Coding Plan"更名为"Token Plan" → 从编程工具升级为通用算力</div>
+      </div>
+      <div class="tl-item ent-wipeDown d7">
+        <div class="tl-time">2026-04</div>
+        <div class="tl-event">DeepSeek V4 开源</div>
+        <div class="tl-desc">1.6T 参数只激活 49B，成本暴降 73%，适配华为/寒武纪</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S04: Transition A→B ===== -->
+<div class="slide transition-page a1 s04" data-slide="4" data-act="1">
+  <div class="slide__inner center">
+    <p class="t-quote ent-textFade">但当所有人都在用，<br>无限就不再无限了。</p>
+    <div class="t-svg-anchor ent-scaleIn d3">
+      <svg width="120" height="60" viewBox="0 0 120 60">
+        <text x="60" y="35" text-anchor="middle" font-size="36" fill="#d4a35f" font-family="serif" opacity="0.8">∞</text>
+        <line x1="20" y1="50" x2="100" y2="50" stroke="#1a3a4a" stroke-width="0.5"/>
+        <circle cx="30" cy="48" r="1" fill="#2a6a7a" opacity="0.5"/>
+        <circle cx="50" cy="52" r="1" fill="#2a6a7a" opacity="0.4"/>
+        <circle cx="70" cy="47" r="1" fill="#2a6a7a" opacity="0.3"/>
+        <circle cx="90" cy="51" r="1" fill="#2a6a7a" opacity="0.2"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S05: Landscape — Two Routes ===== -->
+<div class="slide act-2 a2 s05" data-slide="5" data-act="2">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">第二幕 · 崩塌</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">两条路线，七家玩家</h2>
+    <div class="two-col">
+      <div class="card ent-splitL d2" style="border-color:rgba(26,58,74,0.4);">
+        <h3 style="font-size:16px; color:var(--amber); margin-bottom:16px; font-weight:700;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M8 5v6"/></svg>
+          专卖店（模型厂商）
+        </h3>
+        <div style="font-size:15px; color:var(--text); margin-bottom:8px;">智谱 GLM <span style="float:right; font-size:12px; color:var(--text-dim);">SOTA 推理</span></div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:8px;">Kimi <span style="float:right; font-size:12px; color:var(--text-dim);">编程最强</span></div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:8px;">MiniMax <span style="float:right; font-size:12px; color:var(--text-dim);">极致低价</span></div>
+        <div style="font-size:15px; color:var(--text);">小米 MiMo <span style="float:right; font-size:12px; color:var(--text-dim);">新入局</span></div>
+      </div>
+      <div class="card ent-splitR d3" style="background:rgba(14,14,22,0.8);">
+        <h3 style="font-size:16px; color:var(--amber); margin-bottom:16px; font-weight:700;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="14" height="8" rx="2"/><path d="M4 5V3h8v2"/></svg>
+          超市（云平台）
+        </h3>
+        <div style="font-size:15px; color:var(--text); margin-bottom:8px;">阿里百炼 <span style="float:right; font-size:12px; color:var(--text-dim);">多模型</span></div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:8px;">火山方舟 <span style="float:right; font-size:12px; color:var(--text-dim);">多模型</span></div>
+        <div style="font-size:15px; color:var(--text);">腾讯云 <span style="float:right; font-size:12px; color:var(--text-dim);">混元生态</span></div>
+      </div>
+    </div>
+    <p style="margin-top:24px; font-size:14px; color:var(--text-dim);" class="ent-fadeUp d4">只卖自家模型 vs 聚合多模型一键切换</p>
+  </div>
+</div>
+
+<!-- ===== S06: Price Anchors ===== -->
+<div class="slide act-2 a2 s06" data-slide="6" data-act="2">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">价格锚点</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">同样 ¥40-50，你买到的完全不同</h2>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+      <div class="card card--amber-top ent-scaleIn d1" style="padding:16px;">
+        <div style="font-size:13px; color:var(--text-dim);">MiniMax</div>
+        <div class="data-number" style="font-size:28px; color:var(--amber); margin:4px 0;">¥29</div>
+        <div style="font-size:12px; color:var(--text-dim);">40 prompts / 5h</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d2" style="padding:16px;">
+        <div style="font-size:13px; color:var(--text-dim);">Kimi</div>
+        <div class="data-number" style="font-size:28px; color:var(--amber); margin:4px 0;">¥19</div>
+        <div style="font-size:12px; color:var(--text-dim);">长上下文优先</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d3" style="padding:16px;">
+        <div style="font-size:13px; color:var(--text-dim);">智谱 GLM</div>
+        <div class="data-number" style="font-size:28px; color:var(--amber); margin:4px 0;">¥49</div>
+        <div style="font-size:12px; color:var(--text-dim);">SOTA 推理能力</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d4" style="padding:16px;">
+        <div style="font-size:13px; color:var(--text-dim);">阿里百炼</div>
+        <div class="data-number" style="font-size:28px; color:var(--amber); margin:4px 0;">¥40</div>
+        <div style="font-size:12px; color:var(--text-dim);">18000 次 API 请求</div>
+      </div>
+      <div class="card ent-scaleIn d5" style="padding:16px;">
+        <div style="font-size:13px; color:var(--text-dim);">火山 / 腾讯</div>
+        <div class="data-number" style="font-size:28px; color:var(--amber); margin:4px 0;">¥40</div>
+        <div style="font-size:12px; color:var(--text-dim);">多模型聚合</div>
+      </div>
+      <div class="card ent-scaleIn d6" style="padding:16px;">
+        <div style="font-size:13px; color:var(--text-dim);">小米 MiMo</div>
+        <div class="data-number" style="font-size:28px; color:var(--amber); margin:4px 0;">¥39</div>
+        <div style="font-size:12px; color:var(--text-dim);">V2-Pro $1/$3</div>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:14px; color:var(--text-dim);" class="ent-fadeUp d7">直接比数字毫无意义 —— 计量体系不同</p>
+  </div>
+</div>
+
+<!-- ===== S07: Metering Chaos ===== -->
+<div class="slide act-2 a2 s07" data-slide="7" data-act="2">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">计量单位混乱</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:24px;">五种计量，90% 开发者踩坑</h2>
+    <table class="table-simple ent-wipeDown d2">
+      <thead><tr><th>计量方式</th><th>透明度</th><th>用户感知陷阱</th><th>采用者</th></tr></thead>
+      <tbody>
+        <tr><td>API 请求次数</td><td class="t-amber">○○○○○</td><td>数字大，但 1 提问 = 5-30 次调用</td><td>阿里/火山/腾讯</td></tr>
+        <tr><td>Prompt 次数</td><td class="t-amber">●●○○○</td><td>1 Prompt ≈ 15-20 次模型调用</td><td>智谱/MiniMax（早期）</td></tr>
+        <tr><td>Token 计量</td><td class="t-amber">●●●●●</td><td>最透明，但用户难预估消耗</td><td>Kimi/MiniMax（新版）</td></tr>
+        <tr><td>Credit 计量</td><td class="t-amber">●●●○○</td><td>统一池但不同模型不同倍率</td><td>Cursor/MiMo/阿里 Token Plan</td></tr>
+        <tr><td>时间窗口配额</td><td class="t-amber">●●●○○</td><td>限制节奏而非总量</td><td>智谱 GLM 5h / Claude Code</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:16px; font-size:13px; color:var(--text-dim);" class="ent-fadeUp d5">○ = 不透明 &nbsp; ● = 透明</p>
+  </div>
+</div>
+
+<!-- ===== S08: Chip Dark War ===== -->
+<div class="slide act-2 a2 s08" data-slide="8" data-act="2">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">算力暗战</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">三层芯片格局</h2>
+    <div class="two-col two-col--4555">
+      <div class="ent-slideLeft d2">
+        <svg width="100%" height="280" viewBox="0 0 360 280">
+          <!-- Tier 1: NVIDIA (top, red) -->
+          <rect x="120" y="20" width="180" height="60" rx="4" fill="none" stroke="#d44848" stroke-width="1.5" opacity="0.6"/>
+          <text x="210" y="42" text-anchor="middle" fill="#d44848" font-size="14" font-weight="700" font-family="sans-serif">英伟达（紧缺）</text>
+          <text x="210" y="62" text-anchor="middle" fill="#8a8a95" font-size="11" font-family="sans-serif">出口管制 · 高价</text>
+          <!-- Tier 2: Domestic mid-low (middle, teal) -->
+          <rect x="90" y="110" width="210" height="60" rx="4" fill="none" stroke="#2a6a7a" stroke-width="1.5" opacity="0.5"/>
+          <text x="195" y="132" text-anchor="middle" fill="#2a6a7a" font-size="14" font-weight="700" font-family="sans-serif">国产中低端</text>
+          <text x="195" y="152" text-anchor="middle" fill="#8a8a95" font-size="11" font-family="sans-serif">寒武纪 · 摩尔线程 · 效能稍差</text>
+          <!-- Tier 3: Huawei breakthrough (bottom, amber) -->
+          <rect x="60" y="200" width="240" height="60" rx="4" fill="none" stroke="#d4a35f" stroke-width="2"/>
+          <text x="180" y="222" text-anchor="middle" fill="#d4a35f" font-size="15" font-weight="700" font-family="sans-serif">华为 950 超节点</text>
+          <text x="180" y="244" text-anchor="middle" fill="#8a8a95" font-size="11" font-family="sans-serif">2.87× H20 · 价格 1/3 · DeepSeek 跑在上面</text>
+          <!-- Arrows -->
+          <line x1="180" y1="80" x2="180" y2="110" stroke="#2a6a7a" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="180" y1="170" x2="180" y2="200" stroke="#d4a35f" stroke-width="1.5"/>
+          <text x="200" y="195" fill="#d4a35f" font-size="10" font-family="sans-serif">突破 ↑</text>
+        </svg>
+      </div>
+      <div>
+        <div style="margin-bottom:16px;" class="ent-slideRight d3">
+          <div style="font-size:16px; font-weight:700; color:var(--red); margin-bottom:4px;">英伟达高端紧缺</div>
+          <div style="font-size:13px; color:var(--text-dim);">受出口管制限制，供给紧缺且昂贵</div>
+        </div>
+        <div style="margin-bottom:16px;" class="ent-slideRight d4">
+          <div style="font-size:16px; font-weight:700; color:var(--teal-bright); margin-bottom:4px;">国产中低端效能不足</div>
+          <div style="font-size:13px; color:var(--text-dim);">寒武纪、摩尔线程等替代方案效能稍差</div>
+        </div>
+        <div class="ent-slideRight d5">
+          <div style="font-size:16px; font-weight:700; color:var(--amber); margin-bottom:4px;">华为 950 超节点突破</div>
+          <div style="font-size:13px; color:var(--text-dim);">算力 2.87× H20，价格仅 1/3</div>
+          <div class="quote-block quote-block--amber" style="margin-top:12px; font-size:13px;">
+            "昇腾 950 批量上市后价格大幅下调" — DeepSeek 官方
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S09: Pricing Ceiling ===== -->
+<div class="slide act-2 a2 s09" data-slide="9" data-act="2">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">定价天花板</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:24px;">DeepSeek V4 打破成本结构</h2>
+    <table class="table-simple ent-wipeDown d2">
+      <thead><tr><th>模型</th><th>参数量</th><th>激活量</th><th>成本降幅</th></tr></thead>
+      <tbody>
+        <tr style="background:var(--amber-glow); border-left:2px solid var(--amber);"><td>V4-Pro</td><td class="t-mono t-amber">1.6T</td><td class="t-mono">49B</td><td class="t-mono t-amber">-73%</td></tr>
+        <tr><td>V4-Flash</td><td class="t-mono">—</td><td class="t-mono">—</td><td class="t-mono">极致低价</td></tr>
+        <tr><td>GPT-5</td><td class="t-mono">—</td><td class="t-mono">—</td><td class="t-mono">对比基准</td></tr>
+      </tbody>
+    </table>
+    <div class="quote-block quote-block--amber ent-fadeUp d4" style="margin-top:24px; max-width:700px;">
+      <p class="t-italic" style="font-size:15px;">"受限于高端算力，预计下半年昇腾 950 批量上市后价格大幅下调。"</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S10: Transition B→C ===== -->
+<div class="slide transition-page a2 s10" data-slide="10" data-act="2">
+  <div class="slide__inner center">
+    <p class="t-quote ent-textFade">算力不够用。<br>但更致命的，是有人让算力消耗翻了 <span class="t-amber" style="font-weight:800;">10 倍</span>。</p>
+    <div class="t-svg-anchor ent-scaleIn d3">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <line x1="40" y1="65" x2="40" y2="20" stroke="#d4a35f" stroke-width="3" stroke-linecap="round"/>
+        <polyline points="25,35 40,15 55,35" fill="none" stroke="#d4a35f" stroke-width="2.5" stroke-linecap="round"/>
+        <text x="40" y="75" text-anchor="middle" fill="#8a8a95" font-size="10" font-family="monospace">1× → 10×</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S11: OpenClaw ===== -->
+<div class="slide act-3 a3 s11" data-slide="11" data-act="3">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">第三幕 · 调查</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">OpenClaw：Agent 是颠覆者</h2>
+    <div class="center ent-dollyIn d2">
+      <div style="display:flex; align-items:center; justify-content:center; gap:24px;">
+        <span class="data-number" style="font-size:56px; color:var(--amber);">$15,000</span>
+        <svg width="40" height="30" viewBox="0 0 40 30"><line x1="0" y1="15" x2="30" y2="15" stroke="#d44848" stroke-width="2"/><polyline points="22,8 32,15 22,22" fill="none" stroke="#4aaa6a" stroke-width="2"/></svg>
+        <span class="data-number" style="font-size:56px; color:var(--green);">$800</span>
+      </div>
+      <p style="font-size:13px; color:var(--text-dim); margin-top:8px;">API 价格 → Max plan 实际花费（省 93%）</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:36px;">
+      <div class="card card--amber-top ent-scaleIn d3 center">
+        <div class="data-number" style="font-size:32px; color:var(--amber);">355K</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">GitHub Stars</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d4 center">
+        <div class="data-number" style="font-size:32px; color:var(--amber);">100亿</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">8 个月 Token 消耗</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d5 center">
+        <div class="data-number" style="font-size:32px; color:var(--red);">6-10×</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">消耗增长倍数</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S12: Token Composition ===== -->
+<div class="slide act-3 a3 s12" data-slide="12" data-act="3">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">Token 构成</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:24px;">你付的钱花在了哪</h2>
+    <div class="two-col two-col--6040">
+      <div class="ent-barGrow d2">
+        <div class="bar-row"><span class="bar-label">文件读取</span><div class="bar-track"><div class="bar bar--teal" style="--bar-w:40%;"></div></div><span class="bar-pct">35-45%</span></div>
+        <div class="bar-row"><span class="bar-label">工具输出</span><div class="bar-track"><div class="bar bar--teal" style="--bar-w:20%;"></div></div><span class="bar-pct">15-25%</span></div>
+        <div class="bar-row"><span class="bar-label">上下文重发</span><div class="bar-track"><div class="bar bar--dim" style="--bar-w:18%;"></div></div><span class="bar-pct">15-20%</span></div>
+        <div class="bar-row"><span class="bar-label">推理</span><div class="bar-track"><div class="bar bar--dim" style="--bar-w:13%;"></div></div><span class="bar-pct">10-15%</span></div>
+        <div class="bar-row"><span class="bar-label" style="color:var(--amber);">代码生成</span><div class="bar-track"><div class="bar bar--amber" style="--bar-w:10%;"></div></div><span class="bar-pct">5-15%</span></div>
+      </div>
+      <div>
+        <div class="quote-block ent-slideRight d3">
+          <p style="font-size:20px; font-weight:700; color:var(--amber);">70% 是浪费</p>
+          <p style="margin-top:8px; font-size:14px; color:var(--text-dim);">你以为在买代码生成，实际在买文件读取。代码生成只占 5-15%。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S13: IPO Wave ===== -->
+<div class="slide act-3 a3 s13" data-slide="13" data-act="3">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">IPO 浪潮</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">资本化的定价压力</h2>
+    <div class="two-col">
+      <div class="card card--amber-top ent-scaleIn d2">
+        <h3 style="font-size:18px; color:var(--text); font-weight:700; margin-bottom:12px;">智谱</h3>
+        <div style="font-size:14px; color:var(--text-dim); margin-bottom:8px;">Coding Plan 两个月 <span class="t-amber t-bold">ARR 破亿</span></div>
+        <div style="font-size:13px; color:var(--text-dim);">上市公司必须证明商业可持续性</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d3">
+        <h3 style="font-size:18px; color:var(--text); font-weight:700; margin-bottom:12px;">MiniMax</h3>
+        <div style="font-size:14px; color:var(--text-dim); margin-bottom:8px;">海外收入占比 <span class="t-amber t-bold">73%</span></div>
+        <div style="font-size:13px; color:var(--text-dim);">国际市场的定价权争夺</div>
+      </div>
+    </div>
+    <p style="margin-top:24px; font-size:14px; color:var(--text-dim);" class="ent-fadeUp d4">上市 → 资本压力 → 定价策略必须从补贴转向利润</p>
+  </div>
+</div>
+
+<!-- ===== S14: Cross the Chasm ===== -->
+<div class="slide act-3 a3 s14" data-slide="14" data-act="3">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">跨越鸿沟</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">从实验到生产的信任挑战</h2>
+    <div class="two-col two-col--4060">
+      <div style="display:flex; gap:32px; align-items:baseline; justify-content:center;" class="ent-dollyIn d2">
+        <div class="center">
+          <div class="data-number" style="font-size:72px; color:var(--red);">90%</div>
+          <div style="font-size:13px; color:var(--text-dim);">企业在实验阶段</div>
+        </div>
+        <div style="width:1px; height:80px; background:var(--border);"></div>
+        <div class="center">
+          <div class="data-number" style="font-size:72px; color:var(--amber);">41%</div>
+          <div style="font-size:13px; color:var(--text-dim);">落地生产</div>
+        </div>
+      </div>
+      <div>
+        <div class="quote-block ent-slideRight d3">
+          <p style="font-size:15px;">跨越鸿沟的关键不是模型能力，而是 <span class="t-amber t-bold">"可信赖度"</span></p>
+        </div>
+        <p style="margin-top:16px; font-size:14px; color:var(--text-dim);" class="ent-fadeUp d4">定价权最终来自信任，不是来自低价</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S15: Transition C→D ===== -->
+<div class="slide transition-page a3 s15" data-slide="15" data-act="3">
+  <div class="slide__inner center">
+    <p class="t-quote ent-textFade">这看起来像一场混乱。<br>但所有互联网赛道，都走同样的 <span class="t-amber">三步</span>。</p>
+    <div class="t-svg-anchor ent-scaleIn d3">
+      <svg width="200" height="40" viewBox="0 0 200 40">
+        <text x="30" y="25" text-anchor="middle" fill="#d4a35f" font-size="13" font-weight="700" font-family="sans-serif">补贴</text>
+        <line x1="60" y1="20" x2="80" y2="20" stroke="#d4a35f" stroke-width="1.5"/>
+        <polygon points="80,16 90,20 80,24" fill="#d4a35f"/>
+        <text x="100" y="25" text-anchor="middle" fill="#d4a35f" font-size="13" font-weight="700" font-family="sans-serif">收紧</text>
+        <line x1="120" y1="20" x2="140" y2="20" stroke="#d4a35f" stroke-width="1.5"/>
+        <polygon points="140,16 150,20 140,24" fill="#d4a35f"/>
+        <text x="170" y="25" text-anchor="middle" fill="#d4a35f" font-size="13" font-weight="700" font-family="sans-serif">分层</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S16: Telecom Analogy ===== -->
+<div class="slide act-4 a4 s16" data-slide="16" data-act="4">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">第四幕 · 规律</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:24px;">电信 20 年，精确重演</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--border); border-radius:6px; overflow:hidden;" class="ent-wipeDown d2">
+      <div style="padding:16px; background:var(--teal-dim);">
+        <div style="font-size:12px; color:var(--teal-bright); font-weight:700; letter-spacing:2px; margin-bottom:12px;">电信历史</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">2009 · 充 100 用不完</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">2013 · 9.9 买几 G</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">2017 · 不限量达量降速</div>
+        <div style="font-size:14px; color:var(--text);">2020 · 按 GB 精打细算</div>
+      </div>
+      <div style="padding:16px; border-left:2px solid var(--amber);">
+        <div style="font-size:12px; color:var(--amber); font-weight:700; letter-spacing:2px; margin-bottom:12px;">AI 对应</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">2024 · API 按量（百万 Token 几十元）</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">2025 · Coding Plan（¥29-200/月）</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">2026 · 分层套餐（极速版/普通版）</div>
+        <div style="font-size:14px; color:var(--text);">2026+ · Token 精细计量</div>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:14px; color:var(--text-dim); font-style:italic;" class="ent-fadeUp d4">历史不会重复，但会押韵</p>
+  </div>
+</div>
+
+<!-- ===== S17: Three-Step Rhythm ===== -->
+<div class="slide act-4 a4 s17" data-slide="17" data-act="4">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">三段式节奏</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">所有赛道都走这三步</h2>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:32px;">
+      <div class="center ent-wipeDown d2">
+        <div style="font-size:32px; margin-bottom:8px;">
+          <svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#d4a35f" stroke-width="2"/><text x="24" y="30" text-anchor="middle" fill="#d4a35f" font-size="18" font-weight="700">¥</text></svg>
+        </div>
+        <div style="font-size:24px; font-weight:800; color:var(--amber); margin-bottom:8px;">补贴</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">抢用户规模</div>
+        <div style="font-size:13px; color:var(--text-dim);">百万 Token 几毛钱，首月 7.9 元</div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:center;">
+        <svg width="32" height="20" viewBox="0 0 32 20"><line x1="0" y1="10" x2="24" y2="10" stroke="#d4a35f" stroke-width="2"/><polygon points="24,5 32,10 24,15" fill="#d4a35f"/></svg>
+      </div>
+      <div class="center ent-wipeDown d3">
+        <div style="font-size:32px; margin-bottom:8px;">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="4" fill="none" stroke="#d4a35f" stroke-width="2"/><line x1="16" y1="20" x2="32" y2="20" stroke="#d4a35f" stroke-width="1.5"/><line x1="16" y1="28" x2="28" y2="28" stroke="#d4a35f" stroke-width="1.5"/></svg>
+        </div>
+        <div style="font-size:24px; font-weight:800; color:var(--amber); margin-bottom:8px;">收紧</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">测试价格弹性</div>
+        <div style="font-size:13px; color:var(--text-dim);">限购、停售低档、限时抢购</div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:center;">
+        <svg width="32" height="20" viewBox="0 0 32 20"><line x1="0" y1="10" x2="24" y2="10" stroke="#d4a35f" stroke-width="2"/><polygon points="24,5 32,10 24,15" fill="#d4a35f"/></svg>
+      </div>
+      <div class="center ent-wipeDown d4">
+        <div style="font-size:32px; margin-bottom:8px;">
+          <svg width="48" height="48" viewBox="0 0 48 48"><rect x="4" y="24" width="10" height="16" rx="2" fill="none" stroke="#d4a35f" stroke-width="1.5"/><rect x="19" y="14" width="10" height="26" rx="2" fill="none" stroke="#d4a35f" stroke-width="1.5"/><rect x="34" y="6" width="10" height="34" rx="2" fill="none" stroke="#d4a35f" stroke-width="1.5"/></svg>
+        </div>
+        <div style="font-size:24px; font-weight:800; color:var(--amber); margin-bottom:8px;">分层</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">利润最大化</div>
+        <div style="font-size:13px; color:var(--text-dim);">极速版 ¥98-899，Allegro ¥559</div>
+      </div>
+    </div>
+    <p style="margin-top:24px; text-align:center; font-size:14px; color:var(--text-dim);" class="ent-fadeUp d5">补贴即投资 · 收紧即筛选 · 分层即利润</p>
+  </div>
+</div>
+
+<!-- ===== S18: Metering is Power ===== -->
+<div class="slide act-4 a4 s18" data-slide="18" data-act="4">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">核心洞察</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">谁定义计量单位，谁就掌握定价权</h2>
+    <div class="two-col two-col--55">
+      <div>
+        <div class="ent-fadeUp d2" style="padding:24px; background:var(--amber-glow); border-radius:6px; margin-bottom:24px;">
+          <p style="font-size:20px; font-weight:700; color:var(--text); margin-bottom:8px;">模糊计量 → 早期获客</p>
+          <p style="font-size:14px; color:var(--text-dim);">降低门槛，快速拉新，但信息不对称</p>
+        </div>
+        <div class="ent-fadeUp d3" style="padding:24px; background:var(--teal-dim); border-radius:6px;">
+          <p style="font-size:20px; font-weight:700; color:var(--text); margin-bottom:8px;">透明计量 → 长期信任</p>
+          <p style="font-size:14px; color:var(--text-dim);">用户理解代价，建立可持续关系</p>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:center;" class="ent-slideRight d4">
+        <svg width="280" height="120" viewBox="0 0 280 120">
+          <text x="10" y="30" fill="#8a8a95" font-size="12" font-family="monospace">API</text>
+          <rect x="50" y="20" width="40" height="16" rx="3" fill="none" stroke="#8a8a95" stroke-width="1"/>
+          <line x1="90" y1="28" x2="120" y2="28" stroke="#d4a35f" stroke-width="1"/>
+          <text x="130" y="30" fill="#8a8a95" font-size="12" font-family="monospace">Prompt</text>
+          <rect x="190" y="20" width="40" height="16" rx="3" fill="none" stroke="#d4a35f" stroke-width="1.2"/>
+          <line x1="230" y1="28" x2="250" y2="28" stroke="#d4a35f" stroke-width="1.5"/>
+          <text x="10" y="70" fill="#d4a35f" font-size="12" font-family="monospace">Token</text>
+          <rect x="55" y="60" width="50" height="16" rx="3" fill="none" stroke="#d4a35f" stroke-width="1.5"/>
+          <line x1="105" y1="68" x2="135" y2="68" stroke="#d4a35f" stroke-width="2"/>
+          <text x="145" y="70" fill="#d4a35f" font-size="12" font-family="monospace" font-weight="700">Credit</text>
+          <rect x="200" y="60" width="55" height="16" rx="3" fill="none" stroke="#e8c07a" stroke-width="2"/>
+          <text x="140" y="110" text-anchor="middle" fill="#d4a35f" font-size="11" font-family="monospace">越来越透明 →</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S19: Entry → Ecosystem ===== -->
+<div class="slide act-4 a4 s19" data-slide="19" data-act="4">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">入口到生态</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">¥29 买到的不只是代码补全</h2>
+    <div class="two-col two-col--4060">
+      <div class="ent-slideLeft d2">
+        <svg width="100%" height="240" viewBox="0 0 200 240">
+          <!-- Steps going up -->
+          <rect x="20" y="190" width="50" height="40" rx="4" fill="none" stroke="#d4a35f" stroke-width="1.5"/>
+          <text x="45" y="215" text-anchor="middle" fill="#d4a35f" font-size="10" font-family="sans-serif">编程</text>
+          <rect x="70" y="140" width="50" height="40" rx="4" fill="none" stroke="#d4a35f" stroke-width="1.5"/>
+          <text x="95" y="165" text-anchor="middle" fill="#d4a35f" font-size="10" font-family="sans-serif">图片</text>
+          <rect x="120" y="90" width="50" height="40" rx="4" fill="none" stroke="#d4a35f" stroke-width="1.5"/>
+          <text x="145" y="115" text-anchor="middle" fill="#d4a35f" font-size="10" font-family="sans-serif">语音</text>
+          <rect x="100" y="30" width="80" height="40" rx="4" fill="none" stroke="#e8c07a" stroke-width="2"/>
+          <text x="140" y="55" text-anchor="middle" fill="#e8c07a" font-size="11" font-weight="700" font-family="sans-serif">全模态</text>
+          <!-- Arrow path -->
+          <polyline points="45,190 95,140 145,90 140,70" fill="none" stroke="#d4a35f" stroke-width="1" stroke-dasharray="3,3"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size:14px; color:var(--text-dim); margin-bottom:8px;" class="ent-fadeUp d3">Token Plan 实际包含：</div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:6px;" class="ent-fadeUp d3">· 代码补全与生成</div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:6px;" class="ent-fadeUp d4">· 图片生成与编辑</div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:6px;" class="ent-fadeUp d5">· 语音对话与 TTS</div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:6px;" class="ent-fadeUp d6">· 音乐生成</div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:6px;" class="ent-fadeUp d7">· 视频生成</div>
+        <p style="margin-top:16px; font-size:14px; color:var(--amber);" class="ent-fadeUp d7">高频入口 + 低频高价值 = 生态锁定</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S20: Open Source Pricing ===== -->
+<div class="slide act-4 a4 s20" data-slide="20" data-act="4">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">反直觉</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:24px;">开源模型的定价权悖论</h2>
+    <div class="ent-fadeUp d2" style="padding:24px; background:var(--amber-glow); border-radius:6px; margin-bottom:24px;">
+      <p style="font-size:18px; font-weight:700; color:var(--text);">定价权来自"服务便利性"，而非"模型独占性"</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px;">
+      <div class="card card--amber-top ent-scaleIn d3 center">
+        <div class="data-number" style="font-size:28px; color:var(--amber);">5.35万亿</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">V3.2 月调用 token</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d4 center">
+        <div class="data-number" style="font-size:28px; color:var(--amber);">No.3</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">全球排名</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d5 center">
+        <div class="data-number" style="font-size:28px; color:var(--amber);">50%+</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">开源模型占所有开源 Token</div>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:14px; color:var(--text-dim);" class="ent-fadeUp d6">DeepSeek 不卖订阅，只卖 API，但压制定价上限</p>
+  </div>
+</div>
+
+<!-- ===== S21: Domestic vs Overseas ===== -->
+<div class="slide act-4 a4 s21" data-slide="21" data-act="4">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">对比</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">同一个世界，两套游戏规则</h2>
+    <div class="two-col">
+      <div class="ent-splitL d2" style="padding:24px; background:var(--teal-dim); border-radius:6px;">
+        <h3 style="font-size:18px; color:var(--teal-bright); font-weight:700; margin-bottom:16px;">国内</h3>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">7 家在一个池子卷</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">比谁更便宜</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:16px;">"有人在替你卷"</div>
+        <div style="padding:12px; background:rgba(0,0,0,0.2); border-radius:4px;">
+          <div style="font-size:12px; color:var(--text-dim); margin-bottom:4px;">小米 MiMo 国内</div>
+          <div style="font-size:16px; color:var(--text);">¥39 — ¥659</div>
+        </div>
+      </div>
+      <div class="ent-splitR d3" style="padding:24px; background:var(--amber-glow); border-radius:6px;">
+        <h3 style="font-size:18px; color:var(--amber); font-weight:700; margin-bottom:16px;">海外</h3>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">Claude/GPT/Gemini 三巨头</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:8px;">比谁更强</div>
+        <div style="font-size:14px; color:var(--text); margin-bottom:16px;">为质量和生态付费</div>
+        <div style="padding:12px; background:rgba(0,0,0,0.2); border-radius:4px;">
+          <div style="font-size:12px; color:var(--text-dim); margin-bottom:4px;">MiMo V2-Pro 海外</div>
+          <div style="font-size:16px; color:var(--text);">$1 / $3 <span style="font-size:12px; color:var(--text-dim);">(Claude 的 1/5)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S22: Anti-patterns ===== -->
+<div class="slide act-4 a4 s22" data-slide="22" data-act="4">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">反模式</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">别踩的坑</h2>
+    <div>
+      <div style="display:flex; align-items:flex-start; gap:16px; padding:16px 0; border-bottom:1px solid var(--red-dim);" class="ent-slideLeft d2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><polygon points="12,2 22,22 2,22" fill="none" stroke="#d44848" stroke-width="1.5"/><text x="12" y="18" text-anchor="middle" fill="#d44848" font-size="12" font-weight="700">!</text></svg>
+        <div>
+          <div style="font-size:16px; font-weight:700; color:var(--text); margin-bottom:4px;">Cursor 退款风波</div>
+          <div style="font-size:14px; color:var(--red); margin-bottom:4px;">突然改计费模式，重度用户一周超支 $350</div>
+          <div style="font-size:13px; color:var(--text-dim);">定价模式切换必须渐进，不能一刀切</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:16px; padding:16px 0; border-bottom:1px solid var(--red-dim);" class="ent-slideLeft d3">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><polygon points="12,2 22,22 2,22" fill="none" stroke="#d44848" stroke-width="1.5"/><text x="12" y="18" text-anchor="middle" fill="#d44848" font-size="12" font-weight="700">!</text></svg>
+        <div>
+          <div style="font-size:16px; font-weight:700; color:var(--text); margin-bottom:4px;">计量单位混乱</div>
+          <div style="font-size:14px; color:var(--red); margin-bottom:4px;">90% 用户踩坑</div>
+          <div style="font-size:13px; color:var(--text-dim);">信息不对称短期有利，长期伤信任</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:flex-start; gap:16px; padding:16px 0;" class="ent-slideLeft d4">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><polygon points="12,2 22,22 2,22" fill="none" stroke="#d44848" stroke-width="1.5"/><text x="12" y="18" text-anchor="middle" fill="#d44848" font-size="12" font-weight="700">!</text></svg>
+        <div>
+          <div style="font-size:16px; font-weight:700; color:var(--text); margin-bottom:4px;">饥饿营销反噬</div>
+          <div style="font-size:14px; color:var(--red); margin-bottom:4px;">每天 10:30 抢购</div>
+          <div style="font-size:13px; color:var(--text-dim);">短期有效，长期伤品牌</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S23: Transition D→E ===== -->
+<div class="slide transition-page a4 s23" data-slide="23" data-act="4">
+  <div class="slide__inner center">
+    <p class="t-quote ent-textFade">规律已经清楚了。<br>下一步，看 <span class="t-amber">四条趋势线</span>。</p>
+    <div class="t-svg-anchor ent-scaleIn d3">
+      <svg width="160" height="100" viewBox="0 0 160 100">
+        <line x1="80" y1="50" x2="20" y2="15" stroke="#d4a35f" stroke-width="1.5" opacity="0.6"/>
+        <line x1="80" y1="50" x2="140" y2="15" stroke="#d4a35f" stroke-width="1.5" opacity="0.6"/>
+        <line x1="80" y1="50" x2="20" y2="85" stroke="#d4a35f" stroke-width="1.5" opacity="0.6"/>
+        <line x1="80" y1="50" x2="140" y2="85" stroke="#d4a35f" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="80" cy="50" r="4" fill="#d4a35f"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S24: Four Trend Lines ===== -->
+<div class="slide act-5 a5 s24" data-slide="24" data-act="5">
+  <div class="slide__inner">
+    <div class="t-label ent-fadeUp">第五幕 · 未来</div>
+    <h2 class="t-title ent-fadeUp d1" style="font-size:32px; margin-bottom:32px;">四条趋势线</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div class="card card--amber-top ent-scaleIn d2">
+        <div style="font-size:16px; font-weight:700; color:var(--amber); margin-bottom:8px;">Token 成本持续下降</div>
+        <div style="font-size:13px; color:var(--text-dim);">华为 950 年内 75 万片 + V4 MoE 效率 + 推理芯片竞争</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">利润来自"服务溢价"而非"算力差价"</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d3">
+        <div style="font-size:16px; font-weight:700; color:var(--amber); margin-bottom:8px;">国产芯片重塑供给</div>
+        <div style="font-size:13px; color:var(--text-dim);">2025 自给率 41% → 2027 预测 55%</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">华为+寒武纪+平头哥 = 国产算力三角</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d4">
+        <div style="font-size:16px; font-weight:700; color:var(--amber); margin-bottom:8px;">Agent 成本不可逆</div>
+        <div style="font-size:13px; color:var(--text-dim);">推理需求 = 训练的 4-5 倍，2028 年推理占比 73%</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">谁先转 Token 精细计量谁主动</div>
+      </div>
+      <div class="card card--amber-top ent-scaleIn d5">
+        <div style="font-size:16px; font-weight:700; color:var(--amber); margin-bottom:8px;">新入局者终局</div>
+        <div style="font-size:13px; color:var(--text-dim);">小米 $1/$3 入局，但公开批评"低价是陷阱"</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:8px;">低价破局 → 终局必然收紧</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S25: Summary + Mantra ===== -->
+<div class="slide act-5 a5 s25" data-slide="25" data-act="5">
+  <div class="slide__inner center">
+    <div class="t-label ent-fadeUp">总结</div>
+    <p class="ent-fadeUp d2" style="font-size:clamp(24px,4vw,36px); font-weight:800; color:var(--text); max-width:800px; margin:0 auto; line-height:1.4;">
+      从"卖工具使用权"到"卖算力资源包"
+    </p>
+    <div class="ent-fadeUp d3" style="margin-top:40px; padding:28px 36px; background:var(--amber-glow); border-radius:6px; display:inline-block;">
+      <p style="font-size:clamp(16px,2.5vw,22px); font-weight:700; color:var(--amber); line-height:1.6;">
+        计量即权力，补贴即投资，<br>收紧即筛选，分层即利润。<br>
+        <span style="font-size:0.85em; color:var(--text-dim); font-weight:400;">入口获客，生态锁客。先跑量再算账，别在第一天就想好终价。</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== S26: End ===== -->
+<div class="slide act-5 a5 s26" data-slide="26" data-act="5">
+  <div class="slide__inner center">
+    <p class="ent-textFade" style="font-size:16px; color:var(--text-dim); letter-spacing:1px;">
+      AI 大模型定价模式演变
+    </p>
+    <div style="width:60px; height:1px; background:var(--amber); margin:24px auto; opacity:0.4;" class="ent-textFade d2"></div>
+    <p class="ent-textFade d3" style="font-size:14px; color:var(--text-muted);">2026.04</p>
+  </div>
+</div>
+
+</div><!-- /slides-container -->
+
+<div class="page-indicator" id="pageIndicator">
+  <span class="current" id="pageCurrent">01</span>
+  <span>/</span>
+  <span id="pageTotal">26</span>
+</div>
+
+<div class="nav-hint" id="navHint">← → 翻页 / 点击右/左半屏 / 滑动</div>
+
+<script>
+(function(){
+  const container = document.getElementById('slidesContainer');
+  const overlay = document.getElementById('transOverlay');
+  const progressBar = document.getElementById('progressBar');
+  const pageCurrent = document.getElementById('pageCurrent');
+  const actDots = document.querySelectorAll('.act-dot');
+  const navHint = document.getElementById('navHint');
+  const slides = container.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let animating = false;
+  let hintVisible = true;
+
+  function update(){
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+      // Reset entrance animations
+      const ents = s.querySelectorAll('.ent');
+      ents.forEach(el => {
+        el.classList.remove('go');
+        // Remove all animation classes
+        el.classList.forEach(c => { if(c.startsWith('ent-')) el.classList.remove(c); });
+      });
+    });
+    // Trigger entrance for active slide
+    const active = slides[current];
+    const ents = active.querySelectorAll('.ent');
+    // Force reflow
+    void active.offsetWidth;
+    ents.forEach(el => {
+      el.classList.add('go');
+      // Find which animation class to add from the element's original classes stored in data-anim
+      const anim = el.dataset.anim;
+      if(anim) el.classList.add(anim);
+    });
+    // Progress
+    progressBar.style.width = ((current + 1) / total * 100) + '%';
+    // Page indicator
+    pageCurrent.textContent = String(current + 1).padStart(2, '0');
+    // Act dots
+    const act = slides[current].dataset.act;
+    actDots.forEach(d => d.classList.toggle('active', d.dataset.act === act));
+    // Hide hint after first navigation
+    if(hintVisible && current > 0){
+      navHint.style.opacity = '0';
+      hintVisible = false;
+    }
+  }
+
+  function go(dir){
+    if(animating) return;
+    const next = current + dir;
+    if(next < 0 || next >= total) return;
+    animating = true;
+    overlay.classList.add('active');
+    setTimeout(() => {
+      current = next;
+      update();
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        animating = false;
+      }, 450);
+    }, 450);
+  }
+
+  function goToSlide(n){
+    if(animating || n === current) return;
+    if(n < 0 || n >= total) return;
+    animating = true;
+    overlay.classList.add('active');
+    setTimeout(() => {
+      current = n;
+      update();
+      setTimeout(() => {
+        overlay.classList.remove('active');
+        animating = false;
+      }, 450);
+    }, 450);
+  }
+
+  function goToAct(actNum){
+    // Find first slide of given act
+    for(let i = 0; i < total; i++){
+      if(slides[i].dataset.act === String(actNum)){
+        goToSlide(i);
+        return;
+      }
+    }
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown'){
+      e.preventDefault(); go(1);
+    } else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+      e.preventDefault(); go(-1);
+    }
+  });
+
+  // Click zones
+  container.addEventListener('click', e => {
+    if(e.target.closest('.act-dot')) return;
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if(x > rect.width / 2) go(1);
+    else go(-1);
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive: true});
+  container.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  }, {passive: true});
+
+  // Act nav
+  actDots.forEach(d => {
+    d.addEventListener('click', e => {
+      e.stopPropagation();
+      goToAct(parseInt(d.dataset.act));
+    });
+  });
+
+  // Store animation classes in data attributes, then strip them
+  // so they can be re-added on slide activation
+  slides.forEach(s => {
+    const ents = s.querySelectorAll('.ent');
+    ents.forEach(el => {
+      const animClass = Array.from(el.classList).find(c => c.startsWith('ent-'));
+      if(animClass) el.dataset.anim = animClass;
+    });
+  });
+
+  // Initial update
+  update();
+})();
+</script>
+</body>
+</html>

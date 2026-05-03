@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>如何快速了解一个陌生业务</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===========================================
+       CSS CUSTOM PROPERTIES — BOLD SIGNAL VARIANT
+       深色商务 + 琥珀金强调色
+       =========================================== */
+    :root {
+      --bg-primary: #111111;
+      --bg-secondary: #1a1a1a;
+      --bg-card: #222222;
+      --bg-card-hover: #2a2a2a;
+      --text-primary: #f0ece6;
+      --text-secondary: #8a8580;
+      --text-muted: #5a5550;
+      --accent: #e8a040;
+      --accent-bright: #f0b860;
+      --accent-dim: rgba(232, 160, 64, 0.15);
+      --accent-glow: rgba(232, 160, 64, 0.3);
+      --red: #e05050;
+      --green: #50b870;
+      --yellow: #d4a030;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+
+      --font-display: "Noto Serif SC", serif;
+      --font-body: "Noto Sans SC", sans-serif;
+
+      --title-size: clamp(1.8rem, 5vw, 4rem);
+      --h2-size: clamp(1.3rem, 3.5vw, 2.5rem);
+      --h3-size: clamp(1rem, 2.5vw, 1.5rem);
+      --body-size: clamp(0.72rem, 1.4vw, 1.05rem);
+      --small-size: clamp(0.6rem, 1vw, 0.85rem);
+      --label-size: clamp(0.55rem, 0.9vw, 0.75rem);
+
+      --slide-padding: clamp(1.2rem, 4vw, 4rem);
+      --content-gap: clamp(0.5rem, 2vw, 1.8rem);
+      --element-gap: clamp(0.25rem, 1vw, 0.8rem);
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-normal: 0.6s;
+    }
+
+    /* ===========================================
+       BASE RESET
+       =========================================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ===========================================
+       VIEWPORT FITTING: MANDATORY BASE STYLES
+       =========================================== */
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+    }
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: 100%;
+      overflow: hidden;
+      padding: var(--slide-padding);
+    }
+
+    /* ===========================================
+       TYPOGRAPHY
+       =========================================== */
+    h1, h2, h3, h4 {
+      font-family: var(--font-display);
+      line-height: 1.2;
+    }
+
+    /* ===========================================
+       ANIMATIONS
+       =========================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(25px);
+      transition: opacity var(--duration-normal) var(--ease-out-expo),
+                  transform var(--duration-normal) var(--ease-out-expo);
+    }
+    .slide.visible .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .reveal:nth-child(2) { transition-delay: 0.12s; }
+    .reveal:nth-child(3) { transition-delay: 0.19s; }
+    .reveal:nth-child(4) { transition-delay: 0.26s; }
+    .reveal:nth-child(5) { transition-delay: 0.33s; }
+    .reveal:nth-child(6) { transition-delay: 0.40s; }
+    .reveal:nth-child(7) { transition-delay: 0.47s; }
+    .reveal:nth-child(8) { transition-delay: 0.54s; }
+    .reveal:nth-child(9) { transition-delay: 0.61s; }
+
+    /* ===========================================
+       PROGRESS BAR
+       =========================================== */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      z-index: 1000;
+      transition: width 0.3s ease;
+    }
+
+    /* ===========================================
+       NAV DOTS
+       =========================================== */
+    .nav-dots {
+      position: fixed;
+      right: clamp(0.8rem, 2vw, 1.5rem);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(4px, 0.6vh, 8px);
+      z-index: 100;
+    }
+    .nav-dot {
+      width: clamp(5px, 0.5vw, 8px);
+      height: clamp(5px, 0.5vw, 8px);
+      border-radius: 50%;
+      background: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+    .nav-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* ===========================================
+       SLIDE NUMBER
+       =========================================== */
+    .slide-number {
+      position: absolute;
+      top: clamp(0.8rem, 2vw, 1.5rem);
+      left: var(--slide-padding);
+      font-size: var(--small-size);
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===========================================
+       BACKGROUND PATTERNS
+       =========================================== */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .accent-line-left {
+      position: absolute;
+      left: 0;
+      top: 15%;
+      height: 70%;
+      width: 3px;
+      background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+    }
+
+    /* ===========================================
+       UTILITY CLASSES
+       =========================================== */
+    .accent-text { color: var(--accent); }
+    .accent-bg { background: var(--accent); color: var(--bg-primary); }
+    .muted { color: var(--text-secondary); }
+    .tag {
+      display: inline-block;
+      padding: clamp(2px, 0.3vh, 4px) clamp(8px, 1vw, 14px);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: var(--label-size);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ===========================================
+       TITLE SLIDE
+       =========================================== */
+    .title-slide {
+      background: var(--bg-primary);
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .title-slide h1 {
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+    }
+    .title-slide .subtitle {
+      font-size: clamp(0.9rem, 2vw, 1.4rem);
+      color: var(--accent);
+      font-weight: 400;
+      margin-bottom: clamp(1rem, 3vh, 2.5rem);
+    }
+    .title-slide .meta {
+      font-size: var(--small-size);
+      color: var(--text-secondary);
+    }
+    .title-accent-bar {
+      width: clamp(40px, 8vw, 100px);
+      height: 4px;
+      background: var(--accent);
+      margin-bottom: clamp(0.8rem, 2vh, 1.5rem);
+    }
+
+    /* ===========================================
+       SECTION HEADER SLIDES
+       =========================================== */
+    .section-slide {
+      background: var(--bg-primary);
+    }
+    .section-number {
+      font-size: clamp(3rem, 10vw, 8rem);
+      font-weight: 900;
+      color: var(--accent-dim);
+      font-family: var(--font-display);
+      line-height: 1;
+    }
+    .section-slide h2 {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-top: clamp(0.3rem, 1vh, 0.8rem);
+    }
+
+    /* ===========================================
+       CONTENT SLIDES — Cards & Grids
+       =========================================== */
+    .card-grid {
+      display: grid;
+      gap: clamp(0.4rem, 1vw, 0.8rem);
+    }
+    .card-grid-2x2 { grid-template-columns: 1fr 1fr; }
+    .card-grid-3x3 { grid-template-columns: repeat(3, 1fr); }
+    .card-grid-4x1 { grid-template-columns: repeat(4, 1fr); }
+    .card-grid-2x1 { grid-template-columns: 1fr 1fr; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: clamp(6px, 0.8vw, 10px);
+      padding: clamp(0.6rem, 1.5vw, 1.2rem);
+      transition: border-color 0.3s ease;
+    }
+    .card:hover { border-color: rgba(232, 160, 64, 0.3); }
+    .card-label {
+      font-size: var(--label-size);
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: clamp(2px, 0.3vh, 6px);
+    }
+    .card-title {
+      font-size: clamp(0.75rem, 1.2vw, 1rem);
+      font-weight: 700;
+      margin-bottom: clamp(2px, 0.3vh, 4px);
+    }
+    .card-desc {
+      font-size: var(--small-size);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* ===========================================
+       LISTS
+       =========================================== */
+    .point-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.3rem, 0.8vh, 0.6rem);
+    }
+    .point-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: clamp(6px, 0.8vw, 12px);
+      font-size: var(--body-size);
+      line-height: 1.5;
+    }
+    .point-list li::before {
+      content: '';
+      flex-shrink: 0;
+      width: clamp(5px, 0.4vw, 7px);
+      height: clamp(5px, 0.4vw, 7px);
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: clamp(4px, 0.5vh, 7px);
+    }
+
+    /* ===========================================
+       NUMBERED STEPS
+       =========================================== */
+    .step-list {
+      list-style: none;
+      counter-reset: step;
+    }
+    .step-list li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: clamp(8px, 1vw, 16px);
+      font-size: var(--body-size);
+      line-height: 1.5;
+      padding: clamp(6px, 0.8vh, 12px) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .step-list li:last-child { border-bottom: none; }
+    .step-list li::before {
+      content: counter(step);
+      flex-shrink: 0;
+      width: clamp(22px, 2.2vw, 32px);
+      height: clamp(22px, 2.2vw, 32px);
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: var(--small-size);
+    }
+
+    /* ===========================================
+       CANVAS CARD (BMC layout)
+       =========================================== */
+    .bmc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-rows: 3fr 2fr;
+      gap: clamp(3px, 0.4vw, 6px);
+      flex: 1;
+      max-height: min(65vh, 550px);
+    }
+    .bmc-partners { grid-column: 1; grid-row: 1; }
+    .bmc-activities { grid-column: 2; grid-row: 1; }
+    .bmc-resources { grid-column: 2; grid-row: 2; }
+    .bmc-value { grid-column: 3; grid-row: 1 / 3; }
+    .bmc-relations { grid-column: 4; grid-row: 1; }
+    .bmc-channels { grid-column: 4; grid-row: 2; }
+    .bmc-segments { grid-column: 5; grid-row: 1; }
+    .bmc-cost { grid-column: 1 / 4; grid-row: 3; }
+    .bmc-revenue { grid-column: 4 / 6; grid-row: 3; }
+    .bmc-grid {
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 0.7fr;
+    }
+    .canvas-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: clamp(4px, 0.5vw, 6px);
+      padding: clamp(6px, 1vw, 14px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .canvas-cell-num {
+      font-size: var(--label-size);
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .canvas-cell-title {
+      font-size: clamp(0.65rem, 1vw, 0.85rem);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .canvas-cell-desc {
+      font-size: clamp(0.55rem, 0.8vw, 0.7rem);
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    /* ===========================================
+       INTERVIEW TABLE
+       =========================================== */
+    .interview-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(4px, 0.5vw, 8px);
+    }
+    .interview-row {
+      display: grid;
+      grid-template-columns: clamp(80px, 12vw, 140px) 1fr clamp(80px, 15vw, 200px);
+      gap: clamp(4px, 0.5vw, 8px);
+      align-items: stretch;
+    }
+    .interview-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: clamp(4px, 0.4vw, 6px);
+      padding: clamp(6px, 0.8vw, 12px);
+      font-size: var(--small-size);
+      line-height: 1.4;
+    }
+    .interview-header {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: var(--label-size);
+      background: transparent;
+      border: none;
+      padding: clamp(4px, 0.5vw, 8px);
+    }
+
+    /* ===========================================
+       DIAGNOSIS TABLE
+       =========================================== */
+    .diag-grid {
+      display: grid;
+      gap: clamp(2px, 0.3vw, 4px);
+    }
+    .diag-header, .diag-row {
+      display: grid;
+      grid-template-columns: clamp(60px, 10vw, 100px) 1fr clamp(60px, 8vw, 80px) 1fr;
+      gap: clamp(2px, 0.3vw, 4px);
+    }
+    .diag-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: clamp(6px, 0.8vw, 10px);
+      font-size: var(--small-size);
+      line-height: 1.3;
+    }
+    .diag-hdr {
+      color: var(--accent);
+      font-weight: 500;
+      font-size: var(--label-size);
+      background: rgba(232, 160, 64, 0.08);
+    }
+
+    /* ===========================================
+       QUICK REFERENCE TABLE
+       =========================================== */
+    .ref-grid {
+      display: grid;
+      gap: clamp(3px, 0.4vw, 6px);
+    }
+    .ref-row {
+      display: grid;
+      grid-template-columns: clamp(70px, 12vw, 120px) 1fr;
+      gap: clamp(3px, 0.4vw, 6px);
+    }
+    .ref-type {
+      background: var(--accent-dim);
+      border: 1px solid rgba(232, 160, 64, 0.2);
+      border-radius: 4px;
+      padding: clamp(6px, 0.8vw, 10px);
+      font-weight: 700;
+      font-size: var(--small-size);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+    }
+    .ref-questions {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: clamp(6px, 0.8vw, 10px);
+      font-size: var(--small-size);
+      line-height: 1.4;
+    }
+
+    /* ===========================================
+       CLOSING SLIDE
+       =========================================== */
+    .closing-slide {
+      background: var(--bg-primary);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .closing-slide h2 {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+    }
+    .closing-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.4rem, 1vh, 0.8rem);
+      max-width: min(90vw, 700px);
+    }
+    .closing-list li {
+      font-size: var(--body-size);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .closing-list li .cl-num {
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ===========================================
+       RESPONSIVE BREAKPOINTS
+       =========================================== */
+    @media (max-height: 700px) {
+      :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+      }
+    }
+    @media (max-height: 600px) {
+      :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.65rem, 1.1vw, 0.9rem);
+      }
+      .nav-dots, .slide-number { display: none; }
+    }
+    @media (max-height: 500px) {
+      :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.6rem, 0.9vw, 0.8rem);
+      }
+    }
+    @media (max-width: 600px) {
+      .card-grid-2x2, .card-grid-3x3, .card-grid-4x1, .card-grid-2x1,
+      .two-col { grid-template-columns: 1fr; }
+      .bmc-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+      .interview-row { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+      }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Navigation Dots -->
+  <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+
+  <!-- =========================================
+       SLIDE 01: TITLE
+       ========================================= -->
+  <section class="slide title-slide grid-bg">
+    <div class="slide-content">
+      <div class="tag reveal">内部分享</div>
+      <div class="title-accent-bar reveal" style="margin-top: clamp(0.8rem, 2vh, 1.5rem);"></div>
+      <h1 class="reveal">如何快速了解<br>一个陌生业务</h1>
+      <p class="subtitle reveal">商业化老兵的实战方法论</p>
+      <p class="meta reveal">30 分钟 · 四步法框架</p>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 02: WHY
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="slide-content">
+      <div class="slide-number">02</div>
+      <h2 class="reveal">为什么需要「快速了解陌生业务」？</h2>
+      <ul class="point-list reveal" style="margin-top: var(--content-gap);">
+        <li>商业世界里，机会窗口很短</li>
+        <li>领导说"你去看看这个业务" —— 你只有 1-2 周给出判断</li>
+        <li>不是做学术研究，是做实战判断</li>
+        <li>目标：用最短时间，建立对业务的「可操作认知」</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 03: 四步法总览
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="slide-content">
+      <div class="slide-number">03</div>
+      <h2 class="reveal">四步法总览</h2>
+      <div class="card-grid card-grid-2x2 reveal" style="margin-top: var(--content-gap);">
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-label">Step 1</div>
+          <div class="card-title">搭建业务的「骨架模型」</div>
+          <div class="card-desc">商业模式画布 9 问</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-label">Step 2</div>
+          <div class="card-title">用「穿透式问题」快速深挖</div>
+          <div class="card-desc">4 维度灵魂拷问</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-label">Step 3</div>
+          <div class="card-title">三套「调研动作」交叉验证</div>
+          <div class="card-desc">访谈 + 数据 + 实操</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-label">Step 4</div>
+          <div class="card-title">输出「一页纸健康度诊断」</div>
+          <div class="card-desc">判断而非报告</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 04: STEP 1 — 骨架模型
+       ========================================= -->
+  <section class="slide section-slide grid-bg">
+    <div class="slide-content">
+      <div class="section-number reveal">01</div>
+      <h2 class="reveal">搭建业务的「骨架模型」</h2>
+      <p class="muted reveal" style="margin-top: var(--element-gap); font-size: var(--body-size);">
+        商业模式画布（简化版）— 只问 9 个问题，把所有信息装进去
+      </p>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 05: 9-CELL CANVAS
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="slide-content" style="justify-content: flex-start; padding-top: clamp(2rem, 5vh, 3.5rem);">
+      <div class="slide-number">05</div>
+      <h3 class="reveal" style="margin-bottom: var(--content-gap);">商业模式画布 — 9 格填满</h3>
+      <div class="bmc-grid reveal">
+        <!-- 上半部：5列布局 -->
+        <div class="canvas-cell bmc-partners">
+          <div class="canvas-cell-num">08</div>
+          <div class="canvas-cell-title">和谁合作</div>
+          <div class="canvas-cell-desc">重要伙伴 — 供应商/分销商/平台</div>
+        </div>
+        <div class="canvas-cell bmc-activities">
+          <div class="canvas-cell-num">06</div>
+          <div class="canvas-cell-title">要做什么事</div>
+          <div class="canvas-cell-desc">关键业务活动</div>
+        </div>
+        <div class="canvas-cell bmc-value">
+          <div class="canvas-cell-num">02</div>
+          <div class="canvas-cell-title">解决什么</div>
+          <div class="canvas-cell-desc">价值主张 — 痛点/爽点</div>
+        </div>
+        <div class="canvas-cell bmc-relations">
+          <div class="canvas-cell-num">04</div>
+          <div class="canvas-cell-title">怎么维护</div>
+          <div class="canvas-cell-desc">客户关系</div>
+        </div>
+        <div class="canvas-cell bmc-segments">
+          <div class="canvas-cell-num">01</div>
+          <div class="canvas-cell-title">为谁</div>
+          <div class="canvas-cell-desc">目标客户细分</div>
+        </div>
+        <!-- 下半部第二行 -->
+        <div class="canvas-cell bmc-resources">
+          <div class="canvas-cell-num">07</div>
+          <div class="canvas-cell-title">有什么资源</div>
+          <div class="canvas-cell-desc">核心资源</div>
+        </div>
+        <div class="canvas-cell bmc-channels">
+          <div class="canvas-cell-num">03</div>
+          <div class="canvas-cell-title">怎么触达</div>
+          <div class="canvas-cell-desc">渠道通路</div>
+        </div>
+        <!-- 底部：成本 + 收入 -->
+        <div class="canvas-cell bmc-cost">
+          <div class="canvas-cell-num">09</div>
+          <div class="canvas-cell-title">成本花在哪</div>
+          <div class="canvas-cell-desc">成本结构 — 固定 vs 变动</div>
+        </div>
+        <div class="canvas-cell bmc-revenue">
+          <div class="canvas-cell-num">05</div>
+          <div class="canvas-cell-title">靠什么赚钱</div>
+          <div class="canvas-cell-desc">收入来源 — 定价/收费对象</div>
+        </div>
+      </div>
+      <p class="muted reveal" style="margin-top: var(--element-gap); font-size: var(--small-size);">
+        实操：花 1 小时从已有资料和访谈中填满 9 格。填不上的 = 关键信息缺口，优先补齐。
+      </p>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 06: CASE — 共享充电宝
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="slide-content" style="justify-content: flex-start; padding-top: clamp(2rem, 5vh, 3.5rem);">
+      <div class="slide-number">06</div>
+      <h3 class="reveal">实操举例：共享充电宝</h3>
+      <p class="muted reveal" style="font-size: var(--small-size); margin-bottom: var(--element-gap);">
+        用商业模式画布快速填一个真实案例
+      </p>
+      <div class="bmc-grid reveal" style="flex: 1; max-height: min(60vh, 500px);">
+        <div class="canvas-cell bmc-partners" style="background: var(--accent-dim);">
+          <div class="canvas-cell-num">08</div>
+          <div class="canvas-cell-title">和谁合作</div>
+          <div class="canvas-cell-desc">商户（点位+电源）<br>微信/支付宝（支付）</div>
+        </div>
+        <div class="canvas-cell bmc-activities" style="background: var(--accent-dim);">
+          <div class="canvas-cell-num">06</div>
+          <div class="canvas-cell-title">要做什么事</div>
+          <div class="canvas-cell-desc">设备采购<br>点位谈判/运维补货</div>
+        </div>
+        <div class="canvas-cell bmc-value" style="background: var(--accent-dim);">
+          <div class="canvas-cell-num">02</div>
+          <div class="canvas-cell-title">解决什么</div>
+          <div class="canvas-cell-desc">临时充电需求<br>手机续命</div>
+        </div>
+        <div class="canvas-cell bmc-relations" style="background: var(--accent-dim);">
+          <div class="canvas-cell-num">04</div>
+          <div class="canvas-cell-title">怎么维护</div>
+          <div class="canvas-cell-desc">即扫即用<br>无需注册留存</div>
+        </div>
+        <div class="canvas-cell bmc-segments" style="background: var(--accent-dim);">
+          <div class="canvas-cell-num">01</div>
+          <div class="canvas-cell-title">为谁</div>
+          <div class="canvas-cell-desc">手机电量焦虑人群<br>18-40 岁城市用户</div>
+        </div>
+        <div class="canvas-cell bmc-resources">
+          <div class="canvas-cell-num">07</div>
+          <div class="canvas-cell-title">有什么资源</div>
+          <div class="canvas-cell-desc">供应链能力<br>地推团队/融资</div>
+        </div>
+        <div class="canvas-cell bmc-channels">
+          <div class="canvas-cell-num">03</div>
+          <div class="canvas-cell-title">怎么触达</div>
+          <div class="canvas-cell-desc">线下点位铺设<br>商场/餐厅/地铁站</div>
+        </div>
+        <div class="canvas-cell bmc-cost">
+          <div class="canvas-cell-num">09</div>
+          <div class="canvas-cell-title">成本花在哪</div>
+          <div class="canvas-cell-desc">设备折旧（固定）<br>地推分成+运维（变动）</div>
+        </div>
+        <div class="canvas-cell bmc-revenue">
+          <div class="canvas-cell-num">05</div>
+          <div class="canvas-cell-title">靠什么赚钱</div>
+          <div class="canvas-cell-desc">按时计费<br>前5分钟免费，1-2元/时</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 07: STEP 2 — 穿透式问题
+       ========================================= -->
+  <section class="slide section-slide grid-bg">
+    <div class="slide-content">
+      <div class="section-number reveal">02</div>
+      <h2 class="reveal">用「穿透式问题」<br>快速深挖核心维度</h2>
+      <p class="muted reveal" style="margin-top: var(--element-gap); font-size: var(--body-size);">
+        4 个维度，每个维度 2-3 个灵魂拷问，逼迫自己从表象进入本质
+      </p>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 08: 维度一 — 价值与需求
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="accent-line-left"></div>
+    <div class="slide-content">
+      <div class="slide-number">08</div>
+      <div class="tag reveal">维度一</div>
+      <h2 class="reveal" style="margin-top: var(--element-gap);">价值与需求</h2>
+      <ol class="step-list reveal" style="margin-top: var(--content-gap);">
+        <li>客户不买这个产品，现在用什么替代方案？那个替代方案哪里不好？</li>
+        <li>如果明天涨价 50%，客户会骂着接受，还是直接换对手？</li>
+        <li>解决的是「必须满足」的需求（如水电）还是「锦上添花」（如盲盒）？</li>
+      </ol>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 09: 维度二 — 流程与运转
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="accent-line-left"></div>
+    <div class="slide-content">
+      <div class="slide-number">09</div>
+      <div class="tag reveal">维度二</div>
+      <h2 class="reveal" style="margin-top: var(--element-gap);">流程与运转</h2>
+      <ol class="step-list reveal" style="margin-top: var(--content-gap);">
+        <li>关键链路：从客户第一次知道我们 → 购买 → 持续使用，必须经过哪 5-7 个步骤？</li>
+        <li>瓶颈环节：哪一步最慢/成本最高/最容易出异常？砍掉它业务还成立吗？</li>
+        <li>依赖关系：内部靠哪个岗位决策？外部靠哪个供应商活着？</li>
+      </ol>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 10: 维度三 — 财务与数字
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="accent-line-left"></div>
+    <div class="slide-content">
+      <div class="slide-number">10</div>
+      <div class="tag reveal">维度三</div>
+      <h2 class="reveal" style="margin-top: var(--element-gap);">财务与数字</h2>
+      <ol class="step-list reveal" style="margin-top: var(--content-gap);">
+        <li>核心杠杆：靠"更多客户"还是"更贵客单价"还是"更高复购"？当前哪个最有效？</li>
+        <li>单位经济：收到的钱 - 直接成本，正还是负？单客户亏钱，规模再大也会死</li>
+        <li>效率标尺：人均产出、库存周转天数、回款周期 — 和行业平均比是优是劣？</li>
+      </ol>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 11: 维度四 — 风险与不确定性
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="accent-line-left"></div>
+    <div class="slide-content">
+      <div class="slide-number">11</div>
+      <div class="tag reveal">维度四</div>
+      <h2 class="reveal" style="margin-top: var(--element-gap);">风险与不确定性</h2>
+      <ol class="step-list reveal" style="margin-top: var(--content-gap);">
+        <li>最大的一颗雷：发生什么事件，业务会在 3 个月内崩溃？（核心人员离职 / 政策禁止 / 关键技术失效 / 现金流断裂）</li>
+        <li>竞对最可能从哪里抄袭并击败我们？价格、体验还是捆绑销售？</li>
+      </ol>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 12: STEP 3 — 交叉验证
+       ========================================= -->
+  <section class="slide section-slide grid-bg">
+    <div class="slide-content">
+      <div class="section-number reveal">03</div>
+      <h2 class="reveal">三套「调研动作」<br>交叉验证</h2>
+      <p class="muted reveal" style="margin-top: var(--element-gap); font-size: var(--body-size);">
+        别只看文档或只听汇报，同时做三件事，互相核对
+      </p>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 13: A. 访谈
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="slide-content" style="justify-content: flex-start; padding-top: clamp(1.5rem, 4vh, 3rem);">
+      <div class="slide-number">13</div>
+      <div class="tag reveal">A</div>
+      <h3 class="reveal" style="margin-top: var(--element-gap);">访谈 — 分层问不同角色</h3>
+      <div class="interview-grid reveal" style="margin-top: var(--content-gap);">
+        <div class="interview-row">
+          <div class="interview-header">角色</div>
+          <div class="interview-header">问什么</div>
+          <div class="interview-header">注意陷阱</div>
+        </div>
+        <div class="interview-row">
+          <div class="interview-cell" style="font-weight:700; color: var(--accent);">业务负责人</div>
+          <div class="interview-cell">战略目标、最大的假设、最担心的事</div>
+          <div class="interview-cell muted">容易讲愿景，忽略细节</div>
+        </div>
+        <div class="interview-row">
+          <div class="interview-cell" style="font-weight:700; color: var(--accent);">一线销售/客服</div>
+          <div class="interview-cell">客户最常抱怨什么？丢单真实原因？</div>
+          <div class="interview-cell muted">能听到真问题，但可能情绪化</div>
+        </div>
+        <div class="interview-row">
+          <div class="interview-cell" style="font-weight:700; color: var(--accent);">财务/运营</div>
+          <div class="interview-cell">实际数据表现、异常指标、预算分配</div>
+          <div class="interview-cell muted">数据可能滞后，要问为什么</div>
+        </div>
+        <div class="interview-row">
+          <div class="interview-cell" style="font-weight:700; color: var(--accent);">外部客户</div>
+          <div class="interview-cell">没有你们会怎么办？最看重什么？</div>
+          <div class="interview-cell muted">需要匿名或假装普通用户</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 14: B. 看数据
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="accent-line-left"></div>
+    <div class="slide-content">
+      <div class="slide-number">14</div>
+      <div class="tag reveal">B</div>
+      <h3 class="reveal" style="margin-top: var(--element-gap);">看数据 — 重点找「反常」</h3>
+      <ul class="point-list reveal" style="margin-top: var(--content-gap);">
+        <li>看近 6 个月核心指标趋势：收入、毛利、活跃客户数、流失率</li>
+        <li>看分布：20% 客户是否贡献 80% 收入？高度依赖大客户是风险</li>
+        <li>看运营快照：今天的订单/工单/库存/现金流，有没有积压或异常</li>
+        <li>没有内部数据时 → 行业报告（艾瑞、易观、券商研报）、竞品发布会、招聘 JD（透露战略重点）</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 15: C. 代入角色实操
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="accent-line-left"></div>
+    <div class="slide-content">
+      <div class="slide-number">15</div>
+      <div class="tag reveal">C</div>
+      <h3 class="reveal" style="margin-top: var(--element-gap);">代入角色实操</h3>
+      <div class="card-grid card-grid-3x3 reveal" style="margin-top: var(--content-gap);">
+        <div class="card">
+          <div class="card-label">电商</div>
+          <div class="card-desc">新用户注册 → 浏览 → 加购 → 付款 → 申请售后，记录卡点和体验差的地方</div>
+        </div>
+        <div class="card">
+          <div class="card-label">B2B 软件</div>
+          <div class="card-desc">模拟销售从"找到线索"到"签约回款"，数一数要经过几个内部审批</div>
+        </div>
+        <div class="card">
+          <div class="card-label">制造业</div>
+          <div class="card-desc">从下采购单 → 原料入库 → 生产排期 → 成品出库，追踪一份工单的一天</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 16: STEP 4 — 一页纸诊断
+       ========================================= -->
+  <section class="slide section-slide grid-bg">
+    <div class="slide-content">
+      <div class="section-number reveal">04</div>
+      <h2 class="reveal">输出「一页纸」<br>业务健康度诊断</h2>
+      <p class="muted reveal" style="margin-top: var(--element-gap); font-size: var(--body-size);">
+        不要写长篇报告，只填一张表，强迫自己给出判断和证据
+      </p>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 17: 诊断表
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="slide-content" style="justify-content: flex-start; padding-top: clamp(1.5rem, 4vh, 3rem);">
+      <div class="slide-number">17</div>
+      <h3 class="reveal">一页纸业务健康度诊断</h3>
+      <div class="diag-grid reveal" style="margin-top: var(--content-gap);">
+        <div class="diag-header">
+          <div class="diag-cell diag-hdr">维度</div>
+          <div class="diag-cell diag-hdr">当前状态</div>
+          <div class="diag-cell diag-hdr">健康？</div>
+          <div class="diag-cell diag-hdr">关键证据</div>
+        </div>
+        <div class="diag-row">
+          <div class="diag-cell" style="font-weight:700;">客户需求</div>
+          <div class="diag-cell muted">填写观察到的客户需求状态...</div>
+          <div class="diag-cell" style="text-align:center; color: var(--green);">绿/黄/红</div>
+          <div class="diag-cell muted">填写关键证据...</div>
+        </div>
+        <div class="diag-row">
+          <div class="diag-cell" style="font-weight:700;">业务逻辑</div>
+          <div class="diag-cell muted">填写业务运转逻辑...</div>
+          <div class="diag-cell" style="text-align:center; color: var(--yellow);">绿/黄/红</div>
+          <div class="diag-cell muted">填写关键证据...</div>
+        </div>
+        <div class="diag-row">
+          <div class="diag-cell" style="font-weight:700;">财务状况</div>
+          <div class="diag-cell muted">填写核心财务数据...</div>
+          <div class="diag-cell" style="text-align:center; color: var(--green);">绿/黄/红</div>
+          <div class="diag-cell muted">填写关键证据...</div>
+        </div>
+        <div class="diag-row">
+          <div class="diag-cell" style="font-weight:700;">运营效率</div>
+          <div class="diag-cell muted">填写运营效率指标...</div>
+          <div class="diag-cell" style="text-align:center; color: var(--red);">绿/黄/红</div>
+          <div class="diag-cell muted">填写关键证据...</div>
+        </div>
+        <div class="diag-row">
+          <div class="diag-cell" style="font-weight:700;">风险敞口</div>
+          <div class="diag-cell muted">填写识别到的风险...</div>
+          <div class="diag-cell" style="text-align:center; color: var(--yellow);">绿/黄/红</div>
+          <div class="diag-cell muted">填写关键证据...</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 18: 三个结论
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="accent-line-left"></div>
+    <div class="slide-content">
+      <div class="slide-number">18</div>
+      <h3 class="reveal">诊断之后，回答三个问题</h3>
+      <div class="card-grid reveal" style="margin-top: var(--content-gap); grid-template-columns: 1fr; gap: var(--content-gap);">
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-label">结论一</div>
+          <div class="card-title">这个业务最关键的 3 个成功要素是什么？</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-label">结论二</div>
+          <div class="card-title">如果我去负责，第一个月我会解决哪个具体问题？</div>
+        </div>
+        <div class="card" style="border-left: 3px solid var(--accent);">
+          <div class="card-label">结论三</div>
+          <div class="card-title">用一句话向陌生人解释清楚这个业务</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 19: 附录 — 快速透视技巧
+       ========================================= -->
+  <section class="slide section-slide grid-bg">
+    <div class="slide-content">
+      <div class="section-number reveal">+</div>
+      <h2 class="reveal">附录：不同业务类型的<br>「快速透视技巧」</h2>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 20: 快速透视表
+       ========================================= -->
+  <section class="slide grid-bg">
+    <div class="slide-content" style="justify-content: flex-start; padding-top: clamp(1.5rem, 4vh, 3rem);">
+      <div class="slide-number">20</div>
+      <h3 class="reveal">一问抓住本质</h3>
+      <div class="ref-grid reveal" style="margin-top: var(--content-gap);">
+        <div class="ref-row">
+          <div class="ref-type">SaaS</div>
+          <div class="ref-questions">客户流失率（NDR）？实施成本多高？切换成本高还是低？</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-type">电商</div>
+          <div class="ref-questions">流量从哪里来？复购率？退货率？库存占用多少现金？</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-type">内容/社区</div>
+          <div class="ref-questions">用户为什么留下来？创作者为什么持续生产？社区靠什么正规收入？</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-type">制造业</div>
+          <div class="ref-questions">产能利用率？订单账期？原材料价格波动影响多大？</div>
+        </div>
+        <div class="ref-row">
+          <div class="ref-type">线下连锁</div>
+          <div class="ref-questions">单店模型（盈亏平衡点、回本周期）？标准化程度？</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       SLIDE 21: CLOSING
+       ========================================= -->
+  <section class="slide closing-slide grid-bg">
+    <div class="slide-content" style="align-items: center; text-align: center;">
+      <div class="title-accent-bar reveal"></div>
+      <h2 class="reveal">核心心法</h2>
+      <ul class="closing-list reveal" style="margin-top: var(--content-gap); text-align: left;">
+        <li><span class="cl-num">1.</span> 先建骨架（画布），再填血肉（穿透式问题）</li>
+        <li><span class="cl-num">2.</span> 三套动作交叉验证，不偏信单一信息源</li>
+        <li><span class="cl-num">3.</span> 输出判断而非报告，一页纸逼迫自己给出结论</li>
+        <li><span class="cl-num">4.</span> 最终目标：不是「了解一切」，是「做出可操作的判断」</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- =========================================
+       JAVASCRIPT — Slide Controller
+       ========================================= -->
+  <script>
+    class SlidePresentation {
+      constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentSlide = 0;
+        this.isScrolling = false;
+        this.touchStartY = 0;
+
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+      }
+
+      setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              const idx = Array.from(this.slides).indexOf(entry.target);
+              if (idx !== -1) {
+                this.currentSlide = idx;
+                this.updateProgressBar();
+                this.updateNavDots();
+              }
+            }
+          });
+        }, { threshold: 0.5 });
+        this.slides.forEach(slide => observer.observe(slide));
+      }
+
+      goToSlide(index) {
+        if (index < 0 || index >= this.slides.length) return;
+        this.slides[index].scrollIntoView({ behavior: 'smooth' });
+      }
+
+      setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+          if (e.target.getAttribute('contenteditable')) return;
+          switch (e.key) {
+            case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+              e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+            case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+              e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+            case 'Home':
+              e.preventDefault(); this.goToSlide(0); break;
+            case 'End':
+              e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+          }
+        });
+      }
+
+      setupTouchNav() {
+        document.addEventListener('touchstart', (e) => {
+          this.touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+          const diff = this.touchStartY - e.changedTouches[0].clientY;
+          if (Math.abs(diff) > 50) {
+            this.goToSlide(this.currentSlide + (diff > 0 ? 1 : -1));
+          }
+        }, { passive: true });
+      }
+
+      setupWheelNav() {
+        let timeout;
+        document.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          if (this.isScrolling) return;
+          this.isScrolling = true;
+          this.goToSlide(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+          clearTimeout(timeout);
+          timeout = setTimeout(() => { this.isScrolling = false; }, 800);
+        }, { passive: false });
+      }
+
+      setupProgressBar() {
+        this.progressBar = document.getElementById('progressBar');
+        this.updateProgressBar();
+      }
+
+      updateProgressBar() {
+        const pct = ((this.currentSlide + 1) / this.slides.length) * 100;
+        if (this.progressBar) this.progressBar.style.width = pct + '%';
+      }
+
+      setupNavDots() {
+        this.navDotsContainer = document.getElementById('navDots');
+        this.navDotsContainer.innerHTML = '';
+        this.slides.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+          dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+          dot.addEventListener('click', () => this.goToSlide(i));
+          this.navDotsContainer.appendChild(dot);
+        });
+        this.navDots = this.navDotsContainer.querySelectorAll('.nav-dot');
+      }
+
+      updateNavDots() {
+        if (!this.navDots) return;
+        this.navDots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === this.currentSlide);
+        });
+      }
+    }
+
+    new SlidePresentation();
+  </script>
+</body>
+</html>

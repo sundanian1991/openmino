@@ -25,7 +25,7 @@ argument_hint: [需求描述]
 3. 识别约束条件
 4. 定义完成标准
 
-**输出**：`docs/prompt.md`
+**输出**：`plans/{YYYY-MM-DD-主题}/prompt.md`
 ```markdown
 ## 目标
 ## 排除项
@@ -40,7 +40,7 @@ argument_hint: [需求描述]
 2. 定义验收命令
 3. 识别依赖关系
 
-**输出**：`docs/plans.md`
+**输出**：`plans/{YYYY-MM-DD-主题}/plans.md`
 ```markdown
 ### Phase 1
 - [ ] 任务
@@ -55,7 +55,7 @@ argument_hint: [需求描述]
 2. 执行任务
 3. 跑验收命令
 4. 更新状态 → completed
-5. 写 `documentation.md` → 记录进度
+5. 写 `plans/{YYYY-MM-DD-主题}/documentation.md` → 记录进度
 
 ---
 
@@ -77,7 +77,7 @@ argument_hint: [需求描述]
 
 | 步骤 | AI 动作 | 用户动作 |
 |------|--------|----------|
-| 1 | 初始化 docs/ + 五文件模板 | - |
+| 1 | 初始化 `plans/YYYY-MM-DD-主题/` + 五文件模板 | - |
 | 2 | 编辑 `prompt.md` 草案 | - |
 | 3 | 编辑 `plans.md` 草案 | - |
 | 4 | **暂停，AskUserQuestion 确认** | 审阅/修改 |
@@ -90,7 +90,7 @@ argument_hint: [需求描述]
 *收到 /plan5 后，按以下流程执行：*
 
 1. **需求澄清** - 问清楚要做什么、不做什么
-2. **创建 docs/** - 初始化五文件
+2. **创建 plans/ 子目录** - 初始化五文件
 3. **写 prompt.md** - 记录需求边界
 4. **写 plans.md** - 拆解任务 + 验收
 5. **等用户确认** - "开始执行"

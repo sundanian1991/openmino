@@ -23,6 +23,10 @@ pos: .claude/rules/reference/
 | **10-CODESTYLE.md** | 代码规范与 Git 工作流 | 代码提交前 |
 | **11-CONFIG.md** | 配置与环境详细规则 | 环境配置变更时 |
 | **12-TRANSPARENT.md** | 透明工作机制详细规则 | 需要展开透明流程时 |
+| **13-VISUALIZATION.md** | 可视化默认规范（克制风格） | 做可视化/图表时 |
+| **14-ECHARTS-COMPONENTS.md** | ECharts 完整组件清单 + 供应商场景组合 | 用 ECharts 时 |
+| **15-APPLICABILITY.md** | 适用性评估框架 | 需要评估方案适用性时 |
+| **16-PPT-TEMPLATES.md** | 京东红 PPT 模板布局参数 + OfficeCLI 组件速查 | 处理 PPT 美化/创建时 |
 | **README.md** | 本文件 | - |
 
 ---
@@ -54,6 +58,9 @@ pos: .claude/rules/reference/
 | 代码提交前 | 10-CODESTYLE.md |
 | 环境配置变更 | 11-CONFIG.md |
 | 展开透明流程 | 12-TRANSPARENT.md |
+| 做可视化/图表 | 13-VISUALIZATION.md |
+| 用 ECharts 组件 | 14-ECHARTS-COMPONENTS.md |
+| 处理 PPT 美化/创建 | 16-PPT-TEMPLATES.md |
 
 ---
 

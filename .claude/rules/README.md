@@ -26,7 +26,8 @@ pos: .claude/rules
 │   ├── 06-NOW.md       # 当前状态、最近讨论
 │   ├── MEMORY-L1.md    # 核心记忆、WAL协议
 │   ├── AGENT-FIRST.md  # 子代理优先策略（能并行就并行）
-│   ├── UPDATE_MEMORY.md # 记忆维护指令（MyAgents夜间自动执行）
+│   ├── EPISTEMIC.md    # 认识论与反幻觉硬约束
+│   │   (UPDATE_MEMORY 已移至 commands/)  # 不再自动加载
 │   ├── HEARTBEAT.md    # 心跳清单（定时苏醒时读取）
 │   ├── skill-search.md # 技能搜索规范
 │   └── README.md       # 本文件
@@ -47,12 +48,13 @@ pos: .claude/rules
 
 ## 加载机制
 
-**核心 5 文件（每次会话自动加载）**：
+**核心 6 文件（每次会话自动加载）**：
 - 00-IDENTITY.md — 身份、铁律、行为习惯、输出规范
 - 01-SOUL.md — 性格、气质、我和年老师的关系
 - MEMORY-L1.md — 核心记忆、WAL协议
 - 06-NOW.md — 当前状态、最近讨论
 - AGENT-FIRST.md — 子代理优先策略（能并行就并行）
+- EPISTEMIC.md — 认识论与反幻觉硬约束
 
 **扩展规则（按需 Read）**：
 - 位于 `../reference/` 目录，不自动加载
@@ -60,9 +62,8 @@ pos: .claude/rules
 - 需要时主动读取
 
 **系统自动文件**：
-- UPDATE_MEMORY.md — MyAgents 夜间自动执行记忆维护
 - HEARTBEAT.md — Agent 定时苏醒时读取（正文为空则跳过）
 
 ---
 
-*最后更新：2026-04-04 — 修正 reference/ 结构描述 + 新增 AGENT-FIRST.md 加载说明*
+*最后更新：2026-04-29 — 新增 EPISTEMIC.md（认识论与反幻觉硬约束），核心 5→6 文件*

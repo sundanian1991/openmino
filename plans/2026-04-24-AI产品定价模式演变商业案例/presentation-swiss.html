@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 产品定价模式演变 —— 从 Coding Plan 到 Token Plan</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ===========================================
+   THEME: Swiss Modern — bold, geometric, Bauhaus
+   =========================================== */
+:root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-card: #fafafa;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555555;
+    --text-dim: #999999;
+    --text-on-dark: #ffffff;
+    --accent: #ff3300;
+    --accent-dim: rgba(255, 51, 0, 0.08);
+    --green: #2d8a4e;
+    --green-dim: rgba(45, 138, 78, 0.08);
+    --blue: #2563eb;
+    --blue-dim: rgba(37, 99, 235, 0.08);
+    --border: rgba(0, 0, 0, 0.06);
+    --border-accent: rgba(255, 51, 0, 0.2);
+    --bg-dark: #1a1a1a;
+
+    --font-display: "Archivo", sans-serif;
+    --font-body: "Nunito", sans-serif;
+
+    --title-size: clamp(2rem, 5.5vw, 4.5rem);
+    --h2-size: clamp(1.3rem, 3vw, 2.5rem);
+    --h3-size: clamp(0.95rem, 1.8vw, 1.4rem);
+    --body-size: clamp(0.75rem, 1.4vw, 1rem);
+    --small-size: clamp(0.65rem, 1.1vw, 0.85rem);
+    --mono-size: clamp(0.55rem, 0.9vw, 0.75rem);
+
+    --slide-padding: clamp(1.5rem, 4vw, 4rem);
+    --content-gap: clamp(0.75rem, 2vw, 1.75rem);
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration: 0.7s;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    height: 100%; overflow-x: hidden;
+    scroll-snap-type: y mandatory; scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+html::-webkit-scrollbar { display: none; }
+
+body {
+    height: 100%; background: var(--bg-primary);
+    color: var(--text-primary); font-family: var(--font-body);
+    font-size: var(--body-size); line-height: 1.6;
+}
+
+/* ===========================================
+   VIEWPORT FITTING
+   =========================================== */
+.slide {
+    width: 100vw; height: 100vh; height: 100dvh;
+    overflow: hidden; scroll-snap-align: start;
+    display: flex; flex-direction: column;
+    position: relative;
+}
+.slide-content {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: flex-start;
+    max-height: 100%; overflow: hidden;
+    padding: var(--slide-padding);
+}
+
+@media (max-height: 700px) {
+    :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); }
+}
+@media (max-height: 600px) {
+    :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); }
+    .nav-dots { display: none; }
+}
+@media (max-height: 500px) {
+    :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   PROGRESS & NAV
+   =========================================== */
+.progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--accent); z-index: 10000;
+    transition: width 0.3s ease;
+}
+.nav-dots {
+    position: fixed; right: clamp(0.75rem, 2vw, 1.5rem);
+    top: 50%; transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 8px; z-index: 1000;
+}
+.nav-dots .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-dim); transition: all 0.3s ease; cursor: pointer;
+}
+.nav-dots .dot.active { background: var(--accent); transform: scale(1.5); }
+
+/* ===========================================
+   SWISS MODERN COMPONENTS
+   =========================================== */
+
+/* Section number — huge, light, top-right */
+.section-num {
+    font-family: var(--font-display);
+    font-size: clamp(7rem, 18vw, 15rem);
+    font-weight: 900; color: rgba(0,0,0,0.03);
+    position: absolute; top: calc(-1 * clamp(0.5rem, 2vw, 1rem));
+    right: clamp(0.5rem, 2vw, 2rem);
+    line-height: 1; user-select: none; pointer-events: none;
+}
+
+/* Slide heading — bold, heavy */
+.slide-heading {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 900;
+    color: var(--text-primary);
+    margin-bottom: calc(var(--content-gap) * 0.5);
+    position: relative; z-index: 1;
+    letter-spacing: -0.02em;
+}
+.accent { color: var(--accent); }
+
+/* Red accent bar */
+.accent-bar {
+    width: clamp(2rem, 5vw, 4rem);
+    height: 3px;
+    background: var(--accent);
+    margin-bottom: var(--content-gap);
+}
+
+/* Slide subtitle */
+.slide-subtitle {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    margin-bottom: clamp(1rem, 2.5vw, 1.75rem);
+    max-width: 650px;
+}
+
+/* Cards — clean, sharp, minimal shadow */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: clamp(0.75rem, 1.5vw, 1.25rem);
+    transition: border-color 0.3s ease;
+}
+.card:hover { border-color: var(--border-accent); }
+.card-label {
+    font-size: var(--mono-size);
+    font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.2rem;
+}
+.card-title {
+    font-family: var(--font-display);
+    font-size: var(--h3-size);
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.35rem;
+}
+.card-text {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Metric */
+.metric { display: flex; flex-direction: column; }
+.metric-value {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.5vw, 3rem);
+    font-weight: 900; color: var(--accent);
+    line-height: 1.1;
+}
+.metric-label {
+    font-size: var(--mono-size);
+    color: var(--text-dim); margin-top: 0.15em;
+    font-weight: 600;
+}
+.metric-row {
+    display: flex; gap: clamp(1rem, 3vw, 2.5rem);
+    align-items: baseline; flex-wrap: wrap;
+}
+
+/* Table */
+.data-table {
+    width: 100%; border-collapse: collapse;
+    font-size: clamp(0.6rem, 1.1vw, 0.85rem);
+}
+.data-table th {
+    text-align: left; padding: 0.5em 0.6em;
+    border-bottom: 2px solid var(--text-primary);
+    color: var(--text-primary);
+    font-weight: 800; font-size: var(--mono-size);
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.data-table td {
+    padding: 0.4em 0.6em;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+/* Badge */
+.badge {
+    display: inline-block; padding: 0.15em 0.5em;
+    border-radius: 2px;
+    font-size: var(--mono-size);
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+.badge-accent { background: var(--accent-dim); color: var(--accent); }
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: rgba(196,91,75,0.1); color: #c45b4b; }
+.badge-blue { background: var(--blue-dim); color: var(--blue); }
+
+/* Pull quote */
+.pull-quote {
+    font-family: var(--font-display);
+    font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+    color: var(--text-secondary);
+    border-left: 3px solid var(--accent);
+    padding-left: clamp(0.75rem, 2vw, 1.5rem);
+    line-height: 1.6;
+}
+.pull-quote strong { color: var(--text-primary); font-weight: 700; }
+
+/* Flow */
+.flow {
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+}
+.flow-item {
+    border: 1px solid var(--border);
+    padding: 0.35em 0.7em;
+    font-size: var(--small-size);
+    font-family: var(--font-display);
+    font-weight: 600;
+}
+.flow-item.accent { border-color: var(--accent); color: var(--accent); }
+.flow-arrow { color: var(--text-dim); font-size: var(--small-size); }
+
+/* Key insight box */
+.key-insight {
+    border: 2px solid var(--text-primary);
+    padding: clamp(0.75rem, 1.5vw, 1.25rem);
+    margin-top: clamp(0.75rem, 2vw, 1.5rem);
+}
+.key-insight p {
+    font-family: var(--font-display);
+    font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+    color: var(--text-primary);
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* Two/three col */
+.two-col {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: clamp(0.75rem, 2vw, 2rem); align-items: start;
+}
+.three-col {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+/* Grid */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+/* Tension */
+.tension-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.4rem;
+}
+.tension-item {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.5rem; padding: 0.5em 0.75em;
+    border: 1px solid var(--border);
+    font-size: var(--small-size);
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.tension-vs {
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-weight: 900; font-size: var(--mono-size);
+}
+
+/* Timeline */
+.timeline-item {
+    display: flex; gap: 0.6rem; align-items: baseline;
+    padding: 0.25rem 0;
+}
+.timeline-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0; margin-top: 0.35em;
+}
+.timeline-dot.dim { background: var(--text-dim); }
+.timeline-date {
+    font-family: var(--font-display);
+    font-size: var(--mono-size); font-weight: 700;
+    color: var(--text-primary);
+    min-width: clamp(3.5rem, 7vw, 6rem); flex-shrink: 0;
+}
+.timeline-text {
+    font-size: var(--body-size);
+    color: var(--text-secondary); line-height: 1.4;
+}
+
+/* Closing */
+.closing-slide { background: var(--bg-dark); color: var(--text-on-dark); }
+.closing-text {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 3.5rem);
+    font-weight: 900; margin-bottom: 0.5rem;
+}
+.closing-sub {
+    font-size: var(--body-size); color: #999;
+    max-width: 600px;
+}
+
+/* Title slide */
+.title-slide {
+    background:
+        linear-gradient(135deg, #ffffff 60%, var(--accent-dim) 100%);
+}
+.title-line {
+    font-family: var(--font-display);
+    font-size: var(--title-size);
+    font-weight: 900; line-height: 1.05;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+}
+.title-meta {
+    font-size: var(--body-size);
+    color: var(--text-secondary);
+    margin-top: clamp(0.75rem, 2vw, 1.5rem);
+    max-width: 600px;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+.reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity var(--duration) var(--ease-out-expo),
+                transform var(--duration) var(--ease-out-expo);
+}
+.visible .reveal { opacity: 1; transform: translateY(0); }
+
+.reveal-blur {
+    opacity: 0; filter: blur(6px);
+    transition: opacity var(--duration) var(--ease-out-expo),
+                filter var(--duration) var(--ease-out-expo);
+}
+.visible .reveal-blur { opacity: 1; filter: blur(0); }
+
+.reveal-left {
+    opacity: 0; transform: translateX(-25px);
+    transition: opacity var(--duration) var(--ease-out-expo),
+                transform var(--duration) var(--ease-out-expo);
+}
+.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+/* Stagger */
+.reveal:nth-child(1) { transition-delay: 0.05s; }
+.reveal:nth-child(2) { transition-delay: 0.12s; }
+.reveal:nth-child(3) { transition-delay: 0.19s; }
+.reveal:nth-child(4) { transition-delay: 0.26s; }
+.reveal:nth-child(5) { transition-delay: 0.33s; }
+.reveal:nth-child(6) { transition-delay: 0.4s; }
+.reveal:nth-child(7) { transition-delay: 0.47s; }
+</style>
+</head>
+
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav-dots" id="navDots"></nav>
+
+<!-- ============================================================
+     SLIDE 1: TITLE
+     ============================================================ -->
+<section class="slide title-slide">
+<div class="slide-content" style="justify-content:center;">
+    <div class="accent-bar reveal-blur"></div>
+    <h1 class="title-line reveal-blur">AI 产品定价<br>模式演变</h1>
+    <h2 class="title-line reveal-blur" style="font-size:clamp(1rem,2.5vw,2rem); font-weight:400; color:var(--text-secondary); margin-top:0.3em; letter-spacing:-0.01em;">
+        从 <span class="accent">Coding Plan</span> 到 <span class="accent">Token Plan</span>
+    </h2>
+    <p class="title-meta reveal">国内大模型厂商定价策略的商业逻辑深度分析</p>
+    <div style="margin-top:clamp(1.5rem,4vw,3rem);" class="reveal">
+        <span class="badge badge-accent">商业案例</span>
+        <span class="badge badge-blue" style="margin-left:0.3rem;">2026-04-24</span>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 2: CORE THESIS
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">00</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">核心结论</h2>
+    <div class="metric-row reveal" style="margin-bottom: clamp(1rem, 3vw, 2rem);">
+        <div class="metric">
+            <span class="metric-value" style="font-size:clamp(1.5rem,3vw,2.5rem);">订阅 → 资源包</span>
+            <span class="metric-label">商业模式演进方向</span>
+        </div>
+    </div>
+    <div class="pull-quote reveal">
+        AI 大模型定价正从"卖工具订阅"演进为"卖算力资源包"，精确重演了电信行业从话费套餐到流量套餐的 20 年历史。<br><br>
+        <strong>Coding Plan 是过渡产品，Token Plan 是终态。</strong>
+    </div>
+    <p class="reveal" style="margin-top:clamp(0.75rem,2vw,1.5rem); font-size:var(--small-size); color:var(--text-dim);">
+        能学到的不是具体定价数字，而是三件事：计量单位即定价权、补贴-收紧-分层的三段式节奏、以及"入口产品"到"生态产品"的升级路径。
+    </p>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 3: TIMELINE
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">01</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">关键事件时间线</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(0.5rem,2vw,1.5rem);">
+        <div>
+            <div class="timeline-item reveal"><div class="timeline-dot"></div><span class="timeline-date">2024 Q4</span><span class="timeline-text">DeepSeek 带头降价，百万 Token 从几十元降到几毛</span></div>
+            <div class="timeline-item reveal"><div class="timeline-dot"></div><span class="timeline-date">2025 Q4</span><span class="timeline-text">智谱 GLM 率先推出 Coding Plan</span></div>
+            <div class="timeline-item reveal"><div class="timeline-dot"></div><span class="timeline-date">2025 H2</span><span class="timeline-text">首购优惠取消、低档停售、限时抢购</span></div>
+            <div class="timeline-item reveal"><div class="timeline-dot"></div><span class="timeline-date">2026-01</span><span class="timeline-text">Kimi 从 Prompt 切换为 Token 计量</span></div>
+        </div>
+        <div>
+            <div class="timeline-item reveal"><div class="timeline-dot dim"></div><span class="timeline-date">2026-02</span><span class="timeline-text">OpenClaw 爆火 355K stars，消耗暴增 6-10x</span></div>
+            <div class="timeline-item reveal"><div class="timeline-dot dim"></div><span class="timeline-date">2026-03</span><span class="timeline-text">MiniMax 更名 Token Plan；腾讯云最后入局</span></div>
+            <div class="timeline-item reveal"><div class="timeline-dot dim"></div><span class="timeline-date">2026-04</span><span class="timeline-text">阿里百炼升级企业版 Token Plan ¥198/698/1398</span></div>
+            <div class="timeline-item reveal"><div class="timeline-dot dim"></div><span class="timeline-date">2026-04</span><span class="timeline-text">Anthropic 从标准订阅移除 OpenClaw 访问</span></div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 4: PARTICIPANTS
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">02</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">参与者格局</h2>
+    <div class="two-col">
+        <div class="card reveal" style="border-top:3px solid var(--accent);">
+            <div class="card-label">专卖店路线</div>
+            <div class="card-title">模型厂商</div>
+            <div class="card-text">智谱 GLM、Kimi、MiniMax、小米 MiMo<br>只提供自家模型，深度优化</div>
+            <div style="margin-top:0.5rem;"><span class="badge badge-accent">¥29-659/月</span></div>
+        </div>
+        <div class="card reveal" style="border-top:3px solid var(--blue);">
+            <div class="card-label">超市路线</div>
+            <div class="card-title">云平台</div>
+            <div class="card-text">阿里云百炼、火山方舟、腾讯云<br>聚合多模型，一个 Key 自由切换</div>
+            <div style="margin-top:0.5rem;"><span class="badge badge-blue">¥39-1398/月</span></div>
+        </div>
+    </div>
+    <div class="flow reveal" style="margin-top:clamp(1rem,2.5vw,2rem);">
+        <div class="flow-item">海外对标</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-item">Cursor</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-item">Claude Code</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-item">GitHub Copilot</div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 5: FIVE METRIC SYSTEMS
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">03</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">五种计量体系并存</h2>
+    <p class="slide-subtitle reveal">直接比数字毫无意义，90% 开发者踩坑</p>
+    <table class="data-table reveal">
+        <thead><tr><th>计量方式</th><th>采用者</th><th>换算关系</th><th>透明度</th></tr></thead>
+        <tbody>
+            <tr><td>API 请求次数</td><td>阿里百炼、火山、腾讯云</td><td>1 次提问 = 5-30 次 API</td><td><span class="badge badge-red">低</span></td></tr>
+            <tr><td>Prompt 次数</td><td>智谱 GLM、MiniMax 早期</td><td>1 Prompt ≈ 1200-1600 API</td><td><span class="badge badge-accent">中</span></td></tr>
+            <tr><td>Token 计量</td><td>Kimi、MiniMax Token Plan</td><td>按输入输出 Token 计费</td><td><span class="badge badge-green">高</span></td></tr>
+            <tr><td>Credit 计量</td><td>Cursor、小米、阿里百炼</td><td>统一池，不同模型不同倍率</td><td><span class="badge badge-accent">中</span></td></tr>
+            <tr><td>时间窗口配额</td><td>智谱 5h、Claude 5h+7d</td><td>限制节奏而非总量</td><td><span class="badge badge-accent">中</span></td></tr>
+        </tbody>
+    </table>
+    <div class="key-insight reveal">
+        <p>演变方向：API 次数 → Prompt → Token/Credit → 统一 Credits。越来越透明、越来越可预测。</p>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 6: ENTRY PLAN COMPARISON
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">04</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">入门档对比（¥40-50 区间）</h2>
+    <table class="data-table reveal">
+        <thead><tr><th>平台</th><th>月费</th><th>计量</th><th>额度</th><th>实际等效</th></tr></thead>
+        <tbody>
+            <tr><td>MiniMax</td><td>¥29</td><td>Prompt</td><td>40/5h</td><td>连续每 5h 40 次</td></tr>
+            <tr><td>腾讯云</td><td>¥39</td><td>Token</td><td>3500 万</td><td>~70 轮深度问答</td></tr>
+            <tr><td>小米 MiMo</td><td>¥39</td><td>Credit</td><td>6000 万 (2x)</td><td>~3000 万 Token 等效</td></tr>
+            <tr><td>阿里百炼</td><td>¥40</td><td>API 请求</td><td>18000/月</td><td>~20-120 次提问/天</td></tr>
+            <tr><td>智谱 GLM</td><td>¥49</td><td>Prompt</td><td>2400/月</td><td>每天 80 次提问</td></tr>
+            <tr><td>Cursor</td><td>$20</td><td>Credit</td><td>$20 池</td><td>≈ 225 Sonnet 请求</td></tr>
+        </tbody>
+    </table>
+    <div class="metric-row reveal" style="margin-top:clamp(0.75rem,2vw,1.5rem);">
+        <div class="metric">
+            <span class="metric-value" style="font-size:clamp(1.2rem,2.5vw,2rem);">15x</span>
+            <span class="metric-label">百炼 vs MiniMax 标称倍率</span>
+        </div>
+        <div class="metric">
+            <span class="metric-value" style="font-size:clamp(1.2rem,2.5vw,2rem);">93%</span>
+            <span class="metric-label">Max plan vs API 价节省</span>
+        </div>
+        <div class="metric">
+            <span class="metric-value" style="font-size:clamp(1.2rem,2.5vw,2rem);">2-5x</span>
+            <span class="metric-label">订阅费是地板，实际账单倍数</span>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 7: OPENCLAW
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">05</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">OpenClaw：Token 消耗的催化剂</h2>
+    <div class="two-col">
+        <div>
+            <div class="card reveal">
+                <div class="metric-row">
+                    <div class="metric">
+                        <span class="metric-value" style="font-size:clamp(1.5rem,3vw,2.5rem);">355K</span>
+                        <span class="metric-label">GitHub stars</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card reveal" style="margin-top:0.5rem;">
+                <div class="card-text">Agent 自动循环调用让"不限量订阅"不可持续，倒逼厂商转向 Token 精细计量。</div>
+            </div>
+        </div>
+        <div>
+            <div class="card reveal">
+                <div class="card-label">消耗增长</div>
+                <div class="card-title">6-10x</div>
+                <div class="card-text">MiniMax M2 token 用量：2 月 vs 12 月</div>
+            </div>
+            <div class="card reveal" style="margin-top:0.5rem; border-top:3px solid var(--accent);">
+                <div class="card-label">标志性事件</div>
+                <div class="card-text">Anthropic 2026-04 从标准订阅移除 OpenClaw 访问 —— 成本撑不住了</div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 8: CHIP + DEEPSEEK
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">06</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">芯片供给 + DeepSeek V4 冲击</h2>
+    <div class="two-col">
+        <div>
+            <h3 class="reveal" style="font-family:var(--font-display); font-size:var(--h3-size); font-weight:800; margin-bottom:0.5rem;">算力底层变量</h3>
+            <div class="card reveal">
+                <div class="metric-row" style="margin-bottom:0.5rem;">
+                    <div class="metric">
+                        <span class="metric-value" style="font-size:clamp(1rem,2vw,1.5rem);">66%→54%</span>
+                        <span class="metric-label">NVIDIA 市占率</span>
+                    </div>
+                </div>
+                <div style="border-top:1px solid var(--border); padding-top:0.5rem;">
+                    华为昇腾 950PR：FP4 算力 H20 的 2.87 倍，定价 1/3<br>
+                    <span class="badge badge-green" style="margin-top:0.3rem;">2026 目标 75-100 万片</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h3 class="reveal" style="font-family:var(--font-display); font-size:var(--h3-size); font-weight:800; margin-bottom:0.5rem;">DeepSeek V4 定价</h3>
+            <table class="data-table reveal">
+                <thead><tr><th>模型</th><th>输入（缓存）</th><th>输入</th><th>输出</th></tr></thead>
+                <tbody>
+                    <tr><td>V4-Pro (1.6T)</td><td>1 元/M</td><td>12 元/M</td><td>24 元/M</td></tr>
+                    <tr><td>V4-Flash (284B)</td><td>0.2 元/M</td><td>1 元/M</td><td>2 元/M</td></tr>
+                    <tr style="color:var(--text-dim);"><td>对比 GPT-5</td><td>$5/M</td><td>-</td><td>$15/M</td></tr>
+                </tbody>
+            </table>
+            <div class="key-insight reveal" style="margin-top:0.5rem;">
+                <p>芯片供给直接绑定定价天花板。昇腾 950 量产后价格大幅下调。</p>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 9: IPO + CROSSING CHASM
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">07</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">IPO 进程与跨越鸿沟</h2>
+    <div class="two-col">
+        <div>
+            <h3 class="reveal" style="font-family:var(--font-display); font-size:var(--h3-size); font-weight:800; margin-bottom:0.5rem;">资本化</h3>
+            <div class="card reveal">
+                <div class="card-label">智谱 GLM（2513.HK）</div>
+                <div class="card-text">ARR 17 亿元 +60 倍，Coding Plan 两月 15 万付费</div>
+            </div>
+            <div class="card reveal" style="margin-top:0.5rem;">
+                <div class="card-label">MiniMax（MMX）</div>
+                <div class="card-text">营收 7904 万美元 +159%，海外 73%，毛利率 25.4%</div>
+            </div>
+        </div>
+        <div>
+            <h3 class="reveal" style="font-family:var(--font-display); font-size:var(--h3-size); font-weight:800; margin-bottom:0.5rem;">跨越鸿沟</h3>
+            <div class="pull-quote reveal" style="font-size:clamp(0.85rem,1.4vw,1.1rem);">
+                90% 企业推进 AI 实验，仅 41% 成功落地生产。<br>
+                <strong>跨越鸿沟的关键不是模型能力，而是"可信赖度"。</strong>
+            </div>
+            <div class="card reveal" style="margin-top:0.5rem;">
+                <div class="card-text">实验阶段 → 低价 Coding Plan<br>生产环境 → SLA + Token Plan 企业版溢价</div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 10: TELECOM ANALOGY
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">08</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">手机流量套餐的精确重演</h2>
+    <div class="card reveal" style="margin-bottom:clamp(0.75rem,2vw,1.5rem);">
+        <table class="data-table">
+            <thead><tr><th>电信阶段</th><th>AI 对应</th><th>核心逻辑</th></tr></thead>
+            <tbody>
+                <tr><td>2009 充 100 用不完</td><td>2024 API 按量计费</td><td>供给过剩，感知不到成本</td></tr>
+                <tr><td>2013 9.9 几 G 流量</td><td>2025 Coding Plan</td><td>用量激增，需要包月</td></tr>
+                <tr><td>2017 "不限量"降速</td><td>2026 分层极速版</td><td>精细化分层，按速度定价</td></tr>
+                <tr><td>2020 按 GB 精打细算</td><td>2026+ Token 精细计量</td><td>用户算账，利润回归</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-quote reveal">
+        同样 ¥40-50/月，不同计量方式下实际可用量差异巨大。<br>
+        <strong>Agent 场景下消耗爆炸 —— 8 个月 100 亿 Token，API 价 $15,000+</strong>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 11: INSIGHT 1
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">09</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">洞察一：计量单位即定价权</h2>
+    <div class="pull-quote reveal" style="margin-bottom:clamp(1rem,3vw,2rem);">
+        谁定义计量单位，谁就掌握定价权。
+    </div>
+    <div class="three-col">
+        <div class="card reveal">
+            <div class="card-label">MiniMax</div>
+            <div class="card-text">Prompt → Token：从"模糊打包"到"透明计费"</div>
+        </div>
+        <div class="card reveal">
+            <div class="card-label">Kimi</div>
+            <div class="card-text">Prompt → Token：统一计量语言</div>
+        </div>
+        <div class="card reveal">
+            <div class="card-label">云厂商</div>
+            <div class="card-text">用"API 请求次数"：数字大但消耗多，信息不对称有利</div>
+        </div>
+    </div>
+    <div class="key-insight reveal">
+        <p>模糊计量有利于早期获客，透明计量有利于长期信任。计量单位的选择决定了用户感知和利润空间。</p>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 12: INSIGHT 2
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">10</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">洞察二：补贴 → 收紧 → 分层</h2>
+    <p class="slide-subtitle reveal">所有互联网赛道都走这三步，AI 也不例外</p>
+    <div class="three-col">
+        <div class="card reveal" style="border-top:3px solid var(--green);">
+            <div class="card-label">阶段一</div>
+            <div class="card-title">补贴获客</div>
+            <div class="card-text">百万 Token 几毛钱<br>首月 ¥7.9 起</div>
+            <div style="margin-top:0.5rem;"><span class="badge badge-green">2024-2025</span></div>
+        </div>
+        <div class="card reveal" style="border-top:3px solid var(--accent);">
+            <div class="card-label">阶段二</div>
+            <div class="card-title">收紧测试</div>
+            <div class="card-text">限购、停售低档、限时抢购</div>
+            <div style="margin-top:0.5rem;"><span class="badge badge-accent">2025 H2</span></div>
+        </div>
+        <div class="card reveal" style="border-top:3px solid var(--blue);">
+            <div class="card-label">阶段三</div>
+            <div class="card-title">精细分层</div>
+            <div class="card-text">极速版 ¥98-899，Allegro ¥559</div>
+            <div style="margin-top:0.5rem;"><span class="badge badge-blue">2026</span></div>
+        </div>
+    </div>
+    <div class="key-insight reveal">
+        <p>进入新市场时，不要一开始就想好定价。先补贴跑量，再收紧测试弹性，最后精细分层。</p>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 13: INSIGHT 3
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">11</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">洞察三：从"入口"到"生态"</h2>
+    <div class="pull-quote reveal" style="margin-bottom:clamp(0.75rem,2.5vw,1.5rem);">
+        Coding 是获客入口，Token 是生态载体。
+    </div>
+    <div class="flow reveal" style="margin-bottom:clamp(0.75rem,2vw,1.5rem);">
+        <div class="flow-item">编程（高频刚需）</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-item">图片/语音</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-item">音乐/视频</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-item accent">AI 多媒体工作室</div>
+    </div>
+    <div class="two-col">
+        <div class="card reveal">
+            <div class="card-label">策略</div>
+            <div class="card-text">用高频刚需场景（编程）获客</div>
+        </div>
+        <div class="card reveal">
+            <div class="card-label">目标</div>
+            <div class="card-text">用低频高价值场景提高 ARPU</div>
+        </div>
+    </div>
+    <div style="margin-top:clamp(0.5rem,1.5vw,1rem);" class="reveal">
+        <span class="card-text" style="font-size:var(--small-size); color:var(--text-dim);">
+            MiniMax Token Plan 打包图片、语音、音乐、视频。¥29 买到的不只是代码补全，是全模态 AI 能力。
+        </span>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 14: FUTURE
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">12</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">未来预判</h2>
+    <div class="grid">
+        <div class="card reveal" style="border-left:3px solid var(--accent);">
+            <div class="card-label">趋势一</div>
+            <div class="card-title">Token 成本持续下降</div>
+            <div class="card-text">国产芯片放量 + MoE 效率革命 → 利润来自"服务溢价"</div>
+        </div>
+        <div class="card reveal" style="border-left:3px solid var(--blue);">
+            <div class="card-label">趋势二</div>
+            <div class="card-title">国产替代改变格局</div>
+            <div class="card-text">华为+寒武纪+平头哥算力三角，CANN 迁移效率 90%+</div>
+        </div>
+        <div class="card reveal" style="border-left:3px solid var(--green);">
+            <div class="card-label">趋势三</div>
+            <div class="card-title">开源重塑定价权</div>
+            <div class="card-text">DeepSeek 模式：开源+极致低价。定价权来自"服务便利性"</div>
+        </div>
+        <div class="card reveal" style="border-left:3px solid var(--accent);">
+            <div class="card-label">趋势四</div>
+            <div class="card-title">Agent 成本不可逆</div>
+            <div class="card-text">推理需求 = 训练 4-5 倍。"不限量"不可持续，先转主动</div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 15: TENSIONS
+     ============================================================ -->
+<section class="slide">
+<div class="slide-content">
+    <div class="section-num reveal">13</div>
+    <div class="accent-bar reveal-left"></div>
+    <h2 class="slide-heading reveal">核心张力</h2>
+    <div class="tension-grid reveal">
+        <div class="tension-item"><span>固定月费</span><span class="tension-vs">VS</span><span>按量付费</span></div>
+        <div class="tension-item"><span>低价抢市场</span><span class="tension-vs">VS</span><span>可持续经营</span></div>
+        <div class="tension-item"><span>计量透明</span><span class="tension-vs">VS</span><span>信息不对称</span></div>
+        <div class="tension-item"><span>单模型专精</span><span class="tension-vs">VS</span><span>多模型聚合</span></div>
+        <div class="tension-item"><span>海外定价</span><span class="tension-vs">VS</span><span>国内定价</span></div>
+        <div class="tension-item"><span>用户确定性</span><span class="tension-vs">VS</span><span>厂商利润</span></div>
+    </div>
+    <div class="key-insight reveal">
+        <p>能学到的不是定价数字，而是底层模式：计量即权力、三段式节奏、入口到生态。</p>
+    </div>
+</div>
+</section>
+
+<!-- ============================================================
+     SLIDE 16: CLOSING
+     ============================================================ -->
+<section class="slide closing-slide">
+<div class="slide-content" style="justify-content:center; align-items:center; text-align:center;">
+    <div class="reveal-blur" style="width:clamp(2rem,5vw,4rem); height:3px; background:var(--accent); margin:0 auto 2rem;"></div>
+    <h2 class="closing-text reveal-blur">从 Coding Plan 到 Token Plan</h2>
+    <p class="closing-sub reveal">从"卖工具使用权"到"卖算力资源包"的商业模式升级</p>
+    <div style="margin-top:clamp(2rem,5vw,4rem);" class="reveal">
+        <div class="flow" style="justify-content:center;">
+            <div class="flow-item" style="border-color:#555; color:#999;">手机合约机</div>
+            <span class="flow-arrow" style="color:#555;">→</span>
+            <div class="flow-item" style="border-color:var(--accent); color:var(--accent);">手机流量包</div>
+        </div>
+    </div>
+    <p class="reveal" style="margin-top:clamp(2rem,5vw,4rem); font-size:var(--small-size); color:#555;">
+        2026-04-24 · 商业案例研究
+    </p>
+</div>
+</section>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+class SlidePresentation {
+    constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentSlide = 0;
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+    }
+
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    this.currentSlide = Array.from(this.slides).indexOf(entry.target);
+                    this.updateProgress();
+                    this.updateNavDots();
+                }
+            });
+        }, { threshold: 0.5 });
+        this.slides.forEach(slide => observer.observe(slide));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            if (['ArrowDown',' ','PageDown'].includes(e.key)) { e.preventDefault(); this.goToSlide(this.currentSlide + 1); }
+            if (['ArrowUp','PageUp'].includes(e.key)) { e.preventDefault(); this.goToSlide(this.currentSlide - 1); }
+            if (e.key === 'Home') { e.preventDefault(); this.goToSlide(0); }
+            if (e.key === 'End') { e.preventDefault(); this.goToSlide(this.slides.length - 1); }
+        });
+    }
+
+    setupTouchNav() {
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const delta = startY - e.changedTouches[0].clientY;
+            if (Math.abs(delta) > 50) this.goToSlide(delta > 0 ? this.currentSlide + 1 : this.currentSlide - 1);
+        }, { passive: true });
+    }
+
+    setupProgressBar() { this.progressBar = document.getElementById('progressBar'); }
+    updateProgress() {
+        if (this.progressBar) this.progressBar.style.width = ((this.currentSlide + 1) / this.slides.length * 100) + '%';
+    }
+
+    setupNavDots() {
+        const c = document.getElementById('navDots');
+        c.innerHTML = '';
+        this.slides.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'dot' + (i === 0 ? ' active' : '');
+            d.addEventListener('click', () => this.goToSlide(i));
+            c.appendChild(d);
+        });
+    }
+    updateNavDots() {
+        document.querySelectorAll('.nav-dots .dot').forEach((d, i) => d.classList.toggle('active', i === this.currentSlide));
+    }
+
+    goToSlide(i) { if (i >= 0 && i < this.slides.length) this.slides[i].scrollIntoView({ behavior: 'smooth' }); }
+}
+
+document.addEventListener('DOMContentLoaded', () => new SlidePresentation());
+</script>
+
+</body>
+</html>

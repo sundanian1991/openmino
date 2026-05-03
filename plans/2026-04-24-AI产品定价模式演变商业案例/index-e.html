@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 定价模式演变 — 一个商业案例</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & TOKENS ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f4f0;
+  --bg-surface: #f8f7f4;
+  --bg-inset: #efece6;
+  --text: #2a2a2a;
+  --text-secondary: #6b6b6b;
+  --text-ghost: rgba(42, 42, 42, 0.06);
+  --accent: #c9a84c;
+  --accent-light: rgba(201, 168, 76, 0.12);
+  --accent-dark: #b8962e;
+  --deep: #1a2744;
+  --deep-light: #1e2a4a;
+  --border: #d4d0c8;
+  --border-light: rgba(212, 208, 200, 0.5);
+  --font-display: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --font-body: 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  --section-gap: 120px;
+  --max-width: 1200px;
+  --max-width-narrow: 700px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.35s var(--ease-out);
+  --transition-medium: 0.7s var(--ease-out);
+  --transition-slow: 1.2s var(--ease-out);
+  --blur-amount: 20px;
+  --blur-duration: 1s;
+}
+html { font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.7;
+  overflow: hidden;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+/* Subtle dot grid */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+}
+::selection { background: var(--accent); color: var(--deep); }
+
+/* ===== TOP PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--border-light); z-index: 200;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+  width: 16.66%;
+  transition: width var(--transition-medium);
+}
+
+/* ===== RIGHT ANCHOR DOTS ===== */
+.anchor-dots {
+  position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 1.25rem; z-index: 200;
+}
+.anchor-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid var(--border); background: transparent;
+  cursor: pointer; transition: all var(--transition-fast); position: relative;
+}
+.anchor-dot:hover { border-color: var(--accent); }
+.anchor-dot.active {
+  background: var(--accent); border-color: var(--accent);
+  width: 14px; height: 14px; margin-left: -2px;
+}
+.anchor-dot-label {
+  position: absolute; right: 24px; top: 50%; transform: translateY(-50%);
+  white-space: nowrap; font-size: 0.6rem; font-family: var(--font-body);
+  color: var(--text-secondary); letter-spacing: 0.05em;
+  opacity: 0; pointer-events: none; transition: opacity var(--transition-fast);
+  background: var(--bg-surface); padding: 0.2rem 0.5rem;
+  border: 1px solid var(--border);
+}
+.anchor-dot:hover .anchor-dot-label { opacity: 1; }
+
+/* ===== PAGE SYSTEM ===== */
+.pages { position: relative; width: 100%; height: 100vh; z-index: 1; }
+.page {
+  position: absolute; inset: 0; overflow-y: auto;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.6s var(--ease-out), visibility 0.6s var(--ease-out);
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.page.active { opacity: 1; visibility: visible; pointer-events: auto; }
+.page::-webkit-scrollbar { width: 3px; }
+.page::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ===== SECTION BASE ===== */
+section {
+  padding: 5rem 2rem; max-width: var(--max-width-narrow); margin: 0 auto;
+  opacity: 0; transition: opacity var(--transition-medium), transform var(--transition-medium);
+}
+section.visible { opacity: 1; }
+section.full-bleed { max-width: 100%; padding-left: 5vw; padding-right: 5vw; }
+section.wide { max-width: var(--max-width); }
+.overline {
+  font-family: var(--font-body); font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.overline::before {
+  content: ''; width: 24px; height: 1.5px; background: var(--accent);
+}
+
+/* ===== CHAPTER HEADING ===== */
+.chapter-label {
+  font-family: var(--font-body); font-size: 0.65rem; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--accent-dark); margin-bottom: 1.5rem;
+}
+
+/* ===== ENTRANCE ANIMATIONS ===== */
+.entrance-blur {
+  filter: blur(var(--blur-amount)); transform: translateY(10px);
+  transition: filter var(--blur-duration) var(--ease-out),
+              opacity var(--blur-duration) var(--ease-out),
+              transform var(--blur-duration) var(--ease-out);
+}
+.entrance-blur.visible { filter: blur(0); transform: translateY(0); }
+.entrance-curtain { clip-path: inset(0 100% 0 0); transition: clip-path 1s var(--ease-out); }
+.entrance-curtain.visible { clip-path: inset(0 0% 0 0); }
+.entrance-slide-left { transform: translateX(-40px); transition: transform var(--transition-medium), opacity var(--transition-medium); }
+.entrance-slide-left.visible { transform: translateX(0); }
+.entrance-slide-right { transform: translateX(40px); transition: transform var(--transition-medium), opacity var(--transition-medium); }
+.entrance-slide-right.visible { transform: translateX(0); }
+.entrance-scale { transform: scale(0.95); transition: transform var(--transition-medium), opacity var(--transition-medium); }
+.entrance-scale.visible { transform: scale(1); }
+.entrance-fade { transition: opacity var(--transition-slow); }
+.entrance-fade.visible { opacity: 1; }
+.entrance-grow { transform: scaleY(0); transform-origin: bottom; transition: transform 0.8s var(--ease-out), opacity 0.8s var(--ease-out); }
+.entrance-grow.visible { transform: scaleY(1); }
+
+.stagger-1 { transition-delay: 0.1s !important; }
+.stagger-2 { transition-delay: 0.2s !important; }
+.stagger-3 { transition-delay: 0.3s !important; }
+.stagger-4 { transition-delay: 0.4s !important; }
+.stagger-5 { transition-delay: 0.5s !important; }
+
+/* ===== TYPOGRAPHY ===== */
+h1.magazine-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900; line-height: 1.1; color: var(--deep);
+  margin-bottom: 1rem;
+}
+h2.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-weight: 700; line-height: 1.3; color: var(--deep);
+  margin-bottom: 1.5rem;
+}
+.data-number {
+  font-family: var(--font-body);
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 700; line-height: 0.9; letter-spacing: -0.03em; color: var(--deep);
+}
+.data-number.accent { color: var(--accent-dark); }
+.data-number.red { color: #cc3322; }
+body p { font-size: 1rem; color: var(--text-secondary); line-height: 1.8; }
+body p.lead { font-size: 1.15rem; color: var(--text); line-height: 1.9; }
+body p.dark { color: var(--text); }
+
+/* ===== HERO / FULL-BLEED ===== */
+.hero-section {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  position: relative; padding: 4rem 2rem; max-width: 100%;
+}
+.hero-overline {
+  font-family: var(--font-body); font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-secondary); margin-bottom: 2.5rem;
+}
+.hero-context {
+  font-family: var(--font-body); font-size: 1.1rem; color: var(--text-secondary);
+  max-width: 500px; margin-top: 2.5rem; line-height: 1.8;
+}
+.hero-accent-line {
+  position: absolute; left: max(2rem, calc((100vw - var(--max-width)) / 2));
+  top: 15%; bottom: 15%; width: 2px;
+  background: linear-gradient(to bottom, var(--accent), transparent 70%);
+  opacity: 0; transition: opacity 1.5s var(--ease-out) 0.5s;
+}
+.hero-accent-line.visible { opacity: 1; }
+
+/* ===== STATS ROW ===== */
+.stats-row {
+  display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;
+  max-width: var(--max-width); margin: 0 auto;
+  padding: var(--section-gap) 2rem;
+}
+.stat-block { text-align: center; min-width: 160px; }
+.stat-value {
+  font-family: var(--font-body); font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700; color: var(--deep); line-height: 1.1;
+}
+.stat-value.gold { color: var(--accent-dark); }
+.stat-value.red { color: #cc3322; }
+.stat-label { font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; line-height: 1.5; }
+
+/* ===== EDITORIAL GRID (2-col) ===== */
+.editorial-grid {
+  max-width: var(--max-width); margin: 0 auto;
+  padding: var(--section-gap) 2rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+}
+.grid-text p { margin-bottom: 1rem; }
+.grid-list {
+  list-style: none; display: flex; flex-direction: column; gap: 1rem;
+  padding-top: 1rem; border-top: 1px solid var(--border);
+}
+.grid-list li {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: 1rem; border-bottom: 1px solid var(--border-light);
+  font-size: 0.9rem; transition: all var(--transition-fast);
+}
+.grid-list li:hover { padding-left: 0.5rem; }
+.grid-list .label { color: var(--text-secondary); }
+.grid-list .value { font-weight: 700; color: var(--deep); font-size: 1.1rem; }
+.grid-list .value.gold { color: var(--accent-dark); }
+.grid-list .value.red { color: #cc3322; }
+
+/* ===== MULTIPLIER HERO ===== */
+.multiplier-hero {
+  min-height: 80vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  position: relative; max-width: 100%; padding: 4rem 2rem;
+}
+.multiplier-value {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 15vw, 10rem);
+  font-weight: 900; color: var(--accent-dark); line-height: 1;
+  position: relative; z-index: 2;
+}
+.multiplier-context {
+  font-size: 1.1rem; color: var(--text-secondary);
+  margin-top: 1.5rem; max-width: 500px;
+}
+.converge-line {
+  position: absolute; background: var(--accent); opacity: 0.15;
+}
+.converge-line.top-left { top: 15%; left: 10%; width: 1px; height: 30vh; transform: rotate(35deg); }
+.converge-line.top-right { top: 15%; right: 10%; width: 1px; height: 30vh; transform: rotate(-35deg); }
+.converge-line.bottom-left { bottom: 15%; left: 15%; width: 1px; height: 25vh; transform: rotate(-25deg); }
+.converge-line.bottom-right { bottom: 15%; right: 15%; width: 1px; height: 25vh; transform: rotate(25deg); }
+
+/* ===== MODEL LIST ===== */
+.model-list {
+  max-width: var(--max-width-narrow); margin: 0 auto;
+  padding: 2rem 0; display: flex; flex-direction: column; gap: 0;
+}
+.model-item {
+  display: grid; grid-template-columns: 120px 1fr 100px; gap: 1.5rem;
+  align-items: center; padding: 1.25rem 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: all var(--transition-fast);
+}
+.model-item:hover { padding-left: 0.75rem; background: var(--bg-surface); }
+.model-name { font-weight: 700; color: var(--deep); font-size: 0.95rem; }
+.model-detail { color: var(--text-secondary); font-size: 0.85rem; }
+.model-date { font-size: 0.7rem; color: var(--text-secondary); text-align: right; letter-spacing: 0.05em; }
+
+/* ===== BLOCKQUOTE ===== */
+.blockquote-right {
+  max-width: var(--max-width-narrow); margin: 0 auto;
+  padding: var(--section-gap) 2rem; text-align: right;
+}
+.blockquote-right blockquote {
+  font-family: var(--font-display); font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 700; color: var(--deep); line-height: 1.5;
+  border-right: 3px solid var(--accent); padding-right: 2rem;
+}
+.blockquote-right cite {
+  display: block; margin-top: 1rem; font-size: 0.8rem;
+  color: var(--text-secondary); font-style: normal;
+}
+
+/* ===== CONTEXT BLOAT VISUALIZATION ===== */
+.bloat-demo {
+  max-width: var(--max-width-narrow); margin: 0 auto;
+  padding: 2rem 0;
+}
+.bloat-row {
+  display: grid; grid-template-columns: 100px 1fr 100px; gap: 1rem;
+  align-items: center; padding: 1rem 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.bloat-label { font-size: 0.8rem; color: var(--text-secondary); text-align: right; }
+.bloat-track {
+  height: 28px; background: var(--bg-inset); border-radius: 3px; overflow: hidden; position: relative;
+}
+.bloat-fill {
+  height: 100%; border-radius: 3px; width: 0;
+  transition: width 1s var(--ease-out);
+}
+.bloat-fill.signal { background: var(--accent); }
+.bloat-fill.noise { background: #cc3322; }
+.bloat-val {
+  font-family: var(--font-body); font-size: 0.75rem; color: var(--text-secondary);
+}
+.bloat-legend {
+  display: flex; gap: 2rem; margin-top: 1rem; justify-content: center;
+}
+.bloat-legend span {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.75rem; color: var(--text-secondary);
+}
+.bloat-legend .dot { width: 10px; height: 10px; border-radius: 2px; }
+.bloat-legend .dot.signal { background: var(--accent); }
+.bloat-legend .dot.noise { background: #cc3322; }
+
+/* ===== PRICE TABLE ===== */
+.price-table {
+  width: 100%; border-collapse: collapse; font-size: 0.85rem;
+}
+.price-table th {
+  font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-secondary); text-align: left;
+  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+.price-table td {
+  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+.price-table .platform { font-weight: 700; color: var(--deep); }
+.price-table .price { font-weight: 700; color: var(--deep); }
+.price-table .price.low { color: var(--accent-dark); }
+.price-table .price.high { color: #cc3322; }
+
+/* ===== CURRENCY BOARD ===== */
+.currency-board {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+  max-width: var(--max-width); margin: 0 auto;
+  border-top: 2px solid var(--border); border-bottom: 2px solid var(--border);
+}
+.currency-col {
+  padding: 2rem 1.5rem; border-right: 1px solid var(--border-light);
+  transition: all var(--transition-fast);
+  opacity: 0; transform: translateY(20px);
+}
+.currency-col:last-child { border-right: none; }
+.currency-col.visible { opacity: 1; transform: translateY(0); }
+.currency-col:hover { background: var(--accent-light); }
+.currency-col:hover ~ .currency-col { opacity: 0.4; }
+.currency-icon { font-size: 1.5rem; margin-bottom: 1rem; color: var(--accent); }
+.currency-name {
+  font-family: var(--font-display); font-size: 0.9rem; font-weight: 700;
+  color: var(--deep); margin-bottom: 0.5rem;
+}
+.currency-adopters { font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.5; }
+.currency-example {
+  font-size: 0.8rem; color: var(--text); padding: 0.75rem;
+  background: var(--bg-inset); line-height: 1.6;
+}
+.currency-analogy {
+  margin-top: 1rem; font-size: 0.8rem; color: var(--text-secondary);
+  font-style: italic; border-left: 2px solid var(--accent);
+  padding-left: 0.75rem; line-height: 1.6;
+}
+
+/* ===== TICKER ===== */
+.ticker-section { overflow: hidden; padding: 4rem 0; max-width: 100%; }
+.ticker-label-row {
+  font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-secondary); padding: 0 5vw 1rem;
+}
+.ticker-track {
+  display: flex; gap: 3rem; animation: ticker 25s linear infinite;
+  white-space: nowrap;
+}
+.ticker-track:hover { animation-play-state: paused; }
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item {
+  display: flex; align-items: baseline; gap: 0.5rem; flex-shrink: 0; padding: 0.5rem 0;
+}
+.ticker-label-name { font-size: 0.75rem; color: var(--text-secondary); }
+.ticker-value { font-weight: 700; color: var(--deep); font-size: 1rem; }
+
+/* ===== PULLQUOTE ===== */
+.pullquote {
+  text-align: center; padding: 8rem 2rem;
+  max-width: 700px; margin: 0 auto; position: relative;
+}
+.pullquote-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+  font-weight: 700; color: var(--deep); line-height: 1.5;
+}
+.pullquote-watermark {
+  position: absolute; font-family: var(--font-display);
+  font-size: 15vw; font-weight: 900; color: var(--text-ghost);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: none; white-space: nowrap;
+}
+
+/* ===== PIVOT ===== */
+.pivot-empty {
+  text-align: center; padding: 10rem 2rem;
+  max-width: 600px; margin: 0 auto;
+}
+.pivot-empty p {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  color: var(--text-secondary); font-weight: 400;
+  font-style: italic; line-height: 1.8;
+}
+
+/* ===== TIMELINE ===== */
+.origin-timeline {
+  max-width: var(--max-width-narrow); margin: 0 auto;
+  padding: 2rem 0; position: relative;
+  display: flex; flex-direction: column;
+}
+.origin-timeline::before {
+  content: ''; position: absolute; left: 20px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(to bottom, var(--accent), var(--border-light));
+}
+.tl-item {
+  padding: 1.5rem 0 1.5rem 56px; position: relative;
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+}
+.tl-item.visible { opacity: 1; transform: translateY(0); }
+.tl-item::before {
+  content: ''; position: absolute; left: 14px; top: 1.8rem;
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--accent); background: var(--bg);
+}
+.tl-item:first-child::before {
+  width: 18px; height: 18px; left: 12px;
+  background: var(--accent); border-color: var(--accent);
+}
+.tl-date { font-size: 0.65rem; letter-spacing: 0.1em; color: var(--accent-dark); margin-bottom: 0.25rem; }
+.tl-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; color: var(--deep); margin-bottom: 0.5rem; }
+.tl-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.7; }
+.tl-tag {
+  display: inline-block; font-size: 0.6rem; padding: 0.15rem 0.5rem;
+  background: var(--accent-light); color: var(--accent-dark);
+  letter-spacing: 0.05em; margin-top: 0.5rem;
+}
+
+/* ===== PATTERN CARDS ===== */
+.pattern-card {
+  max-width: var(--max-width-narrow); margin: 0 auto; padding: 2rem 0;
+}
+.pattern-card + .pattern-card { border-top: 1px solid var(--border); }
+.pattern-title {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+  color: var(--deep); margin-bottom: 0.75rem;
+}
+.pattern-body {
+  font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 1rem;
+}
+.pattern-body em { font-style: normal; color: var(--accent-dark); font-weight: 500; }
+.pattern-box {
+  background: var(--bg-inset); border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem; font-size: 0.85rem;
+  color: var(--text-secondary); line-height: 1.8;
+}
+.pattern-box strong {
+  color: var(--accent-dark); font-size: 0.65rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  display: block; margin-bottom: 0.3rem;
+}
+
+/* ===== EVOLUTION STEPS ===== */
+.evolution-steps {
+  max-width: var(--max-width-narrow); margin: 0 auto;
+  padding: 2rem 0; display: flex; flex-direction: column; gap: 0;
+}
+.evo-step {
+  display: grid; grid-template-columns: 160px 1fr; gap: 2rem;
+  padding: 2rem 0; border-bottom: 1px solid var(--border);
+  align-items: start; opacity: 0; transform: translateX(-30px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+.evo-step.visible { opacity: 1; transform: translateX(0); }
+.evo-phase {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  color: var(--deep);
+}
+.evo-year { font-size: 0.7rem; color: var(--accent-dark); margin-top: 0.25rem; letter-spacing: 0.05em; }
+.evo-body {}
+.evo-body p { margin-bottom: 0.75rem; }
+.evo-body .analogy {
+  font-size: 0.85rem; color: var(--text-secondary); font-style: italic;
+  padding: 0.75rem 1rem; background: var(--bg-inset);
+  border-left: 2px solid var(--accent); margin-top: 0.75rem;
+  line-height: 1.7;
+}
+
+/* ===== NARRATIVE HOOK ===== */
+.narrative-hook {
+  text-align: center; padding: 6rem 2rem 10rem;
+  max-width: 600px; margin: 0 auto; cursor: pointer;
+}
+.narrative-hook:hover .hook-text { color: var(--accent-dark); }
+.hook-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 600;
+  color: var(--deep); border-bottom: 2px solid var(--accent);
+  padding-bottom: 0.5rem; transition: color var(--transition-fast);
+  display: inline-block;
+}
+.hook-sub {
+  font-size: 0.75rem; color: var(--text-secondary);
+  margin-top: 1rem; letter-spacing: 0.1em;
+}
+
+/* ===== FOOTER ===== */
+.site-footer { text-align: center; padding: 8rem 2rem; max-width: 400px; margin: 0 auto; }
+.footer-text { font-family: var(--font-display); font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+.footer-colophon { font-size: 0.65rem; color: var(--text-secondary); letter-spacing: 0.1em; }
+.footer-line { width: 40px; height: 2px; background: var(--accent); margin: 1.5rem auto; border: none; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .stats-row { flex-direction: column; gap: 2rem; align-items: center; }
+  .editorial-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .currency-board { grid-template-columns: 1fr 1fr; }
+  .currency-col:nth-child(5) { grid-column: 1 / -1; }
+  .model-item { grid-template-columns: 1fr; gap: 0.5rem; }
+  .model-date { text-align: left; }
+  .bloat-row { grid-template-columns: 80px 1fr 70px; }
+  .evo-step { grid-template-columns: 100px 1fr; gap: 1rem; }
+  .anchor-dots { right: 1rem; }
+  .anchor-dot-label { display: none; }
+  section { padding: 3rem 1.5rem; }
+  .multiplier-value { font-size: clamp(4rem, 20vw, 8rem); }
+  .blockquote-right { text-align: left; }
+  .blockquote-right blockquote {
+    border-right: none; border-left: 3px solid var(--accent);
+    padding-right: 0; padding-left: 1.5rem;
+  }
+}
+@media (max-width: 480px) {
+  .currency-board { grid-template-columns: 1fr; }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  section { opacity: 1; }
+  .entrance-blur, .entrance-curtain, .entrance-slide-left,
+  .entrance-slide-right, .entrance-scale, .entrance-fade,
+  .entrance-grow, .currency-col, .tl-item, .evo-step {
+    opacity: 1 !important; transform: none !important;
+    filter: none !important; clip-path: none !important;
+  }
+  .ticker-track { animation: none; }
+  .bloat-fill { width: var(--target-width) !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Progress Bar -->
+<div class="progress-bar"><div class="progress-bar-fill" id="progress-fill"></div></div>
+
+<!-- Right Anchor Dots -->
+<div class="anchor-dots" id="anchor-dots">
+  <div class="anchor-dot active" data-page="0"><span class="anchor-dot-label">序幕：数字的谎言</span></div>
+  <div class="anchor-dot" data-page="1"><span class="anchor-dot-label">第一章：降价风暴</span></div>
+  <div class="anchor-dot" data-page="2"><span class="anchor-dot-label">第二章：黄金时代</span></div>
+  <div class="anchor-dot" data-page="3"><span class="anchor-dot-label">第三章：变量</span></div>
+  <div class="anchor-dot" data-page="4"><span class="anchor-dot-label">第四章：上下文崩溃</span></div>
+  <div class="anchor-dot" data-page="5"><span class="anchor-dot-label">第五章：终态与启示</span></div>
+</div>
+
+<div class="pages">
+
+<!-- ==================== 序幕：数字的谎言 ==================== -->
+<div class="page active" id="page-0">
+  <section class="hero-section full-bleed">
+    <div class="hero-accent-line"></div>
+    <div class="hero-overline">序幕 — 一个数字的谎言</div>
+    <div class="data-number entrance-blur" id="hero-token">10,000,000,000</div>
+    <div class="data-number accent entrance-blur stagger-2">$15,000+</div>
+    <p class="hero-context entrance-blur stagger-3">一个开发者 8 个月消耗的 Token 数，和它对应的 API 标价。<br>但他只付了 <strong style="color:var(--deep)">¥49/月</strong>。</p>
+  </section>
+
+  <section class="wide entrance-curtain">
+    <div class="overline">这不是滥用，是行业标准</div>
+    <div class="editorial-grid">
+      <div class="grid-text">
+        <p class="lead">¥49 订阅看起来便宜。但一个重度开发者实际消耗的算力，远超这个价格能覆盖的范围。Coding Agent 自动循环调用模型，每次提问触发 5-30 次 API 请求。8 个月累积下来，就是 100 亿。</p>
+        <p>更令人不安的是——其中 <strong style="color:#cc3322">70%</strong> 是浪费。文件读取占 35-45%，代码生成只有 5-15%。你在为 AI 读文件付费，不是写代码。</p>
+      </div>
+      <ul class="grid-list">
+        <li><span class="label">8 个月消耗</span><span class="value gold">100 亿 Token</span></li>
+        <li><span class="label">API 标价</span><span class="value red">$15,000+</span></li>
+        <li><span class="label">实际订阅费</span><span class="value">¥2,744 (¥49×56)</span></li>
+        <li><span class="label">节省比例</span><span class="value gold">93%</span></li>
+        <li><span class="label">浪费比例</span><span class="value red">70%</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="pivot-empty entrance-fade">
+    <p>这个数字告诉我们两件事：<br>第一，订阅制让 AI 变得可负担。<br>第二，<strong style="color:var(--accent-dark)">旧的定价模式已经破产</strong>。</p>
+  </section>
+
+  <div class="narrative-hook" onclick="goToPage(1)">
+    <div class="hook-text">这一切是怎么发生的？</div>
+    <div class="hook-sub">序幕 → 第一章</div>
+  </div>
+
+  <div class="site-footer" style="padding-top:0"><div class="footer-colophon">AI 定价模式演变 · 序幕</div></div>
+</div>
+
+<!-- ==================== 第一章：降价风暴 ==================== -->
+<div class="page" id="page-1">
+  <div style="padding:8vh 2rem 4rem;max-width:var(--max-width-narrow);margin:0 auto">
+    <div class="chapter-label">第一章 — 2024 Q4</div>
+    <h1 class="magazine-title">定价机被打破了</h1>
+    <p class="lead">一切从 DeepSeek 开始。它把百万 Token 的价格从几十元砸到了几毛钱。这不是定价调整——这是把整个行业的定价机砸碎了。</p>
+  </div>
+
+  <section class="wide entrance-curtain">
+    <div class="overline">价格战的起点</div>
+    <div class="editorial-grid">
+      <div class="grid-text">
+        <p class="lead">2024 Q4，DeepSeek 带头降价。百万 Token 从几十元降到几毛钱——降了一个数量级。</p>
+        <p>这在 AI 行业是前所未有的。此前，所有厂商的定价逻辑是"模型很贵，按量付费"。DeepSeek 证明了：MoE 架构 + 国产芯片可以让成本暴降 73%。</p>
+        <p><strong style="color:var(--deep)">一旦有人证明了价格可以这么低，所有人都被迫跟进。</strong>价格战启动了。</p>
+      </div>
+      <ul class="grid-list">
+        <li><span class="label">DeepSeek V4-Pro</span><span class="value">输出 24 元/百万</span></li>
+        <li><span class="label">DeepSeek V4-Flash</span><span class="value gold">输出 2 元/百万</span></li>
+        <li><span class="label">对比 GPT-5</span><span class="value red">输出 $15/百万</span></li>
+        <li><span class="label">成本降幅</span><span class="value gold">73%</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="blockquote-right entrance-slide-right">
+    <blockquote>
+      芯片供给直接绑定定价天花板。<br>DeepSeek 官方说："受限于高端算力，<br>昇腾 950 批量上市后价格大幅下调。"
+    </blockquote>
+    <cite>—— 华为昇腾 950PR 算力是 H20 的 2.87 倍，价格是 H200 的 1/3，2026 年 4 月量产</cite>
+  </section>
+
+  <section class="pivot-empty entrance-fade">
+    <p>价格战打开了潘多拉魔盒。<br>便宜到让人用不完的算力——<br>接下来会发生什么？</p>
+  </section>
+
+  <div class="narrative-hook" onclick="goToPage(2)">
+    <div class="hook-text">便宜到用不完的算力，然后呢？</div>
+    <div class="hook-sub">第一章 → 第二章</div>
+  </div>
+
+  <div class="site-footer" style="padding-top:0"><div class="footer-colophon">AI 定价模式演变 · 第一章</div></div>
+</div>
+
+<!-- ==================== 第二章：黄金时代 ==================== -->
+<div class="page" id="page-2">
+  <div style="padding:8vh 2rem 4rem;max-width:var(--max-width-narrow);margin:0 auto">
+    <div class="chapter-label">第二章 — 2025 Q4 至 2026 Q1</div>
+    <h1 class="magazine-title">Coding Plan 的黄金时代</h1>
+    <p class="lead">价格战打下来后，智谱 GLM 率先推出 Coding Plan——固定月费，不限用量。两个月 ARR 破亿，15 万付费开发者。所有人都看到了：这个模式能跑通。</p>
+  </div>
+
+  <section class="wide entrance-curtain">
+    <div class="overline">七家同时开战</div>
+    <table class="price-table">
+      <thead><tr><th>平台</th><th>最低月费</th><th>Pro 档</th><th>计量</th><th>备注</th></tr></thead>
+      <tbody>
+        <tr><td class="platform">MiniMax</td><td class="price low">¥29</td><td class="price">¥49</td><td>Prompt → Token</td><td>全模态打包</td></tr>
+        <tr><td class="platform">Kimi</td><td class="price low">¥19</td><td class="price">¥99</td><td>Token</td><td>K2.6 编程最强</td></tr>
+        <tr><td class="platform">智谱 GLM</td><td class="price">¥49</td><td class="price">¥149</td><td>Prompt</td><td>每天抢购</td></tr>
+        <tr><td class="platform">阿里百炼</td><td class="price">¥40</td><td class="price high">¥200</td><td>API → Credits</td><td>企业版 ¥198 起</td></tr>
+        <tr><td class="platform">火山方舟</td><td class="price">¥40</td><td class="price">¥200</td><td>API</td><td>字节生态</td></tr>
+        <tr><td class="platform">腾讯云</td><td class="price">¥40</td><td class="price">¥200</td><td>Token</td><td>混元生态</td></tr>
+        <tr><td class="platform">小米 MiMo</td><td class="price low">¥39</td><td class="price high">¥659</td><td>Credit</td><td>$1/$3 极低价</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="wide entrance-slide-left">
+    <div class="overline">资本市场的认可</div>
+    <div class="editorial-grid">
+      <div class="grid-text">
+        <p class="lead">智谱 GLM 2026-01 港交所上市，IPO 市值超 511 亿港元。Coding Plan 上线两个月，ARR 破亿，15 万付费开发者。</p>
+        <p>MiniMax 2026-01 上市，募资超 40 亿港元。2.12 亿用户，200+ 国家，海外收入占比 73%。</p>
+        <p>资本市场的热情证明了：固定月费的 AI 订阅模式，有真实的市场需求。</p>
+      </div>
+      <ul class="grid-list">
+        <li><span class="label">智谱 ARR</span><span class="value gold">17 亿元 (+60x)</span></li>
+        <li><span class="label">付费开发者</span><span class="value">15 万+</span></li>
+        <li><span class="label">MiniMax 用户</span><span class="value gold">2.12 亿</span></li>
+        <li><span class="label">毛利率</span><span class="value">25.4% (转正)</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="pivot-empty entrance-fade">
+    <p>Coding Plan 看起来完美。<br>固定月费、不限用量、用户满意、资本认可。<br>但有一个隐藏的前提——<br><strong style="color:var(--accent-dark)">用户得是手动调用的。</strong></p>
+  </section>
+
+  <div class="narrative-hook" onclick="goToPage(3)">
+    <div class="hook-text">然后来了一个变量</div>
+    <div class="hook-sub">第二章 → 第三章</div>
+  </div>
+
+  <div class="site-footer" style="padding-top:0"><div class="footer-colophon">AI 定价模式演变 · 第二章</div></div>
+</div>
+
+<!-- ==================== 第三章：变量 ==================== -->
+<div class="page" id="page-3">
+  <div style="padding:8vh 2rem 4rem;max-width:var(--max-width-narrow);margin:0 auto">
+    <div class="chapter-label">第三章 — 2026 年 2 月</div>
+    <h1 class="magazine-title">OpenClaw 爆火</h1>
+    <p class="lead">GitHub 355K stars。一个开源 AI Agent 框架，让开发者不用手动调 API——Agent 自动循环调用。Coding Plan 的需求骤增百倍。</p>
+  </div>
+
+  <section class="multiplier-hero full-bleed">
+    <div class="converge-line top-left"></div>
+    <div class="converge-line top-right"></div>
+    <div class="converge-line bottom-left"></div>
+    <div class="converge-line bottom-right"></div>
+    <div class="multiplier-value entrance-blur">6-10×</div>
+    <p class="multiplier-context entrance-blur stagger-2">Agent 让每个开发者的 Token 消耗变成原来的 6-10 倍。<br>MiniMax 的用量：2 月 vs 12 月增长 6 倍，Coding Plan 消耗增长 10 倍+。</p>
+  </section>
+
+  <section class="wide entrance-curtain">
+    <div class="overline">模型进步线</div>
+    <div class="model-list">
+      <div class="model-item entrance-slide-left stagger-1">
+        <div class="model-name">Kimi K2.5</div>
+        <div class="model-detail">1T 参数，编程能力跃升</div>
+        <div class="model-date">2026-01</div>
+      </div>
+      <div class="model-item entrance-slide-left stagger-2">
+        <div class="model-name">GLM-5</div>
+        <div class="model-detail">744B 参数，国产第一梯队</div>
+        <div class="model-date">2026-02</div>
+      </div>
+      <div class="model-item entrance-slide-left stagger-3">
+        <div class="model-name">GLM-5.1</div>
+        <div class="model-detail">持续迭代</div>
+        <div class="model-date">2026-04</div>
+      </div>
+      <div class="model-item entrance-slide-left stagger-4">
+        <div class="model-name">DeepSeek V4</div>
+        <div class="model-detail">1.6T 参数，成本暴降 73%</div>
+        <div class="model-date">2026-04-24</div>
+      </div>
+      <div class="model-item entrance-slide-left stagger-5">
+        <div class="model-name">MiMo-V2.5-Pro</div>
+        <div class="model-detail">对标 Claude Opus 4.6</div>
+        <div class="model-date">2026-04-23</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blockquote-right entrance-slide-right">
+    <blockquote>
+      模型越来越强 → Agent 可用性提高<br>
+      → Token 消耗指数级增长<br>
+      → Coding Plan 的"不限量"承诺<br>
+      在商业上已经破产。
+    </blockquote>
+    <cite>—— Anthropic 2026-04 从标准订阅移除 OpenClaw 访问。连全球头部都撑不住了。</cite>
+  </section>
+
+  <div class="narrative-hook" onclick="goToPage(4)">
+    <div class="hook-text">为什么 Agent 消耗这么大？</div>
+    <div class="hook-sub">第三章 → 第四章</div>
+  </div>
+
+  <div class="site-footer" style="padding-top:0"><div class="footer-colophon">AI 定价模式演变 · 第三章</div></div>
+</div>
+
+<!-- ==================== 第四章：上下文崩溃 ==================== -->
+<div class="page" id="page-4">
+  <div style="padding:8vh 2rem 4rem;max-width:var(--max-width-narrow);margin:0 auto">
+    <div class="chapter-label">第四章 — 上下文崩溃</div>
+    <h1 class="magazine-title">70% 的 Token 是浪费</h1>
+    <p class="lead">Agent 不是"用得多"，而是"浪费得多"。每次调用都重发完整上下文：系统提示、读过的文件、错误日志、对话历史。一个 typo fix 用了 23,000 tokens。一个 $0.50 的 fix，47 次迭代后变成 $30。</p>
+  </div>
+
+  <!-- Context bloat visualization -->
+  <section class="wide entrance-curtain" id="bloat-section">
+    <div class="overline">上下文膨胀——Agent 每一轮都在重复发送</div>
+    <div class="bloat-demo">
+      <div class="bloat-row">
+        <div class="bloat-label">第 1 轮</div>
+        <div class="bloat-track">
+          <div class="bloat-fill signal" style="--target-width:60%" data-width="60"></div>
+        </div>
+        <div class="bloat-val">5,000 tokens</div>
+      </div>
+      <div class="bloat-row">
+        <div class="bloat-label">第 10 轮</div>
+        <div class="bloat-track">
+          <div class="bloat-fill signal" style="--target-width:40%" data-width="40"></div>
+          <div class="bloat-fill noise" style="--target-width:35%;margin-left:-35%" data-width="35"></div>
+        </div>
+        <div class="bloat-val">15,000 tokens</div>
+      </div>
+      <div class="bloat-row">
+        <div class="bloat-label">第 30 轮</div>
+        <div class="bloat-track">
+          <div class="bloat-fill signal" style="--target-width:25%" data-width="25"></div>
+          <div class="bloat-fill noise" style="--target-width:60%;margin-left:-60%" data-width="60"></div>
+        </div>
+        <div class="bloat-val">35,000 tokens</div>
+      </div>
+      <div class="bloat-row">
+        <div class="bloat-label">第 50 轮</div>
+        <div class="bloat-track">
+          <div class="bloat-fill signal" style="--target-width:15%" data-width="15"></div>
+          <div class="bloat-fill noise" style="--target-width:80%;margin-left:-80%" data-width="80"></div>
+        </div>
+        <div class="bloat-val">上下文窗口满了</div>
+      </div>
+      <div class="bloat-legend">
+        <span><span class="dot signal"></span>有效信息</span>
+        <span><span class="dot noise"></span>重复上下文（浪费）</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waste breakdown -->
+  <section class="wide entrance-slide-left">
+    <div class="overline">Token 构成——你在为什么付费？</div>
+    <div class="editorial-grid">
+      <div class="grid-text">
+        <p class="lead">DEV Community 的研究追踪了 42 个 Agent 运行记录：70% 的 Token 是浪费。文件读取占 35-45%，工具输出 15-25%，上下文重发 15-20%。代码生成——你真正想让 AI 做的事——只占 5-15%。</p>
+        <p>更糟糕的是，200K token 的对话成本是 20K 的 <strong style="color:#cc3322">10 倍</strong>。Agentic session 比非 agentic 使用 <strong style="color:#cc3322">贵 200 倍</strong>。</p>
+      </div>
+      <ul class="grid-list">
+        <li><span class="label">文件读取</span><span class="value red">35-45%</span></li>
+        <li><span class="label">工具输出</span><span class="value">15-25%</span></li>
+        <li><span class="label">上下文重发</span><span class="value">15-20%</span></li>
+        <li><span class="label">推理</span><span class="value">10-15%</span></li>
+        <li><span class="label">代码生成</span><span class="value gold">5-15%</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="pivot-empty entrance-fade">
+    <p>Coding Plan 的"不限量"承诺<br>在 Agent 时代不可持续。<br><strong style="color:var(--accent-dark)">旧的定价模式已经破产。</strong></p>
+  </section>
+
+  <div class="narrative-hook" onclick="goToPage(5)">
+    <div class="hook-text">所以行业怎么应对？</div>
+    <div class="hook-sub">第四章 → 第五章</div>
+  </div>
+
+  <div class="site-footer" style="padding-top:0"><div class="footer-colophon">AI 定价模式演变 · 第四章</div></div>
+</div>
+
+<!-- ==================== 第五章：终态与启示 ==================== -->
+<div class="page" id="page-5">
+  <div style="padding:8vh 2rem 4rem;max-width:var(--max-width-narrow);margin:0 auto">
+    <div class="chapter-label">第五章 — 终态与启示</div>
+    <h1 class="magazine-title">从 Coding Plan 到 Credit</h1>
+    <p class="lead">定价模式的演变不是计划出来的，是被现实逼出来的。Coding Plan 是过渡产品，Token Plan 是下一步，Credit 可能是终态。</p>
+  </div>
+
+  <!-- Evolution steps -->
+  <section class="wide entrance-curtain">
+    <div class="overline">定价模式三步演进</div>
+    <div class="evolution-steps" id="evolution-steps">
+      <div class="evo-step">
+        <div>
+          <div class="evo-phase">Talking Plan</div>
+          <div class="evo-year">2025 Q4 — 2026 Q1</div>
+        </div>
+        <div class="evo-body">
+          <p>固定月费，不限用量。用户说"帮我写个功能"，AI 执行。像手机合约机——绑定特定场景（编程），深度优化。</p>
+          <p>智谱 GLM 两个月 ARR 破亿，证明了市场需求。但前提是用户手动调用，Agent 还没来。</p>
+          <div class="analogy">类比：手机话费套餐——充 100 块用不完，因为你在 2G 网络下发短信。</div>
+        </div>
+      </div>
+      <div class="evo-step">
+        <div>
+          <div class="evo-phase">Token Plan</div>
+          <div class="evo-year">2026-03 至今</div>
+        </div>
+        <div class="evo-body">
+          <p>MiniMax 将 "Coding Plan" 更名为 "Token Plan"——从编程工具升级为通用算力。打包图片、语音、视频。不限量消失，按 Token 计量。</p>
+          <p>阿里百炼跟进，企业版 ¥198/698/1398。Lite 档停售——补贴结束，分层开始。</p>
+          <div class="analogy">类比：手机流量套餐——终于透明了，但你得算着用了。</div>
+        </div>
+      </div>
+      <div class="evo-step">
+        <div>
+          <div class="evo-phase">Credit 时代</div>
+          <div class="evo-year">2026+ 趋势</div>
+        </div>
+        <div class="evo-body">
+          <p>Cursor 用 Credit 池，小米 MiMo 用 Credit，阿里百炼企业版也用 Credit。统一 Credits，不同模型不同倍率——抽象了一层，但可预测。</p>
+          <p>这是终态吗？可能。但 Agent 的浪费问题如果不解决，Credit 也不够。真正的终态是：<strong style="color:var(--accent-dark)">上下文压缩 + 模型路由 + 精细计量</strong>。</p>
+          <div class="analogy">类比：话费余额——充进去的钱，打电话和发短信扣的不一样多，但你知道还剩多少。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Five units -->
+  <section class="full-bleed" style="padding:4rem 0">
+    <div class="overline" style="padding:0 5vw">五种计量单位并存</div>
+    <div class="currency-board wide" style="margin-top:2rem">
+      <div class="currency-col stagger-1">
+        <div class="currency-icon">⟐</div>
+        <div class="currency-name">API 请求</div>
+        <div class="currency-adopters">阿里百炼 / 火山 / 腾讯</div>
+        <div class="currency-example">18,000 次/月 ≈ 20-120 次提问/天</div>
+        <div class="currency-analogy">像电信"分钟数"——数字很大但不透明。</div>
+      </div>
+      <div class="currency-col stagger-2">
+        <div class="currency-icon">◈</div>
+        <div class="currency-name">Prompt</div>
+        <div class="currency-adopters">智谱 GLM / MiniMax 早期</div>
+        <div class="currency-example">1 Prompt ≈ 15-20 次模型调用</div>
+        <div class="currency-analogy">像"短信条数"——Agent 时代一次发几十条。</div>
+      </div>
+      <div class="currency-col stagger-3">
+        <div class="currency-icon">◎</div>
+        <div class="currency-name">Token</div>
+        <div class="currency-adopters">Kimi / MiniMax Token Plan</div>
+        <div class="currency-example">3500 万 Token ≈ 70 轮深度问答</div>
+        <div class="currency-analogy">像"流量 GB 数"——透明但难预估。</div>
+      </div>
+      <div class="currency-col stagger-4">
+        <div class="currency-icon">◇</div>
+        <div class="currency-name">Credit</div>
+        <div class="currency-adopters">Cursor / 小米 MiMo / 百炼企业版</div>
+        <div class="currency-example">$20 池 ≈ 225 Sonnet 请求</div>
+        <div class="currency-analogy">像"话费余额"——不同服务扣费不同。</div>
+      </div>
+      <div class="currency-col stagger-5">
+        <div class="currency-icon">△</div>
+        <div class="currency-name">时间窗口</div>
+        <div class="currency-adopters">智谱 GLM / Claude Code</div>
+        <div class="currency-example">40 prompts/5h，用完要等</div>
+        <div class="currency-analogy">像"限速不限量"——到量就降速。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pullquote -->
+  <section class="pullquote full-bleed entrance-scale" style="position:relative">
+    <div class="pullquote-watermark">定义权</div>
+    <div class="pullquote-text">谁能定义计量单位，谁就掌握定价权。</div>
+  </section>
+
+  <!-- Patterns -->
+  <section class="wide entrance-slide-left" style="padding-top:var(--section-gap)">
+    <div class="overline">可复用的商业洞察</div>
+    <div class="pattern-card">
+      <div class="pattern-title">洞察一：计量单位即定价权</div>
+      <div class="pattern-body">谁定义计量单位，谁就掌握定价权。<em>MiniMax 从 Prompt 转向 Token，Kimi 同理</em>——都是在争夺用户信任。模糊计量有利于早期获客，透明计量有利于长期信任。</div>
+      <div class="pattern-box"><strong>模式</strong>推出新产品时，先用模糊计量降低门槛，成熟后用透明计量建立信任。</div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-title">洞察二：补贴 → 收紧 → 分层</div>
+      <div class="pattern-body">所有互联网赛道都走这三步。<em>2024 补贴跑量，2025 H2 收紧测试弹性，2026 精细分层。</em>MiniMax 极速版 ¥98-899，Kimi Allegro ¥559——分层是终局。</div>
+      <div class="pattern-box"><strong>模式</strong>进入新市场不要一开始就想好定价。先补贴跑量建立习惯，再收紧测试弹性，最后精细分层。</div>
+    </div>
+    <div class="pattern-card">
+      <div class="pattern-title">洞察三：Agent 时代的成本不可逆</div>
+      <div class="pattern-body">70% Agent Token 是浪费。推理需求已达训练的 4-5 倍，IDC 预测 2028 年推理占比 73%。<em>所有厂商最终都会转向精细计量——谁先转谁主动，谁后转谁被动。</em></div>
+      <div class="pattern-box"><strong>模式</strong>当使用场景从"手动"变为"自动"时，定价必须从固定转向计量。不转就是 Cursor 退款风波的教训。</div>
+    </div>
+  </section>
+
+  <div class="site-footer">
+    <div class="footer-text">商业案例讲完了。</div>
+    <hr class="footer-line">
+    <div class="footer-colophon">AI 定价模式演变 · 从 Coding Plan 到 Token Plan</div>
+  </div>
+</div>
+
+</div><!-- /.pages -->
+
+<script>
+(function() {
+  const pages = document.querySelectorAll('.page');
+  const dots = document.querySelectorAll('.anchor-dot');
+  const progressFill = document.getElementById('progress-fill');
+  let currentPage = 0;
+  const totalPages = pages.length;
+
+  function goToPage(index) {
+    if (index < 0 || index >= totalPages) return;
+    pages[currentPage].classList.remove('active');
+    pages[currentPage].scrollTop = 0;
+    currentPage = index;
+    pages[currentPage].classList.add('active');
+    dots.forEach((d, i) => d.classList.toggle('active', i === currentPage));
+    progressFill.style.width = ((currentPage + 1) / totalPages * 100) + '%';
+    setTimeout(() => triggerAnimations(pages[currentPage]), 100);
+  }
+  window.goToPage = goToPage;
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => goToPage(parseInt(dot.dataset.page)));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goToPage(currentPage + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goToPage(currentPage - 1); }
+  });
+
+  function triggerAnimations(page) {
+    const sections = page.querySelectorAll('section');
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1, root: page });
+    sections.forEach(el => sectionObserver.observe(el));
+
+    const entrances = page.querySelectorAll('.entrance-blur, .entrance-curtain, .entrance-slide-left, .entrance-slide-right, .entrance-scale, .entrance-fade, .entrance-grow');
+    const entranceObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.15, root: page });
+    entrances.forEach(el => entranceObserver.observe(el));
+
+    const cols = page.querySelectorAll('.currency-col');
+    const colObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.2, root: page });
+    cols.forEach(el => colObserver.observe(el));
+
+    const items = page.querySelectorAll('.tl-item');
+    const tlObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1, root: page });
+    items.forEach(el => tlObserver.observe(el));
+
+    const steps = page.querySelectorAll('.evo-step');
+    const evoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.15, root: page });
+    steps.forEach(el => evoObserver.observe(el));
+
+    // Bloat bars
+    const bloatSection = page.querySelector('#bloat-section');
+    if (bloatSection) {
+      const bloatObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const fills = entry.target.querySelectorAll('.bloat-fill');
+            fills.forEach((fill, i) => {
+              setTimeout(() => { fill.style.width = fill.dataset.width + '%'; }, i * 200);
+            });
+            bloatObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3, root: page });
+      bloatObserver.observe(bloatSection);
+    }
+
+    const lines = page.querySelectorAll('.hero-accent-line');
+    lines.forEach(el => el.classList.add('visible'));
+  }
+
+  triggerAnimations(pages[0]);
+})();
+</script>
+</body>
+</html>
