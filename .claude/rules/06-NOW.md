@@ -12,9 +12,10 @@ pos: .claude/rules/06-NOW.md
 
 ## 会话启动
 
-1. 读本文件 + MEMORY-L1.md
-2. **上下文恢复**（如有截断信号）：读 `workspace/*/对话总结-*.md` → "年老师，醒了。上次我们在[任务描述]。"
-3. 检查当前待办：`memory/context/todo.md`
+1. 读本文件 + MEMORY-L1.md + `memory/state.json`
+2. 读 `memory/events/` 最近 3 天事件（快速恢复上下文）
+3. **上下文恢复**（如有截断信号）：读 `workspace/*/对话总结-*.md` → "年老师，醒了。上次我们在[任务描述]。"
+4. 检查当前待办：`memory/context/todo.md`
 
 **截断信号**：`<context_truncated>`、"truncated"、"继续"、"我们刚才到哪了"
 
@@ -92,7 +93,10 @@ pos: .claude/rules/06-NOW.md
 ## 近期事件
 
 - 05-03：Proactive Agent 架构落地（三支柱 + 主动思考 Cron + workspace 整理）
+- 05-05 ~00:43：技能上游同步检查 — 9 个技能均有本地修改（SKILL.md 定制），按规则全部跳过。远程有更新但被本地修改保护的 4 个：fe-diagram（8 commits）、viz-svg-flow（2 commits）、ppt-html（10 commits）、fe-huashu（1 commit）。其余 5 个远程无新提交。0 个技能需要同步
+- 05-04：记忆系统升级 — 事件化压缩（buffer → 结构化 events.json）+ state.json L1 状态快照，对标 OpenClaw 做梦机制
 - 05-02：viz-design 多图+多技能委派质量优化（三层收口）
+- 05-04 21:26：技能上游同步检查 — **doc-kami 成功同步**（3 commits，新增 .claude-plugin 支持 + AGENTS.md + 模板修复）。4 个有本地修改跳过：fe-diagram（8）、viz-svg-flow（2）、ppt-html（10）、fe-huashu（1）。4 个远程无新提交：fe-cinematic、ppt-presentation、viz-claude、ppt-aham
 - 05-04 ~05:30：技能上游同步检查 — 全部网络通，9 个技能均有本地修改保护不受影响。远程有更新但跳过的 3 个：fe-diagram（8 commits Codex 插件重构）、viz-svg-flow（2 commits draw.io 输出处理）、ppt-html（5 commits 缩略图渲染+GIF）。其余 6 个远程无新提交。0 个技能需要同步
 - 05-04 ~05:28：技能上游同步检查 — 9 个技能均有本地修改（SKILL.md 定制），全部跳过。远程有新提交但被本地修改保护的 2 个：fe-diagram（8 commits Codex 插件支持）、ppt-html（10 commits 缩略图渲染+主题隔离等）。viz-svg-flow/viz-claude fetch 网络被拒/超时，本地有修改不受影响。0 个技能需要同步
 - 05-04 ~05:00：技能上游同步检查 — 4 个网络通（fe-cinematic/doc-kami/ppt-presentation/fe-diagram）均无远程更新或已被本地修改保护。5 个网络不通（viz-svg-flow/viz-claude/ppt-aham/ppt-html/fe-huashu）连接被拒/超时。fe-diagram 远程 8 commits（Codex 插件重构），因本地有修改跳过。0 个技能需要同步
@@ -117,7 +121,7 @@ pos: .claude/rules/06-NOW.md
 ## 会话结束检查
 
 - [ ] 学到什么？→ `memory/insights.md`
-- [ ] WAL 触发？→ 更新 `memory/MEMORY.md`
+- [ ] WAL 触发？→ buffer 内容结构化写入 `memory/events/YYYY-MM/YYYY-MM-DD.json`，更新 `memory/state.json`，然后清空 buffer
 - [ ] 重要事件？→ 更新本文件
 - [ ] git commit && push
 
@@ -132,4 +136,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-05-03 — Proactive Agent 架构落地 + workspace 整理*
+*最后更新：2026-05-05 — 技能上游同步检查 05-05 ~00:43*
