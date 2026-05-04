@@ -93,6 +93,7 @@ pos: .claude/rules/06-NOW.md
 ## 近期事件
 
 - 05-03：Proactive Agent 架构落地（三支柱 + 主动思考 Cron + workspace 整理）
+- 05-05 03:29：技能上游同步检查 — 9 个技能全部有本地修改保护。远程有更新但跳过的 3 个：fe-diagram（8 commits）、viz-svg-flow（2 commits）、ppt-html（10 commits）。fe-huashu fetch 网络超时。doc-kami 无本地修改且远程无更新（唯一干净的技能）。0 个技能需要同步
 - 05-05 ~00:43：技能上游同步检查 — 9 个技能均有本地修改（SKILL.md 定制），按规则全部跳过。远程有更新但被本地修改保护的 4 个：fe-diagram（8 commits）、viz-svg-flow（2 commits）、ppt-html（10 commits）、fe-huashu（1 commit）。其余 5 个远程无新提交。0 个技能需要同步
 - 05-04：记忆系统升级 — 事件化压缩（buffer → 结构化 events.json）+ state.json L1 状态快照，对标 OpenClaw 做梦机制
 - 05-02：viz-design 多图+多技能委派质量优化（三层收口）
@@ -136,4 +137,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-05-05 — 技能上游同步检查 05-05 ~05:08 — 9 个技能均有本地修改，0 个需要同步。远程有更新但被本地修改保护的 4 个：fe-diagram（8 commits）、viz-svg-flow（2 commits）、ppt-html（10 commits）、fe-huashu（1 commit）*
+*最后更新：2026-05-05 — 技能上游同步检查 05-05 03:29 — 9 个技能均有本地修改保护，0 个需要同步*
