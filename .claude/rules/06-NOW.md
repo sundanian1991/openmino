@@ -136,4 +136,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-05-05 — 技能上游同步检查 05-05 ~00:43*
+*最后更新：2026-05-05 — 技能上游同步检查 05-05 ~05:08 — 9 个技能均有本地修改，0 个需要同步。远程有更新但被本地修改保护的 4 个：fe-diagram（8 commits）、viz-svg-flow（2 commits）、ppt-html（10 commits）、fe-huashu（1 commit）*
