@@ -56,7 +56,8 @@ pos: .claude/rules/MEMORY-L1.md
 
 ## 当前状态
 
-> 权威：`06-NOW.md` | 待办：`memory/context/todo.md`
+> 权威：`06-NOW.md` | 待办：`memory/context/todo.md` | 状态快照：`memory/state.json`
+> 近期事件：`memory/events/YYYY-MM/`（会话结束时结构化写入）
 
 ---
 
@@ -64,9 +65,10 @@ pos: .claude/rules/MEMORY-L1.md
 
 关键信息先写后答 | 触发：修正、专有名词、偏好、决策、具体值、异常、年老师原话
 
-**双层落盘**：
+**三层落盘**：
 1. **Working Buffer**（实时）：`memory/thinking/buffer.md` — 对话中发现就写，不等结束
-2. **正式记忆**（对话结束时）：合并到 `memory/MEMORY.md` / `insights.md` / `thinking/journal.md`，然后清空 buffer
+2. **事件化压缩**（对话结束时）：buffer 内容按 events schema 结构化写入 `memory/events/YYYY-MM/YYYY-MM-DD.json`，更新 `memory/state.json`
+3. **正式记忆**（定期合并）：合并到 `memory/MEMORY.md` / `insights.md` / `thinking/journal.md`，然后清空 buffer
 
 ---
 
@@ -82,4 +84,4 @@ pos: .claude/rules/MEMORY-L1.md
 
 ---
 
-*更新：2026-04-23 — 当前状态指向 06-NOW.md*
+*更新：2026-05-04 — 三层落盘（追加事件化压缩层 + state.json 状态快照）*

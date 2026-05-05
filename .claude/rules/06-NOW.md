@@ -92,6 +92,9 @@ pos: .claude/rules/06-NOW.md
 
 ## 近期事件
 
+- 05-05 ~06:48：技能上游同步检查 — doc-kami 无本地修改且远程无更新（唯一干净技能）。8 个技能均有本地修改保护（SKILL.md 定制）。远程有更新但跳过的 3 个：fe-diagram（8 commits Codex 插件）、ppt-html（10 commits 缩略图+主题+动画+GIF）、fe-huashu（1 commit 英文 README）。2 个网络不通（viz-svg-flow/viz-claude）均有本地修改保护。0 个技能需要同步
+- 05-05 ~15:26：技能上游同步检查 — 4 个网络通均无远程更新或已有本地修改保护，5 个网络不通但均有本地修改保护，0 个技能需要同步
+- 05-05 ~14:30：技能上游同步检查 — 4 个网络通均无远程更新或已有本地修改保护，5 个网络不通但均有本地修改保护，0 个技能需要同步
 - 05-05 ~11:30：技能上游同步检查 — 4 个网络通（fe-cinematic/doc-kami/ppt-presentation/fe-diagram）均无远程更新或已被本地修改保护。5 个网络不通（viz-svg-flow/viz-claude/ppt-aham/ppt-html/fe-huashu）均有本地修改，不受影响。0 个技能需要同步
 - 05-03：Proactive Agent 架构落地（三支柱 + 主动思考 Cron + workspace 整理）
 - 05-05 ~08:00：技能上游同步检查 — 9 个技能均有本地修改保护（SKILL.md 定制）。远程有更新但跳过的 4 个：fe-diagram（8 commits Codex 插件）、viz-svg-flow（2 commits draw.io）、ppt-html（10 commits 缩略图+主题+动画）、fe-huashu（1 commit 英文 README）。其余 5 个远程无新提交。doc-kami 无本地修改且远程无更新（唯一干净技能）。0 个技能需要同步
@@ -139,4 +142,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-05-05 ~11:30 — 技能上游同步检查，0 个技能需要同步*
+*最后更新：2026-05-05 ~15:26 — 技能上游同步检查，0 个技能需要同步*
