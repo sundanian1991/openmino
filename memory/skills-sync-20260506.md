@@ -123,3 +123,23 @@ type: project
 
 **远程有更新的技能**：doc-kami（57 commits）、fe-huashu-design（1 commit）、ppt-html-ppt-skill（10 commits）、viz-diagram-design（6 commits）、viz-svg-flow-diagram（2 commits）
 **但因全部 9 个技能均有本地修改，无一可安全同步。**
+
+---
+
+# 技能同步检查 2026-05-06（第八次 ~23:36）
+
+**结论：9 个技能均有本地修改，全部跳过。**
+
+| 技能 | 本地修改 | 远程更新 | 决策 |
+|------|----------|----------|------|
+| doc-kami | M SKILL.md | 有 | 跳过（本地修改） |
+| fe-cinematic-ui | M SKILL.md | 有 | 跳过（本地修改） |
+| fe-huashu-design | M SKILL.md | 有 | 跳过（本地修改） |
+| ppt-aham-ppt | M SKILL.md | 无 | 跳过 |
+| ppt-html-ppt-skill | M SKILL.md + untracked | 有 | 跳过（本地修改） |
+| ppt-presentation-skill | M SKILL.md + untracked | 无 | 跳过 |
+| viz-claude | M skill/SKILL.md | 有 | 跳过（本地修改） |
+| viz-diagram-design | M SKILL.md + untracked | 有 | 跳过（本地修改） |
+| viz-svg-flow-diagram | M SKILL.md | 有 | 跳过（本地修改） |
+
+**远程有更新的技能**（7/9）：doc-kami、fe-cinematic-ui、fe-huashu-design、ppt-html-ppt-skill、viz-claude、viz-diagram-design、viz-svg-flow-diagram。全部因本地修改被跳过。
