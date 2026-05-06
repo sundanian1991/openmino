@@ -5,7 +5,7 @@
 
 ---
 
-## P0 必须通过项（5 项）
+## P0 必须通过项（7 项）
 
 ### Q1：标题 = 结论？
 
@@ -63,7 +63,7 @@
 **检查**：以下项目绝对禁止：
 
 - 饼图超过 3 类（改用柱状图或堆叠条）
-- 双 Y 轴（左右两个不同的纵轴）
+- 双 Y 轴（左右两个不同的纵轴）→ 拆为两张图
 - 3D 效果（3D 柱状图、3D 饼图）
 - 渐变填充（linear-gradient）
 - 阴影效果（box-shadow、drop-shadow）
@@ -73,7 +73,35 @@
 
 ---
 
-## P1 建议优化项（7 项）
+### Q16：非数据墨水已最小化？
+
+**检查**：删除所有不影响表意的元素，最大化数据墨水比例。
+
+- 网格线是否浅到刚好看得见（Stone 100 `#f2f0eb`，虚线）
+- 是否有装饰性边框、渐变、阴影、emoji → 删除
+- 是否有重复标注（数据已有数字，标注又写一遍）→ 删除
+- 是否有不必要的图例（颜色编码已自明）→ 删除
+- 仅保留争取受众信任所需的非数据墨水
+
+**判定方法**：遮住图，逐个元素问"删除它会影响理解吗？"不影响 → 删。
+
+---
+
+### Q17：视觉层级清晰？
+
+**检查**：视觉突出程度与重要性严格匹配。
+
+- 最重要的视觉元素是否在视觉上最突出？
+- 所有比较对象是否已明确标示（参考线/背景区）？
+- 离群值和突出点是否加了注释？
+- 每个元素都有标签，文字足够大？
+- 视觉元素是否按次序排列（从最显眼→最不显眼）？
+
+**判定方法**：眯眼看图 → 只能看到一个突出元素 → 合格。两个以上 → 不通过。
+
+---
+
+## P1 建议优化项（9 项）
 
 ### Q4：颜色 ≤ 2 ramp？
 
@@ -152,17 +180,46 @@
 
 ---
 
+### Q14：有留白策略？
+
+**检查**：不是所有间距一刀切。
+
+| 间距层级 | 最小值 | 用途 |
+|----------|--------|------|
+| 紧凑间距 | 6px | 副标题到标题、同级元素间 |
+| 标准间距 | 12px | 卡片之间、图表到标注 |
+| 呼吸间距 | 16-20px | 标题到内容、卡片内边距 |
+| 区块间距 | 24px+ | 独立区块之间、多图分隔 |
+
+**判定方法**：内容密度 ≤ 85%（内容面积/画布面积）。关键信息周围留白 ≥ 内容宽度的 1.2 倍。
+
+---
+
+### Q15：细节是否精致？
+
+**检查**：同类元素的 roundness / linewidth / alignment 统一。
+
+- 圆角统一：卡片 10px / 节点 12px / 柱子 6px（不自创值）
+- 线条统一：边框 1px / 描边 1.5px / 强调线 2px
+- 标注对齐：标注与数据元素间距 ≥12px，不重叠
+
+**判定方法**：出图前扫描上述三个维度。同一类元素值不一致 → 不通过。
+
+---
+
 ### Q13：渲染契约 JSON 是否完整可消费？
 
-**检查**：SPEC 后附带渲染契约 JSON（viz-design-spec-v1），且字段完整可消费。
+**检查**：SPEC 后附带渲染契约 JSON（viz-design-spec-v2），且字段完整可消费。
 
-- `version`：`"viz-design-spec-v1"`
-- 单图：`renderTarget` / `chartType` / `title` / `subtitle` / `canvas` 齐全
-- 多图：`globalStyle`（colorRamps ≤2, palette, typography, spacing）+ `charts[]` 数组
-- `data.series`：每个系列含 name / values / highlight
-- `visualEncoding.highlight`：高亮系列名 + 色值完整
-- `visualEncoding.grayscale` / `maxHighlightRatio`：已设置，≤ 0.1
-- `annotations`：标注文字写原因+幅度，非纯数字
+- `version`：`"viz-design-spec-v2"`
+- `data`：`type: "rows"` + `fields` + `rows[]` 数组，或 `type: "series"` + `fields` + `series[]`
+- `mapping`：`x` 必须声明（可 null），`y`/`fill`/`color`/`size` 按需
+- `layers`：非空数组，每个含 `geom` + `aes` + `params`。标注用 `geom_label`/`geom_hline`/`geom_vline` 图层
+- `layers[].params.color/size/smooth`：必须是标量（不可为 null，omit 该字段）
+- `scales`：非空时每个必须有 `aesthetic` + `type`（`linear`/`log`/`ordinal`）
+- `coord`：必须存在（可为 null）。`type: "cartesian"` + `flip` 控制水平/垂直
+- `theme`：`palette`/`background`/`grid`/`fontFamily`/`titleSize`/`axisLabelSize`/`canvas` 齐全
+- 多图场景：`globalStyle`（colorRamps ≤2, palette, typography, spacing, cornerRadius, styleSchool）+ `charts[]` 数组
 
 **判定方法**：将 JSON 直接交给渲染技能，能否不依赖文本 SPEC 独立完成渲染？如果不能 → 补全缺失字段。
 
@@ -173,7 +230,7 @@
 ```
 SPEC 编写完成
   ↓
-按 Q1→Q2→Q3→Q4→Q5→Q6→Q7→Q8→Q9→Q10→Q11→Q12 逐项检查
+按 Q1→Q2→Q3→Q4→Q5→Q6→Q7→Q8→Q9→Q10→Q11→Q12→Q14→Q15→Q16→Q17→Q13 逐项检查
   ↓
 P0 不通过？→ 标注失败项，说明原因，打回 SPEC 重修
   ↓
@@ -203,10 +260,14 @@ P1 不通过？→ 标注建议优化项，记录到 SPEC 的"待优化"段
 | Q10 排序有意图 | ✅/⚠️/❌ | ... |
 | Q11 眯眼测试 | ✅/⚠️/❌ | ... |
 | Q12 有 So What | ✅/⚠️/❌ | ... |
+| Q14 留白策略 | ✅/⚠️/❌ | ... |
+| Q15 精致细节 | ✅/⚠️/❌ | ... |
+| Q16 非数据墨水最小化 | ✅/❌ | ... |
+| Q17 视觉层级清晰 | ✅/❌ | ... |
 | Q13 渲染契约 JSON | ✅/❌ | ... |
 
-**P0 通过情况**：X/6 通过
-**P1 通过情况**：Y/7 通过
+**P0 通过情况**：X/7 通过
+**P1 通过情况**：Y/9 通过
 **结论**：通过 / 打回重修（[失败项]）
 ```
 

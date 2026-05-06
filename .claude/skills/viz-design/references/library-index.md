@@ -2,6 +2,39 @@
 
 Use this file to decide what to read next. Load the smallest useful subset.
 
+## DNA Database — 首要参考（Phase 1 先查）
+
+> **4000 条经典案例，命中即继承全策略。先查 DNA，再查模式库。**
+
+- `data/chart-dna-index.tsv`
+  - Use FIRST in Phase 1 — grep/awk 按意图/类型/关键词匹配
+  - 命中 → 继承 chart_type → 模式编号 + highlight/annotation/composition/reading_path 全策略
+  - Searchable via `grep` or `awk` — see examples below.
+- `chart-dna-db.md`
+  - Use only for deep lookup after `chart-dna-index.tsv` identifies entries worth expanding.
+  - Contains full DNA records: source, chart type, title, narrative intent, color scheme (hex), highlight strategy, annotation strategy, composition template, typography style, reading path, why it works (3-5 reusable decisions).
+
+### DNA Search Examples
+
+```bash
+# 按意图匹配（最常用）— 供应商表现/能力评估
+awk -F'\t' '$5 ~ /供应商|能力|评估|健康度/' data/chart-dna-index.tsv | head -10
+
+# 按图表类型匹配
+awk -F'\t' '$3 ~ /漏斗|funnel/' data/chart-dna-index.tsv | head -10
+
+# 按场景/领域关键词
+awk -F'\t' '$14 ~ /麦肯锡|高管|战略/' data/chart-dna-index.tsv | head -10
+
+# 组合条件：供应商 + 排名
+awk -F'\t' '$5 ~ /供应商/ && $14 ~ /排序|排名/' data/chart-dna-index.tsv | head -10
+
+# 趋势/变化类
+awk -F'\t' '$5 ~ /趋势|变化|增长|下降/' data/chart-dna-index.tsv | head -10
+```
+
+---
+
 ## Core References
 
 - `decision-rules.md`
@@ -22,6 +55,8 @@ Use this file to decide what to read next. Load the smallest useful subset.
 
 ## Phase 2: Style + Opening
 
+- `aesthetic-spells.md`
+  - Use when user mentions AI aesthetic concepts (新极简/高级感/低饱和/留白/卡片式) or wants "高级但不冰冷" style. Maps 12 spells to viz-design parameters.
 - `scene-thesis-db.md`
   - Use when designing a single chart scene — one-sentence thesis + signature element + restraint statement for 28 common visualization scenarios.
 - `style-schools.md`
@@ -36,10 +71,15 @@ Use this file to decide what to read next. Load the smallest useful subset.
 - `visual-beats.md`
   - Use for single-chart visual beat design — reading path, emphasis technique, entrance rhythm. **25 types**.
 
+## Phase 3.5: Layout + Interpretation
+
+- `layout-selector.md`
+  - Use AFTER chart type is chosen — maps scenario to one of 40 layout templates + interpretation strategy (KPI cards, insight cards, or no interpretation). **Auto-selected by intent + data density.**
+
 ## Phase 4: Composition + Color + Typography
 
 - `composition-templates.md`
-  - Use to select the canvas layout and region division. **20 types**.
+  - Use to select the canvas layout and region division. **40 types** (13 base + 27 extended).
 - `color-themes.md`
   - Use to pick the color theme — 25 presets with hex ramps and semantic colors.
 - `typography-moods.md`
@@ -78,47 +118,15 @@ Use this file to decide what to read next. Load the smallest useful subset.
   - Use only for deep lookup after `chart-dna-index.tsv` identifies entries worth expanding.
   - Contains full DNA records: source, chart type, title, narrative intent, color scheme (hex), highlight strategy, annotation strategy, composition template, typography style, reading path, why it works (3-5 reusable decisions).
 
-### Search Examples
+### 完整 DNA 搜索参考
 
 ```bash
-# Find all McKinsey-style chart DNAs
-awk -F'\t' '$13 ~ /McKinsey|麦肯锡/' data/chart-dna-index.tsv | head -10
+# 按风格来源
+awk -F'\t' '$2 ~ /McKinsey|麦肯锡/' data/chart-dna-index.tsv | head -10
 
-# Find funnel/conversion charts
-awk -F'\t' '$3 ~ /漏斗|funnel/' data/chart-dna-index.tsv | head -10
+# 按构图模板
+awk -F'\t' '$11 ~ /单中心|01/' data/chart-dna-index.tsv | head -10
 
-# Find dark-themed chart DNAs
-awk -F'\t' '$7 ~ /dark|深色/' data/chart-dna-index.tsv | head -10
-
-# Find charts with high-contrast highlights
-awk -F'\t' '$8 ~ /高亮.*≤10/' data/chart-dna-index.tsv | head -10
-
-# Find radar/radar-style charts
-awk -F'\t' '$2 ~ /雷达|radar/' data/chart-dna-index.tsv | head -10
-
-# Find charts suitable for executive presentations
-awk -F'\t' '$13 ~ /高管|executive|麦肯锡/' data/chart-dna-index.tsv | head -10
-```
-
-## Suggested DNA Search
-
-### Bash / macOS / Linux
-
-```bash
-# Find McKinsey-style chart DNA entries
-awk -F'\t' '$13 ~ /McKinsey|麦肯锡/' data/chart-dna-index.tsv | head -10
-
-# Find funnel charts with bottleneck annotations
-awk -F'\t' '$3 ~ /漏斗/ && $9 ~ /瓶颈/' data/chart-dna-index.tsv | head -10
-
-# Find warm-colored, minimalist charts
-awk -F'\t' '$6 ~ /warm|暖色/ && $13 ~ /极简|minimal/' data/chart-dna-index.tsv | head -10
-```
-
-### PowerShell
-
-```powershell
-Import-Csv data/chart-dna-index.tsv -Delimiter "`t" |
-  Where-Object { $_.style -match "McKinsey|麦肯锡" } |
-  Select-Object -First 10
+# 按高亮策略
+awk -F'\t' '$9 ~ /高亮.*≤10/' data/chart-dna-index.tsv | head -10
 ```

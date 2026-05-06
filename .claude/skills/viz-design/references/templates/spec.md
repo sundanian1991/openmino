@@ -12,6 +12,26 @@
 - **签名视觉元素 source id**：DNA 案例 ID 或 Custom
 - **为什么不能简化为默认模板**：
 
+### 版式布局（Phase 1.5 决策结果）
+
+- **版式编号**：#XX 名称（如 #08 L 型、#14 主次左右 70/30）
+- **画布尺寸**：宽 × 高
+- **区域划分**：
+  - 标题区：位置 + 字号
+  - 主内容区：位置 + 占比
+  - 解读区：位置 + 占比 + 形式（解读卡片 / KPI 卡片 / 无）
+  - 脚注区：位置 + 字号
+- **间距规则**：标题-内容 / 内容-脚注 / 主-解读区
+
+### 解读区内容（如版式需要）
+
+> 解读区写"为什么"和"意味着什么"，不重复图表已有数字。
+
+| 序号 | 形式 | 内容 | 视觉标记 |
+|------|------|------|---------|
+| 1 | 色点+加粗对象+说明 | [判断] + [原因] | 橙色圆点 6px |
+| 2 | ... | ... | ... |
+
 ### 叙事意图（从 intent 继承，完整保留）
 
 **【可视化目的】**
@@ -25,6 +45,67 @@
 
 **【思路】**
 - 视觉叙事路径：第一眼 → 第二眼 → 最终理解
+
+### WIIFT 提要（What's In It For Them — 强制）
+
+> 写在图顶部的结论性提要，让受众一秒判断"这跟我有什么关系"。替代描述性标题。
+
+**WIIFT 提要标准**：
+1. **有动词**：提要中出现动作词，不是纯名词
+2. **有量化**：包含具体数字或幅度
+3. **自足检验**：受众仅凭提要能明白要点，不需要看图再猜
+4. **数据支持**：提要中每个数字都在图中呈现，无需心算
+5. **一致性**：WIIFT 用语与图中标签、脚注一致
+
+- **WIIFT 提要**：[受众身份] + [行动建议] + [量化结果]
+  - 例：❌ "供应商绩效分析" → ✅ "减少 20% 信息不全导致的拒保，营收可从 -5% 扭转为 +10%"
+- **眨眼检验**：闭眼再睁开，能否一秒内看出 WIIFT 传达的核心？
+  - 第一眼看到的要点是否与细看后一致？
+
+### 上下文四问（必须在出图前回答）
+
+| 维度 | 回答 | 说明 |
+|------|------|------|
+| **情境** | | 什么业务场景/汇报节点 |
+| **受众** | | 谁看这张图，背景知识水平 |
+| **沟通者** | | 谁在讲这张图 |
+| **目标** | | 看完图，受众应该做什么决定 |
+
+### TOP-T 框架（单图讲解结构 — 强制）
+
+> 微观层面工具，专注如何讲解单张图。受众能信任数据、认可解读、展开建设性讨论。
+
+- **Topic（话题）**：2-3 词概括本图主题，切换前先介绍话题，帮助受众进入语境
+  - 例："供应商绩效"
+- **Guide（引导）**：详细讲解图中要素，如坐标轴、数据分析、计算方法。这是最长最关键的部分。有效的引导帮助受众理解数据并自行核验结论。
+- **Takeaway（要点）**：一句话结论，与 WIIFT 一致
+
+### WIIFT 提要（What's In It For Them）
+
+> **替代描述性标题**。写在图顶部的结论性提要，让受众一秒判断"这跟我有什么关系"。
+> 标准：有动词 + 有量化 + 自足检验（仅凭提要能明白要点）+ 数据支持（每个数字在图中呈现，无需心算）。
+>
+> WIIFT ≠ 标题。标题标注"是什么"，WIIFT 解释"看了有什么用"。
+> 示例：
+> - ❌ "供应商绩效分析"（描述性标题）
+> - ✅ "减少 20% 信息不全导致的拒保，营收可从 -5% 扭转为 +10%"
+
+- **受众**：[谁看这张图]
+- **沟通者**：[谁在讲这张图]
+- **WIIFT 提要**：[受众身份] + [行动建议] + [量化结果]
+- **眨眼检验**：闭眼再睁开，能否一秒内看出 WIIFT 传达的核心？
+
+### TOP-T 框架（讲解结构）
+
+> 用于演示场景。讲解者按此结构引导受众，不自创讲解方式。
+
+- **Topic（话题）**：2-3 词概括本图主题，切换前帮助受众进入语境
+  - 例："供应商绩效"
+- **Guide（引导）**：讲解路径，按视觉权重顺序
+  1. 先看 [hero 元素] → [为什么重要，引导理解坐标轴/数据]
+  2. 再看 [medium 元素] → [对比/参照点]
+  3. 最后看 [light 元素] → [背景/补充信息]
+- **Takeaway（要点）**：一句话结论，与 WIIFT 提要一致
 
 ### 视觉编码
 
@@ -47,15 +128,99 @@
 - **标注内容**（写原因+幅度，不写数字）：
 - **基准线/参考线**：
 
-### 视觉权重（读者视角）
+### 渲染约束（强制 — 机器可读）
 
-> 从 storyboard 视觉重量表继承，转为渲染端可执行的声明。
+> 以下代码块供 viz-echarts/viz-svg-flow 直接消费，不允许"自行翻译"。
+> 每个约束必须出现在最终渲染中。缺失 = 渲染失败。
+
+#### 标注清单（逐项列出，不可省略）
+
+```
+annotations:
+  - type: label | hline | vline | markPoint | markLine | markArea | text
+    target: { series: <name或index>, dataIndex: <索引或值> }  # 或 { x: <值>, y: <值> }
+    text: "标注文字（写原因+幅度）"
+    position: top | bottom | left | right | inside
+    offset: { x: <px>, y: <px> }  # 相对默认位置的偏移
+    style:
+      fontSize: <px>
+      fontWeight: normal | bold
+      fill: "<hex色值>"
+      opacity: <0-1>
+      lineStyle: { color: "<hex>", type: solid | dashed | dotted, width: <px> }
+```
+
+#### 视觉权重映射
+
+```
+visualWeight:
+  hero: { target: "<系列名或元素标识>", style: { color: "<hex>", lineWidth: <px>, symbolSize: <px> } }
+  medium: { target: "<系列名或元素标识>", style: { color: "<hex>", lineWidth: <px> } }
+  light: { target: "<系列名或元素标识>", style: { color: "<hex>", lineWidth: <px> } }
+```
+
+#### 颜色映射表
+
+```
+colorMap:
+  "<元素标识>": "<hex>"
+  "<元素标识>": "<hex>"
+  default: "<hex>"  # 未列出元素的默认色
+```
+
+#### 布局约束
+
+```
+layout:
+  canvas: { width: <px>, height: <px> }
+  grid: { top: <px>, right: <px>, bottom: <px>, left: <px> }
+  legend: { show: true | false, position: top | bottom | left | right }
+  tooltip: { enabled: true | false }
+```
+
+### 视觉权重（读者视角 — 视觉层级铁律）
+
+> **铁律：视觉突出程度必须与重要性严格匹配。** 最重要的元素 = 视觉上最突出。禁止多个元素同等突出相互抢夺注意力。视觉元素应按次序排列（从最显眼→最不显眼），让受众一次只需处理一个层级的信息。
 
 - **主角元素**（hero）：[哪个元素] → symbolSize / fontSize / 颜色 / 标注内容
+  - hero 必须有 label 且不依赖 hover；hero symbolSize ≥ light × 3
 - **上下文元素**（medium）：[哪些元素] → 参考线样式 / 背景区颜色
 - **背景元素**（light）：[哪些元素] → 灰色 / 小尺寸 / 无标注
 
-> 渲染管线自检规则：hero 元素必须有 label 且不依赖 hover；hero symbolSize ≥ light × 3；有 spatial narrative 必须有参考线或背景区。
+> **层级检验**：眯眼看图，只能看到一个突出元素 → 合格。看到两个以上 → 降低次要元素的视觉权重。
+
+### 关键元素可视性手段
+
+> 以下手段用于提升 hero 元素的可视性，但必须在视觉层级铁律约束下使用。
+
+| 手段 | 规则 | 示例 |
+|------|------|------|
+| **大小** | hero 面积 ≥ background × 3 | hero symbolSize=40, background=8 |
+| **颜色强度** | hero 用主色，background 用 Stone 300 | hero `#2563eb`, bg `#d4d0c8` |
+| **字体** | hero 文本用更大字号 + 节制加粗 | hero 20px bold, bg 12px normal |
+| **标签** | hero 必须有直接标注，不依赖 hover | label 写在元素旁 |
+| **参考线** | 用虚线/浅色线标示基准/目标/事件 | hline Stone 200 dashed |
+| **注释** | 离群值/重要事件加注释，写原因+幅度 | "新方案上线→↑37%" |
+| **分割区块** | 用背景色块组织信息分区 | 四象限/阶段分区 |
+| **拆分双轴** | 同一双 Y 轴数据拆为两张图 | 不混用左右 Y 轴 |
+
+### 参考信息（降低认知负荷）
+
+> 必须包含的参考信息（帮助受众理解数据，不是装饰）：
+
+- **统计参考**：均值/中位数/回归线/置信区间（需要时）
+- **目标参考**：基准线/目标值/达标线（有目标时必须有）
+- **事件参考**：事件时间点（发生前/发生后）、重要时间、政策变化
+- **类别参考**：分类标签、图例
+
+### 非数据墨水检验
+
+> Tufte 原则：删除所有不影响表意的元素，最大化数据墨水比例。
+
+- [ ] 网格线是否浅到刚好看得见（Stone 100 `#f2f0eb`，虚线）
+- [ ] 是否有装饰性边框、渐变、阴影、emoji（如有 → 删除）
+- [ ] 是否有重复标注（数据已有数字，标注又写一遍 → 删除）
+- [ ] 是否有不必要的图例（如果颜色编码已自明 → 删除）
 
 ### 入口映射（单图内部阅读路径）
 
@@ -109,281 +274,24 @@
 - 高亮：[标注策略]
 - 标注：[具体标注内容]
 - 画布：[尺寸]
-请遵循 13-VISUALIZATION.md 配色规范。"
+请遵循 checklist.md 验收标准。配色参考 13-VISUALIZATION.md 或自选。"
 ```
 
-## 渲染契约 JSON（机器可读）
+## 委托渲染声明
 
-> **强制字段**。每张图必须在 spec.md 末尾附带此 JSON 块。
-> 下游渲染技能（viz-echarts / viz-svg-flow）直接消费此 JSON，不再从自然语言中翻译。
-> 多图场景下，所有图共享同一个 `globalStyle` 对象。
-> **viz-design 绝不自己写渲染代码，必须通过渲染契约 JSON 委托。**
-> 
-> **版本策略**：v2（ggplot2 分层）为首选格式。v1 格式仍兼容（渲染管线自动转 v2）。
+> viz-design 不写渲染代码，不指定渲染格式。只声明意图和数据，下游技能自己决定怎么做。
 
-### v2 格式（ggplot2 分层，首选）
+**建议渲染技能**：nature-figure / viz-echarts / viz-svg-flow（参见 SKILL.md 路由表）
 
-> 7 层独立声明，渲染端零猜测。每种图表 = 数据 + 映射 + 几何图层 + 标度 + 分面 + 坐标系 + 主题的组合。
+**委托指令**：
 
-```json
-{
-  "version": "viz-design-spec-v2",
-  "data": {
-    "type": "rows",
-    "fields": ["年份", "GDP_万亿", "增速__pct"],
-    "rows": [
-      { "年份": "2020", "GDP_万亿": 101.4, "增速__pct": 2.3 },
-      { "年份": "2021", "GDP_万亿": 114.9, "增速__pct": 8.6 }
-    ]
-  },
-  "mapping": {
-    "x": "年份",
-    "y": "GDP_万亿",
-    "fill": null,
-    "color": null,
-    "size": null
-  },
-  "layers": [
-    {
-      "geom": "geom_bar",
-      "aes": { "y": "GDP_万亿" },
-      "params": { "color": "#6b7280", "position": "dodge" },
-      "readerWeight": "light"
-    },
-    {
-      "geom": "geom_line",
-      "aes": { "y": "增速__pct" },
-      "params": { "color": "#c26d3a", "size": 2, "smooth": false },
-      "readerWeight": "hero"
-    },
-    {
-      "geom": "geom_label",
-      "aes": { "x": "2021", "y": 114.9, "label": "新高" },
-      "params": { "color": "#c26d3a", "fontSize": 11 },
-      "readerWeight": "hero"
-    }
-  ],
-  "scales": [
-    { "aesthetic": "y", "type": "linear", "name": "GDP（万亿人民币）" },
-    { "aesthetic": "y", "type": "linear", "name": "增速（%）", "secondary": true },
-    { "aesthetic": "color", "type": "manual", "values": ["#6b7280", "#c26d3a"] }
-  ],
-  "coord": { "type": "cartesian", "flip": false },
-  "facet": null,
-  "theme": {
-    "palette": "restrained-warm",
-    "background": "#ffffff",
-    "grid": { "major": "#f3f4f6", "minor": false },
-    "fontFamily": "system-ui",
-    "titleSize": 16,
-    "axisLabelSize": 10,
-    "canvas": { "width": 800, "height": 550 }
-  },
-  "title": "增长引擎切换：服务业占比突破56%",
-  "subtitle": "2015-2024 | GDP从70.3万亿增至134.9万亿人民币"
-}
 ```
+"读以下 viz-design 文档，按要求渲染图表：
+- intent.md: [路径]
+- storyboard.md: [路径]
+- spec.md: [路径]（重点读取"渲染约束"章节）
+- checklist.md: [路径]
 
-### v2 字段说明
-
-#### layers（几何图层）
-
-| geom | 描述 | ECharts 映射 |
-|------|------|-------------|
-| `geom_bar` | 柱状/条形图 | `type: "bar"` |
-| `geom_point` | 散点 | `type: "scatter"` |
-| `geom_line` | 折线（不平滑） | `type: "line", smooth: false` |
-| `geom_smooth` | 平滑曲线 | `type: "line", smooth: true` |
-| `geom_area` | 面积图 | `type: "line", areaStyle: {...}` |
-| `geom_label` | 标注文本 | `scatter + label` 或 `markPoint` |
-| `geom_hline` | 水平参考线 | `markLine` (yAxis) |
-| `geom_vline` | 垂直参考线 | `markLine` (xAxis) |
-| `geom_rect` | 高亮区域 | `markArea` |
-
-常见 params：`position` ("dodge"/"stack"/"identity")、`color`、`size`、`smooth`、`width`。
-
-**readerWeight**（可选）：`hero` / `medium` / `light`。标注每个层的视觉重量等级，渲染管线据此做读者体验自检。主角元素必须标 `hero`。
-
-#### scales（标度）
-
-| scale type | 说明 | ECharts 映射 |
-|------------|------|-------------|
-| `linear` | 线性刻度 | `type: "value"` |
-| `log` | 对数刻度 | `type: "value", logBase: 10` |
-| `manual` | 手动指定色值 | `itemStyle.color` |
-
-`secondary: true` 时映射到 `yAxis[1]`，天然支持双轴。
-
-#### coord（坐标系）
-
-| type | 说明 | ECharts 映射 |
-|------|------|-------------|
-| `cartesian` | 直角坐标 | 默认 |
-| `polar` | 极坐标 | `polar` + `radar` |
-| `flip` | 翻转XY（水平条形） | `xAxis.type="value"` + `yAxis.type="category"` |
-
-#### facet（分面，可选）
-
-```json
-"facet": { "type": "wrap", "by": "category_column", "ncol": 2, "scales": "fixed" }
+渲染约束摘要（必须满足，不得添加或省略）：
+[从上方渲染约束章节复制：标注清单 + 视觉权重 + 颜色映射 + 布局约束]"
 ```
-
-`null` 表示不分面。
-
-### v1 格式（兼容，自动转 v2）
-
-> 新图优先用 v2。v1 格式仍可接受，渲染管线自动转换。
-
-### 单图场景（v1）
-
-```json
-{
-  "version": "viz-design-spec-v1",
-  "renderTarget": "viz-echarts",
-  "chartType": "radar_chart",
-  "title": "结论性标题（不是描述）",
-  "subtitle": "时间范围 + 对象",
-  "canvas": { "width": 800, "height": 550 },
-  "data": {
-    "fields": ["维度1", "维度2", "维度3", "维度4", "维度5"],
-    "series": [
-      { "name": "毅航", "values": [92, 88, 75, 90, 82], "highlight": true },
-      { "name": "基准", "values": [77, 77, 77, 77, 77], "highlight": false }
-    ]
-  },
-  "visualEncoding": {
-    "highlight": [{ "series": "毅航", "color": "#c26d3a" }],
-    "grayscale": true,
-    "maxHighlightRatio": 0.1
-  },
-  "annotations": [
-    { "text": "综合得分 92，超基准 15 分", "target": "毅航-维度1" }
-  ],
-  "referenceLines": [
-    { "type": "circle", "label": "行业基准线", "style": { "color": "#ada599", "dash": [6, 4] } }
-  ],
-  "theme": "default",
-  "layout": {
-    "titlePosition": "top",
-    "chartArea": "center",
-    "padding": { "top": 20, "right": 20, "bottom": 20, "left": 20 }
-  }
-}
-```
-
-### 多图场景（全局风格锁定 + 多图数组）
-
-> **Phase 0 先锁定 globalStyle**，后续每张图从全局继承，不再各自 hash。
-
-```json
-{
-  "version": "viz-design-spec-v1",
-  "globalStyle": {
-    "colorRamps": ["Warm", "Stone"],
-    "palette": {
-      "primary": "#c26d3a",
-      "secondary": "#857d74",
-      "accent": "#2e8b6e",
-      "title": "#6b3410",
-      "subtitle": "#857d74",
-      "axis": "#ada599",
-      "grid": "#f2f0eb",
-      "bg": "#faf9f7"
-    },
-    "typography": {
-      "title": { "size": 16, "weight": 600 },
-      "subtitle": { "size": 11, "weight": 400 },
-      "axisLabel": { "size": 11, "weight": 400 },
-      "annotation": { "size": 11, "weight": 600 },
-      "footnote": { "size": 10, "weight": 400 }
-    },
-    "spacing": {
-      "cardPadding": 16,
-      "titleToContent": 12,
-      "cardGap": 12
-    },
-    "cornerRadius": 10,
-    "styleSchool": "restrained-warm"
-  },
-  "charts": [
-    {
-      "chartId": "chart-1",
-      "renderTarget": "viz-echarts",
-      "chartType": "radar_chart",
-      "title": "毅航健康度全面领先",
-      "subtitle": "2026年Q1 · 金条头部供应商",
-      "canvas": { "width": 800, "height": 550 },
-      "data": {
-        "fields": ["达成率", "峰值比", "效率", "FCI", "流失率"],
-        "series": [
-          { "name": "毅航", "values": [92, 88, 75, 90, 82], "highlight": true }
-        ]
-      },
-      "visualEncoding": {
-        "highlight": [{ "series": "毅航", "color": "#c26d3a" }],
-        "grayscale": true,
-        "maxHighlightRatio": 0.1
-      },
-      "annotations": [],
-      "theme": "default",
-      "layout": { "padding": { "top": 20, "right": 20, "bottom": 20, "left": 20 } }
-    },
-    {
-      "chartId": "chart-2",
-      "renderTarget": "viz-echarts",
-      "chartType": "bar_chart",
-      "title": "3 家供应商低于基准线",
-      "subtitle": "2026年Q1 · 综合评分",
-      "canvas": { "width": 700, "height": 400 },
-      "data": {
-        "fields": ["供应商", "综合评分"],
-        "series": [
-          { "name": "毅航", "values": [92], "highlight": true },
-          { "name": "伽玛", "values": [65], "highlight": false },
-          { "name": "赛维斯", "values": [58], "highlight": false }
-        ]
-      },
-      "visualEncoding": {
-        "highlight": [{ "series": "毅航", "color": "#c26d3a" }],
-        "grayscale": true,
-        "maxHighlightRatio": 0.1
-      },
-      "annotations": [
-        { "text": "低于清退阈值", "target": "赛维斯" }
-      ],
-      "theme": "default",
-      "layout": { "padding": { "top": 20, "right": 20, "bottom": 20, "left": 20 } }
-    }
-  ]
-}
-```
-
-### JSON 字段说明
-
-| 层级 | 字段 | 必填 | 说明 |
-|------|------|------|------|
-| `globalStyle` | 全局风格 | **多图必填** | 多图共享，单图可选填 |
-| `globalStyle.colorRamps` | 色阶列表 | **是** | ≤2，如 `["Warm", "Stone"]` |
-| `globalStyle.palette` | 色值映射 | **是** | 每个角色对应一个 hex |
-| `globalStyle.typography` | 字号字重 | **是** | 遵循 13-VISUALIZATION.md |
-| `renderTarget` | 渲染技能 | **单图必填** | `viz-echarts` / `viz-svg-flow` / `viz-chart` |
-| `chartType` | 图表类型 | **是** | 对应渲染技能的 tool 名 |
-| `charts[]` | 图表数组 | **多图必填** | 单图用 renderTarget 顶层，多图用 charts 数组 |
-| `charts[].chartId` | 图 ID | **是** | `chart-1`, `chart-2`… |
-| `charts[].data.series` | 数据系列 | **是** | 每个系列含 name/values/highlight |
-| `charts[].visualEncoding.highlight` | 高亮规则 | **是** | 明确哪条数据高亮，用什么色 |
-| `charts[].visualEncoding.grayscale` | 灰化标记 | **是** | true = 非高亮元素用 Stone 300 |
-| `charts[].annotations` | 标注列表 | 否 | 无标注时写空数组 `[]` |
-| `charts[].referenceLines` | 参考线 | 否 | 基准线/阈值线 |
-
-### JSON Schema 硬约束（Phase 3 自检必过）
-
-> **以下规则必须 100% 通过，不通过 = 重写 JSON，不得输出。**
-
-| 规则 | 正确写法 | 错误写法 |
-|------|----------|----------|
-| series 数据值 | `"values": [1, 2, 3]` 数组 | `"value": 1` 单值 |
-| 灰度标记 | `"grayscale": true` | `"grayscale": false` |
-| 高亮比例 | `"maxHighlightRatio": 0.1`（≤0.1） | `0.15`, `0.3` 等超标值 |
-| highlight 格式 | `[{ "series": "A", "color": "#c26d3a" }]` | `["A", "B"]` 字符串数组 |
-| 禁止字段 | 仅保留 schema 定义的字段 | 混入 `lineColor`/`yAxis`/`xAxis`/`footer`/`showArea`/`showPoints`/`share`/`yoy`/`note` |
