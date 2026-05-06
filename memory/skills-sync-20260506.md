@@ -1,28 +1,66 @@
-# 技能同步报告 — 2026-05-06
+---
+name: 技能同步检查结果
+description: 每日技能上游同步检查的结果记录
+type: project
+---
 
-## 总览
+# 技能同步检查 2026-05-06（第三次 18:45）
 
-9 个技能全部**跳过** — 均有本地定制修改（SKILL.md 等），为保护本地改动不予拉取。
+**结论：9 个技能均有本地修改，全部跳过。**
 
-## 远程有更新但跳过（本地有修改）
+| 技能 | 本地修改 | 远程更新 | 决策 |
+|------|----------|----------|------|
+| doc-kami | M SKILL.md | 有 (2c2b0cc) | 跳过（本地修改） |
+| ppt-aham-ppt | M SKILL.md | 无 | 跳过 |
+| ppt-html-ppt-skill | M SKILL.md + 11 文件 | 有 (f3a8435) | 跳过（本地修改） |
+| fe-cinematic-ui | M SKILL.md | 无 | 跳过 |
+| viz-svg-flow-diagram | M SKILL.md | 有 (847b6a8) | 跳过（本地修改） |
+| ppt-presentation-skill | M SKILL.md | 无 | 跳过 |
+| fe-huashu-design | M SKILL.md | 有 (764031a) | 跳过（本地修改） |
+| viz-claude | M skill/SKILL.md | 无 | 跳过 |
+| viz-diagram-design | M SKILL.md + 1 文件 | 有 (30764f2) | 跳过（本地修改） |
 
-| 技能 | 远程新提交数 | 本地修改 |
-|------|-------------|----------|
-| doc-kami | 5 commits | SKILL.md |
-| viz-diagram-design | 5 commits | SKILL.md + references/ |
-| viz-svg-flow-diagram | 2 commits | SKILL.md |
-| ppt-html-ppt-skill | 5 commits | SKILL.md + themes/examples/references |
-| fe-huashu-design | 1 commit | SKILL.md |
+**远程有更新的技能**（5/9）：doc-kami、ppt-html-ppt-skill、viz-svg-flow-diagram、fe-huashu-design、viz-diagram-design
+**但因全部 9 个技能均有本地修改，无一可安全同步。**
 
-## 远程无更新，本地有修改（跳过）
+---
 
-| 技能 | 本地修改 |
-|------|----------|
-| fe-cinematic-ui | SKILL.md |
-| ppt-presentation-skill | SKILL.md + .DS_Store |
-| viz-claude | skill/SKILL.md |
-| ppt-aham-ppt | SKILL.md |
+# 技能同步检查 2026-05-06（第二次 14:00）
 
-## 结论
+**结论：9 个技能均有本地修改，全部跳过。**
 
-9/9 技能本地均有修改，全部跳过。本地改动不受影响。
+| 技能 | 本地修改 | 远程更新 | 决策 |
+|------|----------|----------|------|
+| fe-cinematic-ui | M SKILL.md | 无 | 跳过 |
+| doc-kami | M SKILL.md | 有 | 跳过（本地修改） |
+| ppt-presentation-skill | M SKILL.md + .DS_Store | 无 | 跳过 |
+| fe-huashu-design | M SKILL.md | 有 | 跳过（本地修改） |
+| viz-svg-flow-diagram | M SKILL.md | 有 | 跳过（本地修改） |
+| viz-claude | M skill/SKILL.md | 无 | 跳过 |
+| ppt-aham-ppt | M SKILL.md | 无 | 跳过 |
+| ppt-html-ppt-skill | M SKILL.md + 5+ untracked | 有 | 跳过（本地修改） |
+| viz-diagram-design | M SKILL.md + 1 untracked | 有 | 跳过（本地修改） |
+
+**远程有更新的技能**：doc-kami、fe-huashu-design、viz-svg-flow-diagram、ppt-html-ppt-skill、viz-diagram-design（5/9）
+**但因全部 9 个技能均有本地修改，无一可安全同步。**
+
+---
+
+# 技能同步检查 2026-05-06（第一次 09:00）
+
+**结论：9 个技能均有本地修改，全部跳过，无需同步。**
+
+| 技能 | 本地修改 | 远程更新 | 决策 |
+|------|----------|----------|------|
+| doc-kami | M SKILL.md | 57 commits | 跳过（本地修改） |
+| fe-cinematic-ui | M SKILL.md | 无 | 跳过 |
+| fe-huashu-design | M SKILL.md | 1 commit | 跳过（本地修改） |
+| ppt-aham-ppt | M SKILL.md | 无 | 跳过 |
+| ppt-html-ppt-skill | M SKILL.md + 10 untracked | 10 commits | 跳过（本地修改） |
+| ppt-presentation-skill | M SKILL.md + .DS_Store | 无 | 跳过 |
+| viz-claude | M skill/SKILL.md | 无 | 跳过 |
+| viz-diagram-design | M SKILL.md + 1 untracked | 6 commits | 跳过（本地修改） |
+| viz-svg-flow-diagram | M SKILL.md | 2 commits | 跳过（本地修改） |
+
+**远程有更新的技能**：doc-kami（57 commits）、fe-huashu-design（1 commit）、ppt-html-ppt-skill（10 commits）、viz-diagram-design（6 commits）、viz-svg-flow-diagram（2 commits）
+**但因全部 9 个技能均有本地修改，无一可安全同步。**
