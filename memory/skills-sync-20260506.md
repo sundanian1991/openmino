@@ -4,6 +4,26 @@ description: 每日技能上游同步检查的结果记录
 type: project
 ---
 
+# 技能同步检查 2026-05-06（第六次 22:19）
+
+**结论：9 个技能均有本地修改，全部跳过。**
+
+| 技能 | 本地修改 | 远程更新 | 决策 |
+|------|----------|----------|------|
+| fe-cinematic-ui | M SKILL.md | 无 | 跳过 |
+| doc-kami | M SKILL.md | 50 commits | 跳过（本地修改） |
+| ppt-presentation-skill | M SKILL.md + untracked | 8 commits | 跳过（本地修改） |
+| viz-diagram-design | M SKILL.md | 无 | 跳过 |
+| viz-svg-flow-diagram | M SKILL.md | 2 commits | 跳过（本地修改） |
+| viz-claude | M skill/SKILL.md | 无 | 跳过 |
+| ppt-aham-ppt | M SKILL.md | 无 | 跳过 |
+| ppt-html-ppt-skill | M SKILL.md + untracked | 10 commits | 跳过（本地修改） |
+| fe-huashu-design | M SKILL.md | 1 commit | 跳过（本地修改） |
+
+**远程有更新的技能**（5/9）：doc-kami（50 commits）、ppt-presentation-skill（8 commits）、viz-svg-flow-diagram（2 commits）、ppt-html-ppt-skill（10 commits）、fe-huashu-design（1 commit）。全部因本地修改被跳过。
+
+---
+
 # 技能同步检查 2026-05-06（第五次 19:51）
 
 **结论：9 个技能均有本地修改，全部跳过。**
