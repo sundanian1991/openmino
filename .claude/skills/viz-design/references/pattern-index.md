@@ -33,6 +33,7 @@
 | 20 | 桑基图 | 流入→流出→转化 | 客户转化、资金流向 |
 | 21 | 弦线图 | 双向关系网络 | 跨部门协作、贸易往来 |
 | 22 | 雷达图 | 多维能力画像 | 个人/供应商能力评估 |
+> **雷达图使用限制**：仅 ≤5 个维度时使用。≥6 维或 ≥4 个对比对象时，雷达图重叠严重、重点不清，改用**水平条形图组**（每维一条，对象分列）或**小多图矩阵**（每对象一张迷你雷达图）。雷达图不适合"一眼看清谁最大"的场景——读者必须先看图例→找颜色→对照形状，认知路径过长。优先用条形图（长度直接映射大小）表达排名/差异。
 | 23 | 极坐标网格图 | 极坐标上的分布 | 周期性数据 |
 | 24 | 螺旋图 | 螺旋递进 | 成长路径、迭代周期 |
 | 25 | 时间线 | 事件序列 | 项目里程碑、发展历程 |
@@ -205,3 +206,44 @@
 │  └─ 根因分析/假设验证 → C16
 └─ 否 → 继续走分类 A/B/C/D
 ```
+
+---
+
+## 反向 DNA 索引
+
+> 按模式编号反查 DNA 中的经典案例。DNA 命中时直接继承策略。
+> 用法：`awk -F'\t' '$3 ~ /关键词/' data/chart-dna-index.tsv`
+
+| 模式 | DNA chart_type 关键词 | 搜索命令 |
+|------|----------------------|---------|
+| 01 饼图 | 饼图 | `awk -F'\t' '$3 ~ /饼图/' data/chart-dna-index.tsv` |
+| 05 气泡图 | 气泡 | `awk -F'\t' '$3 ~ /气泡/' data/chart-dna-index.tsv` |
+| 07 折线图 | 折线图/趋势线 | `awk -F'\t' '$3 ~ /折线|趋势/' data/chart-dna-index.tsv` |
+| 08 面积图 | 面积图 | `awk -F'\t' '$3 ~ /面积/' data/chart-dna-index.tsv` |
+| 09 散点图 | 散点图 | `awk -F'\t' '$3 ~ /散点/' data/chart-dna-index.tsv` |
+| 10 旭日图 | 旭日图 | `awk -F'\t' '$3 ~ /旭日/' data/chart-dna-index.tsv` |
+| 13 柱状图 | 柱状图/条形图 | `awk -F'\t' '$3 ~ /柱状|条形/' data/chart-dna-index.tsv` |
+| 14 磁带图 | 堆叠条/分段 | `awk -F'\t' '$3 ~ /堆叠|分段/' data/chart-dna-index.tsv` |
+| 15 甘特图 | 甘特图 | `awk -F'\t' '$3 ~ /甘特/' data/chart-dna-index.tsv` |
+| 16 矩形树图 | 矩形树图 | `awk -F'\t' '$3 ~ /矩形树/' data/chart-dna-index.tsv` |
+| 20 桑基图 | 桑基图/桑基流 | `awk -F'\t' '$3 ~ /桑基/' data/chart-dna-index.tsv` |
+| 21 弦线图 | 弦线图 | `awk -F'\t' '$3 ~ /弦线/' data/chart-dna-index.tsv` |
+| 22 雷达图 | 雷达图 | `awk -F'\t' '$3 ~ /雷达/' data/chart-dna-index.tsv` |
+| 19 弧线图 | 弧线图 | `awk -F'\t' '$3 ~ /弧线/' data/chart-dna-index.tsv` |
+| 25 时间线 | 时间线 | `awk -F'\t' '$3 ~ /时间线/' data/chart-dna-index.tsv` |
+| 26 并列比较 | 并列|对比 | `awk -F'\t' '$3 ~ /并列|对比/' data/chart-dna-index.tsv` |
+| 27 抽象树 | 树图/抽象树 | `awk -F'\t' '$3 ~ /树图|抽象树/' data/chart-dna-index.tsv` |
+| 31 金字塔 | 金字塔 | `awk -F'\t' '$3 ~ /金字塔/' data/chart-dna-index.tsv` |
+| 32 漏斗 | 漏斗 | `awk -F'\t' '$3 ~ /漏斗/' data/chart-dna-index.tsv` |
+| 33 辐轮 | 辐轮/辐射 | `awk -F'\t' '$3 ~ /辐轮|辐射/' data/chart-dna-index.tsv` |
+| 34 循环轮 | 循环轮/循环 | `awk -F'\t' '$3 ~ /循环/' data/chart-dna-index.tsv` |
+| 35 楼梯 | 楼梯/阶梯 | `awk -F'\t' '$3 ~ /楼梯|阶梯/' data/chart-dna-index.tsv` |
+| 38 速度仪表 | 速度仪表/仪表盘 | `awk -F'\t' '$3 ~ /仪表/' data/chart-dna-index.tsv` |
+| 39 齿轮 | 齿轮 | `awk -F'\t' '$3 ~ /齿轮/' data/chart-dna-index.tsv` |
+| 42 天平 | 天平 | `awk -F'\t' '$3 ~ /天平/' data/chart-dna-index.tsv` |
+| 49 冰山 | 冰山 | `awk -F'\t' '$3 ~ /冰山/' data/chart-dna-index.tsv` |
+| C02 瀑布分析 | 瀑布图 | `awk -F'\t' '$3 ~ /瀑布/' data/chart-dna-index.tsv` |
+| C03 2x2矩阵 | 2x2|矩阵|四象限 | `awk -F'\t' '$3 ~ /2x2|矩阵|四象限/' data/chart-dna-index.tsv` |
+| C06 漏斗+瓶颈 | 漏斗 | `awk -F'\t' '$3 ~ /漏斗/' data/chart-dna-index.tsv` |
+| C07 趋势+拐点 | 折线图+拐点 | `awk -F'\t' '$5 ~ /拐点/' data/chart-dna-index.tsv` |
+| C10 散点+象限 | 散点+象限 | `awk -F'\t' '$3 ~ /散点.*象限|象限.*散点/' data/chart-dna-index.tsv` |

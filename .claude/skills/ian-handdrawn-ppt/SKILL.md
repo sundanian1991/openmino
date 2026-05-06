@@ -1,6 +1,6 @@
 ---
 name: ian-handdrawn-ppt
-description: Create final Chinese handdrawn technical article/PPT-style page images from articles, Markdown, PDFs, DOCX files, existing slide decks, course notes, scripts, outlines, or rough ideas. Use when the user asks to turn content into PPT/PPTX/slides/courseware/课件/演示稿/配图/效果图 in a refined Chinese handdrawn technical explanation style, to plan such pages, to choose page layouts from semantic content, or to generate complete image-model pages with Chinese text baked into the final visual. Default article outputs use 21:9 covers and 16:9 body illustrations.
+description: 中文手绘风格 PPT 配图生成器 — 将文章、Markdown、PDF、DOCX 等文件转为中国手绘风格的技术讲解图或 PPT 风格页。适用于用户要求做PPT、课件、演示稿、配图、效果图等场景，输出含中文文字 baked 的视觉图片。封面 21:9，正文 16:9。
 ---
 
 # Ian Handdrawn PPT

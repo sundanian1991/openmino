@@ -10,8 +10,13 @@
 ```
 输入（主题/数据/概念）
   ↓
+Layer 0 DNA 优先匹配 — 409 条经典案例，命中即继承
+  按意图/类型/关键词查 chart-dna-index.tsv
+  命中 → chart_type → 模式编号 + 全策略继承
+  未命中 → 降级到 L1
+  ↓
 Layer 1 内容锁死层 — 意图匹配，不走 hash
-  模式、弧线、构图 → 数据/意图决定
+  模式、弧线、构图 → 数据/意图决定（DNA 未命中时）
   ↓
 Layer 2 场景约束层 — Tier 过滤 + 有限 hash
   风格学派、开场骨架 → 场景限定候选池，hash 二选一
@@ -34,6 +39,62 @@ Layer 3 风格自由层 — 全 hash
 | **配色** | L3 风格自由 | hash | 麦肯锡风格下仍有多种蓝色系变体 |
 | **字体** | L3 风格自由 | hash | 选定风格后，同风格内有多种字体配对 |
 | **视觉节拍** | L3 风格自由 | hash | 同一张图可以有不同阅读路径引导 |
+
+---
+
+## Layer 0：DNA 优先匹配（409 条经典案例）
+
+> **先查 DNA，命中即继承，不走 L1 模式决策树。**
+
+### DNA 匹配流程
+
+```
+输入 → 提取意图关键词
+  ↓
+grep/awk 查 chart-dna-index.tsv
+  ├── $5 (narrative_intent) 匹配意图
+  ├── $3 (chart_type) 匹配图形类型
+  └── $14 (keywords) 匹配场景/领域
+  ↓
+命中（≥1 条）→ 取最匹配的一条
+  ├── chart_type → pattern-index.md 模式编号
+  ├── highlight → 高亮策略（颜色+对象）
+  ├── annotation → 标注策略（写原因不写数字）
+  ├── composition → 构图模板
+  ├── reading_path → 阅读路径
+  └── source → 风格学派参考
+  ↓
+未命中 → 降级到 L1 模式决策树
+```
+
+### DNA 继承字段映射
+
+| DNA 字段 | 继承到 | 说明 |
+|---------|--------|------|
+| `chart_type` | Phase 1 模式编号 | 通过 pattern-index.md 映射 |
+| `narrative_intent` | Phase 1 意图描述 | 直接复用 |
+| `highlight` | Phase 2 高亮策略 | 颜色+对象 |
+| `annotation` | Phase 2 标注策略 | 原因+幅度 |
+| `composition` | Phase 3 构图 | 构图编号 |
+| `reading_path` | Phase 2 视觉节拍 | 阅读顺序 |
+| `color_palette` | Phase 3 配色参考 | 按需转换为实际渲染技能色系 |
+| `source` | L2 风格学派 | 参考，不强制 |
+
+### 常用 DNA 搜索示例
+
+```bash
+# 供应商评估/能力画像
+awk -F'\t' '$5 ~ /供应商|能力|评估/' data/chart-dna-index.tsv | head -5
+
+# 趋势/变化/增长
+awk -F'\t' '$5 ~ /趋势|变化|增长|下降/' data/chart-dna-index.tsv | head -5
+
+# 排名/对比
+awk -F'\t' '$14 ~ /排序|排名|对比/' data/chart-dna-index.tsv | head -5
+
+# 转化/漏斗
+awk -F'\t' '$3 ~ /漏斗|转化/' data/chart-dna-index.tsv | head -5
+```
 
 ---
 
@@ -66,14 +127,17 @@ seed = 0 默认，1/2/3 生成变体 A/B/C
 
 ## Layer 1：内容锁死层（意图匹配，不走 hash）
 
+> DNA 未命中时的回退路径。
+
 ### 一、模式选择
 
 走 SKILL.md 的意图识别 + 模式匹配决策树。不走 hash。
 
 ```
-有精确数据？→ 维度数决定图表类型
-抽象概念？→ 关系本质决定类比模式
-逻辑关系？→ 分解/变化/对比/因果决定 C01-C16
+DNA 未命中？→ 有精确数据？
+├─ 是 → 维度数决定图表类型
+├─ 抽象概念？→ 关系本质决定类比模式
+└─ 逻辑关系？→ 分解/变化/对比/因果决定 C01-C16
 ```
 
 **为什么不走 hash**：用饼图表达趋势是错的，不是个性化问题，是正确性问题。
@@ -364,7 +428,8 @@ L2/L3 从全局继承:
 
 | 维度 | 层级 | 候选池大小 | Hash 取法 | 参考文件 |
 |------|------|-----------|----------|---------|
-| 模式 | L1 | 意图决定 | 不走 hash | SKILL.md |
+| DNA 匹配 | **L0 优先** | 409 条 | 关键词匹配 | chart-dna-index.tsv |
+| 模式 | L1 | DNA→chart_type 或意图决定 | 不走 hash | pattern-index.md |
 | 弧线 | L1 | 意图决定 | 不走 hash | narrative-arcs.md |
 | 构图 | L1 | 数量决定 | 不走 hash | composition-templates.md |
 | 风格学派 | L2 | 3-6 | H % N | style-schools.md |

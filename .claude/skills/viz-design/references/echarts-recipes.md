@@ -126,8 +126,8 @@ const baseTheme = {
 | 2 | X 轴网格 | 隐藏（show: false） | baseTheme |
 | 3 | Y 轴网格 | 虚线 + #f2f0eb | baseTheme |
 | 4 | 配色 | Warm/Stone/Teal 三色系 | baseTheme |
-| 5 | 标题 | 结论性（不是描述性） | 13-VISUALIZATION |
-| 6 | 高亮 | ≤10%，只用 Warm 色 | 13-VISUALIZATION |
+| 5 | 标题 | 结论性（不是描述性） | SPEC 规范 |
+| 6 | 高亮 | ≤10%，单色系突出 | 通用原则 |
 | 7 | 标注 | 写原因+幅度，不写数字 | SPEC 规范 |
 | 8 | 动画 | 关闭（animation: false） | baseTheme |
 | 9 | 字体 | system-ui, sans-serif | baseTheme |
