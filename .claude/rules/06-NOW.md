@@ -21,11 +21,35 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
+## 任务地图
+
+> 每次新对话启动读取，用于优先级对齐。年老师决策时我会追问匹配度。
+> 更新规则：新增内容追加到表底，过期项打删除线，每季度清理空项。
+
+### 核心项目（最高优先级）
+- 灵魂文件迭代 — 2026-05-06 完成
+
+### 快速增长业务
+- [空]
+
+### 核心目标
+- [空]
+
+### 当前推进中
+- [空]
+
+### 该放弃的
+- [空]
+
+---
+
 ## 活跃项目
 
 **每日书信（04-12）**：数据源 `~/.myagents/sessions/*.jsonl`，归档 `memory/daily-letter/`
 
 **memory 重构（04-22）**：待办独立到 `memory/context/todo.md`，夜间 Cron 自动维护
+
+**事件化压缩（05-04）**：buffer → `memory/events/` + `memory/state.json`，对标 OpenClaw 做梦机制。触发：每次新对话启动时检查 buffer 是否有未处理内容
 
 **MemOS 迁移（04-24）**：~90 条记忆已上传，供应商管理规范待集中上传
 
@@ -39,6 +63,29 @@ pos: .claude/rules/06-NOW.md
 - 第二层：storyboard.md 强化 Phase 0 全局风格锁定，多图共享色系/字体/风格学派
 - 第三层：SKILL.md 追加委派收口铁律 4 条 + 反模式列表，禁止 viz-design 自行写渲染代码
 - 委派路径唯一：viz-design → JSON → viz-echarts / viz-svg-flow，不存在第二条路径
+
+### 2026-05-09 自我认知建设 + 基础设施清算 + Cron 大瘦身
+- OPINIONS.md 个人信念地图完成：1717 会话 → 35 条精选信念，周度 Cron 自动增量更新
+- Cron 大瘦身：晨间思考砍掉（产出为零），所有 Cron 统一模型
+- 任务验收标准强制化：59 个任务逐条补写，不再接受"大概内容"
+- 判断力与审美训练技能升级：融合元认知+张力设计原则
+- PPT 技能合并（presentation→html-ppt）+ 主动推送四层架构落地
+- ppt-pptx-deck-builder 质量反馈：克制设计 > 装饰过度，颜色系统压缩到 3 角色
+
+### 2026-05-08 ppt-master 首用 + Cron 空跑根因定位
+- Aham PPT 介绍项目完成（公众号→11 页咨询级 PPT，Anthropic 暖色调）
+- ppt-master 端到端跑通：source→strategist→executor→quality→PPTX export
+- **Cron 空跑根因锁定**：默认模型太弱（5-10s + null content），加 --model opus 后正常
+- 推送机制从"心跳扫描"转向"实时写入 + 心跳兜底"
+
+### 2026-05-07 13-VISUALIZATION.md 精简 + Cron 空跑排查
+- 13-VISUALIZATION 删除理论层，只保留核心规则让所有技能通用
+- Cron 空跑问题排查（每日回顾/晨间思考/晚间复盘长期无输出）
+
+### 2026-05-06 灵魂文件重构 + 技能命名规范化
+- 01-SOUL.md 灵魂文件重构完成：基于年老师新材料重建，引入反对规则+责任督促+自我进化
+- 领军人物 PPT 制作完成
+- 技能命名规范化：91 个技能文件夹统一命名格式
 
 ### 2026-05-03 viz-design 百组数据端到端测试 + SKILL.md 优化
 - **100 数据集四阶段测试**：98% 通过率（98 全通过，2 组 JSON 字段偏差），0 失败
@@ -92,42 +139,29 @@ pos: .claude/rules/06-NOW.md
 
 ## 近期事件
 
-- 05-05 ~06:48：技能上游同步检查 — doc-kami 无本地修改且远程无更新（唯一干净技能）。8 个技能均有本地修改保护（SKILL.md 定制）。远程有更新但跳过的 3 个：fe-diagram（8 commits Codex 插件）、ppt-html（10 commits 缩略图+主题+动画+GIF）、fe-huashu（1 commit 英文 README）。2 个网络不通（viz-svg-flow/viz-claude）均有本地修改保护。0 个技能需要同步
-- 05-05 ~15:26：技能上游同步检查 — 4 个网络通均无远程更新或已有本地修改保护，5 个网络不通但均有本地修改保护，0 个技能需要同步
-- 05-05 ~14:30：技能上游同步检查 — 4 个网络通均无远程更新或已有本地修改保护，5 个网络不通但均有本地修改保护，0 个技能需要同步
-- 05-05 ~11:30：技能上游同步检查 — 4 个网络通（fe-cinematic/doc-kami/ppt-presentation/fe-diagram）均无远程更新或已被本地修改保护。5 个网络不通（viz-svg-flow/viz-claude/ppt-aham/ppt-html/fe-huashu）均有本地修改，不受影响。0 个技能需要同步
+> 技能同步检查每日自动执行，结果见 cron 历史。06-NOW 只保留实质性对话/决策/变化。
+
+- 05-09：OPINIONS.md 个人信念地图 + Cron 大瘦身 + 任务验收标准强制化
+- 05-08：ppt-master 首用（Aham PPT）+ Cron 空跑根因定位
+- 05-07：13-VISUALIZATION.md 精简 + PPT 多技能对比测试
+- 05-06：01-SOUL.md 灵魂文件重构 + 领军人物 PPT + 技能命名规范化
+- 05-05：viz-design 渲染路由确定 + chart DNA 清洗 + 四层推送架构
+- 05-04：记忆系统升级 — 事件化压缩（buffer → 结构化 events.json）+ state.json L1 状态快照
 - 05-03：Proactive Agent 架构落地（三支柱 + 主动思考 Cron + workspace 整理）
-- 05-05 ~08:00：技能上游同步检查 — 9 个技能均有本地修改保护（SKILL.md 定制）。远程有更新但跳过的 4 个：fe-diagram（8 commits Codex 插件）、viz-svg-flow（2 commits draw.io）、ppt-html（10 commits 缩略图+主题+动画）、fe-huashu（1 commit 英文 README）。其余 5 个远程无新提交。doc-kami 无本地修改且远程无更新（唯一干净技能）。0 个技能需要同步
-- 05-05 03:29：技能上游同步检查 — 9 个技能全部有本地修改保护。远程有更新但跳过的 3 个：fe-diagram（8 commits）、viz-svg-flow（2 commits）、ppt-html（10 commits）。fe-huashu fetch 网络超时。doc-kami 无本地修改且远程无更新（唯一干净的技能）。0 个技能需要同步
-- 05-05 ~00:43：技能上游同步检查 — 9 个技能均有本地修改（SKILL.md 定制），按规则全部跳过。远程有更新但被本地修改保护的 4 个：fe-diagram（8 commits）、viz-svg-flow（2 commits）、ppt-html（10 commits）、fe-huashu（1 commit）。其余 5 个远程无新提交。0 个技能需要同步
-- 05-04：记忆系统升级 — 事件化压缩（buffer → 结构化 events.json）+ state.json L1 状态快照，对标 OpenClaw 做梦机制
 - 05-02：viz-design 多图+多技能委派质量优化（三层收口）
-- 05-04 21:26：技能上游同步检查 — **doc-kami 成功同步**（3 commits，新增 .claude-plugin 支持 + AGENTS.md + 模板修复）。4 个有本地修改跳过：fe-diagram（8）、viz-svg-flow（2）、ppt-html（10）、fe-huashu（1）。4 个远程无新提交：fe-cinematic、ppt-presentation、viz-claude、ppt-aham
-- 05-04 ~05:30：技能上游同步检查 — 全部网络通，9 个技能均有本地修改保护不受影响。远程有更新但跳过的 3 个：fe-diagram（8 commits Codex 插件重构）、viz-svg-flow（2 commits draw.io 输出处理）、ppt-html（5 commits 缩略图渲染+GIF）。其余 6 个远程无新提交。0 个技能需要同步
-- 05-04 ~05:28：技能上游同步检查 — 9 个技能均有本地修改（SKILL.md 定制），全部跳过。远程有新提交但被本地修改保护的 2 个：fe-diagram（8 commits Codex 插件支持）、ppt-html（10 commits 缩略图渲染+主题隔离等）。viz-svg-flow/viz-claude fetch 网络被拒/超时，本地有修改不受影响。0 个技能需要同步
-- 05-04 ~05:00：技能上游同步检查 — 4 个网络通（fe-cinematic/doc-kami/ppt-presentation/fe-diagram）均无远程更新或已被本地修改保护。5 个网络不通（viz-svg-flow/viz-claude/ppt-aham/ppt-html/fe-huashu）连接被拒/超时。fe-diagram 远程 8 commits（Codex 插件重构），因本地有修改跳过。0 个技能需要同步
-- 05-04 04:30：技能上游同步检查 — 4 个网络通（fe-cinematic/doc-kami/ppt-presentation/fe-diagram）均无远程更新或已被本地修改保护。5 个网络不通（viz-svg-flow/viz-claude/ppt-aham/ppt-html/fe-huashu）均有本地修改，不受影响。fe-diagram 远程 8 commits（Codex 插件重构），因本地有修改跳过。0 个技能需要同步
-- 05-04 00:35：技能上游同步检查 — 9 个 git 技能全部有本地修改或已是最新，4 个网络不通（viz-svg-flow/viz-claude/ppt-aham/fe-huashu）。远程有更新但本地有修改保护的 2 个：fe-diagram（8 commits）、ppt-html（10 commits）。0 个技能需要同步
-- 05-04 00:02：技能上游同步检查 — 全部跳过
-- 05-03 19:15：技能上游同步检查 — 9 个 git 技能全部有本地修改，按规则全部跳过。本次远程更新：fe-diagram（5 commits，Codex 插件支持）、viz-svg-flow（2 commits，draw.io 输出处理）、ppt-html（5 commits，缩略图渲染+GIF 展示）、fe-huashu（1 commit，Showcase）。doc-kami/viz-claude/fe-cinematic/ppt-presentation/ppt-aham 远程无新提交。0 个技能需要同步
-- 04-30：丁梓萌建档 + 知识库大清理（workspace 65→11、docs 去重+命名规范化、流转规则入 CLAUDE.md）
-- 04-29：思考策略框架梳理 + thinking-strategy skill 创建 + 认识论硬约束整合
-- 04-24：AI 定价研究 + 设计技能对比 + MemOS 迁移 + Skills 清理
-- 04-23：上下文管理规则落地 + 供应商规范体系化
-- 04-21：可视化 5 合 1 Demo 交付
-- 04-20：供应商可视化 30 核心单元交付（60 文件）
-- 04-12：每日书信上线
-- 04-11：Sprint Contract 落地
-- 04-06：电销知识库场景深挖
+- 04-30：丁梓萌观察建档 + 知识库大清理（workspace 65→11）
+- 04-29：思考策略框架 + thinking-strategy skill + 认识论硬约束
 
 更早事件见 `memory/insights.md`
 
 ---
 
-## 会话结束检查
+## 新对话启动检查
 
+> 年老师习惯直接开新对话，没有明确的"结束"动作。所以触发时机改为"启动时"。
+
+- [ ] buffer 有未处理内容？→ 结构化写入 `memory/events/YYYY-MM/YYYY-MM-DD.json`，更新 `memory/state.json`，然后清空 buffer
 - [ ] 学到什么？→ `memory/insights.md`
-- [ ] WAL 触发？→ buffer 内容结构化写入 `memory/events/YYYY-MM/YYYY-MM-DD.json`，更新 `memory/state.json`，然后清空 buffer
 - [ ] 重要事件？→ 更新本文件
 - [ ] git commit && push
 
@@ -142,4 +176,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-05-05 ~15:26 — 技能上游同步检查，0 个技能需要同步*
+*最后更新：2026-05-09 — 追记 05-06~05-09 讨论（灵魂文件重构/Cron 空跑/OPINIONS/Cron 大瘦身），近期事件补全*
