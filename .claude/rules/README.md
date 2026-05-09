@@ -28,7 +28,6 @@ pos: .claude/rules
 │   ├── AGENT-FIRST.md  # 子代理优先策略（能并行就并行）
 │   ├── EPISTEMIC.md    # 认识论与反幻觉硬约束
 │   │   (UPDATE_MEMORY 已移至 commands/)  # 不再自动加载
-│   ├── HEARTBEAT.md    # 心跳清单（定时苏醒时读取）
 │   ├── skill-search.md # 技能搜索规范
 │   └── README.md       # 本文件
 └── reference/          # 扩展规则（按需读取，不自动加载）
@@ -61,9 +60,6 @@ pos: .claude/rules
 - 避免会话启动时信息过载
 - 需要时主动读取
 
-**系统自动文件**：
-- HEARTBEAT.md — Agent 定时苏醒时读取（正文为空则跳过）
-
 ---
 
-*最后更新：2026-04-29 — 新增 EPISTEMIC.md（认识论与反幻觉硬约束），核心 5→6 文件*
+*最后更新：2026-05-08 — HEARTBEAT.md 移至项目根目录*
