@@ -1,6 +1,6 @@
 # 页面布局库（Layouts）
 
-本文档收录 10 种最常用的页面布局骨架。每种都是一个完整可粘贴的 `<section class="slide ...">...</section>` 代码块，直接替换文案/图片即可使用。
+本文档收录 14 种最常用的页面布局骨架。每种都是一个完整可粘贴的 `<section class="slide ...">...</section>` 代码块，直接替换文案/图片即可使用。
 
 ---
 
@@ -628,3 +628,214 @@ layouts.md 使用的所有类（`h-hero` / `h-xl` / `h-sub` / `h-md` / `lead` / 
 8. **Hero Close**（最后一页，问题或致谢）
 
 hero 页与 non-hero 页应该 **2-3 : 1 比例交错**，不要连续超过 3 页 non-hero，也不要连续超过 2 页 hero。
+
+---
+
+## Layout 11: 时间线 / 路线图（Timeline）
+
+```html
+<section class="slide light">
+  <div class="chrome">
+    <div>路线图 · Roadmap</div>
+    <div>Act III · 20 / 25</div>
+  </div>
+  <div class="frame" style="padding-top:5vh">
+    <div class="kicker">Phase · 阶段规划</div>
+    <h2 class="h-xl">未来 90 天</h2>
+
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:3vw; margin-top:5vh">
+      <!-- 第一阶段 -->
+      <div style="padding:3vh 2vw; border-left:3px solid currentColor; border-color:rgba(127,127,127,.5)">
+        <div class="meta" style="margin-bottom:1.6vh">Q1 · 1-30 天</div>
+        <h3 class="h-md" style="margin-bottom:1.6vh">验证</h3>
+        <p style="font-family:var(--sans-zh); font-size:max(13px,1.05vw); line-height:1.6; opacity:.78">
+          小范围试点，跑通核心流程
+        </p>
+      </div>
+      <!-- 第二阶段 -->
+      <div style="padding:3vh 2vw; border-left:3px solid currentColor">
+        <div class="meta" style="margin-bottom:1.6vh">Q2 · 31-60 天</div>
+        <h3 class="h-md" style="margin-bottom:1.6vh">扩展</h3>
+        <p style="font-family:var(--sans-zh); font-size:max(13px,1.05vw); line-height:1.6; opacity:.78">
+          扩大覆盖，固化 SOP
+        </p>
+      </div>
+      <!-- 第三阶段 -->
+      <div style="padding:3vh 2vw; border-left:3px solid currentColor">
+        <div class="meta" style="margin-bottom:1.6vh">Q3 · 61-90 天</div>
+        <h3 class="h-md" style="margin-bottom:1.6vh">规模</h3>
+        <p style="font-family:var(--sans-zh); font-size:max(13px,1.05vw); line-height:1.6; opacity:.78">
+          全量推广，数据驱动优化
+        </p>
+      </div>
+      <!-- 里程碑 -->
+      <div style="padding:3vh 2vw; border-left:3px solid currentColor; border-style:dashed">
+        <div class="meta" style="margin-bottom:1.6vh">Milestone</div>
+        <h3 class="h-md" style="margin-bottom:1.6vh">验收</h3>
+        <p style="font-family:var(--sans-zh); font-size:max(13px,1.05vw); line-height:1.6; opacity:.78">
+          达成核心指标，复盘总结
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 20 · 路线图</div>
+    <div>— · —</div>
+  </div>
+</section>
+```
+
+**要点**：
+- 4 列 `grid-template-columns:repeat(4,1fr)` 等宽排列，每个阶段用 `border-left:3px` 做时间线感
+- 最后一列可以用 `border-style:dashed` 制造"未来/待定"视觉区分
+- `.meta` 写时间节点（"Q1 · 1-30 天"），`.h-md` 写阶段名，正文写描述
+- 阶段数可变：3 阶段用 `repeat(3,1fr)`，5 阶段用 `repeat(5,1fr)`
+
+---
+
+## Layout 12: 人物 / 团队介绍（Person Card）
+
+```html
+<section class="slide light">
+  <div class="chrome">
+    <div>核心团队 · Team</div>
+    <div>Act I · 04 / 25</div>
+  </div>
+  <div class="frame" style="padding-top:5vh">
+    <div class="kicker">Who · 谁在做</div>
+    <h2 class="h-xl">三个人</h2>
+
+    <div class="grid-3" style="margin-top:5vh">
+      <!-- 人物 1 -->
+      <div class="pillar" style="padding:4vh 2vw; border:1px solid currentColor; border-color:rgba(127,127,127,.25)">
+        <figure class="frame-img" style="height:22vh; border-radius:4px; margin-bottom:2.4vh">
+          <img src="images/person-01.jpg" alt="张三">
+        </figure>
+        <div class="t" style="font-size:2vw">张三</div>
+        <div class="meta" style="margin-bottom:1.6vh">产品 · Product</div>
+        <div class="d">十年 B 端经验，从设计转产品</div>
+      </div>
+      <!-- 人物 2 -->
+      <div class="pillar" style="padding:4vh 2vw; border:1px solid currentColor; border-color:rgba(127,127,127,.25)">
+        <figure class="frame-img" style="height:22vh; border-radius:4px; margin-bottom:2.4vh">
+          <img src="images/person-02.jpg" alt="李四">
+        </figure>
+        <div class="t" style="font-size:2vw">李四</div>
+        <div class="meta" style="margin-bottom:1.6vh">技术 · Engineering</div>
+        <div class="d">全栈开发，开源社区活跃</div>
+      </div>
+      <!-- 人物 3 -->
+      <div class="pillar" style="padding:4vh 2vw; border:1px solid currentColor; border-color:rgba(127,127,127,.25)">
+        <figure class="frame-img" style="height:22vh; border-radius:4px; margin-bottom:2.4vh">
+          <img src="images/person-03.jpg" alt="王五">
+        </figure>
+        <div class="t" style="font-size:2vw">王五</div>
+        <div class="meta" style="margin-bottom:1.6vh">增长 · Growth</div>
+        <div class="d">0 到 1 操盘手，擅长内容</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 04 · 核心团队</div>
+    <div>— · —</div>
+  </div>
+</section>
+```
+
+**要点**：
+- 复用 `.grid-3` + `.pillar` 结构，中间嵌入 `.frame-img` 照片
+- 照片统一 `height:22vh`（正方形或小竖版最佳），不要太大
+- `.t` 写姓名，`.meta` 写角色，`.d` 写一句话介绍
+- 如果没照片，去掉 `.frame-img` 用 `.ic` 放 Lucide 图标（`<i data-lucide="user" class="ico-lg"></i>`）
+
+---
+
+## Layout 13: Q&A 互动页
+
+```html
+<section class="slide dark">
+  <div class="ghost" style="right:-6vw;top:-8vh">Q&A</div>
+  <div class="chrome">
+    <div>问答 · 互动</div>
+    <div>23 / 25</div>
+  </div>
+  <div class="frame" style="display:grid; gap:5vh; align-content:center; min-height:80vh; position:relative; z-index:2">
+    <div class="kicker">Questions · 你问我答</div>
+    <h2 class="h-hero" style="font-size:7vw">还有问题？</h2>
+    <p class="lead" style="max-width:55vw; opacity:.7">
+      三个最常被问到的问题：
+    </p>
+
+    <div style="display:flex; flex-direction:column; gap:3vh; max-width:65vw">
+      <div style="padding:2.4vh 0; border-top:1px solid rgba(var(--paper-rgb),.2)">
+        <div style="font-family:var(--serif-zh); font-weight:600; font-size:1.5vw; margin-bottom:1vh">Q：一个人做得过来吗？</div>
+        <p style="font-family:var(--sans-zh); font-size:max(14px,1.1vw); line-height:1.6; opacity:.7">
+          核心是流程化，不是时间堆砌。每天 2 小时足矣。
+        </p>
+      </div>
+      <div style="padding:2.4vh 0; border-top:1px solid rgba(var(--paper-rgb),.2)">
+        <div style="font-family:var(--serif-zh); font-weight:600; font-size:1.5vw; margin-bottom:1vh">Q：没有技术背景怎么办？</div>
+        <p style="font-family:var(--sans-zh); font-size:max(14px,1.1vw); line-height:1.6; opacity:.7">
+          这正是这个模式的意义所在 —— 技术不再是门槛。
+        </p>
+      </div>
+      <div style="padding:2.4vh 0; border-top:1px solid rgba(var(--paper-rgb),.2)">
+        <div style="font-family:var(--serif-zh); font-weight:600; font-size:1.5vw; margin-bottom:1vh">Q：成本多少？</div>
+        <p style="font-family:var(--sans-zh); font-size:max(14px,1.1vw); line-height:1.6; opacity:.7">
+          API 费用每月几十块，远低于一个实习生。
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 23 · Q&A</div>
+    <div>— · —</div>
+  </div>
+</section>
+```
+
+**要点**：
+- `hero dark` 或 `dark` 主题，配合 `.ghost` 巨型背景字 "Q&A" 制造杂志感
+- 主内容加 `position:relative; z-index:2` 避免被 ghost 压住
+- Q 用 `.serif-zh` 加粗，A 用 `.sans-zh` 正文，用 `border-top` 分隔每个问答
+- 问题数量 2-5 个为宜，多了会挤
+
+---
+
+## Layout 14: 结尾 CTA（致谢 + 行动建议）
+
+```html
+<section class="slide hero dark">
+  <div class="chrome">
+    <div>谢谢 · Thank You</div>
+    <div>25 / 25</div>
+  </div>
+  <div class="frame" style="display:grid; gap:6vh; align-content:center; min-height:80vh">
+    <div class="kicker">Takeaway · 带走的</div>
+    <h1 class="h-hero" style="font-size:8.5vw">行动。</h1>
+    <p class="lead" style="max-width:55vw; opacity:.8">
+      不是"回去想想"，而是"回去试试"。<br>
+      挑一件最小的事，明天就开始。
+    </p>
+
+    <div class="meta-row" style="gap:3vw">
+      <span>邮箱 · hello@example.com</span>
+      <span>·</span>
+      <span>微信 · @yourid</span>
+      <span>·</span>
+      <span>网站 · yourdomain.com</span>
+    </div>
+  </div>
+  <div class="foot">
+    <div>感谢聆听 · 期待交流</div>
+    <div>— 2026 —</div>
+  </div>
+</section>
+```
+
+**要点**：
+- `hero dark` 收尾，和封面呼应
+- 大字只有一个词："行动。"——用 `h-hero` + 自定义字号
+- 下面给一行 `lead` 作为收束金句
+- 底部用 `.meta-row` 展示联系方式（邮箱/微信/网站）
+- 如果想更简洁，去掉 meta-row，只留大字 + lead

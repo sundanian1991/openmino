@@ -157,7 +157,7 @@ cp "<SKILL_ROOT>/assets/template.html" "项目/XXX/ppt/index.html"
 
 #### 3.1 · 挑布局
 
-**不要从零写 slide**。打开 `references/layouts.md`,里面有 10 种现成布局骨架,每种都是完整可粘贴的 `<section>` 代码块:
+**不要从零写 slide**。打开 `references/layouts.md`,里面有 14 种现成布局骨架,每种都是完整可粘贴的 `<section>` 代码块:
 
 | Layout | 用途 |
 |---|---|
@@ -171,6 +171,10 @@ cp "<SKILL_ROOT>/assets/template.html" "项目/XXX/ppt/index.html"
 | 8. 大引用页(Big Quote) | 衬线金句 / takeaway |
 | 9. 并列对比(Before / After) | 旧模式 vs 新模式 |
 | 10. 图文混排(Lead Image + Side Text) | 信息密集的图文页 |
+| 11. 时间线/路线图(Timeline) | 阶段规划 / Roadmap |
+| 12. 人物/团队介绍(Person Card) | 核心团队成员 |
+| 13. Q&A 互动页 | 答疑 / 常见问题 |
+| 14. 结尾 CTA | 致谢 + 行动建议 + 联系方式 |
 
 选对应 layout,粘过去,改文案和图片路径即可。**务必先完成 3.0 预检**。
 
