@@ -109,6 +109,38 @@ awk -F'\t' '$5 ~ /趋势|变化|增长|下降/' data/chart-dna-index.tsv | head 
 - `verification-standards.md`
   - Use for McKinsey/BCG-grade quality acceptance criteria.
 
+## 设计原则与判断标准
+
+- `design-principles.md`
+  - Use during 循环 2 减法 + 循环 3 验收 — 视觉层级铁律、六步出图法、减法 8 问清单、文字 7 角色、设计原则速查
+  - Contains: 关键元素突出检查标准、文字 7 角色验证表、减法判断标准
+
+---
+
+## 渲染资产
+
+| 参考文件 | 何时读 |
+|----------|--------|
+| **echarts-recipes.md** | 写 ECharts 图表时 — 完整主题配置、色值、API 映射、16 项验证清单 |
+| **dna-playbook.md** | DNA 匹配后速查 — 每个 DNA 场景的 ECharts 完整 option |
+| **auto-selector.md** | 循环 1 S6 自动选择器（风格/配色/字体） |
+| **layout-selector.md** | 循环 1 S6 版式 + 解读策略（场景→版式映射 + 解读决策树） |
+
+**Birchline 色系**：全循环统一使用 html-interactive 中的 Birchline Design System 色彩，不新增任何颜色。
+
+---
+
+## 中间文件模板
+
+| 文件 | 模板路径 | 用途 |
+|------|---------|------|
+| intent.md | templates/intent.md | 意图决策 |
+| storyboard.md | templates/storyboard.md | 视觉叙事设计 |
+| spec.md | templates/spec.md | 设计规格 |
+| checklist.md | templates/checklist.md | 验收清单 |
+
+---
+
 ## Chart DNA Database
 
 - `data/chart-dna-index.tsv`

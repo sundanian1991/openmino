@@ -63,7 +63,7 @@ description: "把任意材料（文字/PDF/PPTX/Word/链接/HTML/MD/SVG/Excel）
 | 演示/汇报/周会 | 左右键翻页的幻灯片 | `references/pattern-slide-deck.md` |
 | 功能实现原理 | 可折叠步骤 + Tab 代码 + FAQ | `references/pattern-feature-explainer.md` |
 | 概念/算法教学 | 交互式可视化 + 对比表 + 术语表 | `references/pattern-concept-explainer.md` |
-| 周报/工程状态 | 数字卡片 + 小图表 + 事件表 | `references/pattern-status-report.md` |
+| 周报/工程状态 | 数字卡片 + 小图表 + 事件表 + Marp 度量卡片/迷你图/环形图/进度条组件 | `references/pattern-status-report.md` |
 | 事故复盘/时间线 | 分钟级时间轴 + 日志摘录 + 清单 | `references/pattern-incident-timeline.md` |
 | 任务排序/优先级 | 拖拽排序的看板 | `references/pattern-triage-board.md` |
 | 配置项管理 | 开关列表 + 依赖警告 + diff 导出 | `references/pattern-feature-flags.md` |
@@ -115,6 +115,177 @@ description: "把任意材料（文字/PDF/PPTX/Word/链接/HTML/MD/SVG/Excel）
 2. 每个子页面一个独立 `.html`
 
 **多材料自动升级**：当输入材料 ≥4 个或主题混合时，自动从模式 A 升级到模式 B，每个材料生成一个子页面，用 index.html 聚合。
+
+## 编辑风格层（Editorial Styles）
+
+> 编辑风格覆盖设计系统（色彩/字体/排版/页面氛围），与交互模式（tab/时间线/折叠等）正交。
+> 先选编辑风格，再选交互模式。风格定"长什么样"，模式定"怎么交互"。
+
+### 通用规则（适用于所有编辑风格）
+
+> 所有编辑风格共享，与单风格硬约束并列。
+
+#### 隔离线克制
+
+**`<hr>`、分隔线、section 底部 border** 是内容密度杀手——每条线都吃掉一段文字的呼吸空间。
+
+| 可以用 | 不用 |
+|--------|------|
+| 主题/章节切换处（如"评估体系"→"九宫格"） | 同主题内段落之间 |
+| 表格与正文之间 | 标题与紧接的正文之间 |
+| 图表 caption 上方 | 列表项之间（用间距代替） |
+
+**默认**：每个 `<section>` 底部最多一条线，section 内段落只用间距（margin-bottom），不用线。
+
+#### 呼吸感基线
+
+| 维度 | 最小值 | 说明 |
+|------|--------|------|
+| **段落间距** | 1.5em | 同主题内相邻段落 |
+| **section 间距** | 2.5em | 不同主题/章节之间 |
+| **标题与正文** | 0.8em | 标题下方到第一段 |
+| **表格/图表与正文** | 2em | 图表上下间距 |
+| **版心宽度** | 桌面端最大 960px | 不要让文字占满屏幕，电脑端阅读舒适度优先 |
+
+---
+
+### 风格路由表
+
+| 内容调性/用户场景 | 编辑风格 | 关键词匹配 |
+|---|---|---|
+| 长文章、行业评论、深度分析、权威感内容 | **economist** | 经济学人、权威、深度、评论、老钱味 |
+| 产品发布、单点突破、传播封面、小红书爆款 | **apple-keynote** | 发布会、产品、极简、hero、苹果风 |
+| 技术研究、白皮书、学术圈材料、硬科技 | **academic-paper** | 论文、学术、白皮书、技术、arXiv |
+| 文化哲思、中文审美、高端本土材料 | **chinese-minimal** | 中式、留白、文化、宣纸、东方美学 |
+| 数据密集型话题、数据叙事、可视化报道 | **ft-data-story** | 数据叙事、FT、数据可视化、ig.ft.com |
+| 以上都不匹配 | **warm-default**（现有暖色系统） | 默认 |
+
+### 风格 A：经济学人编辑风
+
+**适合** — 长文章、行业评论、深度公众号稿、想要权威感的"老钱味"内容。
+
+```css
+/* 设计系统覆盖 */
+:root {
+  --banner:     #E3120B;  /* 顶部红色 banner */
+  --ink:        #1A1A1A;  /* 正文色 */
+  --body-serif: "Source Serif Pro", "Playfair Display", Georgia, serif;
+  --headline:   "Playfair Display", Georgia, serif;
+}
+```
+
+**硬约束**：
+- 顶部一条 4px 红色 banner `#E3120B`（`height:4px; background:#E3120B; width:100%`）
+- 大标题：`--headline` 36px+，副标题斜体 18px
+- 正文：`--body-serif` 17px，行高 1.7
+- 首字母 drop cap：文章首字下沉 3 行加粗（`float:left; font-size:3.5em; line-height:0.8; font-weight:700; margin:0.05em 0.1em 0 0`）
+- pull quote：28px 斜体，占满一行，上下各一条短横线（`border-top/bottom: 1px solid #333`）
+- 数据图表用三色：`#E3120B` / `#4F5D75` / `#9DB4CC`（注：原需求 `#9DB4Co` 为笔误，修正为 `#9DB4CC`）
+- 图表标题在图上方靠左，source 在图下方右
+- 整体 feel 像《经济学人》Briefing 或 Schumpeter 专栏
+
+### 风格 B：苹果发布会风
+
+**适合** — 单点突破型传播、产品定位、小红书爆款封面。
+
+```css
+/* 设计系统覆盖 */
+:root {
+  --white:      #FFFFFF;
+  --space-gray: #1D1D1F;
+  --font:       "SF Pro Display", Inter, system-ui, sans-serif;
+}
+```
+
+**硬约束**：
+- 每个 section 是 100vh 全屏
+- 背景在纯白 `#FFFFFF` 和深空灰 `#1D1D1F` 之间交替
+- 只有一句标题（72px+，font-weight 600），下面一行副标题灰色
+- 所有装饰最简，只用一个核心数字、一个 emoji 或一张产品图占视觉中心
+- 字体 SF Pro Display 或 Inter
+- scroll 是 smooth scroll snap（`scroll-snap-type: y mandatory`）
+- **不允许出现 bullet point**，所有信息都是 hero statement 形式
+- 偶尔用对角线渐变做背景情绪
+
+### 风格 C：学术论文风
+
+**适合** — 深度技术研究、白皮书、面向硬科技投资人或学术圈的材料。
+
+```css
+/* 设计系统覆盖 */
+:root {
+  --ink:        #000000;
+  --gray:       #555555;
+  --accent:     #8B0000;  /* 点睛红 */
+  --font-serif: "Crimson Pro", "Noto Serif SC", Georgia, serif;
+}
+```
+
+**硬约束**：
+- 衬线正文字体（Crimson Pro / 思源宋体）
+- 双栏版式（`column-count: 2; column-gap: 2em`，移动端 `@media (max-width:768px)` 自动单栏）
+- 标题用编号体系（1, 1.1, 1.1.1），用 CSS counter 实现
+- 表格用三线表（顶底粗线 + 中间细线，无侧边框无背景色）
+- 插图用 SVG 黑白线稿，配 Figure 1/2 caption
+- 参考文献用脚注形式，文末列出
+- 配色限定 `#000` / `#555` / `#8B0000`（点睛红）
+- **版心最大宽度 960px**，左右 padding 不小于 48px，不要让文字贴边
+- **section 间距 3em+**，不要让内容挨得太紧；电脑端阅读舒适度优先于紧凑感
+- **隔离线（`<hr>`、分隔线、section 底部 border）克制使用**：只在主题切换处用，同主题内段落间不用
+
+### 风格 D：中式留白美学
+
+**适合** — 中文读者的文化哲思类内容、本土审美的高端材料、小红书差异化爆款打法。
+
+```css
+/* 设计系统覆盖 */
+:root {
+  --xuan-paper: #F5F1E8;  /* 宣纸色 */
+  --ink:        #333333;  /* 墨色 */
+  --cinnabar:   #B22222;  /* 朱砂红 */
+  --font-cn:    "Noto Serif SC", "Source Han Serif SC", serif;
+  --font-en:    "EB Garamond", Georgia, serif;
+}
+```
+
+**硬约束**：
+- 背景色 `#F5F1E8`（宣纸色）
+- 正文 `--font-cn` 17px，字间距 `0.05em`，行高 1.9
+- 大标题横排居左，旁边配一枚朱砂红 `#B22222` 圆形印章（SVG 实现，刻一个相关汉字）
+- 段落之间大间距 2em 以上制造呼吸
+- 图表只用墨色 `#333` + 朱砂红两色
+- 中英文混排时英文用 `--font-en`
+- **不允许出现亮色、渐变、emoji**
+- feel 是言几又、苏州博物馆图录、单向街杂志的视觉气质
+
+### 风格 E：FT 数据叙事风
+
+**适合** — 数据密集型话题、视野心大的爆款选题。
+
+```css
+/* 设计系统覆盖 */
+:root {
+  --cream:      #FFF1E5;  /* FT 标志性米色 */
+  --wine:       #990F3D;
+  --navy:       #0F5499;
+  --ink:        #333333;
+  --taupe:      #B3A39C;
+  --headline:   "Playfair Display", "Financier Display", Georgia, serif;
+  --body:       system-ui, -apple-system, sans-serif;
+}
+```
+
+**硬约束**：
+- 背景色 `#FFF1E5`（FT 标志性米色）
+- 大标题 `--headline` 48px+ 衬线
+- 每个 section 围绕一张主图展开，图占视觉重心、文字是配角
+- 用 Chart.js 或 D3 做图表，hover 显示数值
+- 滚动时图表元素 fade in 逐步出现（IntersectionObserver 实现）
+- color palette 限定 `#990F3D` / `#0F5499` / `#333` / `#B3A39C`
+- 图表标题用陈述句结论（不说"某指标变化趋势"，说"某指标下降 30%"）
+- feel 是 ig.ft.com 上的 Visual & Data Journalism 栏目
+
+---
 
 ## 设计系统（强制）
 
@@ -199,6 +370,31 @@ a.card:hover {
 4. **自包含** — 单文件 HTML，双击就能开。不依赖 CDN、不依赖构建工具
 5. **纯 vanilla** — CSS 变量 + 原生 JS。不用 React、不用 Tailwind、不用框架
 
+### 组件配方索引
+
+> 15 个可复用组件配方已分布到各 `references/pattern-*.md` 文件中。
+> 生成页面时，根据路由表选中模式后读取对应 reference 文件获取组件 CSS/HTML。
+
+| 组件 | 所在文件 |
+|------|----------|
+| Dashboard Metric Cards | `references/pattern-status-report.md` |
+| Funnel Visualization | `references/pattern-status-report.md` |
+| Donut Chart | `references/pattern-svg-charts.md` |
+| SVG Line Chart with Area Fill | `references/pattern-svg-charts.md` |
+| Sparklines | `references/pattern-svg-charts.md` |
+| Grouped Bar Chart | `references/pattern-svg-charts.md` |
+| Gauge / Semicircle Meter | `references/pattern-ui-mockup.md` |
+| Progress Bars | `references/pattern-status-report.md` |
+| Before/After Split | `references/pattern-code-comparison.md` |
+| Flowchart | `references/pattern-flowchart.md` |
+| Chat Bubbles | `references/pattern-ui-mockup.md` |
+| Terminal & Browser Mockups | `references/pattern-ui-mockup.md` |
+| Glassmorphism Cards | `references/pattern-ui-mockup.md` |
+| Vertical Timeline | `references/pattern-incident-timeline.md` |
+| Stacked Bar Segments | `references/pattern-status-report.md` |
+
+**配色**：需映射到 html-interactive 设计系统变量，不要直接复制暗色主题色值。
+
 ## 文档类内容原则
 
 > 文档是最常见的输入类型。PDF、Word、长文、报告——用户要的是"比原文更好读"，不是"比原文更短"。
@@ -263,6 +459,14 @@ a.card:hover {
 - 材料关系：并列（对比）？顺序（时间线）？层级（折叠）？独立（多页）？
 - 交互深度：展示为主 / 可点击 / 可编辑
 
+### Step 1.5：选择编辑风格
+
+根据内容调性匹配编辑风格路由表。如果用户明确指定风格则直接使用。默认 warm-default（暖色系统）。
+
+- 编辑风格决定 **色彩/字体/排版/页面氛围**
+- 交互模式决定 **组件结构/用户操作方式**
+- 两者组合：如 "economist 风格 + feature-explainer 模式" 或 "apple-keynote 风格 + slide-deck 模式"
+
 ### Step 2：选择模式
 
 根据路由表匹配最合适的交互模式。如果内容混合了多种需求，选择主模式，其他作为辅助组件。
@@ -314,6 +518,7 @@ a.card:hover {
 | **UI mockup/仪表盘** | `references/pattern-ui-mockup.md`（metric-dashboard/ui-card/form-layout/list-view 模板） |
 | **SVG 插画/装饰图形** | `references/pattern-svg-art.md`（contour/geometric/illustrative/icon/pattern 风格 + 12种轮廓线图库） |
 | **数据解读报告** | `references/pattern-narrative-report.md`（语义标注+内联迷你图+趋势指标） |
+| **组件配方** | 各 `references/pattern-*.md` 文件的"组件配方"章节（15 种可复用组件） |
 
 每个 reference 文件包含：结构模板 + CSS 关键片段 + JS 交互骨架 + 该模式的设计约束。
 
@@ -340,3 +545,5 @@ a.card:hover {
 - 不编造 placeholder 内容
 - 不生成"看起来像但用不了"的静态模拟（如果要拖拽，就实现真正的拖拽）
 - 不在亮色系设计系统中使用紫色渐变
+- 不使用编辑风格时，必须严格遵循该风格的硬约束（配色/字体/排版），不得混搭默认暖色系统
+- apple-keynote 风格不允许出现 bullet point；chinese-minimal 不允许出现 emoji/亮色/渐变

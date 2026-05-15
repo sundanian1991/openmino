@@ -19,7 +19,7 @@
 | # | 规则 | 做法 |
 |---|------|------|
 | 1 | **一个图一个核心洞察** | 标题写结论（"客诉率骤降 37%"），不写描述（"客诉率趋势"）。其余元素灰化，高亮 ≤10% |
-| 2 | **颜色是信号不是装饰** | 默认 Warm ramp，单图 ≤2 ramp。先灰后彩，有目的地用色 |
+| 2 | **颜色是信号不是装饰** | 默认 Clay ramp，单图 ≤2 ramp。先灰后彩，有目的地用色 |
 | 3 | **每个元素必须有存在理由** | 去掉任何一个，信息还在吗？在就删。去噪是出图前最后一步 |
 
 ---
@@ -30,13 +30,11 @@
 
 | Ramp | 50 | 100 | 300 | 500 | 700 | 800 | 900 |
 |------|------|------|------|------|------|------|------|
-| **Warm** | #faf0e6 | #f0d9bf | #d4a574 | #c26d3a | #8b4513 | #6b3410 | #4a2409 |
-| **Teal** | #e6f5f0 | #b3e0cf | #5dbf9e | #2e8b6e | #1a6b50 | #0f5040 | #04342c |
-| **Coral** | #faeae5 | #f0bfad | #e08060 | #c25030 | #8b3018 | #6b2010 | #4a150a |
-| **Stone** | #f2f0eb | #d6d2c9 | #ada599 | #857d74 | #5f5a54 | #454240 | #2e2c2a |
-| **Sage** | #f0f2ec | #d4dbc8 | #a3b08a | #6f8660 | #4a6040 | #3a4a30 | #2a3520 |
-| **Sky** | #e8f1fa | #b8d4f0 | #70a8d8 | #3a7ab8 | #1a5a90 | #0e4070 | #052a4a |
-| **Amber** | #faf0dc | #f0d68a | #daa830 | #b88018 | #8a5a0a | #6a4005 | #4a2a02 |
+| **Clay** | #F7F6F1 | #E3DACC | #C29A7F | #D97757 | #8F4732 | #4F302D | #141413 |
+| **Gray** | #F7F6F1 | #F0EEE6 | #ACA9A2 | #87867F | #4D4D4A | #31312F | #141413 |
+| **Olive** | #F7F6F1 | #E3DACC | #A8B58A | #788C5D | #475932 | #2B3720 | #141413 |
+| **Danger** | #F8EDED | #EDC8C8 | #D19393 | #B04A4A | #782626 | #461A1A | #141413 |
+| **Amber** | #F7F6F1 | #E3DACC | #D3AA6F | #C78E3F | #795C34 | #483B25 | #141413 |
 
 ### 色阶用途
 
@@ -52,10 +50,10 @@
 
 | 约束 | 说明 |
 |------|------|
-| **默认 Warm** | 对话框 widget 默认用 Warm ramp |
-| **单图 ≤2 ramp** | 默认组合 Warm + Stone。语义需要时最多加至 3 个 |
+| **默认 Clay** | 对话框 widget 默认用 Clay ramp |
+| **单图 ≤2 ramp** | 默认组合 Clay + Gray。语义需要时最多加至 3 个 |
 | **先用深浅，不跨色** | 同一 ramp 的 50/300/500/800 四层已够表达主次 |
-| **跨色必须有语义理由** | Warm=主数据，Stone=基准线，Teal=正面，Coral=负面 |
+| **跨色必须有语义理由** | Clay=主数据，Gray=基准线，Olive=正面，Danger=负面，Amber=预警 |
 
 ### 色块内文字规则
 
@@ -68,18 +66,18 @@
 
 ```js
 {
-  color: ['#c26d3a', '#857d74', '#2e8b6e'],
+  color: ['#D97757', '#87867F', '#788C5D'],
   backgroundColor: 'transparent',
   animation: false,
   xAxis: {
-    axisLine: { lineStyle: { color: '#ada599' } },
-    splitLine: { lineStyle: { color: '#f2f0eb', type: 'dashed' } },
-    axisLabel: { color: '#857d74', fontSize: 11 }
+    axisLine: { lineStyle: { color: '#ACA9A2' } },
+    splitLine: { lineStyle: { color: '#F7F6F1', type: 'dashed' } },
+    axisLabel: { color: '#87867F', fontSize: 11 }
   },
   yAxis: {
     axisLine: { show: false },
-    splitLine: { lineStyle: { color: '#f2f0eb', type: 'dashed' } },
-    axisLabel: { color: '#857d74', fontSize: 11 }
+    splitLine: { lineStyle: { color: '#F7F6F1', type: 'dashed' } },
+    axisLabel: { color: '#87867F', fontSize: 11 }
   }
 }
 ```
@@ -114,13 +112,13 @@
 
 | 元素 | 字号 | 字重 | 颜色 |
 |------|------|------|------|
-| 主标题 | 15-18px | 600 | Warm 800 (`#6b3410`) |
-| 副标题 | 11-12px | 400 | Stone 500 (`#857d74`) |
-| 图表标题 | 13-15px | 600 | Warm 800 |
+| 主标题 | 15-18px | 600 | Clay 800 (`#4F302D`) |
+| 副标题 | 11-12px | 400 | Gray 500 (`#87867F`) |
+| 图表标题 | 13-15px | 600 | Clay 800 |
 | 指标数字 | 26-42px | 600 | 依语义选色 |
-| 坐标轴标签 | 11px | 400 | Stone 500 |
+| 坐标轴标签 | 11px | 400 | Gray 500 |
 | 图例/标注 | 11px | 400-600 | 依角色 |
-| 脚注/来源 | 10px | 400 | Stone 400 (`#ada599`) |
+| 脚注/来源 | 10px | 400 | Gray 300 (`#ACA9A2`) |
 
 **字重约束**：只允许 400（常规）和 600（半粗）。禁止 700，禁止 300。
 
@@ -132,11 +130,11 @@
 
 | 色阶 | borderColor | bg rgba | 用途 |
 |------|-------------|---------|------|
-| Warm | `#c26d3a` | `rgba(194,109,58,0.1)` | 主数据 |
-| Teal | `#2e8b6e` | `rgba(46,139,110,0.1)` | 正面指标 |
-| Coral | `#c25030` | `rgba(194,80,48,0.1)` | 负面/预警 |
-| Stone | `#857d74` | `rgba(133,125,116,0.1)` | 基准线/灰化 |
-| Sky | `#3a7ab8` | `rgba(58,122,184,0.1)` | 信息 |
+| Clay | `#D97757` | `rgba(217,119,87,0.1)` | 主数据 |
+| Olive | `#788C5D` | `rgba(120,140,93,0.1)` | 正面指标 |
+| Danger | `#B04A4A` | `rgba(176,74,74,0.1)` | 负面/预警 |
+| Gray | `#87867F` | `rgba(135,134,127,0.1)` | 基准线/灰化 |
+| Amber | `#C78E3F` | `rgba(199,142,63,0.1)` | 预警 |
 
 ### 手法 1：全线灰 + 单段彩色高亮（segment 分段着色）
 
@@ -145,11 +143,11 @@
 ```js
 {
   data: [4.1, 3.8, 3.5, 3.4, 3.3, 3.2, 3.2, 3.1, 1.8, 1.7],
-  borderColor: '#ada599',
+  borderColor: '#ACA9A2',
   borderWidth: 1.5,
   segment: {
     borderColor: function(ctx) {
-      return ctx.p0DataIndex < 8 ? '#ada599' : '#c26d3a';
+      return ctx.p0DataIndex < 8 ? '#ACA9A2' : '#D97757';
     },
     borderWidth: function(ctx) {
       return ctx.p0DataIndex < 8 ? 1.5 : 3;
@@ -160,7 +158,7 @@
     return i === 7 ? 4 : (i === 8 ? 6 : 0);
   },
   pointBorderColor: function(ctx) {
-    return ctx.dataIndex === 8 ? '#c26d3a' : '#ada599';
+    return ctx.dataIndex === 8 ? '#D97757' : '#ACA9A2';
   },
   pointBorderWidth: function(ctx) {
     return ctx.dataIndex === 8 ? 3 : 1.5;
@@ -182,7 +180,7 @@
 {
   label: '实际',
   data: [89, 86, 84, 82, 79, 76, null, null, null],
-  borderColor: '#857d74',
+  borderColor: '#87867F',
   borderWidth: 2,
   pointRadius: 0,
   tension: 0.3
@@ -190,7 +188,7 @@
 {
   label: '预测',
   data: [null, null, null, null, null, 76, 74, 72, 70],
-  borderColor: '#857d74',
+  borderColor: '#87867F',
   borderWidth: 2,
   borderDash: [6, 4],
   pointRadius: 4,
@@ -199,7 +197,7 @@
 {
   label: '清退阈值',
   data: [75, 75, 75, 75, 75, 75, 75, 75, 75],
-  borderColor: '#c25030',
+  borderColor: '#B04A4A',
   borderWidth: 1.5,
   borderDash: [4, 3],
   pointRadius: 0
@@ -219,7 +217,7 @@
 setTimeout(function(){
   var p = document.getElementById('myChart').parentElement;
   var lbl = document.createElement('div');
-  lbl.innerHTML = '<span style="font-size:10px;color:#c26d3a;font-weight:600">9月方案上线</span>';
+  lbl.innerHTML = '<span style="font-size:10px;color:#D97757;font-weight:600">9月方案上线</span>';
   lbl.style.position = 'absolute';
   lbl.style.left = '68%';
   lbl.style.top = '12%';
@@ -255,19 +253,19 @@ setTimeout(function(){
 | 元素 | 圆角 | 边框 |
 |------|------|------|
 | 卡片 | 10px | 1px solid var(--widget-border) |
-| SVG 节点 | 12px | 1.5px 描边，Warm 500 |
-| SVG 连线 | — | 1.5px，Stone 300 |
+| SVG 节点 | 12px | 1.5px 描边，Clay 500 |
+| SVG 连线 | — | 1.5px，Gray 300 |
 | 柱形图柱子 | 6px top | 无 |
 
 ### 版式骨架（每张图必须包含）
 
 ```
-标题（15px, 600, Warm 800）
-副标题（11px, 400, Stone 500）← 可选，含时间范围+对象
+标题（15px, 600, Clay 800）
+副标题（11px, 400, Gray 500）← 可选，含时间范围+对象
 
 [图表区]
 
-脚注（10px, 400, Stone 400）← 可选，数据来源
+脚注（10px, 400, Gray 300）← 可选，数据来源
 ```
 
 ### 硬约束（不可违反）
@@ -292,7 +290,7 @@ setTimeout(function(){
 
 - [ ] **标题是结论**（"客诉率骤降 37%" 不是 "客诉率趋势"）
 - [ ] **高亮 ≤10%**（只突出 1 个关键点，其余灰化）
-- [ ] **颜色 ≤2 ramp**（默认 Warm + Stone，跨色有语义理由）
+- [ ] **颜色 ≤2 ramp**（默认 Clay + Gray，跨色有语义理由）
 - [ ] **无禁止项**（饼图/双Y轴/3D/渐变/阴影/emoji）
 - [ ] **有副标题或脚注**（时间范围 + 数据来源）
 - [ ] **闭眼再睁眼 2 秒**（第一眼落在你想让观众看的地方吗？）
@@ -325,11 +323,11 @@ setTimeout(function(){
 
 | 层级 | 元素 | 样式 |
 |------|------|------|
-| 最高 | 标题、核心标注 | 600、Warm 主色、大字号 |
-| 高 | 关键数据线 | 3px 粗线、Warm 500 |
-| 中 | 对比数据线 | 1.5px Stone 300 |
+| 最高 | 标题、核心标注 | 600、Clay 主色、大字号 |
+| 高 | 关键数据线 | 3px 粗线、Clay 500 |
+| 中 | 对比数据线 | 1.5px Gray 300 |
 | 低 | 背景数据 | 1px 灰色虚线 |
-| 最低 | 脚注 | 10px、Stone 400 |
+| 最低 | 脚注 | 10px、Gray 300 |
 
 ---
 
@@ -343,6 +341,6 @@ setTimeout(function(){
 | P2 | 全线灰+单段彩 | segment 分段着色 | 方案效果对比 |
 | P3 | 暖色底+大留白+大数字 | 克制，数字自己说话 | 仪表盘/指标卡 |
 | P4 | 标注写原因+幅度 | "新方案→客诉率↓37%" | 拐点/异常点标注 |
-| P5 | 预警行底色区分 | 问题行用 Coral 底 | 列表/表格 |
+| P5 | 预警行底色区分 | 问题行用 Danger 底 | 列表/表格 |
 
 *每次新图获得认可后，追加到本表。*
