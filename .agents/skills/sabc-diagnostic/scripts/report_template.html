@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SABC 诊断报告</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root{
+  --bg:#FFF8F0;--card:#FFFFFF;--text:#2D3748;--muted:#718096;--light:#A0AEC0;
+  --border:#F0E6D8;--accent:#E8734A;--accent-light:#FFF0EB;--accent-dark:#C75A35;
+  --green:#48BB78;--yellow:#ECC94B;--red:#E8734A;
+  --gs:#E8734A;--ga:#5A6878;--gb:#8B99A8;--gc:#B8C4D0;--gun:#E8E0D6;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.6;padding:32px 16px}
+.wrap{max-width:960px;margin:0 auto}
+h1{font-size:20px;font-weight:800;margin-bottom:4px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+
+/* Grade chips */
+.gchips{display:flex;gap:10px;margin-bottom:20px}
+.gchip{flex:1;text-align:center;padding:14px 8px;background:var(--card);border-radius:10px;border:1px solid var(--border)}
+.gchip .n{font-size:28px;font-weight:800}
+.gchip .l{font-size:11px;color:var(--muted);margin-top:2px}
+.gchip.s .n{color:var(--gs)}.gchip.a .n{color:var(--ga)}.gchip.b .n{color:var(--gb)}.gchip.c .n{color:var(--gc)}
+.gchip.s{border-color:rgba(232,115,74,0.3);box-shadow:0 2px 8px rgba(232,115,74,0.08)}
+
+/* Health cards */
+.hcards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+@media(max-width:768px){.hcards{grid-template-columns:1fr 1fr}}
+.hcard{background:var(--card);border-radius:10px;padding:14px;border:1px solid var(--border)}
+.hcard h3{font-size:12px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.hrow{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.hrow .lb{color:var(--muted)}
+.hrow .vl{font-weight:700}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-g{background:var(--green)}.dot-y{background:var(--yellow)}.dot-r{background:var(--red)}
+
+/* Sections */
+.sec{margin-bottom:28px}
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--accent)}
+.sh h2{font-size:15px;font-weight:700}
+.sh .en{font-size:10px;color:var(--light);margin-left:auto}
+
+/* Chart grid */
+.cg2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cg2 .full{grid-column:1/-1}
+@media(max-width:768px){.cg2{grid-template-columns:1fr}.cg2 .full{grid-column:1}}
+.box{background:var(--card);border-radius:10px;padding:14px;border:1px solid var(--border)}
+.box h3{font-size:12px;font-weight:700;margin-bottom:8px}
+.box .c{width:100%;height:260px}
+.box .c.tall{height:320px}
+
+/* Actions */
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:768px){.acts{grid-template-columns:1fr}}
+.act{background:var(--card);border-radius:10px;padding:14px;border:1px solid var(--border);border-left:3px solid var(--accent)}
+.act.p0{border-left-color:var(--red)}.act.p1{border-left-color:var(--yellow)}.act.p2{border-left-color:var(--green)}
+.act .pri{font-size:9px;font-weight:700;color:var(--accent);margin-bottom:2px}
+.act h4{font-size:12px;font-weight:700;margin-bottom:4px}
+.act p{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* Footer */
+.ft{border-top:1px solid var(--border);padding-top:12px;margin-top:8px;font-size:10px;color:var(--light);line-height:1.7}
+.ft strong{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="title">金条坐席 SABC 诊断</h1>
+  <p class="sub" id="subtitle"></p>
+  <span id="poolBadge" style="display:inline-block;padding:2px 10px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:16px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent)"></span>
+  <div class="gchips" id="gchips"></div>
+  <div class="hcards" id="hcards"></div>
+
+  <div class="sec">
+    <div class="sh"><h2>人力结构</h2><span class="en">Workforce</span></div>
+    <div class="cg2">
+      <div class="box"><h3>职场 S/A/B/C 构成</h3><div class="c" id="wpChart"></div></div>
+      <div class="box"><h3>司龄 × 等级矩阵</h3><div class="c" id="tenChart"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><h2>产能效率</h2><span class="en">Efficiency</span></div>
+    <div class="cg2">
+      <div class="box full"><h3>转化断层 — S/A/B/C 对比</h3><div class="c" id="funnelChart"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><h2>集中度风险</h2><span class="en">Concentration</span></div>
+    <div class="cg2">
+      <div class="box full"><h3>GMV 帕累托曲线</h3><div class="c" id="paretoChart"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><h2>问题定位</h2><span class="en">Problem Finding</span></div>
+    <div class="cg2">
+      <div class="box"><h3>职场 C 级率排名</h3><div class="c" id="cChart"></div></div>
+      <div class="box"><h3>ATT × 转化率 效率矩阵</h3><div class="c" id="scatterChart"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><h2>行动建议</h2><span class="en">Actions</span></div>
+    <div class="acts" id="acts"></div>
+  </div>
+
+  <div class="ft">
+    <p><strong>数据口径：</strong>参评 = 最近有效外呼 ≤7 天 且 外呼天数 ≥22 天。评级：百分位排名制，结果:过程 65:35。</p>
+    <p><strong>局限：</strong>单期截面数据，无法判断趋势。转化率分母为接通用户数，非名单下发数。建议连续 3 期对比。</p>
+    <p><strong>生成：</strong>sabc-diagnostic V3.1 | ECharts 5</p>
+  </div>
+</div>
+<script>
+var D = $DATA_JSON;
+var charts = [];
+function initChart(id, opt) {
+  var el = document.getElementById(id);
+  if (!el) return null;
+  var c = echarts.init(el);
+  c.setOption(opt);
+  charts.push(c);
+  return c;
+}
+window.addEventListener('resize', function() { charts.forEach(function(c) { c.resize(); }); });
+
+// Grade colors
+var gc = { 'S': '#E8734A', 'A': '#5A6878', 'B': '#8B99A8', 'C': '#B8C4D0' };
+var gr = ['S','A','B','C'];
+function dot(v, gMax, yMax) {
+  if (v <= gMax) return '<span class="dot dot-g"></span>';
+  if (v <= yMax) return '<span class="dot dot-y"></span>';
+  return '<span class="dot dot-r"></span>';
+}
+
+// === RENDER ===
+
+// Primary pool: use 首贷 if available, else 复贷
+var useSd = D.has_sd;
+var poolN = useSd ? D.sd_n : D.fd_n;
+var poolTotal = useSd ? D.sd_total : D.fd_total;
+var poolPart = useSd ? D.sd_part : D.fd_part;
+var useCombined = D.sd_n > 0 && D.fd_n > 0;
+var gd = useCombined ? (D.total_gd || {}) : (useSd ? (D.sd_gd || {}) : (D.fd_gd || {}));
+var poolLabel = useCombined ? '合计' : (useSd ? '首贷' : '复贷');
+
+document.getElementById('title').textContent = D.supplier + ' 金条坐席 SABC 诊断';
+var isMulti = D.source_files && D.source_files.length > 1;
+var totalRated = D.combined_n || poolN;
+var totalTotal = isMulti ? (D.sd_total + D.fd_total) : poolTotal;
+var subText = '数据截止 ' + D.deadline;
+if (isMulti) subText += ' | ' + D.source_files.length + ' 文件合并';
+if (D.sd_n > 0 && D.fd_n > 0) {
+  subText += ' | 参评 ' + totalRated + ' 人（首贷 ' + D.sd_n + ' + 复贷 ' + D.fd_n + '）/ 总 ' + totalTotal + ' 人';
+} else {
+  subText += ' | 以' + poolLabel + '为主视角 参评 ' + poolN + ' 人 / 总 ' + poolTotal + ' 人';
+}
+document.getElementById('subtitle').textContent = subText;
+document.getElementById('poolBadge').textContent = (useCombined ? '首贷+复贷 合并' : poolLabel + ' 视角') + ' · ' + totalRated + ' 人参评';
+
+// Grade chips
+var chips = '';
+gr.forEach(function(g) {
+  chips += '<div class="gchip '+g.toLowerCase()+'"><div class="n">'+(gd[g]||0)+'</div><div class="lbl">'+g+' 级</div></div>';
+});
+document.getElementById('gchips').innerHTML = chips;
+
+// Health cards
+var hpN = useCombined ? totalRated : poolN;
+var partRate = useCombined ? Math.round(hpN / (D.sd_total + D.fd_total) * 100 * 10) / 10 : poolPart;
+var cRate = hpN > 0 ? Math.round((gd['C']||0)/hpN*100) : 0;
+var sPct = hpN > 0 ? Math.round((gd['S']||0)/hpN*100) : 0;
+var scR = D.sc_ratio || 0;
+var t20 = D.top20_pct || 0;
+var wr = D.warning_rate || 0;
+var mConc = D.mob13_conc || 0;
+var totalGmv = D.sd_total_gmv + D.fd_total_gmv;
+
+document.getElementById('hcards').innerHTML =
+  '<div class="hcard"><h3>'+dot(partRate,75,60)+' 人力结构</h3>'+
+    '<div class="hrow"><span class="lb">参评率</span><span class="vl">'+partRate+'%</span></div>'+
+    '<div class="hrow"><span class="lb">C 级率</span><span class="vl">'+cRate+'%</span></div>'+
+    '<div class="hrow"><span class="lb">S 占比</span><span class="vl">'+sPct+'%</span></div></div>'+
+  '<div class="hcard"><h3>'+dot(scR,2,3)+' 产能效率</h3>'+
+    '<div class="hrow"><span class="lb">S/C 倍差</span><span class="vl">'+scR+'×</span></div>'+
+    '<div class="hrow"><span class="lb">S 转化率</span><span class="vl">'+D.s_conv.toFixed(1)+'%</span></div>'+
+    '<div class="hrow"><span class="lb">C 转化率</span><span class="vl">'+D.c_conv.toFixed(1)+'%</span></div></div>'+
+  '<div class="hcard"><h3>'+dot(t20,50,60)+' 集中度</h3>'+
+    '<div class="hrow"><span class="lb">Top20% GMV</span><span class="vl">'+t20+'%</span></div>'+
+    '<div class="hrow"><span class="lb">总 GMV</span><span class="vl">'+(totalGmv/10000).toFixed(0)+'万</span></div></div>'+
+  '<div class="hcard"><h3>'+dot(wr,10,15)+' 问题定位</h3>'+
+    '<div class="hrow"><span class="lb">预警率</span><span class="vl">'+wr+'%</span></div>'+
+    '<div class="hrow"><span class="lb">MOB1-3 C集中度</span><span class="vl">'+mConc+'%</span></div></div>';
+
+// 1. WP Stacked Bar
+if (D.wp_names && D.wp_names.length > 0) {
+  var series = gr.map(function(g) {
+    return { name: g, type: 'bar', stack: 'total', barMaxWidth: 40,
+      itemStyle: { color: gc[g] },
+      data: D.wp_matrix.map(function(r) { return r[g] || 0; }),
+      emphasis: { focus: 'series' }
+    };
+  });
+  initChart('wpChart', {
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: gr, bottom: 0, textStyle: { fontSize: 10 } },
+    grid: { left: 80, right: 16, top: 10, bottom: 36 },
+    xAxis: { type: 'category', data: D.wp_names, axisLabel: { fontSize: 9, rotate: 20 } },
+    yAxis: { type: 'value', name: '人数', nameTextStyle: { fontSize: 9 } },
+    series: series
+  });
+}
+
+// 2. Tenure Heatmap
+if (D.tenure_data && D.tenure_data.length > 0) {
+  var tData = [], tNames = D.tenure_data.map(function(r) { return r.tenure; });
+  var maxT = 0;
+  D.tenure_data.forEach(function(row, ri) {
+    gr.forEach(function(g, ci) {
+      var v = row[g] || 0; if (v > maxT) maxT = v;
+      tData.push([ci, ri, v]);
+    });
+  });
+  initChart('tenChart', {
+    tooltip: { position: 'top', formatter: function(p) { var d=p.data; return d[2]+'人'; } },
+    grid: { left: 80, right: 30, top: 10, bottom: 40 },
+    xAxis: { type: 'category', data: gr, axisLabel: { fontSize: 11, fontWeight: 'bold' } },
+    yAxis: { type: 'category', data: tNames, axisLabel: { fontSize: 10 } },
+    visualMap: { min: 0, max: Math.max(maxT, 1), calculable: true, orient: 'horizontal', left: 'center', bottom: 0,
+      inRange: { color: ['#FFF0EB','#E8734A','#C75A35'] }, textStyle: { fontSize: 8 } },
+    series: [{ type: 'heatmap', data: tData, label: { show: true, fontSize: 9 },
+      emphasis: { itemStyle: { shadowBlur: 8 } } }]
+  });
+}
+
+// 3. Funnel Bar
+if (D.funnel && Object.keys(D.funnel).length > 0) {
+  var fGrades = Object.keys(D.funnel);
+  initChart('funnelChart', {
+    tooltip: { trigger: 'axis', formatter: function(p) { return p[0].name + ': ' + p[0].value + '%'; } },
+    grid: { left: 50, right: 20, top: 16, bottom: 36 },
+    xAxis: { type: 'category', data: fGrades.map(function(g) { return g + '级'; }) },
+    yAxis: { type: 'value', name: '转化率(%)', nameTextStyle: { fontSize: 9 } },
+    series: [{ type: 'bar', barMaxWidth: 60,
+      data: fGrades.map(function(g) { return {
+        value: D.funnel[g].conv_rate,
+        itemStyle: { color: gc[g] || '#A0AEC0' }
+      };}),
+      label: { show: true, position: 'top', formatter: '{c}%', fontSize: 10, fontWeight: 'bold' }
+    }]
+  });
+}
+
+// 4. Pareto
+if (D.pareto && D.pareto.length > 0) {
+  initChart('paretoChart', {
+    tooltip: { trigger: 'axis' },
+    grid: { left: 50, right: 50, top: 16, bottom: 36 },
+    xAxis: { type: 'category', data: D.pareto.map(function(d) { return d.pct + '%'; }),
+      axisLabel: { fontSize: 8 } },
+    yAxis: { type: 'value', max: 100, name: '累计GMV%', nameTextStyle: { fontSize: 9 } },
+    series: [
+      { type: 'line', smooth: true, symbol: 'none', lineStyle: { width: 3, color: '#E8734A' },
+        areaStyle: { color: { type: 'linear', x:0, y:0, x2:0, y2:1,
+          colorStops: [{offset:0,color:'rgba(232,115,74,0.3)'},{offset:1,color:'rgba(232,115,74,0.05)'}] } },
+        data: D.pareto.map(function(d) { return d.cum; }) },
+      { type: 'line', data: D.pareto.map(function() { return 50; }), lineStyle: { type: 'dashed', color: '#ECC94B' }, symbol: 'none' },
+      { type: 'line', data: D.pareto.map(function() { return 80; }), lineStyle: { type: 'dashed', color: '#B8C4D0' }, symbol: 'none' }
+    ]
+  });
+}
+
+// 5. C Rate Ranking
+if (D.wp_c_rates && D.wp_c_rates.length > 0) {
+  var sorted = D.wp_c_rates.slice(0, 8);
+  sorted.sort(function(a, b) { return b.c_rate - a.c_rate; });
+  initChart('cChart', {
+    tooltip: { trigger: 'axis', formatter: function(p) { return p[0].name + ': ' + p[0].value + '%'; } },
+    grid: { left: 80, right: 40, top: 10, bottom: 10 },
+    yAxis: { type: 'category', data: sorted.map(function(r) { return r.wp; }).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: 'value', name: 'C级率(%)', nameTextStyle: { fontSize: 8 } },
+    series: [{ type: 'bar', barMaxWidth: 20,
+      data: sorted.map(function(r) { return {
+        value: r.c_rate,
+        itemStyle: { color: r.c_rate > 30 ? '#E8734A' : r.c_rate > 20 ? '#ECC94B' : '#8B99A8' }
+      };}).reverse(),
+      label: { show: true, position: 'right', formatter: '{c}%', fontSize: 9 }
+    }]
+  });
+}
+
+// 6. Scatter
+if (D.wp_eff_data && D.wp_eff_data.length > 0) {
+  var avgAtt = D.wp_eff_data.reduce(function(s, r) { return s + r.att; }, 0) / D.wp_eff_data.length;
+  var avgConv = D.wp_eff_data.reduce(function(s, r) { return s + r.conv; }, 0) / D.wp_eff_data.length;
+  initChart('scatterChart', {
+    tooltip: { formatter: function(p) { var d=p.data; return d[3]+'<br>ATT: '+d[0]+'s, 转化率: '+d[1].toFixed(1)+'%<br>C级率: '+d[2].toFixed(0)+'% ('+d[4]+'人)'; } },
+    grid: { left: 50, right: 20, top: 16, bottom: 40 },
+    xAxis: { type: 'value', name: 'ATT(秒)', nameTextStyle: { fontSize: 8 } },
+    yAxis: { type: 'value', name: '转化率(%)', nameTextStyle: { fontSize: 8 } },
+    series: [{ type: 'scatter',
+      symbolSize: function(d) { return Math.max(12, d[4] * 3); },
+      data: D.wp_eff_data.map(function(r) { return [r.att, r.conv, r.c_rate, r.wp, r.n]; }),
+      itemStyle: { color: function(d) { var c = d.data[2]; return c > 30 ? '#E8734A' : c > 20 ? '#ECC94B' : '#8B99A8'; } },
+      emphasis: { focus: 'self' }
+    }],
+    markLine: { data: [{ xAxis: avgAtt }, { yAxis: avgConv }],
+      lineStyle: { type: 'dashed', color: '#A0AEC0' },
+      label: { show: false } }
+  });
+}
+
+// Actions — data-driven
+var acts = [];
+var topWp = D.wp_c_rates.length > 0 ? D.wp_c_rates[0] : null;
+if (topWp && topWp.c_rate > 20) {
+  acts.push({ pri: 'P0 紧急', cls: 'p0', title: topWp.wp + ' C级率专项干预',
+    desc: topWp.wp + ' C级率达 ' + topWp.c_rate + '%（' + topWp.c_count + '/' + topWp.total + '人），建议暂停优质名单，配 SOP+每日通关' });
+}
+if (D.mob13_conc > 30) {
+  acts.push({ pri: 'P0 紧急', cls: 'p0', title: 'MOB1-3 新人前置培训',
+    desc: 'MOB1-3 中 C 级占比 ' + D.mob13_conc + '%，建议新员工30天设通关门槛：日均通时>60min+转化率>50%' });
+}
+if (D.s_conv > 0 && D.c_conv > 0 && D.sc_ratio > 2) {
+  acts.push({ pri: 'P1 重要', cls: 'p1', title: '有效→首贷转化能力提升',
+    desc: 'S 级转化率 ' + D.s_conv.toFixed(1) + '% 是 C 级 ' + D.c_conv.toFixed(1) + '% 的 ' + D.sc_ratio + ' 倍，核心在需求挖掘能力' });
+}
+if (gd['S'] > 0 && gd['C'] > 0) {
+  acts.push({ pri: 'P1 重要', cls: 'p1', title: 'S 级经验萃取',
+    desc: 'S 级 ' + gd['S'] + ' 人，C 级 ' + gd['C'] + ' 人，建议萃取优秀录音+话术手册，跨职场复制' });
+}
+if (topWp && topWp.c_rate > 15) {
+  acts.push({ pri: 'P2 常规', cls: 'p2', title: 'C 级高发职场月度跟踪',
+    desc: topWp.wp + ' 纳入月度供应商管理仪表盘，连续2月无改善启动约谈' });
+}
+acts.push({ pri: 'P2 常规', cls: 'p2', title: '数据局限性',
+  desc: '单期截面数据，无法判断趋势。转化率分母为接通用户数，建议连续 3 期对比' });
+var actsHtml = acts.map(function(a) {
+  return '<div class="act '+a.cls+'"><div class="pri">'+a.pri+'</div><h4>'+a.title+'</h4><p>'+a.desc+'</p></div>';
+}).join('');
+document.getElementById('acts').innerHTML = actsHtml;
+</script>
+</body>
+</html>
