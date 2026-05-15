@@ -487,11 +487,13 @@ def analyze_pool(rated_rows, all_rows):
 
     pareto = []
     cum = 0
-    step = max(1, n_rated // 100)  # 1% segments
+    # Limit to ~15 data points for clean Pareto chart rendering
+    n_bins = min(15, n_rated)
+    step = max(1, n_rated // n_bins)
     for i in range(0, n_rated, step):
         cum += sum(r['_gmv'] for r in sorted_by_gmv[i:i+step])
-        pct = round((i + step) / n_rated * 100, 1)
-        cum_pct = round(cum / total_gmv * 100, 1) if total_gmv > 0 else 0
+        pct = round(min((i + step) / n_rated * 100, 100), 1)
+        cum_pct = round(min(cum / total_gmv * 100, 100), 1) if total_gmv > 0 else 0
         pareto.append({'pct': pct, 'cum': cum_pct})
     if not pareto:
         pareto = [{'pct': 0, 'cum': 0}]
@@ -672,7 +674,8 @@ def build_html(data):
     funnel = main_stats.get('funnel', {})
     pareto = main_stats.get('pareto', [])
     wp_c_rates = main_stats.get('wp_c_rates', [])[:8]
-    wp_eff = main_stats.get('wp_eff', {})
+    # Efficiency scatter: use combined to show ALL workplaces
+    wp_eff = cmb.get('wp_eff', {}) if not cmb.get('error') else main_stats.get('wp_eff', {})
     wp_eff_data = [{'wp': k, **v} for k, v in wp_eff.items()]
 
     # Primary pool = 首贷 if available, else 复贷
@@ -1086,29 +1089,111 @@ def main():
 
 def build_markdown(data):
     sd = data.get('sd_stats', {})
+    fd = data.get('fd_stats', {})
+    cmb = data.get('combined_stats', {})
     deadline = data['deadline'].strftime('%Y-%m-%d')
-    supplier = ', '.join(set(r.get('wp_name', '') for r in data['rows'] if r.get('wp_name')))
+
+    # Use primary pool for headline (首贷 if available, else 复贷)
+    has_sd = len(data.get('sd_rated', [])) > 0
+    main = sd if has_sd else fd
+    pool_name = '首贷' if has_sd else '复贷'
+
+    sd_n = sd.get('n_rated', 0)
+    fd_n = fd.get('n_rated', 0)
+    combined_n = cmb.get('n_rated', 0)
+    source_files = data.get('source_files', [])
 
     lines = [
-        f'# {supplier} 金条坐席 SABC 诊断 · 叙事情报大纲',
+        f'# {data.get("_supplier", "金条")} 坐席 SABC 诊断 · 叙事情报大纲',
         f'> 产自 sabc-diagnostic skill | 数据截止 {deadline}',
+        f'> 数据源: {len(source_files)} 个文件' if len(source_files) > 1 else f'> 数据源: 单文件',
         '',
         '## Big Idea',
-        f'首贷参评 {sd.get("n_rated", 0)} 人，参评率 {sd.get("participation_rate", 0)}%。S/C 转化倍差 {sd.get("sc_ratio", 0)}×，Top20% 贡献 {sd.get("top20_gmv_pct", 0)}% GMV。',
-        '',
-        '## 数据摘要',
-        f'- 总人数 {sd.get("n_total", 0)}，参评 {sd.get("n_rated", 0)}，未参评 {sd.get("n_unrated", 0)}',
-        f'- 参评率: {sd.get("participation_rate", 0)}%',
-        f'- 等级分布: S={sd.get("grade_dist",{}).get("S",0)}, A={sd.get("grade_dist",{}).get("A",0)}, B={sd.get("grade_dist",{}).get("B",0)}, C={sd.get("grade_dist",{}).get("C",0)}',
-        f'- Top20% GMV 占比: {sd.get("top20_gmv_pct", 0)}%',
-        f'- 预警率: {sd.get("warning_rate", 0)}%',
-        '',
-        '## 局限性',
-        '- 单期截面数据，无法判断趋势和季节性',
-        '- 转化率分母为接通用户数而非名单下发数',
-        '- 缺少质检合规数据',
-        '- 部分字段为空（如首贷GMV未下发时）',
     ]
+
+    # Dynamic Big Idea based on key findings
+    gd = main.get('grade_dist', {})
+    s_count = gd.get('S', 0)
+    c_count = gd.get('C', 0)
+    sc_ratio = main.get('sc_ratio', 0)
+    top20_pct = main.get('top20_gmv_pct', 0)
+    part_rate = main.get('participation_rate', 0)
+    warning_rate = main.get('warning_rate', 0)
+    mob13_conc = main.get('mob13_c_conc', 0)
+
+    lines.append(f'{pool_name}参评 {sd_n} 人' if has_sd else f'复贷参评 {fd_n} 人')
+    if combined_n and combined_n != sd_n:
+        lines[-1] += f'，合计参评 {combined_n} 人（首贷 {sd_n} + 复贷 {fd_n}）'
+    lines[-1] += f'，参评率 {part_rate}%。'
+    lines[-1] += f'S/C 转化倍差 {sc_ratio}×，' if sc_ratio > 0 else ''
+    lines[-1] += f'Top20% 贡献 {top20_pct}% GMV。'
+
+    lines.append('')
+    lines.append('## 四视角诊断')
+    lines.append('')
+
+    # 1. 人力结构
+    lines.append(f'### 人力结构')
+    lines.append(f'- S={s_count}, A={gd.get("A",0)}, B={gd.get("B",0)}, C={c_count}')
+    lines.append(f'- 参评率 {part_rate}%（目标 ≥75%）')
+    if c_count > 0:
+        c_rate = round(c_count / max(1, sum(gd.values())) * 100)
+        lines.append(f'- C 级率 {c_rate}%（{"⚠️ 偏高" if c_rate > 25 else "正常"}）')
+    lines.append('')
+
+    # 2. 产能效率
+    lines.append(f'### 产能效率')
+    gm_s = main.get('grade_metrics', {}).get('S', {})
+    gm_c = main.get('grade_metrics', {}).get('C', {})
+    s_conv = gm_s.get('avg_conv', 0) or 0
+    c_conv = gm_c.get('avg_conv', 0) or 0
+    s_att = gm_s.get('avg_att', 0) or 0
+    c_att = gm_c.get('avg_att', 0) or 0
+    lines.append(f'- S 转化率 {s_conv:.2f}% vs C 转化率 {c_conv:.2f}%（倍差 {sc_ratio}×）')
+    lines.append(f'- S ATT {s_att:.0f}s vs C ATT {c_att:.0f}s')
+    lines.append('')
+
+    # 3. 集中度风险
+    lines.append(f'### 集中度风险')
+    lines.append(f'- Top20% GMV 占比 {top20_pct}%（{"⚠️ 偏高" if top20_pct > 60 else "正常"}）')
+    lines.append(f'- 预警率 {warning_rate}%')
+    lines.append(f'- MOB1-3 C集中度 {mob13_conc}%（{"⚠️ 偏高" if mob13_conc > 40 else "正常"}）')
+    lines.append('')
+
+    # 4. 问题定位
+    lines.append(f'### 问题定位')
+    wp_c_rates = main.get('wp_c_rates', [])
+    if wp_c_rates:
+        top_wp = wp_c_rates[0]
+        lines.append(f'- C级率最高职场: {top_wp["wp"]} ({top_wp["c_rate"]}%, {top_wp["c_count"]}/{top_wp["total"]}人)')
+    if mob13_conc > 30:
+        lines.append(f'- 新人 MOB1-3 集中 C 级 {mob13_conc}%，需前置培训')
+    lines.append('')
+
+    # Cross-perspective diagnosis
+    lines.append('## 交叉诊断')
+    lines.append('')
+    findings = []
+    if sc_ratio > 3:
+        findings.append(f'- **产能分化严重**：S 级产能是 C 级的 {sc_ratio}×，建议经验萃取')
+    if part_rate < 70:
+        findings.append(f'- **参评率偏低**：仅 {part_rate}% 达参评标准，大量坐席活跃度不足')
+    if top20_pct > 50:
+        findings.append(f'- **GMV 集中度高**：Top20% 贡献超半数 GMV，核心坐席流失风险大')
+    if mob13_conc > 30:
+        findings.append(f'- **新人质量堪忧**：MOB1-3 C 级占比 {mob13_conc}%，招聘/培训环节需优化')
+    if warning_rate > 10:
+        findings.append(f'- **预警率偏高**：{warning_rate}% 坐席 3 天未上线，管理风险存在')
+    if not findings:
+        findings.append('- 暂无显著风险信号')
+    lines.extend(findings)
+    lines.append('')
+
+    # 局限性
+    lines.append('## 局限性')
+    lines.append('- 单期截面数据，无法判断趋势和季节性')
+    lines.append('- 转化率分母为接通用户数而非名单下发数')
+    lines.append('- 缺少质检合规数据')
     return '\n'.join(lines)
 
 
