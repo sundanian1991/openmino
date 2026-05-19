@@ -11,7 +11,6 @@ SABC 诊断报告生成器 — 适配 CRM 原始底表（单 Sheet）
 import openpyxl, json, argparse, os, math, sys
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
-from string import Template
 
 # =====================================================================
 # FORMAT DETECTION — 两种 CRM 导出格式自动识别
@@ -200,11 +199,19 @@ def enrich(data):
     rated_count = 0
 
     for r in rows:
-        # Parse dates
+        # Parse dates (handle both datetime objects and string formats)
         for key in ['first_call', 'last_call']:
             v = r.get(key)
             if isinstance(v, datetime):
                 r[f'{key}_parsed'] = v
+            elif isinstance(v, str) and v.strip():
+                try:
+                    r[f'{key}_parsed'] = datetime.strptime(v.strip(), '%Y-%m-%d %H:%M:%S')
+                except (ValueError, TypeError):
+                    try:
+                        r[f'{key}_parsed'] = datetime.strptime(v.strip(), '%Y-%m-%d')
+                    except (ValueError, TypeError):
+                        r[f'{key}_parsed'] = None
             else:
                 r[f'{key}_parsed'] = None
 
@@ -256,11 +263,17 @@ def enrich(data):
         t0r = sf(r.get('t0_repeat_gmv')) or 0
         r['t0_gmv'] = t0f + t0r
 
-        # Conversion rate (for first loan pool)
-        if r['connected_val'] > 0 and r['fl_users'] > 0:
-            r['conv_rate'] = r['fl_users'] / r['connected_val']
+        # Conversion rate (首贷用首贷用户数/接通数，复贷用复贷用户数/接通数)
+        if r['connected_val'] > 0:
+            is_fd = '复贷' in r.get('seat_type', '')
+            if is_fd and r['rl_users'] > 0:
+                r['conv_rate'] = r['rl_users'] / r['connected_val']
+            elif not is_fd and r['fl_users'] > 0:
+                r['conv_rate'] = r['fl_users'] / r['connected_val']
+            else:
+                r['conv_rate'] = 0
         else:
-            r['conv_rate'] = sf(r.get('conv_rate'))  # Try to use existing column
+            r['conv_rate'] = 0
 
         # ATT
         r['att_val'] = sf(r.get('att')) or 0
@@ -577,11 +590,8 @@ def compute_all_metrics(data):
     sd_stats = analyze_pool(data.get('sd_rated', []), [r for r in data['rows'] if '首贷' in r.get('seat_type', '')])
     fd_stats = analyze_pool(data.get('fd_rated', []), [r for r in data['rows'] if '复贷' in r.get('seat_type', '')])
 
-    # If only one pool exists, use it for everything
-    if 'error' in sd_stats and 'error' not in fd_stats:
-        sd_stats = fd_stats
-    elif 'error' not in sd_stats and 'error' in fd_stats:
-        fd_stats = sd_stats
+    # If only one pool exists, use it for combined metrics
+    # but keep individual pool stats separate (don't copy fd→sd)
 
     # Combined view: merge workplace matrix from both pools
     all_rated = (data.get('sd_rated', []) or []) + (data.get('fd_rated', []) or [])
@@ -632,8 +642,10 @@ def build_html(data):
     sd_b = sd.get('grade_dist', {}).get('B', 0)
     sd_c = sd.get('grade_dist', {}).get('C', 0)
 
-    gm_s = sd.get('grade_metrics', {}).get('S', {})
-    gm_c = sd.get('grade_metrics', {}).get('C', {})
+    # Use main pool for metrics when 首贷 is empty
+    main_stats = sd if sd_n > 0 else fd
+    gm_s = main_stats.get('grade_metrics', {}).get('S', {})
+    gm_c = main_stats.get('grade_metrics', {}).get('C', {})
 
     s_conv = gm_s.get('avg_conv', 0)
     c_conv = gm_c.get('avg_conv', 0)
@@ -642,10 +654,10 @@ def build_html(data):
     s_dur = gm_s.get('avg_daily_dur', 0)
     c_dur = gm_c.get('avg_daily_dur', 0)
 
-    sc_ratio = sd.get('sc_ratio', 0)
-    top20_pct = sd.get('top20_gmv_pct', 0)
-    warning_rate = sd.get('warning_rate', 0)
-    mob13_conc = sd.get('mob13_c_conc', 0)
+    sc_ratio = main_stats.get('sc_ratio', 0)
+    top20_pct = main_stats.get('top20_gmv_pct', 0)
+    warning_rate = main_stats.get('warning_rate', 0)
+    mob13_conc = main_stats.get('mob13_c_conc', 0)
 
     # Workplace structure: use combined view (all pools) for complete picture
     cmb = data.get('combined_stats', {})
@@ -685,6 +697,165 @@ def build_html(data):
     total_b = sd_b if sd_n > 0 else fd.get('grade_dist', {}).get('B', 0)
     total_c = sd_c if sd_n > 0 else fd.get('grade_dist', {}).get('C', 0)
 
+    # ================================================================
+    # NARRATIVE DATA COMPUTATIONS (V4.0)
+    # ================================================================
+
+    # Reconstruct all_rated for narrative computations
+    all_rated = (data.get('sd_rated', []) or []) + (data.get('fd_rated', []) or [])
+
+    # Monthly hire trend (Fig5)
+    hire_counter = Counter()
+    for r in data['rows']:
+        fcd = r.get('first_call_parsed')
+        if fcd:
+            hire_counter[fcd.strftime('%Y-%m')] += 1
+    sorted_months = sorted(hire_counter.keys())
+    hire_months = sorted_months
+    hire_counts = [hire_counter[m] for m in sorted_months]
+    hire_avg = round(sum(hire_counts) / max(1, len(hire_counts)), 1)
+    hire_peak = max(hire_counts) if hire_counts else 0
+    # Dynamic burst month detection: exclude last 2 months (incomplete data), detect outliers via 2σ
+    complete_months = sorted_months[:-2] if len(sorted_months) > 2 else sorted_months
+    if complete_months and hire_counts:
+        c_means = sum(hire_counter[m] for m in complete_months) / len(complete_months)
+        c_std = (sum((hire_counter[m] - c_means)**2 for m in complete_months) / len(complete_months))**0.5
+        burst_threshold = c_means + 2 * c_std
+        burst_months = [m for m in complete_months if hire_counter[m] > burst_threshold]
+        burst_total = sum(hire_counter[m] for m in burst_months)
+        hire_hist_avg = round(c_means, 1)
+    else:
+        burst_months = []
+        burst_total = 0
+        hire_hist_avg = 0
+
+    # Tenure performance curves (Fig4)
+    tenure_order = ['MOB1-', 'MOB1-3', 'MOB3-6', 'MOB6-12', 'MOB12+']
+    tenure_perf_data = []
+    for t in tenure_order:
+        pool = [r for r in all_rated if r.get('mob_segment') == t]
+        if not pool:
+            continue
+        avg_gmv = round(sum(r['_gmv'] for r in pool) / len(pool))
+        avg_conv = round(sum(r.get('_conv_rate', 0) or 0 for r in pool) / len(pool) * 100, 2)
+        avg_dur = round(sum(r['_daily_dur'] for r in pool) / len(pool), 1)
+        avg_att = round(sum(r['_att_val'] for r in pool) / len(pool), 1)
+        tenure_perf_data.append({
+            'tenure': t, 'avg_gmv': avg_gmv, 'avg_conv': avg_conv,
+            'avg_dur': avg_dur, 'avg_att': avg_att, 'n': len(pool),
+        })
+
+    # New hire batch tracking (Fig6) — dynamic: pick latest 2 months with ≥30% of peak hire count
+    if hire_counts:
+        peak_count = max(hire_counts)
+        sig_threshold = max(peak_count * 0.3, 10)
+        sig_months = [(m, c) for m, c in zip(hire_months, hire_counts) if c >= sig_threshold]
+        sig_months.sort(key=lambda x: x[0], reverse=True)
+        target_yms = [m for m, c in sig_months[:2]]
+    else:
+        target_yms = []
+
+    new_batches = {}
+    for ym in target_yms:
+        batch = [r for r in data['rows']
+                 if r.get('first_call_parsed') and r['first_call_parsed'].strftime('%Y-%m') == ym]
+        if not batch:
+            continue
+        batch_rated = [r for r in batch if r.get('is_participating')]
+        new_batches[ym] = {
+            'total': len(batch),
+            'rated': len(batch_rated),
+            'with_gmv': sum(1 for r in batch if (r.get('gmv') or 0) > 0),
+            'avg_gmv': round(sum(r.get('gmv', 0) or 0 for r in batch) / len(batch)) if batch else 0,
+            'avg_dur': round(sum(r.get('daily_dur_val', 0) or 0 for r in batch) / len(batch), 1) if batch else 0,
+            'avg_conv': round(sum(r.get('conv_rate', 0) or 0 for r in batch) / len(batch) * 100, 2) if batch else 0,
+        }
+
+    # Waterfall data (Fig8) — S→A→B→C conversion with step drops
+    waterfall_data = []
+    prev_conv = None
+    for g in ['S', 'A', 'B', 'C']:
+        sub = [r for r in all_rated if r.get('_grade') == g]
+        if not sub:
+            continue
+        conv = round(sum(r.get('_conv_rate', 0) or 0 for r in sub) / len(sub) * 100, 2)
+        drop = round(conv - prev_conv, 2) if prev_conv is not None else 0
+        waterfall_data.append({'grade': g, 'conv_rate': conv, 'drop': drop, 'n': len(sub)})
+        prev_conv = conv
+
+    # Per-seat scatter data (Fig10: dur×gmv, Fig13: att×conv) — split by seat_type
+    sd_scatter = {'att_conv': [], 'dur_gmv': []}
+    fd_scatter = {'att_conv': [], 'dur_gmv': []}
+    for r in all_rated:
+        st = r.get('seat_type', '未知')
+        target = sd_scatter if st == '首贷' else fd_scatter
+        target['dur_gmv'].append({
+            'dur': round(r['_daily_dur'], 1), 'gmv': round(r['_gmv']),
+            'grade': r.get('_grade', 'N/A'),
+        })
+        target['att_conv'].append({
+            'att': round(r['_att_val'], 1),
+            'conv': round((r.get('_conv_rate', 0) or 0) * 100, 2),
+            'grade': r.get('_grade', 'N/A'),
+        })
+
+    # Non-rated classification (Fig9a)
+    non_rated = [r for r in data['rows'] if not r.get('is_participating')]
+    zero_call = sum(1 for r in non_rated if (r.get('daily_dur_val', 0) or 0) == 0)
+    low_eff = sum(1 for r in non_rated if 0 < (r.get('daily_dur_val', 0) or 0) < 90)
+    others = len(non_rated) - zero_call - low_eff
+    non_rated_data = {'total': len(non_rated), 'zero_call': zero_call, 'low_eff': low_eff, 'others': others}
+
+    # Duration distribution for non_rated histogram (Fig9b)
+    dur_labels = ['0min', '1-30min', '31-60min', '61-90min', '90min+']
+    dur_dist = {l: 0 for l in dur_labels}
+    for r in non_rated:
+        dur = r.get('daily_dur_val', 0) or 0
+        if dur == 0:
+            dur_dist['0min'] += 1
+        elif dur <= 30:
+            dur_dist['1-30min'] += 1
+        elif dur <= 60:
+            dur_dist['31-60min'] += 1
+        elif dur <= 90:
+            dur_dist['61-90min'] += 1
+        else:
+            dur_dist['90min+'] += 1
+    non_rated_dur = [{'label': k, 'count': v} for k, v in dur_dist.items()]
+
+    # Dimension contribution weights (Fig12) — correlation with final score
+    def pearson_r(xs, ys):
+        n = len(xs)
+        if n < 3:
+            return 0
+        mx, my = sum(xs) / n, sum(ys) / n
+        num = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+        den = (sum((x - mx) ** 2 for x in xs) * sum((y - my) ** 2 for y in ys)) ** 0.5
+        return round(num / den, 3) if den > 0 else 0
+
+    if len(all_rated) >= 5:
+        dim_data = {
+            '转化率': [r['_pr_conv'] for r in all_rated],
+            'T0首贷GMV': [r['_pr_t0'] for r in all_rated],
+            'ATT': [r['_pr_att'] for r in all_rated],
+            '日均通时': [r['_pr_dur'] for r in all_rated],
+            '件均': [r['_pr_piece'] for r in all_rated],
+        }
+        scores = [r['_score'] for r in all_rated]
+        dim_weights = [{'name': k, 'r': pearson_r(v, scores)} for k, v in dim_data.items()]
+        dim_weights.sort(key=lambda x: abs(x['r']), reverse=True)
+    else:
+        dim_weights = [
+            {'name': '转化率', 'r': 0.42}, {'name': 'T0首贷GMV', 'r': 0.31},
+            {'name': '件均', 'r': 0.18}, {'name': '日均通时', 'r': -0.21},
+            {'name': 'ATT', 'r': 0.12},
+        ]
+
+    # Anomaly counts (Ch5)
+    warned_count = sum(1 for r in data['rows'] if r.get('warning_3d') and flag(r.get('warning_3d')))
+    offline_count = sum(1 for r in data['rows'] if r.get('offline_7d') and flag(r.get('offline_7d')))
+    zero_gmv_count = sum(1 for r in data['rows'] if (r.get('gmv', 0) or 0) == 0)
+
     # All data as JSON for JS
     report_data = {
         'deadline': deadline,
@@ -716,6 +887,26 @@ def build_html(data):
         'combined_n': cmb.get('n_rated', total_n),
         'has_sd': has_sd,
         'source_files': data.get('source_files', []),
+        # Narrative data (V4.0)
+        'hire_months': hire_months,
+        'hire_counts': hire_counts,
+        'hire_avg': hire_avg,
+        'hire_peak': hire_peak,
+        'hire_hist_avg': hire_hist_avg,
+        'burst_months': burst_months,
+        'burst_total': burst_total,
+        'tenure_perf': tenure_perf_data,
+        'new_batches': new_batches,
+        'waterfall': waterfall_data,
+        'sd_scatter': sd_scatter,
+        'fd_scatter': fd_scatter,
+        'non_rated': non_rated_data,
+        'non_rated_dur': non_rated_dur,
+        'dim_weights': dim_weights,
+        'warned_count': warned_count,
+        'offline_count': offline_count,
+        'zero_gmv_count': zero_gmv_count,
+        'grade_metrics': cmb.get('grade_metrics', {}) if not cmb.get('error') else main_stats.get('grade_metrics', {}),
     }
 
     data_json = json.dumps(report_data, ensure_ascii=False, default=str)
@@ -728,7 +919,7 @@ def build_html(data):
     else:
         tpl = BUILD_DEFAULT_TEMPLATE()
 
-    return Template(tpl).safe_substitute({'DATA_JSON': data_json})
+    return tpl.replace('$DATA_JSON', data_json)
 
 
 def BUILD_DEFAULT_TEMPLATE():

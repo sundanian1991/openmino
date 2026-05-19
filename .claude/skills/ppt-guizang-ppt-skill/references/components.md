@@ -23,16 +23,14 @@
 
 ## 基础 Slide 外壳
 
-每一页都是一个 `<section class="slide ...">`。必须带 `light` 或 `dark` 类，JS 翻页时会根据 class 推断主题切换背景。
+每一页都是一个 `<section class="slide ...">`。必须包含 `data-theme` 属性（`light` 或 `dark`），JS 翻页时会根据这个属性切换背景。
 
 ```html
-<section class="slide light">    <!-- 浅色页 -->
-<section class="slide dark">      <!-- 深色页 -->
-<section class="slide hero light">  <!-- Hero 页：浅色 + 薄遮罩透出 WebGL -->
-<section class="slide hero dark">    <!-- Hero 页：深色 + 薄遮罩 -->
+<section class="slide light" data-theme="light">   <!-- 浅色页 -->
+<section class="slide dark" data-theme="dark">     <!-- 深色页 -->
+<section class="slide light hero" data-theme="light">  <!-- Hero 页：浅色 + 薄遮罩透出 WebGL -->
+<section class="slide dark hero" data-theme="dark">    <!-- Hero 页：深色 + 薄遮罩 -->
 ```
-
-**⚠️ 不需要写 `data-theme` 属性**。JS 的 `go()` 函数直接从 `<section>` 的 class 推断主题（包含 `light` 或 `dark` 类即可），`data-theme` 是可选的，写了会被优先读取但不影响实际行为。
 
 **light vs dark 的使用：交替使用**，每 2-3 页切换一次主题，避免连续超过 3 页同色。翻页时 WebGL 背景会自动在两个 shader 之间渐变过渡。
 
@@ -67,7 +65,6 @@
 **强调技巧**：
 - `<em class="en">英文词</em>` —— 把英文词渲染成 Playfair Display 斜体（很好看）
 - `<em style="opacity:.65">短语</em>` —— 让标题后半段淡出，制造节奏
-- `<span class="en">Inline English</span>` —— 在正文段落中嵌入等宽斜体英文短语，不依赖 `<em>` 标签
 
 ---
 
@@ -280,7 +277,7 @@
 
 5. **信息图 / 截图再设计**：给 `.frame-img` 同时加 `.fit-contain`，避免图内文字和标注被裁切。
 
-6. **用户原始截图比例不合适时**：优先重新生成"截图再设计 / UI 情景图"到目标比例,不要把原图硬塞成长条。
+6. **用户原始截图比例不合适时**：优先按 `screenshot-framing.md` 做 CleanShot X 式程序化适配;只有截图太长、太窄或需要重构信息时,才重新生成"截图再设计 / UI 情景图"。
 
 ### Frame Caption 变体
 

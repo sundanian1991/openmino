@@ -141,6 +141,7 @@ pos: .claude/rules/06-NOW.md
 
 > 技能同步检查每日自动执行，结果见 cron 历史。06-NOW 只保留实质性对话/决策/变化。
 
+- 05-18：技能同步检查（2 个 git 技能：takeaway-skill 本地有修改跳过，compound-knowledge-plugin 无更新）
 - 05-09：OPINIONS.md 个人信念地图 + Cron 大瘦身 + 任务验收标准强制化
 - 05-08：ppt-master 首用（Aham PPT）+ Cron 空跑根因定位
 - 05-07：13-VISUALIZATION.md 精简 + PPT 多技能对比测试
