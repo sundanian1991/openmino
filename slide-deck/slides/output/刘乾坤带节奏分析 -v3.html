@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>刘乾坤带节奏分析 — 行为模式与应对策略</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --text-primary: #111111;
+      --text-secondary: #666666;
+      --text-tertiary: #999999;
+      --bg-white: #ffffff;
+      --border: #e5e5e5;
+      --accent: #E2725B;
+      --accent-light: rgba(226, 114, 91, 0.1);
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--bg-white);
+      color: var(--text-primary);
+      overflow: scroll;
+      line-height: 1.6;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Typography */
+    .t1 {
+      font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .t2 {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .t3 {
+      font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .t3 strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .t4 {
+      font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .t6 {
+      font-size: clamp(0.6rem, 0.8vw, 0.7rem);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Cover Slide */
+    .cover {
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cover-content {
+      max-width: 900px;
+      text-align: center;
+    }
+
+    .cover-title {
+      font-size: clamp(2.2rem, 5.5vw, 3.5rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      line-height: 1.15;
+    }
+
+    .cover-subtitle {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+    }
+
+    .cover-meta {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cover-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-tertiary);
+    }
+
+    .cover-meta-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Section divider */
+    .divider-line {
+      width: 100%;
+      height: 2px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .divider-line.accent {
+      background: var(--accent);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      padding: clamp(1rem, 2vw, 1.5rem);
+      border-radius: 2px;
+    }
+
+    .card-title {
+      font-size: clamp(0.85rem, 1.3vw, 1rem);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    /* Grid layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 1.5rem);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: clamp(0.75rem, 1.5vw, 1rem);
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(0.5rem, 1vw, 0.75rem);
+    }
+
+    /* Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+    }
+
+    .data-table th {
+      border-bottom: 2px solid var(--text-primary);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .data-table td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 0.75rem;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover {
+      background: #fafafa;
+    }
+
+    .accent-text {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-high {
+      background: rgba(214, 51, 51, 0.1);
+      color: #d63333;
+    }
+
+    .badge-medium {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+    }
+
+    .badge-low {
+      background: rgba(37, 99, 235, 0.1);
+      color: #2563eb;
+    }
+
+    /* Progress indicator */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: transparent;
+      z-index: 100;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    /* Navigation hint */
+    .nav-hint {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      font-size: 0.7rem;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+
+    /* SVG Icons */
+    .icon {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon-accent {
+      stroke: var(--accent);
+    }
+
+    /* Hand-drawn style */
+    .hand-drawn {
+      fill: none;
+      stroke: var(--text-primary);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .hand-drawn-fill {
+      fill: var(--accent);
+      stroke: none;
+    }
+
+    /* Content container */
+    .content {
+      flex: 1;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-center {
+      justify-content: center;
+    }
+
+    /* List styles */
+    .list {
+      list-style: none;
+    }
+
+    .list-item {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .list-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.75rem;
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* Quote */
+    .quote {
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+      margin: 1rem 0;
+    }
+
+    .quote-text {
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .cover-meta {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Progress bar -->
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Navigation hint -->
+  <div class="nav-hint">
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+    滚动或按 ↓ 继续
+  </div>
+
+  <!-- Slide 1: Cover -->
+  <section class="slide cover">
+    <div class="cover-content">
+      <h1 class="cover-title">刘乾坤"带节奏"事件深度分析</h1>
+      <p class="cover-subtitle">行为模式识别 · 真实动机分析 · 影响评估 · 应对策略</p>
+      <div class="divider-line accent" style="width: 80px; margin: 2rem auto;"></div>
+      <div class="cover-meta">
+        <div class="cover-meta-item">
+          <svg class="cover-meta-icon hand-drawn" viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="20"/>
+            <text x="24" y="30" text-anchor="middle" font-size="20" fill="var(--accent)">分</text>
+          </svg>
+          <span>2026-03-29</span>
+        </div>
+        <div class="cover-meta-item">
+          <svg class="cover-meta-icon hand-drawn" viewBox="0 0 48 48">
+            <path d="M8 12 L24 4 L40 12 L40 36 L24 44 L8 36 Z"/>
+            <path d="M24 4 L24 44" stroke="var(--accent)"/>
+          </svg>
+          <span>基于档案与行为观察</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2: 事件背景 -->
+  <section class="slide">
+    <div class="t6">事件背景</div>
+    <h2 class="t1" style="margin-top: 0.5rem;">开门红激励预警事件</h2>
+    <div class="divider-line"></div>
+    <div class="content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            刘乾坤的说法
+          </div>
+          <ul class="list">
+            <li class="list-item">"激励拿不到，供应商会<strong>大量流失</strong>"</li>
+            <li class="list-item">"影响<strong>1400 个制鞋工人</strong>、<strong>5000 多个家庭</strong>"</li>
+            <li class="list-item">"激励方案定得<strong>非常有问题</strong>"</li>
+            <li class="list-item">"供应商都来找我（了）"</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg class="icon icon-accent" viewBox="0 0 24 24">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            真实情况
+          </div>
+          <ul class="list">
+            <li class="list-item">只有<strong>头部供应商个别问题</strong></li>
+            <li class="list-item">激励可以<strong>放到 4 月份</strong>继续发</li>
+            <li class="list-item">激励是<strong>策略组定的</strong>（和产品策略、老板一起确认）</li>
+            <li class="list-item">这是<strong>开门红激励 + 三月激励</strong>的问题</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1rem;">
+        <div class="card-title">
+          <svg class="icon icon-accent" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          核心矛盾
+        </div>
+        <p class="t4">
+          激励方案是<strong>策略组</strong>制定的（多方共识），但刘乾坤<strong>只攻击服务组同事</strong>，不攻击策略组。
+          他和刘伟佳（策略组负责人）关系好，这是<strong>选择性攻击</strong>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 3: 行为模式拆解 -->
+  <section class="slide">
+    <div class="t6">行为模式识别</div>
+    <h2 class="t1" style="margin-top: 0.5rem;">带节奏"组合拳"拆解</h2>
+    <div class="divider-line"></div>
+    <div class="content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span style="background: var(--accent); color: white; padding: 0.1rem 0.4rem; border-radius: 2px; font-size: 0.7rem;">第一拳</span>
+            选择性攻击
+          </div>
+          <p class="t4">
+            只攻击<strong>服务组</strong>同事，不攻击<strong>策略组</strong>。
+            激励是策略组定的，但他说"方案有问题"时，暗示是李吉斌的问题。
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span style="background: var(--accent); color: white; padding: 0.1rem 0.4rem; border-radius: 2px; font-size: 0.7rem;">第二拳</span>
+            群内表演
+          </div>
+          <p class="t4">
+            不在私下沟通，直接在群里<strong>@所有人</strong>，"疯狂地说自己在预警"。
+            全程有观众意识，建立"我很关心业务"的人设。
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span style="background: var(--accent); color: white; padding: 0.1rem 0.4rem; border-radius: 2px; font-size: 0.7rem;">第三拳</span>
+            道德绑架
+          </div>
+          <p class="t4">
+            用情绪化数字（<strong>1400、5000</strong>）制造恐慌。
+            把"激励问题"上升为"生存问题"，让反对者变成"冷血"。
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span style="background: var(--accent); color: white; padding: 0.1rem 0.4rem; border-radius: 2px; font-size: 0.7rem;">第四拳</span>
+            转移视线
+          </div>
+          <p class="t4">
+            把<strong>交接期管理失效</strong>转移到<strong>激励方案问题</strong>。
+            把<strong>数据中断、质量变差</strong>转移到<strong>激励定得高</strong>。
+          </p>
+        </div>
+        <div class="card" style="grid-column: span 2;">
+          <div class="card-title">
+            <span style="background: var(--accent); color: white; padding: 0.1rem 0.4rem; border-radius: 2px; font-size: 0.7rem;">第五拳</span>
+            信息真空下的"预警"
+          </div>
+          <p class="t4">
+            信息同步是他的责任还是系统问题？交接后（3 月 16-17 日）数据中断，供应商不知道进展。
+            他用"没有拿到数据"作为预警理由，但<strong>不主动收集信息</strong>。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 4: 动机分析 -->
+  <section class="slide">
+    <div class="t6">动机分析</div>
+    <h2 class="t1" style="margin-top: 0.5rem;">他为什么要"带节奏"？</h2>
+    <div class="divider-line"></div>
+    <div class="content">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">动机</th>
+            <th>逻辑</th>
+            <th style="width: 15%;">可能性</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>表演型预警</strong></td>
+            <td>通过"发现问题"建立"关心业务"的人设。如果出问题=预警有功；如果不出问题=推动有功。</td>
+            <td><span class="badge badge-high">极高</span></td>
+          </tr>
+          <tr>
+            <td><strong>转移视线</strong></td>
+            <td>把"交接期管理失效"转移到"激励方案问题"，规避自己的交接责任。</td>
+            <td><span class="badge badge-high">极高</span></td>
+          </tr>
+          <tr>
+            <td><strong>保护关系网</strong></td>
+            <td>只攻击服务组，不攻击策略组。他和刘伟佳关系好（前下属），维护"师父"。</td>
+            <td><span class="badge badge-high">极高</span></td>
+          </tr>
+          <tr>
+            <td><strong>责任转嫁</strong></td>
+            <td>把激励问题归咎于李吉斌（Q1 责任），自己摘清。"方案定得高"=暗示李吉斌不行。</td>
+            <td><span class="badge badge-medium">高</span></td>
+          </tr>
+          <tr>
+            <td><strong>配合博弈</strong></td>
+            <td>策略组 vs 服务组的权力博弈，刘乾坤是"前下属 + 盟友"，可能配合刘伟佳。</td>
+            <td><span class="badge badge-medium">中</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card" style="margin-top: 1rem;">
+        <div class="card-title">
+          <svg class="icon icon-accent" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          核心判断
+        </div>
+        <p class="t4">
+          这是<strong>表演型预警 + 转移视线 + 保护关系网</strong>的三重组合。
+          预警确实存在（激励确实有问题），但<strong>预警方式有严重问题</strong>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 5: 影响评估（紧迫情绪 → 高密度） -->
+  <section class="slide">
+    <div class="t6">影响评估</div>
+    <h2 class="t1" style="margin-top: 0.5rem;">对各方的具体影响</h2>
+    <div class="divider-line"></div>
+    <div class="content">
+      <div class="grid-2" style="gap: 0.6rem;">
+        <div class="card" style="padding: 0.7rem;">
+          <div class="card-title" style="margin-bottom: 0.3rem; font-size: 0.85rem;">
+            <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            李吉斌（被攻击）
+          </div>
+          <ul class="list" style="margin: 0;">
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">Q1 责任确实在他（事实）</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">专业能力被公开质疑</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">在群里被公开拷问</li>
+          </ul>
+          <p class="t4" style="margin-top: 0.3rem; padding-top: 0.3rem; border-top: 1px solid var(--border); color: var(--accent); font-size: 0.75rem;">
+            应对：不接锅 + 亮资历 + 直接怼
+          </p>
+        </div>
+        <div class="card" style="padding: 0.7rem;">
+          <div class="card-title" style="margin-bottom: 0.3rem; font-size: 0.85rem;">
+            <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            刘伟佳/策略组
+          </div>
+          <ul class="list" style="margin: 0;">
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">没有被攻击（关系网保护）</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">激励是策略组定的，但不承担后果</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">隐性问题：选择性攻击</li>
+          </ul>
+          <p class="t4" style="margin-top: 0.3rem; padding-top: 0.3rem; border-top: 1px solid var(--border); color: var(--accent); font-size: 0.75rem;">
+            观察：是否表态支持刘乾坤
+          </p>
+        </div>
+        <div class="card" style="padding: 0.7rem;">
+          <div class="card-title" style="margin-bottom: 0.3rem; font-size: 0.85rem;">
+            <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            王易人/服务组
+          </div>
+          <ul class="list" style="margin: 0;">
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">团队管理被质疑</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">连带责任（激励问题被放大）</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">交接问题暴露（管理漏洞）</li>
+          </ul>
+          <p class="t4" style="margin-top: 0.3rem; padding-top: 0.3rem; border-top: 1px solid var(--border); color: var(--accent); font-size: 0.75rem;">
+            建议：监督交接，保护团队安全感
+          </p>
+        </div>
+        <!-- 团队氛围：P0 高亮 -->
+        <div class="card" style="padding: 0.7rem; border: 2px solid var(--accent); background: var(--accent-light);">
+          <div class="card-title" style="margin-bottom: 0.3rem; font-size: 0.85rem;">
+            <svg class="icon icon-accent" viewBox="0 0 24 24" style="width:16px;height:16px;">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            团队氛围
+          </div>
+          <ul class="list" style="margin: 0;">
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;"><strong style="color: var(--accent);">安全感被破坏</strong>（大家都紧绷）</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">对立情绪（服务组内部）</li>
+            <li class="list-item" style="padding: 0.2rem 0 0.2rem 1rem; font-size: 0.8rem;">信任受损、表演型管理污染</li>
+          </ul>
+          <p class="t4" style="margin-top: 0.3rem; padding-top: 0.3rem; border-top: 1px solid var(--accent); color: var(--accent); font-size: 0.75rem; font-weight: 600;">
+            最需要保护的是安全感
+          </p>
+        </div>
+      </div>
+
+      <!-- 底部结论条 -->
+      <div style="margin-top: 0.6rem; padding: 0.6rem 1rem; border-left: 3px solid var(--accent); background: #fafafa;">
+        <p class="t4" style="font-size: 0.8rem;">
+          <strong style="color: var(--accent);">关键发现</strong>：表面是"关心业务"，实际损害最大的是<strong>团队安全感</strong>。短期内李吉斌受伤最深，长期看团队信任受损才是最大代价。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6: 应对策略 -->
+  <section class="slide">
+    <div class="t6">应对策略</div>
+    <h2 class="t1" style="margin-top: 0.5rem;">REACT 框架 + 4 个场景</h2>
+    <div class="divider-line"></div>
+    <div class="content">
+      <div class="card" style="margin-bottom: 1rem;">
+        <div class="card-title">
+          <svg class="icon icon-accent" viewBox="0 0 24 24">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          核心原则
+        </div>
+        <div class="grid-4" style="margin-top: 0.75rem;">
+          <div><strong>不接靶子</strong><br><span class="t4">不说"激励/策略有问题"</span></div>
+          <div><strong>回归根本原因</strong><br><span class="t4">指出"交接期信息真空"</span></div>
+          <div><strong>拒绝道德绑架</strong><br><span class="t4">不被情绪化数字逼迫</span></div>
+          <div><strong>保护安全感</strong><br><span class="t4">不在群里制造对立</span></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">场景 1：群里@年老师</div>
+          <div class="quote">
+            <p class="quote-text t4">
+              "我理解你对激励问题的担忧。但真正的问题是<strong>交接期信息真空、数据中断</strong>，导致供应商不知道进展。
+              我这边已经和头部供应商沟通过，建议恢复数据同步机制。"
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">场景 2：道德绑架升级</div>
+          <div class="quote">
+            <p class="quote-text t4">
+              "情绪化的数字不能帮助我们解决问题，反而会<strong>制造恐慌，破坏团队安全感</strong>。
+              供应商的真实问题是不知道进展，不是拿不到钱。"
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">场景 3：攻击激励方案</div>
+          <div class="quote">
+            <p class="quote-text t4">
+              "激励方案是策略组定的、多方共识的。
+              真正的问题是交接期信息真空——即使方案调整，如果数据同步不恢复，问题仍然存在。"
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">场景 4：私聊沟通</div>
+          <div class="quote">
+            <p class="quote-text t4">
+              "你的方式有问题：只攻击服务组、群里放炮、用情绪化数字。
+              这破坏了团队安全感。建议：私下先沟通、攻击问题本身、用真实数据。"
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 7: 风险预警 -->
+  <section class="slide">
+    <div class="t6">风险预警</div>
+    <h2 class="t1" style="margin-top: 0.5rem;">短期/中期/长期 7 大风险</h2>
+    <div class="divider-line"></div>
+    <div class="content">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>周期</th>
+            <th>风险</th>
+            <th>可能性</th>
+            <th>影响</th>
+            <th>应对</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="3" style="vertical-align: middle;"><strong>短期</strong><br><span class="t4">1-2 周</span></td>
+            <td>刘乾坤升级表演强度</td>
+            <td><span class="badge badge-high">高</span></td>
+            <td>中</td>
+            <td>不回应情绪化言论，用数据冷静对冲</td>
+          </tr>
+          <tr>
+            <td>李吉斌公开反击</td>
+            <td><span class="badge badge-medium">中</span></td>
+            <td><strong>高</strong></td>
+            <td>不参与公开冲突，用数据说话</td>
+          </tr>
+          <tr>
+            <td>策略组 vs 服务组博弈升级</td>
+            <td><span class="badge badge-medium">中</span></td>
+            <td><strong>高</strong></td>
+            <td>认清博弈，保护边界，不被绑定</td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="vertical-align: middle;"><strong>中期</strong><br><span class="t4">1-2 月</span></td>
+            <td>狼来了效应（预警疲劳）</td>
+            <td><span class="badge badge-high">高</span></td>
+            <td>中</td>
+            <td>不奖励他的表演</td>
+          </tr>
+          <tr>
+            <td>军哥被误导</td>
+            <td><span class="badge badge-low">低</span></td>
+            <td><strong>高</strong></td>
+            <td>用真实数据澄清</td>
+          </tr>
+          <tr>
+            <td rowspan="2" style="vertical-align: middle;"><strong>长期</strong><br><span class="t4">3 月+</span></td>
+            <td>表演型管理成为常态</td>
+            <td><span class="badge badge-high">高</span></td>
+            <td><strong>高</strong></td>
+            <td>不奖励、用数据对冲、私下建议</td>
+          </tr>
+          <tr>
+            <td>与刘伟佳"师承"关系深化</td>
+            <td><span class="badge badge-medium">中</span></td>
+            <td>中</td>
+            <td>观察互动模式，保护边界</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card" style="margin-top: 1rem;">
+        <div class="card-title">
+          <svg class="icon icon-accent" viewBox="0 0 24 24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          最需要关注的风险
+        </div>
+        <div class="grid-3" style="margin-top: 0.75rem;">
+          <div class="t4">
+            <strong style="color: var(--accent);">李吉斌公开反击</strong><br>
+            可能引发公开冲突，团队氛围恶化
+          </div>
+          <div class="t4">
+            <strong style="color: var(--accent);">策略组 vs 服务组博弈</strong><br>
+            权力斗争公开化，年老师被卷入
+          </div>
+          <div class="t4">
+            <strong style="color: var(--accent);">表演型管理成为常态</strong><br>
+            长期影响团队氛围，真诚沟通减少
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 8: 总结（沉思 + 凝视 → 并列卡片 + 大留白 + 金句） -->
+  <section class="slide cover">
+    <div class="cover-content" style="width: 100%; max-width: 860px;">
+
+      <!-- 四张精简卡片，加大间距 -->
+      <div class="grid-2" style="gap: 2rem; text-align: left; margin-top: 2rem;">
+        <div class="card" style="padding: 1.2rem;">
+          <div class="card-title" style="font-size: 0.85rem;">行为模式</div>
+          <p class="t4" style="font-size: 0.85rem;">
+            选择性攻击 + 群内表演 + 道德绑架 + 转移视线 + 信息真空
+          </p>
+        </div>
+        <div class="card" style="padding: 1.2rem;">
+          <div class="card-title" style="font-size: 0.85rem;">真实动机</div>
+          <p class="t4" style="font-size: 0.85rem;">
+            表演型预警 + 转移视线 + 保护关系网
+          </p>
+        </div>
+        <div class="card" style="padding: 1.2rem;">
+          <div class="card-title" style="font-size: 0.85rem;">核心原则</div>
+          <p class="t4" style="font-size: 0.85rem;">
+            不接靶子 · 回归根本原因 · 拒绝道德绑架 · 保护安全感
+          </p>
+        </div>
+        <div class="card" style="padding: 1.2rem;">
+          <div class="card-title" style="font-size: 0.85rem;">关键话术</div>
+          <p class="t4" style="font-size: 0.85rem;">
+            "真正的问题是交接期信息真空、数据中断"
+          </p>
+        </div>
+      </div>
+
+      <!-- 底部金句：放大、居中、独立 -->
+      <div style="margin-top: 3.5rem; text-align: center;">
+        <div style="width: 60px; height: 2.4px; background: var(--accent); margin: 0 auto 2rem;"></div>
+        <p style="font-size: clamp(1.1rem, 2.2vw, 1.5rem); font-weight: 600; color: var(--accent); line-height: 1.6;">
+          预警确实存在，但预警方式有严重问题
+        </p>
+        <p class="t6" style="margin-top: 2rem;">分析完成 · 2026-03-29</p>
+      </div>
+
+    </div>
+  </section>
+
+  <script>
+    // Progress bar
+    const progressBar = document.getElementById('progressBar');
+    const slides = document.querySelectorAll('.slide');
+
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      progressBar.style.width = progress + '%';
+    }
+
+    window.addEventListener('scroll', updateProgress);
+    updateProgress();
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      const currentScroll = window.scrollY;
+      const windowHeight = window.innerHeight;
+
+      if (e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        window.scrollTo({ top: currentScroll + windowHeight * 0.9, behavior: 'smooth' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        window.scrollTo({ top: currentScroll - windowHeight * 0.9, behavior: 'smooth' });
+      }
+    });
+
+    // Intersection Observer for slide animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    slides.forEach(slide => observer.observe(slide));
+  </script>
+</body>
+</html>

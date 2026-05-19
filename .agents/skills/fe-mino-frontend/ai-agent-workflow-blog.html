@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent工作流模式深度解析</title>
+
+  <style>
+    /* ============================================
+       数据模式 - 黑白灰极简 + 陶土色点缀
+       ============================================ */
+    :root {
+      --text-primary: #111111;
+      --text-secondary: #666666;
+      --text-tertiary: #999999;
+      --bg-white: #ffffff;
+      --border: #e5e5e5;
+      --accent: #E2725B;
+      --code-bg: #f8f8f8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Text', Helvetica, Arial, sans-serif;
+      background: var(--bg-white);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: clamp(2rem, 5vw, 4rem);
+    }
+
+    /* 标题区 */
+    .header {
+      text-align: center;
+      padding: clamp(3rem, 8vw, 4rem) 0;
+      border-bottom: 2px solid var(--text-primary);
+      margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    .header h1 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .header .subtitle {
+      font-size: clamp(0.9rem, 2vw, 1.2rem);
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .header .meta {
+      font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+      color: var(--text-tertiary);
+    }
+
+    /* 开篇锚点 */
+    .hero-stats {
+      text-align: center;
+      padding: clamp(2rem, 5vw, 3rem) 0;
+      margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    .hero-stats h2 {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .stats-comparison {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(2rem, 5vw, 4rem);
+      margin-bottom: 1rem;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value.serial {
+      color: var(--text-secondary);
+    }
+
+    .stat-value.parallel {
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: var(--text-secondary);
+    }
+
+    .hero-note {
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
+      color: var(--text-tertiary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 核心问题区 */
+    .complexity-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: clamp(1.5rem, 3vw, 2rem);
+      margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    .complexity-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      padding: clamp(1.2rem, 2vw, 1.5rem);
+    }
+
+    .complexity-card h3 {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    /* 代码块样式 */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+      font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+      line-height: 1.5;
+    }
+
+    .code-inline {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+      background: var(--code-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+
+    /* 手绘 SVG 样式 */
+    .hand-drawn {
+      fill: none;
+      stroke: var(--text-primary);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .hand-drawn-accent {
+      fill: var(--accent);
+      stroke: none;
+    }
+
+    /* 三种模式卡片 */
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: clamp(1rem, 2vw, 1.5rem);
+      margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+
+    .mode-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      padding: clamp(1.2rem, 2vw, 1.5rem);
+    }
+
+    .mode-card .mode-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .mode-card h4 {
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .mode-card .mode-tag {
+      display: inline-block;
+      background: var(--code-bg);
+      padding: 0.3rem 0.6rem;
+      border-radius: 3px;
+      font-size: clamp(0.75rem, 1.2vw, 0.85rem);
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .mode-card p {
+      font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* 性能对比表格 */
+    .table-wrapper {
+      margin-bottom: clamp(2rem, 5vw, 3rem);
+      overflow-x: auto;
+    }
+
+    .perf-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.75rem, 1.3vw, 0.9rem);
+      background: var(--bg-white);
+    }
+
+    .perf-table thead {
+      border-bottom: 2px solid var(--text-primary);
+    }
+
+    .perf-table th {
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: clamp(0.6rem, 1.2vw, 0.8rem);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .perf-table td {
+      padding: clamp(0.6rem, 1.2vw, 0.8rem);
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .perf-table tr:hover {
+      background: var(--code-bg);
+    }
+
+    .perf-table .accent {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* 底部总结 */
+    .footer-summary {
+      text-align: center;
+      padding: clamp(2rem, 5vw, 3rem) 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-summary p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .stats-comparison {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .complexity-section,
+      .modes-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header {
+        padding: 1.5rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 标题区 -->
+    <header class="header">
+      <h1>AI Agent工作流模式深度解析</h1>
+      <p class="subtitle">从串行到并行的性能革命</p>
+      <p class="meta">孙大年 | 2026-02-26</p>
+    </header>
+
+    <!-- 开篇锚点 -->
+    <section class="hero-stats">
+      <h2>串行 25秒 vs 并行 5秒：5倍性能差距</h2>
+      <div class="stats-comparison">
+        <div class="stat-item">
+          <div class="stat-value serial">25s</div>
+          <div class="stat-label">串行</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value parallel">5s</div>
+          <div class="stat-label">并行</div>
+        </div>
+      </div>
+      <p class="hero-note">90%开发者仍在用串行，根源：易写、调试方便。但并行模式可将耗时降低至串行的 1/5。</p>
+    </section>
+
+    <!-- 核心问题区 -->
+    <section class="complexity-section">
+      <div class="complexity-card">
+        <h3>串行时间复杂度</h3>
+        <div class="code-block">O(n) = 500ms × n</div>
+        <p style="font-size: clamp(0.75rem, 1.3vw, 0.9rem); color: var(--text-secondary);">假设5个独立LLM任务（每个平均延迟500ms），总耗时为500ms × 5 = 2500ms</p>
+      </div>
+
+      <div class="complexity-card">
+        <h3>并行时间复杂度</h3>
+        <div class="code-block">O(1) = max(500ms)</div>
+        <p style="font-size: clamp(0.75rem, 1.3vw, 0.9rem); color: var(--text-secondary);">相同任务下，总耗时为max(500ms)，仅需单个任务的耗时</p>
+      </div>
+    </section>
+
+    <!-- 三种模式卡片 -->
+    <section class="modes-grid">
+      <!-- 模式1 -->
+      <div class="mode-card">
+        <div class="mode-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48">
+            <!-- 链条：两个连接的椭圆 -->
+            <ellipse cx="16" cy="24" rx="10" ry="12" class="hand-drawn"/>
+            <ellipse cx="32" cy="24" rx="10" ry="12" class="hand-drawn"/>
+            <!-- 连接点点缀 -->
+            <circle cx="24" cy="24" r="3" class="hand-drawn-accent"/>
+          </svg>
+        </div>
+        <h4>串行链式处理</h4>
+        <div class="mode-tag">O(n)</div>
+        <p><strong>原理：</strong>一个LLM的输出直接作为下一个LLM的输入，如同流水线。</p>
+        <p><strong>场景：</strong>文档处理流程、代码审查链、数据清洗管道</p>
+      </div>
+
+      <!-- 模式2 -->
+      <div class="mode-card">
+        <div class="mode-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48">
+            <!-- 分支箭头：从中心一分为二 -->
+            <path d="M 8 36 L 24 16 L 24 36" class="hand-drawn"/>
+            <path d="M 40 36 L 24 16 L 24 36" class="hand-drawn"/>
+            <!-- 箭头头部点缀 -->
+            <circle cx="24" cy="16" r="3" class="hand-drawn-accent"/>
+          </svg>
+        </div>
+        <h4>智能路由</h4>
+        <div class="mode-tag">O(1)</div>
+        <p><strong>原理：</strong>同一输入根据条件走不同路径，先分类再分发。</p>
+        <p><strong>场景：</strong>客服系统、多任务处理、个性化推荐</p>
+      </div>
+
+      <!-- 模式3 -->
+      <div class="mode-card">
+        <div class="mode-icon">
+          <svg width="48" height="48" viewBox="0 0 48 48">
+            <!-- 并行箭头：两个并排的箭头 -->
+            <path d="M 10 40 L 10 14 L 4 20" class="hand-drawn"/>
+            <path d="M 38 40 L 38 14 L 44 20" class="hand-drawn"/>
+            <!-- 两个箭头起点点缀 -->
+            <circle cx="10" cy="40" r="3" class="hand-drawn-accent"/>
+            <circle cx="38" cy="40" r="3" class="hand-drawn-accent"/>
+          </svg>
+        </div>
+        <h4>并行处理</h4>
+        <div class="mode-tag">O(1)</div>
+        <p><strong>原理：</strong>多个独立任务同时执行，最后汇总结果。</p>
+        <p><strong>说明：</strong><span class="accent">最被低估的模式</span>，性能提升显著。</p>
+      </div>
+    </section>
+
+    <!-- 性能对比表格 -->
+    <section class="table-wrapper">
+      <table class="perf-table">
+        <thead>
+          <tr>
+            <th>模式</th>
+            <th>总耗时</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>串行</td>
+            <td>2600ms</td>
+            <td>520ms × 5，顺序执行累加</td>
+          </tr>
+          <tr>
+            <td>并行（无限制）</td>
+            <td class="accent">523ms</td>
+            <td>max(520ms)，理论上限</td>
+          </tr>
+          <tr>
+            <td>并发（限制5）</td>
+            <td class="accent">521ms</td>
+            <td>信号量控制，无性能损失</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 底部总结 -->
+    <footer class="footer-summary">
+      <p>结论：并行模式可将耗时降低至串行的 1/5</p>
+    </footer>
+  </div>
+
+  <!--
+  =====================================================
+  设计哲学签名（Phase 2.5 审美判断力）
+  =====================================================
+
+  哲学：实验室白板 — 精确即美学
+
+  8维定位：
+  - 温度：5/10 偏冷（技术分析，但有个人经历温度）
+  - 密度：7/10 较高（代码、数据、模式对比）
+  - 权威感：7/10 中高（有实践经验，明确判断）
+  - 时间感：6/10 当下偏永恒（2026技术文章，通用范式）
+  - 精度：9/10 极高（代码、时间复杂度分析）
+  - 戏剧性：4/10 中等（"5倍差距"有戏剧性）
+  - 材质感：3/10 偏数字（技术文章，数字原生）
+  - 色彩：2/10 近单色（黑白灰基底，代码高亮点缀）
+
+  =====================================================
+  -->
+</body>
+</html>

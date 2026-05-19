@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岐力职场人力健康度诊断与改善路径</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FFFFFF;
+    --bg-warm: #FFF8EF;
+    --text-primary: #1A1A1A;
+    --text-secondary: #525252;
+    --text-light: #969696;
+    --line: #D9D9D9;
+    --fill: #F7F7F7;
+    --accent-red: #E63946;
+    --accent-teal: #2A9D8F;
+    --accent-orange: #F4A261;
+    --accent-navy: #1A1A1A;
+    --slide-w: 1280px;
+    --slide-h: 720px;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+    background: #333;
+    display: flex; flex-direction: column; align-items: center;
+    color: var(--text-primary);
+    overflow: hidden;
+  }
+
+  .presentation {
+    position: relative;
+    width: var(--slide-w); max-width: 100vw;
+    aspect-ratio: 16 / 9;
+    margin-top: 20px;
+    background: var(--bg);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    padding: 48px 56px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.35s ease;
+    background: var(--bg);
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+  .slide.warm { background: var(--bg-warm); }
+
+  .headline {
+    font-size: 28px; font-weight: 700; color: var(--text-primary);
+    letter-spacing: -0.4px; line-height: 1.25; margin-bottom: 6px;
+  }
+  .subhead {
+    font-size: 15px; font-weight: 400; color: var(--text-secondary);
+    line-height: 1.4; margin-bottom: 18px;
+  }
+  .subhead::after {
+    content: ''; display: block;
+    width: 40px; height: 2px; background: var(--line);
+    margin-top: 14px;
+  }
+  .body-text {
+    font-size: 14px; font-weight: 400; color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .body-text p { margin-bottom: 4px; }
+
+  .chart-area { flex: 1; display: flex; align-items: stretch; gap: 24px; min-height: 0; }
+  .chart-main { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+  .chart-side { width: 200px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+
+  /* Controls */
+  .controls {
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 12px; padding: 8px 0;
+    font-size: 14px; color: #ccc;
+  }
+  .controls button {
+    background: #555; color: #fff; border: none;
+    padding: 8px 20px; border-radius: 4px;
+    font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .controls button:hover { background: #777; }
+  .controls .counter { min-width: 60px; text-align: center; }
+
+  /* --- Individual slide styles --- */
+
+  /* Slide 1 Cover */
+  .slide-1 { background: var(--bg); justify-content: flex-start; padding-top: 80px; }
+  .slide-1 .headline { font-size: 40px; max-width: 70%; }
+  .slide-1 .subhead { font-size: 18px; color: var(--text-secondary); margin-top: 10px; }
+  .slide-1 .subhead::after { display: none; }
+  .slide-1 .cover-stat {
+    position: absolute; bottom: 60px; right: 60px; text-align: right;
+  }
+  .slide-1 .cover-stat .num {
+    font-size: 120px; font-weight: 800; color: var(--accent-red);
+    line-height: 0.9; letter-spacing: -4px;
+  }
+  .slide-1 .cover-stat .num-bg {
+    position: absolute; bottom: -8px; right: -12px;
+    width: 200px; height: 80px; background: var(--bg-warm);
+    z-index: -1; border-radius: 4px;
+  }
+  .slide-1 .cover-stat .label {
+    font-size: 16px; color: var(--text-secondary); margin-top: 4px;
+  }
+  .slide-1 .divider {
+    width: 60px; height: 2px; background: var(--line);
+    margin: 14px 0;
+  }
+
+  /* Slide 2 Three columns */
+  .three-cols { display: flex; gap: 24px; flex: 1; align-items: stretch; min-height: 0; }
+  .three-cols .col {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    border-right: 1px solid var(--line); padding: 0 12px;
+  }
+  .three-cols .col:last-child { border-right: none; }
+  .three-cols .col .big-num { font-size: 56px; font-weight: 700; line-height: 1; }
+  .three-cols .col .col-label { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+  .three-cols .col .col-detail { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .three-cols .col.red .big-num { color: var(--accent-red); }
+  .three-cols .col.orange .big-num { color: var(--accent-orange); }
+
+  .bottom-arrow-bar {
+    margin-top: auto; padding: 20px 0 12px;
+    border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    font-size: 15px; color: var(--text-secondary);
+  }
+  .bottom-arrow-bar .arrow { color: var(--accent-orange); font-size: 20px; font-weight: 300; }
+  .bottom-arrow-bar .highlight { color: var(--accent-red); font-weight: 600; }
+  .data-annotation {
+    position: absolute; bottom: 14px; right: 56px;
+    font-size: 11px; color: var(--text-light);
+  }
+
+  /* Stacked bar chart */
+  .stacked-bars { width: 100%; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 10px; }
+  .bar-label { width: 72px; font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+  .bar-track { flex: 1; height: 28px; display: flex; border-radius: 2px; overflow: hidden; }
+  .bar-track .seg { height: 100%; display: flex; align-items: center; justify-content: flex-end; padding-right: 4px; font-size: 10px; color: rgba(255,255,255,0.8); font-weight: 500; min-width: 12px; }
+  .seg.teal { background: var(--accent-teal); }
+  .seg.gray { background: var(--line); color: var(--text-light); }
+  .seg.red { background: var(--accent-red); }
+
+  /* Bar chart */
+  .bar-chart { width: 100%; }
+  .bar-chart .bar-item { display: flex; align-items: center; margin-bottom: 6px; }
+  .bar-chart .bar-item .bar-label { width: 80px; font-size: 11px; color: var(--text-secondary); flex-shrink: 0; }
+  .bar-chart .bar-item .bar-fill { height: 20px; border-radius: 2px; display: flex; align-items: center; padding: 0 6px; font-size: 10px; color: #fff; font-weight: 500; transition: width 0.5s; }
+  .bar-chart .bar-item .bar-value { font-size: 11px; color: var(--text-secondary); margin-left: 6px; white-space: nowrap; }
+
+  /* Combo bar+line */
+  .combo-area { display: flex; flex-direction: column; flex: 1; }
+  .bar-month { display: flex; align-items: flex-end; height: 100px; gap: 4px; position: relative; }
+  .bar-month-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; }
+  .bar-month-item .bar { width: 70%; background: var(--text-light); border-radius: 2px 2px 0 0; transition: height 0.5s; min-height: 2px; position: relative; }
+  .bar-month-item .bar.highlight { background: var(--accent-red); }
+  .bar-month-item .retention-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-orange); z-index: 2; }
+  .bar-month-item .retention-line { position: absolute; width: 100%; height: 2px; background: transparent; }
+  .bar-month-item .month-label { font-size: 9px; color: var(--text-light); margin-top: 4px; white-space: nowrap; }
+  .bar-month-item .retention-label { font-size: 9px; color: var(--accent-orange); position: absolute; top: -14px; white-space: nowrap; }
+
+  /* Scatter dot simulation */
+  .scatter-area { position: relative; flex: 1; border-left: 1px solid var(--text-primary); border-bottom: 1px solid var(--text-primary); margin: 0 20px 20px 60px; min-height: 200px; }
+  .scatter-area .dot { position: absolute; border-radius: 50%; }
+  .scatter-area .x-label { position: absolute; bottom: -18px; font-size: 10px; color: var(--text-light); }
+  .scatter-area .y-label { position: absolute; left: -50px; transform: rotate(-90deg); transform-origin: right center; font-size: 10px; color: var(--text-light); white-space: nowrap; }
+
+  /* Improvement paths */
+  .paths { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+  .path-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .path-row:last-child { border-bottom: none; }
+  .path-swatch { width: 48px; height: 32px; border-radius: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+  .path-content { flex: 1; }
+  .path-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+  .path-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .path-impact { text-align: right; flex-shrink: 0; }
+  .path-impact .num { font-size: 24px; font-weight: 700; }
+  .path-impact .sublabel { font-size: 11px; color: var(--text-secondary); }
+
+  /* Action items */
+  .action-list { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
+  .action-item { display: flex; gap: 16px; align-items: flex-start; }
+  .action-num { width: 32px; height: 32px; border-radius: 50%; background: var(--text-primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
+  .action-text { }
+  .action-text .act-header { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+  .action-text .act-desc { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+  .watermark {
+    position: absolute; font-size: 260px; font-weight: 800;
+    color: rgba(26,26,26,0.03); line-height: 1;
+    bottom: 20px; right: 40px; pointer-events: none; z-index: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 800px) {
+    .slide { padding: 24px 20px; }
+    .slide-1 .headline { font-size: 24px; max-width: 100%; }
+    .slide-1 .cover-stat .num { font-size: 72px; }
+    .slide-1 .cover-stat { bottom: 30px; right: 30px; }
+    .three-cols { flex-direction: column; gap: 8px; }
+    .three-cols .col { border-right: none; border-bottom: 1px solid var(--line); padding: 8px 0; }
+    .three-cols .col:last-child { border-bottom: none; }
+    .bottom-arrow-bar { flex-wrap: wrap; font-size: 12px; }
+    .chart-area { flex-direction: column; }
+    .chart-side { width: 100%; flex-direction: row; }
+    .headline { font-size: 20px; }
+    .bar-row { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="presentation" id="pres">
+
+  <!-- Slide 1: Cover -->
+  <div class="slide slide-1 active">
+    <div class="headline">岐力职场人力健康度</br>诊断与改善路径</div>
+    <div class="divider"></div>
+    <div class="subhead">有效人力仅29%——分层治理，精准改善</div>
+    <div class="cover-stat">
+      <div class="num-bg"></div>
+      <div class="num">29%</div>
+      <div class="label">有效人力占比</div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Executive Summary -->
+  <div class="slide">
+    <div class="headline">三层问题，三层解法</div>
+    <div class="subhead">有效人力仅34/118人（29%），核心矛盾是「留不住人、用不好人」</div>
+    <div class="three-cols">
+      <div class="col red">
+        <div class="big-num">44</div>
+        <div class="col-label">流失人数（37%）</div>
+        <div class="col-detail">含 GMV≥500万熟手17人</div>
+      </div>
+      <div class="col orange">
+        <div class="big-num">17</div>
+        <div class="col-label">C级人数</div>
+        <div class="col-detail">人均GMV仅为A级54%</div>
+      </div>
+      <div class="col">
+        <div class="big-num">40</div>
+        <div class="col-label">不参评人数</div>
+        <div class="col-detail">多人距参评门槛一步之遥</div>
+      </div>
+    </div>
+    <div class="bottom-arrow-bar">
+      <span>稳住高产核心 <span class="highlight">8人</span></span>
+      <span class="arrow">→</span>
+      <span>提升C级 <span class="highlight">17人</span></span>
+      <span class="arrow">→</span>
+      <span>缩短新人爬坡 ~10人</span>
+    </div>
+    <div class="data-annotation">数据截至 2026.05.12</div>
+  </div>
+
+  <!-- Slide 3: Human Landscape -->
+  <div class="slide">
+    <div class="headline">118人目标参评仅34人——超七成人力未达标</div>
+    <div class="subhead">按司龄段看人力结构，流失严重且新人不达标比例极高</div>
+    <div class="chart-area">
+      <div class="chart-main">
+        <div class="stacked-bars">
+          <div class="bar-row">
+            <div class="bar-label">MOB1-</div>
+            <div class="bar-track">
+              <div class="seg gray" style="width:78%">28</div>
+              <div class="seg red" style="width:22%">8</div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">MOB1-3</div>
+            <div class="bar-track">
+              <div class="seg teal" style="width:40%">23</div>
+              <div class="seg gray" style="width:19%">11</div>
+              <div class="seg red" style="width:41%">23</div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">MOB3-6</div>
+            <div class="bar-track">
+              <div class="seg teal" style="width:60%">6</div>
+              <div class="seg red" style="width:40%">4</div>
+            </div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-label">MOB6-12</div>
+            <div class="bar-track">
+              <div class="seg teal" style="width:33%">5</div>
+              <div class="seg gray" style="width:7%">1</div>
+              <div class="seg red" style="width:60%">9</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--text-light)">
+            <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent-teal);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> 参评</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:var(--line);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> 不参评</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:var(--accent-red);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> 已流失</span>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-light)">数据范围：岐力职场复贷线全部118名历史坐席（2025-06至2026-05-12）</div>
+      </div>
+      <div class="chart-side">
+        <div style="font-size:72px;font-weight:800;color:var(--accent-red);line-height:1">29%</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">有效人力占比</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Retention by Cohort -->
+  <div class="slide">
+    <div class="headline">3月扩招46人，仅59%留存——流失中含8名熟手</div>
+    <div class="subhead">各批次入职人数与留存率一览，2026年3月为关键分水岭</div>
+    <div class="chart-area" style="flex-direction:column">
+      <div class="combo-area">
+        <div style="display:flex;align-items:flex-end;height:140px;gap:6px;padding:0 4px;position:relative;flex:1">
+          <div class="bar-month-item"><div class="bar" style="height:15%"></div><div class="month-label">25-06</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:7%"></div><div class="month-label">25-07</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:4%"></div><div class="month-label">25-09</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:7%"></div><div class="month-label">25-10</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:7%"></div><div class="month-label">25-11</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:7%"></div><div class="month-label">25-12</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:11%"></div><div class="month-label">26-01</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:4%"></div><div class="month-label">26-02</div></div>
+          <div class="bar-month-item"><div class="bar highlight" style="height:100%"></div><div class="month-label" style="font-weight:600;color:var(--accent-red)">26-03</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:46%"></div><div class="month-label">26-04</div></div>
+          <div class="bar-month-item"><div class="bar" style="height:50%"></div><div class="month-label">26-05</div></div>
+        </div>
+        <div style="display:flex;gap:16px;font-size:11px;color:var(--text-light);align-items:center">
+          <span><span style="display:inline-block;width:10px;height:10px;background:var(--text-light);border-radius:2px;vertical-align:middle;margin-right:4px;"></span> 入职人数</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="display:inline-block;width:20px;height:2px;background:var(--accent-orange);vertical-align:middle"></span> 留存率</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Slide 5: Cost of Attrition -->
+  <div class="slide">
+    <div class="headline">流失44人带走1.68亿GMV——17人为高产熟手</div>
+    <div class="subhead">GMV≥500万的17人，累计带走超1.2亿GMV</div>
+    <div class="chart-area" style="flex-direction:column;gap:8px">
+      <!-- Top row: two big number cards -->
+      <div style="display:flex;gap:16px;flex:1">
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--fill);border-radius:6px;padding:16px">
+          <div style="font-size:64px;font-weight:800;color:var(--accent-red);line-height:1">44</div>
+          <div style="font-size:15px;color:var(--text-secondary);margin-top:2px">流失总人数</div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:2px">流失率 37%</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--fill);border-radius:6px;padding:16px">
+          <div style="font-size:64px;font-weight:800;color:var(--accent-red);line-height:1">17</div>
+          <div style="font-size:15px;color:var(--text-secondary);margin-top:2px">GMV≥500万熟手</div>
+          <div style="font-size:12px;color:var(--text-light);margin-top:2px">占流失人数 39%</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg-warm);border:1px solid var(--line);border-radius:6px;padding:16px">
+          <div style="font-size:32px;font-weight:700;color:var(--text-primary);line-height:1">1.68亿</div>
+          <div style="font-size:15px;color:var(--text-secondary);margin-top:2px">累计带走GMV</div>
+          <div style="font-size:12px;color:var(--accent-red);margin-top:2px;font-weight:500">= 在职参评总GMV的 <strong>78%</strong></div>
+        </div>
+      </div>
+      <!-- Bottom: TOP5 names -->
+      <div style="padding:12px 20px;background:var(--bg-warm);border:1px solid var(--line);border-radius:6px">
+        <div style="font-size:12px;color:var(--text-secondary);font-weight:500;margin-bottom:8px">TOP5 流失高产熟手（GMV≥500万）</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:120px;padding:8px 12px;background:var(--bg);border-radius:4px;border-left:3px solid var(--accent-red)"><div style="font-size:14px;font-weight:600;color:var(--text-primary)">吴才亮</div><div style="font-size:12px;color:var(--accent-red);font-weight:500">1,430万</div></div>
+          <div style="flex:1;min-width:120px;padding:8px 12px;background:var(--bg);border-radius:4px;border-left:3px solid var(--accent-red)"><div style="font-size:14px;font-weight:600;color:var(--text-primary)">万泽珊</div><div style="font-size:12px;color:var(--accent-red);font-weight:500">939万</div></div>
+          <div style="flex:1;min-width:120px;padding:8px 12px;background:var(--bg);border-radius:4px;border-left:3px solid var(--accent-red)"><div style="font-size:14px;font-weight:600;color:var(--text-primary)">詹焱</div><div style="font-size:12px;color:var(--accent-red);font-weight:500">871万</div></div>
+          <div style="flex:1;min-width:120px;padding:8px 12px;background:var(--bg);border-radius:4px;border-left:3px solid var(--accent-red)"><div style="font-size:14px;font-weight:600;color:var(--text-primary)">刘玉立</div><div style="font-size:12px;color:var(--accent-red);font-weight:500">845万</div></div>
+          <div style="flex:1;min-width:120px;padding:8px 12px;background:var(--bg);border-radius:4px;border-left:3px solid var(--accent-red)"><div style="font-size:14px;font-weight:600;color:var(--text-primary)">吴珍珍</div><div style="font-size:12px;color:var(--accent-red);font-weight:500">841万</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Slide 6: Grade Gap -->
+  <div class="slide">
+    <div class="headline">参评34人中C级占半——C级人均GMV仅为A级54%</div>
+    <div class="subhead">等级断层清晰可见，C级提效是最大改善空间</div>
+    <div class="chart-area" style="flex-direction:column">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:4px">人数</div>
+        <div class="bar-chart">
+          <div class="bar-item"><div class="bar-label">S级 1人</div><div class="bar-fill" style="width:6%;background:var(--text-primary)">1</div></div>
+          <div class="bar-item"><div class="bar-label">A级 7人</div><div class="bar-fill" style="width:41%;background:var(--text-secondary)">7</div></div>
+          <div class="bar-item"><div class="bar-label">B级 9人</div><div class="bar-fill" style="width:53%;background:var(--text-light)">9</div></div>
+          <div class="bar-item"><div class="bar-label">C级 17人</div><div class="bar-fill" style="width:100%;background:var(--accent-red)">17</div></div>
+        </div>
+      </div>
+      <div style="margin:4px 0;padding:8px 12px;background:var(--bg-warm);border-radius:4px;text-align:center">
+        <span style="font-weight:700;font-size:15px;color:var(--text-primary)">C级人均GMV仅为A级的54%</span>
+        <div style="display:flex;gap:16px;margin-top:4px;font-size:11px;color:var(--text-secondary);justify-content:center">
+          <span>ATT 77s vs 110s</span>
+          <span>日均通时 105分 vs 140分</span>
+          <span>件均 17,887元 vs 28,864元</span>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:4px">人均GMV（万）</div>
+        <div class="bar-chart">
+          <div class="bar-item"><div class="bar-label">S级</div><div class="bar-fill" style="width:100%;background:var(--text-primary)"></div><div class="bar-value">1,110万</div></div>
+          <div class="bar-item"><div class="bar-label">A级</div><div class="bar-fill" style="width:80%;background:var(--text-secondary)"></div><div class="bar-value">890万</div></div>
+          <div class="bar-item"><div class="bar-label">B级</div><div class="bar-fill" style="width:63%;background:var(--text-light)"></div><div class="bar-value">702万</div></div>
+          <div class="bar-item"><div class="bar-label">C级</div><div class="bar-fill" style="width:43%;background:var(--accent-red)"></div><div class="bar-value">478万</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Slide 7: ATT Efficiency Matrix -->
+  <div class="slide">
+    <div class="headline">ATT与产出正相关——C级通话深度不足是提效瓶颈</div>
+    <div class="subhead">通话时长与GMV呈明确正相关，C级提效空间明确</div>
+    <div class="chart-area" style="flex-direction:column;gap:8px">
+      <!-- Left-Right comparison zones -->
+      <div style="flex:1;display:flex;gap:20px;align-items:stretch">
+        <!-- C级 zone -->
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;border:2px dashed var(--accent-red);border-radius:8px;padding:16px;background:rgba(230,57,70,0.03)">
+          <div style="font-size:14px;font-weight:700;color:var(--accent-red);margin-bottom:10px;letter-spacing:0.5px">提效重点区 · C级 17人</div>
+          <div style="display:flex;gap:16px">
+            <div style="text-align:center;padding:0 8px">
+              <div style="font-size:36px;font-weight:800;color:var(--accent-red);line-height:1">77s</div>
+              <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">平均ATT</div>
+            </div>
+            <div style="width:1px;background:var(--accent-red);opacity:0.3"></div>
+            <div style="text-align:center;padding:0 8px">
+              <div style="font-size:36px;font-weight:800;color:var(--accent-red);line-height:1">478万</div>
+              <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">人均GMV</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:var(--text-light)">
+            <span>日均通时 105分</span>
+            <span>·</span>
+            <span>件均 17,887元</span>
+          </div>
+        </div>
+        <!-- Arrow + Trend -->
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;flex-shrink:0;padding:0 4px">
+          <div style="font-size:11px;color:var(--text-light);text-align:center">效率<br>提升</div>
+          <div style="font-size:28px;color:var(--accent-orange);font-weight:300">→</div>
+          <div style="width:2px;height:24px;background:var(--line)"></div>
+        </div>
+        <!-- S+A zone -->
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;border:2px dashed var(--accent-orange);border-radius:8px;padding:16px;background:rgba(244,162,97,0.03)">
+          <div style="font-size:14px;font-weight:700;color:var(--accent-orange);margin-bottom:10px;letter-spacing:0.5px">核心产力区 · S+A级 8人</div>
+          <div style="display:flex;gap:16px">
+            <div style="text-align:center;padding:0 8px">
+              <div style="font-size:36px;font-weight:800;color:var(--accent-orange);line-height:1">110s</div>
+              <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">平均ATT</div>
+            </div>
+            <div style="width:1px;background:var(--accent-orange);opacity:0.3"></div>
+            <div style="text-align:center;padding:0 8px">
+              <div style="font-size:36px;font-weight:800;color:var(--accent-orange);line-height:1">890万</div>
+              <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">人均GMV</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:var(--text-light)">
+            <span>日均通时 140分</span>
+            <span>·</span>
+            <span>件均 28,864元</span>
+          </div>
+        </div>
+      </div>
+      <!-- Bottom: gap comparison strip -->
+      <div style="display:flex;gap:24px;justify-content:center;align-items:center;padding:10px 20px;background:var(--bg-warm);border:1px solid var(--line);border-radius:6px;font-size:13px;color:var(--text-secondary)">
+        <div>
+          <span style="font-weight:600">C级ATT</span> 77s 
+          <span style="color:var(--accent-red);font-weight:600">= A级 70%</span>
+        </div>
+        <div style="width:1px;height:20px;background:var(--line)"></div>
+        <div>
+          <span style="font-weight:600">日均通时</span> 105分 
+          <span style="color:var(--accent-red);font-weight:600">= A级 75%</span>
+        </div>
+        <div style="width:1px;height:20px;background:var(--line)"></div>
+        <div>
+          <span style="font-weight:600">件均</span> 17,887元 
+          <span style="color:var(--accent-red);font-weight:600">= A级 62%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Slide 8: March Urgency -->
+  <div class="slide">
+    <div class="headline">3月扩招已失8名高产熟手——留住现有人才刻不容缓</div>
+    <div class="subhead">8人累计带走5,946万GMV，均超在职参评人均水平</div>
+    <div class="chart-area" style="flex-direction:column">
+      <div class="bar-chart" style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative">
+        <div style="position:relative;width:100%">
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:100%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">詹焱 871万</div></div>
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:97%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">刘玉立 845万</div></div>
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:97%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">吴珍珍 841万</div></div>
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:90%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">颜樱 782万</div></div>
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:87%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">杨丹丹 757万</div></div>
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:85%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">黄素云 744万</div></div>
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:70%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">龚梅 613万</div></div>
+          <div class="bar-item"><div class="bar-label"></div><div class="bar-fill" style="width:64%;background:var(--accent-red);height:24px"></div><div class="bar-value" style="font-weight:600">龚盼星 561万</div></div>
+          <!-- Reference line -->
+          <div style="position:absolute;left:73%;top:0;bottom:0;border-left:2px dashed var(--accent-orange);z-index:2"></div>
+          <div style="position:absolute;left:73%;top:-18px;font-size:9px;color:var(--accent-orange);white-space:nowrap;z-index:2">在职参评人均634万</div>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--text-secondary);font-weight:500">8人累计带走 <span style="color:var(--accent-red);font-weight:700">5,946万</span> GMV</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Improvement Paths -->
+  <div class="slide">
+    <div class="headline">三条改善路径，最大杠杆在C级提效</div>
+    <div class="subhead">17人若提升到B级水平，预期增量超3,800万</div>
+    <div class="paths">
+      <div class="path-row">
+        <div class="path-swatch" style="background:var(--bg-warm);border:1px solid var(--line);color:var(--text-primary)">路径1</div>
+        <div class="path-content">
+          <div class="path-title">稳住高产核心</div>
+          <div class="path-desc">S+A级8人 · 保留激励，目标0流失</div>
+        </div>
+        <div class="path-impact">
+          <div class="sublabel">保住</div>
+          <div class="num" style="color:var(--text-primary);font-size:18px">7,120万/月</div>
+        </div>
+      </div>
+      <div class="path-row" style="background:rgba(230,57,70,0.04);border-radius:4px;margin:0 -8px;padding:10px 8px">
+        <div class="path-swatch" style="background:var(--accent-red);color:#fff;position:relative">路径2 ⭐</div>
+        <div class="path-content">
+          <div class="path-title" style="color:var(--accent-red)">提升C级 <span style="font-size:11px;font-weight:400;background:var(--accent-orange);color:#fff;padding:1px 6px;border-radius:3px;margin-left:6px">最大杠杆点</span></div>
+          <div class="path-desc">17人 · 专项辅导ATT+件均，目标→B级水平</div>
+        </div>
+        <div class="path-impact">
+          <div class="sublabel">预期增量</div>
+          <div class="num" style="color:var(--accent-red)">+3,808万</div>
+        </div>
+      </div>
+      <div class="path-row">
+        <div class="path-swatch" style="background:var(--fill);color:var(--text-secondary)">路径3</div>
+        <div class="path-content">
+          <div class="path-title">缩短新人爬坡</div>
+          <div class="path-desc">不参评40人 · 出勤+带教，推动~10人达标参评</div>
+        </div>
+        <div class="path-impact">
+          <div class="sublabel" style="color:var(--text-light)">预期增量</div>
+          <div class="num" style="color:var(--text-light);font-size:16px">待估</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Back Cover -->
+  <div class="slide warm">
+    <div class="watermark">29%</div>
+    <div class="headline" style="margin-bottom:24px">下一步行动</div>
+    <div class="action-list">
+      <div class="action-item">
+        <div class="action-num">①</div>
+        <div class="action-text">
+          <div class="act-header">立即</div>
+          <div class="act-desc">S+A级8人保留沟通，确认激励到位，防止高产核心流失</div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--line);margin:0 0 0 48px"></div>
+      <div class="action-item">
+        <div class="action-num">②</div>
+        <div class="action-text">
+          <div class="act-header">本周</div>
+          <div class="act-desc">锁定C级17人ATT和件均短板，制定专项辅导计划，目标提升到B级水平</div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--line);margin:0 0 0 48px"></div>
+      <div class="action-item">
+        <div class="action-num">③</div>
+        <div class="action-text">
+          <div class="act-header">两周内</div>
+          <div class="act-desc">排查不参评40人中近门槛的10人，通过出勤管理和带教推动达标参评</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:auto;text-align:center;font-size:13px;color:var(--text-secondary);padding-top:16px;border-top:1px solid var(--line)">
+      有效人力占比29% → 目标：通过三层治理持续提升
+    </div>
+  </div>
+
+</div>
+
+<div class="controls">
+  <button onclick="goSlide(-1)">← 上一页</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button onclick="goSlide(1)">下一页 →</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+
+  function goSlide(dir) {
+    slides[current].classList.remove('active');
+    current = (current + dir + total) % total;
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+    // Animate bars
+    setTimeout(animateBars, 50);
+  }
+
+  function animateBars() {
+    // Animate bar widths in current slide
+    const bars = slides[current].querySelectorAll('.bar-fill');
+    bars.forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0%';
+      setTimeout(() => { bar.style.width = w; }, 20);
+    });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goSlide(1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goSlide(-1); }
+  });
+
+  // Initial animation
+  setTimeout(animateBars, 300);
+</script>
+
+</body>
+</html>
