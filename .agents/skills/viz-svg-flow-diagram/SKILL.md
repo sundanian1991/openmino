@@ -235,7 +235,7 @@ Reuse bundled assets as starting points:
 2. 从 `spec.md` 提取：概念/关系/结构、视觉编码（主角/上下文/背景元素的视觉权重）、布局方向
 3. 映射为 viz-svg-flow 的节点和边（role: hero/medium/light → tone 映射）
 4. 按 viz-svg-flow 的 house style 执行
-5. **配色**：参考 `13-VISUALIZATION.md` 色阶体系，viz-svg-flow 的 warm paper 风格天然适配 Warm ramp，也可自选
+5. **配色**：viz-svg-flow 的 warm paper 风格，也可自选
 6. 出图后读 `checklist.md` 逐项验收
 
 **与 viz-design 的分工**：viz-design 做概念→图形的翻译决策（选齿轮还是天平、哪些元素高亮），viz-svg-flow 做 SVG 渲染执行（布局算法、动画、导出）。

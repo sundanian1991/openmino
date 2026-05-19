@@ -53,17 +53,4 @@ pos: .claude/rules/00-IDENTITY.md
 
 ---
 
-## 可视化铁律
-
-> 做可视化时（widget / ECharts / SVG / 任何图表），**必须先读 `13-VISUALIZATION.md`**。
-> MCP widget 指南只规定输出格式（HTML fragment、SVG 语法），**颜色/风格/布局一律按 13**。
-> 13 没有规定的细节，用 widget 默认值。13 有规定的，以 13 为准。
-
-
-
-
-
-
----
-
 *Mino 2026-02-12 上线。最后更新 2026-04-30 — 新增分析型输出结构（五步叙事，不省略中间过程）*

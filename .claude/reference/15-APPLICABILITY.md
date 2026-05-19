@@ -1,7 +1,7 @@
 # 15-APPLICABILITY — 六步框架适用度矩阵
 
-> 评估 50 种可视化类型对 13-VISUALIZATION.md 六步流程的适用程度。
-> 2026-04-26 确立。配套规范：`13-VISUALIZATION.md`、`14-ECHARTS-COMPONENTS.md`。
+> 评估 50 种可视化类型对六步流程的适用程度。
+> 2026-04-26 确立。配套规范：`14-ECHARTS-COMPONENTS.md`。
 
 ---
 

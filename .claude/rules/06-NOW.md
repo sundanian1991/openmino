@@ -78,8 +78,7 @@ pos: .claude/rules/06-NOW.md
 - **Cron 空跑根因锁定**：默认模型太弱（5-10s + null content），加 --model opus 后正常
 - 推送机制从"心跳扫描"转向"实时写入 + 心跳兜底"
 
-### 2026-05-07 13-VISUALIZATION.md 精简 + Cron 空跑排查
-- 13-VISUALIZATION 删除理论层，只保留核心规则让所有技能通用
+### 2026-05-07 Cron 空跑排查
 - Cron 空跑问题排查（每日回顾/晨间思考/晚间复盘长期无输出）
 
 ### 2026-05-06 灵魂文件重构 + 技能命名规范化
@@ -144,7 +143,7 @@ pos: .claude/rules/06-NOW.md
 - 05-18：技能同步检查（2 个 git 技能：takeaway-skill 本地有修改跳过，compound-knowledge-plugin 无更新）
 - 05-09：OPINIONS.md 个人信念地图 + Cron 大瘦身 + 任务验收标准强制化
 - 05-08：ppt-master 首用（Aham PPT）+ Cron 空跑根因定位
-- 05-07：13-VISUALIZATION.md 精简 + PPT 多技能对比测试
+- 05-07：PPT 多技能对比测试
 - 05-06：01-SOUL.md 灵魂文件重构 + 领军人物 PPT + 技能命名规范化
 - 05-05：viz-design 渲染路由确定 + chart DNA 清洗 + 四层推送架构
 - 05-04：记忆系统升级 — 事件化压缩（buffer → 结构化 events.json）+ state.json L1 状态快照

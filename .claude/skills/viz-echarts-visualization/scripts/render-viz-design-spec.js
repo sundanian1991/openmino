@@ -8,7 +8,7 @@ const path = require('path');
 
 const ECHARTS_CDN = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
 
-// ─── 配色（对标 echarts-recipes.md + 13-VISUALIZATION.md）────────
+// ─── 配色（对标 echarts-recipes.md）────────
 const THEMES = {
   default: {
     bg: '#ffffff',

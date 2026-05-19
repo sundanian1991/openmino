@@ -251,7 +251,7 @@ install.packages(c(
 3. 读 `storyboard.md` → 提取签名视觉元素和阅读路径
 4. 选择 Python 或 R（优先 Python，除非数据/用户指定 R）
 5. 按 nature-figure 工作流执行（figure contract → 绘图 → QA）
-6. **配色**：默认使用 nature-figure 自有学术配色。如 spec.md 中指定了 13-VISUALIZATION.md 色系则参考使用
+6. **配色**：默认使用 nature-figure 自有学术配色，也可自选
 7. 出图后读 `checklist.md` 逐项验收
 
 **与 viz-design 的分工**：viz-design 做视觉决策，nature-figure 做渲染执行。viz-design 不指定 Python/R、不指定 matplotlib/ggplot2 的具体参数——这些由 nature-figure 自行决定。
