@@ -1,15 +1,11 @@
 <!-- AI_GENERATED_START -->
-# Workspace Overview
+# mino
 
-## Directories
-- **Inbox/** — directory
-- **memory/** — directory
-- **node_modules/** — directory
-- **workspace/** — directory
-- **企业微信BPO风险管控体系/** — directory
-
-## Root Files
+- .DS_Store
+- .assistant/
+- .codepilot/
 - BPO供应商KPI考核表.xlsx
+- Inbox/
 - PATH.ai.md
 - README.ai.md
 - claude.md
@@ -20,14 +16,15 @@
 - gen-policy.js
 - gen-professional-doc.js
 - memory.md
+- memory/
+- node_modules/
 - package-lock.json
 - package.json
 - recalc.py
 - soul.md
 - user.md
+- workspace/
 - 企业微信BPO运营风险管控制度.docx
+- 企业微信BPO风险管控体系/
 - 供应商邀约排期表.xlsx
-
-## Structure
-This workspace contains 5 directories and 19 root files.
 <!-- AI_GENERATED_END -->

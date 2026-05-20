@@ -20,6 +20,8 @@ Base: `/Users/sundanian/Documents/projects/ai-agents/my-agent`
 - `workspace/`
 - `CLAUDE.md`
 - `HEARTBEAT.md`
+- `PATH.ai.md`
+- `README.ai.md`
 - `README.md`
 - `gate_s3.json`
 - `memory.md`

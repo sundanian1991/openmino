@@ -158,6 +158,7 @@ description: "把任意材料（文字/PDF/PPTX/Word/链接/HTML/MD/SVG/Excel）
 | 技术研究、白皮书、学术圈材料、硬科技 | **academic-paper** | 论文、学术、白皮书、技术、arXiv |
 | 文化哲思、中文审美、高端本土材料 | **chinese-minimal** | 中式、留白、文化、宣纸、东方美学 |
 | 数据密集型话题、数据叙事、可视化报道 | **ft-data-story** | 数据叙事、FT、数据可视化、ig.ft.com |
+| 品牌产品文档、企业级方案展示、专业力量感 | **loreal** | 欧莱雅、品牌、产品文档、黑红金、L'Oreal |
 | 以上都不匹配 | **warm-default**（现有暖色系统） | 默认 |
 
 ### 风格 A：经济学人编辑风
@@ -284,6 +285,46 @@ description: "把任意材料（文字/PDF/PPTX/Word/链接/HTML/MD/SVG/Excel）
 - color palette 限定 `#990F3D` / `#0F5499` / `#333` / `#B3A39C`
 - 图表标题用陈述句结论（不说"某指标变化趋势"，说"某指标下降 30%"）
 - feel 是 ig.ft.com 上的 Visual & Data Journalism 栏目
+
+### 风格 F：欧莱雅品牌风
+
+**适合** — 品牌产品文档、企业级方案展示、强调专业感与力量感的内容。
+
+```css
+/* 设计系统覆盖 */
+:root {
+  --black:    #1A1A1A;
+  --pure:     #000000;
+  --white:    #FFFFFF;
+  --red:      #D70015;
+  --red-dark: #A80010;
+  --red-soft: #FFF0F1;
+  --gray-50:  #F8F8F8;
+  --gray-100: #F0F0F0;
+  --gray-200: #E0E0E0;
+  --gray-300: #CCCCCC;
+  --gray-500: #888888;
+  --gray-700: #555555;
+  --gold:     #B8860B;
+  --font-cn:  "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-en:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+```
+
+**硬约束**：
+- 配色严格：主色只用黑+红+金，禁止蓝/紫/绿/渐变
+- 全屏封面页（min-height 100vh），红色横线 3px 开场，大标题中关键词用红色
+- 章节顶部 2px 黑色边框 + 红色英文编号（Chapter 01/02/...）
+- 数值指标用英文字体，红色强调
+- 红色只做强调，不大面积使用（定位块黑底除外）
+- 金色仅用于警告/注意标识，慎用
+- 图表用红+黑+灰三色系
+- **版心最大宽度 960px**，左右 padding 不小于 48px
+- **章节间距 80px+**，保证呼吸感
+- **隔离线克制**：章节切换用 2px 黑线，section 内不用线
+- **不允许出现 emoji**、亮色、渐变
+- feel 是欧莱雅品牌手册——克制的力量感，黑底衬红，精密的专业感
+- 详细组件配方见 `references/editorial-loreal.md`
 
 ---
 
@@ -483,6 +524,23 @@ a.card:hover {
 
 用真实内容填充模板。所有文本必须是用户提供的真实内容，不编造 placeholder。
 
+### Step 4.5：注入快速编辑器
+
+读取 `references/editor-quick-edit.md`，在生成的 HTML 的 `</body>` 前注入编辑器代码。
+
+**注入条件**：
+
+| 条件 | 行为 |
+|------|------|
+| 默认 | 注入编辑器（右上角"编辑"按钮，不激活不影响浏览） |
+| 用户说"演示用""最终版""直接发""不要编辑器" | 跳过注入 |
+
+**注入内容**：`<!-- 快速编辑器注入开始 -->` ... `<!-- 快速编辑器注入结束 -->` 之间的完整编辑器代码块（CSS + HTML + JS）。
+
+**编辑器能力（P0+P1）**：
+- P0：文字内容直接编辑（contentEditable）、编辑模式开关、导出干净 HTML
+- P1：文字工具栏（加粗/斜体/下划线/颜色/字号）、元素属性面板（背景色/文字色/间距/圆角/边框）、section 拖拽排序、撤销/重做
+
 ### Step 5：验证
 
 生成后自检：
@@ -490,6 +548,7 @@ a.card:hover {
 - 所有交互都能用（点击、拖拽、切换）
 - 响应式（至少 640px 和 1120px 两个断点）
 - 颜色系统一致（只使用上述 CSS 变量中的色）
+- 编辑器已注入时：编辑按钮可点击、文字可编辑、导出后干净 HTML 无编辑器残留
 
 ## 参考资源路由
 
@@ -518,7 +577,9 @@ a.card:hover {
 | **UI mockup/仪表盘** | `references/pattern-ui-mockup.md`（metric-dashboard/ui-card/form-layout/list-view 模板） |
 | **SVG 插画/装饰图形** | `references/pattern-svg-art.md`（contour/geometric/illustrative/icon/pattern 风格 + 12种轮廓线图库） |
 | **数据解读报告** | `references/pattern-narrative-report.md`（语义标注+内联迷你图+趋势指标） |
+| **欧莱雅品牌风格** | `references/editorial-loreal.md`（黑红金配色+全套组件配方+两次实产验证） |
 | **组件配方** | 各 `references/pattern-*.md` 文件的"组件配方"章节（15 种可复用组件） |
+| **快速编辑器** | `references/editor-quick-edit.md`（P0+P1 编辑能力：文字编辑/样式微调/拖拽排序/撤销/导出） |
 
 每个 reference 文件包含：结构模板 + CSS 关键片段 + JS 交互骨架 + 该模式的设计约束。
 

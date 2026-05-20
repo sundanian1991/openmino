@@ -21,6 +21,8 @@
 ## Root Files
 - CLAUDE.md
 - HEARTBEAT.md
+- PATH.ai.md
+- README.ai.md
 - README.md
 - gate_s3.json
 - memory.md
@@ -31,5 +33,5 @@
 - user.md
 
 ## Structure
-This workspace contains 15 directories and 12 root files.
+This workspace contains 15 directories and 14 root files.
 <!-- AI_GENERATED_END -->
