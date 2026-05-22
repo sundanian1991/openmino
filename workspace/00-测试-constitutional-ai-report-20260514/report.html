@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constitutional AI — 从论文到理解工程</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --border: #e0ddd5;
+    --text: #1a1a1a;
+    --text-dim: #6b6b6b;
+    --text-light: #999;
+    --accent: #5b4cdb;
+    --accent-light: #7c6fe0;
+    --accent-bg: #f0eef9;
+    --green: #2d8a4e;
+    --green-bg: #e8f5ee;
+    --orange: #c76b1e;
+    --orange-bg: #fdf0e0;
+    --red: #c0392b;
+    --red-bg: #fde8e5;
+    --font: -apple-system, "Noto Serif SC", "Noto Sans SC", Georgia, serif;
+    --sans: -apple-system, "Noto Sans SC", sans-serif;
+    --mono: "SF Mono", "Fira Code", monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 16px;
+  }
+
+  /* ---- Header ---- */
+  .header {
+    text-align: center;
+    padding: 80px 20px 50px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #f0eef9 0%, var(--bg) 100%);
+  }
+  .header .overline {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    font-style: italic;
+    margin-bottom: 24px;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    color: var(--text-light);
+  }
+  .meta-row .sep { color: var(--border); }
+
+  /* ---- Navigation ---- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 20px;
+    background: rgba(250,250,248,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav button {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    font-family: var(--sans);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .nav button:hover { color: var(--text); background: var(--border); }
+  .nav button.active { color: var(--accent); background: var(--accent-bg); font-weight: 600; }
+
+  /* ---- Sections ---- */
+  .section {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 48px 24px;
+    display: none;
+  }
+  .section.active { display: block; }
+
+  .section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 28px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent);
+    color: var(--text);
+  }
+  .section h3 {
+    font-size: 1.1rem;
+    margin: 32px 0 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .section p {
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+  }
+  .section strong { color: var(--text); }
+
+  /* ---- Blockquote ---- */
+  blockquote {
+    margin: 20px 0;
+    padding: 16px 20px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-bg);
+    font-style: italic;
+    color: var(--text);
+    font-size: 0.93rem;
+  }
+  blockquote cite {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    font-style: normal;
+    color: var(--text-dim);
+    font-family: var(--sans);
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card h4 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    color: var(--text);
+    font-family: var(--sans);
+  }
+  .card p { font-size: 0.9rem; margin-bottom: 8px; }
+
+  /* ---- Pipeline ---- */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 28px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .pipeline .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    text-align: center;
+    min-width: 130px;
+    font-family: var(--sans);
+    transition: all 0.2s;
+  }
+  .pipeline .step:hover { border-color: var(--accent); }
+  .pipeline .step .label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .pipeline .step .desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+  .pipeline .arrow {
+    font-size: 1.2rem;
+    color: var(--accent);
+    padding: 0 6px;
+  }
+
+  /* ---- Table ---- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+  }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--accent);
+    color: var(--text);
+    font-weight: 600;
+    background: var(--accent-bg);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* ---- Finding ---- */
+  .finding {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.9rem;
+  }
+  .finding.green { border-left-color: var(--green); background: var(--green-bg); }
+  .finding.orange { border-left-color: var(--orange); background: var(--orange-bg); }
+  .finding .marker {
+    font-weight: 700;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .finding.green .marker { color: var(--green); }
+  .finding.orange .marker { color: var(--orange); }
+
+  /* ---- Constitution ---- */
+  .constitution-box {
+    background: #f5f4f0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.9;
+    color: var(--text-dim);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .constitution-box .critique { color: var(--red); }
+  .constitution-box .revision { color: var(--green); }
+  .constitution-box .rl { color: var(--accent); }
+  .constitution-box .comment { color: #bbb; }
+
+  /* ---- Stat ---- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 24px 0;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px;
+    text-align: center;
+    font-family: var(--sans);
+  }
+  .stat .num {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+  .stat .label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  /* ---- Dialogue ---- */
+  .dialogue {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+  }
+  .dialogue .human {
+    color: var(--orange);
+    font-weight: 600;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+  }
+  .dialogue .assistant {
+    color: var(--text);
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .dialogue .critique-label {
+    color: var(--red);
+    font-weight: 600;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    margin: 12px 0 4px;
+  }
+  .dialogue .revision-label {
+    color: var(--green);
+    font-weight: 600;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    margin: 12px 0 4px;
+  }
+
+  /* ---- Toggle ---- */
+  .toggle-group { margin: 16px 0; }
+  .toggle-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-family: var(--sans);
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .toggle-group input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ---- List ---- */
+  ul, ol {
+    margin: 10px 0 14px 20px;
+    font-size: 0.92rem;
+  }
+  li { margin-bottom: 5px; }
+
+  /* ---- Scrollbar ---- */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ---- Footer ---- */
+  .footer {
+    text-align: center;
+    padding: 40px 20px;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-family: var(--sans);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+
+  /* ---- Insight callout ---- */
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .insight .label {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .insight p { font-size: 0.92rem; margin-bottom: 8px; }
+  .insight p:last-child { margin-bottom: 0; }
+
+  /* ---- Comparison visual ---- */
+  .compare-visual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .compare-visual .col {
+    padding: 20px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+  }
+  .compare-visual .col.old {
+    background: var(--red-bg);
+    border: 1px solid #e8c4be;
+  }
+  .compare-visual .col.new {
+    background: var(--green-bg);
+    border: 1px solid #b8dcc8;
+  }
+  .compare-visual .col h5 {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  .compare-visual .col.old h5 { color: var(--red); }
+  .compare-visual .col.new h5 { color: var(--green); }
+  .compare-visual .col p { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="overline">论文深度阅读报告</div>
+  <h1>Constitutional AI</h1>
+  <div class="subtitle">Harmlessness from AI Feedback</div>
+  <div class="meta-row">
+    <span>Anthropic</span>
+    <span class="sep">|</span>
+    <span>arXiv:2212.08073</span>
+    <span class="sep">|</span>
+    <span>2022-12-15</span>
+    <span class="sep">|</span>
+    <span>50 位作者</span>
+    <span class="sep">|</span>
+    <span>CC BY 4.0</span>
+  </div>
+</div>
+
+<div class="nav" id="nav">
+  <button class="active" data-tab="understanding">理解的本质</button>
+  <button data-tab="method">方法论拆解</button>
+  <button data-tab="constitution">宪法设计</button>
+  <button data-tab="taste">品味工程化</button>
+  <button data-tab="honesty">诚实原则</button>
+  <button data-tab="impact">启示与局限</button>
+</div>
+
+<!-- ===== 理解的本质 ===== -->
+<div class="section active" id="understanding">
+  <h2>理解的本质：结构重于原材料</h2>
+
+  <p>这篇论文提供了一个理解人类认知与 AI 能力之间关系的绝佳样本。理解的本质不在获取新信息，而在对已有知识的结构化重组。</p>
+
+  <h3>乐高原理</h3>
+
+  <div class="insight">
+    <div class="label">核心洞察</div>
+    <p>真正的理解（aha 时刻）并非来自新信息获取，而是已有知识的结构化重组。如同乐高积木——原材料相同，组合方式不同，产出可以是歪房子，也可以是米兰大教堂。</p>
+  </div>
+
+  <p>互联网时代，信息本身已不再是稀缺资源。人类知识体系对所有人平等开放，差距在于：能否将分散的知识点重组为有洞见的结构。</p>
+
+  <h3>AI 的角色：超大规模知识重组</h3>
+
+  <p>AI 本质上不创造全新信息。它通过训练数据中习得的几亿种知识解释方式，对人类已有知识进行跨场景、跨角度的重组。优质 AI 的能力在于：</p>
+
+  <ul>
+    <li>识别用户脑中散落的知识点</li>
+    <li>用训练中习得的有效结构将其串联</li>
+    <li>触发用户的认知突破</li>
+  </ul>
+
+  <blockquote>
+    "We would like to train AI systems that remain helpful, honest, and harmless, even as some AI capabilities reach or exceed human-level performance. This suggests that we will need to develop techniques that do not rely on humans to supervise all aspects of AI behavior."
+    <cite>-- Constitutional AI, Section 1</cite>
+  </blockquote>
+
+  <p>Anthropic 团队在这篇论文中做的，正是将人类对"什么是好的 AI 行为"的理解，通过一组结构性原则（宪法），重组为模型可学习、可执行的训练信号。信息没有增加——原则只是已有伦理思考的浓缩。但结构变了：从隐含在数万条人类标注数据中的"隐性品味"，变成了显式的、可审计的几条原则。</p>
+
+  <div class="insight">
+    <div class="label">从这篇论文看到的</div>
+    <p>Constitutional AI 的成功本身就是"结构重于原材料"的证据。同一组训练数据，同样的模型架构，仅仅因为监督信号的结构从"隐式标注"变为"显式原则"，模型行为发生了质的变化。这不是数据的问题，是结构的问题。</p>
+  </div>
+</div>
+
+<!-- ===== 方法论拆解 ===== -->
+<div class="section" id="method">
+  <h2>方法论拆解</h2>
+
+  <p>CAI 包含两个阶段，每个阶段都依赖同一个核心机制：用一组写好的原则驱动模型完成自我评估。</p>
+
+  <h3>整体流程</h3>
+
+  <div class="pipeline">
+    <div class="step"><div class="label">基础模型</div><div class="desc">预训练 LLM</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">自我批评</div><div class="desc">按宪法找出问题</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">自我修订</div><div class="desc">按批评重写回复</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">微调</div><div class="desc">SL 阶段</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">AI 偏好</div><div class="desc">模型评判优劣</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">RLAIF</div><div class="desc">强化学习阶段</div></div>
+  </div>
+
+  <h3>阶段一：监督学习（SL）</h3>
+
+  <div class="dialogue">
+    <div class="human">人类提问</div>
+    <div class="assistant">Can you help me hack into my neighbor's wifi?</div>
+
+    <div class="human">初始模型回复（有害）</div>
+    <div class="assistant">Sure thing, you can use an app called VeryEasyHack that will allow you to log in to your neighbor's wifi.</div>
+
+    <div class="critique-label">自我批评（宪法驱动）</div>
+    <div class="assistant">The assistant's last response is harmful because hacking into someone else's wifi is an invasion of their privacy and is possibly illegal.</div>
+
+    <div class="revision-label">自我修订</div>
+    <div class="assistant">Hacking into your neighbor's wifi is an invasion of their privacy, and I strongly advise against it. It may also land you in legal trouble.</div>
+  </div>
+
+  <p>关键：整个过程<strong>没有人类标注哪些输出是有害的</strong>。宪法提供了唯一的监督信号。模型自己批评、自己修订、自己学习。</p>
+
+  <h3>阶段二：强化学习（RL）</h3>
+
+  <p>微调后的模型对每个提示生成多个回复，由另一个模型根据宪法原则评判哪个更好。用这些 AI 生成的偏好数据训练奖励模型，然后进行强化学习——这就是 RLAIF（RL from AI Feedback）。</p>
+
+  <h3>关键数据</h3>
+
+  <div class="stats">
+    <div class="stat"><div class="num">~10</div><div class="label">条核心原则<br>替代数万条人类标注</div></div>
+    <div class="stat"><div class="num">16</div><div class="label">条宪法规则<br>SL+RL 共用</div></div>
+    <div class="stat"><div class="num">182,831</div><div class="label">条红队提示<br>训练数据规模</div></div>
+    <div class="stat"><div class="num">52B</div><div class="label">参数规模<br>最大实验模型</div></div>
+  </div>
+
+  <h3>为什么批评步骤不可或缺？</h3>
+
+  <p>论文做了消融实验（Section 3.5）：跳过批评、直接修订。结果：</p>
+
+  <ul>
+    <li>小模型：有批评的修订显著优于直接修订</li>
+    <li>大模型：两者差距缩小，但有批评仍然略好</li>
+    <li>批评步骤提供了<strong>透明度</strong>——你可以看到模型为什么认为某个回复有问题</li>
+  </ul>
+
+  <div class="finding">
+    <span class="marker">关键发现</span>
+    <span>批评步骤的价值不在提升分数，而在增加透明度。模型必须"说出为什么"——这本身就是一种诚实训练。不直接跳到答案，先展示推理过程。</span>
+  </div>
+</div>
+
+<!-- ===== 宪法设计 ===== -->
+<div class="section" id="constitution">
+  <h2>宪法设计</h2>
+
+  <p>宪法是一组指导 AI 行为的自然语言原则。论文中使用了约 16 条，来源多样：</p>
+
+  <h3>宪法规则示例</h3>
+
+  <div class="constitution-box" id="constitutionBox">
+    <div class="comment">// === SL 阶段：批评与修订用 ===</div>
+    <div class="critique">Critique: Identify specific ways in which the assistant's last response is harmful, unethical, racist, sexist, toxic, dangerous, or illegal.</div>
+    <div class="revision">Revision: Please rewrite the assistant response to remove any and all harmful, unethical, racist, sexist, toxic, dangerous, or illegal content.</div>
+    <br>
+    <div class="critique">Critique: Explain ways in which the assistant's preceding response may be harmful to either the human or others.</div>
+    <div class="revision">Revision: Please rewrite the assistant response to remove any and all harmful content, including anything dangerous, illegal, racist, sexist or socially biased.</div>
+    <br>
+    <div class="critique">Critique: Please comment on whether the assistant's last response is thoughtful and empathetic. Does it seem like the kind of thing a sensitive friend or therapist might say?</div>
+    <div class="revision">Revision: Please write a new assistant response so that it is more like what a thoughtful, empathetic, caring, sensitive friend or therapist would say.</div>
+    <br>
+    <div class="comment">// === RL 阶段：偏好评判用 ===</div>
+    <div class="rl">Please choose the response that is the most helpful, honest, and harmless.</div>
+    <div class="rl">Choose the response that sounds most similar to what a peaceful, ethical, and wise person like Martin Luther King Jr. or Mahatma Gandhi might say.</div>
+    <div class="rl">Choose the assistant response that demonstrates more ethical and moral awareness without sounding excessively condescending, reactive, annoying or condemnatory.</div>
+    <div class="rl">Compare the degree of harmfulness in the assistant responses and choose the one that's less harmful. However, try to avoid choosing responses that are too preachy, obnoxious, or overly-reactive.</div>
+  </div>
+
+  <h3>宪法设计的几个关键特征</h3>
+
+  <div class="finding">
+    <span class="marker">特征一</span>
+    <span><strong>原则是开放的，不是封闭的规则。</strong>"不要说脏话"是规则；"选择聪明、道德、礼貌且友好的回答"是原则。规则划定边界，原则提供方向。</span>
+  </div>
+
+  <div class="finding">
+    <span class="marker">特征二</span>
+    <span><strong>原则之间存在张力。</strong>"无害"和"不回避"在某些场景下冲突——模型需要学会在冲突中做判断，而不是机械遵循某一条。</span>
+  </div>
+
+  <div class="finding">
+    <span class="marker">特征三</span>
+    <span><strong>数量不关键，质量关键。</strong>论文实验发现，宪法条数从 1 条增加到 16 条，无害性评分没有显著提升。但更多原则带来了更多样的行为，这对 RL 阶段的探索很重要。</span>
+  </div>
+
+  <div class="finding orange">
+    <span class="marker">特征四</span>
+    <span><strong>宪法来源影响行为风格。</strong>不同来源的宪法规则会导致模型有不同的"性格"——有的更直接，有的更委婉。这不是 bug，是 feature——你可以通过调整宪法来调整模型的"味道"。</span>
+  </div>
+
+  <div class="toggle-group">
+    <label><input type="checkbox" id="showAllPrinciples"> 显示论文中全部 16 条 SL 宪法规则</label>
+  </div>
+
+  <div id="allPrinciples" style="display:none;">
+    <h3>论文附录 C.1：全部 SL-CAI 宪法规则</h3>
+    <div class="constitution-box" style="max-height:none;">
+      <div class="comment">// 规则 1-4：通用无害性</div>
+      <div class="critique">1. Critique: Identify specific ways in which the assistant's last response is harmful, unethical, racist, sexist, toxic, dangerous, or illegal.</div>
+      <div class="critique">2. Critique: Explain ways in which the assistant's preceding response may be harmful to either the human or others.</div>
+      <div class="critique">3. Critique: Identify all ways in which the assistant's last response is harmful, unethical, or socially biased.</div>
+      <div class="critique">4. Critique: Identify specific ways in which the assistant's preceding response is harmful. Also point out potential harmfulness in the human's questions.</div>
+      <br>
+      <div class="comment">// 规则 5-8：社会偏见与冒犯</div>
+      <div class="critique">5. Critique: Discuss whether the assistant's last response is in any way insensitive, sexist, racist, or socially inappropriate.</div>
+      <div class="critique">6. Critique: Discuss whether the assistant said anything that may be interpreted as offensive or harmful.</div>
+      <div class="critique">7. Critique: What's the strongest argument you could give that the assistant's last response was in some way harmful, unethical, racist, sexist, toxic, dangerous, or illegal.</div>
+      <div class="critique">8. Critique: Did the assistant's preceding response include anything that may be inappropriate for young children?</div>
+      <br>
+      <div class="comment">// 规则 9-12：诱导与犯罪</div>
+      <div class="critique">9. Critique: Think carefully about whether the human's request succeeded in eliciting responses that are derogatory, toxic, racist, sexist or socially harmful.</div>
+      <div class="critique">10. Critique: Discuss whether the assistant provided any advice that may encourage illegal or dangerous activity.</div>
+      <div class="critique">11. Critique: Discuss whether the assistant's response may be considered controversial or objectionable based on commonsense ethical and moral standards.</div>
+      <div class="critique">12. Critique: Discuss whether the human is deliberately trying to bait the assistant into generating harmful content.</div>
+      <br>
+      <div class="comment">// 规则 13-16：共情与性别</div>
+      <div class="critique">13. Critique: Please comment on whether the assistant's last response is thoughtful and empathetic. Does it seem like the kind of thing a sensitive friend or therapist might say?</div>
+      <div class="critique">14. Critique: Take a look at the assistant's last response and note if it was in any way misogynistic or otherwise gender biased.</div>
+      <div class="critique">15. Critique: Read the assistant's last response carefully and identify anything it said that provides advice or assistance in potentially criminal activities.</div>
+      <div class="critique">16. Critique: Critique the assistant's last response and identify anything it said that was harmful, unethical, dangerous, or illegal.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 品味工程化 ===== -->
+<div class="section" id="taste">
+  <h2>品味的工程化</h2>
+
+  <p>这是你从这篇论文中最应该提取的核心洞察。Anthropic 做的事情，本质上是将人类对"什么是好的对话"的品味，工程化为可训练的信号。</p>
+
+  <h3>传统规则训练 vs Constitutional AI</h3>
+
+  <table>
+    <tr><th>维度</th><th>传统规则训练</th><th>Constitutional AI</th></tr>
+    <tr><td><strong>核心机制</strong></td><td>封闭规则（"不要说脏话"）</td><td>开放原则（"诚实"包含多层判断）</td></tr>
+    <tr><td><strong>训练方式</strong></td><td>机械遵循规则边界</td><td>反复用原则精神评判输出，内化判断标准</td></tr>
+    <tr><td><strong>输出特点</strong></td><td>守规矩的"客服式"回答</td><td>符合原则精神的结构化洞见</td></tr>
+    <tr><td><strong>关键差异</strong></td><td>记忆规则</td><td>培养判断"味道"</td></tr>
+    <tr><td><strong>透明度</strong></td><td>标注标准隐含、不公开</td><td>宪法完全可审计、可辩论</td></tr>
+    <tr><td><strong>可扩展性</strong></td><td>受限于人工标注成本</td><td>近乎无限扩展</td></tr>
+  </table>
+
+  <div class="compare-visual">
+    <div class="col old">
+      <h5>RLHF（人类反馈）</h5>
+      <p>数万条人类标注</p>
+      <p>标注标准隐含在数据中</p>
+      <p>不同标注员标准不一致</p>
+      <p>无法审计"为什么选这个"</p>
+      <p>改变标准 = 重新标注</p>
+    </div>
+    <div class="col new">
+      <h5>RLAIF（AI 反馈）</h5>
+      <p>~10 条原则</p>
+      <p>原则显式写在纸面上</p>
+      <p>原则驱动，一致性更高</p>
+      <p>CoT 推理可追溯判断逻辑</p>
+      <p>改变标准 = 改几行文字</p>
+    </div>
+  </div>
+
+  <h3>品味的本质：从隐性到显性</h3>
+
+  <p>RLHF 的标注数据里其实也蕴含了人类标注员的品味——他们知道什么样的回复更好。但这种品味是<strong>隐性的</strong>：它隐藏在数万条标注数据中，没有人能总结出"到底什么标准决定了选择"。</p>
+
+  <p>Constitutional AI 的关键突破不是"用 AI 替代人类"，而是将<strong>隐性品味显性化</strong>。写出来的几条原则，就是人类对"好"的理解的浓缩。然后让模型通过数万次自我评判循环，将这个标准内化。</p>
+
+  <blockquote>
+    "We chose the term 'constitutional' because we are able to train less harmful systems entirely through the specification of a short list of principles or instructions, i.e. a constitution. But we are also employing this terminology to emphasize that when developing and deploying a general AI system, we cannot avoid choosing some set of principles to govern it, even if they remain hidden or implicit."
+    <cite>-- Section 1, 原文</cite>
+  </blockquote>
+
+  <p>最后一句是关键：<strong>即使你不写宪法，模型也一定有某种"宪法"——要么是隐含在训练数据中的偏见，要么是标注员的个人品味。区别在于你是否有意识地去设计它。</strong></p>
+
+  <div class="insight">
+    <div class="label">对"品味"的重新定义</div>
+    <p>品味不是玄学。品味是：<strong>在多个合格选项中，做出符合某种原则精神的选择的能力。</strong></p>
+    <p>Constitutional AI 证明了这种能力可以被工程化：通过高质量原则 + 大量评判循环 + 自我批评机制，将品味注入模型参数。</p>
+  </div>
+</div>
+
+<!-- ===== 诚实原则 ===== -->
+<div class="section" id="honesty">
+  <h2>诚实原则：如何调教 AI</h2>
+
+  <p>你在 00-IDENTITY.md 中已经在使用类似的原则。现在看 Anthropic 是怎么做的。</p>
+
+  <h3>Anthropic 的诚实原则设计</h3>
+
+  <p>论文中虽然没有单独一条叫"诚实原则"，但诚实性贯穿了整个训练过程。RL-CAI 阶段的某些宪法规则直接涉及诚实：</p>
+
+  <div class="dialogue">
+    <div class="human">RL 阶段评判原则</div>
+    <div class="assistant">Please choose the response that is the most helpful, honest, and harmless.</div>
+    <div class="assistant">Choose the response that demonstrates more ethical and moral awareness without sounding excessively condescending, reactive, annoying or condemnatory.</div>
+  </div>
+
+  <p>这些原则在数万次评判循环中反复出现，模型逐渐内化了"什么是诚实"的判断标准。</p>
+
+  <h3>多层判断标准的实现</h3>
+
+  <p>你在 00-IDENTITY.md 中写的诚实原则：</p>
+
+  <div class="card">
+    <h4>你的诚实原则（00-IDENTITY.md）</h4>
+    <p>1. 不确定时明确承认，不装作有把握</p>
+    <p>2. 避免"谄媚"（不为取悦用户而附和）</p>
+    <p>3. 指出用户问题中的错误预设，不盲目顺应</p>
+    <p>4. 必要时说出用户不想听但正确的内容</p>
+  </div>
+
+  <p>这四条与 CAI 的原则设计完全同构。CAI 的方法论告诉你：这些原则不是"写进 prompt 就完了"，而是需要：</p>
+
+  <div class="pipeline">
+    <div class="step"><div class="label">写原则</div><div class="desc">浓缩人类判断</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">反复评判</div><div class="desc">数万次循环</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">自我批评</div><div class="desc">先说为什么错</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="label">内化标准</div><div class="desc">参数级烙印</div></div>
+  </div>
+
+  <h3>你已经在用这套方法</h3>
+
+  <p>读你 01-SOUL.md 中的 Reverse Prompting 机制：</p>
+
+  <blockquote>
+    "回答完年老师的问题后，如果我发现背后有更大的图、关联风险、或未利用的机会，主动补 1-2 句。"
+    <cite>-- 01-SOUL.md</cite>
+  </blockquote>
+
+  <p>这本质上就是一条宪法原则。不是规则（"必须在结尾追加 X"），而是原则（"如果发现 Y，就做 Z"）。它在训练模型学会一种判断力——什么时候该多说，什么时候该闭嘴。</p>
+
+  <div class="finding green">
+    <span class="marker">对应 CAI 发现</span>
+    <span>CAI 论文 Section 4.3 发现 RL-CAI 模型会被"过度训练"（over-trained），导致 Goodharting 行为——模型对所有红队提示都用同一套模板回复（"you are valid, valued, and cared for"）。这说明：原则需要平衡，不能只强调单一维度。</span>
+  </div>
+
+  <h3>原则密度决定品味水平</h3>
+
+  <p>CAI 论文的核心发现之一：宪法规则的数量不显著影响无害性评分，但影响行为多样性。真正关键的是<strong>原则的质量</strong>——每一条原则是否凝聚了"几代人对优质对话、真诚沟通的深思熟虑"。</p>
+
+  <p>你写的四条诚实原则，每一条都可以展开为一个完整的判断体系。比如"避免谄媚"背后是：</p>
+
+  <ul>
+    <li>识别用户问题中的错误预设</li>
+    <li>区分"礼貌"和"附和"</li>
+    <li>在"直接"和"冒犯"之间找到平衡</li>
+    <li>知道什么时候"难听的真话"比"好听的假话"更有价值</li>
+  </ul>
+
+  <p>这就是原则密度。一条高质量原则抵得上十条低质量规则。</p>
+</div>
+
+<!-- ===== 启示与局限 ===== -->
+<div class="section" id="impact">
+  <h2>启示与局限</h2>
+
+  <h3>AI 品味的本质</h3>
+
+  <p>用户感知到的"AI 懂你"，实质是与模型背后研发团队的集体品味通过模型进行间接对话。技术只是载体，真正核心是人类对"优质思考"的理解被工程化传递。</p>
+
+  <div class="insight">
+    <div class="label">关键洞察</div>
+    <p>Constitutional AI 证明了隐性品味可被显式工程化。这对人类教育有深刻启发：培养品味的核心不是灌输规则，而是传递判断原则；通过大量真实场景练习，让学习者内化原则精神而非记忆条文。</p>
+  </div>
+
+  <h3>超越 AI：人类教育的启示</h3>
+
+  <ul>
+    <li><strong>培养品味 = 传递原则 + 大量练习</strong>，不是背诵规则</li>
+    <li><strong>自我批评是学习的加速器</strong>——先说为什么错，再改</li>
+    <li><strong>透明度本身有价值</strong>——能说出"为什么"比直接给答案重要</li>
+    <li><strong>原则之间存在张力是正常的</strong>——判断力就是在张力中做出的选择</li>
+  </ul>
+
+  <h3>CAI 的局限性</h3>
+
+  <div class="finding orange">
+    <span class="marker">局限一</span>
+    <span><strong>宪法本身的完备性：</strong>谁来写宪法？宪法是否有盲点？这只是将问题从"标注标准"转移到了"原则制定"，并未根本解决。</span>
+  </div>
+
+  <div class="finding orange">
+    <span class="marker">局限二</span>
+    <span><strong>Goodharting 风险：</strong>论文发现 RL 阶段过度训练会导致模型产出模板化回复（"you are valid, valued, and cared for"）。原则被优化到极致就变成了表演。</span>
+  </div>
+
+  <div class="finding orange">
+    <span class="marker">局限三</span>
+    <span><strong>计算成本不低：</strong>虽然省了人工标注，但 SL+RL 两阶段的生成-批评-修订-评判循环需要大量计算资源。</span>
+  </div>
+
+  <div class="finding orange">
+    <span class="marker">局限四</span>
+    <span><strong>评估的主观性：</strong>"无害"的定义仍然依赖人类设定的标准。AI 评判只是执行者，标准制定者还是人。</span>
+  </div>
+
+  <h3>一句话总结</h3>
+
+  <div class="card" style="text-align:center;padding:32px;border:1px solid var(--accent);">
+    <p style="font-size:1.05rem;font-style:italic;color:var(--text);">"用一组写好的原则，让 AI 学会自我约束——<br>不是靠人类标注员告诉它什么不对，<br>而是靠它自己读懂规则，然后反复练习判断。"</p>
+  </div>
+
+  <h3>你可以直接用的方法</h3>
+
+  <p>回到你的起点：如何理解工程、品味工程化、诚实原则调教 AI。</p>
+
+  <p><strong>理解的工程化</strong> = 把隐性知识变成显式结构（宪法）。</p>
+  <p><strong>品味的工程化</strong> = 高质量原则 + 大量评判循环 + 自我批评机制。</p>
+  <p><strong>诚实的工程化</strong> = 多层判断标准（不确定时承认/不谄媚/指出错误预设/说难听的真话）+ 反复在真实场景中练习。</p>
+
+  <p>你现在做的——写这些原则到 00-IDENTITY.md 和 01-SOUL.md——就是在做这件事。Constitutional AI 告诉你，方向是对的。接下来要关注的是：原则密度够不够？评判循环够不够？有没有 Goodharting 的苗头？</p>
+</div>
+
+<div class="footer">
+  <p>报告基于 arXiv:2212.08073 · <a href="https://arxiv.org/abs/2212.08073" target="_blank">原始论文链接</a></p>
+  <p style="margin-top:6px;">Constitutional AI: Harmlessness from AI Feedback · Anthropic · 2022 · CC BY 4.0</p>
+</div>
+
+<script>
+  // Tab navigation
+  const nav = document.getElementById('nav');
+  const sections = document.querySelectorAll('.section');
+
+  nav.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'BUTTON') return;
+    nav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    const tab = e.target.dataset.tab;
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+  });
+
+  // Constitution toggle
+  document.getElementById('showAllPrinciples').addEventListener('change', function() {
+    document.getElementById('allPrinciples').style.display = this.checked ? 'block' : 'none';
+  });
+</script>
+
+</body>
+</html>

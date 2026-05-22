@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>司龄阶梯</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #FFF8F0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #chart { width: 820px; height: 480px; }
+</style>
+</head>
+<body>
+<div id="chart"></div>
+<script>
+var chart = echarts.init(document.getElementById('chart'));
+
+var categories = ['MOB1-', 'MOB1-3', 'MOB3-6', 'MOB6-12', 'MOB12+'];
+var gmvData = [16.6, 45.0, 98.3, 158.7, 267.6];
+var headcount = [1, 22, 7, 8, 18];
+
+// 构造标注文本
+var labels = headcount.map(function(h, i) { return h + '人 / ' + gmvData[i] + '万'; });
+
+// 底层完整阶梯面积（灰色）
+var baseSeries = {
+  type: 'line',
+  step: 'end',
+  smooth: false,
+  symbol: 'circle',
+  symbolSize: 8,
+  lineStyle: { color: '#999999', width: 2 },
+  itemStyle: { color: '#999999' },
+  areaStyle: { color: '#D9D9D9', origin: 'auto' },
+  data: gmvData,
+  z: 1,
+  label: {
+    show: true,
+    position: 'top',
+    distance: 14,
+    formatter: function(params) { return labels[params.dataIndex]; },
+    fontSize: 12,
+    color: '#666666',
+    lineHeight: 16
+  },
+  // MOB12+ 标注单独覆盖
+};
+
+// 顶层 MOB12+ 橙色线段 + 面积（只画最后一个阶梯）
+// 用一组只有最后点有值的 series，配合 visualMap 不太方便
+// 改为：用 markArea 高亮最后一段阶梯
+var highlightSeries = {
+  type: 'line',
+  step: 'end',
+  smooth: false,
+  symbol: 'circle',
+  symbolSize: 10,
+  lineStyle: { width: 0, color: 'transparent' },
+  itemStyle: { color: '#CC6B1E' },
+  areaStyle: null,
+  data: [null, null, null, null, 267.6],
+  z: 3,
+  label: {
+    show: true,
+    position: 'top',
+    distance: 14,
+    formatter: function() { return '{b|' + labels[4] + '}'; },
+    rich: {
+      b: { fontWeight: 'bold', fontSize: 13, color: '#CC6B1E', lineHeight: 16 }
+    }
+  }
+};
+
+var option = {
+  backgroundColor: '#FFF8F0',
+  title: {
+    text: '首贷 MOB12+ 人均 267 万，MOB1-3 仅 45 万——产能需要 6+ 月沉淀',
+    left: 20,
+    top: 16,
+    textStyle: { fontSize: 16, fontWeight: 600, color: '#333333', width: 760, overflow: 'break' }
+  },
+  grid: {
+    left: 60,
+    right: 40,
+    top: 72,
+    bottom: 56
+  },
+  tooltip: { show: false },
+  xAxis: {
+    type: 'category',
+    data: categories,
+    axisLine: { lineStyle: { color: '#CCCCCC' } },
+    axisTick: { show: false },
+    axisLabel: { fontSize: 13, color: '#555555', margin: 12 }
+  },
+  yAxis: {
+    type: 'value',
+    name: '人均 GMV（万）',
+    nameTextStyle: { fontSize: 12, color: '#999999', padding: [0, 40, 0, 0] },
+    axisLine: { show: false },
+    axisTick: { show: false },
+    axisLabel: { fontSize: 11, color: '#999999' },
+    splitLine: { lineStyle: { color: '#E8E8E8', type: 'dashed' } }
+  },
+  series: [
+    baseSeries,
+    highlightSeries
+  ],
+  // 用 graphic 覆盖 MOB12+ 区域的面积填充
+  graphic: []
+};
+
+chart.setOption(option);
+
+// 后处理：绘制 MOB12+ 阶梯的橙色面积
+// 计算最后两个 category 在 grid 坐标系中的位置
+function drawHighlight() {
+  var gridRect = chart.getModel().getComponent('grid', 0).coordinateSystem;
+  var opts = chart.getOption();
+
+  // 获取像素坐标
+  var x4 = chart.convertToPixel({ seriesIndex: 0 }, [4, 267.6]); // MOB12+ 数据点
+  var x3 = chart.convertToPixel({ seriesIndex: 0 }, [3, 158.7]); // MOB6-12 数据点
+  var y0 = chart.convertToPixel({ seriesIndex: 0 }, [0, 0]);     // 底部
+
+  // 阶梯面积：从 x3 到 x4，y 从 0 到 267.6，阶梯在 x3 处跳升
+  var stepPath = 'M' + x3[0] + ',' + y0[1]
+    + 'L' + x3[0] + ',' + x4[1]
+    + 'L' + x4[0] + ',' + x4[1]
+    + 'L' + x4[0] + ',' + y0[1] + 'Z';
+
+  chart.setOption({
+    graphic: [{
+      type: 'path',
+      shape: { pathData: stepPath },
+      style: { fill: 'rgba(204,107,30,0.18)', stroke: 'none' },
+      z: 2,
+      silent: true
+    }]
+  });
+}
+
+// 延迟一帧确保坐标系已渲染
+setTimeout(drawHighlight, 100);
+
+window.addEventListener('resize', function() { chart.resize(); setTimeout(drawHighlight, 50); });
+</script>
+</body>
+</html>

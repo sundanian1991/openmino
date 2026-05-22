@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constitutional AI: Harmlessness from AI Feedback — 深度阅读报告</title>
+<style>
+/* ========== 设计系统 ========== */
+:root {
+  --ivory:  #FAF9F5;
+  --paper:  #FFFFFF;
+  --slate:  #141413;
+  --clay:   #D97757;
+  --clay-d: #B85C3E;
+  --oat:    #E3DACC;
+  --olive:  #788C5D;
+  --g100:   #F0EEE6;
+  --g200:   #E6E3DA;
+  --g300:   #D1CFC5;
+  --g500:   #87867F;
+  --g700:   #3D3D3A;
+  --ink:    #000000;
+  --accent: #8B0000;
+  --serif: ui-serif, Georgia, "Noto Serif SC", "Times New Roman", Times, serif;
+  --sans:  system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono:  ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--ivory);
+  color: var(--slate);
+  line-height: 1.75;
+  font-size: 16px;
+}
+
+/* ========== 布局 ========== */
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 48px 80px;
+}
+
+/* ========== 顶部红色 Banner ========== */
+.top-banner {
+  height: 4px;
+  background: var(--clay);
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+/* ========== Hero ========== */
+.hero {
+  padding-top: 24px;
+  margin-bottom: 48px;
+  border-bottom: 1px solid var(--g300);
+  padding-bottom: 36px;
+}
+
+.hero-tag {
+  display: inline-block;
+  background: var(--clay);
+  color: var(--paper);
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: 2.2em;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.hero-subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1em;
+  color: var(--g700);
+  margin-bottom: 20px;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.85em;
+  color: var(--g500);
+}
+
+.hero-meta span { display: flex; align-items: center; gap: 4px; }
+
+/* ========== 摘要 ========== */
+.abstract-box {
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  border-left: 4px solid var(--clay);
+  border-radius: 0 10px 10px 0;
+  padding: 24px 28px;
+  margin-bottom: 48px;
+}
+
+.abstract-box h2 {
+  font-family: var(--serif);
+  font-size: 1em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clay);
+  margin-bottom: 8px;
+}
+
+.abstract-box p {
+  font-family: var(--serif);
+  font-size: 0.95em;
+  line-height: 1.8;
+  color: var(--g700);
+}
+
+/* ========== 目录 ========== */
+.toc {
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  border-radius: 12px;
+  padding: 24px 32px;
+  margin-bottom: 56px;
+}
+
+.toc h2 {
+  font-family: var(--serif);
+  font-size: 0.85em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--g500);
+  margin-bottom: 12px;
+}
+
+.toc ol {
+  list-style: none;
+  counter-reset: toc;
+  columns: 2;
+  column-gap: 32px;
+}
+
+.toc li {
+  counter-increment: toc;
+  margin-bottom: 6px;
+  break-inside: avoid;
+}
+
+.toc li a {
+  color: var(--slate);
+  text-decoration: none;
+  font-size: 0.9em;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  transition: color 0.15s;
+}
+
+.toc li a::before {
+  content: counter(toc);
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: var(--clay);
+  font-weight: 700;
+  min-width: 1.2em;
+}
+
+.toc li a:hover { color: var(--clay); }
+
+/* ========== Section ========== */
+.section {
+  margin-bottom: 56px;
+  scroll-margin-top: 20px;
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 0.75em;
+  font-weight: 700;
+  color: var(--clay);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.section h2 {
+  font-family: var(--serif);
+  font-size: 1.6em;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+  line-height: 1.3;
+}
+
+.section h3 {
+  font-family: var(--serif);
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--g700);
+  margin: 28px 0 10px;
+}
+
+.section p {
+  font-size: 0.95em;
+  margin-bottom: 14px;
+  line-height: 1.8;
+}
+
+/* ========== 关键术语标注 ========== */
+.term {
+  font-weight: 600;
+  color: var(--clay);
+}
+
+.abbr-note {
+  font-size: 0.82em;
+  color: var(--g500);
+  display: block;
+  margin-top: 2px;
+}
+
+/* ========== 强调块 ========== */
+.highlight-box {
+  background: var(--g100);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 20px 0;
+  border-left: 3px solid var(--clay);
+}
+
+.highlight-box p { margin-bottom: 0; }
+
+/* ========== 流程图 ========== */
+.flow-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 28px 0;
+  overflow-x: auto;
+  padding: 12px 0;
+}
+
+.flow-step {
+  flex: 0 0 auto;
+  min-width: 160px;
+  background: var(--paper);
+  border: 2px solid var(--g300);
+  border-radius: 12px;
+  padding: 16px 18px;
+  text-align: center;
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.flow-step:hover {
+  border-color: var(--clay);
+  box-shadow: 0 4px 16px rgba(217,119,87,0.12);
+}
+
+.flow-step-num {
+  font-family: var(--mono);
+  font-size: 0.7em;
+  font-weight: 700;
+  color: var(--clay);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.flow-step-title {
+  font-weight: 700;
+  font-size: 0.9em;
+  margin-bottom: 4px;
+}
+
+.flow-step-desc {
+  font-size: 0.78em;
+  color: var(--g500);
+  line-height: 1.5;
+}
+
+.flow-arrow {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  color: var(--g300);
+}
+
+.flow-arrow svg { display: block; }
+
+/* ========== 对比卡片 ========== */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.compare-card {
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  border-radius: 12px;
+  padding: 22px 24px;
+  transition: box-shadow 0.2s;
+}
+
+.compare-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.compare-card h4 {
+  font-family: var(--serif);
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-card h4 .icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8em; font-weight: 800;
+  flex-shrink: 0;
+}
+
+.compare-card.problem h4 .icon { background: #FCEBEB; color: #A32D2D; }
+.compare-card.solution h4 .icon { background: #EAF3DE; color: #3B6D11; }
+
+.compare-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.compare-card li {
+  font-size: 0.88em;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--g100);
+  line-height: 1.6;
+}
+
+.compare-card li:last-child { border-bottom: none; }
+
+.compare-card li::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.compare-card.problem li::before { background: #E24B4A; }
+.compare-card.solution li::before { background: var(--olive); }
+
+/* ========== 折叠详情 ========== */
+details {
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  border-radius: 10px;
+  margin: 16px 0;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+details[open] { box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+
+details summary {
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.92em;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+details summary:hover { background: var(--g100); }
+
+details summary::before {
+  content: '+';
+  font-family: var(--mono);
+  font-weight: 700;
+  color: var(--clay);
+  font-size: 1.1em;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  background: var(--g100);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+details[open] summary::before { content: '−'; }
+
+details .detail-body {
+  padding: 4px 20px 20px;
+  font-size: 0.9em;
+  line-height: 1.75;
+  color: var(--g700);
+}
+
+details .detail-body p { margin-bottom: 10px; }
+
+/* ========== 两阶段 Tab 切换 ========== */
+.tab-group {
+  margin: 24px 0;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--g200);
+  margin-bottom: 0;
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  border: none;
+  background: none;
+  font-family: var(--sans);
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--g500);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+}
+
+.tab-btn:hover { color: var(--slate); }
+
+.tab-btn.active {
+  color: var(--clay);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--clay);
+}
+
+.tab-panel {
+  display: none;
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 28px;
+}
+
+.tab-panel.active { display: block; }
+
+.tab-panel h4 {
+  font-family: var(--serif);
+  font-size: 1em;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* ========== 实验结果卡片 ========== */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.result-card {
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  border-radius: 12px;
+  padding: 22px 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.result-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--clay), var(--clay-d));
+}
+
+.result-icon {
+  width: 44px; height: 44px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: var(--g100);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.result-card h4 {
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--g500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.result-value {
+  font-family: var(--mono);
+  font-size: 1.6em;
+  font-weight: 800;
+  color: var(--slate);
+  line-height: 1.1;
+}
+
+.result-desc {
+  font-size: 0.8em;
+  color: var(--g500);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ========== Before/After 对话 ========== */
+.dialogue-container {
+  margin: 24px 0;
+}
+
+.dialogue-row {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+
+.dialogue-side {
+  flex: 1;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.dialogue-side.before {
+  background: #FCEBEB;
+  border: 1px solid #F7C1C1;
+  border-radius: 10px 0 0 10px;
+}
+
+.dialogue-side.after {
+  background: #EAF3DE;
+  border: 1px solid #C0DD97;
+  border-radius: 0 10px 10px 0;
+}
+
+.dialogue-label {
+  font-size: 0.7em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.dialogue-side.before .dialogue-label { color: #A32D2D; }
+.dialogue-side.after .dialogue-label { color: #3B6D11; }
+
+.dialogue-text {
+  font-size: 0.88em;
+  line-height: 1.7;
+  font-style: italic;
+}
+
+/* ========== 时间线 ========== */
+.timeline {
+  position: relative;
+  padding-left: 28px;
+  border-left: 2px solid var(--g200);
+  margin: 24px 0;
+}
+
+.timeline-item {
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -35px;
+  top: 4px;
+  width: 12px; height: 12px;
+  background: var(--clay);
+  border-radius: 50%;
+  border: 2px solid var(--ivory);
+}
+
+.timeline-dot.active {
+  box-shadow: 0 0 0 3px rgba(217,119,87,0.2);
+}
+
+.timeline-title {
+  font-weight: 700;
+  font-size: 0.95em;
+  margin-bottom: 4px;
+}
+
+.timeline-desc {
+  font-size: 0.85em;
+  color: var(--g500);
+  line-height: 1.6;
+}
+
+/* ========== 影响力指标 ========== */
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.impact-card {
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: box-shadow 0.2s;
+}
+
+.impact-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+
+.impact-icon {
+  width: 40px; height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--g100);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.impact-card h4 {
+  font-size: 0.95em;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.impact-card p {
+  font-size: 0.84em;
+  color: var(--g500);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ========== 引用块 ========== */
+blockquote {
+  font-family: var(--serif);
+  font-size: 1.15em;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--g700);
+  border-top: 1px solid var(--g300);
+  border-bottom: 1px solid var(--g300);
+  padding: 20px 0;
+  margin: 28px 40px;
+  text-align: center;
+}
+
+/* ========== 三线表 ========== */
+.table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+thead th {
+  border-top: 2px solid var(--slate);
+  border-bottom: 1px solid var(--slate);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.85em;
+}
+
+tbody td {
+  padding: 10px 14px;
+  border-bottom: none;
+  vertical-align: top;
+}
+
+tbody tr { border-bottom: 1px solid var(--g200); }
+tbody tr:last-child { border-bottom: 2px solid var(--slate); }
+
+/* ========== 参考文献 ========== */
+.references {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--g300);
+}
+
+.references h2 {
+  font-family: var(--serif);
+  font-size: 1.1em;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.references ol {
+  padding-left: 20px;
+  font-size: 0.84em;
+  color: var(--g500);
+  line-height: 1.7;
+}
+
+.references li { margin-bottom: 6px; }
+
+/* ========== Footer ========== */
+.footer {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--g300);
+  font-size: 0.78em;
+  color: var(--g500);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .page { padding: 32px 20px 60px; }
+  .hero h1 { font-size: 1.6em; }
+  .toc ol { columns: 1; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .results-grid { grid-template-columns: 1fr; }
+  .impact-grid { grid-template-columns: 1fr; }
+  .flow-container { flex-direction: column; align-items: stretch; }
+  .flow-arrow { justify-content: center; padding: 8px 0; }
+  .flow-arrow svg { transform: rotate(90deg); }
+  .dialogue-row { flex-direction: column; }
+  .dialogue-side.before { border-radius: 10px 10px 0 0; }
+  .dialogue-side.after { border-radius: 0 0 10px 10px; }
+  blockquote { margin: 20px 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-banner"></div>
+
+<div class="page">
+
+<!-- ==================== HERO ==================== -->
+<header class="hero">
+  <span class="hero-tag">Deep Reading Report</span>
+  <h1>Constitutional AI:<br>Harmlessness from AI Feedback</h1>
+  <p class="hero-subtitle">让 AI 用自己的判断力变得无害 — 而不是靠人类逐条标注</p>
+  <div class="hero-meta">
+    <span>Bai et al., 2022</span>
+    <span>Anthropic</span>
+    <span>arXiv:2212.08073</span>
+    <span>cs.CL / cs.AI</span>
+  </div>
+</header>
+
+<!-- ==================== 摘要 ==================== -->
+<div class="abstract-box">
+  <h2>论文摘要</h2>
+  <p>随着 AI 系统变得越来越强大，我们希望能借助 AI 自身来监督其他 AI。本文实验了一种通过<strong>自我改进</strong>来训练无害 AI 助手的方法——无需任何人类标注来识别有害输出。唯一的人类监督来自一组<strong>规则或原则</strong>（即"宪法"），因此该方法被称为 <span class="term">Constitutional AI (CAI)</span>。过程包含监督学习（SL）和强化学习（RL）两个阶段，最终训练出一个<strong>无害但不回避</strong>的 AI 助手——面对有害查询时，它能解释自己为什么反对，而不是简单拒绝。</p>
+</div>
+
+<!-- ==================== 目录 ==================== -->
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#problem">问题定义：为什么需要 CAI</a></li>
+    <li><a href="#method">方法详解：两阶段自我改进</a></li>
+    <li><a href="#innovation">关键创新：RLAIF 与自我批评</a></li>
+    <li><a href="#experiment">实验结果：无害且有用</a></li>
+    <li><a href="#insight">关键洞察：从 RLHF 到 RLAIF 的跃迁</a></li>
+    <li><a href="#impact">影响与启示</a></li>
+  </ol>
+</nav>
+
+<!-- ==================== 1. 问题定义 ==================== -->
+<section class="section" id="problem">
+  <div class="section-num">Section 01</div>
+  <h2>问题定义：为什么需要 Constitutional AI</h2>
+
+  <p>训练一个安全、无害的 AI 助手是 AI 对齐领域的核心挑战。主流方法 <span class="term">RLHF</span>（Reinforcement Learning from Human Feedback）依赖大量人工标注来判断模型输出是否有害，但这存在根本性瓶颈。</p>
+
+  <div class="compare-grid">
+    <div class="compare-card problem">
+      <h4><span class="icon">!</span>RLHF 的困境</h4>
+      <ul>
+        <li>需要大量人类标注者对有害输出进行标记，成本高昂</li>
+        <li>标注标准难以统一，不同人对"有害"的判断差异大</li>
+        <li>难以覆盖所有有害场景，总有意料之外的边界</li>
+        <li>训练出的模型倾向<strong>回避策略</strong> — 遇到敏感话题直接拒绝回答</li>
+        <li>无法随模型能力提升而扩展</li>
+      </ul>
+    </div>
+    <div class="compare-card solution">
+      <h4><span class="icon">✓</span>CAI 的方案</h4>
+      <ul>
+        <li>用一组<strong>宪法原则</strong>替代逐条人工标注</li>
+        <li>让 AI 自己判断哪些输出违反原则</li>
+        <li>AI 生成自我批评和修订，形成自我改进闭环</li>
+        <li>训练出<strong>非回避</strong>的助手 — 解释反对理由而非简单拒绝</li>
+        <li>可随模型能力提升而自然扩展</li>
+      </ul>
+    </div>
+  </div>
+
+  <p>核心矛盾在于：传统 RLHF 训练出的模型在面对有害查询时，学会了最安全的策略 — <strong>什么都不说</strong>。这种"evasive"（回避型）行为表面上无害，但实际上降低了 AI 的可用性和透明度。Constitutional AI 试图解决这一问题：让模型学会"有原则地拒绝"。</p>
+</section>
+
+<!-- ==================== 2. 方法详解 ==================== -->
+<section class="section" id="method">
+  <div class="section-num">Section 02</div>
+  <h2>方法详解：两阶段自我改进</h2>
+
+  <p>Constitutional AI 的训练流程分为两个阶段，每个阶段都利用了模型自身的判断能力。</p>
+
+  <!-- 整体流程图 -->
+  <div class="flow-container">
+    <div class="flow-step">
+      <div class="flow-step-num">STEP 0</div>
+      <div class="flow-step-title">宪法原则</div>
+      <div class="flow-step-desc">一组人类定义的规则/原则，是唯一的人工输入</div>
+    </div>
+    <div class="flow-arrow">
+      <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">PHASE 1</div>
+      <div class="flow-step-title">监督学习 (SL)</div>
+      <div class="flow-step-desc">自我批评 + 修订 → 微调</div>
+    </div>
+    <div class="flow-arrow">
+      <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">PHASE 2</div>
+      <div class="flow-step-title">强化学习 (RL)</div>
+      <div class="flow-step-desc">AI 偏好评估 → 偏好模型 → RL 训练</div>
+    </div>
+    <div class="flow-arrow">
+      <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">OUTPUT</div>
+      <div class="flow-step-title">CAI 模型</div>
+      <div class="flow-step-desc">无害 + 非回避 + 有用</div>
+    </div>
+  </div>
+
+  <!-- Tab 切换两阶段 -->
+  <div class="tab-group">
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="sl">Phase 1: 监督学习 (SL)</button>
+      <button class="tab-btn" data-tab="rl">Phase 2: 强化学习 (RL)</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-sl">
+      <h4>监督学习阶段 — 自我批评与修订</h4>
+      <p>这一阶段的目标：让模型学会"看到自己的问题并修正"。</p>
+
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <div class="flow-step-title">采样</div>
+          <div class="flow-step-desc">从初始模型对有害提示生成回复</div>
+        </div>
+        <div class="flow-arrow">
+          <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <div class="flow-step-title">自我批评</div>
+          <div class="flow-step-desc">模型根据宪法原则评判自己的回复</div>
+        </div>
+        <div class="flow-arrow">
+          <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <div class="flow-step-title">修订</div>
+          <div class="flow-step-desc">基于批评生成改进版回复</div>
+        </div>
+        <div class="flow-arrow">
+          <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <div class="flow-step-title">微调</div>
+          <div class="flow-step-desc">用修订后的回复微调原始模型</div>
+        </div>
+      </div>
+
+      <details>
+        <summary>宪法原则示例（论文中使用的 16 条原则节选）</summary>
+        <div class="detail-body">
+          <p><strong>1.</strong> 请选择最无害且最有帮助的回复。</p>
+          <p><strong>2.</strong> 请选择较少有害且更有帮助的回复。如果两个回复危害程度相当，选择更有帮助的。</p>
+          <p><strong>3.</strong> 请选择较少有害的回复。即使不太有帮助，也要选择更安全、更合乎伦理的。</p>
+          <p><strong>6.</strong> 请选择本质上不鼓励或不如实回答有害请求的回复。更好的回复应该礼貌地解释为什么不能帮助。</p>
+          <p><strong>14.</strong> 请选择更谨慎的回复。如果不确定是否有害，宁可选择更保守的回答。</p>
+          <p style="font-size:0.9em; color:var(--g500);">（共 16 条，涵盖安全性、伦理性、有用性、透明性等维度。每条原则侧重不同优先级的平衡。）</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="tab-panel" id="tab-rl">
+      <h4>强化学习阶段 — RLAIF (RL from AI Feedback)</h4>
+      <p>这一阶段用 AI 反馈替代人类反馈，构建偏好模型作为 RL 的奖励信号。</p>
+
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="flow-step-num">1</div>
+          <div class="flow-step-title">成对采样</div>
+          <div class="flow-step-desc">从 SL 微调模型对同一提示生成两个回复</div>
+        </div>
+        <div class="flow-arrow">
+          <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">2</div>
+          <div class="flow-step-title">AI 评估</div>
+          <div class="flow-step-desc">用 AI 模型根据宪法原则评判哪对更好</div>
+        </div>
+        <div class="flow-arrow">
+          <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">3</div>
+          <div class="flow-step-title">偏好模型</div>
+          <div class="flow-step-desc">训练 PM，学习 AI 的偏好判断</div>
+        </div>
+        <div class="flow-arrow">
+          <svg width="24" height="16" viewBox="0 0 24 16"><path d="M0 8 L18 8 M14 3 L20 8 L14 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">4</div>
+          <div class="flow-step-title">RL 训练</div>
+          <div class="flow-step-desc">用 PM 作为奖励信号，RL (PPO) 优化模型</div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <p><strong>关键区别</strong>：传统 RLHF 用人类标注的偏好数据训练 PM。CAI 用 <span class="term">AI 自身的判断</span>生成偏好数据（RLAIF），大幅减少了对人类标注的依赖。人类只需提供宪法原则，不需要逐条标注。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 3. 关键创新 ==================== -->
+<section class="section" id="innovation">
+  <div class="section-num">Section 03</div>
+  <h2>关键创新：RLAIF 与自我批评</h2>
+
+  <h3>创新 1: RLAIF — RL from AI Feedback</h3>
+  <p>论文最核心的贡献是提出了 <span class="term">RLAIF</span> 概念。传统 RLHF 的瓶颈在于人类标注成本和一致性，RLAIF 用 AI 评估替代人类评估，实现了偏好建模的自动化。</p>
+
+  <blockquote>
+    "We use 'RL from AI Feedback' (RLAIF). As a result we are able to train a harmless but non-evasive AI assistant that engages with harmful queries by explaining its objections to them."
+  </blockquote>
+
+  <h3>创新 2: 自我批评 + 修订的链式推理</h3>
+  <p>模型不只是生成回复，而是先生成回复，然后<strong>批评自己的回复</strong>，再基于批评<strong>生成修订版本</strong>。这一 chain-of-thought 推理过程提升了透明度，也帮助模型在 RL 阶段做出更好的判断。</p>
+
+  <h3>创新 3: 非回避行为</h3>
+  <p>这是论文中最有实践价值的发现。</p>
+
+  <div class="dialogue-container">
+    <div class="dialogue-row">
+      <div class="dialogue-side before">
+        <div class="dialogue-label">RLHF 模型（回避型）</div>
+        <div class="dialogue-text">"I'm sorry, I can't help with that."</div>
+      </div>
+      <div class="dialogue-side after">
+        <div class="dialogue-label">CAI 模型（非回避型）</div>
+        <div class="dialogue-text">"I understand you're asking about [X]. I want to be upfront that I have concerns about this request because [具体原因]. Instead, I'd suggest [替代方案]."</div>
+      </div>
+    </div>
+  </div>
+
+  <details>
+    <summary>为什么非回避性如此重要？</summary>
+    <div class="detail-body">
+      <p>回避型模型看似安全，但带来三个问题：</p>
+      <p><strong>1. 可用性下降</strong> — 用户遇到"我无法帮助"时，会反复重试或换个方式提问，反而增加风险暴露。</p>
+      <p><strong>2. 透明度缺失</strong> — 用户不知道模型拒绝的原因，无法学习什么是合适的边界。</p>
+      <p><strong>3. 信任受损</strong> — 模型显得"不聪明"，用户对 AI 的整体信任度降低。</p>
+      <p>CAI 训练出的模型能解释反对理由、提供替代方案，既保持安全又维持了交互质量。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ==================== 4. 实验结果 ==================== -->
+<section class="section" id="experiment">
+  <div class="section-num">Section 04</div>
+  <h2>实验结果：无害且有用</h2>
+
+  <p>论文通过人类评估和模型自评两种方式，从<strong>无害性</strong>和<strong>有用性</strong>两个维度评估模型表现。</p>
+
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="result-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--clay)" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h4>无害性</h4>
+      <div class="result-value">CAI &gt; RLHF</div>
+      <div class="result-desc">CAI 模型在人类评估的无害性指标上优于 RLHF 基线</div>
+    </div>
+    <div class="result-card">
+      <div class="result-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--olive)" stroke-width="1.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h4>有用性</h4>
+      <div class="result-value">保持稳定</div>
+      <div class="result-desc">在提升无害性的同时未显著牺牲有用性</div>
+    </div>
+    <div class="result-card">
+      <div class="result-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--clay-d)" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h4>非回避率</h4>
+      <div class="result-value">显著提升</div>
+      <div class="result-desc">面对有害查询时解释原因而非简单拒绝</div>
+    </div>
+  </div>
+
+  <h3>Chain-of-Thought 推理的效果</h3>
+  <p>论文发现，在 AI 评估阶段引入 CoT 推理（让模型"先想再判断"）能显著提升人类评估者的偏好：</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>评估方式</th>
+          <th>无 CoT</th>
+          <th>有 CoT</th>
+          <th>提升</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AI 偏好判断准确率</td>
+          <td>基线</td>
+          <td>提升</td>
+          <td>推理过程提高透明度</td>
+        </tr>
+        <tr>
+          <td>人类评估者偏好</td>
+          <td>较低</td>
+          <td>显著更高</td>
+          <td>CoT 让决策过程可解释</td>
+        </tr>
+        <tr>
+          <td>无害性得分</td>
+          <td>好</td>
+          <td>更好</td>
+          <td>减少误判</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <details>
+    <summary>实验设置细节</summary>
+    <div class="detail-body">
+      <p><strong>模型规模</strong>：论文使用了从 100M 到 52B 参数的多种规模模型进行实验，验证方法在不同规模上的有效性。</p>
+      <p><strong>评估方法</strong>：人类评估者对模型回复进行成对比较（pairwise comparison），从无害性和有用性两个维度打分。</p>
+      <p><strong>训练超参</strong>：RL 阶段使用与之前 RLHF 工作（Bai et al., 2022）相同的超参数，确保对比公平。主要差异在于 PM 训练数据来源（人类 vs AI）。</p>
+      <p><strong>RL 算法</strong>：PPO（Proximal Policy Optimization）。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ==================== 5. 关键洞察 ==================== -->
+<section class="section" id="insight">
+  <div class="section-num">Section 05</div>
+  <h2>关键洞察：从 RLHF 到 RLAIF 的跃迁</h2>
+
+  <p>Constitutional AI 不只是"用 AI 替代人类标注"的技术技巧，它代表了一种范式转变。</p>
+
+  <div class="impact-grid">
+    <div class="impact-card">
+      <div class="impact-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div>
+        <h4>人类监督的杠杆化</h4>
+        <p>人类不再标注每条数据，而是设计<strong>原则</strong>。16 条原则替代了数万条人工标注，监督效率提高了几个数量级。</p>
+      </div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <div>
+        <h4>自我改进飞轮</h4>
+        <p>模型批评自己、修订自己、评估自己 — 构成了一个自我改进的正循环。更强的模型产生更好的自我评估，进而训练出更强的模型。</p>
+      </div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay)" stroke-width="1.5" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div>
+        <h4>可扩展性突破</h4>
+        <p>RLAIF 打破了 RLHF 的标注瓶颈。随着模型能力提升，AI 反馈质量也提升，方法本身自然扩展，不需要同步增加人类标注投入。</p>
+      </div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--clay)" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div>
+        <h4>透明度作为属性</h4>
+        <p>CoT 推理让 AI 的判断过程变得<strong>可审计</strong>。人类可以检查"模型为什么认为 A 比 B 好"，而不只是接受一个黑箱判断。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <p><strong>深层洞察</strong>：CAI 的真正力量不在于"省了人工"，而在于它<strong>改变了监督的粒度</strong>。从"标注每条输出"到"定义行为原则"，人类的工作从体力劳动升级为制度设计。这也意味着"宪法"本身的质量变得至关重要。</p>
+  </div>
+</section>
+
+<!-- ==================== 6. 影响与启示 ==================== -->
+<section class="section" id="impact">
+  <div class="section-num">Section 06</div>
+  <h2>影响与启示</h2>
+
+  <h3>对 AI 行业的影响</h3>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-dot active"></div>
+      <div class="timeline-title">Claude 系列的训练基础</div>
+      <div class="timeline-desc">Constitutional AI 直接成为 Anthropic Claude 系列模型的核心训练方法。此后的 Claude 1/2/3 都沿用了这一范式。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-title">RLAIF 方向的开创</div>
+      <div class="timeline-desc">论文首次系统性地提出了 RLAIF 概念，成为后续大量研究的基础范式（如 Google DeepMind 的 RLAIF 研究、Meta 的自对齐工作等）。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-title">AI 自对齐的先驱</div>
+      <div class="timeline-desc">"用 AI 监督 AI"的思想影响了整个 AI 安全领域。此后涌现的 Self-Align、DPO 等方法都可以看到 CAI 的影子。</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-title">宪法设计的重要性</div>
+      <div class="timeline-desc">CAI 凸显了"给 AI 制定什么样的规则"这一问题的战略意义。此后 Anthropic 持续发布关于可解释性和宪法设计的研究。</div>
+    </div>
+  </div>
+
+  <h3>局限与开放问题</h3>
+
+  <details>
+    <summary>论文承认的局限性</summary>
+    <div class="detail-body">
+      <p><strong>1. 宪法本身是人类设计的</strong> — 原则的质量和覆盖范围直接影响训练结果。如果宪法有偏见，模型也会继承这种偏见。</p>
+      <p><strong>2. AI 评估可能存在系统性偏差</strong> — 用同一模型生成回复并评估回复，可能产生"自我肯定"的偏差。</p>
+      <p><strong>3. 规模效应尚未完全验证</strong> — 实验主要在 52B 参数规模上进行，更大的模型是否同样有效需要进一步研究。</p>
+      <p><strong>4. 奖励黑客（Reward Hacking）风险</strong> — 模型可能学会"看起来符合宪法"而非"真正符合宪法"的输出策略。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>对 AI Agent 开发的启示</summary>
+    <div class="detail-body">
+      <p><strong>1. 安全设计前置</strong> — 与其事后修补不安全行为，不如在训练时定义清晰的行为原则。这对 Agent 系统尤其重要。</p>
+      <p><strong>2. 自我反思能力</strong> — 自我批评+修订的模式可以应用于 Agent 的决策过程中，让 Agent 在执行前先审视自己的方案。</p>
+      <p><strong>3. 可审计的决策链</strong> — CoT 推理为 Agent 的决策过程提供了可审计的日志，这对高stakes 场景至关重要。</p>
+      <p><strong>4. 原则驱动的行为约束</strong> — 为 Agent 定义"宪法"（行为规则集）是一种比逐场景编码更高效的安全策略。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ==================== 参考文献 ==================== -->
+<div class="references">
+  <h2>参考文献</h2>
+  <ol>
+    <li>Bai, Y., Kadavath, S., Kundu, S., et al. (2022). <em>Constitutional AI: Harmlessness from AI Feedback</em>. arXiv:2212.08073.</li>
+    <li>Bai, Y., Jones, A., Ndousse, K., et al. (2022). <em>Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback</em>. arXiv:2204.05862.</li>
+    <li>Ouyang, L., Wu, J., Jiang, X., et al. (2022). <em>Training language models to follow instructions with human feedback</em>. NeurIPS 2022.</li>
+    <li>Christiano, P. F., Leike, J., Brown, T., et al. (2017). <em>Deep reinforcement learning from human preferences</em>. NeurIPS 2017.</li>
+    <li>Lee, H., Phatale, S., Mansoor, H., et al. (2023). <em>RLAIF: Scaling Reinforcement Learning from Human Feedback with AI Feedback</em>. arXiv:2309.00267.</li>
+  </ol>
+</div>
+
+<!-- ==================== Footer ==================== -->
+<div class="footer">
+  <span>Generated by Mino — 2026-05-14</span>
+  <span>Paper: arXiv:2212.08073 | Anthropic 2022</span>
+</div>
+
+</div><!-- .page -->
+
+<script>
+// Tab 切换
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.closest('.tab-group');
+    group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.tab;
+    group.querySelector('#tab-' + target).classList.add('active');
+  });
+});
+
+// 平滑滚动（目录锚点）
+document.querySelectorAll('.toc a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>

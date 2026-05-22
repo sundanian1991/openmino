@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商分级盘点 — 九宫格评估体系</title>
+<style>
+:root{
+  --cream:#FFF1E5;--wine:#990F3D;--navy:#0F5499;--ink:#333;--taupe:#B3A39C;
+  --wine-l:#F2DDE6;--navy-l:#D4E4F3;--taupe-l:#EDE8E5;--wine-d:#7A0C2F;--navy-d:#0B3F73;
+  --wine-bg:rgba(153,15,61,.07);--navy-bg:rgba(15,84,153,.07);--taupe-bg:rgba(179,163,156,.12);
+  --headline:"Playfair Display",Georgia,"Noto Serif SC",serif;
+  --body:system-ui,-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --h1:3.2rem;--h2:2rem;--h3:1.35rem;--h4:1.05rem;--body:1.06rem;--sm:.88rem;--xs:.8rem;
+  --sp1:.5rem;--sp2:1rem;--sp3:1.5rem;--sp4:2.5rem;--sp5:4rem;--sp6:6rem;
+  --max-w:820px;--max-wide:960px;--radius:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);font-size:var(--body);line-height:1.75;color:var(--ink);background:var(--cream);padding-bottom:var(--sp6)}
+h1,h2,h3,h4{font-family:var(--headline);color:var(--ink);line-height:1.25}
+h1{font-size:var(--h1);font-weight:700;letter-spacing:-.02em}
+h2{font-size:var(--h2);font-weight:600;margin-bottom:var(--sp2)}
+h3{font-size:var(--h3);font-weight:600;margin-bottom:var(--sp1)}
+h4{font-size:var(--h4);font-weight:500}
+p{margin-bottom:var(--sp2)}
+small,.sm{font-size:var(--sm);color:var(--taupe)}
+
+.hero{padding:var(--sp6) var(--sp3) var(--sp5);max-width:var(--max-w);margin:0 auto}
+.hero h1{color:var(--wine);margin-bottom:var(--sp1)}
+.hero .subtitle{font-size:1.25rem;color:var(--taupe);font-style:italic}
+.hero .meta{margin-top:var(--sp3);font-size:var(--sm);color:var(--taupe);border-top:2px solid var(--wine);padding-top:var(--sp1);display:flex;gap:var(--sp3);flex-wrap:wrap}
+.hero .meta span{white-space:nowrap}
+
+.section{padding:var(--sp4) var(--sp3);max-width:var(--max-wide);margin:0 auto}
+.section-title{font-size:var(--h2);margin-bottom:var(--sp3);padding-bottom:var(--sp1);border-bottom:3px solid var(--wine);display:inline-block}
+.section-subtitle{font-size:var(--sm);color:var(--taupe);text-transform:uppercase;letter-spacing:.12em;margin-bottom:var(--sp1);font-weight:500}
+
+.summary-box{background:var(--wine-bg);border-left:4px solid var(--wine);padding:var(--sp2) var(--sp3);margin-bottom:var(--sp3);border-radius:0 var(--radius) var(--radius) 0}
+.summary-box p{margin:0;font-size:var(--sm);line-height:1.7}
+
+.status-list{margin:var(--sp2) 0;list-style:none;display:grid;gap:var(--sp1)}
+.status-list li{padding:var(--sp1) var(--sp2);background:rgba(0,0,0,.03);border-radius:var(--radius);font-size:var(--sm);border-left:3px solid var(--taupe)}
+
+table{width:100%;border-collapse:collapse;margin:var(--sp2) 0;font-size:var(--sm)}
+th,td{padding:.65rem .8rem;text-align:left;border-bottom:1px solid var(--taupe-l)}
+th{background:var(--ink);color:#fff;font-weight:600;font-size:var(--xs);text-transform:uppercase;letter-spacing:.05em}
+tr:hover td{background:rgba(0,0,0,.02)}
+
+.formula-card{background:#fff;border-radius:var(--radius);padding:var(--sp3);margin:var(--sp3) 0;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.formula-main{font-family:var(--mono);font-size:1.1rem;background:var(--wine-bg);padding:var(--sp2);border-radius:8px;text-align:center;margin:var(--sp2) 0;border:1px solid var(--wine-l)}
+.step{display:flex;gap:var(--sp2);margin:var(--sp2) 0;padding:var(--sp2);background:#fff;border-radius:8px;border:1px solid var(--taupe-l)}
+.step-num{width:36px;height:36px;min-width:36px;border-radius:50%;background:var(--wine);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--headline);font-size:1rem;margin-top:2px}
+.step-body h4{margin-bottom:var(--sp1)}
+
+.nine-grid{display:grid;grid-template-columns:36px 1fr;gap:0;margin:var(--sp3) 0;max-width:640px}
+.nine-grid-y-label{display:flex;align-items:center;justify-content:center;writing-mode:vertical-lr;transform:rotate(180deg);font-size:var(--xs);font-weight:600;color:var(--taupe);letter-spacing:.1em}
+.nine-grid-body{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,80px);gap:4px}
+.nine-grid-x-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-left:36px;margin-top:4px}
+.nine-grid-x-labels span{text-align:center;font-size:var(--xs);color:var(--taupe);font-weight:500}
+.gc{border-radius:8px;padding:.6rem;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;transition:transform .2s}
+.gc:hover{transform:scale(1.03)}
+.gc .name{font-weight:700;font-size:var(--sm);font-family:var(--headline)}
+.gc .desc{font-size:var(--xs);margin-top:2px;opacity:.85}
+.gc-star{background:var(--wine);color:#fff}
+.gc-accel{background:var(--navy);color:#fff}
+.gc-warn{background:var(--wine-l);color:var(--wine-d)}
+.gc-grow{background:var(--navy-l);color:var(--navy-d)}
+.gc-core{background:#E8E4E0;color:var(--ink)}
+.gc-watch{background:var(--taupe-l);color:var(--ink)}
+.gc-elim{background:var(--taupe);color:#fff}
+.gc-potent{background:rgba(15,84,153,.15);color:var(--navy-d)}
+.gc-mid-fall{background:rgba(179,163,156,.25);color:var(--ink)}
+
+.lists-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp2);margin:var(--sp3) 0}
+.list-card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.05);border-top:4px solid var(--taupe)}
+.list-card h4{padding:var(--sp1) var(--sp2);font-family:var(--headline);font-size:1.1rem}
+.list-card .card-body{padding:var(--sp2)}
+.list-card .card-body p{margin-bottom:var(--sp1);font-size:var(--sm)}
+.list-card .card-body .est{font-size:1.8rem;font-weight:700;color:var(--ink);font-family:var(--headline)}
+.lc-retain{border-top-color:var(--wine)}.lc-retain h4{color:var(--wine)}
+.lc-nurture{border-top-color:var(--navy)}.lc-nurture h4{color:var(--navy)}
+.lc-optimize{border-top-color:var(--taupe)}.lc-optimize h4{color:var(--taupe)}
+
+.timeline{position:relative;margin:var(--sp3) 0;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:3px;background:var(--taupe-l);border-radius:2px}
+.tl-item{position:relative;margin-bottom:var(--sp3)}
+.tl-item::before{content:'';position:absolute;left:-24px;top:6px;width:13px;height:13px;border-radius:50%;background:var(--wine);border:2px solid var(--cream)}
+.tl-item .tl-date{font-size:var(--xs);font-weight:600;color:var(--wine);text-transform:uppercase;letter-spacing:.05em}
+.tl-item .tl-text{font-size:var(--sm);margin-top:4px}
+.tl-item .tl-check{font-size:var(--xs);color:var(--taupe);margin-top:2px}
+
+.metric-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--sp2);margin:var(--sp3) 0}
+.metric-card{background:#fff;border-radius:var(--radius);padding:var(--sp2);border-left:4px solid var(--navy);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.metric-card h4{font-size:var(--sm);margin-bottom:4px;color:var(--navy)}
+.metric-card .mdef{font-size:var(--xs);color:var(--taupe);margin-bottom:4px}
+.metric-card .mtarget{font-size:var(--sm);font-weight:600}
+
+.risk-card{background:#fff;border-radius:var(--radius);padding:var(--sp2);margin-bottom:var(--sp1);border-left:4px solid var(--wine);box-shadow:0 1px 6px rgba(0,0,0,.04)}
+.risk-card h4{font-size:var(--sm);color:var(--wine);margin-bottom:6px}
+.risk-card p{font-size:var(--sm);margin:0}
+
+footer{text-align:center;padding:var(--sp4) var(--sp3);font-size:var(--xs);color:var(--taupe);border-top:1px solid var(--taupe-l);max-width:var(--max-wide);margin:0 auto}
+
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+.d4{transition-delay:.4s}.d5{transition-delay:.5s}.d6{transition-delay:.6s}
+
+.chart-caption{font-size:var(--sm);color:var(--taupe);margin-top:var(--sp1);font-style:italic}
+.chart-source{font-size:var(--xs);color:var(--taupe);text-align:right;margin-top:4px}
+.accent-wine{color:var(--wine)}.accent-navy{color:var(--navy)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:var(--xs);font-weight:600}
+.badge-wine{background:var(--wine-l);color:var(--wine-d)}
+.badge-navy{background:var(--navy-l);color:var(--navy-d)}
+.badge-taupe{background:var(--taupe-l);color:var(--ink)}
+
+@media(max-width:768px){
+  :root{--h1:2.2rem;--h2:1.5rem}
+  .lists-grid{grid-template-columns:1fr}
+  .metric-cards{grid-template-columns:1fr}
+  .nine-grid-body{grid-template-rows:repeat(3,64px)}
+  .hero{padding:var(--sp4) var(--sp2) var(--sp3)}
+  .section{padding:var(--sp3) var(--sp2)}
+}
+</style>
+</head>
+<body>
+
+<header class="hero fade-in">
+  <h1>供应商分级盘点</h1>
+  <p class="subtitle">九宫格评估体系与三张清单</p>
+  <div class="meta">
+    <span>周期：月度评估 + 季度盘点</span>
+    <span>优先级：P0</span>
+    <span>状态：分析类，直做</span>
+  </div>
+</header>
+
+<!-- ========== 1. 目标 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">目标</div>
+  <h2 class="section-title">对 30+ 供应商进行综合评估</h2>
+  <div class="summary-box">
+    <p>以<strong>当月贡献 &times; 环比趋势 + 供管自评</strong>为核心公式，输出分级清单和三张清单（保留 / 培养 / 优化），为资源分配、培养优化、淘汰清退提供决策依据。</p>
+  </div>
+  <p class="chart-source">对应 HRBP 原版：业务侧人才盘点（九宫格）</p>
+</section>
+
+<!-- ========== 2. 现状 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">现状诊断</div>
+  <h2 class="section-title">六大结构性缺失</h2>
+  <ul class="status-list">
+    <li class="fade-in d1"><strong>缺乏系统性的分级评估机制</strong> — 分级多凭经验和直觉</li>
+    <li class="fade-in d2"><strong>没有正式的"三张清单"</strong> — 保留 / 培养 / 优化无结构化输出</li>
+    <li class="fade-in d3"><strong>赛马机制只看业绩一个维度</strong> — 有相对排名但过于单一</li>
+    <li class="fade-in d4"><strong>合规无量化的合规分数</strong> — 有巡检整改记录但无法量化对比</li>
+    <li class="fade-in d5"><strong>交付稳定性无结构化数据</strong> — 人员流动、产能波动、SLA 未纳入体系</li>
+    <li class="fade-in d6"><strong>30+ 供应商覆盖四条产线</strong> — 头部 6 家贡献绝大部分产能，但缺乏分级管理</li>
+  </ul>
+</section>
+
+<!-- ========== 3. 评估体系 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">评估体系设计</div>
+  <h2 class="section-title">两套体系，月度评估 + 季度盘点</h2>
+
+  <table class="fade-in">
+    <thead><tr><th>体系</th><th>用途</th><th>频率</th></tr></thead>
+    <tbody>
+      <tr><td><strong>月度评估</strong></td><td>供应商分级 + 三张清单</td><td>每月</td></tr>
+      <tr><td><strong>季度盘点</strong></td><td>战略维度校准 + 格局审视</td><td>每季度</td></tr>
+    </tbody>
+  </table>
+
+  <!-- Formula Card -->
+  <div class="formula-card fade-in">
+    <h3>月度评估：得分计算</h3>
+    <div class="formula-main">
+      最终得分 = [ 赛马基础分（扣分后 &times; 稳定性系数）] + 供管自评加分（0~4分）
+    </div>
+
+    <div class="step fade-in d1">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>赛马基础分</h4>
+        <p class="sm">直接采用现有赛马成绩，满分 100。</p>
+      </div>
+    </div>
+
+    <div class="step fade-in d2">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>合规扣分</h4>
+        <table>
+          <thead><tr><th>事件</th><th>扣分</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>黄牌整改</td><td>-10 分/次</td><td>巡检发现问题并下发整改函</td></tr>
+            <tr><td>投诉 / 一般违规</td><td>-5 分/次</td><td>质检通报、客户投诉</td></tr>
+            <tr><td>红线违规</td><td>当月直接降级</td><td>安全、数据泄露等严重事件</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="step fade-in d3">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>交付稳定性系数</h4>
+        <p class="sm" style="margin-bottom:var(--sp1)">月底扫三张检查线，ABC 三档：</p>
+        <table>
+          <thead><tr><th>档位</th><th>系数</th><th>触发条件（满足任一即降级）</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge-wine">稳定 A</span></td><td>1.0</td><td>人员无大幅变动、产能无异常波动、SLA 全达成</td></tr>
+            <tr><td><span class="badge badge-navy">波动 B</span></td><td>0.9</td><td>人员流失 &gt;10%、产能波动 &gt;20%、SLA 一次未达成</td></tr>
+            <tr><td><span class="badge badge-taupe">失控 C</span></td><td>0.75</td><td>核心人员离职、产能断崖、SLA 两次以上未达成、突发掉链子</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="step fade-in d4">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>供管自评加分（0~4 分）</h4>
+        <p class="sm" style="margin-bottom:var(--sp1)">主观评价，四项各评高中低，高 = 1 分，中低 = 0 分：</p>
+        <table>
+          <thead><tr><th>维度</th><th>高 = 1 分的触发条件</th></tr></thead>
+          <tbody>
+            <tr><td><strong>战略协作</strong></td><td>主动提出建设性建议 / 参与规划讨论、与业务方向一致</td></tr>
+            <tr><td><strong>响应质量</strong></td><td>24h 内响应、反馈有实质内容（非沟通频率）</td></tr>
+            <tr><td><strong>高效执行</strong></td><td>临时任务按时按质完成，无返工</td></tr>
+            <tr><td><strong>共同成长</strong></td><td>产线会议积极贡献、分享经验、对整体产线有额外贡献</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 计算示例 -->
+  <div class="fade-in">
+    <h3>计算示例</h3>
+    <table>
+      <thead><tr><th>供应商</th><th>赛马</th><th>合规扣分</th><th>稳定性</th><th>自评</th><th>最终得分</th></tr></thead>
+      <tbody>
+        <tr><td>甲</td><td>90</td><td>0</td><td>A (1.0)</td><td>2/4</td><td><strong>90&times;1.0 + 2 = 92</strong></td></tr>
+        <tr><td>乙</td><td>85</td><td>黄牌 (-10)</td><td>A (1.0)</td><td>4/4</td><td><strong>75&times;1.0 + 4 = 79</strong></td></tr>
+        <tr><td>丙</td><td>90</td><td>0</td><td>B (0.9)</td><td>1/4</td><td><strong>81&times;0.9 + 1 = 73.9</strong></td></tr>
+        <tr><td>丁</td><td>75</td><td>0</td><td>C (0.75)</td><td>0/4</td><td><strong>56.3 + 0 = 56.3</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SVG 条形图：计算示例可视化 -->
+  <svg viewBox="0 0 700 240" class="fade-in" role="img" aria-label="四家供应商最终得分对比条形图">
+    <text x="0" y="18" font-family="var(--headline)" font-size="15" fill="var(--ink)" font-weight="600">黄牌扣分使乙从 85 分降至 79 分，稳定性系数使丙从 81 分降至 73.9 分</text>
+    <g transform="translate(80,36)">
+      <line x1="0" y1="0" x2="0" y2="180" stroke="var(--taupe-l)" stroke-width="1"/>
+      <line x1="0" y1="180" x2="600" y2="180" stroke="var(--taupe-l)" stroke-width="1"/>
+      <text x="-8" y="184" text-anchor="end" font-size="11" fill="var(--taupe)">0</text>
+      <line x1="120" y1="0" x2="120" y2="180" stroke="var(--taupe-l)" stroke-width=".5" stroke-dasharray="3,3"/>
+      <text x="120" y="196" text-anchor="middle" font-size="10" fill="var(--taupe)">20</text>
+      <line x1="240" y1="0" x2="240" y2="180" stroke="var(--taupe-l)" stroke-width=".5" stroke-dasharray="3,3"/>
+      <text x="240" y="196" text-anchor="middle" font-size="10" fill="var(--taupe)">40</text>
+      <line x1="360" y1="0" x2="360" y2="180" stroke="var(--taupe-l)" stroke-width=".5" stroke-dasharray="3,3"/>
+      <text x="360" y="196" text-anchor="middle" font-size="10" fill="var(--taupe)">60</text>
+      <line x1="480" y1="0" x2="480" y2="180" stroke="var(--taupe-l)" stroke-width=".5" stroke-dasharray="3,3"/>
+      <text x="480" y="196" text-anchor="middle" font-size="10" fill="var(--taupe)">80</text>
+      <line x1="540" y1="0" x2="540" y2="180" stroke="var(--taupe-l)" stroke-width=".5" stroke-dasharray="3,3"/>
+      <text x="540" y="196" text-anchor="middle" font-size="10" fill="var(--taupe)">90</text>
+      <rect x="0" y="8" width="496" height="32" rx="4" fill="var(--wine)"/><text x="504" y="29" font-size="13" fill="var(--wine)" font-weight="700">92</text><text x="-8" y="28" text-anchor="end" font-size="12" fill="var(--ink)">甲</text>
+      <rect x="0" y="56" width="424" height="32" rx="4" fill="var(--navy)"/><text x="432" y="77" font-size="13" fill="var(--navy)" font-weight="700">79</text><text x="-8" y="76" text-anchor="end" font-size="12" fill="var(--ink)">乙</text>
+      <rect x="0" y="104" width="397" height="32" rx="4" fill="var(--taupe)"/><text x="405" y="125" font-size="13" fill="var(--taupe)" font-weight="700">73.9</text><text x="-8" y="124" text-anchor="end" font-size="12" fill="var(--ink)">丙</text>
+      <rect x="0" y="152" width="303" height="32" rx="4" fill="#ccc"/><text x="311" y="173" font-size="13" fill="#999" font-weight="700">56.3</text><text x="-8" y="172" text-anchor="end" font-size="12" fill="var(--ink)">丁</text>
+    </g>
+    <text x="80" y="236" font-size="10" fill="var(--taupe)">图：四家供应商最终得分对比（甲无扣分且稳定，丁稳定性失控）</text>
+  </svg>
+</section>
+
+<!-- ========== 4. 九宫格 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">九宫格映射（月度）</div>
+  <h2 class="section-title">当月贡献与环比趋势决定供应商位置</h2>
+
+  <div class="fade-in" style="margin-bottom:var(--sp2)">
+    <table>
+      <thead><tr><th>轴</th><th>含义</th><th>切分方式</th></tr></thead>
+      <tbody>
+        <tr><td><strong>X 轴：当月贡献</strong></td><td>最终得分（赛马 &times; 稳定性 + 自评）</td><td>按当月 30+ 家供应商得分的高中低三分位切分</td></tr>
+        <tr><td><strong>Y 轴：环比趋势</strong></td><td>本月 vs 上月最终得分变化率</td><td>上升 &ge;5% / -5%~+5% 持平 / 下降 &ge;5%</td></tr>
+      </tbody>
+    </table>
+    <p class="sm" style="margin-top:var(--sp1)">注：第一个月只有贡献无趋势，全部标记为"基线"，从第二个月开始有趋势。</p>
+  </div>
+
+  <!-- Nine Grid SVG -->
+  <svg viewBox="0 0 700 440" class="fade-in" role="img" aria-label="供应商分级九宫格矩阵">
+    <text x="0" y="20" font-family="var(--headline)" font-size="17" fill="var(--ink)" font-weight="600">九宫格：头部趋升为加速器重点投，头部趋降为预警需稳住</text>
+    <!-- Y axis label -->
+    <text x="20" y="230" text-anchor="middle" font-family="var(--headline)" font-size="13" fill="var(--taupe)" transform="rotate(-90,20,230)">环比趋势 &rarr;</text>
+    <!-- Grid cells -->
+    <g transform="translate(50,40)">
+      <!-- Row 1: 高贡献 -->
+      <rect x="0" y="0" width="196" height="100" rx="8" class="gc gc-warn"/><text x="98" y="46" text-anchor="middle" class="gc-name gc-warn-name">预警</text><text x="98" y="68" text-anchor="middle" class="gc-desc" fill="#6B0A25">稳住别掉</text>
+      <rect x="204" y="0" width="196" height="100" rx="8" class="gc gc-star"/><text x="302" y="46" text-anchor="middle" class="gc-name" fill="#fff">明星</text><text x="302" y="68" text-anchor="middle" class="gc-desc" fill="rgba(255,255,255,.8)">稳产主力</text>
+      <rect x="408" y="0" width="196" height="100" rx="8" class="gc gc-accel"/><text x="506" y="46" text-anchor="middle" class="gc-name" fill="#fff">加速器</text><text x="506" y="68" text-anchor="middle" class="gc-desc" fill="rgba(255,255,255,.8)">重点投</text>
+
+      <!-- Row 2: 中贡献 -->
+      <rect x="0" y="112" width="196" height="100" rx="8" class="gc gc-mid-fall"/><text x="98" y="158" text-anchor="middle" class="gc-name">关注</text><text x="98" y="180" text-anchor="middle" class="gc-desc">为什么掉</text>
+      <rect x="204" y="112" width="196" height="100" rx="8" class="gc gc-core"/><text x="302" y="158" text-anchor="middle" class="gc-name">中坚</text><text x="302" y="180" text-anchor="middle" class="gc-desc">基本盘</text>
+      <rect x="408" y="112" width="196" height="100" rx="8" class="gc gc-grow"/><text x="506" y="158" text-anchor="middle" class="gc-name">成长</text><text x="506" y="180" text-anchor="middle" class="gc-desc">重点培养</text>
+
+      <!-- Row 3: 低贡献 -->
+      <rect x="0" y="224" width="196" height="100" rx="8" class="gc gc-elim"/><text x="98" y="270" text-anchor="middle" class="gc-name" fill="#fff">淘汰</text><text x="98" y="292" text-anchor="middle" class="gc-desc" fill="rgba(255,255,255,.8)">持续恶化</text>
+      <rect x="204" y="224" width="196" height="100" rx="8" class="gc gc-watch"/><text x="302" y="270" text-anchor="middle" class="gc-name">观察</text><text x="302" y="292" text-anchor="middle" class="gc-desc">给期限</text>
+      <rect x="408" y="224" width="196" height="100" rx="8" class="gc gc-potent"/><text x="506" y="270" text-anchor="middle" class="gc-name">潜力</text><text x="506" y="292" text-anchor="middle" class="gc-desc">给机会</text>
+
+      <!-- Y axis ticks -->
+      <text x="-12" y="50" text-anchor="end" font-size="12" fill="var(--wine)" font-weight="600">高贡献</text>
+      <text x="-12" y="162" text-anchor="end" font-size="12" fill="var(--navy)" font-weight="600">中贡献</text>
+      <text x="-12" y="274" text-anchor="end" font-size="12" fill="var(--taupe)" font-weight="600">低贡献</text>
+
+      <!-- X axis labels -->
+      <text x="98" y="348" text-anchor="middle" font-size="13" fill="var(--wine)" font-weight="600">&darr; 趋势下降</text>
+      <text x="302" y="348" text-anchor="middle" font-size="13" fill="var(--ink)" font-weight="600">&rarr; 趋势持平</text>
+      <text x="506" y="348" text-anchor="middle" font-size="13" fill="var(--navy)" font-weight="600">&uarr; 趋势上升</text>
+    </g>
+    <text x="50" y="420" font-size="10" fill="var(--taupe)">图：供应商九宫格 — 两轴各三分位切分，9 格对应 9 种管理策略</text>
+  </svg>
+</section>
+
+<!-- ========== 5. 季度盘点 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">季度盘点</div>
+  <h2 class="section-title">月度评估捕捉变动，季度校准审视格局</h2>
+
+  <div class="fade-in">
+    <table>
+      <thead><tr><th>维度</th><th>说明</th><th>评估方式</th></tr></thead>
+      <tbody>
+        <tr><td><strong>战略意义</strong></td><td>是否在关键产线 / 关键项目有不可替代性</td><td>管理层评估</td></tr>
+        <tr><td><strong>长期潜力</strong></td><td>规模扩张意愿、技术升级能力、团队稳定性</td><td>访谈 + 观察</td></tr>
+        <tr><td><strong>风险敞口</strong></td><td>过度依赖单一大客户、财务状况、舆情</td><td>公开信息 + 调研</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="summary-box fade-in" style="margin-top:var(--sp3)">
+    <h4 class="sm" style="margin-bottom:var(--sp1)">季度校准的四种组合</h4>
+    <p>月度表现好 + 季度校准好 &rarr; <strong>保留清单</strong>，深度绑定</p>
+    <p>月度表现好 + 季度校准差 &rarr; <strong>"高贡献但脆弱"</strong>，准备替代方案</p>
+    <p>月度表现差 + 季度校准好 &rarr; <strong>"低贡献但值得救"</strong>，给资源倾斜</p>
+    <p>月度表现差 + 季度校准差 &rarr; <strong>优化清单</strong>，启动清退</p>
+  </div>
+</section>
+
+<!-- ========== 6. 三张清单 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">输出</div>
+  <h2 class="section-title">三张清单驱动后续行动</h2>
+
+  <div class="lists-grid">
+    <div class="list-card lc-retain fade-in d1">
+      <h4>保留清单</h4>
+      <div class="card-body">
+        <div class="est">6-10 家</div>
+        <p><strong>来源：</strong>明星 + 加速器 + 中坚（月度高贡献或中贡献且趋势稳定）+ 季度校准良好</p>
+        <p><strong>策略：</strong>资源倾斜、优先分配、深度绑定</p>
+      </div>
+    </div>
+    <div class="list-card lc-nurture fade-in d2">
+      <h4>培养清单</h4>
+      <div class="card-body">
+        <div class="est">12-15 家</div>
+        <p><strong>来源：</strong>成长 + 潜力 + 关注 + 观察（月度中 / 低贡献但有上升趋势）+ 季度校准有潜力</p>
+        <p><strong>策略：</strong>针对性辅导、明确提升方向、月度跟踪进度</p>
+      </div>
+    </div>
+    <div class="list-card lc-optimize fade-in d3">
+      <h4>优化清单</h4>
+      <div class="card-body">
+        <div class="est">5-8 家</div>
+        <p><strong>来源：</strong>淘汰 + 预警（趋势下降的高贡献）+ 季度校准无潜力</p>
+        <p><strong>策略：</strong>限期整改、减少份额、准备替代</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 7. 实施路径 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">实施路径</div>
+  <h2 class="section-title">从基线建立到季度校准的三步走</h2>
+
+  <div class="fade-in">
+    <div class="step">
+      <div class="step-num" style="background:var(--wine)">1</div>
+      <div class="step-body">
+        <h4>基线建立（第 1 个月）</h4>
+        <p class="sm">收集当月赛马成绩、合规事件、稳定性评估、供管自评；计算 30+ 家供应商当月得分；按三分位切分高中低，绘制首次九宫格（趋势标记"基线"）</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:var(--wine)">2</div>
+      <div class="step-body">
+        <h4>月度滚动（第 2 个月起）</h4>
+        <p class="sm">每月重复第一步；计算环比趋势，更新九宫格位置；输出三张清单（保留 / 培养 / 优化）</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num" style="background:var(--wine)">3</div>
+      <div class="step-body">
+        <h4>季度校准（每季度末）</h4>
+        <p class="sm">追加战略意义、长期潜力、风险敞口评估；修正月度评估结果；向易人汇报分级结果，确认分类</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 里程碑时间线 -->
+  <div class="fade-in" style="margin-top:var(--sp3)">
+    <h3>里程碑</h3>
+    <div class="timeline">
+      <div class="tl-item fade-in d1">
+        <div class="tl-date">第 1 周（5 月）</div>
+        <div class="tl-text"><strong>基线数据收集完成</strong></div>
+        <div class="tl-check">30+ 供应商得分计算完毕</div>
+      </div>
+      <div class="tl-item fade-in d2">
+        <div class="tl-date">第 2 周（5 月）</div>
+        <div class="tl-text"><strong>首次九宫格绘制完成</strong></div>
+        <div class="tl-check">每家供应商有明确位置（基线）</div>
+      </div>
+      <div class="tl-item fade-in d3">
+        <div class="tl-date">第 2 周（5 月）</div>
+        <div class="tl-text"><strong>三张清单输出</strong></div>
+        <div class="tl-check">保留 / 培养 / 优化清单确认</div>
+      </div>
+      <div class="tl-item fade-in d4">
+        <div class="tl-date">第 3 周（5 月）</div>
+        <div class="tl-text"><strong>汇报完成</strong></div>
+        <div class="tl-check">易人确认分级结果</div>
+      </div>
+      <div class="tl-item fade-in d5">
+        <div class="tl-date">6 月起</div>
+        <div class="tl-text"><strong>月度评估滚动</strong></div>
+        <div class="tl-check">每月末自动更新九宫格</div>
+      </div>
+      <div class="tl-item fade-in d6">
+        <div class="tl-date">6 月底</div>
+        <div class="tl-text"><strong>首次趋势可见</strong></div>
+        <div class="tl-check">5 月 &rarr; 6 月环比趋势可用</div>
+      </div>
+      <div class="tl-item fade-in d6">
+        <div class="tl-date">Q2 末（6 月）</div>
+        <div class="tl-text"><strong>首次季度校准</strong></div>
+        <div class="tl-check">战略 / 潜力 / 风险校准完成</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 8. 量化指标 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">量化指标</div>
+  <h2 class="section-title">六项指标追踪评估效果</h2>
+
+  <div class="metric-cards">
+    <div class="metric-card fade-in d1">
+      <h4>评估覆盖率</h4>
+      <div class="mdef">完成评估的供应商数 / 总供应商数</div>
+      <div class="mtarget">目标：100%</div>
+    </div>
+    <div class="metric-card fade-in d2">
+      <h4>头部产能占比</h4>
+      <div class="mdef">头部供应商产能 / 总产能</div>
+      <div class="mtarget">建立基线（当前未知）</div>
+    </div>
+    <div class="metric-card fade-in d3">
+      <h4>腰部转化率</h4>
+      <div class="mdef">季度内从腰部进入头部的供应商数</div>
+      <div class="mtarget">Q2 末 &ge; 1 家</div>
+    </div>
+    <div class="metric-card fade-in d4">
+      <h4>尾部淘汰率</h4>
+      <div class="mdef">季度内从优化清单清退的供应商数</div>
+      <div class="mtarget">根据业务实际</div>
+    </div>
+    <div class="metric-card fade-in d5">
+      <h4>稳定性预警率</h4>
+      <div class="mdef">稳定性评为 B 或 C 的供应商占比</div>
+      <div class="mtarget">监控用，无目标</div>
+    </div>
+    <div class="metric-card fade-in d6">
+      <h4>自评区分度</h4>
+      <div class="mdef">供管自评得分分布（不应集中在 3-4 分）</div>
+      <div class="mtarget">至少 20% 供应商得 2 分以下</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 9. 风险与应对 ========== -->
+<section class="section fade-in">
+  <div class="section-subtitle">风险与应对</div>
+  <h2 class="section-title">六大风险及应对策略</h2>
+
+  <div class="risk-card fade-in d1">
+    <h4>交付稳定性无历史数据，首次评估可能不准</h4>
+    <p>第 1 个月标注"待校准"，从第 2 个月开始有趋势后可修正</p>
+  </div>
+  <div class="risk-card fade-in d2">
+    <h4>合规扣分与赛马成绩中的合规指标可能重复</h4>
+    <p>确认赛马是否已包含合规，如已包含则合规扣分项减半或只计红线事件</p>
+  </div>
+  <div class="risk-card fade-in d3">
+    <h4>供管自评变成"人情分"，全部高分无区分度</h4>
+    <p>每项有明确触发条件，月底过检查表；连续两月无中低分的维度需复核</p>
+  </div>
+  <div class="risk-card fade-in d4">
+    <h4>分级变成"贴标签"，腰部供应商失去积极性</h4>
+    <p>强调分级是动态的，月度调整，每次公布"进步榜"</p>
+  </div>
+  <div class="risk-card fade-in d5">
+    <h4>精力集中在分级本身，后续动作跟不上</h4>
+    <p>分级只是起点，重点是三张清单对应的后续动作</p>
+  </div>
+  <div class="risk-card fade-in d6">
+    <h4>外部储备供应商未纳入体系</h4>
+    <p>储备供应商独立评估，对标存量层级后决定是否引入</p>
+  </div>
+</section>
+
+<footer class="fade-in">
+  <p>供应商分级盘点 &middot; 九宫格评估体系</p>
+  <p class="sm" style="margin-top:4px">最后更新：2026-05-04 &middot; 初版</p>
+</footer>
+
+<script>
+// IntersectionObserver for fade-in animations
+(function(){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.12,rootMargin:'0px 0px -40px 0px'});
+
+  document.querySelectorAll('.fade-in').forEach(function(el){io.observe(el)});
+})();
+</script>
+</body>
+</html>

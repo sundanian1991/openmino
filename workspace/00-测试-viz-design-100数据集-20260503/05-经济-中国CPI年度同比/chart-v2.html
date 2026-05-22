@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中国 CPI 十年走势</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #FAF9F5; font-family: -apple-system, "PingFang SC", sans-serif; display: flex; justify-content: center; padding: 40px 0; }
+  .chart-wrap { background: #fff; border-radius: 12px; padding: 32px 36px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); max-width: 940px; }
+  #chart { width: 850px; height: 420px; }
+  .lead { max-width: 700px; margin: 12px 0 0; font-size: 13px; color: #5F5A54; line-height: 1.7; }
+  .lead strong { color: '#141413; font-weight: 600; }
+  .footer-note { text-align: left; font-size: 11px; color: #A3A29B; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="chart-wrap">
+  <div id="chart"></div>
+  <div class="lead">
+    中国 CPI 十年徘徊在 2% 以下，2023-2024 仅 <strong>0.2%</strong>——通胀不是潜在风险，而是已经发生的现实。PPI 从 -5.2% 飙到 +8.1% 再跌回 -3.0%，<strong>工业端经历了过山车，消费端却几乎没动静。</strong>
+  </div>
+  <div class="footer-note">数据来源：国家统计局 | 2015—2024 年度同比</div>
+</div>
+<script>
+const chart = echarts.init(document.getElementById('chart'));
+
+const years = ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+const cpi   = [1.4, 2.0, 1.6, 2.1, 2.9, 2.5, 0.9, 2.0, 0.2, 0.2];
+const ppi   = [-5.2,-1.4, 6.3, 3.5,-0.3,-1.8, 8.1, 4.1,-3.0,-2.2];
+const food  = [2.3, 4.6,-1.4, 1.8, 7.4,10.6,-1.4, 2.4,-0.3,-0.2];
+
+const W = 850, H = 420;
+const pad = { top: 65, right: 60, bottom: 40, left: 50 };
+const plotW = W - pad.left - pad.right;
+const plotH = H - pad.top - pad.bottom;
+const yMin = -7, yMax = 12;
+
+function xPx(i) { return pad.left + (i + 0.5) / years.length * plotW; }
+function yPx(v) { return pad.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH; }
+
+const opt = {
+  title: {
+    text: '中国 CPI 十年走低，PPI 剧烈波动',
+    subtext: '2015 — 2024 年度同比（%）',
+    left: 'left', top: 6,
+    textStyle: { fontSize: 17, fontWeight: 700, color: '#141413' },
+    subtextStyle: { fontSize: 11, color: '#A3A29B' }
+  },
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(p) {
+      let s = p[0].axisValue + '<br/>';
+      p.forEach(function(item) { s += item.marker + item.seriesName + ': ' + item.value + '%<br/>'; });
+      return s;
+    }
+  },
+  // v2 减法：去掉 legend（改为 inline 标注）
+  grid: { left: pad.left, right: pad.right, top: pad.top, bottom: pad.bottom },
+  xAxis: {
+    type: 'category', data: years,
+    axisLabel: { fontSize: 11, color: '#3D3D3A', fontWeight: 600 },
+    axisLine: { lineStyle: { color: '#E3DACC' } },
+    axisTick: { show: false }
+  },
+  yAxis: {
+    type: 'value', min: yMin, max: yMax, interval: 2,
+    axisLabel: { formatter: '{value}%', fontSize: 10, color: '#87867F' },
+    axisLine: { show: false },
+    // v2 减法：去掉网格线
+    splitLine: { show: false },
+    axisTick: { show: false }
+  },
+  series: [
+    { name: 'CPI', type: 'line', data: cpi,
+      smooth: 0.2, symbol: 'none',
+      lineStyle: { width: 2.5, color: '#3D3D3A' } },
+    { name: 'PPI', type: 'line', data: ppi,
+      smooth: 0.2, symbol: 'none',
+      lineStyle: { width: 2, color: '#D97757' } },
+    { name: '食品CPI', type: 'line', data: food,
+      smooth: 0.2, symbol: 'none',
+      lineStyle: { width: 2, color: '#788C5D' } }
+  ],
+  graphic: [
+    // 2% 参考虚线
+    {
+      type: 'line',
+      shape: { x1: pad.left, y1: yPx(2), x2: W - pad.right, y2: yPx(2) },
+      style: { stroke: '#A3A29B', lineWidth: 1, lineDash: [4, 4] }
+    },
+    {
+      type: 'text', style: { text: '2%', fill: '#A3A29B', fontSize: 9 },
+      left: W - pad.right + 5, top: yPx(2) - 8
+    },
+
+    // PPI 极值标注
+    {
+      type: 'circle', shape: { cx: xPx(0), cy: yPx(-5.2), r: 4 },
+      style: { fill: '#D97757', stroke: '#fff', lineWidth: 2 }
+    },
+    {
+      type: 'text', style: { text: '-5.2%', fill: '#D97757', fontSize: 9 },
+      left: xPx(0) - 18, top: yPx(-5.2) + 10
+    },
+    {
+      type: 'circle', shape: { cx: xPx(6), cy: yPx(8.1), r: 4 },
+      style: { fill: '#D97757', stroke: '#fff', lineWidth: 2 }
+    },
+    {
+      type: 'text', style: { text: '+8.1%', fill: '#D97757', fontSize: 9 },
+      left: xPx(6) + 8, top: yPx(8.1) - 16
+    },
+
+    // CPI 2024 标注
+    {
+      type: 'circle', shape: { cx: xPx(9), cy: yPx(0.2), r: 4 },
+      style: { fill: '#3D3D3A', stroke: '#fff', lineWidth: 2 }
+    },
+    {
+      type: 'text', style: { text: '0.2%', fill: '#3D3D3A', fontSize: 10, fontWeight: 600 },
+      left: xPx(9) + 10, top: yPx(0.2) - 14
+    },
+
+    // Inline 图例（右上方，替代 legend）
+    {
+      type: 'text', style: { text: '— CPI', fill: '#3D3D3A', fontSize: 10, fontWeight: 600 },
+      left: W - pad.right - 130, top: pad.top - 5
+    },
+    {
+      type: 'text', style: { text: '— PPI', fill: '#D97757', fontSize: 10 },
+      left: W - pad.right - 80, top: pad.top - 5
+    },
+    {
+      type: 'text', style: { text: '— 食品CPI', fill: '#788C5D', fontSize: 10 },
+      left: W - pad.right - 35, top: pad.top - 5
+    }
+  ]
+};
+
+chart.setOption(opt);
+</script>
+</body>
+</html>

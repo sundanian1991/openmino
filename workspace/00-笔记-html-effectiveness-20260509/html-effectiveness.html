@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>The unreasonable effectiveness of HTML</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=IBM+Plex+Mono:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,700;1,8..60,400&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #0f172a;
+  --ink-rgb:    15,23,42;
+  --paper:      #f8fafc;
+  --paper-rgb:  248,250,252;
+  --accent:     #38bdf8;
+  --accent-rgb: 56,189,248;
+  --muted:      #64748b;
+
+  --serif-zh:   "Noto Serif SC", "Source Serif 4", serif;
+  --sans-zh:    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono:       "JetBrains Mono", "IBM Plex Mono", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--ink); color: var(--paper); font-family: var(--sans-zh); -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+
+#deck {
+  position: fixed; inset: 0;
+  width: 10000vw; height: 100vh;
+  display: flex; flex-wrap: nowrap;
+  transition: transform .85s cubic-bezier(.77,0,.175,1);
+  z-index: 10; will-change: transform;
+}
+.slide {
+  width: 100vw; height: 100vh;
+  flex: 0 0 100vw;
+  position: relative;
+  padding: clamp(2rem, 5vw, 5.5rem) clamp(2rem, 6vw, 6.5rem) clamp(1.5rem, 3vw, 3rem);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.slide.dark  { background: var(--ink);   color: var(--paper); }
+.slide.light { background: var(--paper); color: var(--ink);  }
+
+.display-zh   { font-family: var(--serif-zh); font-weight: 900; font-size: clamp(3rem, 7vw, 7rem);   line-height: 1.05; letter-spacing: 0; }
+.h1-zh        { font-family: var(--serif-zh); font-weight: 700; font-size: clamp(2rem, 4.6vw, 4.2rem); line-height: 1.12; }
+.h2-zh        { font-family: var(--serif-zh); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.6rem);  line-height: 1.22; }
+.lead-zh      { font-family: var(--serif-zh); font-weight: 400; font-size: clamp(1.5rem, 2vw, 2rem);   line-height: 1.55; }
+.body-zh      { font-family: var(--sans-zh);  font-weight: 400; font-size: clamp(1.5rem, 1.55vw, 1.75rem); line-height: 1.65; }
+.kicker       { font-family: var(--mono); font-size: clamp(.8rem, .9vw, 1rem); text-transform: uppercase; letter-spacing: .15em; opacity: .55; margin-bottom: 1vh; }
+.meta         { font-family: var(--mono); font-size: clamp(.75rem, .8vw, .9rem); letter-spacing: .08em; opacity: .5; }
+
+.slide-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+.note-stack { width: min(100%, 76rem); margin: 0 auto; display: flex; flex-direction: column; justify-content: center; gap: clamp(2rem, 4vh, 3.6rem); }
+.center-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; text-align: center; }
+.section-title { max-width: 11em; margin: 0 auto; text-align: center; }
+
+.grid-2-6-6 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 3vw, 3rem); flex: 1; min-height: 0; }
+.grid-2-7-5 { display: grid; grid-template-columns: 7fr 5fr; gap: clamp(1rem, 3vw, 3rem); flex: 1; min-height: 0; }
+.grid-3       { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(.8rem, 2vw, 2rem); min-height: 0; }
+
+/* Category badge */
+.cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .6em;
+  padding: .3em .9em;
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: clamp(.65rem, .75vw, .85rem);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: clamp(1rem, 2.5vh, 2rem);
+}
+.dark .cat-badge { background: rgba(var(--accent-rgb), .15); color: var(--accent); }
+.light .cat-badge { background: rgba(var(--accent-rgb), .1); color: rgb(var(--accent-rgb)); }
+
+/* Demo card */
+.demo-card {
+  padding: clamp(1rem, 2vh, 1.6rem);
+  border-radius: 6px;
+  border: 1px solid rgba(var(--ink-rgb), .08);
+}
+.dark .demo-card { border-color: rgba(var(--paper-rgb), .1); background: rgba(var(--paper-rgb), .04); }
+.light .demo-card { border-color: rgba(var(--ink-rgb), .08); background: rgba(var(--ink-rgb), .03); }
+
+.demo-card h3 {
+  font-family: var(--serif-zh);
+  font-size: clamp(1.3rem, 1.8vw, 2rem);
+  font-weight: 700;
+  margin-bottom: .5em;
+}
+.dark .demo-card h3 { color: var(--paper); }
+.light .demo-card h3 { color: var(--ink); }
+
+.demo-card p {
+  font-family: var(--sans-zh);
+  font-size: clamp(1.1rem, 1.3vw, 1.5rem);
+  line-height: 1.55;
+}
+.dark .demo-card p { color: rgba(var(--paper-rgb), .7); }
+.light .demo-card p { color: rgba(var(--ink-rgb), .65); }
+
+.demo-card .file-tag {
+  font-family: var(--mono);
+  font-size: clamp(.6rem, .65vw, .75rem);
+  letter-spacing: .08em;
+  opacity: .4;
+  margin-top: .6em;
+}
+
+.callout {
+  font-family: var(--serif-zh); font-weight: 400;
+  font-size: clamp(2rem, 3.5vw, 3.6rem); line-height: 1.45;
+  border-left: 3px solid var(--accent); padding-left: clamp(1rem, 2vw, 1.75rem);
+  max-width: 14em;
+}
+.callout cite { display: block; font-style: normal; font-weight: 500; font-size: clamp(.8rem, 1vw, 1rem); margin-top: 1.8vh; opacity: .6; font-family: var(--mono); }
+
+/* Comparison layout */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 3vw, 3rem);
+}
+.vs-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: clamp(1.2rem, 1.5vw, 1.8rem);
+  font-weight: 600;
+  color: var(--accent);
+  opacity: .6;
+}
+
+/* Tension arrows */
+.tension {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
+}
+.tension-item { flex: 1; }
+.tension-arrow {
+  font-size: clamp(2rem, 3vw, 3.5rem);
+  color: var(--accent);
+  opacity: .5;
+  font-family: var(--mono);
+}
+
+/* Number highlight */
+.big-number {
+  font-family: var(--serif-zh);
+  font-weight: 800;
+  font-size: clamp(5rem, 13vw, 10rem);
+  line-height: 1;
+  color: var(--accent);
+}
+
+/* Chrome & Foot */
+.chrome { display: flex; justify-content: space-between; font-family: var(--mono); font-size: clamp(.75rem, .8vw, .9rem); letter-spacing: .1em; text-transform: uppercase; opacity: .45; margin-bottom: 2vh; }
+.foot   { display: flex; justify-content: space-between; font-family: var(--mono); font-size: clamp(.75rem, .8vw, .9rem); letter-spacing: .1em; text-transform: uppercase; opacity: .4; margin-top: auto; padding-top: 2vh; }
+
+/* Animations */
+.anim-item { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.slide.active .anim-item { opacity: 1; transform: translateY(0); }
+.slide.active .anim-item:nth-child(1)  { transition-delay: .05s; }
+.slide.active .anim-item:nth-child(2)  { transition-delay: .15s; }
+.slide.active .anim-item:nth-child(3)  { transition-delay: .25s; }
+.slide.active .anim-item:nth-child(4)  { transition-delay: .35s; }
+.slide.active .anim-item:nth-child(5)  { transition-delay: .45s; }
+.slide.active .anim-item:nth-child(n+6) { transition-delay: .55s; }
+
+/* Nav */
+#nav { position: fixed; left: 50%; bottom: 2.2vh; transform: translateX(-50%); z-index: 30; display: flex; gap: 9px; padding: 7px 14px; border-radius: 999px; background: rgba(0,0,0,.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#nav .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.3); border: none; padding: 0; cursor: pointer; transition: all .3s ease; }
+#nav .dot.active { background: rgba(255,255,255,.95); width: 20px; border-radius: 999px; }
+
+/* Flow diagram */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: clamp(.6rem, 1.2vw, 1.2rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.flow-step {
+  padding: clamp(.6rem, 1vh, 1rem) clamp(1rem, 1.5vw, 1.6rem);
+  border-radius: 6px;
+  font-family: var(--sans-zh);
+  font-size: clamp(1.1rem, 1.3vw, 1.5rem);
+  font-weight: 500;
+  text-align: center;
+}
+.dark .flow-step { background: rgba(var(--accent-rgb), .12); color: var(--accent); }
+.light .flow-step { background: rgba(var(--accent-rgb), .08); color: rgb(var(--accent-rgb)); }
+.flow-arrow { font-size: clamp(1.2rem, 1.5vw, 1.8rem); opacity: .4; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+<!-- 01 Cover -->
+<section class="slide dark active" data-theme="dark" data-screen-label="Cover" data-source="thariqs.github.io/html-effectiveness" style="text-align:center;align-items:center">
+  <div class="kicker anim-item" style="width:100%;text-align:center">thariqs.github.io/html-effectiveness</div>
+  <h1 class="display-zh anim-item" style="margin-top:auto;margin-bottom:auto;max-width:12em;font-size:clamp(2.5rem,6vw,6rem)">HTML 的不合理<br>有效性</h1>
+  <p class="lead-zh anim-item" style="max-width:24em;margin-top:clamp(1rem,3vh,2rem);opacity:.6;text-align:center">20 个 .html 文件，替代一堵 Markdown 文本墙</p>
+  <div class="foot" style="width:100%">
+    <div>Thariq · 20 个自包含示例</div>
+    <div>9 个类别</div>
+  </div>
+</section>
+
+<!-- 02 Core thesis -->
+<section class="slide dark" data-theme="dark" data-screen-label="核心判断" data-source="Markdown 的局限">
+  <div class="chrome"><div>核心判断</div><div>02 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">Markdown 把空间信息压平了</h2>
+      <div class="tension">
+        <div class="tension-item anim-item">
+          <div class="kicker" style="color:var(--muted)">.md</div>
+          <p class="body-zh" style="opacity:.5">顺序文本，逐段滚动，差异靠缩进，关系靠缩进和符号</p>
+        </div>
+        <div class="tension-arrow anim-item">→</div>
+        <div class="tension-item anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">.html</div>
+          <p class="body-zh">并排对比、标注跳转、交互反馈、真实渲染，一眼看见形状</p>
+        </div>
+      </div>
+      <div class="callout anim-item" style="max-width:20em">
+        每个示例都拿一份你本该跳过的文档，变成一个你会真正打开的文件
+        <cite>页面副标题</cite>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>02 / 13</div></div>
+</section>
+
+<!-- 03 Exploration -->
+<section class="slide light" data-theme="light" data-screen-label="探索与规划" data-source="01-exploration-code-approaches / 02-exploration-visual-designs / 16-implementation-plan">
+  <div class="chrome"><div>01 · Exploration & Planning</div><div>03 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">3 demos</div>
+        <h2 class="h1-zh" style="margin-bottom:clamp(1rem,2vh,2rem)">还不确定想要什么时，并排摆出来让选择发生</h2>
+      </div>
+      <div class="grid-3">
+        <div class="demo-card anim-item">
+          <h3>代码方案对比</h3>
+          <p>三种解决思路放一起，内联标注各自的取舍</p>
+          <div class="file-tag">01-exploration-code-approaches.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>视觉设计方向</h3>
+          <p>几个布局和配色方案实时渲染，让你指着选，而不是想象</p>
+          <div class="file-tag">02-exploration-visual-designs.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>实施计划</h3>
+          <p>时间线里程碑、数据流图、内联 mockup 和风险表</p>
+          <div class="file-tag">16-implementation-plan.html</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>当你在读三堵顺序文本试图同时记住它们时，不如把它们并排放在眼前</div><div>03 / 13</div></div>
+</section>
+
+<!-- 04 Code Review -->
+<section class="slide dark" data-theme="dark" data-screen-label="代码审查" data-source="03-code-review-pr / 17-pr-writeup / 04-code-understanding">
+  <div class="chrome"><div>02 · Code Review & Understanding</div><div>04 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">3 demos</div>
+        <h2 class="h1-zh" style="margin-bottom:clamp(1rem,2vh,2rem)">diff 和调用图是空间信息，Markdown 把它们压成了一段文本</h2>
+      </div>
+      <div class="compare-row">
+        <div class="demo-card anim-item">
+          <h3>标注 PR</h3>
+          <p>diff 旁边加上批注、严重性标签和跳转链接，比在终端里滚动更容易扫视</p>
+          <div class="file-tag">03-code-review-pr.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>模块地图</h3>
+          <p>陌生包画成框和箭头，热路径高亮，入口点列表一目了然</p>
+          <div class="file-tag">04-code-understanding.html</div>
+        </div>
+      </div>
+      <p class="body-zh anim-item" style="opacity:.6;text-align:center;margin-top:clamp(1rem,2vh,2rem)">PR 写作也一样：动机、前后对比、逐文件讲 why、标记重点审查区</p>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>04 / 13</div></div>
+</section>
+
+<!-- 05 Design System -->
+<section class="slide light" data-theme="light" data-screen-label="设计系统" data-source="05-design-system / 06-component-variants">
+  <div class="chrome"><div>03 · Design</div><div>05 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">2 demos</div>
+        <h2 class="h1-zh" style="margin-bottom:clamp(1rem,2vh,2rem)">HTML 就是设计系统交付的媒介</h2>
+      </div>
+      <div class="grid-2-6-6" style="align-items:start">
+        <div class="demo-card anim-item">
+          <div class="kicker" style="color:rgb(var(--accent-rgb));opacity:1">活的设计系统</div>
+          <h3>Token 变色卡</h3>
+          <p>从仓库拉出颜色、字号、间距，渲染成可以直接复制的色板</p>
+          <div class="file-tag">05-design-system.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <div class="kicker" style="color:rgb(var(--accent-rgb));opacity:1">组件变体</div>
+          <h3>组件联系单</h3>
+          <p>一个组件的所有尺寸、状态和意图铺在一张纸上供审查</p>
+          <div class="file-tag">06-component-variants.html</div>
+        </div>
+      </div>
+      <p class="body-zh anim-item" style="opacity:.6;text-align:center;margin-top:clamp(1rem,2vh,2rem)">Token 变样本，组件变联系单，产物可以直接喂回下一个 prompt</p>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>05 / 13</div></div>
+</section>
+
+<!-- 06 Prototyping -->
+<section class="slide dark" data-theme="dark" data-screen-label="原型" data-source="07-prototype-animation / 08-prototype-interaction">
+  <div class="chrome"><div>04 · Prototyping</div><div>06 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">2 demos</div>
+      </div>
+      <div class="center-stage" style="flex-direction:column">
+        <div class="callout anim-item" style="max-width:18em;text-align:center;border-left:none;border-bottom:3px solid var(--accent);padding-bottom:clamp(1rem,2vh,2rem);padding-left:0">
+          动感和交互无法被描述，只能被感受
+        </div>
+        <div class="grid-2-6-6" style="margin-top:clamp(2rem,4vh,3rem);width:min(100%,56rem);text-align:left">
+          <div class="demo-card anim-item">
+            <h3>动画沙盒</h3>
+            <p>过渡效果单独拎出来，配上滑块调时长和缓动曲线，接进代码之前先调准</p>
+            <div class="file-tag">07-prototype-animation.html</div>
+          </div>
+          <div class="demo-card anim-item">
+            <h3>可点击流程</h3>
+            <p>四个页面串起来，保真度够你判断交互方向对不对</p>
+            <div class="file-tag">08-prototype-interaction.html</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>06 / 13</div></div>
+</section>
+
+<!-- 07 Illustrations & Diagrams -->
+<section class="slide light" data-theme="light" data-screen-label="插图与图表" data-source="10-svg-illustrations / 13-flowchart-diagram">
+  <div class="chrome"><div>05 · Illustrations & Diagrams</div><div>07 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">2 demos</div>
+        <h2 class="h1-zh" style="margin-bottom:clamp(1rem,2vh,2rem)">内联 SVG 给 AI Agent 一支真画笔</h2>
+      </div>
+      <div class="grid-2-6-6" style="align-items:start">
+        <div class="demo-card anim-item">
+          <h3>SVG 图纸集</h3>
+          <p>文章配图内联绘制，可以逐张调整、复制</p>
+          <div class="file-tag">10-svg-illustrations.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>标注流程图</h3>
+          <p>部署流水线画成真正的流程图，点每一步看跑什么、耗时、失败路径</p>
+          <div class="file-tag">13-flowchart-diagram.html</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>07 / 13</div></div>
+</section>
+
+<!-- 08 Decks -->
+<section class="slide dark" data-theme="dark" data-screen-label="幻灯片" data-source="09-slide-deck">
+  <div class="chrome"><div>06 · Decks</div><div>08 / 13</div></div>
+  <div class="slide-body">
+    <div class="center-stage" style="flex-direction:column">
+      <div class="anim-item">
+        <div class="cat-badge">1 demo</div>
+      </div>
+      <div class="big-number anim-item">20</div>
+      <p class="lead-zh anim-item" style="opacity:.7;text-align:center;margin-top:.5em">行 JS + 几个 <code style="color:var(--accent);opacity:1">&lt;section&gt;</code> 标签 = 一份幻灯片</p>
+      <div class="demo-card anim-item" style="margin-top:clamp(1.5rem,3vh,2.5rem);max-width:36rem;text-align:center">
+        <h3>箭头键幻灯片</h3>
+        <p>一个 HTML 文件，左右方向键翻页，没有构建步骤</p>
+        <div class="file-tag">09-slide-deck.html</div>
+      </div>
+      <p class="body-zh anim-item" style="opacity:.5;margin-top:clamp(1rem,2vh,2rem)">把 Slack 线程或设计文档丢给 Agent，直接生成可以在会议上翻的东西</p>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>08 / 13</div></div>
+</section>
+
+<!-- 09 Research -->
+<section class="slide light" data-theme="light" data-screen-label="研究学习" data-source="14-research-feature-explainer / 15-research-concept-explainer">
+  <div class="chrome"><div>07 · Research & Learning</div><div>09 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">2 demos</div>
+        <h2 class="h1-zh" style="margin-bottom:clamp(1rem,2vh,2rem)">搭好脚手架，新主题才能被导航</h2>
+      </div>
+      <div class="flow anim-item" style="margin-bottom:clamp(1.5rem,3vh,2.5rem)">
+        <span class="flow-step">折叠区块</span>
+        <span class="flow-arrow">+</span>
+        <span class="flow-step">标签页代码示例</span>
+        <span class="flow-arrow">+</span>
+        <span class="flow-step">边缘术语表</span>
+        <span class="flow-arrow">=</span>
+        <span class="flow-step" style="font-weight:700">可导航的知识</span>
+      </div>
+      <div class="compare-row">
+        <div class="demo-card anim-item">
+          <h3>功能解释器</h3>
+          <p>限制流机制"，TL;DR 框、可折叠请求路径步骤、标签页配置片段、FAQ</p>
+          <div class="file-tag">14-research-feature-explainer.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>概念解释器</h3>
+          <p>一致性哈希配上可交互的环，加减节点看效果，对比表加悬停词汇表</p>
+          <div class="file-tag">15-research-concept-explainer.html</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>09 / 13</div></div>
+</section>
+
+<!-- 10 Reports -->
+<section class="slide dark" data-theme="dark" data-screen-label="报告" data-source="11-status-report / 12-incident-report">
+  <div class="chrome"><div>08 · Reports</div><div>10 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">2 demos</div>
+        <h2 class="h1-zh" style="margin-bottom:clamp(1rem,2vh,2rem)">一点结构加一点颜色，跳过型文档变必读型</h2>
+      </div>
+      <div class="compare-row">
+        <div class="demo-card anim-item">
+          <h3>周报</h3>
+          <p>已交付、延期项、加一个小图表，周一早上快速扫一眼的格式</p>
+          <div class="file-tag">11-status-report.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>事件时间线</h3>
+          <p>逐分钟时间线、日志片段、后续检查清单</p>
+          <div class="file-tag">12-incident-report.html</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>10 / 13</div></div>
+</section>
+
+<!-- 11 Custom Editors -->
+<section class="slide light" data-theme="light" data-screen-label="自定义编辑界面" data-source="18-editor-triage-board / 19-editor-feature-flags / 20-editor-prompt-tuner">
+  <div class="chrome"><div>09 · Custom Editing Interfaces</div><div>11 / 13</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <div class="anim-item">
+        <div class="cat-badge">3 demos</div>
+        <h2 class="h1-zh" style="margin-bottom:clamp(1rem,2vh,2rem)">有些需求在文本框里说不清，那就做一个用完即弃的编辑器</h2>
+      </div>
+      <div class="grid-3">
+        <div class="demo-card anim-item">
+          <h3>工单看板</h3>
+          <p>30 张工单拖拽到 Now / Next / Later / Cut，最后以 Markdown 格式导出排序</p>
+          <div class="file-tag">18-editor-triage-board.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>特性开关编辑器</h3>
+          <p>按区域分组的开关、前置依赖关闭时告警、"复制差异"按钮只导出变更部分</p>
+          <div class="file-tag">19-editor-feature-flags.html</div>
+        </div>
+        <div class="demo-card anim-item">
+          <h3>提示词调优器</h3>
+          <p>左边可编辑模板并高亮变量槽，右边三个样例输入实时重渲染</p>
+          <div class="file-tag">20-editor-prompt-tuner.html</div>
+        </div>
+      </div>
+      <p class="body-zh anim-item" style="opacity:.6;text-align:center;margin-top:clamp(1rem,2vh,2rem)">关键：永远放一个导出按钮，让 UI 里的操作变回可以粘贴给 Agent 或提交到 git 的东西</p>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>11 / 13</div></div>
+</section>
+
+<!-- 12 Summary -->
+<section class="slide dark" data-theme="dark" data-screen-label="核心总结" data-source="全文总结">
+  <div class="chrome"><div>核心总结</div><div>12 / 13</div></div>
+  <div class="slide-body">
+    <div style="width:min(100%,68rem);margin:0 auto;display:flex;flex-direction:column;gap:clamp(2rem,5vh,3.5rem)">
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">01</div>
+        <p class="body-zh">Markdown 擅长线性阅读，但空间关系（diff、调用图、设计变体对比）天然需要二维展示。HTML 把信息从"读完"变成"看见"</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">02</div>
+        <p class="body-zh">每个示例都是自包含的一个 .html 文件，不需要服务器，不需要构建步骤，浏览器直接打开，Agent 生成后立刻可用</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">03</div>
+        <p class="body-zh">用完即弃的编辑器思路：为特定任务做一个临时 UI，但始终用导出按钮把操作结果变回文本，人始终在循环里</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">04</div>
+        <p class="body-zh">HTML 就是 HTML 应该交付的格式，设计系统渲染成色板，组件铺成联系单，产物直接喂回下一个 prompt，循环收紧</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>thariqs.github.io/html-effectiveness</div><div>12 / 13</div></div>
+</section>
+
+<!-- 13 Closing -->
+<section class="slide light" data-theme="light" data-screen-label="结尾回扣" data-source="回到起点">
+  <div class="chrome"><div>结尾</div><div>13 / 13</div></div>
+  <div class="center-stage" style="flex-direction:column">
+    <div class="kicker anim-item">Back to where we started</div>
+    <h2 class="h1-zh anim-item" style="max-width:11em;text-align:center;margin-top:clamp(1rem,3vh,2rem)">每个文件都能直接打开看，而不是需要你想象它长什么样</h2>
+    <p class="body-zh anim-item" style="opacity:.5;margin-top:clamp(1.5rem,3vh,2.5rem);text-align:center">thariqs.github.io/html-effectiveness</p>
+  </div>
+  <div class="foot" style="width:100%"><div>The unreasonable effectiveness of HTML</div><div>13 / 13</div></div>
+</section>
+
+</div>
+
+<div id="nav"></div>
+
+<script>
+(function(){
+  const deck = document.getElementById('deck');
+  const slides = Array.from(deck.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let isTransitioning = false;
+
+  const nav = document.getElementById('nav');
+  function renderNav() {
+    nav.innerHTML = '';
+    slides.forEach((s, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (i === current ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i+1));
+      dot.onclick = () => goTo(i);
+      nav.appendChild(dot);
+    });
+    const theme = slides[current].dataset.theme;
+    nav.style.setProperty('background', theme === 'light'
+      ? 'rgba(0,0,0,.12)' : 'rgba(255,255,255,.15)');
+    Array.from(nav.querySelectorAll('.dot')).forEach((d,i) => {
+      d.style.background = i === current
+        ? (theme==='light' ? 'rgba(0,0,0,.7)' : 'rgba(255,255,255,.95)')
+        : (theme==='light' ? 'rgba(0,0,0,.18)' : 'rgba(255,255,255,.3)');
+    });
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= total || idx === current) return;
+    isTransitioning = true;
+    current = idx;
+    deck.style.transform = 'translateX(-' + (current * 100) + 'vw)';
+    slides.forEach(s => s.classList.remove('active'));
+    setTimeout(() => {
+      slides[current].classList.add('active');
+      isTransitioning = false;
+      renderNav();
+      saveProgress();
+    }, 900);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (isTransitioning) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+  });
+
+  let wheelTimeout = null;
+  document.addEventListener('wheel', e => {
+    if (isTransitioning || wheelTimeout) return;
+    wheelTimeout = setTimeout(() => wheelTimeout = null, 800);
+    if (e.deltaY > 30) goTo(current + 1);
+    if (e.deltaY < -30) goTo(current - 1);
+  }, { passive: true });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (isTransitioning) return;
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (diff > 50) goTo(current + 1);
+    if (diff < -50) goTo(current - 1);
+  }, { passive: true });
+
+  const STORAGE_KEY = 'slides-progress';
+  function saveProgress() { try { localStorage.setItem(STORAGE_KEY, current); } catch(e){} }
+  function loadProgress() {
+    try {
+      const p = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+      if (!isNaN(p) && p >= 0 && p < total) { current = p; deck.style.transform = 'translateX(-' + (current*100) + 'vw)'; }
+    } catch(e){}
+  }
+
+  loadProgress();
+  slides.forEach(s => s.classList.remove('active'));
+  slides[current].classList.add('active');
+  renderNav();
+})();
+</script>
+</body>
+</html>

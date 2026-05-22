@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案A · 连续色阶热力图</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f5f0;font-family:system-ui,'PingFang SC','Microsoft YaHei',sans-serif;color:#2e2c2a;padding:40px 20px}
+.container{max-width:740px;margin:0 auto}
+h2{font-size:18px;font-weight:600;color:#1a6b50;margin-bottom:4px;letter-spacing:0.5px}
+.sub{font-size:12px;color:#857d74;margin-bottom:20px;line-height:1.5}
+.hm-wrap{background:#fff;border-radius:8px;border:1px solid #e0ddd5;padding:16px;overflow-x:auto;min-height:100px}
+#hm{display:block;margin:0 auto}
+.legend-row{display:flex;align-items:center;gap:12px;margin-top:14px;padding:10px 16px;background:#fafaf7;border-radius:6px;border:1px solid #e0ddd5;flex-wrap:wrap}
+.grad-bar{width:200px;height:14px;border-radius:3px;background:linear-gradient(90deg,#c4503a,#d4a040,#d4c040,#6aaa60);flex-shrink:0}
+.lbl{font-size:11px;color:#5f5a54}
+.note{font-size:11px;color:#857d74;margin-top:12px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>全量供应商 · 四维诊断热力图</h2>
+  <div class="sub">连续色阶 · 红色→橙色→黄色→绿色平滑过渡</div>
+  <div class="hm-wrap">
+    <canvas id="hm"></canvas>
+  </div>
+  <div class="legend-row">
+    <div class="grad-bar"></div>
+    <span class="lbl">危险</span>
+    <span class="lbl" style="color:#b89040">预警</span>
+    <span class="lbl">关注</span>
+    <span class="lbl" style="color:#6aaa60">健康</span>
+  </div>
+  <div class="note">▲ 供应商按综合风险从高到低排列（重点管理→预警→观察→正常）｜颜色由红渐绿，一眼看出红色集中在"人"维度</div>
+</div>
+<script>
+var suppliers = [
+  { n:'速讯达', v:[3,2,2,1] }, { n:'华啸',   v:[2,2,2,1] },
+  { n:'阅文',   v:[3,2,1,1] }, { n:'艾斯',   v:[2,2,1,0] },
+  { n:'创博',   v:[1,2,1,0] }, { n:'九通',   v:[3,1,1,0] },
+  { n:'衍生',   v:[3,1,1,0] }, { n:'速腾',   v:[3,1,1,0] },
+  { n:'保全界', v:[3,1,1,0] }, { n:'小蜜蜂', v:[3,1,0,0] },
+  { n:'拓银',   v:[3,1,0,0] }, { n:'靖涵',   v:[2,1,1,0] },
+  { n:'人和',   v:[2,1,1,0] }, { n:'中弘',   v:[2,1,1,0] },
+  { n:'锦瑞',   v:[2,1,1,0] }, { n:'新动力', v:[2,1,1,0] },
+  { n:'嘉信',   v:[2,1,0,0] }, { n:'博岳',   v:[2,1,0,0] },
+  { n:'广达',   v:[1,1,1,0] }, { n:'岐力',   v:[1,0,1,1] },
+  { n:'汇讯',   v:[1,1,1,0] }, { n:'零犀',   v:[1,1,0,0] },
+  { n:'翰锐',   v:[1,1,0,0] }, { n:'中乾',   v:[1,1,0,0] },
+  { n:'德辰',   v:[1,1,0,0] }, { n:'赛维斯', v:[1,0,1,0] },
+  { n:'伽玛',   v:[1,1,0,0] }, { n:'毅航',   v:[0,1,0,0] },
+  { n:'毛毛虫', v:[0,0,0,0] }
+];
+var dims = ['人（体质）','绩（功力）','管（内功）','风（盲区）'];
+var R=29,C=4;
+
+var pal = [
+  [100,180,110], [210,190,70], [210,140,60], [195,85,70]
+];
+function mapColor(t){
+  var i=Math.min(Math.floor(t),2), f=t-i;
+  return [pal[i][0]*(1-f)+pal[i+1][0]*f|0, pal[i][1]*(1-f)+pal[i+1][1]*f|0, pal[i][2]*(1-f)+pal[i+1][2]*f|0];
+}
+
+(function(){
+  var cv=document.getElementById('hm'), ctx=cv.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+  var cellW=108,cellH=18,gapX=1,gapY=1,labelW=60,hmLeft=labelW+6,hmTop=26;
+  var hmW=C*(cellW+gapX), hmH=R*(cellH+gapY);
+  var tw=hmLeft+hmW+10, th=hmTop+hmH+8;
+
+  cv.width=tw*dpr; cv.height=th*dpr;
+  cv.style.width=tw+'px'; cv.style.height=th+'px';
+  ctx.scale(dpr,dpr);
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,tw,th);
+
+  // Build smooth field (20x upsampled)
+  var uw=80,uh=580, sx=hmW/uw, sy=hmH/uh;
+  var fld=[];
+  for(var y=0;y<uh;y++){
+    fld[y]=[];
+    for(var x=0;x<uw;x++){
+      var gx=x/20,gy=y/20;
+      var ix=Math.min(Math.floor(gx),C-2), iy=Math.min(Math.floor(gy),R-2);
+      var fx=gx-ix,fy=gy-iy;
+      var v00=suppliers[iy].v[ix], v10=suppliers[iy].v[Math.min(ix+1,C-1)];
+      var v01=suppliers[Math.min(iy+1,R-1)].v[ix], v11=suppliers[Math.min(iy+1,R-1)].v[Math.min(ix+1,C-1)];
+      fld[y][x]=v00*(1-fx)*(1-fy)+v10*fx*(1-fy)+v01*(1-fx)*fy+v11*fx*fy;
+    }
+  }
+
+  // Render to OFFSCREEN canvas at 1x (avoids putImageData HiDPI bug)
+  var off=document.createElement('canvas');
+  off.width=tw; off.height=th;
+  var octx=off.getContext('2d');
+  var img=octx.createImageData(tw,th);
+  var d=img.data;
+  for(var py=0;py<th;py++){
+    for(var px=0;px<tw;px++){
+      var idx=(py*tw+px)*4;
+      if(px>=hmLeft&&px<hmLeft+hmW&&py>=hmTop&&py<hmTop+hmH){
+        var fx=px-hmLeft,fy=py-hmTop;
+        var ux=Math.min(Math.floor(fx/sx),uw-1)|0, uy=Math.min(Math.floor(fy/sy),uh-1)|0;
+        var c=mapColor(fld[uy][ux]);
+        d[idx]=c[0]; d[idx+1]=c[1]; d[idx+2]=c[2]; d[idx+3]=255;
+      } else {
+        d[idx]=255; d[idx+1]=255; d[idx+2]=255; d[idx+3]=255;
+      }
+    }
+  }
+  octx.putImageData(img,0,0);
+
+  // Draw offscreen → main canvas (respects dpr transform)
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
+  ctx.drawImage(off,0,0);
+
+  // Dimension labels
+  ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.font='500 11px system-ui,"PingFang SC",sans-serif';
+  ctx.fillStyle='#5f5a54';
+  for(var c=0;c<C;c++) ctx.fillText(dims[c], hmLeft+c*(cellW+gapX)+cellW/2, hmTop-4);
+
+  // Supplier labels
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  ctx.font='11px system-ui,"PingFang SC",sans-serif';
+  ctx.fillStyle='#454240';
+  for(var r=0;r<R;r++) ctx.fillText(suppliers[r].n, labelW, hmTop+r*(cellH+gapY)+cellH/2);
+})();
+</script>
+</body>
+</html>

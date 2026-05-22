@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>供应商年度评审 — 2025</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #fff;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  padding: 28px 32px 20px;
+}
+.header { margin-bottom: 18px; }
+.title {
+  font-size: 17px; font-weight: 600; color: #6b3410;
+  line-height: 1.4;
+}
+.subtitle {
+  font-size: 12px; font-weight: 400; color: #857d74; margin-top: 4px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.card {
+  background: #faf8f5;
+  border: 1px solid #e8e4df;
+  border-radius: 10px;
+  padding: 16px 16px 8px;
+}
+.chart { width: 100%; height: 360px; }
+.footer {
+  margin-top: 14px; font-size: 10px; color: #ada599;
+  text-align: right;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="title">尾部3家系统性不达标，差距幅度远超临界</div>
+  <div class="subtitle">2025年度供应商评审 — 6家核心供应商 × 4项关键指标 | 虚线为基准线</div>
+</div>
+<div class="grid">
+  <div class="card"><div id="chart-rate" class="chart"></div></div>
+  <div class="card"><div id="chart-efficiency" class="chart"></div></div>
+  <div class="card"><div id="chart-compliance" class="chart"></div></div>
+  <div class="card"><div id="chart-turnover" class="chart"></div></div>
+</div>
+<div class="footer">数据来源：2025年度供应商评审 | 基准线：达成率≥95% 人效≥75 合规率≥90% 流失率≤15%</div>
+
+<script>
+// ── 色彩体系 ──
+const PASS_COLOR   = '#E8843C';  // 达标 — 暖橙
+const FAIL_COLOR   = '#B8A99A';  // 未达标基底 — 灰
+const GAP_COLOR    = '#E06B5E';  // 差距段 — 珊瑚红
+const BASELINE_CLR = '#c25030';  // 基准线
+const LABEL_CLR    = '#857d74';
+const TITLE_CLR    = '#6b3410';
+
+const SUPPLIERS = ['毅航', '毛毛虫', '伽玛', '赛维斯', '岐力', '翰锐'];
+
+// 指标数据（已按从优到劣排序）
+const METRICS = [
+  {
+    id: 'chart-rate',
+    title: '达成率（%）',
+    baseline: 95,
+    values:  [105, 98, 93, 87, 82, 78],
+    // 越大越好
+    higherIsBetter: true,
+    xMax: 120,
+    splitNumber: 6
+  },
+  {
+    id: 'chart-efficiency',
+    title: '人效（分）',
+    baseline: 75,
+    values:  [92, 85, 78, 72, 68, 65],
+    higherIsBetter: true,
+    xMax: 110,
+    splitNumber: 5
+  },
+  {
+    id: 'chart-compliance',
+    title: '合规率（%）',
+    baseline: 90,
+    values:  [98, 95, 91, 88, 85, 82],
+    higherIsBetter: true,
+    xMax: 110,
+    splitNumber: 5
+  },
+  {
+    id: 'chart-turnover',
+    title: '流失率（%）',
+    baseline: 15,
+    values:  [8, 12, 18, 22, 25, 28],
+    // 越小越好 — 低于基准=达标
+    higherIsBetter: false,
+    xMax: 35,
+    splitNumber: 5
+  }
+];
+
+function buildOption(m) {
+  const { id, title, baseline, values, higherIsBetter, xMax, splitNumber } = m;
+  const gapData = [];
+
+  // 计算差距数据
+  values.forEach(function(v, i) {
+    if (higherIsBetter) {
+      if (v < baseline) {
+        gapData.push({ value: baseline - v, supplier: SUPPLIERS[i] });
+      }
+    } else {
+      // 流失率：大于基准 = 不达标
+      if (v > baseline) {
+        gapData.push({ value: v - baseline, supplier: SUPPLIERS[i] });
+      }
+    }
+  });
+
+  // 找最大差距
+  var maxGap = null;
+  gapData.forEach(function(g) {
+    if (!maxGap || g.value > maxGap.value) maxGap = g;
+  });
+
+  // 系列数据
+  var baseSeries = [];  // 基底柱（达标=PASS_COLOR，未达标=FAIL_COLOR）
+  var gapSeries = [];   // 差距柱（仅未达标时有值）
+
+  values.forEach(function(v) {
+    var passed = higherIsBetter ? (v >= baseline) : (v <= baseline);
+    baseSeries.push(passed ? v : Math.min(v, baseline));
+    gapSeries.push(passed ? 0 : Math.abs(v - baseline));
+  });
+
+  return {
+    animation: false,
+    title: {
+      text: title,
+      left: 'left', top: 0,
+      textStyle: { color: TITLE_CLR, fontSize: 13, fontWeight: 600 }
+    },
+    grid: { top: 36, right: 20, bottom: 28, left: 60 },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function(params) {
+        var idx = params[0].dataIndex;
+        var val = values[idx];
+        var passed = higherIsBetter ? (val >= baseline) : (val <= baseline);
+        var status = passed ? '达标' : '未达标';
+        var tip = SUPPLIERS[idx] + ' ' + title.replace(/[（）()]/g, '') + ': <b>' + val + '</b><br/>'
+          + '基准: ' + baseline + ' | 状态: ' + status;
+        if (!passed) {
+          tip += '<br/>差距: ' + Math.abs(val - baseline);
+        }
+        return tip;
+      }
+    },
+    xAxis: {
+      type: 'value',
+      max: xMax,
+      splitNumber: splitNumber,
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: LABEL_CLR, fontSize: 11 },
+      splitLine: { lineStyle: { color: '#f2f0eb', type: 'dashed' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: SUPPLIERS,
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: LABEL_CLR, fontSize: 12, fontWeight: 400 }
+    },
+    series: [
+      {
+        name: '实际值',
+        type: 'bar',
+        stack: 'bullet',
+        barWidth: 18,
+        itemStyle: {
+          color: function(p) {
+            var idx = p.dataIndex;
+            var v = values[idx];
+            var passed = higherIsBetter ? (v >= baseline) : (v <= baseline);
+            return passed ? PASS_COLOR : FAIL_COLOR;
+          }
+        },
+        label: {
+          show: true,
+          position: 'right',
+          color: function(p) {
+            var idx = p.dataIndex;
+            var v = values[idx];
+            var passed = higherIsBetter ? (v >= baseline) : (v <= baseline);
+            return passed ? '#8b4513' : LABEL_CLR;
+          },
+          fontSize: 12,
+          fontWeight: 600,
+          formatter: function(p) { return values[p.dataIndex]; },
+          offset: [4, 0]
+        },
+        data: baseSeries
+      },
+      {
+        name: '差距',
+        type: 'bar',
+        stack: 'bullet',
+        itemStyle: { color: GAP_COLOR },
+        barWidth: 18,
+        data: gapSeries
+      },
+      {
+        name: '基准线',
+        type: 'bar',
+        barWidth: 2,
+        barGap: '-100%',
+        itemStyle: { color: 'transparent' },
+        markLine: {
+          symbol: 'none',
+          silent: true,
+          lineStyle: { color: BASELINE_CLR, type: 'dashed', width: 1.5 },
+          label: {
+            show: true,
+            position: 'insideStartTop',
+            color: BASELINE_CLR,
+            fontSize: 10,
+            formatter: '基准 ' + baseline
+          },
+          data: [{ xAxis: baseline }]
+        },
+        data: values.map(function() { return 0; })
+      }
+    ]
+  };
+}
+
+// ── 初始化图表 ──
+METRICS.forEach(function(m) {
+  var chart = echarts.init(document.getElementById(m.id));
+  chart.setOption(buildOption(m));
+});
+
+window.addEventListener('resize', function() {
+  METRICS.forEach(function(m) {
+    echarts.getInstanceByDom(document.getElementById(m.id)).resize();
+  });
+});
+</script>
+</body>
+</html>

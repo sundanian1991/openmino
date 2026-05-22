@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>李诞的AI养虾指南</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* 背景 */
+      --cream: #F7F3ED;
+      --warm-white: #FEFCF9;
+      --sand: #E8E0D4;
+      --stone: #C4B9A8;
+
+      /* 文字 */
+      --ink: #0B0800;
+      --ink-light: #3D362E;
+      --ink-faded: #6B6158;
+
+      /* 强调色 */
+      --vermillion: #BA3420;
+      --vermillion-web: #C4432A;
+
+      /* 辅助色 */
+      --matcha: #6B7F5A;
+      --indigo: #2B3A52;
+      --gold: #B8963E;
+      --milk: #FEFFFA;
+
+      /* 字体 */
+      --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      --font-body: 'DM Sans', 'Noto Serif SC', sans-serif;
+
+      /* 细节 */
+      --radius: 2px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+      font-family: var(--font-body);
+      background: var(--warm-white);
+      color: var(--ink);
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding: clamp(2rem, 5vw, 4rem);
+    }
+
+    /* 纸张纹理 */
+    .paper-texture {
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* 字体层级 */
+    .t1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .t2 {
+      font-family: var(--font-body);
+      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+      font-weight: 600;
+      color: var(--ink);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .t3 {
+      font-family: var(--font-body);
+      font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+      color: var(--ink-light);
+      line-height: 1.8;
+    }
+
+    .accent { color: var(--vermillion); }
+
+    /* ========== 封面 ========== */
+    .slide-cover {
+      background: var(--cream);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .cover-illustration {
+      width: clamp(160px, 25vw, 240px);
+      height: auto;
+      margin-bottom: 2.5rem;
+      filter: drop-shadow(0 2px 8px rgba(11, 8, 0, 0.1));
+      transition: filter 0.3s ease;
+    }
+
+    .cover-illustration:hover {
+      filter: drop-shadow(0 4px 16px rgba(186, 52, 32, 0.25));
+    }
+
+    .cover-title { margin-bottom: 1rem; }
+    .cover-subtitle { max-width: 500px; }
+
+    .cover-decoration {
+      position: absolute;
+      bottom: 3rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .cover-decoration .line {
+      width: 50px;
+      height: 1px;
+      background: var(--stone);
+    }
+
+    .cover-decoration .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--vermillion);
+    }
+
+    /* ========== 目录页 ========== */
+    .slide-toc { background: var(--warm-white); }
+    .toc-header { margin-bottom: 2rem; }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(1rem, 2vw, 1.5rem);
+      flex: 1;
+    }
+
+    .toc-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      border-left: 2px solid var(--sand);
+      transition: border-color 0.3s ease;
+    }
+
+    .toc-item:hover { border-color: var(--vermillion); }
+
+    .toc-num {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 2.8vw, 1.8rem);
+      font-weight: 600;
+      color: var(--ink-faded);
+      line-height: 1;
+    }
+
+    .toc-text {
+      font-size: clamp(0.85rem, 1.3vw, 1rem);
+      color: var(--ink-light);
+      line-height: 1.5;
+    }
+
+    /* ========== 三要素页 ========== */
+    .slide-elements { background: var(--cream); }
+    .elements-header { text-align: center; margin-bottom: 3rem; }
+
+    .elements-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+      flex: 1;
+      align-items: start;
+    }
+
+    .element-card {
+      text-align: center;
+      padding: clamp(1.5rem, 3vw, 2rem);
+    }
+
+    .element-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .element-card:hover .element-icon { transform: translateY(-3px); }
+
+    .element-name {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+
+    .element-name-en {
+      font-size: 0.7rem;
+      color: var(--ink-faded);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .element-desc {
+      font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+      color: var(--ink-light);
+      line-height: 1.7;
+    }
+
+    /* ========== 技巧页 ========== */
+    .slide-skills { background: var(--warm-white); }
+
+    .skills-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 4vw, 4rem);
+      flex: 1;
+    }
+
+    .skills-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .skill-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: var(--radius);
+      transition: background 0.3s ease;
+    }
+
+    .skill-item:hover { background: var(--cream); }
+
+    .skill-num {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--vermillion);
+      min-width: 2rem;
+    }
+
+    .skill-text h4 {
+      font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.2rem;
+    }
+
+    .skill-text p {
+      font-size: clamp(0.75rem, 1vw, 0.85rem);
+      color: var(--ink-faded);
+    }
+
+    .skills-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .workflow-diagram {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    /* ========== 行动清单页 ========== */
+    .slide-action { background: var(--cream); }
+
+    .action-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex: 1;
+    }
+
+    .action-steps {
+      display: flex;
+      gap: clamp(1.5rem, 3vw, 3rem);
+      margin: 2.5rem 0;
+    }
+
+    .action-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .step-icon {
+      width: 52px;
+      height: 52px;
+      transition: transform 0.3s ease;
+    }
+
+    .action-step:hover .step-icon { transform: translateY(-3px); }
+
+    .step-label {
+      font-size: clamp(0.8rem, 1.1vw, 0.9rem);
+      color: var(--ink-light);
+      max-width: 110px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .action-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+      font-weight: 600;
+      color: var(--ink);
+      margin-top: 2rem;
+      position: relative;
+      padding: 0 2rem;
+    }
+
+    .action-quote::before,
+    .action-quote::after {
+      content: '"';
+      color: var(--vermillion);
+      font-size: 1.4em;
+      position: absolute;
+    }
+
+    .action-quote::before { left: 0; top: -0.15em; }
+    .action-quote::after { right: 0; bottom: -0.35em; }
+
+    /* ========== 页脚 ========== */
+    .slide-footer {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 clamp(2rem, 5vw, 4rem);
+      font-size: 0.65rem;
+      color: var(--stone);
+    }
+
+    .slide-num {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      color: var(--ink-faded);
+    }
+
+    /* ========== 导航 ========== */
+    .nav-hint {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      color: var(--stone);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.5;
+      z-index: 100;
+    }
+
+    /* ========== 动画 ========== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .slide.visible .fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide.visible .fade-in:nth-child(1) { transition-delay: 0.1s; }
+    .slide.visible .fade-in:nth-child(2) { transition-delay: 0.2s; }
+    .slide.visible .fade-in:nth-child(3) { transition-delay: 0.3s; }
+    .slide.visible .fade-in:nth-child(4) { transition-delay: 0.4s; }
+
+    @media (max-width: 768px) {
+      .toc-grid { grid-template-columns: 1fr; }
+      .elements-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+      .skills-content { grid-template-columns: 1fr; }
+      .action-steps { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="paper-texture"></div>
+  <div class="nav-hint">↓ 空格键翻页</div>
+
+  <!-- P1 - 封面 -->
+  <section class="slide slide-cover">
+    <!-- Quiver AI 精致手绘虾 - 双层结构 -->
+    <svg class="cover-illustration" viewBox="0 0 250 250" style="width:100%;height:auto;">
+      <!-- 填充层 -->
+      <path d="m229.4 154.1c-1.22 8.2-3.32 18.67-8.33 21l-1.58-0.03c-3.33 12.88-11.75 24.21-19.67 30.89l-2.48-1.61-2.78-0.41-0.25 4.49-21.52 24.58c-3.67 4.26-6.4 4.53-10.03 3.07l-0.74-2.98 4.31-1.69c-5.12 1.74-5.98 3.02-13.22 1.85-3-0.48-7.27-1.55-7.16-4.6l2.38-5.36c-6.62-0.12-13.01-1.91-14.14-5.42-1.11-3.94 5.46-8.55 16.04-12.43 8.28-3.22 18.63-6.75 29.37-7.92l3.58-0.4 2.98-5.88c1.29-7.06 3.09-13.64 7.39-18.39l-1.77-5.53 2.32-2.96-2.47-5.11 0.55-8.45-4.65-3.92-1.38-6.89c5.9-2.14 12.24-4.75 16.91-16.58 2.67-4.5 6.54-8.18 9.83-17.34 4.77 1.08 11.8 8.63 14.85 17.76l-0.39 4.74-2.01 1.7c3.93 4.61 5.51 14.61 4.06 23.82z" fill="#BA3420"/>
+      <path d="m186.1 90.01c9.1-0.58 20.94 5.57 24.07 10.42 2.94 4.58 3 8.82-3.17 15.88-5.28 6.17-6.11 14.94-14.24 19.41-5.71 3.04-13.84 1.92-17.05-3.5l-2.33-4.75c8.71-3.91 10.64-10.55 9.9-16.14-0.51-4.58 1.65-12.43 2.82-15.89v-5.43z" fill="#BA3420"/>
+      <path d="m163.4 92.42c0.92-4.59 4.66-4.66 9.5-4.42 4.92 0.47 11.61 1.24 13.19 6.4 1.17 4.31-3.09 9.98-2.39 18.39 1 8.76-5.39 15.05-13.05 15.35-6.86 0.32-9.49-1.62-11.39-7.04 5.37-6.93 6.75-13.79 4.14-23.05v-5.63z" fill="#BA3420"/>
+      <path d="m57.21 86.14c7.96-0.48 13.13-1.02 21.58-3.03l4.42-1.62c-10.97-2.07-20.24-4.48-29.86-9.82 10.13 3.45 21.62 5.37 32.66 4.61 9.85-0.66 16.26-5.04 29.1-3.26 4.95 0.76 8.87 2.43 14.01 2.49 8.98 0.17 19.12 2.13 29 5.11 3.23 1.03 2.66 4.65-0.99 3.68-10.06-3.53-21.12-5.71-34.31-6.86-10.25-1.06-14.37-0.94-26.5 0.55-7.18 0.89-11.56 1.78-21.55 0.1 4.34 1.08 6.97 1.36 9.45 1.67 1.64 0.23 1.37 1.96-0.4 1.75-8.82-1.25-16.74-2.79-24.59-5.87 4.89 2.57 11.54 4.37 18.62 5.37 1.58 0.26 2.28 0.38 4.26 0.66l-2.14 0.83c-8.86 1.69-12.81 1.93-19.59 2.41-3.79 0.27-7.52 0.26-15.45-4.82 3.76 5.13 7.63 6.12 12.28 6.05z" fill="#FEFFFA"/>
+      <path d="m83.63 86.47c-0.41 3.7 2.12 4.94 4.32 4.62 3.42-0.36 4.64-2.58 4.41-4.95-0.31-2.57-2.53-3.86-4.77-3.63-2.2 0.22-3.68 1.34-3.96 3.96z" fill="#0B0800"/>
+
+      <!-- 描边层 -->
+      <g fill="none" stroke="#0B0800" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m165 85.12c5.33-1.28 14.49-1.43 20.81 3.63 3.1 2.93 1.4 7.32-0.54 13.25-1.35 4.77-0.94 7.03-0.54 11.62 0.07 7.53-6.59 13.94-15.45 13.85-5.35-0.04-8.52-1.43-10.89-4.54" stroke-width="1.6"/>
+        <path d="m187.1 89.61c8.09 0 21.9 5.4 24.37 13.6 2 6.85-2.89 10.95-6.01 15.54-4.06 5.87-5.47 15.43-17.21 17.69-7.66 1.57-11.58-1.97-13.02-7.96" stroke-width="1.6"/>
+        <path d="m212.7 105.3c7.66 2.58 14.01 11.9 15.59 19.08 0.74 3.4-1.67 6.45-5.67 7.84-8.86 2.57-11.27 7.69-18.13 12.93-4.12 3.25-11.55 3.87-15.66-1.11-1.29-1.75-1.75-4.46-1.75-5.41" stroke-width="1.6"/>
+        <path d="m228.2 129.3c2.57 4.99 6.42 17.71 3.38 22.23-2.86 4.15-6.88 2.03-11.43 1.56-8.16-0.8-13.17 5.35-18.81 7.09-4.41 1.33-8.71-2.52-8.9-9.09" stroke-width="1.6"/>
+        <path d="m230.4 154.8c-0.61 8.89-3.54 19.07-9.19 20-4.48 0.75-6.92-3.61-13.7-2.88-4.47 0.48-8.06 3.08-12.24 0.54-3.88-2.3-4.18-9.21 1.18-11.8" stroke-width="1.6"/>
+        <path d="m192.3 173.5c-4.12 4.46-5.83 13.52-6.54 19.25-0.31 2.74-2.78 4.54-2.4 5.19 0.51 1.05 4.43-0.55 5.38 2.21 0.64 1.97 0.92 2.8 1.21 3.36 1.01 0.21 3.81-1.07 6 1.26 1.18 1.29 0.1 2.38 2.21 1.87 4.82-1.26 19.07-15.64 24.02-30.77" stroke-width="2.1"/>
+        <path d="m181.9 197.1c-7.27 0.69-27.6 7.5-36.08 11.36-9.63 4.33-13.4 7.63-12.29 10.82 1.55 4.42 8.55 5.35 13.2 4.42" stroke-width="2.1"/>
+        <path d="m182.8 205.9c-7.63 8.29-16.78 22.8-26.53 27.07-4.19 1.95-10.9 0.25-12.05-1.7-2.31-3.87 4.9-12.99 18.63-21.32 5.12-3.18 9.98-4.88 15.87-6.27" stroke-width="1.6"/>
+        <path d="m185.9 207.3-15.52 26.36c-2.55 3.79-7.43 4.84-9.3 1.91-0.51-0.79 0.13-2.32 0.39-3.14" stroke-width="2.1"/>
+        <path d="m194 203.3c2.34 2.33 0.76 4.53-5.9 12.4-4.71 5.27-9.18 9.9-11.94 11.9" stroke-width="2.1"/>
+        <path d="m169.2 169.7c4.32-4.52 8.48-8.44 13.78-8.74 3.64-0.13 5.94 2.33 9.17 3.28" stroke-width="1.6"/>
+        <path d="m164.4 164c3.1-5.12 9.45-10.97 14.44-12.16 2.69-0.69 7.07-0.69 8.9 0.53" stroke-width="1.6"/>
+        <path d="m158 157.4c0.88-7.24 4.08-13.36 10.16-17.28 3.03-2 5.72-5 8.95-4.18" stroke-width="1.6"/>
+        <path d="m151.2 155.7c-2.45-7.99 0.84-14.47 8.84-22.78 2.87-2.7 7.25-4.44 9.73-3.83" stroke-width="1.6"/>
+        <path d="m148.9 124.3c-2.66 8.54-11.6 14.16-28.64 24.85-1.58 0.99-0.97 3.19 0.94 4.71 6.58 5.32 6.81 11.9 14.47 13.84 3.15 0.89 6.16 1.44 9.43 1.42" stroke-width="1.06"/>
+        <path d="m144.3 125.6c-5.12 8.45-13.64 10.48-25.58 12.93-6.07 1.29-13.07 3.05-13.67 6.3" stroke-width="2.1"/>
+        <path d="m132 124.2c-5.34 5.57-14.49 4.42-22.55 4.42-5.2-0.27-12.41-1.52-15.53 2.29-3.92 4.92-7.44 8.12-12.85 12.52-5.83 4.39-7.21 9.79-7.58 19.99" stroke-width=".7"/>
+        <path d="m122.9 121.1c-6.86 2.93-11.47 2.72-18.97 0.33-6.28-2.07-10.05-0.11-16.57 2.06-10.83 0.73-20.18 9.21-23.85 16.46" stroke-width="1.06"/>
+        <path d="m111.3 115.1c-6.46 1.29-13.08-0.03-19.03-2.45-6.1-2.55-17.73 0.18-20.83 2.05-3.67 2-6.39 3.83-7.64 6.09" stroke-width="1.6"/>
+        <path d="m104.7 110.9c-7.04 0.99-11.79-0.39-17.86-2.88-5.89-0.99-8.83 0.16-11.13 0.8-4.58 1.29-8.21 1.81-12.69 4" stroke-width=".7"/>
+        <path d="m100.8 137.8c-2.87 6.29-4.84 10.83-8.57 18.26-2.7 6.45-0.59 11.87 1.71 16.4" stroke-width=".7"/>
+        <path d="m105.2 144.9c2.66 7.88 2.22 14.95 4.49 22.4 1.45 3.88 7.43 7.83 12.18 10.56" stroke-width=".7"/>
+        <path d="m56.08 88.28c1.1-1.14 3.53-0.55 5.95 0.53 8.28 3.61 17.78 6.37 23.68 6.5 1.73 0 2.17 0.44 1.44 0.76" stroke-width="1.6"/>
+        <path d="m58.08 90.19c5.19 3.25 13.23 6.57 20.83 9.07 5.78 1.93 8.61 2.73 9.54 1.57" stroke-width="2.1"/>
+        <path d="m92.19 96.94c3.23 0.79 3.62 3.27 1.72 5.6" stroke-width="1.06"/>
+        <path d="m162.7 86.27c-1.97 2.87-2.58 6.69 0.28 13.75 2.61 7.53-1.35 22.26-16.5 23.59-12.15 0.27-22.69-3.8-31.06-7.65-8.53-4.05-15.38-8.07-25.3-10.93" stroke="#BA3420" stroke-width="2.1"/>
+        <path d="m5.26 57.15c-2.44-16.59 7.59-28.79 18.23-36.27 15.32-9.92 33.64-9.62 40.03-9.22 8.51 0.36 13.57 1.12 24.09 4.44 8.3 2.03 12.34 1.51 23.98 5.58 20.51 6.89 34.6 16.23 55.49 22.5 12.71 3.94 36.97 8.01 55.33 2.62 0.7-0.19 0.91-0.24 0.3 0.15-9.19 5.06-29.53 4.67-46.59 0.66-20.83-4.78-32.09-11.91-54.64-21.52-12.84-5.42-24.87-7.79-35.06-9.93-11.71-1.24-26.31-1.65-42.43 9.65-11.57 6.79-19.78 16.1-18.42 31.11 1.45 14.35 13.66 24.99 25.06 30.35 1.83 0.96 5.88 2.51 7.82 3.22-16.91-2.54-37.84-7.45-50.65-25.37-6.32-8.85-0.84-24.89 14.91-35.17 12.77-8.33 32.77-7.21 38.38-7.61 28.63-1.6 48.07 5.93 66.42 15.06 17.17 8.86 34.95 19.68 58.49 23.94 17.22 3.58 40.04 3.43 61.32-3.22 1.17-0.39 1.35-0.39 0.59 0-15.19 6.89-41.87 8.39-57.25 5.82-23.38-3.13-36.85-10.02-56.22-20.09-18.42-9.62-37.72-17.76-63.45-18.81-9.63-0.47-23.76 0-31.39 4.71" stroke-width="1.6"/>
+      </g>
+    </svg>
+
+    <h1 class="t1 cover-title fade-in">李诞的<span class="accent">AI养虾</span>指南</h1>
+    <p class="t3 cover-subtitle fade-in">从脱口秀演员到AI驯养师的方法论</p>
+
+    <div class="cover-decoration fade-in">
+      <span class="line"></span>
+      <span class="dot"></span>
+      <span class="line"></span>
+    </div>
+  </section>
+
+  <!-- P2 - 目录 -->
+  <section class="slide slide-toc">
+    <div class="toc-header">
+      <h2 class="t2 fade-in">Contents</h2>
+    </div>
+
+    <div class="toc-grid">
+      <div class="toc-item fade-in">
+        <span class="toc-num">01</span>
+        <span class="toc-text">Soul+Skills+记忆<br/>养虾三要素</span>
+      </div>
+      <div class="toc-item fade-in">
+        <span class="toc-num">02</span>
+        <span class="toc-text">写脚本技巧<br/>模块化Prompt工作流</span>
+      </div>
+      <div class="toc-item fade-in">
+        <span class="toc-num">03</span>
+        <span class="toc-text">做判断技巧<br/>规则驱动型AI</span>
+      </div>
+      <div class="toc-item fade-in">
+        <span class="toc-num">04</span>
+        <span class="toc-text">学习技巧<br/>向量化个人语料</span>
+      </div>
+      <div class="toc-item fade-in">
+        <span class="toc-num">05</span>
+        <span class="toc-text">飞书妙搭实操<br/>三步部署法</span>
+      </div>
+      <div class="toc-item fade-in">
+        <span class="toc-num">06</span>
+        <span class="toc-text">行动清单<br/>如何开始养虾之旅</span>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span>李诞的AI养虾指南</span>
+      <span class="slide-num">02</span>
+    </div>
+  </section>
+
+  <!-- P3 - 养虾三要素 -->
+  <section class="slide slide-elements">
+    <div class="elements-header">
+      <h2 class="t2 fade-in">Core Elements</h2>
+      <h3 class="t1 fade-in" style="margin-top: 0.5rem;">养虾<span class="accent">三要素</span></h3>
+    </div>
+
+    <div class="elements-grid">
+      <!-- Soul -->
+      <div class="element-card fade-in">
+        <div class="element-icon">
+          <svg viewBox="0 0 72 72" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <!-- 心形填充层 -->
+            <path d="m36 62c-20-14-26-24-24-34s10-16 18-16c6 0 10 4 12 8 2-4 6-8 12-8 8 0 16 6 18 16s-4 20-24 34"
+                  fill="#FEFFFA" stroke="none"/>
+            <!-- 心形墨线层 -->
+            <path d="m36 62c-20-14-26-24-24-34s10-16 18-16c6 0 10 4 12 8 2-4 6-8 12-8 8 0 16 6 18 16s-4 20-24 34"
+                  stroke="#0B0800" stroke-width="1.3" fill="none"/>
+            <!-- 朱红心尖 -->
+            <circle cx="36" cy="42" r="3.5" fill="#BA3420"/>
+          </svg>
+        </div>
+        <h4 class="element-name">人设</h4>
+        <p class="element-name-en">Soul</p>
+        <p class="element-desc">定义价值观、语气、身份<br/>让AI有"灵魂"</p>
+      </div>
+
+      <!-- Skills -->
+      <div class="element-card fade-in">
+        <div class="element-icon">
+          <svg viewBox="0 0 72 72" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <!-- 模块填充层 -->
+            <rect x="10" y="10" width="20" height="20" rx="2" fill="#FEFFFA"/>
+            <rect x="42" y="10" width="20" height="20" rx="2" fill="#FEFFFA"/>
+            <rect x="10" y="42" width="20" height="20" rx="2" fill="#FEFFFA"/>
+            <rect x="42" y="42" width="20" height="20" rx="2" fill="#BA3420"/>
+            <!-- 模块墨线层 -->
+            <rect x="10" y="10" width="20" height="20" rx="2" stroke="#0B0800" stroke-width="1.3" fill="none"/>
+            <rect x="42" y="10" width="20" height="20" rx="2" stroke="#0B0800" stroke-width="1.3" fill="none"/>
+            <rect x="10" y="42" width="20" height="20" rx="2" stroke="#0B0800" stroke-width="1.3" fill="none"/>
+            <rect x="42" y="42" width="20" height="20" rx="2" stroke="#0B0800" stroke-width="1.3" fill="none"/>
+            <!-- 核心标记 -->
+            <circle cx="52" cy="52" r="3" fill="#FEFFFA"/>
+          </svg>
+        </div>
+        <h4 class="element-name">技能</h4>
+        <p class="element-name-en">Skills</p>
+        <p class="element-desc">模块化技能包开发<br/>按需调用</p>
+      </div>
+
+      <!-- 记忆 -->
+      <div class="element-card fade-in">
+        <div class="element-icon">
+          <svg viewBox="0 0 72 72" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <!-- 书本填充层 -->
+            <path d="m12 14c16 2 24 4 24 4v44c0 0-8-2-24-6z" fill="#FEFFFA"/>
+            <path d="m60 14c-16 2-24 4-24 4v44c0 0 8-2 24-6z" fill="#FEFFFA"/>
+            <!-- 书本墨线层 -->
+            <path d="m12 14c16 2 24 4 24 4v44c0 0-8-2-24-6z" stroke="#0B0800" stroke-width="1.3" fill="none"/>
+            <path d="m60 14c-16 2-24 4-24 4v44c0 0 8-2 24-6z" stroke="#0B0800" stroke-width="1.3" fill="none"/>
+            <line x1="36" y1="18" x2="36" y2="62" stroke="#0B0800" stroke-width="1.3"/>
+            <!-- 书签朱红 -->
+            <path d="m46 16l3-4l3 4v8h-6z" fill="#BA3420"/>
+            <!-- 文字线 -->
+            <g stroke="#0B0800" stroke-width="1.04" fill="none">
+              <line x1="18" y1="28" x2="30" y2="30"/>
+              <line x1="18" y1="36" x2="28" y2="38"/>
+              <line x1="42" y1="30" x2="54" y2="28"/>
+              <line x1="42" y1="38" x2="52" y2="36"/>
+            </g>
+          </svg>
+        </div>
+        <h4 class="element-name">记忆</h4>
+        <p class="element-name-en">Memory</p>
+        <p class="element-desc">喂入文档、聊天记录<br/>直播转录</p>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span>李诞的AI养虾指南</span>
+      <span class="slide-num">03</span>
+    </div>
+  </section>
+
+  <!-- P4 - 写脚本技巧 -->
+  <section class="slide slide-skills">
+    <div class="skills-content">
+      <div class="skills-left">
+        <h2 class="t2 fade-in">Writing Skills</h2>
+        <h3 class="t1 fade-in" style="margin: 0.5rem 0 2rem;">写脚本<span class="accent">技巧</span></h3>
+
+        <div class="skill-item fade-in">
+          <span class="skill-num">01</span>
+          <div class="skill-text">
+            <h4>任务拆分</h4>
+            <p>开场 → 对比 → 概念 → 结尾</p>
+          </div>
+        </div>
+
+        <div class="skill-item fade-in">
+          <span class="skill-num">02</span>
+          <div class="skill-text">
+            <h4>分模块产出后整合</h4>
+            <p>避免一次性大Prompt</p>
+          </div>
+        </div>
+
+        <div class="skill-item fade-in">
+          <span class="skill-num">03</span>
+          <div class="skill-text">
+            <h4>使用"即梦脚本"Skill模板</h4>
+            <p>标准化流程</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="skills-right fade-in">
+        <svg class="workflow-diagram" viewBox="0 0 300 200" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="#3D362E"/>
+            </marker>
+          </defs>
+
+          <g transform="translate(10, 20)">
+            <!-- 开场 -->
+            <rect x="0" y="0" width="60" height="40" rx="2" fill="#FEFFFA" stroke="#0B0800" stroke-width="1.3"/>
+            <text x="30" y="25" text-anchor="middle" font-size="13" fill="#0B0800">开场</text>
+
+            <!-- 箭头 -->
+            <line x1="65" y1="20" x2="85" y2="20" stroke="#3D362E" stroke-width="1.3" marker-end="url(#arrow)"/>
+
+            <!-- 对比 -->
+            <rect x="90" y="0" width="60" height="40" rx="2" fill="#FEFFFA" stroke="#0B0800" stroke-width="1.3"/>
+            <text x="120" y="25" text-anchor="middle" font-size="13" fill="#0B0800">对比</text>
+
+            <!-- 箭头 -->
+            <line x1="155" y1="20" x2="175" y2="20" stroke="#3D362E" stroke-width="1.3" marker-end="url(#arrow)"/>
+
+            <!-- 概念 -->
+            <rect x="180" y="0" width="60" height="40" rx="2" fill="#FEFFFA" stroke="#0B0800" stroke-width="1.3"/>
+            <text x="210" y="25" text-anchor="middle" font-size="13" fill="#0B0800">概念</text>
+
+            <!-- 向下 -->
+            <line x1="210" y1="45" x2="210" y2="75" stroke="#3D362E" stroke-width="1.3" marker-end="url(#arrow)"/>
+
+            <!-- 结尾 - 朱红强调 -->
+            <rect x="180" y="80" width="60" height="40" rx="2" fill="#BA3420" stroke="none"/>
+            <text x="210" y="105" text-anchor="middle" font-size="13" fill="#FEFFFA">结尾</text>
+
+            <!-- 产出 -->
+            <line x1="210" y1="125" x2="210" y2="145" stroke="#BA3420" stroke-width="1.5"/>
+            <text x="210" y="165" text-anchor="middle" font-size="15" fill="#BA3420" font-weight="600">完整脚本</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span>李诞的AI养虾指南</span>
+      <span class="slide-num">04</span>
+    </div>
+  </section>
+
+  <!-- P5 - 行动清单 -->
+  <section class="slide slide-action">
+    <div class="action-content">
+      <h2 class="t2 fade-in">Action List</h2>
+      <h3 class="t1 fade-in" style="margin-top: 0.5rem;">开始<span class="accent">养虾</span></h3>
+
+      <div class="action-steps fade-in">
+        <div class="action-step">
+          <div class="step-icon">
+            <svg viewBox="0 0 52 52" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="26" cy="26" r="20" stroke="#0B0800" stroke-width="1.5"/>
+              <text x="26" y="32" text-anchor="middle" font-size="16" fill="#0B0800" font-weight="600">1</text>
+            </svg>
+          </div>
+          <span class="step-label">定义AI人设</span>
+        </div>
+
+        <div class="action-step">
+          <div class="step-icon">
+            <svg viewBox="0 0 52 52" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="26" cy="26" r="20" stroke="#0B0800" stroke-width="1.5"/>
+              <text x="26" y="32" text-anchor="middle" font-size="16" fill="#0B0800" font-weight="600">2</text>
+            </svg>
+          </div>
+          <span class="step-label">选择1个Skill开始</span>
+        </div>
+
+        <div class="action-step">
+          <div class="step-icon">
+            <svg viewBox="0 0 52 52" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="26" cy="26" r="20" fill="#BA3420"/>
+              <text x="26" y="32" text-anchor="middle" font-size="16" fill="#FEFFFA" font-weight="600">3</text>
+            </svg>
+          </div>
+          <span class="step-label">持续喂养记忆</span>
+        </div>
+      </div>
+
+      <p class="action-quote fade-in">养虾养的是未来的自己</p>
+    </div>
+
+    <div class="slide-footer">
+      <span>李诞的AI养虾指南</span>
+      <span class="slide-num">05</span>
+    </div>
+  </section>
+
+  <script>
+    class SlidePresentation {
+      constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentIndex = 0;
+        this.init();
+      }
+
+      init() {
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            this.next();
+          }
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.prev();
+          }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+          });
+        }, { threshold: 0.5 });
+
+        this.slides.forEach(slide => observer.observe(slide));
+        this.slides[0].classList.add('visible');
+      }
+
+      next() {
+        if (this.currentIndex < this.slides.length - 1) {
+          this.currentIndex++;
+          this.slides[this.currentIndex].scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      prev() {
+        if (this.currentIndex > 0) {
+          this.currentIndex--;
+          this.slides[this.currentIndex].scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    }
+
+    new SlidePresentation();
+  </script>
+</body>
+</html>

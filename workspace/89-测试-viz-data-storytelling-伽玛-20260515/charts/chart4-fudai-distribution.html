@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>复贷线共享SABC百分位排名制——C级改善效果同样待检验</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8f6f3;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.container {
+  width: 1100px;
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.06);
+  padding: 32px 32px 24px;
+}
+#chart { width: 100%; height: 520px; }
+.annotation {
+  margin-top: 20px;
+  padding: 14px 20px;
+  background: #f9f7f4;
+  border-left: 4px solid #8CBDB4;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.8;
+}
+.annotation p { margin: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="chart"></div>
+  <div class="annotation">
+    <p>复贷线评级权重：GMV 35% + T0GMV 15% + 件均 15% + ATT 10% + 通时 25%，与首贷线分池独立评级</p>
+    <p>百分位边界基于 93 人参评池计算，非预设阈值</p>
+  </div>
+</div>
+<script>
+(function() {
+  var chartDom = document.getElementById('chart');
+  var myChart = echarts.init(chartDom, null, { renderer: 'canvas' });
+
+  // ------------------------------------------------------------
+  //  数据
+  // ------------------------------------------------------------
+  var categories = ['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', '60-70', '70-80', '80-90'];
+  var counts = [12, 10, 10, 17, 16, 12, 8, 5, 3];
+
+  // 暖青色渐变（从浅到深，对应非 bottom-20% 的 7 根柱子）
+  var warmCyanPalette = [
+    '#D4E8E2', '#C0DCD4', '#ACD0C6', '#98C4B8',
+    '#84B8AA', '#70AC9C', '#5CA08E'
+  ];
+
+  var BAR_WIDTH_RATIO = '80%';
+
+  // 为每根柱子指定颜色（bottom 20% 用橙红，其余用暖青渐变）
+  var barColors = counts.map(function(count, i) {
+    if (i < 2) { // 0-10, 10-20 → bottom 20%
+      return '#D46A44';
+    }
+    // 20-90 → 暖青渐变, idx 对应 palette 下标
+    var idx = i - 2;
+    return warmCyanPalette[idx] || warmCyanPalette[warmCyanPalette.length - 1];
+  });
+
+  // ------------------------------------------------------------
+  //  主配置
+  // ------------------------------------------------------------
+  var option = {
+    backgroundColor: '#ffffff',
+
+    title: [
+      {
+        text: '复贷线共享SABC百分位排名制——C级改善效果同样待检验',
+        left: 'center',
+        top: 10,
+        textStyle: {
+          fontSize: 18,
+          fontWeight: 700,
+          color: '#3a3a3a',
+          lineHeight: 28,
+          fontFamily: 'system-ui,-apple-system,sans-serif'
+        }
+      },
+      {
+        text: '复贷线93人参评 | 近30天 | 综合得分分布',
+        left: 'center',
+        top: 42,
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 400,
+          color: '#999',
+          fontFamily: 'system-ui,-apple-system,sans-serif'
+        }
+      }
+    ],
+
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      backgroundColor: 'rgba(255,255,255,0.96)',
+      borderColor: '#ddd',
+      borderWidth: 1,
+      padding: [10, 14],
+      formatter: function(params) {
+        if (!params || !params.length) return '';
+        var p = params[0];
+        return '<div style="font-size:13px;color:#888;margin-bottom:4px">得分区间</div>' +
+          '<div style="font-size:16px;font-weight:700;color:#3a3a3a">' + p.name + ' 分</div>' +
+          '<div style="font-size:13px;color:#666;margin-top:6px">人数：<span style="font-weight:700;color:#3a3a3a">' + p.value + ' 人</span></div>';
+      }
+    },
+
+    grid: {
+      left: 60,
+      right: 36,
+      top: 95,
+      bottom: 48
+    },
+
+    xAxis: {
+      type: 'category',
+      data: categories,
+      splitLine: {
+        show: true,
+        lineStyle: { type: 'dashed', color: '#efefef', width: 1 }
+      },
+      axisLabel: {
+        fontSize: 12,
+        color: '#888',
+        fontFamily: 'system-ui,-apple-system,sans-serif',
+        interval: 0
+      },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      name: '得分区间',
+      nameTextStyle: {
+        fontSize: 12,
+        color: '#888',
+        fontFamily: 'system-ui,-apple-system,sans-serif',
+        fontWeight: 500
+      },
+      nameLocation: 'middle',
+      nameGap: 32
+    },
+
+    yAxis: {
+      type: 'value',
+      name: '人数',
+      nameTextStyle: {
+        fontSize: 12,
+        color: '#888',
+        fontFamily: 'system-ui,-apple-system,sans-serif',
+        fontWeight: 500
+      },
+      splitLine: {
+        show: true,
+        lineStyle: { type: 'dashed', color: '#efefef', width: 1 }
+      },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: {
+        fontSize: 12,
+        color: '#888',
+        fontFamily: 'system-ui,-apple-system,sans-serif'
+      },
+      min: 0
+    },
+
+    series: [
+      {
+        type: 'bar',
+        name: '人数',
+        data: counts.map(function(v, i) {
+          return {
+            value: v,
+            itemStyle: {
+              color: barColors[i],
+              borderRadius: [3, 3, 0, 0]
+            }
+          };
+        }),
+        barWidth: BAR_WIDTH_RATIO,
+        itemStyle: {
+          borderRadius: [3, 3, 0, 0]
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 6,
+            shadowColor: 'rgba(0,0,0,0.12)'
+          }
+        }
+      }
+    ],
+
+    // 留空 graphic，渲染后动态填充
+    graphic: { elements: [] },
+
+    animation: true,
+    animationDuration: 800,
+    animationEasing: 'cubicOut'
+  };
+
+  // ------------------------------------------------------------
+  //  阈值线定义
+  // ------------------------------------------------------------
+  var thresholds = [
+    { value: 19.6, label: 'S底线 P20=19.6', color: '#2A7A6E' },
+    { value: 39.8, label: 'A底线 P50=39.8', color: '#4F8F8F' },
+    { value: 57.3, label: 'B底线 P80=57.3', color: '#D4A76A' }
+  ];
+
+  // ------------------------------------------------------------
+  //  渲染 Graphic 元素（阈值线 + Bottom 20% 高亮区域）
+  // ------------------------------------------------------------
+  function renderGraphics() {
+    var gridModel = myChart.getModel().getComponent('grid');
+    if (!gridModel) return;
+    var rect = gridModel.getRect();
+    var yTop = rect.y;
+    var yBottom = rect.y + rect.height;
+
+    var elements = [];
+
+    // ---- Bottom 20% 高亮背景 ----
+    // x0: 分类轴第0个分类的左边界（-0.5 为分类索引偏移）
+    var xLeft = myChart.convertToPixel({ xAxisIndex: 0 }, -0.5);
+    // P20 在分类索引空间中的位置：value / 10
+    var xP20 = myChart.convertToPixel({ xAxisIndex: 0 }, 1.96);
+    if (xLeft != null && xP20 != null && !isNaN(xLeft) && !isNaN(xP20)) {
+      elements.push({
+        type: 'rect',
+        shape: {
+          x: xLeft,
+          y: yTop,
+          width: Math.max(xP20 - xLeft, 0),
+          height: yBottom - yTop
+        },
+        style: { fill: 'rgba(212, 106, 68, 0.08)', stroke: 'none' },
+        silent: true,
+        z: 5
+      });
+    }
+
+    // ---- 三条百分位虚线 + 标签 ----
+    thresholds.forEach(function(t) {
+      // 分类索引 = value / 10
+      var x = myChart.convertToPixel({ xAxisIndex: 0 }, t.value / 10);
+      if (x == null || isNaN(x)) return;
+
+      // 虚线
+      elements.push({
+        type: 'line',
+        shape: { x1: x, y1: yBottom, x2: x, y2: yTop },
+        style: {
+          stroke: t.color,
+          lineWidth: 2,
+          lineDash: [6, 4]
+        },
+        silent: true,
+        z: 10
+      });
+
+      // 标签背景（固定宽度，所有 label 居中）
+      var lblW = 130;
+      elements.push({
+        type: 'rect',
+        shape: {
+          x: x - lblW / 2,
+          y: yTop - 20,
+          width: lblW,
+          height: 18
+        },
+        style: {
+          fill: 'rgba(255,255,255,0.92)',
+          stroke: '#e0ddd8',
+          lineWidth: 0.5,
+          borderRadius: 4
+        },
+        silent: true,
+        z: 11
+      });
+
+      // 标签文字
+      elements.push({
+        type: 'text',
+        x: x,
+        y: yTop - 11,
+        style: {
+          text: t.label,
+          textAlign: 'center',
+          textVerticalAlign: 'middle',
+          fill: '#3a3a3a',
+          font: '600 11px system-ui, -apple-system, sans-serif'
+        },
+        silent: true,
+        z: 12
+      });
+    });
+
+    myChart.setOption({
+      graphic: { elements: elements }
+    });
+  }
+
+  // ------------------------------------------------------------
+  //  初始化
+  // ------------------------------------------------------------
+  myChart.setOption(option);
+
+  // 等首次渲染 + 动画完成后绘制阈值线
+  var renderTimer = setTimeout(function() {
+    renderGraphics();
+  }, 100);
+
+  // 确保动画真正完成后也尝试绘制
+  myChart.on('finished', function onFinished() {
+    renderGraphics();
+    myChart.off('finished', onFinished);
+  });
+
+  // ------------------------------------------------------------
+  //  自适应
+  // ------------------------------------------------------------
+  window.addEventListener('resize', function() {
+    myChart.resize();
+    renderGraphics();
+  });
+
+  // 当 <details> 或容器切换显隐时自动重新绘制
+  var ro = new ResizeObserver(function() {
+    myChart.resize();
+    renderGraphics();
+  });
+  ro.observe(chartDom);
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>车抵贷业务复盘 — 信息卡片</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #e8e4dd;
+    font-family: 'Noto Sans SC', sans-serif;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .card {
+    width: 600px;
+    height: 800px;
+    flex-shrink: 0;
+    background: #f2efe9;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-dark {
+    background: #1a1a1a;
+    color: #f2efe9;
+  }
+  .noise-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    filter: url(#noise);
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .card-dark .noise-overlay { opacity: 0.04; }
+  .card-content {
+    position: relative;
+    z-index: 2;
+    padding: 48px 44px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .accent { color: #d95e00; }
+  .accent-line {
+    width: 60px;
+    height: 4px;
+    background: #d95e00;
+    margin: 16px 0;
+  }
+  .card-dark .accent-line { background: #d95e00; }
+  .tag {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 20px;
+  }
+  .card-dark .tag { color: #888; }
+  .big-number {
+    font-family: 'Oswald', sans-serif;
+    font-size: 120px;
+    font-weight: 700;
+    line-height: 1;
+    color: #1a1a1a;
+  }
+  .card-dark .big-number { color: #f2efe9; }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+  .card-dark .section-title { color: #f2efe9; }
+  .body-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #444;
+  }
+  .card-dark .body-text { color: #ccc; }
+  .data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .card-dark .data-row { border-bottom-color: rgba(255,255,255,0.1); }
+  .data-label { font-size: 14px; color: #777; }
+  .card-dark .data-label { color: #999; }
+  .data-value {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .card-dark .data-value { color: #f2efe9; }
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d95e00;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .list-number {
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: rgba(217, 94, 0, 0.15);
+    position: absolute;
+    top: -4px;
+    left: 0;
+  }
+  .risk-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 3px;
+    letter-spacing: 1px;
+  }
+  .risk-high { background: #d95e00; color: #fff; }
+  .risk-med { background: #f0a050; color: #fff; }
+
+  .export-btn {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: #d95e00;
+    color: #f2efe9;
+    border: none;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(217, 94, 0, 0.4);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .export-btn:hover { background: #c04d00; transform: translateY(-1px); }
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    background: #d95e00;
+    z-index: 1001;
+    transition: width 0.3s;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<svg style="position: absolute; width: 0; height: 0">
+  <filter id="noise">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
+  </filter>
+</svg>
+
+<div class="progress-bar" id="progressBar"></div>
+<button class="export-btn" onclick="exportCards()">
+  <i class="fas fa-download"></i>&nbsp; 导出全部卡片
+</button>
+
+<div class="cards-container">
+
+  <!-- Card 1: Cover -->
+  <div class="card" id="card-1">
+    <div class="noise-overlay"></div>
+    <div class="card-content" style="justify-content: center; align-items: center; text-align: center;">
+      <div class="tag" style="margin-bottom: 32px;">2026 Q1 &nbsp;|&nbsp; 业务复盘</div>
+      <div style="display: flex; gap: 32px; margin-bottom: 24px;">
+        <div style="text-align: center;">
+          <div class="big-number" style="font-size: 72px; color: #d95e00;">43%</div>
+          <div style="font-size: 13px; color: #999; margin-top: 4px;">3月达成率</div>
+        </div>
+        <div style="width: 1px; background: rgba(0,0,0,0.1); align-self: stretch;"></div>
+        <div style="text-align: center;">
+          <div class="big-number" style="font-size: 72px;">93%</div>
+          <div style="font-size: 13px; color: #999; margin-top: 4px;">新人占比</div>
+        </div>
+      </div>
+      <div class="accent-line" style="margin: 24px auto;"></div>
+      <div class="section-title" style="font-size: 38px; margin-top: 12px;">车抵贷业务复盘</div>
+      <div style="font-size: 15px; color: #999; margin-top: 12px; line-height: 1.6;">
+        业绩下滑归因 &middot; 供应商问题诊断<br>管理机制建设 &middot; 处置方案建议
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: 业务达成趋势 (Dark) -->
+  <div class="card card-dark" id="card-2">
+    <div class="noise-overlay"></div>
+    <div class="card-content">
+      <div class="tag">Business Performance</div>
+      <div class="section-title" style="margin-bottom: 4px;">业绩滑坡</div>
+      <div class="accent-line"></div>
+      <div class="body-text" style="margin-bottom: 28px;">
+        达成率从 2 月的 90% 断崖式下跌至 43%，人力结构严重失衡。
+      </div>
+
+      <!-- 达成率柱状图 -->
+      <div style="margin-bottom: 32px;">
+        <div style="font-size: 11px; letter-spacing: 2px; color: #888; margin-bottom: 16px;">达成率趋势（对标中联）</div>
+        <div style="display: flex; align-items: flex-end; gap: 20px; height: 180px; padding: 0 20px;">
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-family: 'Oswald'; font-size: 20px; font-weight: 700; margin-bottom: 6px;">63%</div>
+            <div style="width: 100%; height: 63%; background: rgba(217,94,0,0.3); border-radius: 4px 4px 0 0;"></div>
+            <div style="font-size: 12px; color: #888; margin-top: 8px;">1月</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-family: 'Oswald'; font-size: 20px; font-weight: 700; color: #d95e00; margin-bottom: 6px;">90%</div>
+            <div style="width: 100%; height: 90%; background: #d95e00; border-radius: 4px 4px 0 0;"></div>
+            <div style="font-size: 12px; color: #888; margin-top: 8px;">2月</div>
+          </div>
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <div style="font-family: 'Oswald'; font-size: 20px; font-weight: 700; color: #e84040; margin-bottom: 6px;">43%</div>
+            <div style="width: 100%; height: 43%; background: #e84040; border-radius: 4px 4px 0 0;"></div>
+            <div style="font-size: 12px; color: #888; margin-top: 8px;">3月</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 关键指标 -->
+      <div style="font-size: 11px; letter-spacing: 2px; color: #888; margin-bottom: 12px;">核心数据</div>
+      <div class="data-row">
+        <span class="data-label">上线人力</span>
+        <span class="data-value">45 <span style="font-size: 14px; color: #888;">人</span></span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">老人占比</span>
+        <span class="data-value" style="color: #e84040;">7%</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">结算系数</span>
+        <span class="data-value">1.5% <span style="font-size: 12px; color: #888;">（行业 1.8-2.2%）</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: 归因分析 -->
+  <div class="card" id="card-3">
+    <div class="noise-overlay"></div>
+    <div class="card-content">
+      <div class="tag">Root Cause Analysis</div>
+      <div class="section-title">四重归因</div>
+      <div class="accent-line"></div>
+      <div class="body-text" style="margin-bottom: 24px;">业绩下滑的客观因素与管理问题交织。</div>
+
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="position: relative; padding-left: 52px;">
+          <div class="list-number">01</div>
+          <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">新人占比过高</div>
+          <div style="font-size: 13px; color: #888; line-height: 1.6;">93% 新人需爬坡周期，产能短期无法释放</div>
+        </div>
+        <div style="position: relative; padding-left: 52px;">
+          <div class="list-number">02</div>
+          <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">绩优老人流失</div>
+          <div style="font-size: 13px; color: #888; line-height: 1.6;">2 名绩优员工因个人原因离职，核心产能折损</div>
+        </div>
+        <div style="position: relative; padding-left: 52px;">
+          <div class="list-number">03</div>
+          <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">风控政策收紧</div>
+          <div style="font-size: 13px; color: #888; line-height: 1.6;">中联拒绝率从 30% 提至 40%，通过率下降</div>
+        </div>
+        <div style="position: relative; padding-left: 52px;">
+          <div class="list-number">04</div>
+          <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">名单产能未释放</div>
+          <div style="font-size: 13px; color: #888; line-height: 1.6;">大批量上人后名单增发，转化周期拉长</div>
+        </div>
+      </div>
+
+      <div style="margin-top: auto; padding: 16px 20px; background: rgba(217,94,0,0.06); border-left: 3px solid #d95e00; border-radius: 0 6px 6px 0;">
+        <div style="font-size: 13px; font-weight: 700; color: #d95e00; margin-bottom: 4px;">核心矛盾</div>
+        <div style="font-size: 13px; color: #666; line-height: 1.6;">车晓商务想签单冲量，运营想控制亏损。持续亏损 &rarr; 运营消极 &rarr; 不上人 &rarr; 产能低 &rarr; 更亏损</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: 供应商问题 (Dark) -->
+  <div class="card card-dark" id="card-4">
+    <div class="noise-overlay"></div>
+    <div class="card-content">
+      <div class="tag">Supplier Diagnosis</div>
+      <div class="section-title">供应商问题拆解</div>
+      <div class="accent-line"></div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px;">
+        <div style="padding: 16px 20px; background: rgba(255,255,255,0.04); border-radius: 6px; border-left: 3px solid #d95e00;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 700; font-size: 15px;">言行不一</span>
+            <span class="risk-badge risk-high">HIGH</span>
+          </div>
+          <div style="font-size: 12px; color: #999; line-height: 1.5;">商务承诺与运营交付脱节，说的头头是道，实际做不到</div>
+        </div>
+        <div style="padding: 16px 20px; background: rgba(255,255,255,0.04); border-radius: 6px; border-left: 3px solid #d95e00;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 700; font-size: 15px;">人员不达标</span>
+            <span class="risk-badge risk-high">HIGH</span>
+          </div>
+          <div style="font-size: 12px; color: #999; line-height: 1.5;">上人不符合标准，速度慢，招聘能力不足</div>
+        </div>
+        <div style="padding: 16px 20px; background: rgba(255,255,255,0.04); border-radius: 6px; border-left: 3px solid #f0a050;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 700; font-size: 15px;">配合度差</span>
+            <span class="risk-badge risk-med">MED</span>
+          </div>
+          <div style="font-size: 12px; color: #999; line-height: 1.5;">内部目标分歧导致执行力弱，反复拉扯</div>
+        </div>
+        <div style="padding: 16px 20px; background: rgba(255,255,255,0.04); border-radius: 6px; border-left: 3px solid #f0a050;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 700; font-size: 15px;">管理缺失</span>
+            <span class="risk-badge risk-med">MED</span>
+          </div>
+          <div style="font-size: 12px; color: #999; line-height: 1.5;">无日复盘、无过程检查、无阶梯处罚</div>
+        </div>
+      </div>
+
+      <div style="font-size: 11px; letter-spacing: 2px; color: #666; margin-bottom: 10px;">管理机制缺口</div>
+      <div class="data-row" style="padding: 8px 0;">
+        <span class="data-label">日复盘机制</span>
+        <span style="font-size: 12px; color: #e84040;">缺失</span>
+      </div>
+      <div class="data-row" style="padding: 8px 0;">
+        <span class="data-label">过程检查</span>
+        <span style="font-size: 12px; color: #e84040;">依赖人工</span>
+      </div>
+      <div class="data-row" style="padding: 8px 0;">
+        <span class="data-label">不达标惩罚</span>
+        <span style="font-size: 12px; color: #e84040;">无阶梯机制</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 5: 处置方案 -->
+  <div class="card" id="card-5">
+    <div class="noise-overlay"></div>
+    <div class="card-content">
+      <div class="tag">Action Plan</div>
+      <div class="section-title">两条路</div>
+      <div class="accent-line"></div>
+
+      <!-- 方案 A -->
+      <div style="padding: 20px 24px; background: rgba(217,94,0,0.05); border: 1px solid rgba(217,94,0,0.15); border-radius: 8px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 36px; height: 36px; background: #d95e00; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-weight: 700; font-size: 16px;">A</div>
+          <div style="font-weight: 700; font-size: 17px;">继续投入，加条件</div>
+        </div>
+        <div style="font-size: 13px; color: #666; line-height: 1.7; padding-left: 48px;">
+          结算系数 1.5% &rarr; <span class="accent" style="font-weight: 700;">1.8%</span><br>
+          上管理机制（复盘/检查/惩罚）<br>
+          阅文新职场赛马，给车晓 <span style="font-weight: 700;">3 个月观察期</span><br>
+          同步筛选备选供应商
+        </div>
+      </div>
+
+      <!-- 方案 B -->
+      <div style="padding: 20px 24px; background: rgba(26,26,26,0.04); border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 36px; height: 36px; background: #1a1a1a; color: #f2efe9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Oswald'; font-weight: 700; font-size: 16px;">B</div>
+          <div style="font-weight: 700; font-size: 17px;">准备止损</div>
+        </div>
+        <div style="font-size: 13px; color: #666; line-height: 1.7; padding-left: 48px;">
+          阅文升主力，车晓降辅助<br>
+          逐步收缩名单分配<br>
+          本季度内完成供应商调整
+        </div>
+      </div>
+
+      <!-- 决策事项 -->
+      <div style="font-size: 11px; letter-spacing: 2px; color: #999; margin-bottom: 12px;">需军哥决策</div>
+      <div class="data-row">
+        <span class="data-label">结算系数</span>
+        <span class="data-value" style="font-size: 16px;">1.5% &rarr; 1.8%?</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">观察期</span>
+        <span class="data-value" style="font-size: 16px;">3 个月?</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">备选供应商</span>
+        <span class="data-value" style="font-size: 16px;">是否启动?</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 6: 下阶段目标 + Outro -->
+  <div class="card" id="card-6">
+    <div class="noise-overlay"></div>
+    <div class="card-content" style="justify-content: space-between;">
+      <div>
+        <div class="tag">Next Steps</div>
+        <div class="section-title">下阶段目标</div>
+        <div class="accent-line"></div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(217,94,0,0.06); border-radius: 6px;">
+            <div>
+              <div style="font-size: 13px; color: #999; margin-bottom: 2px;">老人产能</div>
+              <div style="font-weight: 700;">名转达成中联的 <span class="accent">105%</span></div>
+            </div>
+            <i class="fas fa-chart-line" style="font-size: 20px; color: #d95e00; opacity: 0.4;"></i>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(217,94,0,0.06); border-radius: 6px;">
+            <div>
+              <div style="font-size: 13px; color: #999; margin-bottom: 2px;">新人爬坡</div>
+              <div style="font-weight: 700;">达成中联的 <span class="accent">70%</span></div>
+            </div>
+            <i class="fas fa-user-plus" style="font-size: 20px; color: #d95e00; opacity: 0.4;"></i>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(217,94,0,0.06); border-radius: 6px;">
+            <div>
+              <div style="font-size: 13px; color: #999; margin-bottom: 2px;">4 月挑战</div>
+              <div style="font-weight: 700;">放款目标 <span class="accent">4680 万</span></div>
+            </div>
+            <i class="fas fa-bullseye" style="font-size: 20px; color: #d95e00; opacity: 0.4;"></i>
+          </div>
+        </div>
+
+        <div style="font-size: 11px; letter-spacing: 2px; color: #999; margin-bottom: 12px;">所需支持</div>
+        <div style="font-size: 13px; color: #666; line-height: 1.8;">
+          <div style="margin-bottom: 6px;"><span style="color: #d95e00; font-weight: 700;">页面</span> &nbsp;落地页添加 BPO 企微二维码</div>
+          <div style="margin-bottom: 6px;"><span style="color: #d95e00; font-weight: 700;">结算</span> &nbsp;有条件上调至 1.8%</div>
+          <div style="margin-bottom: 6px;"><span style="color: #d95e00; font-weight: 700;">审核</span> &nbsp;推动中联 AI 审核替代人审</div>
+          <div><span style="color: #d95e00; font-weight: 700;">名单</span> &nbsp;当前名单量无法支撑 50 人作业</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.06);">
+        <div style="font-size: 12px; color: #bbb; letter-spacing: 2px;">车抵贷业务复盘 &nbsp;|&nbsp; 2026.03</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+async function exportCards() {
+  const btn = document.querySelector('.export-btn');
+  const bar = document.getElementById('progressBar');
+  const cards = document.querySelectorAll('.card');
+  const total = cards.length;
+
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>&nbsp; 导出中...';
+  btn.disabled = true;
+  bar.style.display = 'block';
+
+  for (let i = 0; i < total; i++) {
+    bar.style.width = ((i + 1) / total * 100) + '%';
+    const canvas = await html2canvas(cards[i], {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: cards[i].classList.contains('card-dark') ? '#1a1a1a' : '#f2efe9',
+      width: 600,
+      height: 800
+    });
+    const link = document.createElement('a');
+    link.download = '车抵贷复盘-card-' + (i + 1) + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    await new Promise(r => setTimeout(r, 500));
+  }
+
+  bar.style.display = 'none';
+  btn.innerHTML = '<i class="fas fa-check"></i>&nbsp; 导出完成';
+  setTimeout(() => {
+    btn.innerHTML = '<i class="fas fa-download"></i>&nbsp; 导出全部卡片';
+    btn.disabled = false;
+  }, 2000);
+}
+</script>
+
+</body>
+</html>

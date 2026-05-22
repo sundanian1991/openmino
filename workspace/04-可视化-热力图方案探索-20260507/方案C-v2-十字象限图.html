@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案C · 十字象限图</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f5f0;font-family:system-ui,'PingFang SC','Microsoft YaHei',sans-serif;color:#2e2c2a;padding:40px 20px}
+.container{max-width:720px;margin:0 auto}
+h2{font-size:18px;font-weight:600;color:#1a6b50;margin-bottom:4px}
+.sub{font-size:12px;color:#857d74;margin-bottom:20px;line-height:1.5}
+.chart-wrap{background:#fff;border-radius:8px;border:1px solid #e0ddd5;padding:16px;overflow-x:auto}
+#chart{display:block;margin:0 auto}
+.legend-row{display:flex;align-items:center;gap:14px;margin-top:14px;padding:10px 16px;background:#fafaf7;border-radius:6px;border:1px solid #e0ddd5;flex-wrap:wrap}
+.legend-row .dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.legend-row .sz{display:inline-block;border-radius:50%;background:#7a7a70;vertical-align:middle}
+.note{font-size:11px;color:#857d74;margin-top:12px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>供应商 · 人 vs 绩效管理 十字象限</h2>
+  <div class="sub">横轴=人力维度严重度 ｜ 纵轴=业绩+管理综合严重度 ｜ 气泡大小=体量 ｜ 颜色=盲区风险</div>
+  <div class="chart-wrap">
+    <canvas id="chart"></canvas>
+  </div>
+  <div class="legend-row">
+    <span><span class="dot" style="background:#6aaa60"></span> 风🟢</span>
+    <span><span class="dot" style="background:#d4a040"></span> 风🟡</span>
+    <span><span class="dot" style="background:#c47040"></span> 风🟠</span>
+    <span><span class="dot" style="background:#c4503a"></span> 风🔴</span>
+    <span style="margin-left:8px"><span class="sz" style="width:8px;height:8px"></span> <span class="sz" style="width:12px;height:12px"></span> <span class="sz" style="width:18px;height:18px"></span> = 体量从小到大</span>
+  </div>
+  <div class="note">▲ 四个象限从左下（健康）到右上（全面告急）｜气泡大小反映供应商体量</div>
+</div>
+<script>
+var suppliers = [
+  { n:'速讯达', v:[3,2,2,1], s:76 },  { n:'华啸',   v:[2,2,2,1], s:95 },
+  { n:'阅文',   v:[3,2,1,1], s:50 },  { n:'艾斯',   v:[2,2,1,0], s:70 },
+  { n:'创博',   v:[1,2,1,0], s:167 }, { n:'九通',   v:[3,1,1,0], s:35 },
+  { n:'衍生',   v:[3,1,1,0], s:40 },  { n:'速腾',   v:[3,1,1,0], s:45 },
+  { n:'保全界', v:[3,1,1,0], s:55 },  { n:'小蜜蜂', v:[3,1,0,0], s:65 },
+  { n:'拓银',   v:[3,1,0,0], s:60 },  { n:'靖涵',   v:[2,1,1,0], s:75 },
+  { n:'人和',   v:[2,1,1,0], s:95 },  { n:'中弘',   v:[2,1,1,0], s:130 },
+  { n:'锦瑞',   v:[2,1,1,0], s:80 },  { n:'新动力', v:[2,1,1,0], s:90 },
+  { n:'嘉信',   v:[2,1,0,0], s:85 },  { n:'博岳',   v:[2,1,0,0], s:100 },
+  { n:'广达',   v:[1,1,1,0], s:157 }, { n:'岐力',   v:[1,0,1,1], s:138 },
+  { n:'汇讯',   v:[1,1,1,0], s:280 }, { n:'零犀',   v:[1,1,0,0], s:105 },
+  { n:'翰锐',   v:[1,1,0,0], s:110 }, { n:'中乾',   v:[1,1,0,0], s:171 },
+  { n:'德辰',   v:[1,1,0,0], s:151 }, { n:'赛维斯', v:[1,0,1,0], s:213 },
+  { n:'伽玛',   v:[1,1,0,0], s:286 }, { n:'毅航',   v:[0,1,0,0], s:481 },
+  { n:'毛毛虫', v:[0,0,0,0], s:348 }
+];
+
+// Color mapping for 风 (v[3])
+var fengColors = ['#6aaa60','#d4a040','#c47040','#c4503a'];
+
+(function(){
+  var cv=document.getElementById('chart'), ctx=cv.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+
+  var pad={t:26,r:24,b:40,l:50};
+  var W=640, H=540;
+  cv.width=W*dpr; cv.height=H*dpr;
+  cv.style.width=W+'px'; cv.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+
+  var pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+  // Compute data: X=人(v0), Y=(绩+管)/2, color=风(v3), size=s
+  var pts=[];
+  for(var i=0;i<suppliers.length;i++){
+    var d=suppliers[i];
+    pts.push({ x:d.v[0], y:(d.v[1]+d.v[2])/2, f:d.v[3], s:d.s, idx:i });
+  }
+
+  function px(x){ return pad.l + x/3*pw; }
+  function py(y){ return pad.t + ph - y/3*ph; }
+
+  // Grid
+  ctx.strokeStyle='#f0ede8'; ctx.lineWidth=1;
+  for(var g=0;g<=3;g++){
+    ctx.beginPath(); ctx.moveTo(pad.l,py(g)); ctx.lineTo(pad.l+pw,py(g)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px(g),pad.t); ctx.lineTo(px(g),pad.t+ph); ctx.stroke();
+  }
+
+  // Quadrant divider at 1.5
+  ctx.strokeStyle='#d0ccc4'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(px(1.5),pad.t); ctx.lineTo(px(1.5),pad.t+ph); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.l,py(1.5)); ctx.lineTo(pad.l+pw,py(1.5)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Quadrant labels
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='12px system-ui,"PingFang SC",sans-serif';
+  ctx.fillStyle='rgba(180,175,165,0.5)';
+  var qw=pw/2, qh=ph/2;
+  ctx.fillText('健康稳定', pad.l+qw/2, pad.t+qh/2);
+  ctx.fillText('人力瓶颈', pad.l+qw+qw/2, pad.t+qh/2);
+  ctx.fillText('运营压力', pad.l+qw/2, pad.t+qh+qh/2);
+  ctx.fillText('全面告急', pad.l+qw+qw/2, pad.t+qh+qh/2);
+
+  // Axis labels
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.font='11px system-ui,"PingFang SC",sans-serif';
+  ctx.fillStyle='#5f5a54';
+  for(var g=0;g<=3;g++) ctx.fillText(g, px(g), pad.t+ph+6);
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  ctx.font='11px system-ui,"PingFang SC",sans-serif';
+  for(var g=0;g<=3;g++) ctx.fillText(g, pad.l-8, py(g));
+
+  // Axis titles
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.font='12px system-ui,"PingFang SC",sans-serif';
+  ctx.fillStyle='#454240';
+  ctx.fillText('人（体质）严重度 →', pad.l+pw/2, H-18);
+  ctx.save();
+  ctx.translate(14, pad.t+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.fillText('绩·管 综合严重度 →', 0, 0);
+  ctx.restore();
+
+  // Bubbles: draw from small to large
+  var order=pts.map(function(_,i){return i;});
+  order.sort(function(a,b){return pts[a].s-pts[b].s;});
+
+  var minS=35, maxS=481, minR=6, maxR=30;
+
+  for(var oi=0;oi<order.length;oi++){
+    var p=pts[order[oi]], d=suppliers[p.idx];
+    var cx=px(p.x), cy=py(p.y);
+    var r=minR+(p.s-minS)/(maxS-minS)*(maxR-minR);
+    var col=fengColors[p.f];
+
+    // Shadow
+    ctx.beginPath(); ctx.arc(cx+1, cy+1, r, 0, Math.PI*2);
+    ctx.fillStyle='rgba(0,0,0,0.04)'; ctx.fill();
+
+    // Bubble fill
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fillStyle=col+'88'; ctx.fill();
+    ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.stroke();
+
+    // Label
+    if(r>9){
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.font='10px system-ui,"PingFang SC",sans-serif';
+      ctx.fillStyle='#454240';
+      ctx.fillText(d.n, cx, cy-r-3);
+    }
+  }
+
+  // Small bubble labels (offset)
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i], d=suppliers[p.idx];
+    var cx=px(p.x), cy=py(p.y);
+    var r=minR+(p.s-minS)/(maxS-minS)*(maxR-minR);
+    if(r<=9){
+      ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.font='9px system-ui,"PingFang SC",sans-serif';
+      ctx.fillStyle='#5f5a54';
+      ctx.fillText(d.n, cx+r+3, cy+3);
+    }
+  }
+
+  // Marginal: 风 color bar at bottom
+  var barY=pad.t+ph+24, barH=4;
+  ctx.fillStyle='#f0ede8';
+  ctx.fillRect(pad.l, barY, pw, barH);
+  // Only show 风 markers for non-green suppliers
+  for(var i=0;i<pts.length;i++){
+    if(pts[i].f===0) continue;
+    var cx=px(pts[i].x);
+    ctx.fillStyle=fengColors[pts[i].f];
+    ctx.fillRect(cx-2, barY, 4, barH);
+  }
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.font='9px system-ui,"PingFang SC",sans-serif';
+  ctx.fillStyle='#857d74';
+  ctx.fillText('▲ 底部色条 = 盲区风险非🟢的供应商', pad.l, barY+6);
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BPO供应商人力看板 | 分析性精确</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --text-primary: #111111;
+      --text-secondary: #666666;
+      --text-tertiary: #999999;
+      --border: #E5E5E5;
+      --border-heavy: #111111;
+      --bg: #FAFAFA;
+      --surface: #FFFFFF;
+      --accent: #E2725B;
+      --positive: #2A9D5C;
+      --negative: #B85450;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ========================================
+       NAVIGATION - Minimal
+       ======================================== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 32px;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.3px;
+      margin-right: 48px;
+    }
+
+    .nav-items {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-item {
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .nav-item:hover { color: var(--text-primary); }
+    .nav-item.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ========================================
+       PAGE STRUCTURE
+       ======================================== */
+    .page {
+      display: none;
+      padding: 80px 32px 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .page.active { display: block; }
+
+    .page-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border-heavy);
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* ========================================
+       SECTION - Minimal Container
+       ======================================== */
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+    }
+
+    .section-meta {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    /* ========================================
+       KPI GRID - Dense
+       ======================================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .kpi-cell {
+      background: var(--surface);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+
+    .kpi-value.accent {
+      color: var(--accent);
+    }
+
+    .kpi-value.risk {
+      color: var(--negative);
+    }
+
+    .kpi-delta {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kpi-delta.up { color: var(--positive); }
+    .kpi-delta.down { color: var(--negative); }
+    .kpi-delta.neutral { color: var(--text-tertiary); }
+
+    /* ========================================
+       DATA TABLE - Clean
+       ======================================== */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 600;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border-heavy);
+    }
+
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover td {
+      background: rgba(0,0,0,0.015);
+    }
+
+    .cell-primary { font-weight: 500; }
+    .cell-secondary { color: var(--text-secondary); }
+    .cell-tertiary { color: var(--text-tertiary); font-size: 11px; }
+
+    .cell-numeric {
+      font-family: 'Inter', monospace;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    /* ========================================
+       CHART CONTAINERS
+       ======================================== */
+    .chart-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px;
+    }
+
+    .chart {
+      width: 100%;
+      height: 280px;
+    }
+
+    .chart-lg { height: 360px; }
+    .chart-sm { height: 200px; }
+
+    /* ========================================
+       GRID LAYOUTS
+       ======================================== */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    /* ========================================
+       RISK INDICATORS
+       ======================================== */
+    .risk-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .risk-high { background: var(--negative); }
+    .risk-medium { background: #C4A96A; }
+    .risk-low { background: var(--positive); }
+
+    .risk-text-high { color: var(--negative); font-weight: 500; }
+    .risk-text-medium { color: #C4A96A; }
+    .risk-text-low { color: var(--positive); }
+
+    /* ========================================
+       SPARKLINE
+       ======================================== */
+    .sparkline {
+      width: 80px;
+      height: 24px;
+    }
+
+    /* ========================================
+       ANNOTATION
+       ======================================== */
+    .annotation {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ========================================
+       MATRIX GRID
+       ======================================== */
+    .matrix-legend {
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      margin-bottom: 12px;
+    }
+
+    .matrix-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<div class="nav">
+  <div class="nav-brand">BPO人力分析</div>
+  <div class="nav-items">
+    <div class="nav-item active" onclick="switchTab(this, 'overview')">总览</div>
+    <div class="nav-item" onclick="switchTab(this, 'workplace')">职场视角</div>
+    <div class="nav-item" onclick="switchTab(this, 'supplier')">供应商视角</div>
+    <div class="nav-item" onclick="switchTab(this, 'product')">产品线视角</div>
+    <div class="nav-item" onclick="switchTab(this, 'risk')">风险监控</div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 1: OVERVIEW ==================== -->
+<div class="page active" id="overview">
+  <div class="page-header">
+    <div class="page-title">人力配置总览</div>
+    <div class="page-subtitle">数据周期：2025年1月 - 12月 | 最后更新：2025-12-31</div>
+  </div>
+
+  <!-- KPI Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">核心指标</div>
+      <div class="section-meta">截至2025年12月</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">
+        <div class="kpi-label">总人力规模</div>
+        <div class="kpi-value">3,124</div>
+        <div class="kpi-delta up">
+          <span>↑</span>
+          <span>12.3% 较年初</span>
+        </div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-label">活跃供应商</div>
+        <div class="kpi-value">32</div>
+        <div class="kpi-delta neutral">
+          <span>—</span>
+          <span>较上月持平</span>
+        </div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-label">覆盖站点</div>
+        <div class="kpi-value">73</div>
+        <div class="kpi-delta up">
+          <span>↑</span>
+          <span>3个 新增</span>
+        </div>
+      </div>
+      <div class="kpi-cell accent">
+        <div class="kpi-label">人力波动率</div>
+        <div class="kpi-value accent">29.2%</div>
+        <div class="kpi-delta down">
+          <span>⚠</span>
+          <span>需关注</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Trend -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">月度人力趋势</div>
+      <div class="section-meta">全年变化曲线，峰值：3,124（12月）| 谷值：2,418（2月）</div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-lg" id="ch-trend"></div>
+    </div>
+  </div>
+
+  <!-- Top Changes -->
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">增长TOP5站点</div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>站点</th>
+            <th class="cell-numeric">当前人力</th>
+            <th class="cell-numeric">增长</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="cell-primary">光谷站点</span><br><span class="cell-tertiary">湖北省武汉市</span></td>
+            <td class="cell-numeric cell-primary">892</td>
+            <td class="cell-numeric risk-text-low">+124</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">通达花园</span><br><span class="cell-tertiary">河北省石家庄市</span></td>
+            <td class="cell-numeric cell-primary">756</td>
+            <td class="cell-numeric risk-text-low">+98</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">安定东站点</span><br><span class="cell-tertiary">河北省石家庄市</span></td>
+            <td class="cell-numeric cell-primary">698</td>
+            <td class="cell-numeric risk-text-low">+87</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">正定站点</span><br><span class="cell-tertiary">河北省石家庄市</span></td>
+            <td class="cell-numeric cell-primary">654</td>
+            <td class="cell-numeric risk-text-low">+76</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">信安大厦</span><br><span class="cell-tertiary">辽宁省沈阳市</span></td>
+            <td class="cell-numeric cell-primary">612</td>
+            <td class="cell-numeric risk-text-low">+65</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">下降TOP5站点</div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>站点</th>
+            <th class="cell-numeric">当前人力</th>
+            <th class="cell-numeric">下降</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="cell-primary">唐山站点</span><br><span class="cell-tertiary">河北省唐山市</span></td>
+            <td class="cell-numeric cell-primary">310</td>
+            <td class="cell-numeric risk-text-high">-45</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">保定站点</span><br><span class="cell-tertiary">河北省保定市</span></td>
+            <td class="cell-numeric cell-primary">332</td>
+            <td class="cell-numeric risk-text-high">-38</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">石家庄站点</span><br><span class="cell-tertiary">河北省石家庄市</span></td>
+            <td class="cell-numeric cell-primary">354</td>
+            <td class="cell-numeric risk-text-medium">-32</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">合肥站点</span><br><span class="cell-tertiary">安徽省合肥市</span></td>
+            <td class="cell-numeric cell-primary">376</td>
+            <td class="cell-numeric risk-text-medium">-28</td>
+          </tr>
+          <tr>
+            <td><span class="cell-primary">廊坊站点</span><br><span class="cell-tertiary">河北省廊坊市</span></td>
+            <td class="cell-numeric cell-primary">398</td>
+            <td class="cell-numeric risk-text-medium">-24</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 2: WORKPLACE ==================== -->
+<div class="page" id="workplace">
+  <div class="page-header">
+    <div class="page-title">职场视角分析</div>
+    <div class="page-subtitle">73个站点的空间分布与规模结构</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">TOP15站点排名</div>
+        <div class="section-meta">按当前人力排序</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart" id="ch-wp-rank"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">站点规模分布</div>
+        <div class="section-meta">按人力区间统计</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart" id="ch-wp-dist"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">TOP5站点趋势对比</div>
+      <div class="section-meta">全年月度变化曲线</div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-lg" id="ch-wp-trend"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">TOP20站点热力图</div>
+      <div class="section-meta">颜色深浅表示各站点各月份的人力规模</div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-lg" id="ch-wp-heatmap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 3: SUPPLIER ==================== -->
+<div class="page" id="supplier">
+  <div class="page-header">
+    <div class="page-title">供应商视角分析</div>
+    <div class="page-subtitle">32家供应商的规模、增长与风险评估</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">供应商规模排名</div>
+        <div class="section-meta">TOP15，按当前人力</div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>供应商</th>
+            <th class="cell-numeric">人力</th>
+            <th class="cell-numeric">增长</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong></td>
+            <td><span class="cell-primary">汇讯（湖北）</span><br><span class="cell-tertiary">3个站点</span></td>
+            <td class="cell-numeric cell-primary">2,706</td>
+            <td class="cell-numeric risk-text-low">+12.3%</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td><span class="cell-primary">湖北伽玛</span><br><span class="cell-tertiary">2个站点</span></td>
+            <td class="cell-numeric cell-primary">2,020</td>
+            <td class="cell-numeric risk-text-low">+8.5%</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td><span class="cell-primary">石家庄赛维斯</span><br><span class="cell-tertiary">4个站点</span></td>
+            <td class="cell-numeric cell-primary">1,933</td>
+            <td class="cell-numeric risk-text-high">-5.2%</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong></td>
+            <td><span class="cell-primary">北京中弘智享</span><br><span class="cell-tertiary">2个站点</span></td>
+            <td class="cell-numeric cell-primary">1,695</td>
+            <td class="cell-numeric risk-text-low">+15.1%</td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td><span class="cell-primary">合肥毅航</span><br><span class="cell-tertiary">3个站点</span></td>
+            <td class="cell-numeric cell-primary">1,657</td>
+            <td class="cell-numeric risk-text-low">+6.8%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">TOP5供应商堆叠趋势</div>
+        <div class="section-meta">月度人力占比变化</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart" id="ch-sup-stack"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">规模-增长矩阵</div>
+        <div class="section-meta">气泡大小 = 站点数量</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart" id="ch-sup-matrix"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">风险评估矩阵</div>
+        <div class="section-meta">X轴=产品线数量 | Y轴=集中度 | 气泡=人力</div>
+      </div>
+      <div class="matrix-legend">
+        <div class="matrix-legend-item"><span class="risk-dot risk-high"></span>高风险</div>
+        <div class="matrix-legend-item"><span class="risk-dot risk-medium"></span>中风险</div>
+        <div class="matrix-legend-item"><span class="risk-dot risk-low"></span>低风险</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart" id="ch-sup-risk"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 4: PRODUCT ==================== -->
+<div class="page" id="product">
+  <div class="page-header">
+    <div class="page-title">产品线视角分析</div>
+    <div class="page-subtitle">四大业态的人力投入与交叉分析</div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">产品线月度对比</div>
+      <div class="section-meta">各业态全年人力变化</div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-lg" id="ch-product-bar"></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Q4人力占比</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart" id="ch-product-pie"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">趋势对比</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart" id="ch-product-trend"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 5: RISK ==================== -->
+<div class="page" id="risk">
+  <div class="page-header">
+    <div class="page-title">风险监控中心</div>
+    <div class="page-subtitle">多维度风险信号识别与评估</div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom: 32px;">
+    <div class="kpi-cell" style="border-left: 3px solid var(--negative); padding-left: 16px;">
+      <div class="kpi-label" style="color: var(--negative);">高风险供应商</div>
+      <div class="kpi-value" style="color: var(--negative);">3</div>
+      <div class="kpi-delta down">
+        <span>需立即处理</span>
+      </div>
+    </div>
+    <div class="kpi-cell" style="border-left: 3px solid var(--warning); padding-left: 16px;">
+      <div class="kpi-label" style="color: var(--warning);">中风险供应商</div>
+      <div class="kpi-value" style="color: var(--warning);">5</div>
+      <div class="kpi-delta neutral">
+        <span>监控中</span>
+      </div>
+    </div>
+    <div class="kpi-cell" style="border-left: 3px solid var(--positive); padding-left: 16px;">
+      <div class="kpi-label" style="color: var(--positive);">正常运营</div>
+      <div class="kpi-value" style="color: var(--positive);">24</div>
+      <div class="kpi-delta up">
+        <span>75%占比</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">高风险预警详情</div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>供应商</th>
+          <th>风险类型</th>
+          <th class="cell-numeric">当前人力</th>
+          <th class="cell-numeric">变化</th>
+          <th>风险说明</th>
+          <th>建议措施</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="cell-primary">石家庄赛维斯</span></td>
+          <td><span class="risk-text-high">● 人力下滑</span></td>
+          <td class="cell-numeric">1,933</td>
+          <td class="cell-numeric risk-text-high">-5.2%</td>
+          <td class="cell-secondary">连续3个月负增长</td>
+          <td class="cell-secondary">启动沟通机制</td>
+        </tr>
+        <tr>
+          <td><span class="cell-primary">北京速讯达</span></td>
+          <td><span class="risk-text-high">● 单产品线依赖</span></td>
+          <td class="cell-numeric">900</td>
+          <td class="cell-numeric risk-text-low">+4.5%</td>
+          <td class="cell-secondary">100%金条业务，无分散</td>
+          <td class="cell-secondary">评估扩项可能</td>
+        </tr>
+        <tr>
+          <td><span class="cell-primary">湖北靖涵</span></td>
+          <td><span class="risk-text-high">● 单站点集中</span></td>
+          <td class="cell-numeric">780</td>
+          <td class="cell-numeric risk-text-low">+3.2%</td>
+          <td class="cell-secondary">单站点承载全部人力</td>
+          <td class="cell-secondary">考察备选职场</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">风险分布矩阵</div>
+      <div class="section-meta">32家供应商的风险等级分布</div>
+    </div>
+    <div class="chart-container">
+      <div class="chart" id="ch-risk-matrix"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========================================
+// TAB SWITCHING
+// ========================================
+function switchTab(el, pageId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(pageId).classList.add('active');
+
+  setTimeout(() => {
+    initChartsForPage(pageId);
+  }, 50);
+}
+
+const chartInstances = {};
+
+function initChartsForPage(pageId) {
+  switch(pageId) {
+    case 'overview': initOverviewCharts(); break;
+    case 'workplace': initWorkplaceCharts(); break;
+    case 'supplier': initSupplierCharts(); break;
+    case 'product': initProductCharts(); break;
+    case 'risk': initRiskCharts(); break;
+  }
+}
+
+// ========================================
+// CHART CONFIGURATION
+// ========================================
+const colors = {
+  primary: '#111111',
+  secondary: '#666666',
+  tertiary: '#999999',
+  border: '#E5E5E5',
+  accent: '#E2725B',
+  positive: '#2A9D5C',
+  negative: '#B85450',
+  warning: '#C4A96A',
+  palette: ['#E2725B', '#111111', '#5B7FA8', '#6D9E84', '#C4A96A', '#B87E7E']
+};
+
+const commonGrid = { left: 48, right: 24, top: 24, bottom: 32 };
+const commonAxis = {
+  axisLine: { lineStyle: { color: colors.border } },
+  axisLabel: { color: colors.secondary, fontSize: 11 },
+  splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } }
+};
+
+// ========================================
+// OVERVIEW CHARTS
+// ========================================
+function initOverviewCharts() {
+  // Main trend
+  const trendChart = echarts.init(document.getElementById('ch-trend'));
+  trendChart.setOption({
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(255,255,255,0.95)',
+      borderColor: colors.border,
+      textStyle: { color: colors.primary, fontSize: 12 }
+    },
+    grid: { left: 48, right: 24, top: 24, bottom: 48 },
+    xAxis: {
+      type: 'category',
+      data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      axisLine: { lineStyle: { color: colors.border } },
+      axisLabel: { color: colors.secondary, fontSize: 11 }
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 11 }
+    },
+    series: [{
+      data: [2890,2418,3124,2956,2834,2756,2689,2734,2812,2945,3078,3156],
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 6,
+      itemStyle: { color: colors.accent },
+      lineStyle: { width: 2.5, color: colors.accent },
+      areaStyle: {
+        color: new echarts.graphic.LinearGradient(0,0,0,1,[
+          { offset: 0, color: 'rgba(226,114,91,0.12)' },
+          { offset: 1, color: 'rgba(226,114,91,0.02)' }
+        ])
+      }
+    }]
+  });
+  chartInstances['trend'] = trendChart;
+}
+
+// ========================================
+// WORKPLACE CHARTS
+// ========================================
+function initWorkplaceCharts() {
+  // Rank chart
+  const rankChart = echarts.init(document.getElementById('ch-wp-rank'));
+  rankChart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 80, right: 24, top: 8, bottom: 24 },
+    xAxis: {
+      type: 'value',
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'category',
+      data: ['桥西','廊坊','合肥','保定','唐山','石家庄','蜀山','元一天地','银河大厦','信安大厦','正定','安定东','通达花园','光谷'],
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: colors.primary, fontSize: 11 }
+    },
+    series: [{
+      type: 'bar',
+      data: [423,398,376,354,332,310,498,534,589,612,654,698,756,892],
+      itemStyle: { color: colors.accent },
+      barWidth: 12
+    }]
+  });
+
+  // Distribution
+  const distChart = echarts.init(document.getElementById('ch-wp-dist'));
+  distChart.setOption({
+    tooltip: { trigger: 'item' },
+    series: [{
+      type: 'pie',
+      radius: ['45%', '70%'],
+      center: ['50%', '50%'],
+      data: [
+        { value: 15, name: '<100人', itemStyle: { color: '#E8E8E8' } },
+        { value: 28, name: '100-300人', itemStyle: { color: '#C8C8C8' } },
+        { value: 18, name: '300-500人', itemStyle: { color: '#A8A8A8' } },
+        { value: 8, name: '500-800人', itemStyle: { color: '#D4897A' } },
+        { value: 4, name: '>800人', itemStyle: { color: colors.accent } }
+      ],
+      label: { fontSize: 11, color: colors.secondary },
+      labelLine: { lineStyle: { color: colors.border } }
+    }]
+  });
+
+  // Trend comparison
+  const trendChart = echarts.init(document.getElementById('ch-wp-trend'));
+  trendChart.setOption({
+    tooltip: { trigger: 'axis' },
+    grid: { left: 48, right: 24, top: 24, bottom: 48 },
+    legend: { bottom: 0, textStyle: { color: colors.secondary, fontSize: 10 } },
+    xAxis: {
+      type: 'category',
+      data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      axisLine: { lineStyle: { color: colors.border } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    series: [
+      { name: '光谷', type: 'line', smooth: true, data: [720,680,750,800,850,880,900,920,890,950,980,960], itemStyle: { color: colors.accent }, lineStyle: { width: 3 } },
+      { name: '通达花园', type: 'line', smooth: true, data: [600,580,620,650,680,720,750,780,760,800,820,810], itemStyle: { color: '#666' }, lineStyle: { width: 2 } },
+      { name: '安定东', type: 'line', smooth: true, data: [550,530,580,620,650,680,700,720,710,750,780,770], itemStyle: { color: '#999' }, lineStyle: { width: 2 } }
+    ]
+  });
+
+  // Heatmap
+  const heatmapChart = echarts.init(document.getElementById('ch-wp-heatmap'));
+  const sites = ['光谷','通达花园','安定东','正定','信安大厦','银河大厦','元一天地','蜀山','承德','桥西','廊坊','合肥','石家庄','保定','唐山'];
+  const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const heatmapData = [];
+  sites.forEach((site, i) => {
+    months.forEach((month, j) => {
+      const base = [720,600,550,500,480,450,400,380,350,320,300,280,260,240,220][i];
+      const variation = Math.random() * 100 - 20;
+      heatmapData.push([j, i, Math.round(base + variation + j * 20)]);
+    });
+  });
+
+  heatmapChart.setOption({
+    tooltip: { position: 'top' },
+    grid: { left: 80, right: 24, top: 8, bottom: 32 },
+    xAxis: {
+      type: 'category',
+      data: months,
+      splitArea: { show: true },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'category',
+      data: sites,
+      splitArea: { show: true },
+      axisLabel: { color: colors.primary, fontSize: 10 }
+    },
+    visualMap: {
+      min: 200,
+      max: 1000,
+      calculable: true,
+      orient: 'horizontal',
+      left: 'center',
+      bottom: 0,
+      inRange: {
+        color: ['#F5F1EE', '#E8CFC7', '#DBAFA3', '#CE8F7F', '#C16F5B', '#E2725B']
+      },
+      textStyle: { color: colors.secondary, fontSize: 10 }
+    },
+    series: [{
+      type: 'heatmap',
+      data: heatmapData,
+      label: { show: false }
+    }]
+  });
+}
+
+// ========================================
+// SUPPLIER CHARTS
+// ========================================
+function initSupplierCharts() {
+  // Stack trend
+  const stackChart = echarts.init(document.getElementById('ch-sup-stack'));
+  stackChart.setOption({
+    tooltip: { trigger: 'axis' },
+    grid: { left: 48, right: 24, top: 24, bottom: 48 },
+    legend: { bottom: 0, textStyle: { color: colors.secondary, fontSize: 10 } },
+    xAxis: {
+      type: 'category',
+      data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      axisLine: { lineStyle: { color: colors.border } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    series: [
+      { name: '汇讯', type: 'line', stack: 'total', areaStyle: {}, smooth: true, data: [2200,2150,2300,2400,2500,2550,2600,2650,2680,2700,2706,2706], itemStyle: { color: colors.accent }, lineStyle: { width: 2 } },
+      { name: '伽玛', type: 'line', stack: 'total', areaStyle: {}, smooth: true, data: [1800,1820,1850,1880,1920,1950,1980,2000,2010,2020,2020,2020], itemStyle: { color: '#5B7FA8' }, lineStyle: { width: 2 } },
+      { name: '赛维斯', type: 'line', stack: 'total', areaStyle: {}, smooth: true, data: [2000,1980,1960,1950,1940,1935,1934,1933,1933,1933,1933,1933], itemStyle: { color: '#888' }, lineStyle: { width: 2 } }
+    ]
+  });
+
+  // Size-Growth matrix
+  const matrixChart = echarts.init(document.getElementById('ch-sup-matrix'));
+  matrixChart.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: function(p) {
+        return p.data[3] + '<br/>人力: ' + p.data[0] + '<br/>增长: ' + p.data[1] + '%';
+      }
+    },
+    grid: { left: 48, right: 24, top: 24, bottom: 48 },
+    xAxis: {
+      type: 'value',
+      name: '人力规模',
+      nameLocation: 'middle',
+      nameGap: 24,
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'value',
+      name: '增长率(%)',
+      nameLocation: 'middle',
+      nameGap: 32,
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    series: [{
+      type: 'scatter',
+      data: [
+        [2706, 12.3, 3, '汇讯'],
+        [2020, 8.5, 2, '伽玛'],
+        [1933, -5.2, 4, '赛维斯'],
+        [1695, 15.1, 2, '中弘智享'],
+        [1657, 6.8, 3, '毅航']
+      ],
+      symbolSize: function(d) { return d[2] * 10; },
+      itemStyle: { color: colors.accent }
+    }]
+  });
+
+  // Risk matrix
+  const riskChart = echarts.init(document.getElementById('ch-sup-risk'));
+  riskChart.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: function(p) {
+        return p.data[3] + '<br/>产品线: ' + p.data[0] + '<br/>集中度: ' + p.data[1] + '%';
+      }
+    },
+    grid: { left: 48, right: 24, top: 24, bottom: 48 },
+    xAxis: {
+      type: 'value',
+      name: '产品线数量',
+      min: 0,
+      max: 5,
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'value',
+      name: '集中度(%)',
+      min: 30,
+      max: 100,
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    series: [{
+      type: 'scatter',
+      data: [
+        [1, 100, 900, '速讯达'],
+        [1, 100, 780, '靖涵'],
+        [1, 100, 798, '九通'],
+        [2, 55, 2020, '伽玛'],
+        [3, 45, 2706, '汇讯'],
+        [4, 35, 1933, '赛维斯']
+      ],
+      symbolSize: function(d) { return Math.sqrt(d[2]) / 2; },
+      itemStyle: {
+        color: function(p) {
+          if (p.data[1] >= 70 || p.data[0] === 1) return colors.negative;
+          if (p.data[1] >= 50) return '#C4A96A';
+          return colors.positive;
+        }
+      }
+    }]
+  });
+}
+
+// ========================================
+// PRODUCT CHARTS
+// ========================================
+function initProductCharts() {
+  // Bar chart
+  const barChart = echarts.init(document.getElementById('ch-product-bar'));
+  barChart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { bottom: 0, textStyle: { color: colors.secondary, fontSize: 10 } },
+    grid: { left: 48, right: 24, top: 24, bottom: 48 },
+    xAxis: {
+      type: 'category',
+      data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      axisLine: { lineStyle: { color: colors.border } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    series: [
+      { name: '金条', type: 'bar', stack: 'total', data: [720,710,750,780,800,820,830,840,850,852,851,852], itemStyle: { color: colors.accent } },
+      { name: '企业金融', type: 'bar', stack: 'total', data: [520,530,540,550,560,580,590,600,610,615,620,623], itemStyle: { color: '#5B7FA8' } },
+      { name: '信用卡', type: 'bar', stack: 'total', data: [480,470,465,460,455,450,448,450,452,454,456,456], itemStyle: { color: '#6D9E84' } },
+      { name: '财富', type: 'bar', stack: 'total', data: [210,220,230,240,250,260,270,280,285,288,289,289], itemStyle: { color: '#C4A96A' } }
+    ]
+  });
+
+  // Pie chart
+  const pieChart = echarts.init(document.getElementById('ch-product-pie'));
+  pieChart.setOption({
+    tooltip: { trigger: 'item' },
+    series: [{
+      type: 'pie',
+      radius: ['40%', '65%'],
+      center: ['50%', '45%'],
+      data: [
+        { value: 8524, name: '金条 43%', itemStyle: { color: colors.accent } },
+        { value: 6234, name: '企业金融 31%', itemStyle: { color: '#5B7FA8' } },
+        { value: 4567, name: '信用卡 23%', itemStyle: { color: '#6D9E84' } },
+        { value: 2891, name: '财富 15%', itemStyle: { color: '#C4A96A' } }
+      ],
+      label: { fontSize: 11, color: colors.secondary },
+      labelLine: { lineStyle: { color: colors.border } }
+    }]
+  });
+
+  // Trend chart
+  const trendChart = echarts.init(document.getElementById('ch-product-trend'));
+  trendChart.setOption({
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 0, textStyle: { color: colors.secondary, fontSize: 10 } },
+    grid: { left: 48, right: 24, top: 16, bottom: 40 },
+    xAxis: {
+      type: 'category',
+      data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+      axisLine: { lineStyle: { color: colors.border } },
+      axisLabel: { color: colors.secondary, fontSize: 9 }
+    },
+    yAxis: {
+      type: 'value',
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 9 }
+    },
+    series: [
+      { name: '金条', type: 'line', smooth: true, data: [7200,7100,7500,7800,8000,8200,8300,8400,8500,8520,8510,8524], itemStyle: { color: colors.accent }, lineStyle: { width: 3 } },
+      { name: '企金', type: 'line', smooth: true, data: [5200,5300,5400,5500,5600,5800,5900,6000,6100,6150,6200,6234], itemStyle: { color: '#5B7FA8' }, lineStyle: { width: 2 } }
+    ]
+  });
+}
+
+// ========================================
+// RISK CHARTS
+// ========================================
+function initRiskCharts() {
+  // Risk matrix scatter
+  const riskMatrixChart = echarts.init(document.getElementById('ch-risk-matrix'));
+  riskMatrixChart.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: function(p) {
+        return p.data[2] + '<br/>风险评分: ' + p.data[0] + '<br/>集中度: ' + p.data[1] + '%';
+      }
+    },
+    grid: { left: 48, right: 24, top: 24, bottom: 48 },
+    xAxis: {
+      type: 'value',
+      name: '综合风险评分',
+      min: 0,
+      max: 100,
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    yAxis: {
+      type: 'value',
+      name: '业务集中度(%)',
+      min: 0,
+      max: 100,
+      splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+      axisLabel: { color: colors.secondary, fontSize: 10 }
+    },
+    series: [{
+      type: 'scatter',
+      data: [
+        [85, 100, 900, '速讯达'],
+        [78, 100, 780, '靖涵'],
+        [72, 100, 798, '九通'],
+        [65, 55, 2020, '伽玛'],
+        [45, 45, 2706, '汇讯'],
+        [35, 35, 1933, '赛维斯'],
+        [25, 42, 1657, '毅航'],
+        [20, 38, 1695, '中弘智享']
+      ],
+      symbolSize: function(d) { return Math.sqrt(d[2]) / 2; },
+      itemStyle: {
+        color: function(p) {
+          if (p.data[0] >= 70) return colors.negative;
+          if (p.data[0] >= 50) return colors.warning;
+          return colors.positive;
+        }
+      }
+    }]
+  });
+}
+
+// ========================================
+// INITIALIZE
+// ========================================
+window.addEventListener('load', () => {
+  initOverviewCharts();
+});
+
+window.addEventListener('resize', () => {
+  Object.values(chartInstances).forEach(chart => chart.resize());
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aham PPT — 让 Claude 生成原生可编辑的咨询级 PPT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ========== Reset & Base ========== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif; color: #ffffff; }
+
+    /* ========== Design System ========== */
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111111;
+      --bg-card: #161616;
+      --bg-elevated: #1a1a1a;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255,255,255,0.65);
+      --text-muted: rgba(255,255,255,0.35);
+      --accent: #1677FF;
+      --accent-light: #4A9FFF;
+      --accent-gradient: linear-gradient(135deg, #1677FF, #00BFFF);
+      --accent-glow: rgba(22,119,255,0.25);
+      --border: rgba(255,255,255,0.08);
+      --border-light: rgba(255,255,255,0.12);
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ========== Slide Container ========== */
+    .slides-container {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: var(--bg-primary);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 80px 100px;
+      opacity: 0;
+      transform: translateX(40px) scale(0.98);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+      pointer-events: none;
+      background: var(--bg-primary);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide.prev {
+      opacity: 0;
+      transform: translateX(-40px) scale(0.98);
+    }
+
+    /* ========== Click Zones ========== */
+    .click-zone {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      z-index: 10;
+      cursor: pointer;
+    }
+    .click-zone.left { left: 0; }
+    .click-zone.right { right: 0; }
+    .click-zone:hover::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(22,119,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .click-zone.left:hover::after { left: 20px; }
+    .click-zone.right:hover::after { right: 20px; }
+
+    /* ========== Content Typography ========== */
+    .slide-content {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Page number watermark */
+    .page-number {
+      position: fixed;
+      bottom: 80px;
+      right: 60px;
+      font-size: 120px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.03);
+      font-family: var(--font-mono);
+      pointer-events: none;
+      line-height: 1;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    h1 .accent {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2 {
+      font-size: clamp(24px, 2.5vw, 36px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: clamp(18px, 1.5vw, 22px);
+      font-weight: 500;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: clamp(15px, 1.2vw, 18px);
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-width: 680px;
+    }
+
+    .subtitle {
+      font-size: clamp(14px, 1.1vw, 18px);
+      color: var(--text-secondary);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      margin-bottom: 24px;
+    }
+
+    .meta-text {
+      font-size: clamp(12px, 0.9vw, 14px);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    /* ========== Slide-specific layouts ========== */
+
+    /* Cover */
+    .slide-cover { text-align: center; }
+    .slide-cover .logo-tag {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(22,119,255,0.12);
+      color: var(--accent-light);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 32px;
+      border: 1px solid rgba(22,119,255,0.2);
+    }
+    .slide-cover h1 { font-size: clamp(40px, 5vw, 72px); margin-bottom: 20px; }
+    .slide-cover .subtitle { font-size: clamp(16px, 1.4vw, 22px); color: var(--text-secondary); max-width: 600px; margin: 0 auto 32px; }
+    .slide-cover .speaker-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .slide-cover .speaker-info .divider { width: 1px; height: 16px; background: var(--border-light); }
+
+    /* Cover decoration */
+    .cover-decoration {
+      position: absolute;
+      top: -120px;
+      right: -120px;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(22,119,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cover-decoration-2 {
+      position: absolute;
+      bottom: -200px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,191,255,0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Grid background */
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Section divider styles */
+    .section-number {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      gap: 16px;
+      width: 100%;
+    }
+    .card-grid-2 { grid-template-columns: 1fr 1fr; }
+    .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: border-color 0.3s;
+    }
+    .card:hover { border-color: rgba(22,119,255,0.3); }
+    .card .card-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .card p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+    /* Comparison layout */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      width: 100%;
+    }
+    .comparison-item {
+      padding: 28px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .comparison-item.bad { background: rgba(255,77,77,0.04); border-color: rgba(255,77,77,0.15); }
+    .comparison-item.good { background: rgba(22,119,255,0.04); border-color: rgba(22,119,255,0.15); }
+    .comparison-item .label {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .comparison-item.bad .label { background: rgba(255,77,77,0.12); color: #ff6b6b; }
+    .comparison-item.good .label { background: rgba(22,119,255,0.12); color: var(--accent-light); }
+    .comparison-item h3 { font-size: 18px; margin-bottom: 8px; }
+    .comparison-item p { font-size: 14px; }
+
+    /* Process / flow */
+    .process-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      width: 100%;
+    }
+    .process-step {
+      flex: 1;
+      min-width: 100px;
+      padding: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      position: relative;
+    }
+    .process-step .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: 8px;
+    }
+    .process-step .step-label { font-size: 12px; font-weight: 500; line-height: 1.3; }
+    .process-step .step-sub { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Highlight box */
+    .highlight-box {
+      padding: 20px 24px;
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--accent);
+      background: rgba(22,119,255,0.05);
+      margin: 16px 0;
+    }
+    .highlight-box p { font-size: 14px; color: var(--text-primary); }
+
+    /* Pill tag */
+    .pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      margin: 2px;
+    }
+    .pill.danger { background: rgba(255,77,77,0.1); border-color: rgba(255,77,77,0.2); color: #ff6b6b; }
+    .pill.warning { background: rgba(255,191,0,0.1); border-color: rgba(255,191,0,0.2); color: #ffd700; }
+    .pill.success { background: rgba(0,200,83,0.1); border-color: rgba(0,200,83,0.2); color: #00c853; }
+    .pill.info { background: rgba(22,119,255,0.1); border-color: rgba(22,119,255,0.2); color: var(--accent-light); }
+
+    /* Tag list */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+    /* Number display */
+    .big-number {
+      font-size: clamp(48px, 6vw, 80px);
+      font-weight: 800;
+      font-family: var(--font-mono);
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+
+    /* Quote style */
+    .quote-block {
+      padding: 24px 28px;
+      border-left: 3px solid var(--accent);
+      background: rgba(22,119,255,0.04);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      max-width: 700px;
+    }
+    .quote-block p { font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .quote-block .attribution { font-size: 13px; color: var(--text-muted); margin-top: 12px; font-family: var(--font-mono); }
+
+    /* Centered layout helper */
+    .text-center { text-align: center; }
+    .text-left { text-align: left; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .mt-8 { margin-top: 8px; }
+    .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .mt-32 { margin-top: 32px; }
+    .mb-8 { margin-bottom: 8px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-24 { margin-bottom: 24px; }
+    .w-full { width: 100%; }
+    .gap-16 { gap: 16px; }
+    .gap-24 { gap: 24px; }
+    .flex-col { display: flex; flex-direction: column; }
+    .items-start { align-items: flex-start; }
+    .items-center { align-items: center; }
+
+    /* ========== Controls ========== */
+    .controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 20px;
+      z-index: 100;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .controls.hidden {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    .controls button {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', 'Noto Sans SC', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .controls button:hover {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .controls button.active {
+      color: var(--accent-light);
+    }
+
+    .controls .separator {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+
+    .controls .page-indicator {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .controls .progress-bar {
+      flex: 1;
+      max-width: 200px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .controls .progress-bar .progress-fill {
+      height: 100%;
+      background: var(--accent-gradient);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* ========== Speaker Notes ========== */
+    .speaker-notes {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 380px;
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      background: rgba(16,16,16,0.97);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-left: 1px solid var(--border);
+      padding: 28px;
+      overflow-y: auto;
+      z-index: 200;
+    }
+
+    .speaker-notes.open {
+      transform: translateX(0);
+    }
+
+    .speaker-notes .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .speaker-notes .notes-header h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .speaker-notes .notes-header .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+    }
+
+    .speaker-notes .notes-header .close-btn:hover { color: var(--text-primary); }
+
+    .speaker-notes .note-content {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+    }
+
+    .speaker-notes .note-content strong {
+      color: var(--text-primary);
+    }
+
+    /* ========== Fullscreen override ========== */
+    .slides-container:fullscreen .controls { bottom: 0; }
+    .slides-container:-webkit-full-screen .controls { bottom: 0; }
+
+    /* ========== Print / PDF ========== */
+    @media print {
+      body { background: #fff; overflow: visible !important; }
+      .controls, .speaker-notes, .click-zone, .page-number { display: none !important; }
+      .slides-container { position: static; overflow: visible; background: #fff; }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        page-break-after: always;
+        width: 100vw;
+        height: 100vh;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 80px;
+        background: #fff !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .slide h1, .slide h2, .slide h3, .slide p,
+      .slide .subtitle, .slide .meta-text, .slide .section-number { color: #000 !important; }
+      .slide .card { background: #f5f5f5 !important; border-color: #ddd !important; }
+      .slide .card p { color: #333 !important; }
+      .slide .comparison-item.bad { background: #fff5f5 !important; border-color: #ffcdd2 !important; }
+      .slide .comparison-item.good { background: #f0f7ff !important; border-color: #bbdefb !important; }
+      .slide .highlight-box { background: #f0f7ff !important; border-left-color: #1677FF !important; }
+      .slide .highlight-box p { color: #333 !important; }
+      .slide .quote-block { background: #f8f8f8 !important; border-left-color: #1677FF !important; }
+      .slide .quote-block p { color: #222 !important; }
+      .cover-decoration, .cover-decoration-2, .grid-bg { display: none !important; }
+      .slide .process-step { background: #f5f5f5 !important; border-color: #ddd !important; }
+      .slide .process-step .step-label { color: #333 !important; }
+      .big-number { -webkit-text-fill-color: #1677FF !important; color: #1677FF !important; }
+      h1 .accent { -webkit-text-fill-color: #1677FF !important; color: #1677FF !important; }
+      .slide .speaker-info { color: #666 !important; }
+      .slide .tag-list .pill { color: #555 !important; }
+      .slide .tag-list .pill.danger { color: #d32f2f !important; }
+      .slide .tag-list .pill.info { color: #1976d2 !important; }
+    }
+
+    /* ========== Responsive ========== */
+    @media (max-width: 768px) {
+      .slide { padding: 40px 24px; }
+      .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+      .comparison { grid-template-columns: 1fr; gap: 16px; }
+      .process-steps { flex-direction: column; }
+      .slide-cover h1 { font-size: 32px; }
+      .controls { gap: 6px; padding: 0 10px; }
+      .controls button { font-size: 11px; padding: 4px 8px; }
+      .controls .progress-bar { max-width: 80px; }
+      .speaker-notes { width: 100%; }
+      .page-number { font-size: 80px; bottom: 60px; right: 20px; }
+    }
+
+    /* Scrollbar styling */
+    .speaker-notes::-webkit-scrollbar { width: 4px; }
+    .speaker-notes::-webkit-scrollbar-track { background: transparent; }
+    .speaker-notes::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- ========== Click Navigation Zones ========== -->
+  <div class="click-zone left" onclick="prevSlide()"></div>
+  <div class="click-zone right" onclick="nextSlide()"></div>
+
+  <!-- ========== Page Number Watermark ========== -->
+  <div class="page-number" id="pageNumber">01</div>
+
+  <!-- ========== Slides Container ========== -->
+  <div class="slides-container" id="slidesContainer">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1: COVER                                                  -->
+    <!-- ============================================================ -->
+    <div class="slide slide-cover active" data-index="0">
+      <div class="cover-decoration"></div>
+      <div class="cover-decoration-2"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="logo-tag">OPEN SOURCE / CLAUDE SKILL</div>
+        <h1>
+          <span class="accent">Aham PPT</span><br>
+          让 Claude 生成原生可编辑的<br>咨询级 PPT
+        </h1>
+        <p class="subtitle">
+          不是图片拼贴，不是套模板。每个形状都是 PowerPoint 原生对象，双击就能改。
+        </p>
+        <div class="speaker-info">
+          <span>Aham0501</span>
+          <span class="divider"></span>
+          <span>Aham 日记</span>
+          <span class="divider"></span>
+          <span>2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2: 先看成品                                               -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="1">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">01 · 成果展示</div>
+        <h2>先看成品：<span class="accent">10 页原生可编辑 PPT</span></h2>
+        <p class="mb-24">同一套技能生成，同一套规范约束。结构不同，视觉一致。</p>
+        <div class="card-grid card-grid-2">
+          <div class="card">
+            <span class="card-icon">▣</span>
+            <h3>封面 · 英雄标题 + 元信息</h3>
+            <p>Hero 大标题 + Action Title + 四列元信息，品牌色的克制开场</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">⊞</span>
+            <h3>现状诊断 · 高密度数据表</h3>
+            <p>关键行高亮 + 语义色徽章，一眼看透业务全貌</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">⇄</span>
+            <h3>流程对比 · 传统 vs Aham</h3>
+            <p>传统流程 vs 八阶段流水线，泳道+决策菱形+异常回退</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">⟳</span>
+            <h3>路线图 · 时间轴 + 里程碑</h3>
+            <p>6 条工作流 × 13 个月 × 13 个里程碑，阶段风险分级</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">◉</span>
+            <h3>技术架构 · 四层 22 模块</h3>
+            <p>四层分层架构图 + 连接箭头 + 颜色分层，全部独立可编辑</p>
+          </div>
+          <div class="card">
+            <span class="card-icon">⊟</span>
+            <h3>财务测算 · 三年 ROI</h3>
+            <p>数据驱动的投入产出模型，空缺处留 [待替换] 占位符</p>
+          </div>
+        </div>
+        <p class="mt-16" style="font-size:13px; color:var(--text-muted);">
+          每一页的每个元素——文字、形状、表格、箭头——在 PowerPoint 中都是独立可编辑的原生对象
+        </p>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3: 抉择一 — 原生可编辑                                    -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="2">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">02 · 核心设计抉择</div>
+        <h2>抉择一：<span class="accent">原生可编辑</span> vs 图片导出</h2>
+        <div class="comparison mt-24">
+          <div class="comparison-item bad">
+            <div class="label">大多数 AI PPT 工具</div>
+            <h3>每一页 = 一张图片</h3>
+            <p>打开后每一页是整张图片嵌入。改数字？只能替换整图。调布局？拆不开。这是"演示级"PPT，不是"交付级"。</p>
+          </div>
+          <div class="comparison-item good">
+            <div class="label">Aham PPT</div>
+            <h3>每个 shape 都是原生对象</h3>
+            <p>双击文字就能改，右键形状就能换色，选中对象就能挪位置。整页复制到别人 PPT 里继续编辑。</p>
+          </div>
+        </div>
+        <div class="highlight-box mt-24">
+          <p><strong>技术实现：</strong>SVG → DrawingML 对象映射。每一页先渲染成标准 SVG，再通过转换器将每个元素（矩形、线条、文字、多边形）一一映射为 PowerPoint 的原生 DrawingML 对象。不是图片嵌入，不是 EMF 包裹，是真正的 native shape。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4: 抉择二 — 八阶段方法论                                  -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="3">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">02 · 核心设计抉择</div>
+        <h2>抉择二：<span class="accent">八阶段方法论</span> vs 一键生成</h2>
+        <p class="mb-16">"一键生成"听起来美好，但改起来比重写还累。Aham 把 PPT 制作拆成八个阶段，每个阶段有明确的输入、输出和判断标准。</p>
+        <div class="process-steps">
+          <div class="process-step"><div class="step-num">1</div><div class="step-label">规范加载</div><div class="step-sub">色值·字体·禁用</div></div>
+          <div class="process-step"><div class="step-num">2</div><div class="step-label">材料解析</div><div class="step-sub">提取事实与证据</div></div>
+          <div class="process-step"><div class="step-num">3</div><div class="step-label">论点提炼</div><div class="step-sub">金字塔结构</div></div>
+          <div class="process-step"><div class="step-num">4</div><div class="step-label">叙事骨架</div><div class="step-sub">Ghost Deck</div></div>
+          <div class="process-step"><div class="step-num">5</div><div class="step-label">版式规划</div><div class="step-sub">Part + 版式类型</div></div>
+          <div class="process-step" style="border-color:rgba(22,119,255,0.4);"><div class="step-num">6</div><div class="step-label">样稿确认</div><div class="step-sub">关键决策点</div></div>
+          <div class="process-step"><div class="step-num">7</div><div class="step-label">逐页设计</div><div class="step-sub">SVG → PPTX</div></div>
+          <div class="process-step"><div class="step-num">8</div><div class="step-label">质检交付</div><div class="step-sub">QC 清单扫描</div></div>
+        </div>
+        <p class="mt-16" style="font-size:13px; color:var(--text-muted);">
+          取自麦肯锡顶级合伙人的工作流：Ghost Deck 先行 → 样稿确认 → 精修。整个过程中顾问只需做 3 次关键决策。
+        </p>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5: 抉择三 — 品牌规范硬约束                               -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="4">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">02 · 核心设计抉择</div>
+        <h2>抉择三：<span class="accent">品牌规范</span>作为硬约束</h2>
+        <p class="mb-16">规范把 AI 的"审美自由"关进笼子里。不是建议，是执行中的硬约束。</p>
+        <div class="card-grid card-grid-3">
+          <div class="card">
+            <h3 style="color:#ff6b6b;">✦ 绝对禁用</h3>
+            <div class="tag-list">
+              <span class="pill danger">渐变</span>
+              <span class="pill danger">3D</span>
+              <span class="pill danger">投影</span>
+              <span class="pill danger">纯黑 #000</span>
+              <span class="pill danger">第二装饰色</span>
+              <span class="pill danger">饼图</span>
+              <span class="pill danger">表格竖线</span>
+              <span class="pill danger">emoji</span>
+              <span class="pill danger">圆角 &gt; 8px</span>
+            </div>
+            <div class="tag-list mt-12">
+              <span class="pill danger">赋能</span>
+              <span class="pill danger">颠覆</span>
+              <span class="pill danger">生态</span>
+              <span class="pill danger">闭环</span>
+              <span class="pill danger">最佳实践</span>
+            </div>
+          </div>
+          <div class="card">
+            <h3 style="color:#00c853;">✦ 强制规则</h3>
+            <p style="font-size:13px; line-height:1.6;">状态必须颜色 + 符号双通道<br>
+            ✓ 合格 / ▲ 预警 / ✕ 异常<br><br>
+            数字用等宽字体<br>
+            标题层级用字重区分<br>
+            而非颜色区分</p>
+          </div>
+          <div class="card">
+            <h3 style="color:#4A9FFF;">✦ 推荐模式</h3>
+            <p style="font-size:13px; line-height:1.6;">每条建议包含四要素：<br><br>
+            <strong>【具体行动】</strong><br>
+            <strong>【量化目标】</strong><br>
+            <strong>【责任方】</strong><br>
+            <strong>【时间节点】</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6: 八阶段核心 — 样稿确认                                  -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="5">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">03 · 方法论核心</div>
+        <h2>最关键的一步：<span class="accent">样稿确认</span></h2>
+        <div class="comparison mt-24">
+          <div class="comparison-item bad">
+            <div class="label">传统 AI 工具</div>
+            <h3>一口气做 30 页，再调整</h3>
+            <p>整体方向错了，30 页全部推倒重来。修改时间 > 从零开始做的时间。</p>
+          </div>
+          <div class="comparison-item good">
+            <div class="label">Aham PPT</div>
+            <h3>先做 3-5 页样稿，对齐方向</h3>
+            <p>做完样稿后停下来——视觉方向、叙事调性、信息密度跟你对齐，再展开剩下 25 页。</p>
+          </div>
+        </div>
+        <div class="highlight-box mt-24">
+          <p>这个方法是 <strong>从麦肯锡抄来的</strong>。顶级合伙人的 PPT 工作流：先试方向 → 对齐 → 大规模生产。不是"先生产，再试错"。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7: 不编数据                                               -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="6">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">04 · 设计哲学</div>
+        <h2>不编数据：<span class="accent">[待替换]</span> 不是 bug，是设计</h2>
+        <p class="mb-24">每一个数字都必须有来源。没有基线数据，就不编造。</p>
+        <div class="card-grid card-grid-2">
+          <div class="card" style="grid-column:1/2;">
+            <h3>常规做法</h3>
+            <p style="color:#ff6b6b;">AI 默默编一个"看起来合理"的数字填上。百分比、金额、时间节点——无法追溯来源。这在咨询报告中是职业道德问题。</p>
+          </div>
+          <div class="card" style="grid-column:2/3;">
+            <h3>Aham 的做法</h3>
+            <p style="color:#00c853;">明确留 <code style="color:var(--accent-light);">[待替换]</code> 占位符，在页面下方注明"需 XX 数据方提供"。空缺比编造诚实。</p>
+          </div>
+        </div>
+        <div class="quote-block mt-24">
+          <p>"每一个数字都必须标注来源和时间节点。<br>规范里没有覆盖的场景 → 停下来问使用者，不自己补充。<br>如果源材料里没有数据 → 留占位符，<strong>不编造</strong>。"</p>
+          <div class="attribution">— Aham PPT 品牌规范</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8: 灵活使用方式                                           -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="7">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">05 · 使用方式</div>
+        <h2>全流程 &amp; <span class="accent">轻量入口</span></h2>
+        <p class="mb-16">核心价值在八阶段全流程，但不是唯一姿势。执行深度随输入深度自动调整。</p>
+        <div class="card-grid card-grid-4">
+          <div class="card">
+            <div class="big-number" style="font-size:32px; -webkit-text-fill-color:#fff; color:#fff;">📄</div>
+            <h3>全流程</h3>
+            <p>源材料（调研报告/纪要/PDF/Word）+ 受众 + 篇幅 → 1-2 小时 → 30 页咨询级 PPT</p>
+          </div>
+          <div class="card">
+            <div class="big-number" style="font-size:32px; -webkit-text-fill-color:#fff; color:#fff;">📝</div>
+            <h3>提纲入口</h3>
+            <p>跳过素材解析阶段，从论点提炼开始。适合已有清晰结构的需求。</p>
+          </div>
+          <div class="card">
+            <div class="big-number" style="font-size:32px; -webkit-text-fill-color:#fff; color:#fff;">💬</div>
+            <h3>一句话需求</h3>
+            <p>"给我做一个 Q3 业绩汇报的 5 页 PPT"——从结构规划开始，快速出稿。</p>
+          </div>
+          <div class="card">
+            <div class="big-number" style="font-size:32px; -webkit-text-fill-color:#fff; color:#fff;">📸</div>
+            <h3>图片入口</h3>
+            <p>手写草稿、白板照片、甚至其他 PPT 截图——识别结构和要点，重构为 Aham 风格。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9: 开源信息                                               -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="8">
+      <div class="grid-bg"></div>
+      <div class="slide-content" style="position:relative; z-index:2;">
+        <div class="section-number">06 · 开源</div>
+        <h2>完整技能包已开源</h2>
+        <p class="subtitle mb-24">从方法论到工具链，从模板到源文件，全部开放。</p>
+        <div class="card-grid card-grid-2">
+          <div class="card">
+            <h3>文档</h3>
+            <p>八阶段方法论文档（phase-01 到 phase-08）<br>品牌规范完整文档（色值、字体、禁用清单、轨道分流规则）</p>
+          </div>
+          <div class="card">
+            <h3>工具链</h3>
+            <p>SVG → 原生 PPTX 工具链代码（MIT License）<br>7 类版式的 SVG 骨架模板</p>
+          </div>
+          <div class="card">
+            <h3>经验库</h3>
+            <p>24 个场景化经验索引（适合有咨询背景的读者深入阅读）</p>
+          </div>
+          <div class="card">
+            <h3>源文件</h3>
+            <p>10 页 demo PPT 的 .pptx 源文件，可下载后双击验证每个 shape 的可编辑性</p>
+          </div>
+        </div>
+        <div class="highlight-box mt-24">
+          <p>安装：复制到 Claude 技能目录下（<code style="color:var(--accent-light);">~/.claude/skills/user/aham-ppt/</code> 或 <code style="color:var(--accent-light);">/mnt/skills/user/aham-ppt/</code>），对话中说"帮我做 PPT"即可触发。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10: CTA / ENDING                                         -->
+    <!-- ============================================================ -->
+    <div class="slide" data-index="9">
+      <div class="cover-decoration"></div>
+      <div class="cover-decoration-2"></div>
+      <div class="slide-content text-center" style="position:relative; z-index:2;">
+        <div class="section-number" style="text-align:center;">让知识工作者不再熬夜，早点回家</div>
+        <h1 class="mt-16">
+          <span class="accent">Aham PPT</span>
+        </h1>
+        <p class="subtitle" style="max-width: 500px; margin: 16px auto 0;">
+          把你的素材、想法、甚至一张图，变成对标咨询公司标准的、原生可编辑的 PPT。<br><br>
+          不是图片拼贴，不是套模板。<br>
+          <strong>是真的可编辑。</strong>
+        </p>
+        <div style="margin-top: 40px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+          <span class="pill info">GitHub 开源</span>
+          <span class="pill info">MIT License</span>
+          <span class="pill info">Claude Skill</span>
+        </div>
+        <p style="margin-top: 48px; font-size: 13px; color: var(--text-muted); font-family: var(--font-mono);">
+          Star on GitHub · Fork · Contribute
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== Controls Bar ========== -->
+  <div class="controls" id="controls">
+    <button onclick="prevSlide()" title="上一页 (←)">◀</button>
+    <span class="page-indicator" id="pageIndicator">1 / 10</span>
+    <button onclick="nextSlide()" title="下一页 (→)">▶</button>
+    <div class="separator"></div>
+    <div class="progress-bar" id="progressBar" onclick="seekProgress(event)">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="separator"></div>
+    <button onclick="toggleAutoplay()" id="autoplayBtn" title="自动播放 (A)">▶ Auto</button>
+    <button onclick="toggleFullscreen()" title="全屏 (F)">⛶ Full</button>
+    <button onclick="exportPDF()" title="导出 PDF (P)">📥 PDF</button>
+    <button onclick="toggleNotes()" id="notesBtn" title="演讲者备注 (N)">📝 Notes</button>
+  </div>
+
+  <!-- ========== Speaker Notes Panel ========== -->
+  <div class="speaker-notes" id="speakerNotes">
+    <div class="notes-header">
+      <h3>演讲者备注 · 第 <span id="notePageNum">1</span> 页</h3>
+      <button class="close-btn" onclick="toggleNotes()">✕</button>
+    </div>
+    <div class="note-content" id="noteContent"></div>
+  </div>
+
+  <script>
+    // ========== Slide Data ==========
+    const totalSlides = 10;
+    let currentSlide = 0;
+    let autoplayInterval = null;
+    let autoplaySpeed = 6000;
+    let notesOpen = false;
+
+    const notesData = [
+      // Slide 1
+      `开场：开门见山，第一句话就点出核心差异。语速中等，有力量。
+
+> 大家好。今天跟大家分享一个我最近在做的开源项目——Aham PPT。
+>
+> 先给一个结论：市面上 AI PPT 工具很多，但大部分做出来的东西，打开 PowerPoint 一看，每一页都是一张图片——你改不了文字，调不了颜色，挪不动形状。Aham 走的是完全相反的路：每一页都是原生可编辑的，双击就能改，右键就能换色，选中就能挪位。
+>
+> 具体怎么做到的，我们一页一页来看。`,
+
+      // Slide 2
+      `放慢语速，让观众有时间消化每张卡片的描述。
+
+> 在讲方法论之前，先看结果。这 6 页 PPT 都是用 Aham 的一整套技能自动生成的。封面、数据表、流程对比、路线图、财务测算、架构图——不同类型的页面，不同的结构，不同的版式。
+>
+> 但你看视觉语言——高度一致，克制、干净、信息密度高。这是咨询公司交付物最核心的两个特征：克制到让人放心，信息密度高到让人信服。
+>
+> 更重要的是，这些不是套模板生成的。同一套技能，同一套规范，但每一页的版式和结构都是根据内容动态设计的。`,
+
+      // Slide 3
+      `强调"交付级 vs 演示级"这对关键词。用手势强调对比。
+
+> 大部分 AI PPT 工具生成的"PPT"，打开之后你会发现每一页都是一张图片。你想改个数字？只能把整张图片替换掉。想调一下布局？拆不开。这是演示级的 PPT，不是交付级的。
+>
+> Aham 走的是完全另一条路。每个形状都是 PowerPoint 原生的 shape，每段文字都是 textbox，每个表格都是原生 table。双击文字就能改，右键形状就能换色，选中对象就能挪位置，甚至可以整页复制到别人的 PPT 里继续编辑。
+>
+> 技术实现上，我们把每一页先渲染成标准 SVG，再通过一套专门的转换器，把 SVG 的每一个元素一一映射为 PPT 的原生 DrawingML 对象。不是图片嵌入，是真正的 native shape。`,
+
+      // Slide 4
+      `用手势强调"八"这个数字，展现系统性。
+
+> "一键生成 PPT"听起来很美好。但实际用过的人都知道：一键出来的东西，改起来比重写还累。原因很简单——AI 没想明白，你就得替它擦屁股。
+>
+> Aham 强制把 PPT 制作拆成八个阶段，每个阶段都有明确的输入、输出和判断标准。从规范加载开始，到素材解析、论点提炼、叙事骨架搭建、版式规划、样稿确认、逐页设计、再到最后的质检交付。
+>
+> 这个方法是从咨询公司抄来的。麦肯锡顶级合伙人做 PPT 的逻辑是一样的——Ghost Deck 先行，样稿确认，再精修。`,
+
+      // Slide 5
+      `列举禁用项时可以略带调侃，让观众有共鸣。
+
+> 这是最反直觉的一点。我们对 AI 说"生成一份专业的 PPT"，AI 会用它的"审美"给你一堆渐变、emoji、饼图、彩色 bullet——这些东西在咨询公司的交付语境里都是禁用的。
+>
+> Aham 的规范明确列出了一份禁止清单：绝对禁用渐变、3D、投影、纯黑 #000、第二装饰色、饼图、表格竖线、emoji、圆角大于 8px。禁用词包括赋能、颠覆、生态、闭环等——这些词在咨询报告里出现，就说明你没想清楚。
+>
+> 这些规则不是"建议"，是 AI 执行过程中会被反复检查的硬约束。每一页最后都会经过 QC 清单逐项扫描，不合规的自动修正。`,
+
+      // Slide 6
+      `可以用手比划"3-5"和"30"的对比。
+
+> 这八个阶段里，最关键的是第六阶段——样稿确认。
+>
+> 传统 AI 工具的做法是"一口气做完 30 页，然后让你调整"。结果往往是整体方向错了，30 页都要推倒重来。你改 AI 的产出，花的时间比自己从头做还久。
+>
+> Aham 会强制在做完 3 到 5 页样稿之后停下来。把视觉方向、叙事调性、信息密度跟你对齐，再展开剩下 25 页。这是咨询行业的黄金工作流——先试方向，再大规模生产。`,
+
+      // Slide 7
+      `这里可以放慢语速，让这段话更有分量。
+
+> 不知道你们注意到没有，刚才的财务测算页里，有几处写着 [待替换] 的字样。
+>
+> 这不是 bug，是设计。
+>
+> Aham 的方法论要求：任何一个数字都必须有来源。如果源材料里没有提供基线数据，Aham 不会自己编一个"看起来合理"的数字填上。而是明确留一个占位符，在页面下方注明"需 XX 数据方提供"。
+>
+> 这是咨询公司的基本职业伦理。一份咨询报告里的每一个百分比、每一笔金额、每一条时间节点，都应该能追溯到一个具体的、可查证的来源。AI 工具如果默默替你编数据，那不是帮你，是在坑你。`,
+
+      // Slide 8
+      `这部分可以轻松一些，展现产品的灵活性。
+
+> 全流程是最佳体验，但不是唯一姿势。Aham 支持从不同入口进入。
+>
+> 如果你有一份素材——调研报告、会议纪要、PDF、Word 文档——给它，加上明确的受众和预期篇幅，Aham 会用 1 到 2 小时走完完整八阶段，产出一份 30 页左右的咨询级 PPT。
+>
+> 如果你只有一份提纲，Aham 会跳过素材解析，从论点提炼开始。
+> 如果你只有一句话的需求，Aham 从结构规划开始。
+> 甚至你只有一张图片——手写草稿、白板照片、甚至另一份 PPT 的截图——Aham 也能识别其中的结构和要点，重构为 Aham 风格。
+>
+> 不管从哪进入，输出的质量底线是一样的。`,
+
+      // Slide 9
+      `介绍开源信息，语气自然。
+
+> 这套技能今天已在 GitHub 开源。包含完整的八阶段方法论文档、品牌规范完整文档、SVG 到原生 PPTX 的工具链代码、24 个场景化经验索引、7 类版式的 SVG 骨架模板，以及今天 demo 里 10 页 PPT 的源文件。
+>
+> 安装非常简单——复制到 Claude 技能目录下，在对话中说"帮我做 PPT"或"根据这份资料做 PPT"就能触发。
+>
+> Aham 自带一个虚构的示例品牌和色值，你可以直接用它的风格生成 PPT，也可以按 README 里的指引三步改成你自己的品牌。`,
+
+      // Slide 10
+      `结尾要有力量，目光看向观众，表达真诚感谢。
+
+> 如果你也在为每周花 20 个小时做 PPT 而头疼，这个技能可能对你有用。欢迎 star。谢谢大家。
+>
+> "让知识工作者不再熬夜，早点回家"——这是 Aham 的初心。`
+    ];
+
+    // ========== Navigation ==========
+    function goToSlide(index) {
+      if (index < 0 || index >= totalSlides) return;
+      const slides = document.querySelectorAll('.slide');
+      slides.forEach((s, i) => {
+        s.classList.remove('active', 'prev');
+        if (i === index) s.classList.add('active');
+        else if (i < index && index - i <= 2) s.classList.add('prev');
+      });
+      currentSlide = index;
+      updateControls();
+      updateNotes();
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+      else if (autoplayInterval) { stopAutoplay(); }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) goToSlide(currentSlide - 1);
+    }
+
+    // ========== Controls Update ==========
+    function updateControls() {
+      document.getElementById('pageIndicator').textContent = `${currentSlide + 1} / ${totalSlides}`;
+      document.getElementById('progressFill').style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+      document.getElementById('pageNumber').textContent = String(currentSlide + 1).padStart(2, '0');
+    }
+
+    // ========== Notes ==========
+    function updateNotes() {
+      document.getElementById('notePageNum').textContent = currentSlide + 1;
+      document.getElementById('noteContent').textContent = notesData[currentSlide] || '';
+    }
+
+    function toggleNotes() {
+      notesOpen = !notesOpen;
+      document.getElementById('speakerNotes').classList.toggle('open', notesOpen);
+      document.getElementById('notesBtn').classList.toggle('active', notesOpen);
+    }
+
+    // ========== Autoplay ==========
+    function toggleAutoplay() {
+      const btn = document.getElementById('autoplayBtn');
+      if (autoplayInterval) {
+        stopAutoplay();
+      } else {
+        autoplayInterval = setInterval(() => {
+          if (currentSlide >= totalSlides - 1) {
+            stopAutoplay();
+            goToSlide(0);
+          } else {
+            nextSlide();
+          }
+        }, autoplaySpeed);
+        btn.textContent = '⏸ Pause';
+        btn.classList.add('active');
+      }
+    }
+
+    function stopAutoplay() {
+      clearInterval(autoplayInterval);
+      autoplayInterval = null;
+      document.getElementById('autoplayBtn').textContent = '▶ Auto';
+      document.getElementById('autoplayBtn').classList.remove('active');
+    }
+
+    // ========== Fullscreen ==========
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // ========== PDF Export ==========
+    function exportPDF() {
+      document.body.classList.add('print-mode');
+      // Ensure all slides are visible for print
+      document.querySelectorAll('.slide').forEach(s => {
+        s.style.opacity = '1';
+        s.style.transform = 'none';
+        s.style.position = 'relative';
+        s.style.pointerEvents = 'auto';
+      });
+      window.print();
+      document.querySelectorAll('.slide').forEach(s => {
+        s.style.opacity = '';
+        s.style.transform = '';
+        s.style.position = '';
+        s.style.pointerEvents = '';
+      });
+      // Restore active slide
+      document.querySelectorAll('.slide').forEach((s, i) => {
+        s.classList.remove('active', 'prev');
+        if (i === currentSlide) s.classList.add('active');
+      });
+      document.body.classList.remove('print-mode');
+    }
+
+    // ========== Progress Click ==========
+    function seekProgress(e) {
+      const bar = document.getElementById('progressBar');
+      const rect = bar.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      const idx = Math.min(Math.floor(pct * totalSlides), totalSlides - 1);
+      goToSlide(idx);
+    }
+
+    // ========== Keyboard ==========
+    document.addEventListener('keydown', (e) => {
+      if (notesOpen && e.key === 'Escape') { toggleNotes(); return; }
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          nextSlide();
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          e.preventDefault();
+          prevSlide();
+          break;
+        case 'f':
+        case 'F':
+          toggleFullscreen();
+          break;
+        case 'a':
+        case 'A':
+          toggleAutoplay();
+          break;
+        case 'n':
+        case 'N':
+          toggleNotes();
+          break;
+        case 'Escape':
+          if (document.fullscreenElement) document.exitFullscreen();
+          break;
+        case 'p':
+        case 'P':
+          exportPDF();
+          break;
+      }
+    });
+
+    // ========== Touch swipe ==========
+    let touchStartX = 0;
+    let touchEndX = 0;
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) nextSlide();
+        else prevSlide();
+      }
+    });
+
+    // ========== Controls visibility on fullscreen ==========
+    let controlsTimeout = null;
+    document.addEventListener('mousemove', () => {
+      const controls = document.querySelector('.controls');
+      controls.classList.remove('hidden');
+      clearTimeout(controlsTimeout);
+      if (document.fullscreenElement) {
+        controlsTimeout = setTimeout(() => {
+          if (!notesOpen) controls.classList.add('hidden');
+        }, 3000);
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement) {
+        document.querySelector('.controls').classList.remove('hidden');
+      }
+    });
+
+    // ========== Init ==========
+    updateControls();
+    updateNotes();
+  </script>
+</body>
+</html>

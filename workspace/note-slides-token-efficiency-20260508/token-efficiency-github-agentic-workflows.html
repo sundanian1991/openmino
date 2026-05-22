@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Improving Token Efficiency in GitHub Agentic Workflows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=IBM+Plex+Mono:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #0d1117;
+  --ink-rgb:    13,17,23;
+  --paper:      #f0f4f8;
+  --paper-rgb:  240,244,248;
+  --accent:     #1f6feb;
+  --accent-rgb: 31,111,235;
+  --muted:      #6e7681;
+  --serif-zh:   "Noto Serif SC", "Source Serif 4", serif;
+  --sans-zh:    "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono:       "IBM Plex Mono", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--ink); color: var(--paper); font-family: var(--sans-zh); -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+#deck {
+  position: fixed; inset: 0;
+  width: 10000vw; height: 100vh;
+  display: flex; flex-wrap: nowrap;
+  transition: transform .85s cubic-bezier(.77,0,.175,1);
+  z-index: 10; will-change: transform;
+}
+.slide {
+  width: 100vw; height: 100vh;
+  flex: 0 0 100vw;
+  position: relative;
+  padding: clamp(2rem, 5vw, 5.5rem) clamp(2rem, 6vw, 6.5rem) clamp(1.5rem, 3vw, 3rem);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.slide.dark  { background: var(--ink);   color: var(--paper); }
+.slide.light { background: var(--paper); color: var(--ink);  }
+.display-zh   { font-family: var(--serif-zh); font-weight: 900; font-size: clamp(3rem, 7vw, 7rem);   line-height: 1.05; letter-spacing: 0; }
+.h1-zh        { font-family: var(--serif-zh); font-weight: 700; font-size: clamp(2rem, 4.6vw, 4.2rem); line-height: 1.12; }
+.h2-zh        { font-family: var(--serif-zh); font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.6rem);  line-height: 1.22; }
+.lead-zh      { font-family: var(--serif-zh); font-weight: 400; font-size: clamp(1.5rem, 2vw, 2rem);   line-height: 1.55; }
+.body-zh      { font-family: var(--sans-zh);  font-weight: 400; font-size: clamp(1.5rem, 1.55vw, 1.75rem); line-height: 1.65; }
+.kicker       { font-family: var(--mono); font-size: clamp(.8rem, .9vw, 1rem); text-transform: uppercase; letter-spacing: .15em; opacity: .55; margin-bottom: 1vh; }
+.meta         { font-family: var(--mono); font-size: clamp(.75rem, .8vw, .9rem); letter-spacing: .08em; opacity: .5; }
+.slide-body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+.note-stack { width: min(100%, 76rem); margin: 0 auto; display: flex; flex-direction: column; justify-content: center; gap: clamp(2rem, 4vh, 3.6rem); }
+.center-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; text-align: center; }
+.section-title { max-width: 11em; margin: 0 auto; text-align: center; }
+.soft-note { max-width: 22em; color: rgba(var(--ink-rgb), .52); }
+.slide.dark .soft-note { color: rgba(var(--paper-rgb), .6); }
+.grid-2-6-6 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 3vw, 3rem); flex: 1; min-height: 0; }
+.grid-3       { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(.8rem, 2vw, 2rem); min-height: 0; }
+.callout {
+  font-family: var(--serif-zh); font-weight: 400;
+  font-size: clamp(2rem, 3.5vw, 3.6rem); line-height: 1.45;
+  border-left: 3px solid var(--accent); padding-left: clamp(1rem, 2vw, 1.75rem);
+  max-width: 14em;
+}
+.callout cite { display: block; font-style: normal; font-weight: 500; font-size: clamp(.8rem, 1vw, 1rem); margin-top: 1.8vh; opacity: .6; font-family: var(--mono); }
+.stat-num   { font-family: var(--serif-zh); font-weight: 800; font-size: clamp(5rem, 13vw, 12rem); line-height: 1; color: var(--accent); }
+.stat-label { font-family: var(--mono); font-size: clamp(.8rem, .9vw, 1rem); text-transform: uppercase; letter-spacing: .12em; opacity: .5; margin-top: .5vh; }
+.stat-note { font-family: var(--sans-zh); font-size: clamp(1.2rem, 1.35vw, 1.5rem); opacity: .6; margin-top: .8vh; }
+.table-wrap { width: min(100%, 74rem); margin: 0 auto; display: flex; flex-direction: column; gap: clamp(1.4rem, 3.5vh, 2.8rem); }
+.data-table { width: 100%; border-collapse: separate; border-spacing: 0 clamp(.45rem, 1vh, .8rem); font-family: var(--sans-zh); font-size: clamp(1.08rem, 1.22vw, 1.42rem); line-height: 1.45; }
+.data-table th, .data-table td { padding: clamp(.8rem, 1.35vw, 1.25rem) clamp(.9rem, 1.6vw, 1.45rem); text-align: center; vertical-align: middle; }
+.data-table th { font-family: var(--mono); font-size: clamp(.78rem, .82vw, .95rem); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: rgba(var(--accent-rgb), .08); }
+.data-table td { background: rgba(var(--ink-rgb), .045); }
+.slide.dark .data-table td { background: rgba(var(--paper-rgb), .075); }
+.data-table.keyed td:first-child, .data-table.keyed th:first-child { text-align: left; font-weight: 600; }
+.data-table tr > *:first-child { border-radius: 6px 0 0 6px; }
+.data-table tr > *:last-child { border-radius: 0 6px 6px 0; }
+#nav { position: fixed; left: 50%; bottom: 2.2vh; transform: translateX(-50%); z-index: 30; display: flex; gap: 9px; padding: 7px 14px; border-radius: 999px; background: rgba(0,0,0,.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#nav .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.3); border: none; padding: 0; cursor: pointer; transition: all .3s ease; }
+#nav .dot.active { background: rgba(255,255,255,.95); width: 20px; border-radius: 999px; }
+.chrome { display: flex; justify-content: space-between; font-family: var(--mono); font-size: clamp(.75rem, .8vw, .9rem); letter-spacing: .1em; text-transform: uppercase; opacity: .45; margin-bottom: 2vh; }
+.foot   { display: flex; justify-content: space-between; font-family: var(--mono); font-size: clamp(.75rem, .8vw, .9rem); letter-spacing: .1em; text-transform: uppercase; opacity: .4; margin-top: auto; padding-top: 2vh; }
+.anim-item { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.slide.active .anim-item { opacity: 1; transform: translateY(0); }
+.slide.active .anim-item:nth-child(1)  { transition-delay: .05s; }
+.slide.active .anim-item:nth-child(2)  { transition-delay: .15s; }
+.slide.active .anim-item:nth-child(3)  { transition-delay: .25s; }
+.slide.active .anim-item:nth-child(4)  { transition-delay: .35s; }
+.slide.active .anim-item:nth-child(5)  { transition-delay: .45s; }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+<!-- 1/20 封面 -->
+<section class="slide dark hero active" data-theme="dark" data-screen-label="Cover" data-source="GitHub Blog · May 7, 2026" style="text-align:center;align-items:center">
+  <div class="kicker anim-item" style="width:100%">GitHub Blog · AI &amp; ML · May 7, 2026</div>
+  <h1 class="display-zh anim-item" style="margin-top:auto;margin-bottom:auto;max-width:12em;font-size:clamp(2.6rem,5.6vw,5.8rem)">Improving Token Efficiency in GitHub Agentic Workflows</h1>
+  <div class="foot" style="width:100%">
+    <div>Landon Cox &amp; Mara Kiefer · Microsoft Research</div>
+    <div>12 min read</div>
+  </div>
+</section>
+
+<!-- 2/20 语境 -->
+<section class="slide light" data-theme="light" data-screen-label="Context" data-source="博客导语">
+  <div class="chrome"><div>语境</div><div>02 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item" style="max-width:11em">自用的 agentic workflow 正悄然积累大量 API 成本，自动调度让问题不易察觉</h2>
+      <div class="grid-3">
+        <div class="anim-item"><div class="kicker">触发方式</div><p class="body-zh">Agentic workflow 由 GitHub Actions 自动调度触发，不像交互式会话有人盯着成本</p></div>
+        <div class="anim-item"><div class="kicker">优势</div><p class="body-zh">相比交互式会话，workflow 的行为完全由 YAML 定义，每次执行可重复，更容易优化</p></div>
+        <div class="anim-item"><div class="kicker">目标</div><p class="body-zh">在 2026 年 4 月开始系统性优化，目标是在不影响质量的前提下降低 token 消耗</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：博客导语 + 第一节</div><div>02 / 20</div></div>
+</section>
+
+<!-- 3/20 文章脉络 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Arc" data-source="全文结构">
+  <div class="chrome"><div>脉络</div><div>03 / 20</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h2 class="h1-zh anim-item" style="text-align:center;max-width:11em;margin:0 auto clamp(2rem,4vh,3.5rem)">本文沿着观测 → 发现 → 修复 → 迭代的闭环推进</h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(1rem,2vw,2rem)">
+      <div class="anim-item"><div class="meta" style="color:var(--accent);opacity:1">观测</div><p class="body-zh">API proxy 日志记录每轮 LLM 调用的 token 消耗</p></div>
+      <div class="anim-item"><div class="meta" style="color:var(--accent);opacity:1">发现</div><p class="body-zh">Auditor + Optimizer 两个自动化工作流每天发掘低效模式</p></div>
+      <div class="anim-item"><div class="meta" style="color:var(--accent);opacity:1">修复</div><p class="body-zh">移除未用工具、CLI 替代 MCP、修复配置错误</p></div>
+      <div class="anim-item"><div class="meta" style="color:var(--accent);opacity:1">迭代</div><p class="body-zh">用 Effective Tokens 度量，追踪每轮变化是否真正降本</p></div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：全文</div><div>03 / 20</div></div>
+</section>
+
+<!-- 4/20 核心问题: 观点页 -->
+<section class="slide light" data-theme="light" data-screen-label="Problem" data-source="博客导语" style="text-align:center;align-items:center">
+  <div class="chrome" style="width:100%"><div>问题</div><div>04 / 20</div></div>
+  <div class="center-stage">
+    <p class="lead-zh anim-item" style="max-width:18em;color:rgba(var(--ink-rgb),.65);margin-bottom:clamp(1rem,2vh,2rem)">Agentic workflows 就像一组街头清洁工，它们不断打扫 repo 里的小脏东西，显著改善仓库卫生和质量。但问题是：它们自动运行，从不报账单。</p>
+    <h2 class="h1-zh anim-item" style="max-width:11em">And because CI jobs like agentic workflows are automatically scheduled and triggered, costs can accumulate out of view.</h2>
+  </div>
+  <div class="foot" style="width:100%"><div>Landon Cox &amp; Mara Kiefer</div><div>04 / 20</div></div>
+</section>
+
+<!-- 5/20 第一步: API Proxy 日志 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Step 1" data-source="Logging token usage">
+  <div class="chrome"><div>第一步：观测</div><div>05 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">API Proxy 安全架构意外成为统一日志的切入点</h2>
+      <div class="grid-3">
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">问题</div>
+          <p class="body-zh" style="margin-top:1vh">Claude CLI、Copilot CLI、Codex CLI 各用不同的日志格式，历史数据也不完整</p>
+        </div>
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">方案</div>
+          <p class="body-zh" style="margin-top:1vh">API proxy 本来用于防止 agent 直接访问凭据，现在同时拦截并归一化所有 LLM 调用日志</p>
+        </div>
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">产出</div>
+          <p class="body-zh" style="margin-top:1vh">每个 workflow 输出 token-usage.jsonl，含 input/output/cache tokens、模型、provider、时间戳</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Logging token usage</div><div>05 / 20</div></div>
+</section>
+
+<!-- 6/20 Auditor + Optimizer -->
+<section class="slide light" data-theme="light" data-screen-label="Automation" data-source="Workflows optimizing workflows">
+  <div class="chrome"><div>第二步：自愈机制</div><div>06 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">两个每天运行的 agentic workflow 形成 token 优化的良性循环</h2>
+      <div class="grid-3" style="align-items:start">
+        <div class="anim-item">
+          <div class="kicker">Daily Token Usage Auditor</div>
+          <p class="body-zh" style="margin-top:1.2vh">读取最近 workflow 运行的 token 用量，按 workflow 聚合，标记异常（比如一个通常 4 轮 LLM 的 workflow 跑了 18 轮），输出结构化报告</p>
+        </div>
+        <div class="anim-item">
+          <div class="kicker">Daily Token Optimizer</div>
+          <p class="body-zh" style="margin-top:1.2vh">Auditor 标记异常后，Optimizer 分析源码和日志，创建 GitHub Issue 描述具体低效点并给出优化建议</p>
+        </div>
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">良性循环</div>
+          <p class="body-zh" style="margin-top:1.2vh">Auditor 和 Optimizer 本身也是 agentic workflow，它们的 token 用量也被纳入每日报告</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Workflows optimizing workflows</div><div>06 / 20</div></div>
+</section>
+
+<!-- 7/20 发现1: 未使用的 MCP 工具 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Finding 1" data-source="Eliminating unused MCP tools">
+  <div class="chrome"><div>发现一</div><div>07 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">最常见的低效：未使用的 MCP 工具注册，每轮对话携带 10-15 KB 无用 schema</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(1rem,2vw,2rem);align-items:start">
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">问题机理</div>
+          <p class="body-zh" style="margin-top:1.2vh">LLM API 是无状态的，agent 运行时每次请求都附带 MCP 工具的函数名和 JSON schema。GitHub MCP server 有 40 个工具，每个工具加上 schema 总共 10-15 KB。如果 agent 只用了其中 2 个，剩下的 38 个就是纯浪费</p>
+        </div>
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">优化方式</div>
+          <p class="body-zh" style="margin-top:1.2vh">Optimizer 交叉比对工具清单和实际调用记录，识别从未用到的工具并建议从配置中移除。在 smoke-test workflow 中，这一改动每轮减少 8-12 KB 上下文，节省数千 token，行为完全不变</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Eliminating unused MCP tools</div><div>07 / 20</div></div>
+</section>
+
+<!-- 8/20 发现2: CLI 替代 MCP -->
+<section class="slide light" data-theme="light" data-screen-label="Finding 2" data-source="Replacing GitHub MCP with GitHub CLI">
+  <div class="chrome"><div>发现二</div><div>08 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">更大的结构性机会：把数据获取从 LLM 推理循环中移出去</h2>
+      <div class="grid-3" style="align-items:start">
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">MCP 的代价</div>
+          <p class="body-zh" style="margin-top:1vh">一次 MCP 调用=一次完整 LLM 往返：决定调用、构造参数、接收响应，每一步都消耗 token。gh pr diff 则是一次确定性的 HTTP 请求</p>
+        </div>
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">策略一：预下载</div>
+          <p class="body-zh" style="margin-top:1vh">agent 启动前，setup 步骤用 gh 命令把 PR diff、文件列表等数据写到工作区文件，agent 直接读取，零 LLM 开销</p>
+        </div>
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">策略二：运行时代理</div>
+          <p class="body-zh" style="margin-top:1vh">agent 在运行中需要获取什么时，通过透明 HTTP proxy 调用 gh CLI 获取结构化数据，同样不暴露 token 给 agent</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Replacing GitHub MCP with GitHub CLI</div><div>08 / 20</div></div>
+</section>
+
+<!-- 9/20 测量：Effective Tokens 公式 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Measurement" data-source="Measuring efficiency gains" style="text-align:center;align-items:center">
+  <div class="chrome" style="width:100%"><div>测量问题</div><div>09 / 20</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center">
+    <h2 class="h1-zh anim-item" style="max-width:12em">Not all tokens are created equal</h2>
+    <div class="anim-item" style="margin-top:clamp(2rem,4vh,3rem);font-family:var(--mono);font-size:clamp(2rem,3.8vw,4rem);font-weight:600;color:var(--accent);letter-spacing:.02em;text-align:center">
+      ET = m × (I + 0.1C + 4.0O)
+    </div>
+    <div class="anim-item" style="margin-top:clamp(1rem,2vh,2rem);max-width:28em;text-align:left">
+      <p class="body-zh" style="margin-bottom:.8vh"><strong style="color:var(--accent)">m</strong> = 模型成本系数（Haiku 0.25x, Sonnet 1.0x, Opus 5.0x）</p>
+      <p class="body-zh" style="margin-bottom:.8vh"><strong style="color:var(--accent)">I</strong> = 新处理输入 tokens, <strong style="color:var(--accent)">C</strong> = 缓存读取 tokens (0.1x), <strong style="color:var(--accent)">O</strong> = 输出 tokens (4.0x)</p>
+      <p class="body-zh" style="font-size:clamp(1.2rem,1.3vw,1.5rem);opacity:.65;margin-top:1.5vh">输出 tokens 权重重是因为它是最贵的 token 类型；缓存读取权重低是因为缓存价格只有新鲜输入的几分之一</p>
+    </div>
+  </div>
+  <div class="foot" style="width:100%"><div>来源：Measuring efficiency gains</div><div>09 / 20</div></div>
+</section>
+
+<!-- 10/20 三个测量难点 -->
+<section class="slide light" data-theme="light" data-screen-label="Challenges" data-source="Three confounding factors">
+  <div class="chrome"><div>测量难点</div><div>10 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">三个混杂因子让"优化是否有效"的判定不直接</h2>
+      <div class="grid-3" style="align-items:start">
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">模型差异</div>
+          <p class="body-zh" style="margin-top:1.2vh">相同 token 数量下 Haiku 成本只有 Sonnet 的 1/4。原始 token 数不变不代表成本不变。ET 公式通过模型系数解决这个问题</p>
+        </div>
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">负载波动</div>
+          <p class="body-zh" style="margin-top:1.2vh">同一个 workflow 这次处理 5 行 fix，下次处理 200 行 PR。token 数下降可能是运气（任务变轻了），不是效率提升。需同时追踪 LLM 调用轮次</p>
+        </div>
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">质量不可知</div>
+          <p class="body-zh" style="margin-top:1.2vh">没有 ground-truth correctness。过程信号（输出 token/call、轮次/run）可近似质量，但无法直接观测到优化是否伤害了输出质量</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Measuring efficiency gains</div><div>10 / 20</div></div>
+</section>
+
+<!-- 11/20 初步结果：表格 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Results" data-source="Initial results">
+  <div class="chrome"><div>初步结果</div><div>11 / 20</div></div>
+  <div class="slide-body">
+    <div class="table-wrap">
+      <h2 class="h1-zh anim-item" style="text-align:center;max-width:12em;margin:0 auto">12 个生产 workflow 中 9 个接受了优化建议</h2>
+      <table class="data-table keyed anim-item">
+        <thead>
+          <tr><th>Workflow</th><th>仓库</th><th>ET 变化</th><th>修复后运行数</th><th>运行频率</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Auto-Triage Issues</td><td>gh-aw</td><td style="color:#3fb950;font-weight:700">-62%</td><td>109</td><td>6.8 次/天</td></tr>
+          <tr><td>Daily Compiler Quality</td><td>gh-aw</td><td style="color:#3fb950;font-weight:700">-19%</td><td>12</td><td>最多 1 次/天</td></tr>
+          <tr><td>Community Attribution</td><td>gh-aw</td><td style="color:#3fb950;font-weight:700">-37%</td><td>8</td><td>每日</td></tr>
+          <tr><td>Security Guard</td><td>gh-aw-firewall</td><td style="color:#3fb950;font-weight:700">-43%</td><td>大量</td><td>每个 PR</td></tr>
+          <tr><td>Smoke Claude</td><td>gh-aw-firewall</td><td style="color:#3fb950;font-weight:700">-59%</td><td>大量</td><td>每个变更</td></tr>
+        </tbody>
+      </table>
+      <div class="anim-item" style="text-align:center"><p class="body-zh" style="color:rgba(var(--paper-rgb),.6);max-width:36em;margin:0 auto">Auto-Triage 修复期间节省约 780 万 ET。运行频率和单次节省同样重要。</p></div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Initial results + 图表数据</div><div>11 / 20</div></div>
+</section>
+
+<!-- 12/20 Auto-Triage 亮点: 62% -->
+<section class="slide light" data-theme="light" data-screen-label="Spotlight" data-source="Auto-Triage Issues" style="text-align:center;align-items:center">
+  <div class="chrome" style="width:100%"><div>最佳案例</div><div>12 / 20</div></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center">
+    <div class="anim-item">
+      <div class="kicker">Auto-Triage Issues · gh-aw</div>
+      <div class="stat-num" style="margin-top:1vh">62%</div>
+      <div class="stat-label">ET reduction · 109 post-fix runs</div>
+    </div>
+    <div class="anim-item" style="margin-top:clamp(2rem,4vh,3.5rem);text-align:left;width:min(100%,32rem)">
+      <p class="body-zh">优化前，许多 agent 轮次花在不需要推理的数据获取上：读取 issue 元数据、扫描标签。把这些步骤移到 agent 启动前的 CLl 步骤后，它们完全退出了 LLM 推理循环。</p>
+    </div>
+    <div class="anim-item" style="margin-top:clamp(1.5rem,2.5vh,2.5rem);text-align:left;width:min(100%,32rem)">
+      <p class="body-zh" style="color:rgba(var(--ink-rgb),.6)">运行频率：平均 6.8 次/天，最高 15 次/天。62% 的节省以这个频率复利，效果远超低频 workflow。</p>
+    </div>
+  </div>
+  <div class="foot" style="width:100%"><div>来源：Initial results + Take aways</div><div>12 / 20</div></div>
+</section>
+
+<!-- 13/20 模式1: 确定性数据获取 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Pattern 1" data-source="Take aways">
+  <div class="chrome"><div>模式一</div><div>13 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">Many agent turns are deterministic data-gathering</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,3vw,3rem);align-items:start">
+        <div class="anim-item">
+          <div class="callout" style="max-width:14em;color:var(--paper);background:rgba(var(--paper-rgb),.06)">
+            The cheapest LLM call is the one you don't make.
+            <cite>Landon Cox &amp; Mara Kiefer · 核心洞察</cite>
+          </div>
+        </div>
+        <div class="anim-item">
+          <p class="body-zh" style="margin-bottom:1.5vh">Security Guard 的 −60% 来自一个前置的 relevance gate：如果 PR 不涉及安全敏感文件，LLM 根本不会被调用。</p>
+          <p class="body-zh">这不是优化 token 效率，这是从源头消除不需要推理的 LLM 调用。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Take aways · 模式1</div><div>13 / 20</div></div>
+</section>
+
+<!-- 14/20 模式2: 未使用工具的代价 -->
+<section class="slide light" data-theme="light" data-screen-label="Pattern 2" data-source="Glossary Maintainer 案例">
+  <div class="chrome"><div>模式二</div><div>14 / 20</div></div>
+  <div class="grid-2-6-6" style="flex:1;min-height:0;align-items:center">
+    <div class="anim-item">
+      <div class="kicker">Excerpt</div>
+      <div class="callout" style="max-width:14em;color:var(--ink)">
+        search_repositories called 342 times in one run, 58% of all tool calls.
+        <cite>Glossary Maintainer · gh-aw</cite>
+      </div>
+    </div>
+    <div class="anim-item" style="padding-left:clamp(1rem,3vw,3rem)">
+      <div class="kicker" style="color:var(--accent);opacity:1">为什么值得记</div>
+      <p class="lead-zh" style="max-width:18em">一个只扫描本地文件变更的 workflow，完全不需 search_repositories，却被重复调用了 342 次。</p>
+      <p class="body-zh" style="max-width:18em;margin-top:clamp(1rem,2vh,1.6rem)">移除这个工具后行为完全不变，但每轮 token 消耗显著下降。Smoke Claude 的 −79% 部分来自激进的 MCP 工具裁剪，配合模型降级到 Haiku。</p>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Take aways · 模式2</div><div>14 / 20</div></div>
+</section>
+
+<!-- 15/20 模式3: 跑飞循环 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Pattern 3" data-source="Daily Syntax Error Quality 案例">
+  <div class="chrome"><div>模式三</div><div>15 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">A single misconfigured rule can cause runaway loops</h2>
+      <div class="grid-3">
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">问题</div>
+          <p class="body-zh" style="margin-top:1vh">Daily Syntax Error Quality 是优化前 token 消耗最高的 workflow。根因：workflow 把测试文件拷贝到 /tmp/ 后调用 gh aw compile *，但 sandbox 的 bash allowlist 只允许相对路径 glob 模式</p>
+        </div>
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">后果</div>
+          <p class="body-zh" style="margin-top:1vh">每次编译尝试都被拒绝。agent 无法使用需要的工具，掉入 64 轮 fallback 循环，手动读源代码去猜测 compiler 会报什么</p>
+        </div>
+        <div class="anim-item">
+          <div class="meta" style="color:var(--accent);opacity:1">修复</div>
+          <p class="body-zh" style="margin-top:1vh">一行修复：扩大允许的 bash patterns 后循环消失。这是一行配置错的代价：64 轮无意义的 LLM 调用。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Take aways · 模式3</div><div>15 / 20</div></div>
+</section>
+
+<!-- 16/20 Contribution Check 的教训 -->
+<section class="slide light" data-theme="light" data-screen-label="Caveat" data-source="Contribution Check 案例">
+  <div class="chrome"><div>需要注意</div><div>16 / 20</div></div>
+  <div class="slide-body">
+    <div class="note-stack">
+      <h2 class="h1-zh anim-item section-title">优化后 ET 上升 5% 不等于优化失败，工作负载偏移可以掩盖效率提升</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,3vw,3rem);align-items:start">
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">数据</div>
+          <p class="body-zh" style="margin-top:1.2vh">Contribution Check workflow 优化前：41% 小型 PR（ET &lt;100K），39% 大型 PR（ET &gt;300K）。优化后遭遇开发活动高峰：9% 小型 PR，65% 大型 PR。</p>
+        </div>
+        <div class="anim-item">
+          <div class="kicker" style="color:var(--accent);opacity:1">分析</div>
+          <p class="body-zh" style="margin-top:1.2vh">输出 tokens（ET 公式中权重 4x）上升 14%，因为 agent 需要审查更大的 diff。每轮效率实际改善了，但负载变化在聚合数据中掩盖了这一改善。始终需要结合 LLM 轮次来判断。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：Contribution Check 案例</div><div>16 / 20</div></div>
+</section>
+
+<!-- 17/20 下一步：双张力 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Next" data-source="What's next">
+  <div class="chrome"><div>下一步</div><div>17 / 20</div></div>
+  <div class="grid-2-6-6" style="flex:1;min-height:0;align-items:center">
+    <div class="anim-item">
+      <div class="kicker">Episode 分析</div>
+      <h2 class="h2-zh" style="margin-bottom:clamp(1rem,2vh,2rem);margin-top:1vh">同一个 workflow 内部，哪些阶段值得做、哪些阶段是浪费</h2>
+      <p class="body-zh" style="max-width:15em">一次 workflow 运行不是平坦的 API 序列，而是一串 episode：上下文收集、读取 artifact、失败重试、合成最终答案。能看清 episode 就能回答：哪段 episode 真正导致了高成本？哪些应该变成确定性预步骤？</p>
+    </div>
+    <div class="anim-item">
+      <div class="kicker" style="color:var(--accent);opacity:1">Portfolio 分析</div>
+      <h2 class="h2-zh" style="margin-bottom:clamp(1rem,2vh,2rem);margin-top:1vh">跨 workflow 的重复读取和重叠判断</h2>
+      <p class="body-zh" style="max-width:15em">一个 repo 运行的不只是单个 workflow，而是一整支自动化舰队。它们经常触发在相同事件上、读取相同的 diff 和日志、产出相邻的判断。下一个问题是：哪些工作流在重复读数据？哪些应该合并？</p>
+    </div>
+  </div>
+  <div class="foot"><div>来源：What's next</div><div>17 / 20</div></div>
+</section>
+
+<!-- 18/20 最终判断 -->
+<section class="slide light" data-theme="light" data-screen-label="Closing" data-source="Take aways + What's next" style="text-align:center;align-items:center">
+  <div class="chrome" style="width:100%"><div>核心结论</div><div>18 / 20</div></div>
+  <div class="center-stage" style="flex-direction:column">
+    <p class="lead-zh anim-item" style="max-width:20em;color:rgba(var(--ink-rgb),.65);margin-bottom:clamp(1.5rem,3vh,2.5rem)">If you're running agentic workflows in CI and wondering whether you're spending more than you need to:</p>
+    <h2 class="h1-zh anim-item" style="max-width:12em">Add the API proxy, turn on logging, and let the data tell you where to look.</h2>
+    <div class="anim-item" style="margin-top:clamp(2rem,4vh,3.5rem);text-align:left;width:min(100%,32rem)">
+      <p class="body-zh">两个优化工作流可以用 gh-aw CLI 直接安装：</p>
+      <p class="body-zh" style="font-family:var(--mono);margin-top:1vh;padding:clamp(1rem,1.5vh,1.2rem);background:rgba(var(--ink-rgb),.06);border-radius:4px;font-size:clamp(1rem,1.1vw,1.2rem)">gh extensions install github/gh-aw<br>gh aw add githubnext/agentic-ops/copilot-token-audit githubnext/agentic-ops/copilot-token-optimizer</p>
+    </div>
+  </div>
+  <div class="foot" style="width:100%"><div>Landon Cox &amp; Mara Kiefer · GitHub Blog</div><div>18 / 20</div></div>
+</section>
+
+<!-- 19/20 核心总结 1 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Summary" data-source="核心总结 1-4">
+  <div class="chrome"><div>核心总结</div><div>19 / 20</div></div>
+  <div class="slide-body">
+    <div style="width:min(100%,68rem);margin:0 auto;display:flex;flex-direction:column;gap:clamp(2rem,5vh,3.5rem)">
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">01</div>
+        <p class="body-zh">GitHub 自用数百个 agentic workflow 做 CI 和维护。Agentic workflow 自动调度触发，成本低调积累不易被察觉。优化它的优势在于行为完全由 YAML 定义，可重复、可衡量。</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">02</div>
+        <p class="body-zh">API proxy（原本用于安全隔离）意外成为 unified logging 的切入点。每个 workflow 产出 token-usage.jsonl，含 input/output/cache tokens、模型和时间戳。有了数据才能优化。</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">03</div>
+        <p class="body-zh">两个 agentic workflow 构成自愈循环：Auditor 聚合报告标记异常，Optimizer 分析源码创建 Issue 给出具体优化建议。它们自己的 token 也出现在每日报告中，形成良性循环。</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">04</div>
+        <p class="body-zh">两个最常见的低效模式：① 未使用的 MCP 工具，40 个工具的 schema 每轮浪费 10-15 KB 上下文；② 数据获取经过 LLM，用 gh CLI 替代 MCP 把确定性的 HTTP 请求移出推理循环。一个 search_repositories 工具单轮被调 342 次。</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：全文</div><div>19 / 20</div></div>
+</section>
+
+<!-- 20/20 核心总结 2 -->
+<section class="slide dark" data-theme="dark" data-screen-label="Summary" data-source="核心总结 5-8">
+  <div class="chrome"><div>核心总结</div><div>20 / 20</div></div>
+  <div class="slide-body">
+    <div style="width:min(100%,68rem);margin:0 auto;display:flex;flex-direction:column;gap:clamp(2rem,5vh,3.5rem)">
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">05</div>
+        <p class="body-zh">测量效率提升有三个混杂因素：模型差异（Haiku 比 Sonnet 便宜 4x）、工作负载波动（5 行 fix vs 200 行 PR）、质量不可知（没有 ground-truth correctness）。Effective Tokens 公式用模型系数和 token 类型权重归一化成本。</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">06</div>
+        <p class="body-zh">初步结果：12 个生产 workflow 中 9 个接受优化建议。Auto-Triage Issues −62%（109 个修复后运行），Security Guard −43%，Smoke Claude −59%。运行频率和单次节省同样重要，Auto-Triage 日均 6.8 次，累计节省 780 万 ET。</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">07</div>
+        <p class="body-zh">模式总结：① 许多 agent 轮次是确定性的数据获取，"最便宜的 LLM 调用是不需要的那一次"；② 未使用的工具成本很高，SR 工具单轮调用 342 次全是浪费；③ 一行配置错误可以导致 64 轮回退循环。</p>
+      </div>
+      <div class="anim-item" style="display:grid;grid-template-columns:auto 1fr;gap:clamp(1.5rem,3vw,3rem);align-items:start">
+        <div style="font-family:var(--mono);font-size:clamp(2.5rem,5vw,5rem);font-weight:600;color:var(--accent);line-height:1">08</div>
+        <p class="body-zh">下一步方向：从 workflow 级优化升级到系统级，episode 分析（区分必要阶段和浪费阶段）和 portfolio 分析（跨 workflow 去重和缓存共享）。但核心建议一样：加 API proxy、开日志、让数据说话。</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><div>来源：全文</div><div>20 / 20</div></div>
+</section>
+
+</div>
+
+<div id="nav"></div>
+
+<script>
+(function(){
+  const deck = document.getElementById('deck');
+  const slides = Array.from(deck.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let isTransitioning = false;
+  const nav = document.getElementById('nav');
+  function renderNav() {
+    nav.innerHTML = '';
+    slides.forEach((s, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (i === current ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i+1));
+      dot.onclick = () => goTo(i);
+      nav.appendChild(dot);
+    });
+    const theme = slides[current].dataset.theme;
+    nav.style.setProperty('background', theme === 'light' ? 'rgba(0,0,0,.12)' : 'rgba(255,255,255,.15)');
+    Array.from(nav.querySelectorAll('.dot')).forEach((d,i) => {
+      d.style.background = i === current
+        ? (theme==='light' ? 'rgba(0,0,0,.7)' : 'rgba(255,255,255,.95)')
+        : (theme==='light' ? 'rgba(0,0,0,.18)' : 'rgba(255,255,255,.3)');
+    });
+  }
+  function goTo(idx) {
+    if (idx < 0 || idx >= total || idx === current) return;
+    isTransitioning = true;
+    current = idx;
+    deck.style.transform = 'translateX(-' + (current * 100) + 'vw)';
+    slides.forEach(s => s.classList.remove('active'));
+    setTimeout(() => {
+      slides[current].classList.add('active');
+      isTransitioning = false;
+      renderNav();
+      saveProgress();
+    }, 900);
+  }
+  document.addEventListener('keydown', e => {
+    if (isTransitioning) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+  });
+  let wheelTimeout = null;
+  document.addEventListener('wheel', e => {
+    if (isTransitioning || wheelTimeout) return;
+    wheelTimeout = setTimeout(() => wheelTimeout = null, 800);
+    if (e.deltaY > 30) goTo(current + 1);
+    if (e.deltaY < -30) goTo(current - 1);
+  }, { passive: true });
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (isTransitioning) return;
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (diff > 50) goTo(current + 1);
+    if (diff < -50) goTo(current - 1);
+  }, { passive: true });
+  const STORAGE_KEY = 'slides-progress';
+  function saveProgress() { try { localStorage.setItem(STORAGE_KEY, current); } catch(e){} }
+  function loadProgress() {
+    try {
+      const p = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+      if (!isNaN(p) && p >= 0 && p < total) { current = p; deck.style.transform = 'translateX(-' + (current*100) + 'vw)'; }
+    } catch(e){}
+  }
+  loadProgress();
+  slides.forEach(s => s.classList.remove('active'));
+  slides[current].classList.add('active');
+  renderNav();
+})();
+</script>
+</body>
+</html>

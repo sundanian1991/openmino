@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>viz-design 可视化设计器 — 完整流程</title>
+<style>
+:root {
+  --ivory: #FAF9F5;
+  --paper: #FFFFFF;
+  --slate: #141413;
+  --clay: #D97757;
+  --clay-d: #B85C3E;
+  --olive: #788C5D;
+  --oat: #E3DACC;
+  --g100: #F0EEE6;
+  --g200: #E6E3DA;
+  --g300: #D1CFC5;
+  --g500: #87867F;
+  --g700: #3D3D3A;
+  --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--sans);
+  background: var(--ivory);
+  color: var(--slate);
+  line-height: 1.6;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--slate);
+  color: var(--ivory);
+  padding: 48px 40px 32px;
+  text-align: center;
+}
+.header h1 {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.header .subtitle {
+  color: var(--g500);
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* ── Nav Pills ── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--g300);
+  padding: 0 40px;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+.nav button {
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-family: var(--sans);
+  color: var(--g500);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 150ms ease;
+}
+.nav button:hover { color: var(--slate); }
+.nav button.active {
+  color: var(--clay);
+  border-bottom-color: var(--clay);
+  font-weight: 600;
+}
+
+/* ── Sections ── */
+.section {
+  display: none;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+  animation: fadeIn 200ms ease;
+}
+.section.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--g300);
+}
+h3 {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: var(--clay);
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--paper);
+  border: 1.5px solid var(--g300);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.card.highlight {
+  border-left: 4px solid var(--clay);
+  background: var(--g100);
+}
+.card.green {
+  border-left: 4px solid var(--olive);
+}
+
+/* ── Tables ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+}
+th {
+  background: var(--g100);
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 600;
+  border-bottom: 2px solid var(--g300);
+}
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--g200);
+}
+tr:hover td { background: var(--g100); }
+
+/* ── Flow Diagram ── */
+.flow-container {
+  position: relative;
+  padding: 20px 0;
+}
+.flow-step {
+  position: relative;
+  padding: 0 0 40px 60px;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+.flow-step:last-child { padding-bottom: 0; }
+
+.flow-step::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 48px;
+  bottom: 0;
+  width: 2px;
+  background: var(--g300);
+}
+.flow-step:last-child::before { display: none; }
+
+.flow-step .step-marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--g300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--g500);
+  transition: all 200ms ease;
+}
+.flow-step:hover .step-marker,
+.flow-step.active .step-marker {
+  border-color: var(--clay);
+  background: var(--clay);
+  color: white;
+  transform: scale(1.1);
+}
+.flow-step.active .step-marker {
+  box-shadow: 0 0 0 4px rgba(217, 119, 87, 0.2);
+}
+
+.step-content {
+  transition: all 200ms ease;
+}
+.step-content h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--slate);
+}
+.step-content .step-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-family: var(--mono);
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--oat);
+  color: var(--g700);
+  margin-bottom: 8px;
+}
+.step-detail {
+  display: none;
+  margin-top: 12px;
+  padding: 16px;
+  background: var(--g100);
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.flow-step.active .step-detail { display: block; }
+
+.step-detail ul {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+.step-detail li {
+  margin-bottom: 4px;
+}
+
+/* ── Architecture ── */
+.arch-layer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.arch-layer::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 2px;
+  height: 8px;
+  background: var(--g300);
+}
+.arch-layer:last-child::after { display: none; }
+.arch-layer.strategy { background: var(--g100); border: 1px solid var(--g300); }
+.arch-layer.design { background: rgba(217,119,87,0.08); border: 1.5px solid var(--clay); }
+.arch-layer.render { background: rgba(120,140,93,0.08); border: 1.5px solid var(--olive); }
+.arch-layer.container { background: var(--oat); border: 1px solid var(--g300); }
+
+.arch-label {
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--g500);
+  min-width: 80px;
+}
+.arch-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+.arch-desc {
+  font-size: 13px;
+  color: var(--g500);
+}
+
+/* ── Code block ── */
+.code {
+  background: var(--slate);
+  color: var(--g200);
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.code .comment { color: var(--g500); }
+.code .key { color: var(--clay); }
+.code .val { color: var(--olive); }
+
+/* ── Quote ── */
+.quote {
+  border-left: 3px solid var(--clay);
+  padding-left: 16px;
+  margin: 16px 0;
+  font-style: italic;
+  color: var(--g700);
+}
+
+/* ── Pill ── */
+.pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pill.clay { background: rgba(217,119,87,0.12); color: var(--clay); }
+.pill.olive { background: rgba(120,140,93,0.12); color: var(--olive); }
+.pill.g { background: var(--g100); color: var(--g700); }
+
+/* ── Two columns ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 16px 0;
+}
+@media (max-width: 640px) {
+  .two-col { grid-template-columns: 1fr; }
+  .nav { padding: 0 16px; }
+  .section { padding: 24px 20px 60px; }
+  .header { padding: 32px 20px 24px; }
+}
+
+/* ── Color Swatches ── */
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.swatch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--paper);
+  border: 1px solid var(--g300);
+  font-size: 13px;
+  font-family: var(--mono);
+}
+.swatch-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--g300);
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--g500);
+  font-size: 12px;
+  border-top: 1px solid var(--g300);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>viz-design 可视化设计器</h1>
+  <div class="subtitle">9509 条 DNA 模式库 · 15 类意图索引 · 从需求到交付的完整流程</div>
+</div>
+
+<div class="nav" id="nav">
+  <button class="active" data-section="overview">总览</button>
+  <button data-section="workflow">流程图</button>
+  <button data-section="phases">各阶段详解</button>
+  <button data-section="spec">SPEC 规范</button>
+  <button data-section="delegation">委派路由</button>
+  <button data-section="architecture">三层架构</button>
+</div>
+
+<!-- ═══ 总览 ═══ -->
+<div class="section active" id="overview">
+  <h2>核心定位</h2>
+
+  <div class="card highlight">
+    <strong>不是画图工具，是可视化设计师。</strong>
+    <p style="margin-top:8px;">它决定"用什么图、为什么、怎么讲"，但不自己动手画。画图交给渲染技能，容器交给容器技能。</p>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <h3 style="margin-top:0;">输入</h3>
+      <ul style="padding-left:20px; font-size:14px;">
+        <li>抽象概念、非结构化数据</li>
+        <li>文字描述、复杂关系</li>
+        <li>供应商分析、业绩数据</li>
+        <li>战略建议、咨询图表需求</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;">输出</h3>
+      <ul style="padding-left:20px; font-size:14px;">
+        <li><span class="pill clay">intent.md</span> — 意图决策</li>
+        <li><span class="pill clay">storyboard.md</span> — 视觉叙事</li>
+        <li><span class="pill clay">spec.md</span> — 编译规格</li>
+        <li><span class="pill clay">checklist.md</span> — 验收清单</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>核心原理</h2>
+
+  <div class="card">
+    <div class="quote"><strong>图表思维是认知压缩。</strong> 文字是线性的，图像是并行的。一张好图让大脑跳过解码阶段，直达模式识别。</div>
+    <div class="quote"><strong>选图本身就是洞察。</strong> 选漏斗说明你看到了衰减关系，选齿轮说明你看到了联动机制。图的选择先于图的绘制。</div>
+    <div class="quote"><strong>9509 条 DNA = 9509 个经验记录。</strong> 不需要从零想，从 DNA 索引中匹配最佳实践。</div>
+  </div>
+
+  <h2>视觉层级铁律</h2>
+  <div class="card green">
+    <strong>视觉突出程度必须与重要性严格匹配。</strong>
+    <p style="margin-top:8px;font-size:14px;">最重要的元素 = 视觉上最突出。禁止多个元素同等突出相互抢夺注意力。</p>
+  </div>
+
+  <table>
+    <tr><th>手段</th><th>用法</th></tr>
+    <tr><td>大小/类型/标签</td><td>调整关键元素的视觉权重</td></tr>
+    <tr><td>参考线/分割区块</td><td>组织信息层级</td></tr>
+    <tr><td>字号/加粗</td><td>节制使用，重要文本突出</td></tr>
+    <tr><td>颜色强度</td><td>为关键数据着色</td></tr>
+    <tr><td>注释/说明</td><td>重要事件添加文字解释</td></tr>
+    <tr><td>离群值标注</td><td>或将双 Y 轴数据拆为两张图</td></tr>
+  </table>
+
+  <h2>全局色系（Birchline）</h2>
+  <p style="font-size:14px;color:var(--g500);margin-bottom:12px;">图表颜色不超出此体系，不自创任何颜色。用灰度 + 单重点色让关键信息跳出来。</p>
+  <div class="swatches">
+    <div class="swatch"><span class="swatch-dot" style="background:#D97757"></span>clay 重点高亮</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#B85C3E"></span>clay-d 警告下降</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#788C5D"></span>olive 正向成功</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#E3DACC"></span>oat 次要背景</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#141413"></span>slate 标题正文</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#3D3D3A"></span>g700 正文辅助</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#87867F"></span>g500 次要文字</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#D1CFC5"></span>g300 边框参考</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#E6E3DA"></span>g200 网格线</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#F0EEE6"></span>g100 背景填充</div>
+    <div class="swatch"><span class="swatch-dot" style="background:#FAF9F5;border-color:#ccc"></span>ivory 页面底色</div>
+  </div>
+
+  <h2>入口模式</h2>
+  <table>
+    <tr><th>年老师说的</th><th>模式</th><th>做法</th></tr>
+    <tr><td>"先看看数据能讲什么"</td><td><span class="pill clay">A 逐步引导</span></td><td>列出分析角度 → 确认 → 再选图表</td></tr>
+    <tr><td>"你帮我决定"/"最佳方案"</td><td><span class="pill olive">B AI 推荐</span></td><td>AI 自主决策最佳方案 → 直接出图</td></tr>
+    <tr><td>直接指定图表或角度</td><td><span class="pill g">C 自定义</span></td><td>按指定执行</td></tr>
+    <tr><td>单图需求且意图明确</td><td><span class="pill g">C 快速路径</span></td><td>直接执行</td></tr>
+    <tr><td>多图需求或复杂数据</td><td><span class="pill clay">A 默认</span></td><td>先分析再逐个确认</td></tr>
+  </table>
+</div>
+
+<!-- ═══ 流程图 ═══ -->
+<div class="section" id="workflow">
+  <h2>完整流程 — 点击每个阶段展开详情</h2>
+  <p style="font-size:14px;color:var(--g500);margin-bottom:24px;">收到输入后，按阶段逐步推进。每个阶段有明确产出，可回退重做。</p>
+
+  <div class="flow-container">
+
+    <div class="flow-step active" onclick="toggleStep(this)">
+      <div class="step-marker">0</div>
+      <div class="step-content">
+        <span class="step-tag">条件触发</span>
+        <h4>全局风格锁定</h4>
+        <p style="font-size:13px;color:var(--g500);">仅 ≥2 张图时执行，锁死色系/字体/风格学派</p>
+        <div class="step-detail">
+          <strong>做什么：</strong>
+          <ul>
+            <li>风格学派：hash(主题名) → 读 style-schools.md</li>
+            <li>全局色系：1 套主色 + 1 套强调色 → 读 color-themes.md</li>
+            <li>全局字体：锁定 1 对 → 读 typography-moods.md</li>
+            <li>多图衔接：编号连续、视觉引导、配色统一</li>
+          </ul>
+          <strong>产出：</strong>global-style.md
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step" onclick="toggleStep(this)">
+      <div class="step-marker">1</div>
+      <div class="step-content">
+        <span class="step-tag">DNA 匹配</span>
+        <h4>DNA 意图匹配</h4>
+        <p style="font-size:13px;color:var(--g500);">读索引 → 按意图选模式 → 按 ID 查完整策略</p>
+        <div class="step-detail">
+          <strong>做什么：</strong>
+          <ul>
+            <li>读 dna-index-ai.md — 15 类意图速查表匹配表达意图</li>
+            <li>锁定图表类型 → 从索引中取最佳案例 ID</li>
+            <li>按案例 ID 查 chart-dna-index.tsv → 继承全策略</li>
+            <li>未命中 → 自主推理，参考 concept-pattern-map</li>
+            <li>自动选择器 — 读 auto-selector.md（风格/配色/字体）</li>
+          </ul>
+          <strong>关键：</strong>选图本身就是洞察。漏斗 = 衰减关系，齿轮 = 联动机制。
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step" onclick="toggleStep(this)">
+      <div class="step-marker">1.5</div>
+      <div class="step-content">
+        <span class="step-tag">版式决策</span>
+        <h4>版式 + 解读策略</h4>
+        <p style="font-size:13px;color:var(--g500);">场景 → 版式映射，决定解读区形式</p>
+        <div class="step-detail">
+          <strong>版式选择：</strong>
+          <ul>
+            <li>核心图表 → #01 单图居中</li>
+            <li>辅助解读 → #08 L 型 或 #14 主次左右 70/30</li>
+            <li>多个关键指标 → #28 顶部 KPI + 多图表</li>
+            <li>多图对比 → #02 左右对比 或 #26 三栏对比</li>
+            <li>流程/阶段 → #22 水平步骤流</li>
+          </ul>
+          <strong>解读策略：</strong>结论 → 解读卡片 / 数字 → KPI 卡片 / 对比 → 高亮脚注
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step" onclick="toggleStep(this)">
+      <div class="step-marker">2</div>
+      <div class="step-content">
+        <span class="step-tag">视觉叙事</span>
+        <h4>storyboard.md</h4>
+        <p style="font-size:13px;color:var(--g500);">叙事弧线、阅读路径、克制声明</p>
+        <div class="step-detail">
+          <strong>做什么：</strong>
+          <ul>
+            <li>读 narrative-arcs.md + visual-beats.md 定弧线和节拍</li>
+            <li>场景设计 — "一句话灵魂" + 签名视觉元素 + 克制声明</li>
+          </ul>
+          <strong>产出：</strong>storyboard.md
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step" onclick="toggleStep(this)">
+      <div class="step-marker">G</div>
+      <div class="step-content">
+        <span class="step-tag">门禁 Gate</span>
+        <h4>用户确认 + 有效性门禁</h4>
+        <p style="font-size:13px;color:var(--g500);">向年老师确认模式选择，失败则切换备选</p>
+        <div class="step-detail">
+          <ul>
+            <li><strong>用户确认：</strong>推荐 X 模式，因为 Y。提供 2-3 个备选。</li>
+            <li><strong>有效性门禁：</strong>读 chart-validity-gate.md → R0 检验</li>
+            <li>失败 → 查备选模式表 → 切换 → 重新过门禁</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step" onclick="toggleStep(this)">
+      <div class="step-marker">3</div>
+      <div class="step-content">
+        <span class="step-tag">编译规格</span>
+        <h4>spec.md</h4>
+        <p style="font-size:13px;color:var(--g500);">数据/视觉编码/标注策略/布局/渲染约束</p>
+        <div class="step-detail">
+          <strong>做什么：</strong>
+          <ul>
+            <li>按 templates/spec.md 模板编写</li>
+            <li>生成渲染约束代码块（machine-readable）：</li>
+            <ul>
+              <li>标注清单：type/target/text/position/offset/style</li>
+              <li>视觉权重映射：hero/medium/light</li>
+              <li>颜色映射表：每个元素标识 → hex 色值</li>
+              <li>布局约束：canvas/grid/legend/tooltip</li>
+            </ul>
+          </ul>
+          <strong>产出：</strong>spec.md（含渲染约束章节）
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step" onclick="toggleStep(this)">
+      <div class="step-marker">R</div>
+      <div class="step-content">
+        <span class="step-tag">委派渲染</span>
+        <h4>委托渲染技能执行</h4>
+        <p style="font-size:13px;color:var(--g500);">传递四个 md 文档 + 渲染约束摘要</p>
+        <div class="step-detail">
+          <strong>委派方式：</strong>
+          <ul>
+            <li>传递四个文档路径：intent.md / storyboard.md / spec.md / checklist.md</li>
+            <li>从 spec.md 渲染约束章节提取摘要，逐项列出</li>
+            <li>下游技能必须严格消费约束，不得自行翻译</li>
+          </ul>
+          <strong>渲染结果嗅探：</strong>快速扫描截断/代码泄露/中文乱码/元素重叠
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-step" onclick="toggleStep(this)">
+      <div class="step-marker">4</div>
+      <div class="step-content">
+        <span class="step-tag">验收交付</span>
+        <h4>checklist.md</h4>
+        <p style="font-size:13px;color:var(--g500);">出图前自检 + 验收 + 不通过则回退</p>
+        <div class="step-detail">
+          <strong>做什么：</strong>
+          <ul>
+            <li>出图前自检 — 读 anti-patterns.md</li>
+            <li>验收 — 读 verification-standards.md</li>
+            <li>写入 checklist.md，标注通过/不通过</li>
+            <li><strong>4 项以上不通过 → 回退 Phase 1</strong></li>
+            <ul>
+              <li>首次失败 → 调参数重试</li>
+              <li>连续失败 2 次 → 换图表/拆分多图/改变叙事结构</li>
+            </ul>
+          </ul>
+          <strong>出口：</strong>通过 → 交付最终图表
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ 各阶段详解 ═══ -->
+<div class="section" id="phases">
+  <h2>四阶段工作流详解</h2>
+
+  <div class="card highlight">
+    <h3 style="margin-top:0;">Phase 0 — 全局风格锁定</h3>
+    <p style="font-size:14px;">多图场景先锁全局风格，后续每张图从全局继承。单图场景跳过。</p>
+    <div class="code">
+      <span class="comment">风格学派：</span> hash(主题名) → style-schools.md<br>
+      <span class="comment">全局色系：</span> 1 套主色 + 1 套强调色 → color-themes.md<br>
+      <span class="comment">全局字体：</span> 锁定 1 对 → typography-moods.md<br>
+      <span class="comment">多图衔接：</span> 编号连续 / 视觉引导 / 配色统一<br>
+      <span class="comment">产出：</span> <span class="key">global-style.md</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">Phase 1 — DNA 意图匹配</h3>
+    <p style="font-size:14px;">从 9509 条 DNA 中匹配最佳实践，不重新发明轮子。</p>
+    <div class="code">
+      <span class="comment">1. 读 dna-index-ai.md — 意图速查表匹配</span><br>
+      &nbsp;&nbsp; <span class="key">"趋势变化"</span> → 面积图/折线图/散点图<br>
+      &nbsp;&nbsp; <span class="key">"分类对比"</span> → 柱状图/棒棒糖图/蝴蝶图<br>
+      &nbsp;&nbsp; <span class="key">"占比构成"</span> → 柱状图/堆叠条/饼图<br>
+      &nbsp;&nbsp; <span class="key">"驱动因素"</span> → 瀑布图/桥接图<br>
+      <span class="comment">2. 锁定图表 → 从索引取最佳案例 ID</span><br>
+      <span class="comment">3. 按 ID 查 TSV → 继承全策略</span><br>
+      &nbsp;&nbsp; chart_type / highlight / annotation / composition<br>
+      &nbsp;&nbsp; reading_path / color_palette<br>
+      <span class="comment">4. 未命中 → 自主推理，参考 concept-pattern-map</span><br>
+      <span class="comment">5. 自动选择器 → auto-selector.md</span>
+    </div>
+    <div class="quote"><strong>DNA 优先：</strong>锁定后按案例 ID 查完整 DNA，继承全策略。未命中时自主推理，不走独立决策树。</div>
+    <div class="quote"><strong>速查优先：</strong>DNA 匹配后立即查 dna-playbook.md。已有施工图模板的直接套用，只替换数据。</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">Phase 1.5 — 版式 + 解读策略</h3>
+    <p style="font-size:14px;">场景 → 版式映射，决定解读区形式。</p>
+    <table>
+      <tr><th>场景</th><th>版式</th></tr>
+      <tr><td>只有核心图表</td><td>#01 单图居中</td></tr>
+      <tr><td>需要辅助解读</td><td>#08 L 型 / #14 主次左右 70/30</td></tr>
+      <tr><td>多个关键指标</td><td>#28 顶部 KPI + 多图表</td></tr>
+      <tr><td>多图对比</td><td>#02 左右对比 / #26 三栏对比</td></tr>
+      <tr><td>流程/阶段</td><td>#22 水平步骤流</td></tr>
+    </table>
+  </div>
+
+  <div class="card green">
+    <h3 style="margin-top:0;">Phase 2 — storyboard.md</h3>
+    <p style="font-size:14px;">视觉叙事设计 — 定弧线、定节拍、定克制。</p>
+    <ul style="padding-left:20px;font-size:14px;">
+      <li>读 narrative-arcs.md + visual-beats.md 定弧线和节拍</li>
+      <li>场景设计 — "一句话灵魂" + 签名视觉元素 + 克制声明</li>
+      <li>写入 <span class="pill clay">storyboard.md</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">Phase 3 — spec.md</h3>
+    <p style="font-size:14px;">编译规格，生成 machine-readable 的渲染约束。</p>
+    <div class="code">
+      <span class="comment">叙事意图：</span><br>
+      &nbsp;&nbsp; 可视化目的 / 想传达什么 / 结论 / 思路<br><br>
+      <span class="comment">视觉执行：</span><br>
+      &nbsp;&nbsp; 模式选择 / 标题(结论性) / 视觉编码<br>
+      &nbsp;&nbsp; 数据组织 / 标注策略(高亮≤10%) / 布局<br><br>
+      <span class="comment">渲染约束（machine-readable）：</span><br>
+      &nbsp;&nbsp; 标注清单 / 视觉权重 / 颜色映射 / 布局约束
+    </div>
+  </div>
+
+  <div class="card highlight">
+    <h3 style="margin-top:0;">Phase 4 — checklist.md 验收</h3>
+    <p style="font-size:14px;">出图前自检 → 验收 → 不通过回退。</p>
+    <ul style="padding-left:20px;font-size:14px;">
+      <li>出图前自检 — 读 anti-patterns.md</li>
+      <li>验收 — 读 verification-standards.md</li>
+      <li>写入 checklist.md，标注通过/不通过</li>
+      <li><strong>4 项以上不通过 → 回退 Phase 1</strong></li>
+      <li>同一修复策略连续失败 2 次 → 升级为架构级变更</li>
+    </ul>
+  </div>
+
+  <h2>轻量模式（单图快速场景）</h2>
+  <div class="card">
+    <ul style="padding-left:20px;font-size:14px;">
+      <li>Phase 1+2 合并为口头确认（不写文件）</li>
+      <li>Phase 3 必须写 spec.md</li>
+      <li>Phase 4 验收后，必须委托渲染技能执行，不得自己出图</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ SPEC 规范 ═══ -->
+<div class="section" id="spec">
+  <h2>SPEC 编写规范</h2>
+  <div class="card highlight">
+    <strong>SPEC 是视觉叙事剧本，不是渲染指令。</strong>
+  </div>
+
+  <h3>叙事意图（必须先写）</h3>
+  <div class="card">
+    <div class="code">
+      <span class="key">【可视化目的】</span> 为什么要做这张图？认知缺口是什么？<br>
+      <span class="key">【想传达什么】</span> 核心信息（只有一句话）<br>
+      <span class="key">【结论】</span> 读者应该得出什么判断？<br>
+      <span class="key">【思路】</span> 为什么选这个图？视觉叙事路径是什么？
+    </div>
+  </div>
+
+  <h3>视觉执行</h3>
+  <div class="card">
+    <div class="code">
+      <span class="key">【模式选择】</span> 编号 + 名称 + 匹配理由（1 句话）<br>
+      <span class="key">【标题】</span> 主标题：结论性（不是描述性）；副标题：时间范围 + 对象<br>
+      <span class="key">【视觉编码】</span> X/Y 轴编码什么 / 颜色编码什么 / 大小编码什么<br>
+      <span class="key">【数据组织】</span> 字段清单 / 排序规则 / 聚合规则<br>
+      <span class="key">【标注策略】</span> 高亮 ≤10% / 标注写原因+幅度（不写数字）<br>
+      <span class="key">【布局】</span> 画布尺寸 / 配色参考 13-VISUALIZATION.md 或自选
+    </div>
+  </div>
+
+  <h3>渲染约束（machine-readable）</h3>
+  <p style="font-size:14px;color:var(--g500);">spec.md 内"渲染约束"章节，下游技能必须严格消费，不得自行翻译。</p>
+  <div class="card">
+    <table>
+      <tr><th>约束项</th><th>内容</th></tr>
+      <tr><td>标注清单</td><td>逐项枚举：type/target/text/position/offset/style</td></tr>
+      <tr><td>视觉权重</td><td>hero/medium/light 的 target + 精确样式</td></tr>
+      <tr><td>颜色映射</td><td>每个元素标识 → hex 色值</td></tr>
+      <tr><td>布局约束</td><td>canvas/grid/legend/tooltip 精确值</td></tr>
+    </table>
+  </div>
+
+  <h3>设计原则映射</h3>
+  <table>
+    <tr><th>设计原则</th><th>SPEC 中如何体现</th></tr>
+    <tr><td>标题写结论</td><td>SPEC【标题】必须是结论性的</td></tr>
+    <tr><td>颜色是信号不是装饰</td><td>SPEC【视觉编码】说明颜色编码什么</td></tr>
+    <tr><td>高亮 ≤10%</td><td>SPEC【标注策略】限定高亮范围</td></tr>
+    <tr><td>色系 ≤2 ramp</td><td>SPEC 注明色系选择理由</td></tr>
+    <tr><td>一个图一个核心洞察</td><td>SPEC【想传达什么】只写一句话</td></tr>
+  </table>
+</div>
+
+<!-- ═══ 委派路由 ═══ -->
+<div class="section" id="delegation">
+  <h2>委派收口铁律</h2>
+  <div class="card highlight">
+    <strong>viz-design 只做设计，不做渲染。</strong>
+    <p style="margin-top:8px;">产出四个 md 文档，下游技能自己读自己做。绝不自己写 ECharts option、SVG path、matplotlib 代码。</p>
+  </div>
+
+  <h3>五条铁律</h3>
+  <div class="two-col">
+    <div class="card green">
+      <div style="font-size:14px;"><span class="pill olive">铁律 1</span> viz-design 绝不自己写渲染代码</div>
+    </div>
+    <div class="card green">
+      <div style="font-size:14px;"><span class="pill olive">铁律 2</span> viz-design 绝不猜下游输入格式</div>
+    </div>
+    <div class="card green">
+      <div style="font-size:14px;"><span class="pill olive">铁律 3</span> 多图场景必须先锁 globalStyle</div>
+    </div>
+    <div class="card green">
+      <div style="font-size:14px;"><span class="pill olive">铁律 4</span> 委托方式统一：四文档 + 约束摘要</div>
+    </div>
+  </div>
+  <div class="card green" style="max-width:50%;">
+    <div style="font-size:14px;"><span class="pill olive">铁律 5</span> 出图后必须按 checklist.md 验收</div>
+  </div>
+
+  <h3>渲染路由</h3>
+  <table>
+    <tr><th>场景</th><th>首选下游</th><th>理由</th></tr>
+    <tr><td>管理层汇报/商业报告</td><td><span class="pill clay">viz-echarts</span></td><td>HTML 输出、中文零问题、可交互</td></tr>
+    <tr><td>学术论文/印刷出版</td><td><span class="pill g">nature-figure</span></td><td>印刷级 SVG/PDF（ggplot2）</td></tr>
+    <tr><td>交互式图表（tooltip/缩放）</td><td><span class="pill clay">viz-echarts</span></td><td>HTML 交互</td></tr>
+    <tr><td>概念图（齿轮/金字塔/冰山）</td><td><span class="pill olive">viz-svg-flow</span></td><td>抽象类比</td></tr>
+    <tr><td>结构关系（组织/层级/网络）</td><td><span class="pill olive">viz-svg-flow</span></td><td>SVG 生成</td></tr>
+    <tr><td>杂志风信息图</td><td><span class="pill g">viz-editorial</span></td><td>编辑排版</td></tr>
+  </table>
+
+  <h3>容器委派</h3>
+  <table>
+    <tr><th>使用场景</th><th>委派技能</th></tr>
+    <tr><td>汇报演示（翻页）</td><td>ppt-html</td></tr>
+    <tr><td>汇报演示（动画）</td><td>ppt-slides</td></tr>
+    <tr><td>数据看板/仪表盘</td><td>fe-mino</td></tr>
+    <tr><td>Office 格式</td><td>ppt-deck-builder</td></tr>
+    <tr><td>正式报告/提案</td><td>mini-pdf</td></tr>
+    <tr><td>社交媒体传播</td><td>viz-editorial</td></tr>
+    <tr><td>落地页/专题页</td><td>fe-frontend</td></tr>
+    <tr><td>单图需求</td><td>无容器层，直接渲染</td></tr>
+  </table>
+
+  <h3>委托指令格式</h3>
+  <div class="card">
+    <div class="code">
+      <span class="comment">传递四个文档路径 + 渲染约束摘要：</span><br><br>
+      <span class="val">- intent.md: [路径]</span><br>
+      <span class="val">- storyboard.md: [路径]</span><br>
+      <span class="val">- spec.md: [路径]</span> （重点读取"渲染约束"章节）<br>
+      <span class="val">- checklist.md: [路径]</span><br><br>
+      <span class="comment">渲染约束摘要（必须满足，不得添加或省略）：</span><br>
+      <span class="comment">标注清单 + 视觉权重 + 颜色映射 + 布局约束</span><br><br>
+      <span class="key">"标注、颜色、位置严格按渲染约束执行，不得自选。"</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 三层架构 ═══ -->
+<div class="section" id="architecture">
+  <h2>三层架构</h2>
+  <p style="font-size:14px;color:var(--g500);margin-bottom:24px;">viz-design 处于中间层，上游接收策略决策，下游驱动渲染和容器。</p>
+
+  <div style="max-width:600px;margin:0 auto;">
+    <div class="arch-layer strategy">
+      <span class="arch-label">策略层</span>
+      <span class="arch-name">viz-data-story</span>
+      <span class="arch-desc">大纲 → 几张图 → 叙事顺序</span>
+    </div>
+    <div class="arch-layer design">
+      <span class="arch-label">设计层</span>
+      <span class="arch-name">viz-design</span>
+      <span class="arch-desc">每张图 → 选模式 → 写 SPEC → 选容器</span>
+    </div>
+    <div class="arch-layer render">
+      <span class="arch-label">渲染层</span>
+      <span class="arch-name">viz-echarts / viz-svg-flow / viz-chart / viz-infographic</span>
+      <span class="arch-desc">实际绘制图表</span>
+    </div>
+    <div class="arch-layer container">
+      <span class="arch-label">容器层</span>
+      <span class="arch-name">ppt-html / fe-mino / mini-pdf / ppt-deck-builder / fe-frontend</span>
+      <span class="arch-desc">组装、翻页、仪表盘等</span>
+    </div>
+  </div>
+
+  <h2>技能边界</h2>
+  <table>
+    <tr><th>本技能负责</th><th>不负责</th></tr>
+    <tr><td>概念 → 模式匹配（选什么图）</td><td>实际画图（绝不自己写渲染代码）</td></tr>
+    <tr><td>SPEC 编写（标题/标注/布局/叙事）</td><td>配色设计（各渲染技能自带配色体系）</td></tr>
+    <tr><td>视觉叙事策略（先讲什么后讲什么）</td><td>数据清洗（交给数据技能）</td></tr>
+  </table>
+
+  <h2>反模式（禁止）</h2>
+  <div class="card" style="border-left:4px solid var(--clay-d);">
+    <ul style="padding-left:20px;font-size:14px;">
+      <li>自己写 ECharts option / SVG path / matplotlib 代码</li>
+      <li>猜下游技能的 JSON 输入格式</li>
+      <li>多图各自选色，不锁全局</li>
+      <li>自己组装多图 HTML（应委派容器技能）</li>
+      <li>出图后不验收即交付</li>
+      <li>为了走流程而走流程（每个 Phase 都有明确产出价值）</li>
+    </ul>
+  </div>
+
+  <h2>资产分层</h2>
+  <p style="font-size:14px;color:var(--g500);margin-bottom:12px;">迭代时只重写表现层，不重跑内容层分析。</p>
+  <table>
+    <tr><th>层级</th><th>文件/内容</th><th>迭代时</th></tr>
+    <tr><td><span class="pill olive">内容层</span></td><td>数据清单、分析结论、叙事逻辑</td><td>不重写，全程复用</td></tr>
+    <tr><td><span class="pill clay">表现层</span></td><td>风格、配色、版式、SPEC 参数</td><td>每次迭代可调</td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  viz-design 可视化设计器 · 9509 条 DNA 模式库 · Birchline Design System
+</div>
+
+<script>
+function toggleStep(el) {
+  const wasActive = el.classList.contains('active');
+  document.querySelectorAll('.flow-step').forEach(s => s.classList.remove('active'));
+  if (!wasActive) el.classList.add('active');
+}
+
+document.querySelectorAll('.nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.section).classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

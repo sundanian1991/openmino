@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>伽玛职场 · 入职趋势</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root {
+  --bg: #FFF8F0; --card: #FFFFFF; --text: #2D3748; --muted: #718096;
+  --light: #A0AEC0; --border: #F0E6D8; --accent: #E8734A; --accent-light: #FFF0EB;
+  --gray-bar: #D1C9C0; --red-bar: #E8734A;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; padding: 40px 20px; }
+.wrap { max-width: 900px; margin: 0 auto; }
+h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+.sub { color: var(--muted); font-size: 12px; margin-bottom: 24px; }
+.chart-box { background: var(--card); border-radius: 10px; padding: 20px; border: 1px solid var(--border); }
+.chart-box .c { width: 100%; height: 420px; }
+.note { margin-top: 16px; padding: 12px 14px; background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 6px; font-size: 12px; line-height: 1.7; color: var(--text); }
+.note strong { color: var(--accent); }
+.foot { margin-top: 12px; font-size: 10px; color: var(--light); line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>伽玛职场 · 坐席入职趋势</h1>
+  <p class="sub">数据源：金条业务首次外呼日期 ｜ 数据截止 2026-05-12</p>
+
+  <div class="chart-box">
+    <div class="c" id="mainChart"></div>
+  </div>
+
+  <div class="note">
+    <strong>图说：</strong>2026年3月入职74人、4月入职76人，两月合计150人，是历史月均<strong>5.6人</strong>的<strong>13-14倍</strong>。此前历史单月峰值仅为19人（2024年11月、2025年10月）。
+    这批新人正处于育成发酵期——3月入职者已部分产出（贡献21.8%总GMV），4月入职者仍在爬坡。
+    <strong>核心问题：</strong>快速扩招后的人员留存率、育成周期、以及存量低效人员清理进度，将直接影响下季度的产能表现。
+  </div>
+
+  <div class="foot">
+    历史均值 = 排除2026年3-5月后所有月份的算术平均 ｜ 2026年5月为截至12日的数据（部分月份）
+  </div>
+</div>
+
+<script>
+var labels = ["2021-11","2022-01","2022-02","2022-04","2022-05","2022-06","2022-07","2023-01","2023-09","2023-11","2024-02","2024-03","2024-04","2024-06","2024-07","2024-08","2024-10","2024-11","2024-12","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05"];
+var values = [2,2,1,1,2,4,1,4,7,4,3,4,4,1,5,2,4,19,8,6,5,2,3,5,10,7,13,19,11,3,5,11,74,76,15];
+var histAvg = 5.6;
+
+// Bar colors: red for 2026-03 and 2026-04, gray for others
+var barColors = values.map(function(v, i) {
+  var l = labels[i];
+  if (l === "2026-03" || l === "2026-04") return "#E8734A";
+  // 2026-05 is partial month, lighter gray with a note
+  if (l === "2026-05") return "#D1C9C0";
+  return "#D1C9C0";
+});
+
+// Highlight border for red bars
+var itemStyle = values.map(function(v, i) {
+  var l = labels[i];
+  if (l === "2026-03" || l === "2026-04") {
+    return { color: "#E8734A", borderRadius: [3, 3, 0, 0] };
+  }
+  return { color: "#D1C9C0", borderRadius: [3, 3, 0, 0] };
+});
+
+var chart = echarts.init(document.getElementById('mainChart'));
+
+var option = {
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(params) {
+      var p = params[0];
+      var l = p.axisValue;
+      var v = p.value;
+      if (l === "2026-03" || l === "2026-04") {
+        return '<strong style="color:#E8734A">' + l + '</strong><br/>入职: <strong>' + v + '人</strong><br/><span style="color:#E8734A">⚠ 历史均值的' + (v/histAvg).toFixed(1) + '倍</span>';
+      }
+      if (l === "2026-05") {
+        return '<strong>' + l + '</strong><br/>入职: ' + v + '人<span style="color:#A0AEC0">（部分月份）</span>';
+      }
+      return '<strong>' + l + '</strong><br/>入职: ' + v + '人';
+    }
+  },
+  grid: {
+    left: 40, right: 100, top: 50, bottom: 60
+  },
+  xAxis: {
+    type: 'category',
+    data: labels,
+    axisLabel: {
+      fontSize: 9,
+      color: '#8B99A8',
+      rotate: 45,
+      // Show every 3rd label to reduce clutter, but always show key months
+      interval: function(idx) {
+        var l = labels[idx];
+        // Always show the highlighted and nearby months
+        if (l === "2026-03" || l === "2026-04") return true;
+        if (l === "2021-11" || l === "2023-09" || l === "2024-11" || l === "2025-10" || l === "2026-02" || l === "2026-05") return true;
+        // Every 4th label otherwise
+        return idx % 4 === 0;
+      }
+    },
+    axisLine: { lineStyle: { color: '#E8E0D6' } },
+    axisTick: { alignWithLabel: true }
+  },
+  yAxis: {
+    type: 'value',
+    name: '入职人数',
+    nameTextStyle: { fontSize: 10, color: '#8B99A8' },
+    axisLabel: { fontSize: 10, color: '#8B99A8' },
+    splitLine: { lineStyle: { color: '#F2F0EB', type: 'dashed' } },
+    axisLine: { show: false },
+    min: 0
+  },
+  series: [
+    {
+      type: 'bar',
+      data: values.map(function(v, i) {
+        return {
+          value: v,
+          itemStyle: itemStyle[i]
+        };
+      }),
+      barMaxWidth: 30,
+      label: {
+        show: function(idx) {
+          var l = labels[idx];
+          return l === "2026-03" || l === "2026-04";
+        },
+        position: 'top',
+        formatter: function(p) { return p.value + '人'; },
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#E8734A'
+      },
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 8,
+          shadowColor: 'rgba(232,115,74,0.3)'
+        }
+      }
+    },
+    {
+      type: 'line',
+      name: '历史均值线',
+      data: values.map(function() { return histAvg; }),
+      symbol: 'none',
+      lineStyle: {
+        color: '#E8734A',
+        width: 2,
+        type: 'dashed'
+      },
+      label: {
+        show: true,
+        formatter: '历史月均 ' + histAvg + '人',
+        position: 'end',
+        fontSize: 11,
+        fontWeight: 'bold',
+        color: '#E8734A'
+      },
+      emphasis: { lineStyle: { width: 3 } }
+    }
+  ],
+  // Annotation marks using visual pieces
+  visualMap: {
+    show: false,
+    pieces: [
+      { min: 70, color: '#E8734A' }
+    ]
+  }
+};
+
+chart.setOption(option);
+
+// Mark area annotation for 2026-03 and 2026-04
+chart.setOption({
+  series: [
+    {}, // Keep bar series
+    {}  // Keep line series
+  ]
+});
+
+// Add mark areas after initial render
+var idxMar = labels.indexOf("2026-03");
+var idxApr = labels.indexOf("2026-04");
+
+chart.setOption({
+  series: [{
+    type: 'bar',
+    markArea: {
+      silent: true,
+      data: [[{
+        xAxis: labels[idxMar-1] || labels[0],
+        label: {
+          show: true,
+          position: 'top',
+          formatter: '集中入职期\n150人 / 2个月',
+          fontSize: 12,
+          fontWeight: 'bold',
+          color: '#E8734A',
+          backgroundColor: 'rgba(255,248,240,0.9)',
+          padding: [4, 8],
+          borderRadius: 4
+        },
+        itemStyle: { color: 'rgba(232,115,74,0.08)' }
+      }, {
+        xAxis: labels[idxApr+1] || labels[labels.length-1]
+      }]]
+    }
+  }]
+});
+
+// Responsive
+window.addEventListener('resize', function() { chart.resize(); });
+</script>
+</body>
+</html>

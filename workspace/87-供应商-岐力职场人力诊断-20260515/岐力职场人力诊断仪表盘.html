@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岐力职场人力诊断仪表盘 — 2026.05.14</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --red: #8b1a1a;
+  --red-light: #c25030;
+  --red-bg: rgba(194,80,48,0.12);
+  --teal: #2e8b6e;
+  --teal-bg: rgba(46,139,110,0.12);
+  --sky: #3a7ab8;
+  --sky-bg: rgba(58,122,184,0.12);
+  --stone: #857d74;
+  --stone-bg: rgba(133,125,116,0.12);
+  --amber: #8a5a0a;
+  --amber-bg: rgba(184,128,24,0.12);
+  --bg: #fafaf8;
+  --card: #ffffff;
+  --border: #e8e6e1;
+  --text: #2e2c2a;
+  --text2: #5f5a54;
+  --text3: #857d74;
+  --inset: #f2f0eb;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+.page { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+/* Header */
+.header { border-bottom: 2px solid var(--red); padding-bottom: 16px; margin-bottom: 32px; }
+.header h1 { font-size: 22px; font-weight: 600; color: var(--red); letter-spacing: -0.5px; }
+.header .meta { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.header .meta span { margin-right: 16px; }
+
+/* Section */
+.section { margin-bottom: 40px; }
+.section-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.section-sub { font-size: 12px; color: var(--text3); margin-bottom: 16px; }
+
+/* KPI Cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+.kpi-label { font-size: 12px; color: var(--text3); }
+.kpi-value { font-size: 30px; font-weight: 600; margin: 4px 0 2px; line-height: 1.1; }
+.kpi-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-top: 4px; }
+
+/* Grade Row */
+.grade-row { display: flex; gap: 24px; align-items: center; margin-top: 20px; flex-wrap: wrap; }
+.grade-item { text-align: center; min-width: 48px; }
+.grade-val { font-size: 20px; font-weight: 600; }
+.grade-lab { font-size: 11px; color: var(--text3); }
+
+/* Chart Container */
+.chart-container { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-top: 16px; }
+.chart-wrap { position: relative; width: 100%; }
+.chart-wrap.tall { height: 360px; }
+.chart-wrap.mid { height: 300px; }
+
+/* Insight Box */
+.insight { font-size: 13px; line-height: 1.7; background: var(--inset); border-radius: 8px; padding: 14px 18px; margin-top: 16px; border-left: 3px solid var(--red-light); }
+.insight b { color: var(--red-light); }
+
+/* Heatmap */
+.hm-grid { font-size: 11px; }
+.hm-row { display: grid; grid-template-columns: 120px repeat(4, 1fr); gap: 3px; }
+.hm-hdr { font-weight: 600; font-size: 11px; color: var(--text3); padding: 6px 4px; text-align: center; }
+.hm-name { font-weight: 600; white-space: nowrap; padding: 5px 8px; display: flex; align-items: center; gap: 5px; font-size: 11px; }
+.hm-name .mob { color: var(--text3); font-size: 9px; font-weight: 400; }
+.hm-cell { display: flex; align-items: center; justify-content: center; padding: 5px 4px; border-radius: 4px; font-weight: 600; min-height: 26px; }
+.hm-divider { height: 1px; background: var(--border); margin: 4px 0; grid-column: 1 / -1; }
+.tag { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; }
+.tag-S { background: rgba(139,26,26,0.15); color: #8b1a1a; }
+.tag-A { background: var(--teal-bg); color: var(--teal); }
+.tag-B { background: var(--sky-bg); color: var(--sky); }
+.tag-C { background: var(--stone-bg); color: var(--stone); }
+
+.legend-bar { width: 140px; height: 10px; border-radius: 4px; background: linear-gradient(to right, #c25030, #e0b0b0, #d4dbc8, #a8d5ba, #2e8b6e); }
+.legend-row { display: flex; gap: 10px; font-size: 11px; align-items: center; margin-top: 10px; color: var(--text3); }
+
+/* Action Table */
+.action-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+.action-table th { background: var(--inset); padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text2); border-bottom: 1px solid var(--border); }
+.action-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.action-table tr:last-child td { border-bottom: none; }
+.action-table .priority { font-weight: 600; font-size: 12px; white-space: nowrap; }
+.p-high { color: var(--red-light); }
+.p-mid { color: var(--amber); }
+.p-low { color: var(--sky); }
+
+/* Footer */
+.footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); text-align: center; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- Header -->
+<div class="header">
+  <h1>岐力职场人力诊断仪表盘</h1>
+  <div class="meta">
+    <span>复贷业务线 · 管户金条</span>
+    <span>数据截止：2026-05-14</span>
+    <span>数据科技业务部 · 服务组</span>
+  </div>
+</div>
+
+<!-- Section 1: KPI Overview -->
+<div class="section">
+  <div class="section-title">一、人力全景</div>
+  <div class="section-sub">6项核心指标，10秒判断大局</div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">总人数</div>
+      <div class="kpi-value" style="color:var(--red)">118</div>
+      <div class="kpi-tag" style="background:var(--red-bg);color:var(--red-light)">团队规模偏大</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">参评率</div>
+      <div class="kpi-value" style="color:var(--red-light)">39%</div>
+      <div class="kpi-tag" style="background:var(--red-bg);color:var(--red-light)">61%未达参评门槛</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">参评人均GMV</div>
+      <div class="kpi-value" style="color:var(--teal)">627<span style="font-size:16px;font-weight:400">万</span></div>
+      <div class="kpi-tag" style="background:var(--teal-bg);color:var(--teal)">46人参评均值</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">S级人数</div>
+      <div class="kpi-value" style="color:var(--amber)">1</div>
+      <div class="kpi-tag" style="background:var(--amber-bg);color:var(--amber)">仅言莹1人</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">超7天未上线</div>
+      <div class="kpi-value" style="color:var(--red-light)">2</div>
+      <div class="kpi-tag" style="background:var(--red-bg);color:var(--red-light)">金继昌、程志</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">外呼天数不足22天</div>
+      <div class="kpi-value" style="color:var(--red-light)">72</div>
+      <div class="kpi-tag" style="background:var(--red-bg);color:var(--red-light)">占61%</div>
+    </div>
+  </div>
+
+  <div class="grade-row">
+    <span style="font-size:12px;color:var(--text3);font-weight:600">等级分布（参评46人）：</span>
+    <div class="grade-item"><div class="grade-val" style="color:var(--red)">1</div><div class="grade-lab">S级</div></div>
+    <div class="grade-item"><div class="grade-val" style="color:var(--teal)">11</div><div class="grade-lab">A级</div></div>
+    <div class="grade-item"><div class="grade-val" style="color:var(--sky)">16</div><div class="grade-lab">B级</div></div>
+    <div class="grade-item"><div class="grade-val" style="color:var(--stone)">18</div><div class="grade-lab">C级</div></div>
+  </div>
+
+  <div class="insight">
+    <b>核心判断</b>：团队结构性问题 — 78%为MOB1-3新人，C级占参评39%，S级仅1人。不是"几个人不行"，是<b>整体底盘偏弱</b>。帕累托检验未通过（前20%仅贡献38%），产出极度分散，缺乏真正的头部拉动。
+  </div>
+</div>
+
+<!-- Section 2: Structure -->
+<div class="section">
+  <div class="section-title">二、人力结构：司龄 x 参评 x 等级</div>
+  <div class="section-sub">78%团队为MOB1-3新人，非参评人员高度集中在MOB1-</div>
+  <div class="chart-container">
+    <div class="chart-wrap mid"><canvas id="chartStructure"></canvas></div>
+  </div>
+  <div class="insight">
+    <b>关键发现</b>：MOB1-的36人全部非参评（入职不到2周），这是新人入职潮导致的结构性产出空窗。但MOB1-3中仍有<b>27人（47%）非参评</b> — 入职40-56天仍未达标，才是真正需要介入的群体。MOB6-12的8名参评人员中A级3人、C级3人，两极分化明显。
+  </div>
+</div>
+
+<!-- Section 3: Pareto -->
+<div class="section">
+  <div class="section-title">三、帕累托检验：前20%仅贡献38% — 缺乏头部拉动</div>
+  <div class="section-sub">108人有GMV产出 | 总计46,653万 | 红色柱=前6名头部</div>
+  <div class="chart-container">
+    <div class="chart-wrap tall"><canvas id="chartPareto"></canvas></div>
+  </div>
+  <div class="insight">
+    <b>核心问题</b>：经典帕累托要求前20%贡献80%产出，但岐力前20%（22人）仅贡献38.2%。产出<b>极度分散</b>，没有真正的"超级产能者" — 最高个人（吴才亮1430万）也仅占3.1%。<br>
+    这意味着：(1) 不能靠"盯几个人"来拉动业绩，必须是<b>系统性提升</b>；(2) 团队天花板受限于客户池质量或话术效率，不是人力不足。
+  </div>
+</div>
+
+<!-- Section 4: Heatmap -->
+<div class="section">
+  <div class="section-title">四、效率诊断矩阵：多维度热力图</div>
+  <div class="section-sub">红=弱 | 绿=强 | 展示A级头部12人 + C级尾部10人</div>
+  <div class="chart-container">
+    <div class="hm-grid" id="heatmapGrid"></div>
+    <div class="legend-row">
+      <span>弱</span><div class="legend-bar"></div><span>强</span>
+      <span style="margin-left:12px">ATT越低越好 | GMV / T0 / 通时越高越好 | 数值=百分位排名</span>
+    </div>
+  </div>
+  <div class="insight" style="line-height:1.8">
+    <b>典型模式对比</b>：<br>
+    <b>标杆</b> — 徐锦：ATT效率高(74s) + GMV 972万 + T0占比63%，效率型选手，复制其话术和客户筛选逻辑。<br>
+    <b>高耗低产</b> — 李佳：ATT 136s（倒数第2）但日均通时182min（全队最高），<b>通时长不等于产出高</b>，客户筛选或话术转化有问题。<br>
+    <b>高效低产</b> — 冯子豪/刘智帆：ATT 62-64s（全队最快）但GMV仅335-348万，<b>通话效率高但客单价低</b>，需要提升客户经营能力。<br>
+    <b>老员工塌陷</b> — 唐艳琴/齐梦华（MOB6-12，入职10个月+）仍为C级，已过成长期，需个别谈话确定去留。
+  </div>
+</div>
+
+<!-- Section 5: Action -->
+<div class="section">
+  <div class="section-title">五、行动建议</div>
+  <div class="section-sub">按优先级排列的三层干预策略</div>
+  <table class="action-table">
+    <thead>
+      <tr><th style="width:80px">优先级</th><th style="width:140px">对象</th><th>动作</th><th style="width:180px">依据</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="priority p-high">即刻干预</td>
+        <td>金继昌、程志</td>
+        <td>超7天未上线+GMV=0，确认是否已离职/挂名，48小时内反馈</td>
+        <td>图一KPI + 图二司龄</td>
+      </tr>
+      <tr>
+        <td class="priority p-high">短期优化</td>
+        <td>C级18人</td>
+        <td>复制徐锦模式（低ATT+高T0转化），针对性话术培训，2周内见效</td>
+        <td>图四热力图</td>
+      </tr>
+      <tr>
+        <td class="priority p-mid">结构性改善</td>
+        <td>MOB1-3中27名非参评</td>
+        <td>入职40-56天仍未达标，检查培训体系和带教质量，重点而非撒网</td>
+        <td>图二司龄交叉</td>
+      </tr>
+      <tr>
+        <td class="priority p-low">长期关注</td>
+        <td>唐艳琴、齐梦华</td>
+        <td>MOB6-12仍为C级，已过成长期，个别谈话确定去留或调岗方案</td>
+        <td>图四热力图</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  岐力职场人力诊断仪表盘 · 数据截止2026-05-14 · 数据科技业务部·服务组
+</div>
+
+</div>
+
+<script>
+// ========== Chart 2: Structure ==========
+(function(){
+  var ctx = document.getElementById('chartStructure').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['MOB1-\n(入职<14天)', 'MOB1-3\n(14-90天)', 'MOB3-6\n(90-180天)', 'MOB6-12\n(180-365天)'],
+      datasets: [
+        { label: 'S级', data: [0,1,0,0], backgroundColor: '#8b1a1a', borderRadius: 4, barPercentage: 0.7 },
+        { label: 'A级', data: [0,6,2,3], backgroundColor: '#2e8b6e', borderRadius: 4, barPercentage: 0.7 },
+        { label: 'B级', data: [0,12,2,2], backgroundColor: '#3a7ab8', borderRadius: 4, barPercentage: 0.7 },
+        { label: 'C级', data: [0,11,4,3], backgroundColor: '#857d74', borderRadius: 4, barPercentage: 0.7 },
+        { label: '非参评', data: [36,27,2,7], backgroundColor: 'rgba(133,125,116,0.25)', borderColor: '#857d74', borderWidth: 1, borderRadius: 4, barPercentage: 0.7 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12, padding: 8 } },
+        tooltip: {
+          callbacks: {
+            afterBody: function(c) {
+              var totals = [36,57,10,15];
+              var evals = [0,30,8,8];
+              var i = c[0].dataIndex;
+              return '参评率: ' + Math.round(evals[i]/totals[i]*100) + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { stacked: true, grid: { color: 'rgba(0,0,0,0.06)' }, title: { display: true, text: '人数', font: { size: 11 } } }
+      }
+    }
+  });
+})();
+
+// ========== Chart 3: Pareto ==========
+(function(){
+  var ctx = document.getElementById('chartPareto').getContext('2d');
+  var rawData = [
+    {n:'吴才亮',v:1430},{n:'言莹',v:1110},{n:'彭科',v:1030},{n:'徐锦',v:972},
+    {n:'万泽珊',v:939},{n:'蔡子虎',v:887},{n:'詹焱',v:871},{n:'罗豪',v:871},
+    {n:'黎鑫',v:856},{n:'熊晨',v:849},{n:'刘玉立',v:845},{n:'吴珍珍',v:841},
+    {n:'洪诚',v:823},{n:'刘强',v:815},{n:'邓清清',v:814},{n:'郑民',v:812},
+    {n:'颜樱',v:782},{n:'刘波波',v:769},{n:'李文超',v:758},{n:'杨丹丹',v:757},
+    {n:'李佳',v:753},{n:'黄素云',v:744},{n:'周建兰',v:743},{n:'刘颖',v:732},
+    {n:'陈家伟',v:729},{n:'龚洋洋',v:709},{n:'李勋凯',v:701},{n:'钱凯平',v:691},
+    {n:'胡小康',v:671},{n:'余学伟',v:653}
+  ];
+  var totalGmv = 46653;
+  var labels = [], gmvData = [], cumData = [];
+  var cum = 0;
+  for (var i = 0; i < rawData.length; i++) {
+    labels.push(rawData[i].n);
+    gmvData.push(rawData[i].v);
+    cum += rawData[i].v;
+    cumData.push(Math.round(cum / totalGmv * 1000) / 10);
+  }
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          type: 'bar', label: '复贷GMV(万)', data: gmvData,
+          backgroundColor: function(c) { return c.dataIndex < 6 ? '#8b1a1a' : 'rgba(139,26,26,0.35)'; },
+          borderRadius: 3, barPercentage: 0.8, yAxisID: 'y'
+        },
+        {
+          type: 'line', label: '累计贡献%', data: cumData,
+          borderColor: '#3a7ab8', backgroundColor: 'rgba(58,122,184,0.08)', fill: true,
+          tension: 0.3, pointRadius: 2, pointBackgroundColor: '#3a7ab8', borderWidth: 2, yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12, padding: 8 } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45, minRotation: 45 } },
+        y: { position: 'left', grid: { color: 'rgba(0,0,0,0.06)' }, title: { display: true, text: 'GMV(万)', font: { size: 11 } } },
+        y1: { position: 'right', min: 0, max: 100, grid: { display: false }, title: { display: true, text: '累计%', font: { size: 11 } }, ticks: { callback: function(v) { return v + '%'; } } }
+      }
+    }
+  });
+})();
+
+// ========== Heatmap ==========
+(function(){
+  var data = [
+    {n:'言莹',g:'S',mob:'MOB1-3',att:31,gmv:100,t0:96,avg:96},
+    {n:'徐锦',g:'A',mob:'MOB1-3',att:84,gmv:96,t0:100,avg:84},
+    {n:'吴珍珍',g:'A',mob:'MOB1-3',att:40,gmv:80,t0:91,avg:89},
+    {n:'彭科',g:'A',mob:'MOB1-3',att:40,gmv:98,t0:98,avg:24},
+    {n:'蔡子虎',g:'A',mob:'MOB6-12',att:0,gmv:93,t0:84,avg:71},
+    {n:'黎鑫',g:'A',mob:'MOB1-3',att:49,gmv:87,t0:64,avg:78},
+    {n:'李佳',g:'A',mob:'MOB3-6',att:4,gmv:62,t0:80,avg:100},
+    {n:'郑民',g:'A',mob:'MOB3-6',att:7,gmv:73,t0:89,avg:31},
+    {n:'詹焱',g:'A',mob:'MOB1-3',att:27,gmv:89,t0:82,avg:42},
+    {n:'颜樱',g:'A',mob:'MOB1-3',att:16,gmv:71,t0:71,avg:73},
+    {n:'刘莉莉',g:'A',mob:'MOB6-12',att:4,gmv:47,t0:93,avg:87},
+    {n:'邓清清',g:'A',mob:'MOB6-12',att:11,gmv:76,t0:87,avg:91},
+    {divider:true},
+    {n:'吴文豪',g:'C',mob:'MOB1-3',att:91,gmv:29,t0:20,avg:31},
+    {n:'冯子豪',g:'C',mob:'MOB1-3',att:98,gmv:4,t0:24,avg:27},
+    {n:'刘智帆',g:'C',mob:'MOB1-3',att:100,gmv:9,t0:0,avg:7},
+    {n:'齐梦华',g:'C',mob:'MOB6-12',att:89,gmv:13,t0:40,avg:2},
+    {n:'徐乐富',g:'C',mob:'MOB3-6',att:80,gmv:2,t0:9,avg:0},
+    {n:'邹泽勇',g:'C',mob:'MOB1-3',att:62,gmv:7,t0:18,avg:13},
+    {n:'唐艳琴',g:'C',mob:'MOB6-12',att:27,gmv:0,t0:27,avg:16},
+    {n:'程芬芬',g:'C',mob:'MOB1-3',att:80,gmv:11,t0:38,avg:29},
+    {n:'李博闻',g:'C',mob:'MOB1-3',att:69,gmv:18,t0:7,avg:60},
+    {n:'徐志雄',g:'C',mob:'MOB3-6',att:42,gmv:27,t0:16,avg:18}
+  ];
+
+  function getCellColor(v) {
+    var r, g, b;
+    if (v <= 25) { r = 194; g = 80; b = 48; }
+    else if (v <= 50) { var t = (v-25)/25; r = Math.round(194+(224-194)*t); g = Math.round(80+(176-80)*t); b = Math.round(48+(176-48)*t); }
+    else if (v <= 75) { var t = (v-50)/25; r = Math.round(224+(168-224)*t); g = Math.round(176+(213-176)*t); b = Math.round(176+(186-176)*t); }
+    else { var t = (v-75)/25; r = Math.round(168+(46-168)*t); g = Math.round(213+(139-213)*t); b = Math.round(186+(110-186)*t); }
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+  function getTextColor(v) { return v < 40 ? '#fff' : '#333'; }
+
+  var grid = document.getElementById('heatmapGrid');
+  // Header
+  var hdr = document.createElement('div');
+  hdr.className = 'hm-row';
+  hdr.innerHTML = '<div class="hm-hdr"></div><div class="hm-hdr">ATT效率</div><div class="hm-hdr">GMV产出</div><div class="hm-hdr">T0转化</div><div class="hm-hdr">日均通时</div>';
+  grid.appendChild(hdr);
+
+  for (var i = 0; i < data.length; i++) {
+    var d = data[i];
+    if (d.divider) {
+      var dv = document.createElement('div');
+      dv.className = 'hm-divider';
+      grid.appendChild(dv);
+      continue;
+    }
+    var row = document.createElement('div');
+    row.className = 'hm-row';
+    row.innerHTML =
+      '<div class="hm-name"><span class="tag tag-' + d.g + '">' + d.g + '</span>' + d.n + '<span class="mob">' + d.mob + '</span></div>' +
+      '<div class="hm-cell" style="background:' + getCellColor(d.att) + ';color:' + getTextColor(d.att) + '">' + d.att + '</div>' +
+      '<div class="hm-cell" style="background:' + getCellColor(d.gmv) + ';color:' + getTextColor(d.gmv) + '">' + d.gmv + '</div>' +
+      '<div class="hm-cell" style="background:' + getCellColor(d.t0) + ';color:' + getTextColor(d.t0) + '">' + d.t0 + '</div>' +
+      '<div class="hm-cell" style="background:' + getCellColor(d.avg) + ';color:' + getTextColor(d.avg) + '">' + d.avg + '</div>';
+    grid.appendChild(row);
+  }
+})();
+</script>
+</body>
+</html>

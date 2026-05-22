@@ -34,7 +34,7 @@ skillsDir: ./.claude/skills
 
 ## 目录约定
 
-**核心 vs 临时**：`workspace/` 是临时工作台（不入库），其余目录为核心（提交并推送）。
+**核心 vs 临时**：`workspace/` 工作台也入库（提交并推送），方便 git 跟踪和恢复。
 
 ### workspace/ 命名规范（强制）
 

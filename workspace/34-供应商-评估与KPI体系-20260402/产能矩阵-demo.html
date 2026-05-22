@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产能利用率矩阵</title>
+    <style>
+        :root {
+            /* === 配色原则：用颜色引导视线 === */
+            /* 1. 需要行动的 = 红色/橙色（视觉跳出来） */
+            /* 2. 正向标杆 = 绿色（确认感） */
+            /* 3. 其他 = 灰度（背景信息） */
+
+            /* 灰度（背景） */
+            --gray-50: #FAFAFA;
+            --gray-100: #F5F5F4;
+            --gray-200: #E7E5E4;
+            --gray-300: #D6D3D1;
+            --gray-400: #A8A29E;
+            --gray-500: #78716C;
+            --gray-600: #57534E;
+            --gray-700: #44403C;
+            --gray-800: #292524;
+
+            /* 语义色（有明确含义） */
+            --red: #DC2626;           /* 问题/危险 = 需要立即行动 */
+            --red-bg: #FEF2F2;        /* 问题象限背景 */
+            --green: #16A34A;         /* 标杆/成功 = 正向确认 */
+            --green-bg: #F0FDF4;      /* 标杆象限背景 */
+            --amber: #F59E0B;         /* 警告/注意 = 需要观察 */
+            --amber-bg: #FFFBEB;      /* 警告象限背景 */
+            --gray-blue: #F5F5F4;     /* 普通 = 背景信息 */
+
+            /* 间距 */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+
+            /* 容器 */
+            --radius: 6px;
+            --border: 1px solid var(--gray-300);
+
+            /* 字体 */
+            --font-h1: 600 18px/1.2 -apple-system, sans-serif;
+            --font-h2: 600 14px/1.3 -apple-system, sans-serif;
+            --font-h3: 500 13px/1.4 -apple-system, sans-serif;
+            --font-body: 400 12px/1.5 -apple-system, sans-serif;
+            --font-caption: 400 11px/1.4 -apple-system, sans-serif;
+            --font-mono: 400 11px/1.4 "SF Mono", monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font: var(--font-body);
+            background: #FFFFFF;
+            color: var(--gray-800);
+            padding: var(--space-4);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* === 标题 === */
+        .header {
+            margin-bottom: var(--space-3);
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font: var(--font-h1);
+            color: var(--gray-800);
+        }
+
+        .page-subtitle {
+            font: var(--font-body);
+            color: var(--gray-500);
+            margin-top: var(--space-1);
+        }
+
+        /* === 主布局 === */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: var(--space-4);
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* === 矩阵卡片 === */
+        .matrix-card {
+            background: #FFFFFF;
+            border: var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .matrix-header {
+            padding: var(--space-3) var(--space-4);
+            border-bottom: var(--border);
+            font: var(--font-h2);
+            color: var(--gray-800);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .matrix-body {
+            flex: 1;
+            padding: var(--space-3);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        /* 坐标轴 */
+        .axis-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 var(--space-5);
+            font: var(--font-caption);
+            color: var(--gray-500);
+            text-transform: uppercase;
+        }
+
+        .axis-col {
+            position: absolute;
+            left: var(--space-2);
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font: var(--font-caption);
+            color: var(--gray-500);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* 矩阵网格 */
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1px;
+            background: var(--gray-300);
+            border: 1px solid var(--gray-300);
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+
+        /* 象限 - 用背景色引导 */
+        .quadrant {
+            position: relative;
+            padding: var(--space-4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .quadrant-tl { background: var(--gray-blue); }  /* 潜力型 - 普通 */
+        .quadrant-tr { background: var(--green-bg); }  /* 标杆型 - 绿色确认 */
+        .quadrant-bl { background: var(--red-bg); }    /* 问题型 - 红色警示 */
+        .quadrant-br { background: var(--amber-bg); }  /* 波动型 - 黄色观察 */
+
+        /* 象限标签 */
+        .quadrant-label {
+            font: var(--font-h2);
+            margin-bottom: var(--space-2);
+        }
+
+        .quadrant-tl .quadrant-label { color: var(--gray-600); }
+        .quadrant-tr .quadrant-label { color: var(--green); }
+        .quadrant-bl .quadrant-label { color: var(--red); }
+        .quadrant-br .quadrant-label { color: var(--amber); }
+
+        .quadrant-desc {
+            font: var(--font-caption);
+            margin-bottom: var(--space-1);
+        }
+
+        .quadrant-tl .quadrant-desc { color: var(--gray-500); }
+        .quadrant-tr .quadrant-desc { color: var(--green); }
+        .quadrant-bl .quadrant-desc { color: var(--red); }
+        .quadrant-br .quadrant-desc { color: var(--amber); }
+
+        .quadrant-action {
+            margin-top: auto;
+            padding: var(--space-2) var(--space-3);
+            background: #FFFFFF;
+            border-radius: var(--radius);
+            font: var(--font-caption);
+            align-self: flex-start;
+        }
+
+        .quadrant-tl .quadrant-action { color: var(--gray-600); border-color: var(--gray-300); }
+        .quadrant-tr .quadrant-action { color: var(--green); border-color: var(--green); }
+        .quadrant-bl .quadrant-action { color: var(--red); border-color: var(--red); font-weight: 500; }
+        .quadrant-br .quadrant-action { color: var(--amber); border-color: var(--amber); }
+
+        /* === 气泡 === */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 气泡用白色底，边框表达状态 */
+        .bubble-name {
+            font: var(--font-h3);
+            font-size: 11px;
+        }
+
+        .bubble-value {
+            font: var(--font-mono);
+            font-size: 9px;
+        }
+
+        .bubble-sm { width: 44px; height: 44px; }
+        .bubble-md { width: 56px; height: 56px; }
+        .bubble-lg { width: 68px; height: 68px; }
+
+        /* 气泡边框色 = 状态色 */
+        .bubble-success {
+            background: #FFFFFF;
+            border: 2px solid var(--green);
+        }
+        .bubble-success .bubble-name { color: var(--gray-800); }
+        .bubble-success .bubble-value { color: var(--green); }
+
+        .bubble-danger {
+            background: #FFFFFF;
+            border: 2px solid var(--red);
+        }
+        .bubble-danger .bubble-name { color: var(--gray-800); }
+        .bubble-danger .bubble-value { color: var(--red); }
+
+        .bubble-warning {
+            background: #FFFFFF;
+            border: 2px solid var(--amber);
+        }
+        .bubble-warning .bubble-name { color: var(--gray-800); }
+        .bubble-warning .bubble-value { color: var(--amber); }
+
+        .bubble-neutral {
+            background: #FFFFFF;
+            border: 2px solid var(--gray-400);
+        }
+        .bubble-neutral .bubble-name { color: var(--gray-800); }
+        .bubble-neutral .bubble-value { color: var(--gray-500); }
+
+        /* === 右侧面板 === */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            overflow-y: auto;
+        }
+
+        /* 重点卡片（问题供应商）- 跳出来 */
+        .alert-card {
+            background: var(--red-bg);
+            border: 1px solid var(--red);
+            border-radius: var(--radius);
+            padding: var(--space-3);
+        }
+
+        .alert-header {
+            font: var(--font-h2);
+            color: var(--red);
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+
+        .alert-item {
+            padding: var(--space-2) 0;
+            border-top: 1px solid rgba(220, 38, 38, 0.2);
+            font: var(--font-body);
+            color: var(--gray-700);
+        }
+
+        /* 正向卡片（标杆） */
+        .good-card {
+            background: var(--green-bg);
+            border: 1px solid var(--green);
+            border-radius: var(--radius);
+            padding: var(--space-3);
+        }
+
+        .good-header {
+            font: var(--font-h2);
+            color: var(--green);
+            margin-bottom: var(--space-2);
+        }
+
+        /* 普通指标卡 */
+        .metric-card {
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            padding: var(--space-3);
+        }
+
+        .metric-label {
+            font: var(--font-caption);
+            color: var(--gray-500);
+        }
+
+        .metric-value {
+            font: var(--font-h1);
+            color: var(--gray-800);
+        }
+
+        /* 供应商列表 */
+        .supplier-list {
+            background: #FFFFFF;
+            border: var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: var(--space-2) var(--space-3);
+            background: var(--gray-100);
+            font: var(--font-h2);
+            color: var(--gray-700);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-2) var(--space-3);
+            border-bottom: 1px solid var(--gray-200);
+            font: var(--font-body);
+        }
+
+        .list-name {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .list-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .list-dot-success { background: var(--green); }
+        .list-dot-danger { background: var(--red); }
+        .list-dot-warning { background: var(--amber); }
+        .list-dot-neutral { background: var(--gray-400); }
+
+        .list-metrics {
+            font: var(--font-mono);
+            color: var(--gray-500);
+        }
+
+        /* 图例 */
+        .legend {
+            padding: var(--space-2) var(--space-3);
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            font: var(--font-caption);
+            color: var(--gray-600);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="page-title">产能利用率矩阵</h1>
+        <p class="page-subtitle">自身峰值比 × 头部差距 — 红色=需立即行动</p>
+    </div>
+
+    <div class="dashboard">
+        <div class="matrix-card">
+            <div class="matrix-header">
+                <span>四象限分布</span>
+                <span style="font: var(--font-caption); color: var(--gray-500);">气泡大小 = 产能规模</span>
+            </div>
+            <div class="matrix-body">
+                <div class="axis-col">← 峰值比低 &nbsp;&nbsp;&nbsp; 峰值比高 →</div>
+                <div class="matrix-grid">
+                    <!-- 左上：潜力型 -->
+                    <div class="quadrant quadrant-tl">
+                        <div class="quadrant-label">潜力型</div>
+                        <div class="quadrant-desc">自身好，距标杆有差距</div>
+                        <div class="quadrant-action">标杆分享</div>
+                        <div class="bubble bubble-neutral bubble-md" style="top: 35%; right: 20%;">
+                            <span class="bubble-name">广达</span>
+                            <span class="bubble-value">85%</span>
+                        </div>
+                        <div class="bubble bubble-neutral bubble-md" style="top: 55%; right: 35%;">
+                            <span class="bubble-name">伽玛</span>
+                            <span class="bubble-value">82%</span>
+                        </div>
+                    </div>
+
+                    <!-- 右上：标杆型（绿色） -->
+                    <div class="quadrant quadrant-tr">
+                        <div class="quadrant-label">标杆型</div>
+                        <div class="quadrant-desc">自身好，接近头部</div>
+                        <div class="quadrant-action">维持现状</div>
+                        <div class="bubble bubble-success bubble-lg" style="top: 30%; right: 30%;">
+                            <span class="bubble-name">毅航</span>
+                            <span class="bubble-value">92%</span>
+                        </div>
+                        <div class="bubble bubble-success bubble-lg" style="top: 50%; right: 20%;">
+                            <span class="bubble-name">毛毛虫</span>
+                            <span class="bubble-value">88%</span>
+                        </div>
+                    </div>
+
+                    <!-- 左下：问题型（红色） -->
+                    <div class="quadrant quadrant-bl">
+                        <div class="quadrant-label">问题型</div>
+                        <div class="quadrant-desc">自身差，距标杆远</div>
+                        <div class="quadrant-action">立即约谈</div>
+                        <div class="bubble bubble-danger bubble-sm" style="top: 30%; right: 30%;">
+                            <span class="bubble-name">华啸</span>
+                            <span class="bubble-value">58%</span>
+                        </div>
+                        <div class="bubble bubble-danger bubble-md" style="top: 55%; right: 20%;">
+                            <span class="bubble-name">岐力</span>
+                            <span class="bubble-value">62%</span>
+                        </div>
+                    </div>
+
+                    <!-- 右下：波动型（黄色） -->
+                    <div class="quadrant quadrant-br">
+                        <div class="quadrant-label">波动型</div>
+                        <div class="quadrant-desc">暂时低，差距不大</div>
+                        <div class="quadrant-action">观察趋势</div>
+                        <div class="bubble bubble-warning bubble-md" style="top: 35%; right: 25%;">
+                            <span class="bubble-name">赛维斯</span>
+                            <span class="bubble-value">71%</span>
+                        </div>
+                        <div class="bubble bubble-warning bubble-sm" style="top: 55%; right: 40%;">
+                            <span class="bubble-name">翰锐</span>
+                            <span class="bubble-value">74%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="axis-row">
+                    <span>头部差距大</span>
+                    <span>头部差距小</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <!-- 重点：问题供应商（红色跳出来） -->
+            <div class="alert-card">
+                <div class="alert-header">
+                    <span>⚠</span>
+                    <span>需立即行动</span>
+                </div>
+                <div class="alert-item">华啸：峰值比 58%，下滑 8%</div>
+                <div class="alert-item">岐力：峰值比 62%，下滑 5%</div>
+            </div>
+
+            <!-- 正向：标杆供应商（绿色确认） -->
+            <div class="good-card">
+                <div class="good-header">✓ 标杆供应商</div>
+                <div style="font: var(--font-body); color: var(--gray-700);">
+                    毅航 92%、毛毛虫 88%
+                </div>
+            </div>
+
+            <!-- 普通指标 -->
+            <div class="metric-card">
+                <div class="metric-label">供应商总数</div>
+                <div class="metric-value">8家</div>
+            </div>
+
+            <!-- 完整列表 -->
+            <div class="supplier-list">
+                <div class="list-header">全部供应商</div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-success"></span>
+                        毅航
+                    </span>
+                    <span class="list-metrics">92% / 3%</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-success"></span>
+                        毛毛虫
+                    </span>
+                    <span class="list-metrics">88% / 5%</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-neutral"></span>
+                        广达
+                    </span>
+                    <span class="list-metrics">85% / 18%</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-neutral"></span>
+                        伽玛
+                    </span>
+                    <span class="list-metrics">82% / 15%</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-warning"></span>
+                        赛维斯
+                    </span>
+                    <span class="list-metrics">71% / 6%</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-warning"></span>
+                        翰锐
+                    </span>
+                    <span class="list-metrics">74% / 8%</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-danger"></span>
+                        岐力
+                    </span>
+                    <span class="list-metrics">62% / 28%</span>
+                </div>
+                <div class="list-item">
+                    <span class="list-name">
+                        <span class="list-dot list-dot-danger"></span>
+                        华啸
+                    </span>
+                    <span class="list-metrics">58% / 32%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>viz-design 完整工作流</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#faf7f2;color:#1c1917;font-family:'Noto Sans SC','Geist',system-ui,sans-serif;line-height:1.6}
+.container{max-width:960px;margin:0 auto;padding:2rem 1rem}
+.header{text-align:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid rgba(28,25,23,0.12)}
+.header .eyebrow{font-family:'Noto Sans Mono','Geist Mono',monospace;font-size:0.75rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:#78716c;margin-bottom:0.5rem}
+.header h1{font-family:'Instrument Serif','Noto Serif SC',Georgia,serif;font-size:2rem;font-weight:400;color:#1c1917}
+.header .subtitle{font-size:0.875rem;color:#57534e;margin-top:0.5rem}
+
+.diagram-container{background:#f2ede4;border:1px solid rgba(11,13,11,0.12);border-radius:8px;padding:1rem;overflow-x:auto;margin-bottom:2rem}
+svg text{font-family:'Noto Sans SC','Geist',system-ui,sans-serif}
+svg .node-name{font-weight:600}
+svg .sublabel{fill:#57534e;font-family:'Noto Sans Mono','Geist Mono',monospace}
+
+.legend{display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:center;padding:1rem 0;font-size:0.75rem;color:#57534e}
+.legend-item{display:flex;align-items:center;gap:0.5rem}
+.legend-shape{width:24px;height:16px;border:1px solid #1c1917;border-radius:3px;display:inline-block}
+.legend-shape.oval{border-radius:50%}
+.legend-shape.diamond{width:14px;height:14px;transform:rotate(45deg);margin:2px}
+.legend-shape.dashed{border-style:dashed}
+.legend-shape.accent{border-color:#b5523a;background:rgba(181,82,58,0.08)}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+@media(max-width:700px){.cards{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid rgba(11,13,11,0.12);border-radius:6px;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem}
+.card-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.card-dot.accent{background:#b5523a}
+.card-dot.ink{background:#1c1917}
+.card-dot.muted{background:#78716c}
+.card h3{font-size:0.875rem;font-weight:600}
+.card .eyebrow{font-family:'Noto Sans Mono','Geist Mono',monospace;font-size:0.65rem;color:#78716c;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.25rem}
+.card ul{list-style:none;padding:0}
+.card li{font-size:0.8rem;color:#57534e;padding:0.2rem 0;border-bottom:1px solid rgba(28,25,23,0.06);display:flex;align-items:flex-start;gap:0.4rem}
+.card li:last-child{border-bottom:none}
+.card li::before{content:'';width:4px;height:4px;background:#78716c;border-radius:50%;flex-shrink:0;margin-top:0.35rem}
+
+.footer{text-align:center;padding:1rem 0;border-top:1px solid rgba(28,25,23,0.12);font-family:'Noto Sans Mono','Geist Mono',monospace;font-size:0.7rem;color:#78716c}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+<p class="eyebrow">viz-design Skill</p>
+<h1>可视化设计器完整工作流</h1>
+<p class="subtitle">三循环工作流：初稿 → 减法迭代 → 验收交付 — 从需求入口到渲染出图</p>
+</div>
+
+<!-- PHASE 0: INTENT & SPEC
+Intent: viz-design 技能从需求接收到最终交付的完整流程图
+Type: Flowchart (decision tree + linear flow)
+  Why this type: 工作流包含决策分支、循环回退、多阶段处理
+  Why not alternatives: 架构图不适合表达流程顺序，泳道图不适合单角色流程
+Content distillation: 14 个节点，包含 3 条决策分支、1 条回退路径
+Focal elements: R0 必要性门禁（关键决策点）, Cycle 3 验收回退（质量闭环）
+Layout budget:
+  Canvas: 960x1640, padding: 40
+  viewBox H: 1640 + 80 safety = 1720
+  Nodes: see spatial budget below
+  Spacing check: min gap >= 24px
+-->
+
+<div class="diagram-container">
+<svg viewBox="0 0 960 1720" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto">
+<defs>
+<pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+<circle cx="11" cy="11" r="0.8" fill="rgba(28,25,23,0.08)"/>
+</pattern>
+<marker id="arrow" viewBox="0 0 12 8" refX="11" refY="4" markerWidth="8" markerHeight="6" orient="auto">
+<path d="M 0 0 L 12 4 L 0 8 Z" fill="#57534e"/>
+</marker>
+<marker id="arrow-accent" viewBox="0 0 12 8" refX="11" refY="4" markerWidth="8" markerHeight="6" orient="auto">
+<path d="M 0 0 L 12 4 L 0 8 Z" fill="#b5523a"/>
+</marker>
+<marker id="arrow-dashed" viewBox="0 0 12 8" refX="11" refY="4" markerWidth="8" markerHeight="6" orient="auto">
+<path d="M 0 0 L 12 4 L 0 8 Z" fill="#78716c"/>
+</marker>
+<filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+<feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.06"/>
+</filter>
+</defs>
+
+<!-- Background -->
+<rect width="960" height="1720" fill="url(#dots)"/>
+
+<!-- ============================================ -->
+<!-- MAIN FLOWCHART                               -->
+<!-- ============================================ -->
+
+<!-- ===== NODE 1: Start ===== -->
+<rect x="360" y="52" width="240" height="48" rx="24" fill="#ffffff" stroke="#1c1917" stroke-width="1"/>
+<text x="480" y="82" text-anchor="middle" font-size="14" font-weight="600" fill="#1c1917">收到可视化需求</text>
+
+<!-- Down arrow -->
+<line x1="480" y1="100" x2="480" y2="124" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- ===== NODE 2: Entry Mode ===== -->
+<rect x="360" y="128" width="240" height="56" rx="6" fill="#ffffff" stroke="#1c1917" stroke-width="1"/>
+<text x="480" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#1c1917">入口模式选择</text>
+<text x="480" y="170" text-anchor="middle" font-size="10" fill="#57534e" class="sublabel">A引导 B推荐 C自定义 C快速路径</text>
+
+<!-- Down arrow -->
+<line x1="480" y1="184" x2="480" y2="208" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- ===== NODE 3: Quick Channel Decision ===== -->
+<rect x="360" y="212" width="240" height="56" rx="6" fill="#ffffff" stroke="#1c1917" stroke-width="1"/>
+<text x="480" y="236" text-anchor="middle" font-size="12" font-weight="600" fill="#1c1917">快速通道决策矩阵</text>
+<text x="480" y="254" text-anchor="middle" font-size="10" fill="#57534e" class="sublabel">单图→轻量 / 多图→完整</text>
+
+<!-- Down arrow -->
+<line x1="480" y1="268" x2="480" y2="296" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- ===== NODE 4: R0 Gate (Diamond) ===== -->
+<polygon points="480,300 600,340 480,380 360,340" fill="#ffffff" stroke="#b5523a" stroke-width="1.5"/>
+<text x="480" y="336" text-anchor="middle" font-size="12" font-weight="600" fill="#1c1917">R0 必要性门禁</text>
+<text x="480" y="352" text-anchor="middle" font-size="10" fill="#57534e" class="sublabel">三分支决策</text>
+
+<!-- R0 left arrow: 表格 -->
+<line x1="366" y1="340" x2="264" y2="340" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="310" y="332" text-anchor="middle" font-size="10" fill="#57534e" class="sublabel">精确数值→表格</text>
+
+<!-- R0 right arrow: 文字 -->
+<line x1="594" y1="340" x2="696" y2="340" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="650" y="332" text-anchor="middle" font-size="10" fill="#57534e" class="sublabel">一句话说清→文字</text>
+
+<!-- R0 down arrow: 继续 -->
+<line x1="480" y1="380" x2="480" y2="412" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="492" y="396" font-size="10" fill="#b5523a" font-weight="500">分布/趋势/关联→继续</text>
+
+<!-- ===== NODE 5: Cycle 1 Container ===== -->
+<rect x="300" y="416" width="360" height="232" rx="8" fill="#ffffff" stroke="rgba(28,25,23,0.12)" stroke-width="1"/>
+<rect x="300" y="416" width="360" height="28" rx="8" fill="#faf7f2" stroke="none"/>
+<rect x="300" y="436" width="360" height="8" fill="#faf7f2"/>
+<text x="320" y="436" font-size="11" font-weight="600" fill="#1c1917">循环 1：初稿</text>
+<text x="640" y="436" text-anchor="end" font-size="9" fill="#78716c" class="sublabel">先有</text>
+
+<!-- Cycle 1 internal: Step 1 -->
+<rect x="320" y="456" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="476" text-anchor="middle" font-size="11" fill="#1c1917">DNA 意图匹配 → 查 TSV 全策略</text>
+
+<!-- Cycle 1 internal: Step 2 -->
+<rect x="320" y="492" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="512" text-anchor="middle" font-size="11" fill="#1c1917">命中施工图模板 → 直接套用</text>
+
+<!-- Cycle 1 internal: Step 3 -->
+<rect x="320" y="528" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="548" text-anchor="middle" font-size="11" fill="#1c1917">未命中 → fallback 链 → 自主推理</text>
+
+<!-- Cycle 1 internal: Step 4 -->
+<rect x="320" y="564" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="584" text-anchor="middle" font-size="11" fill="#1c1917">版式策略 → 写中间文件（intent/storyboard/spec）</text>
+
+<!-- Cycle 1 internal: Step 5 -->
+<rect x="320" y="600" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="620" text-anchor="middle" font-size="11" fill="#1c1917">出第一版图表（ECharts / SVG）</text>
+
+<!-- Internal arrows for Cycle 1 -->
+<line x1="480" y1="484" x2="480" y2="492" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+<line x1="480" y1="520" x2="480" y2="528" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+<line x1="480" y1="556" x2="480" y2="564" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+<line x1="480" y1="592" x2="480" y2="600" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+
+<!-- Down arrow from Cycle 1 -->
+<line x1="480" y1="648" x2="480" y2="680" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- ===== NODE 6: Cycle 2 Container ===== -->
+<rect x="300" y="684" width="360" height="172" rx="8" fill="#ffffff" stroke="rgba(28,25,23,0.12)" stroke-width="1"/>
+<rect x="300" y="684" width="360" height="28" rx="8" fill="#faf7f2" stroke="none"/>
+<rect x="300" y="704" width="360" height="8" fill="#faf7f2"/>
+<text x="320" y="704" font-size="11" font-weight="600" fill="#1c1917">循环 2：减法迭代</text>
+<text x="640" y="704" text-anchor="end" font-size="9" fill="#78716c" class="sublabel">再做精 · 7 问 · 最多 3 轮</text>
+
+<!-- Cycle 2 internal: Step 1 -->
+<rect x="320" y="724" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="744" text-anchor="middle" font-size="11" fill="#1c1917">逐项追问：标题/图例/网格/边框/标注/参考线/色块</text>
+
+<!-- Cycle 2 internal: Step 2 -->
+<rect x="320" y="760" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="780" text-anchor="middle" font-size="11" fill="#1c1917">每个元素：去掉影响理解吗？留下分散重点吗？</text>
+
+<!-- Cycle 2 internal: Step 3 -->
+<rect x="320" y="796" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="816" text-anchor="middle" font-size="11" fill="#1c1917">最多 3 轮迭代 · 用户说"够了"提前终止</text>
+
+<!-- Internal arrows for Cycle 2 -->
+<line x1="480" y1="752" x2="480" y2="760" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+<line x1="480" y1="788" x2="480" y2="796" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+
+<!-- Down arrow from Cycle 2 -->
+<line x1="480" y1="856" x2="480" y2="888" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- ===== NODE 7: Cycle 3 Container ===== -->
+<rect x="300" y="892" width="360" height="184" rx="8" fill="#ffffff" stroke="rgba(28,25,23,0.12)" stroke-width="1"/>
+<rect x="300" y="892" width="360" height="28" rx="8" fill="#faf7f2" stroke="none"/>
+<rect x="300" y="912" width="360" height="8" fill="#faf7f2"/>
+<text x="320" y="912" font-size="11" font-weight="600" fill="#1c1917">循环 3：验收</text>
+<text x="640" y="912" text-anchor="end" font-size="9" fill="#78716c" class="sublabel">8 项检查 · 4+ 失败回退循环 1</text>
+
+<!-- Cycle 3 internal: Step 1 -->
+<rect x="320" y="932" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="952" text-anchor="middle" font-size="11" fill="#1c1917">逐项检查：截断/代码泄露/中文乱码/元素重叠</text>
+
+<!-- Cycle 3 internal: Step 2 -->
+<rect x="320" y="968" width="320" height="28" rx="4" fill="rgba(28,25,23,0.03)" stroke="none"/>
+<text x="480" y="988" text-anchor="middle" font-size="11" fill="#1c1917">色盲友好 / 高亮 ≤10% / 结论性标题 / 一图一核心</text>
+
+<!-- Cycle 3 internal: Step 3 - Decision -->
+<rect x="320" y="1004" width="320" height="40" rx="6" fill="rgba(181,82,58,0.06)" stroke="#b5523a" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="480" y="1022" text-anchor="middle" font-size="11" font-weight="600" fill="#b5523a">判定：通过 / 失败</text>
+<text x="480" y="1038" text-anchor="middle" font-size="9" fill="#78716c" class="sublabel">4+ 项不通过 → 回退循环 1</text>
+
+<!-- Internal arrows for Cycle 3 -->
+<line x1="480" y1="960" x2="480" y2="968" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+<line x1="480" y1="996" x2="480" y2="1004" stroke="rgba(28,25,23,0.2)" stroke-width="0.8"/>
+
+<!-- FEEDBACK LOOP: Cycle 3 → Cycle 1 (red dashed path on the left) -->
+<path d="M 300 1000 Q 248 1000 248 608 Q 248 544 300 532"
+      fill="none" stroke="#b5523a" stroke-width="1.5" stroke-dasharray="6,4"
+      marker-end="url(#arrow-accent)"/>
+<!-- Feedback loop label -->
+<rect x="212" y="740" width="72" height="20" rx="4" fill="#faf7f2" stroke="none"/>
+<text x="248" y="754" text-anchor="middle" font-size="9" font-weight="500" fill="#b5523a">4+ 失败回退</text>
+
+<!-- Down arrow from Cycle 3 (pass path) -->
+<line x1="480" y1="1076" x2="480" y2="1112" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="492" y="1096" font-size="10" fill="#1c1917" font-weight="500">通过</text>
+
+<!-- ===== NODE 8: Render Route (Diamond) ===== -->
+<polygon points="480,1116 580,1148 480,1180 380,1148" fill="#ffffff" stroke="#1c1917" stroke-width="1"/>
+<text x="480" y="1144" text-anchor="middle" font-size="11" font-weight="600" fill="#1c1917">渲染路由</text>
+<text x="480" y="1158" text-anchor="middle" font-size="9" fill="#57534e" class="sublabel">按图表类型选择</text>
+
+<!-- Render Route left arrow: ECharts -->
+<line x1="390" y1="1152" x2="304" y2="1152" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="340" y="1144" text-anchor="middle" font-size="10" fill="#57534e" class="sublabel">数据图表</text>
+
+<!-- Render Route right arrow: SVG -->
+<line x1="570" y1="1152" x2="656" y2="1152" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="620" y="1144" text-anchor="middle" font-size="10" fill="#57534e" class="sublabel">概念图</text>
+
+<!-- Render Route down arrow: nature-figure -->
+<line x1="480" y1="1180" x2="480" y2="1212" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+<text x="492" y="1200" font-size="10" fill="#57534e" class="sublabel">学术论文</text>
+
+<!-- ===== NODE 9: ECharts Output ===== -->
+<rect x="180" y="1132" width="120" height="40" rx="6" fill="#ffffff" stroke="#1c1917" stroke-width="1"/>
+<text x="240" y="1152" text-anchor="middle" font-size="11" font-weight="600" fill="#1c1917">ECharts HTML</text>
+<text x="240" y="1166" text-anchor="middle" font-size="9" fill="#57534e" class="sublabel">自包含·双击可开</text>
+
+<!-- ===== NODE 10: SVG Output ===== -->
+<rect x="660" y="1132" width="120" height="40" rx="6" fill="#ffffff" stroke="#1c1917" stroke-width="1"/>
+<text x="720" y="1152" text-anchor="middle" font-size="11" font-weight="600" fill="#1c1917">SVG 矢量图</text>
+<text x="720" y="1166" text-anchor="middle" font-size="9" fill="#57534e" class="sublabel">齿轮/金字塔/流程</text>
+
+<!-- ===== NODE 11: Nature Figure Output ===== -->
+<rect x="380" y="1216" width="200" height="40" rx="6" fill="#ffffff" stroke="#1c1917" stroke-width="1"/>
+<text x="480" y="1236" text-anchor="middle" font-size="11" font-weight="600" fill="#1c1917">nature-figure</text>
+<text x="480" y="1250" text-anchor="middle" font-size="9" fill="#57534e" class="sublabel">ggplot2 · 印刷级</text>
+
+<!-- Converging arrows to Deliver -->
+<line x1="240" y1="1172" x2="240" y2="1300" stroke="#57534e" stroke-width="1"/>
+<line x1="240" y1="1300" x2="456" y2="1300" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<line x1="720" y1="1172" x2="720" y2="1300" stroke="#57534e" stroke-width="1"/>
+<line x1="720" y1="1300" x2="504" y2="1300" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<line x1="480" y1="1256" x2="480" y2="1284" stroke="#57534e" stroke-width="1" marker-end="url(#arrow)"/>
+
+<!-- ===== NODE 12: Deliver ===== -->
+<rect x="360" y="1304" width="240" height="48" rx="24" fill="#ffffff" stroke="#b5523a" stroke-width="1.5"/>
+<text x="480" y="1334" text-anchor="middle" font-size="14" font-weight="600" fill="#b5523a">交付最终图表</text>
+
+<!-- ============================================ -->
+<!-- ANNOTATION CALLOUTS                          -->
+<!-- ============================================ -->
+
+<!-- Left annotation: DNA priority -->
+<rect x="48" y="448" width="220" height="56" rx="6" fill="#faf7f2" stroke="rgba(120,113,108,0.3)" stroke-width="0.8"/>
+<text x="60" y="466" font-size="10" font-weight="500" fill="#1c1917">DNA 优先：9509 条模式库</text>
+<text x="60" y="482" font-size="9" fill="#57534e" class="sublabel">意图→图表→设计策略</text>
+<text x="60" y="496" font-size="9" fill="#57534e" class="sublabel">命中施工图模板→直接套用</text>
+<line x1="268" y1="476" x2="300" y2="476" stroke="rgba(120,113,108,0.3)" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+<!-- Right annotation: Intermediate files -->
+<rect x="692" y="500" width="220" height="72" rx="6" fill="#faf7f2" stroke="rgba(120,113,108,0.3)" stroke-width="0.8"/>
+<text x="704" y="518" font-size="10" font-weight="500" fill="#1c1917">中间文件（记录+迭代检查）</text>
+<text x="704" y="536" font-size="9" fill="#57534e" class="sublabel">intent.md — 意图决策</text>
+<text x="704" y="552" font-size="9" fill="#57534e" class="sublabel">storyboard.md — 视觉叙事</text>
+<text x="704" y="568" font-size="9" fill="#57534e" class="sublabel">spec.md — 设计规格</text>
+<line x1="692" y1="536" x2="660" y2="536" stroke="rgba(120,113,108,0.3)" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+<!-- Left annotation: Subtraction principles -->
+<rect x="48" y="720" width="220" height="80" rx="6" fill="#faf7f2" stroke="rgba(120,113,108,0.3)" stroke-width="0.8"/>
+<text x="60" y="738" font-size="10" font-weight="500" fill="#1c1917">减法 7 问核心原则</text>
+<text x="60" y="756" font-size="9" fill="#57534e" class="sublabel">"去掉它影响理解吗？"</text>
+<text x="60" y="772" font-size="9" fill="#57534e" class="sublabel">"留下它分散重点吗？"</text>
+<text x="60" y="788" font-size="9" fill="#57534e" class="sublabel">"标题是结论还是描述？"</text>
+<text x="60" y="804" font-size="9" fill="#b5523a" font-weight="500" class="sublabel">终点：每元素为核心判断服务</text>
+<line x1="268" y1="760" x2="300" y2="760" stroke="rgba(120,113,108,0.3)" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+<!-- ============================================ -->
+<!-- LEGEND                                       -->
+<!-- ============================================ -->
+<g transform="translate(300, 1400)">
+<rect x="0" y="0" width="360" height="80" rx="6" fill="#ffffff" stroke="rgba(28,25,23,0.08)" stroke-width="0.8"/>
+<text x="16" y="22" font-size="9" font-weight="600" fill="#78716c" letter-spacing="0.1em">图例 LEGEND</text>
+
+<!-- Start/End -->
+<rect x="16" y="36" width="20" height="14" rx="7" fill="#ffffff" stroke="#1c1917" stroke-width="0.8"/>
+<text x="44" y="48" font-size="9" fill="#57534e">开始 / 结束</text>
+
+<!-- Process -->
+<rect x="120" y="36" width="20" height="14" rx="3" fill="#ffffff" stroke="#1c1917" stroke-width="0.8"/>
+<text x="148" y="48" font-size="9" fill="#57534e">处理步骤</text>
+
+<!-- Decision -->
+<polygon points="240,36 250,43 240,50 230,43" fill="#ffffff" stroke="#1c1917" stroke-width="0.8"/>
+<text x="258" y="48" font-size="9" fill="#57534e">决策分支</text>
+
+<!-- Cycle group -->
+<rect x="16" y="58" width="20" height="14" rx="3" fill="#ffffff" stroke="rgba(28,25,23,0.12)" stroke-width="0.8"/>
+<text x="44" y="70" font-size="9" fill="#57534e">循环组（含子步骤）</text>
+
+<!-- Feedback -->
+<line x1="120" y1="65" x2="140" y2="65" stroke="#b5523a" stroke-width="1.2" stroke-dasharray="4,3"/>
+<text x="148" y="70" font-size="9" fill="#57534e">回退路径</text>
+
+<!-- Focal -->
+<rect x="240" y="58" width="20" height="14" rx="3" fill="rgba(181,82,58,0.08)" stroke="#b5523a" stroke-width="0.8"/>
+<text x="268" y="70" font-size="9" fill="#57534e">关键节点</text>
+</g>
+
+</svg>
+</div>
+
+<!-- Summary Cards -->
+<div class="cards">
+<div class="card">
+<p class="eyebrow">CYCLE 1</p>
+<div class="card-header">
+<span class="card-dot accent"></span>
+<h3>初稿 — 先有</h3>
+</div>
+<ul>
+<li>DNA 意图匹配（9509 条模式库）</li>
+<li>命中施工图模板 → 直接套用</li>
+<li>未命中 → fallback 链 → 自主推理</li>
+<li>版式策略 + 写中间文件</li>
+<li>出第一版图表</li>
+</ul>
+</div>
+
+<div class="card">
+<p class="eyebrow">CYCLE 2</p>
+<div class="card-header">
+<span class="card-dot ink"></span>
+<h3>减法迭代 — 再做精</h3>
+</div>
+<ul>
+<li>7 问逐项追每个元素价值</li>
+<li>标题→结论性 / 图例→可省略</li>
+<li>网格/边框/色块→能去则去</li>
+<li>标注写原因+幅度，不写纯数字</li>
+<li>最多 3 轮，用户可随时终止</li>
+</ul>
+</div>
+
+<div class="card">
+<p class="eyebrow">CYCLE 3</p>
+<div class="card-header">
+<span class="card-dot muted"></span>
+<h3>验收 — 最后检查</h3>
+</div>
+<ul>
+<li>8 项检查：截断/泄露/乱码/重叠</li>
+<li>色盲友好（禁用红绿对比）</li>
+<li>高亮 ≤10% / 标题结论性</li>
+<li>4+ 项不通过 → 回退循环 1</li>
+<li>通过 → 渲染路由 → 交付</li>
+</ul>
+</div>
+</div>
+
+<div class="footer">
+viz-design SKILL.md 工作流全景图 — 由 viz-diagram-design 技能生成 — 2026-05-10
+</div>
+
+</div>
+</body>
+</html>
