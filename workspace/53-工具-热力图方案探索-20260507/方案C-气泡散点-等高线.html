@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案C · 气泡散点</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f5f0;font-family:system-ui,'PingFang SC','Microsoft YaHei',sans-serif;color:#2e2c2a;padding:40px 20px}
+.container{max-width:740px;margin:0 auto}
+h2{font-size:18px;font-weight:600;color:#1a6b50;margin-bottom:4px;letter-spacing:0.5px}
+.sub{font-size:12px;color:#857d74;margin-bottom:20px}
+.chart-wrap{background:#fff;border-radius:8px;border:1px solid #e0ddd5;padding:16px;overflow-x:auto}
+#chart{display:block;margin:0 auto}
+.legend-row{display:flex;align-items:center;gap:16px;margin-top:16px;padding:10px 16px;background:#fafaf7;border-radius:6px;border:1px solid #e0ddd5;flex-wrap:wrap}
+.legend-swatches{display:flex;gap:6px}
+.swatch{width:22px;height:14px;border-radius:2px}
+.legend-label{font-size:11px;color:#5f5a54;white-space:nowrap}
+.legend-dot{display:inline-block;border-radius:50%;vertical-align:middle;margin-right:4px}
+.note{font-size:11px;color:#857d74;margin-top:12px;text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>供应商 · 人 vs 绩·管·风 气泡散点</h2>
+  <div class="sub">横轴=人力维度严重度 纵轴=业绩+管理+风险综合严重度 气泡大小=体量</div>
+  <div class="chart-wrap">
+    <canvas id="chart"></canvas>
+  </div>
+  <div class="legend-row">
+    <div class="legend-swatches">
+      <div class="swatch" style="background:#7aaa6a"></div>
+      <div class="swatch" style="background:#d4a84a"></div>
+      <div class="swatch" style="background:#c27a3a"></div>
+      <div class="swatch" style="background:#b85a4a"></div>
+    </div>
+    <span class="legend-label">健康</span>
+    <span class="legend-label">关注</span>
+    <span class="legend-label">预警</span>
+    <span class="legend-label">危险</span>
+    <span class="legend-label"><span class="legend-dot" style="width:8px;height:8px;background:#454240;"></span>气泡面积 ≈ 体量</span>
+    <span class="legend-label" style="border-left:2px solid rgba(170,100,80,0.4);padding-left:6px">等高线 密度聚集</span>
+  </div>
+  <div class="note">▲ 左下=健康状况好 右上=问题集中｜等高线圈出密度最高的供应商群｜悬空白气泡=需重点关注</div>
+</div>
+<script>
+// ===== DATA =====
+var suppliers = [
+  { n:'速讯达', v:[3,2,2,1], r:'重点管理', s:76 },
+  { n:'华啸',   v:[2,2,2,1], r:'重点管理', s:95 },
+  { n:'阅文',   v:[3,2,1,1], r:'预警', s:50 },
+  { n:'艾斯',   v:[2,2,1,0], r:'预警', s:70 },
+  { n:'创博',   v:[1,2,1,0], r:'预警', s:167 },
+  { n:'九通',   v:[3,1,1,0], r:'观察', s:35 },
+  { n:'衍生',   v:[3,1,1,0], r:'观察', s:40 },
+  { n:'速腾',   v:[3,1,1,0], r:'观察', s:45 },
+  { n:'保全界', v:[3,1,1,0], r:'观察', s:55 },
+  { n:'小蜜蜂', v:[3,1,0,0], r:'观察', s:65 },
+  { n:'拓银',   v:[3,1,0,0], r:'观察', s:60 },
+  { n:'靖涵',   v:[2,1,1,0], r:'观察', s:75 },
+  { n:'人和',   v:[2,1,1,0], r:'观察', s:95 },
+  { n:'中弘',   v:[2,1,1,0], r:'观察', s:130 },
+  { n:'锦瑞',   v:[2,1,1,0], r:'观察', s:80 },
+  { n:'新动力', v:[2,1,1,0], r:'观察', s:90 },
+  { n:'嘉信',   v:[2,1,0,0], r:'观察', s:85 },
+  { n:'博岳',   v:[2,1,0,0], r:'观察', s:100 },
+  { n:'广达',   v:[1,1,1,0], r:'观察', s:157 },
+  { n:'岐力',   v:[1,0,1,1], r:'观察', s:138 },
+  { n:'汇讯',   v:[1,1,1,0], r:'观察', s:280 },
+  { n:'零犀',   v:[1,1,0,0], r:'观察', s:105 },
+  { n:'翰锐',   v:[1,1,0,0], r:'观察', s:110 },
+  { n:'中乾',   v:[1,1,0,0], r:'观察', s:171 },
+  { n:'德辰',   v:[1,1,0,0], r:'观察', s:151 },
+  { n:'赛维斯', v:[1,0,1,0], r:'观察', s:213 },
+  { n:'伽玛',   v:[1,1,0,0], r:'观察', s:286 },
+  { n:'毅航',   v:[0,1,0,0], r:'观察', s:481 },
+  { n:'毛毛虫', v:[0,0,0,0], r:'正常', s:348 },
+];
+
+var colors = ['#7aaa6a','#d4a84a','#c27a3a','#b85a4a'];
+
+(function(){
+  var canvas = document.getElementById('chart');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+
+  var pad = {t:24,r:24,b:36,l:50};
+  var w = 640, h = 520;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+
+  var plotW = w - pad.l - pad.r;
+  var plotH = h - pad.t - pad.b;
+
+  var bg = '#ffffff';
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,w,h);
+
+  // ---- Compute positions ----
+  // X: 人 severity (0-3), Y: avg of 绩+管+风 (0-3)
+  var pts = [];
+  for (var i = 0; i < suppliers.length; i++) {
+    var d = suppliers[i];
+    var x = d.v[0]; // 人
+    var y = (d.v[1] + d.v[2] + d.v[3]) / 3; // avg of 绩+管+风
+    pts.push({ x:x, y:y, s:d.s, i:i });
+  }
+
+  function toPixel(px, py) {
+    return {
+      x: pad.l + px / 3 * plotW,
+      y: pad.t + plotH - (py / 3 * plotH) // flip Y
+    };
+  }
+
+  // ---- Grid lines ----
+  ctx.strokeStyle = '#f0ede8';
+  ctx.lineWidth = 1;
+  for (var g = 0; g <= 3; g++) {
+    var p = toPixel(g, g);
+    // Vertical
+    ctx.beginPath();
+    ctx.moveTo(p.x, pad.t);
+    ctx.lineTo(p.x, pad.t + plotH);
+    ctx.stroke();
+    // Horizontal
+    if (g > 0) {
+      ctx.beginPath();
+      ctx.moveTo(pad.l, p.y);
+      ctx.lineTo(pad.l + plotW, p.y);
+      ctx.stroke();
+    }
+  }
+
+  // ---- Axis labels ----
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.font = '10px system-ui, "PingFang SC", sans-serif';
+  ctx.fillStyle = '#857d74';
+  for (var g = 0; g <= 3; g++) {
+    var p = toPixel(g, 0);
+    ctx.fillText(g, p.x, pad.t + plotH + 6);
+  }
+
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  ctx.font = '10px system-ui, "PingFang SC", sans-serif';
+  for (var g = 0; g <= 3; g++) {
+    var p = toPixel(0, g);
+    ctx.fillText(g, pad.l - 8, p.y);
+  }
+
+  // Axis titles
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.font = '11px system-ui, "PingFang SC", sans-serif';
+  ctx.fillStyle = '#5f5a54';
+  ctx.fillText('人（体质）严重度 →', pad.l + plotW/2, h - 16);
+
+  ctx.save();
+  ctx.translate(14, pad.t + plotH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText('绩·管·风 综合严重度 →', 0, 0);
+  ctx.restore();
+
+  // ---- Contour density (KDE-ish) ----
+  // Simple grid-based density estimation
+  var res = 40; // 40x40 grid
+  var dens = [];
+  var sigma = 0.2; // gaussian kernel bandwidth
+  for (var gy = 0; gy < res; gy++) {
+    dens[gy] = [];
+    for (var gx = 0; gx < res; gx++) {
+      var cx = gx / res * 3;
+      var cy = gy / res * 3;
+      var sum = 0;
+      for (var i = 0; i < pts.length; i++) {
+        var dx = pts[i].x - cx;
+        var dy = pts[i].y - cy;
+        sum += Math.exp(-(dx*dx + dy*dy) / (2*sigma*sigma));
+      }
+      dens[gy][gx] = sum;
+    }
+  }
+
+  // Find max density for normalization
+  var maxD = 0;
+  for (var gy = 0; gy < res; gy++)
+    for (var gx = 0; gx < res; gx++)
+      if (dens[gy][gx] > maxD) maxD = dens[gy][gx];
+
+  // Draw contour lines at 30%, 50%, 70% thresholds
+  function drawDensityContour(th, color) {
+    var t = th * maxD;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 0.6;
+    ctx.beginPath();
+    for (var gy = 0; gy < res - 1; gy++) {
+      for (var gx = 0; gx < res - 1; gx++) {
+        var b00 = dens[gy][gx] >= t;
+        var b10 = dens[gy][gx+1] >= t;
+        var b11 = dens[gy+1][gx+1] >= t;
+        var b01 = dens[gy+1][gx] >= t;
+        var code = (b00?1:0)|(b10?2:0)|(b11?4:0)|(b01?8:0);
+        if (code===0||code===15) continue;
+
+        var lerp = function(v0,v1){return v0===v1?0.5:(t-v0)/(v1-v0);};
+
+        var eb = lerp(dens[gy][gx], dens[gy][gx+1]);
+        var er = lerp(dens[gy][gx+1], dens[gy+1][gx+1]);
+        var et = lerp(dens[gy][gx], dens[gy+1][gx]); // hmm top edge should be from [gy+1][gx] to [gy+1][gx+1]
+        // Wait let me redo:
+        var _eb = lerp(dens[gy][gx], dens[gy][gx+1]);    // bottom: [gy][gx] → [gy][gx+1]
+        var _er = lerp(dens[gy][gx+1], dens[gy+1][gx+1]); // right: [gy][gx+1] → [gy+1][gx+1]
+        var _et = lerp(dens[gy+1][gx], dens[gy+1][gx+1]); // top: [gy+1][gx] → [gy+1][gx+1]
+        var _el = lerp(dens[gy][gx], dens[gy+1][gx]);    // left: [gy][gx] → [gy+1][gx]
+
+        var cw_ = plotW / res;
+        var ch_ = plotH / res;
+
+        var p00 = toPixel((gx)/res*3, (gy)/res*3);
+        var p10 = toPixel((gx+1)/res*3, (gy)/res*3);
+        var p01 = toPixel((gx)/res*3, (gy+1)/res*3);
+        var p11 = toPixel((gx+1)/res*3, (gy+1)/res*3);
+
+        function seg(ax,ay, bx,by) {
+          ctx.moveTo(ax, ay);
+          ctx.lineTo(bx, by);
+        }
+
+        switch(code) {
+          case 1: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p00.x, p00.y+(p01.y-p00.y)*_el); break;
+          case 2: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p10.x, p10.y+(p11.y-p10.y)*_er); break;
+          case 3: seg(p00.x, p00.y+(p01.y-p00.y)*_el, p10.x, p10.y+(p11.y-p10.y)*_er); break;
+          case 4: seg(p01.x+(p11.x-p01.x)*_et, p01.y, p10.x, p10.y+(p11.y-p10.y)*_er); break;
+          case 5: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p00.x, p00.y+(p01.y-p00.y)*_el); seg(p01.x+(p11.x-p01.x)*_et, p01.y, p10.x, p10.y+(p11.y-p10.y)*_er); break;
+          case 6: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p01.x+(p11.x-p01.x)*_et, p01.y); break;
+          case 7: seg(p00.x, p00.y+(p01.y-p00.y)*_el, p01.x+(p11.x-p01.x)*_et, p01.y); break;
+          case 8: seg(p01.x+(p11.x-p01.x)*_et, p01.y, p00.x, p00.y+(p01.y-p00.y)*_el); break;
+          case 9: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p01.x+(p11.x-p01.x)*_et, p01.y); break;
+          case 10: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p10.x, p10.y+(p11.y-p10.y)*_er); seg(p01.x+(p11.x-p01.x)*_et, p01.y, p00.x, p00.y+(p01.y-p00.y)*_el); break;
+          case 11: seg(p10.x, p10.y+(p11.y-p10.y)*_er, p01.x+(p11.x-p01.x)*_et, p01.y); break;
+          case 12: seg(p00.x, p00.y+(p01.y-p00.y)*_el, p10.x, p10.y+(p11.y-p10.y)*_er); break;
+          case 13: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p10.x, p10.y+(p11.y-p10.y)*_er); break;
+          case 14: seg(p00.x+(p10.x-p00.x)*_eb, p00.y, p00.x, p00.y+(p01.y-p00.y)*_el); break;
+        }
+      }
+    }
+    ctx.stroke();
+  }
+
+  drawDensityContour(0.3, 'rgba(150,130,110,0.15)');
+  drawDensityContour(0.5, 'rgba(150,130,110,0.25)');
+  drawDensityContour(0.7, 'rgba(150,130,110,0.35)');
+
+  // ---- Bubbles ----
+  var minS = 35, maxS = 481;
+  var minR = 5, maxR = 24;
+
+  // Draw bubbles (back to front, sorted by size ascending)
+  var order = [];
+  for (var i = 0; i < pts.length; i++) order.push(i);
+  order.sort(function(a,b){ return suppliers[a].s - suppliers[b].s; });
+
+  for (var oi = 0; oi < order.length; oi++) {
+    var idx = order[oi];
+    var d = suppliers[idx];
+    var p = toPixel(pts[idx].x, pts[idx].y);
+    var r = minR + (d.s - minS) / (maxS - minS) * (maxR - minR);
+    var maxV = Math.max.apply(null, d.v);
+    var avgV = (d.v[0]+d.v[1]+d.v[2]+d.v[3])/4;
+    var colorIdx = Math.round(avgV);
+    if (colorIdx > 3) colorIdx = 3;
+    if (colorIdx < 0) colorIdx = 0;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+
+    // Fill with color + transparency
+    var col = colors[colorIdx];
+    ctx.fillStyle = col + '88';
+    ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Label (only if large enough)
+    if (r > 10) {
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.font = '9px system-ui, "PingFang SC", sans-serif';
+      ctx.fillStyle = '#454240';
+      ctx.fillText(d.n, p.x, p.y - r - 2);
+    }
+  }
+
+  // ---- Manual labels for small suppliers (offset) ----
+  for (var i = 0; i < suppliers.length; i++) {
+    var d = suppliers[i];
+    var p = toPixel(pts[i].x, pts[i].y);
+    var r = minR + (d.s - minS) / (maxS - minS) * (maxR - minR);
+    if (r <= 10) {
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.font = '9px system-ui, "PingFang SC", sans-serif';
+      ctx.fillStyle = '#5f5a54';
+      ctx.fillText(d.n, p.x + r + 3, p.y + 3);
+    }
+  }
+
+  // ---- Quadrant labels ----
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '11px system-ui, "PingFang SC", sans-serif';
+  ctx.fillStyle = 'rgba(200,195,185,0.6)';
+
+  var qw = plotW / 2, qh = plotH / 2;
+  ctx.fillText('健康 · 低风险', pad.l + qw/2, pad.t + qh/2);
+  ctx.fillText('人力有短板', pad.l + qw + qw/2, pad.t + qh/2);
+  ctx.fillText('综合有压力', pad.l + qw/2, pad.t + qh + qh/2);
+  ctx.fillText('全面告急', pad.l + qw + qw/2, pad.t + qh + qh/2);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商分级九宫格 Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f5f6fa;--surface:#ffffff;--surface2:#f0f1f5;--border:#dfe1e8;
+  --text:#1a1d27;--text2:#6b7280;--accent:#4a6aef;--accent2:#3b5de7;
+  --green:#16a34a;--yellow:#ca8a04;--red:#dc2626;--orange:#ea580c;
+  --cyan:#0891b2;--purple:#7c3aed;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;overflow:hidden}
+.app{display:grid;grid-template-columns:320px 1fr;grid-template-rows:1fr auto;height:100vh}
+
+/* Sidebar */
+.sidebar{grid-row:1/3;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:20px;box-shadow:2px 0 8px rgba(0,0,0,.04)}
+.sidebar h2{font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.control-group{margin-bottom:20px}
+.control-group label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px}
+.slider-row{display:flex;align-items:center;gap:8px}
+.slider-row input[type=range]{flex:1;-webkit-appearance:none;height:4px;background:#dfe1e8;border-radius:2px;outline:none}
+.slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--accent);border-radius:50%;cursor:pointer;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.slider-val{font-size:12px;color:var(--accent);min-width:32px;text-align:right;font-variant-numeric:tabular-nums}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.toggle-row span{font-size:13px}
+.toggle{position:relative;width:36px;height:20px;background:#dfe1e8;border-radius:10px;cursor:pointer;transition:.2s}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.toggle.on::after{left:18px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.preset-btn{padding:5px 10px;font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;transition:.15s}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+select{width:100%;padding:6px 8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}
+select:focus{border-color:var(--accent)}
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* Main area */
+.main{display:grid;grid-template-rows:1fr auto;overflow:hidden}
+.canvas-wrap{padding:24px;overflow-y:auto;display:flex;flex-direction:column;align-items:center;gap:20px}
+
+/* Grid */
+.grid-container{display:grid;grid-template-columns:80px repeat(3,1fr);grid-template-rows:40px repeat(3,1fr);gap:3px;width:100%;max-width:720px;aspect-ratio:1.3}
+.grid-header{text-align:center;font-size:11px;color:var(--text2);display:flex;align-items:center;justify-content:center}
+.grid-row-label{font-size:11px;color:var(--text2);display:flex;align-items:center;justify-content:center;writing-mode:horizontal-tb}
+.grid-cell{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px;position:relative;min-height:80px;transition:.2s;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.grid-cell:hover{border-color:var(--accent)}
+.cell-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;position:absolute;top:4px;left:6px}
+.cell-badge{font-size:9px;padding:1px 4px;border-radius:3px;position:absolute;top:4px;right:6px}
+.cell-suppliers{display:flex;flex-wrap:wrap;gap:3px;margin-top:18px}
+.supplier-chip{font-size:10px;padding:2px 6px;border-radius:4px;cursor:pointer;transition:.15s;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.supplier-chip:hover{opacity:.8;transform:scale(1.05)}
+.chip-selectable.selected{outline:2px solid var(--accent);outline-offset:1px}
+
+/* Cell colors */
+.cell-accelerate{background:#f0fdf4;border-color:#bbf7d0}
+.cell-accelerate .cell-label{color:var(--green)}
+.cell-star{background:#dcfce7;border-color:#86efac}
+.cell-star .cell-label{color:var(--green)}
+.cell-warning{background:#fef2f2;border-color:#fecaca}
+.cell-warning .cell-label{color:var(--red)}
+.cell-grow{background:#ecfeff;border-color:#a5f3fc}
+.cell-grow .cell-label{color:var(--cyan)}
+.cell-core{background:#eff6ff;border-color:#bfdbfe}
+.cell-core .cell-label{color:var(--accent)}
+.cell-watch{background:#fff7ed;border-color:#fed7aa}
+.cell-watch .cell-label{color:var(--orange)}
+.cell-eliminate{background:#fee2e2;border-color:#fca5a5}
+.cell-eliminate .cell-label{color:var(--red)}
+.cell-observe{background:#fefce8;border-color:#fde68a}
+.cell-observe .cell-label{color:var(--yellow)}
+.cell-potential{background:#f5f3ff;border-color:#ddd6fe}
+.cell-potential .cell-label{color:var(--purple)}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%;max-width:720px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 16px;text-align:center;min-width:100px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.stat-card .stat-num{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat-card .stat-label{font-size:10px;color:var(--text2);margin-top:2px}
+
+/* Prompt area */
+.prompt-area{background:var(--surface);border-top:1px solid var(--border);padding:16px 24px;position:relative}
+.prompt-area h3{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.prompt-text{font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap;max-height:100px;overflow-y:auto;padding-right:80px}
+.copy-btn{position:absolute;top:16px;right:24px;padding:6px 14px;font-size:12px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;transition:.15s}
+.copy-btn:hover{background:var(--accent)}
+.copy-btn.copied{background:var(--green)}
+
+/* Supplier editor modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:420px;max-height:80vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.modal h3{margin-bottom:16px;font-size:15px}
+.modal .field{margin-bottom:12px}
+.modal .field label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px}
+.modal .field input,.modal .field select{width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none}
+.modal .field input:focus,.modal .field select:focus{border-color:var(--accent)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.modal-actions button{padding:8px 16px;font-size:13px;border-radius:6px;cursor:pointer;border:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--text2);border:1px solid var(--border)!important}
+.btn-danger{background:var(--red);color:#fff}
+.btn-add{width:100%;padding:8px;font-size:12px;background:var(--surface);border:1px dashed var(--border);border-radius:6px;color:var(--text2);cursor:pointer;margin-bottom:12px}
+.btn-add:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Score breakdown tooltip */
+.score-tip{position:absolute;bottom:4px;right:6px;font-size:9px;color:var(--text2)}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>评分参数</h2>
+
+    <div class="presets">
+      <button class="preset-btn active" onclick="applyPreset('default')">默认</button>
+      <button class="preset-btn" onclick="applyPreset('strict')">严格模式</button>
+      <button class="preset-btn" onclick="applyPreset('growth')">成长优先</button>
+      <button class="preset-btn" onclick="applyPreset('stable')">稳定优先</button>
+    </div>
+
+    <div class="control-group">
+      <label>趋势切分阈值（%）</label>
+      <div class="slider-row">
+        <input type="range" min="1" max="20" value="5" id="trendThreshold" oninput="updateState()">
+        <span class="slider-val" id="trendThresholdVal">5%</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>贡献分位切分</label>
+      <select id="percentileMode" onchange="updateState()">
+        <option value="tertile">三分位（等分）</option>
+        <option value="headHeavy">头部集中（30/40/30）</option>
+        <option value="tailHeavy">尾部集中（40/30/30）</option>
+      </select>
+    </div>
+
+    <div class="divider"></div>
+    <h2>稳定性系数</h2>
+
+    <div class="control-group">
+      <label>A 档系数（稳定）</label>
+      <div class="slider-row">
+        <input type="range" min="80" max="100" value="100" id="stableA" oninput="updateState()">
+        <span class="slider-val" id="stableAVal">1.00</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>B 档系数（波动）</label>
+      <div class="slider-row">
+        <input type="range" min="70" max="95" value="90" id="stableB" oninput="updateState()">
+        <span class="slider-val" id="stableBVal">0.90</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>C 档系数（失控）</label>
+      <div class="slider-row">
+        <input type="range" min="50" max="85" value="75" id="stableC" oninput="updateState()">
+        <span class="slider-val" id="stableCVal">0.75</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <h2>扣分力度</h2>
+
+    <div class="control-group">
+      <label>黄牌扣分</label>
+      <div class="slider-row">
+        <input type="range" min="3" max="20" value="10" id="yellowPenalty" oninput="updateState()">
+        <span class="slider-val" id="yellowPenaltyVal">-10</span>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>投诉/一般违规扣分</label>
+      <div class="slider-row">
+        <input type="range" min="1" max="15" value="5" id="complaintPenalty" oninput="updateState()">
+        <span class="slider-val" id="complaintPenaltyVal">-5</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <h2>供管自评上限</h2>
+
+    <div class="control-group">
+      <label>最高加分</label>
+      <div class="slider-row">
+        <input type="range" min="2" max="8" value="4" id="selfEvalMax" oninput="updateState()">
+        <span class="slider-val" id="selfEvalMaxVal">4分</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <h2>供应商管理</h2>
+
+    <button class="btn-add" onclick="openAddModal()">+ 添加供应商</button>
+
+    <div class="control-group">
+      <label>选中供应商</label>
+      <div id="supplierList"></div>
+    </div>
+
+    <div class="divider"></div>
+    <h2>视图</h2>
+
+    <div class="toggle-row">
+      <span>显示得分</span>
+      <div class="toggle on" id="showScores" onclick="toggleSwitch(this)"></div>
+    </div>
+    <div class="toggle-row">
+      <span>显示色彩</span>
+      <div class="toggle on" id="showColors" onclick="toggleSwitch(this)"></div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="canvas-wrap">
+      <!-- Stats -->
+      <div class="stats-bar" id="statsBar"></div>
+      <!-- Grid -->
+      <div class="grid-container" id="grid"></div>
+    </div>
+
+    <!-- Prompt output -->
+    <div class="prompt-area">
+      <h3>生成的分析提示词</h3>
+      <div class="prompt-text" id="promptText"></div>
+      <button class="copy-btn" onclick="copyPrompt()">复制提示词</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">添加供应商</h3>
+    <div class="field">
+      <label>名称</label>
+      <input type="text" id="mName" placeholder="如：毅航">
+    </div>
+    <div class="field">
+      <label>赛马基础分（0-100）</label>
+      <input type="number" id="mScore" min="0" max="100" value="80">
+    </div>
+    <div class="field">
+      <label>黄牌次数</label>
+      <input type="number" id="mYellow" min="0" max="5" value="0">
+    </div>
+    <div class="field">
+      <label>投诉次数</label>
+      <input type="number" id="mComplaint" min="0" max="5" value="0">
+    </div>
+    <div class="field">
+      <label>红线违规</label>
+      <select id="mRedline"><option value="0">否</option><option value="1">是</option></select>
+    </div>
+    <div class="field">
+      <label>稳定性</label>
+      <select id="mStability"><option value="A">A - 稳定</option><option value="B">B - 波动</option><option value="C">C - 失控</option></select>
+    </div>
+    <div class="field">
+      <label>供管自评加分（0-4）</label>
+      <input type="number" id="mSelfEval" min="0" max="4" value="2">
+    </div>
+    <div class="field">
+      <label>上月最终得分（首个填0）</label>
+      <input type="number" id="mPrevScore" min="0" max="120" value="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn-danger" id="deleteBtn" style="display:none" onclick="deleteSupplier()">删除</button>
+      <button class="btn-primary" onclick="saveSupplier()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// State
+const DEFAULTS = {
+  trendThreshold: 5,
+  percentileMode: 'tertile',
+  stableA: 100, stableB: 90, stableC: 75,
+  yellowPenalty: 10, complaintPenalty: 5,
+  selfEvalMax: 4,
+  showScores: true, showColors: true
+};
+
+const state = {...DEFAULTS};
+
+// Sample suppliers based on doc
+let suppliers = [
+  {id:1, name:'毅航', score:92, yellow:0, complaint:0, redline:false, stability:'A', selfEval:3, prevScore:88},
+  {id:2, name:'毛毛虫', score:88, yellow:0, complaint:0, redline:false, stability:'A', selfEval:2, prevScore:85},
+  {id:3, name:'伽玛', score:85, yellow:1, complaint:0, redline:false, stability:'A', selfEval:4, prevScore:90},
+  {id:4, name:'赛维斯', score:83, yellow:0, complaint:1, redline:false, stability:'B', selfEval:2, prevScore:80},
+  {id:5, name:'岐力', score:79, yellow:0, complaint:0, redline:false, stability:'A', selfEval:3, prevScore:75},
+  {id:6, name:'翰锐', score:77, yellow:0, complaint:0, redline:false, stability:'B', selfEval:1, prevScore:78},
+  {id:7, name:'天域', score:72, yellow:0, complaint:0, redline:false, stability:'A', selfEval:2, prevScore:68},
+  {id:8, name:'信达', score:68, yellow:1, complaint:0, redline:false, stability:'B', selfEval:1, prevScore:70},
+  {id:9, name:'华腾', score:65, yellow:0, complaint:1, redline:false, stability:'A', selfEval:0, prevScore:62},
+  {id:10, name:'智联', score:60, yellow:0, complaint:0, redline:false, stability:'B', selfEval:2, prevScore:55},
+  {id:11, name:'博远', score:55, yellow:0, complaint:0, redline:false, stability:'C', selfEval:1, prevScore:52},
+  {id:12, name:'启明', score:50, yellow:1, complaint:1, redline:false, stability:'B', selfEval:0, prevScore:58},
+  {id:13, name:'新锐', score:45, yellow:0, complaint:0, redline:false, stability:'A', selfEval:2, prevScore:40},
+  {id:14, name:'恒信', score:40, yellow:0, complaint:0, redline:false, stability:'C', selfEval:0, prevScore:38},
+  {id:15, name:'鑫源', score:35, yellow:1, complaint:0, redline:false, stability:'C', selfEval:0, prevScore:42},
+  {id:16, name:'远航', score:30, yellow:0, complaint:2, redline:false, stability:'C', selfEval:0, prevScore:28},
+];
+
+let nextId = 17;
+let editingId = null;
+
+// Cell definitions [row][col] → row=contribution(high/med/low), col=trend(down/flat/up)
+const cells = [
+  // High contribution
+  [
+    {key:'warning', label:'预警', cls:'cell-warning', list:'优化', tip:'稳住别掉'},
+    {key:'star', label:'明星', cls:'cell-star', list:'保留', tip:'稳产主力'},
+    {key:'accelerate', label:'加速器', cls:'cell-accelerate', list:'保留', tip:'重点投'},
+  ],
+  // Medium contribution
+  [
+    {key:'watch', label:'关注', cls:'cell-watch', list:'培养/优化', tip:'为什么掉'},
+    {key:'core', label:'中坚', cls:'cell-core', list:'保留', tip:'基本盘'},
+    {key:'grow', label:'成长', cls:'cell-grow', list:'培养', tip:'重点培养'},
+  ],
+  // Low contribution
+  [
+    {key:'eliminate', label:'淘汰', cls:'cell-eliminate', list:'优化', tip:'持续恶化'},
+    {key:'observe', label:'观察', cls:'cell-observe', list:'培养', tip:'给期限'},
+    {key:'potential', label:'潜力', cls:'cell-potential', list:'培养', tip:'给机会'},
+  ],
+];
+
+const chipColors = {
+  warning:'#dc2626', star:'#16a34a', accelerate:'#16a34a',
+  watch:'#ea580c', core:'#4a6aef', grow:'#0891b2',
+  eliminate:'#dc2626', observe:'#ca8a04', potential:'#7c3aed'
+};
+
+function calcFinalScore(s) {
+  if (s.redline) return 0;
+  let base = s.score;
+  base -= s.yellow * state.yellowPenalty;
+  base -= s.complaint * state.complaintPenalty;
+  const coefMap = {A: state.stableA/100, B: state.stableB/100, C: state.stableC/100};
+  const coef = coefMap[s.stability] || 1;
+  const selfEval = Math.min(s.selfEval, state.selfEvalMax);
+  return Math.max(0, base * coef + selfEval);
+}
+
+function calcTrend(s, finalScore) {
+  if (s.prevScore === 0) return 'baseline';
+  const change = ((finalScore - s.prevScore) / s.prevScore) * 100;
+  const th = state.trendThreshold;
+  if (change >= th) return 'up';
+  if (change <= -th) return 'down';
+  return 'flat';
+}
+
+function getPercentileBounds(scores) {
+  const sorted = [...scores].sort((a,b) => a - b);
+  const n = sorted.length;
+  if (n < 3) return {low: sorted[n-1]+1, mid: sorted[0]-1};
+  if (state.percentileMode === 'tertile') {
+    const t1 = sorted[Math.floor(n/3)];
+    const t2 = sorted[Math.floor(2*n/3)];
+    return {low: t2, mid: t1};
+  } else if (state.percentileMode === 'headHeavy') {
+    const t1 = sorted[Math.floor(n*0.3)];
+    const t2 = sorted[Math.floor(n*0.7)];
+    return {low: t2, mid: t1};
+  } else {
+    const t1 = sorted[Math.floor(n*0.4)];
+    const t2 = sorted[Math.floor(n*0.7)];
+    return {low: t2, mid: t1};
+  }
+}
+
+function classifySuppliers() {
+  const data = suppliers.map(s => {
+    const final = calcFinalScore(s);
+    const trend = calcTrend(s, final);
+    return {...s, final, trend};
+  });
+
+  const scores = data.map(d => d.final);
+  const bounds = getPercentileBounds(scores);
+
+  return data.map(d => {
+    let contrib;
+    if (d.final >= bounds.low) contrib = 'high';
+    else if (d.final >= bounds.mid) contrib = 'med';
+    else contrib = 'low';
+
+    let trendIdx;
+    if (d.trend === 'baseline') trendIdx = 1; // treat baseline as flat
+    else if (d.trend === 'down') trendIdx = 0;
+    else if (d.trend === 'flat') trendIdx = 1;
+    else trendIdx = 2;
+
+    const contribIdx = contrib === 'high' ? 0 : contrib === 'med' ? 1 : 2;
+    const cell = cells[contribIdx][trendIdx];
+
+    return {...d, contrib, contribIdx, trendIdx, cell};
+  });
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  const classified = classifySuppliers();
+
+  // Header row
+  let html = '<div></div>';
+  html += '<div class="grid-header" style="color:var(--red)">趋势下降 ↓</div>';
+  html += '<div class="grid-header" style="color:var(--text2)">趋势持平 →</div>';
+  html += '<div class="grid-header" style="color:var(--green)">趋势上升 ↑</div>';
+
+  const rowLabels = ['高贡献', '中贡献', '低贡献'];
+
+  for (let r = 0; r < 3; r++) {
+    html += `<div class="grid-row-label">${rowLabels[r]}</div>`;
+    for (let c = 0; c < 3; c++) {
+      const cell = cells[r][c];
+      const inCell = classified.filter(x => x.contribIdx === r && x.trendIdx === c);
+      const colorCls = state.showColors ? cell.cls : '';
+      html += `<div class="grid-cell ${colorCls}">`;
+      html += `<span class="cell-label">${cell.label}</span>`;
+      html += `<span class="cell-badge" style="background:${chipColors[cell.key]}22;color:${chipColors[cell.key]}">${cell.list}</span>`;
+      html += '<div class="cell-suppliers">';
+      inCell.forEach(s => {
+        const scoreStr = state.showScores ? ` (${s.final.toFixed(1)})` : '';
+        html += `<span class="supplier-chip chip-selectable" style="background:${chipColors[cell.key]}22;color:${chipColors[cell.key]}" onclick="openEditModal(${s.id})" title="点击编辑">${s.name}${scoreStr}</span>`;
+      });
+      html += '</div>';
+      html += '</div>';
+    }
+  }
+
+  grid.innerHTML = html;
+}
+
+function renderStats() {
+  const classified = classifySuppliers();
+  const stats = document.getElementById('statsBar');
+
+  const keep = classified.filter(x => x.cell.list === '保留').length;
+  const grow = classified.filter(x => x.cell.list === '培养' || x.cell.list === '培养/优化').length;
+  const opt = classified.filter(x => x.cell.list === '优化').length;
+  const avg = classified.reduce((s,x) => s + x.final, 0) / classified.length;
+  const unstable = classified.filter(x => x.stability !== 'A').length;
+
+  stats.innerHTML = `
+    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${keep}</div><div class="stat-label">保留清单</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--cyan)">${grow}</div><div class="stat-label">培养清单</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--red)">${opt}</div><div class="stat-label">优化清单</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${avg.toFixed(1)}</div><div class="stat-label">平均得分</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--orange)">${unstable}</div><div class="stat-label">B/C档供应商</div></div>
+    <div class="stat-card"><div class="stat-num">${classified.length}</div><div class="stat-label">总计</div></div>
+  `;
+}
+
+function renderSupplierList() {
+  const list = document.getElementById('supplierList');
+  const classified = classifySuppliers();
+  list.innerHTML = classified
+    .sort((a,b) => b.final - a.final)
+    .map(s => `<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0;cursor:pointer" onclick="openEditModal(${s.id})">
+      <span style="font-size:12px">${s.name}</span>
+      <span style="font-size:11px;color:${chipColors[s.cell.key]}">${s.final.toFixed(1)} · ${s.cell.label}</span>
+    </div>`).join('');
+}
+
+function renderPrompt() {
+  const classified = classifySuppliers();
+  const parts = [];
+
+  // Param summary
+  if (state.trendThreshold !== DEFAULTS.trendThreshold) parts.push(`趋势阈值调整为 ${state.trendThreshold}%`);
+  if (state.percentileMode !== 'tertile') {
+    const names = {headHeavy:'头部集中(30/40/30)', tailHeavy:'尾部集中(40/30/30)'};
+    parts.push(`贡献分位切分采用${names[state.percentileMode]}`);
+  }
+  if (state.stableA !== DEFAULTS.stableA) parts.push(`A档系数调整为 ${(state.stableA/100).toFixed(2)}`);
+  if (state.stableB !== DEFAULTS.stableB) parts.push(`B档系数调整为 ${(state.stableB/100).toFixed(2)}`);
+  if (state.stableC !== DEFAULTS.stableC) parts.push(`C档系数调整为 ${(state.stableC/100).toFixed(2)}`);
+  if (state.yellowPenalty !== DEFAULTS.yellowPenalty) parts.push(`黄牌扣分调整为 ${state.yellowPenalty}分`);
+  if (state.complaintPenalty !== DEFAULTS.complaintPenalty) parts.push(`投诉扣分调整为 ${state.complaintPenalty}分`);
+  if (state.selfEvalMax !== DEFAULTS.selfEvalMax) parts.push(`供管自评上限调整为 ${state.selfEvalMax}分`);
+
+  // Distribution
+  const keep = classified.filter(x => x.cell.list === '保留');
+  const grow = classified.filter(x => x.cell.list === '培养' || x.cell.list === '培养/优化');
+  const opt = classified.filter(x => x.cell.list === '优化');
+
+  let prompt = `基于供应商分级盘点九宫格模型，当前${classified.length}家供应商评估结果如下：\n\n`;
+
+  prompt += `【保留清单】${keep.length}家：${keep.map(s => `${s.name}(${s.final.toFixed(1)})`).join('、')}。`;
+  prompt += `这些供应商贡献高、趋势稳定或上升，建议资源倾斜、深度绑定。\n\n`;
+
+  prompt += `【培养清单】${grow.length}家：${grow.map(s => `${s.name}(${s.final.toFixed(1)}分, ${s.cell.label})`).join('、')}。`;
+  prompt += `需针对性辅导和月度跟踪。\n\n`;
+
+  prompt += `【优化清单】${opt.length}家：${opt.map(s => `${s.name}(${s.final.toFixed(1)}分, ${s.cell.label})`).join('、')}。`;
+  prompt += `建议限期整改或启动清退。\n\n`;
+
+  if (parts.length > 0) {
+    prompt += `当前参数调整：${parts.join('；')}。\n\n`;
+  }
+
+  // Key insights
+  const declining = classified.filter(x => x.trend === 'down' && x.contrib === 'high');
+  if (declining.length > 0) {
+    prompt += `⚠ 重点关注：${declining.map(s => s.name).join('、')}贡献高但趋势下降，属于"预警"区域，需分析下降原因。\n`;
+  }
+
+  const rising = classified.filter(x => x.trend === 'up' && x.contrib === 'low');
+  if (rising.length > 0) {
+    prompt += `✦ 潜力信号：${rising.map(s => s.name).join('、')}当前贡献低但趋势上升，属于"潜力"区域，建议给机会观察。\n`;
+  }
+
+  const unstable = classified.filter(x => x.stability === 'C');
+  if (unstable.length > 0) {
+    prompt += `⚑ 稳定性风险：${unstable.map(s => `${s.name}(C档, 系数${(state.stableC/100).toFixed(2)})`).join('、')}，交付稳定性失控，产能风险高。\n`;
+  }
+
+  document.getElementById('promptText').textContent = prompt;
+}
+
+function updateAll() {
+  renderGrid();
+  renderStats();
+  renderSupplierList();
+  renderPrompt();
+}
+
+function updateState() {
+  state.trendThreshold = +document.getElementById('trendThreshold').value;
+  state.percentileMode = document.getElementById('percentileMode').value;
+  state.stableA = +document.getElementById('stableA').value;
+  state.stableB = +document.getElementById('stableB').value;
+  state.stableC = +document.getElementById('stableC').value;
+  state.yellowPenalty = +document.getElementById('yellowPenalty').value;
+  state.complaintPenalty = +document.getElementById('complaintPenalty').value;
+  state.selfEvalMax = +document.getElementById('selfEvalMax').value;
+
+  document.getElementById('trendThresholdVal').textContent = state.trendThreshold + '%';
+  document.getElementById('stableAVal').textContent = (state.stableA/100).toFixed(2);
+  document.getElementById('stableBVal').textContent = (state.stableB/100).toFixed(2);
+  document.getElementById('stableCVal').textContent = (state.stableC/100).toFixed(2);
+  document.getElementById('yellowPenaltyVal').textContent = '-' + state.yellowPenalty;
+  document.getElementById('complaintPenaltyVal').textContent = '-' + state.complaintPenalty;
+  document.getElementById('selfEvalMaxVal').textContent = state.selfEvalMax + '分';
+
+  updateAll();
+}
+
+function toggleSwitch(el) {
+  el.classList.toggle('on');
+  state[el.id] = el.classList.contains('on');
+  updateAll();
+}
+
+// Presets
+function applyPreset(name) {
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (name === 'default') {
+    Object.assign(state, DEFAULTS);
+  } else if (name === 'strict') {
+    Object.assign(state, DEFAULTS);
+    state.yellowPenalty = 15;
+    state.complaintPenalty = 10;
+    state.stableC = 65;
+    state.selfEvalMax = 3;
+  } else if (name === 'growth') {
+    Object.assign(state, DEFAULTS);
+    state.trendThreshold = 3;
+    state.selfEvalMax = 6;
+    state.stableB = 95;
+  } else if (name === 'stable') {
+    Object.assign(state, DEFAULTS);
+    state.stableA = 100;
+    state.stableB = 80;
+    state.stableC = 60;
+    state.trendThreshold = 8;
+  }
+
+  // Sync UI
+  document.getElementById('trendThreshold').value = state.trendThreshold;
+  document.getElementById('percentileMode').value = state.percentileMode;
+  document.getElementById('stableA').value = state.stableA;
+  document.getElementById('stableB').value = state.stableB;
+  document.getElementById('stableC').value = state.stableC;
+  document.getElementById('yellowPenalty').value = state.yellowPenalty;
+  document.getElementById('complaintPenalty').value = state.complaintPenalty;
+  document.getElementById('selfEvalMax').value = state.selfEvalMax;
+
+  updateState();
+}
+
+// Modal
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = '添加供应商';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('mName').value = '';
+  document.getElementById('mScore').value = 60;
+  document.getElementById('mYellow').value = 0;
+  document.getElementById('mComplaint').value = 0;
+  document.getElementById('mRedline').value = '0';
+  document.getElementById('mStability').value = 'A';
+  document.getElementById('mSelfEval').value = 1;
+  document.getElementById('mPrevScore').value = 0;
+  document.getElementById('modal').classList.add('show');
+}
+
+function openEditModal(id) {
+  const s = suppliers.find(x => x.id === id);
+  if (!s) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = '编辑：' + s.name;
+  document.getElementById('deleteBtn').style.display = 'inline-block';
+  document.getElementById('mName').value = s.name;
+  document.getElementById('mScore').value = s.score;
+  document.getElementById('mYellow').value = s.yellow;
+  document.getElementById('mComplaint').value = s.complaint;
+  document.getElementById('mRedline').value = s.redline ? '1' : '0';
+  document.getElementById('mStability').value = s.stability;
+  document.getElementById('mSelfEval').value = s.selfEval;
+  document.getElementById('mPrevScore').value = s.prevScore;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+function saveSupplier() {
+  const data = {
+    name: document.getElementById('mName').value.trim(),
+    score: +document.getElementById('mScore').value,
+    yellow: +document.getElementById('mYellow').value,
+    complaint: +document.getElementById('mComplaint').value,
+    redline: document.getElementById('mRedline').value === '1',
+    stability: document.getElementById('mStability').value,
+    selfEval: +document.getElementById('mSelfEval').value,
+    prevScore: +document.getElementById('mPrevScore').value,
+  };
+  if (!data.name) return;
+
+  if (editingId) {
+    const s = suppliers.find(x => x.id === editingId);
+    Object.assign(s, data);
+  } else {
+    suppliers.push({id: nextId++, ...data});
+  }
+  closeModal();
+  updateAll();
+}
+
+function deleteSupplier() {
+  if (!editingId) return;
+  suppliers = suppliers.filter(x => x.id !== editingId);
+  closeModal();
+  updateAll();
+}
+
+function copyPrompt() {
+  const text = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '已复制!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制提示词'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Init
+updateAll();
+</script>
+</body>
+</html>

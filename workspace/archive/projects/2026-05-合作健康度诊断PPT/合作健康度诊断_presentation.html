@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合作健康度诊断 — 供应商协作问题发现与改善闭环</title>
+<style>
+/* ===== Reset & Base ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;background:#0a1628;color:#2c3e50}
+
+/* ===== CSS Variables ===== */
+:root{
+  --primary:#1B3A5C;
+  --primary-light:#244d7a;
+  --secondary:#4A90D9;
+  --secondary-light:#6ba8e8;
+  --accent:#E8913A;
+  --accent-light:#f0a85c;
+  --bg-dark:#0d1f33;
+  --bg-card:#f7f9fc;
+  --bg-card-alt:#edf2f7;
+  --text-dark:#1a2a3a;
+  --text-mid:#4a5c6e;
+  --text-light:#8899aa;
+  --white:#ffffff;
+  --danger:#d94f4f;
+  --success:#2ea86f;
+  --border:#dde5ee;
+  --slide-w:1920;
+  --slide-h:1080;
+}
+
+/* ===== Slide Container ===== */
+#deck{position:relative;width:100vw;height:100vh;overflow:hidden}
+.slide{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:none;flex-direction:column;
+  background:var(--white);
+  opacity:0;transition:opacity .35s ease;
+}
+.slide.active{display:flex;opacity:1}
+.slide.prev{display:flex;opacity:0}
+
+/* ===== Top Accent Bar ===== */
+.slide::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  z-index:10;
+}
+
+/* ===== Cover Slide ===== */
+.slide-cover{background:linear-gradient(135deg,#0d1f33 0%,var(--primary) 40%,var(--primary-light) 100%);justify-content:center;align-items:center;text-align:center;color:var(--white)}
+.slide-cover::before{display:none}
+.slide-cover .cover-badge{display:inline-block;padding:8px 24px;border:1.5px solid var(--secondary);border-radius:20px;font-size:15px;color:var(--secondary-light);letter-spacing:1px;margin-bottom:32px}
+.slide-cover h1{font-size:56px;font-weight:700;letter-spacing:2px;margin-bottom:16px}
+.slide-cover .cover-sub{font-size:22px;font-weight:400;color:rgba(255,255,255,.75);margin-bottom:48px}
+.slide-cover .cover-meta{font-size:14px;color:rgba(255,255,255,.5)}
+.slide-cover .cover-line{width:60px;height:3px;background:var(--accent);margin:0 auto 28px}
+
+/* ===== Section Header ===== */
+.slide-header{padding:60px 80px 20px}
+.slide-header h2{font-size:34px;font-weight:700;color:var(--primary);line-height:1.3}
+.slide-header .header-line{width:48px;height:3px;background:var(--accent);margin-top:12px}
+.slide-header .header-sub{font-size:16px;color:var(--text-mid);margin-top:8px}
+
+/* ===== Slide Body ===== */
+.slide-body{flex:1;padding:0 80px 40px;display:flex;flex-direction:column;justify-content:center;position:relative}
+
+/* ===== Bottom Bar ===== */
+.slide-bottom{padding:0 80px 36px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--text-light)}
+.slide-bottom .bottom-value{color:var(--accent);font-weight:600}
+
+/* ===== Card Grid ===== */
+.card-grid{display:grid;gap:24px}
+.card-grid.cols-2{grid-template-columns:1fr 1fr}
+.card-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{
+  background:var(--bg-card);border:1px solid var(--border);border-radius:10px;
+  padding:32px;position:relative;overflow:hidden;
+}
+.card .card-icon{width:44px;height:44px;border-radius:8px;background:var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:var(--white);font-size:20px}
+.card .card-label{font-size:18px;font-weight:700;color:var(--primary);margin-bottom:8px}
+.card .card-desc{font-size:14px;color:var(--text-mid);line-height:1.6}
+.card-accent .card-icon{background:var(--accent)}
+.card-danger .card-icon{background:var(--danger)}
+.card-success .card-icon{background:var(--success)}
+
+/* ===== Arrow Flow ===== */
+.arrow-flow{display:flex;align-items:stretch;gap:0;justify-content:center}
+.arrow-step{
+  flex:1;max-width:320px;text-align:center;padding:32px 24px;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:10px;
+  position:relative;
+}
+.arrow-step .step-num{display:inline-block;width:36px;height:36px;line-height:36px;border-radius:50%;background:var(--primary);color:var(--white);font-size:16px;font-weight:700;margin-bottom:12px}
+.arrow-step .step-title{font-size:20px;font-weight:700;color:var(--primary);margin-bottom:8px}
+.arrow-step .step-desc{font-size:14px;color:var(--text-mid);line-height:1.5}
+.arrow-step .step-time{display:inline-block;margin-top:12px;padding:4px 14px;background:var(--bg-card-alt);border-radius:12px;font-size:12px;color:var(--secondary);font-weight:600}
+.arrow-arrow{display:flex;align-items:center;font-size:28px;color:var(--secondary);padding:0 8px;flex-shrink:0}
+
+/* ===== Dual Column ===== */
+.dual-col{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.dual-col .col-header{font-size:18px;font-weight:700;color:var(--primary);margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--secondary);display:flex;align-items:center;gap:8px}
+.dual-col .col-header .col-badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:12px;color:var(--white);background:var(--secondary)}
+.dual-col .col-badge-alt{background:var(--accent)}
+.item-list{list-style:none}
+.item-list li{padding:12px 0;border-bottom:1px solid var(--border);font-size:15px;color:var(--text-dark);display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.item-list li:last-child{border-bottom:none}
+.item-list .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--secondary);margin-top:7px;flex-shrink:0}
+.item-list .dot-accent{background:var(--accent)}
+
+/* ===== Matrix ===== */
+.matrix-wrap{display:flex;align-items:center;justify-content:center;gap:40px}
+.matrix{
+  width:480px;height:380px;position:relative;
+  border-left:2px solid var(--text-mid);border-bottom:2px solid var(--text-mid);
+}
+.matrix .m-label-y{position:absolute;left:-24px;top:50%;transform:translate(-100%,-50%) rotate(-90deg);font-size:13px;color:var(--text-mid);white-space:nowrap;font-weight:600}
+.matrix .m-label-x{position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--text-mid);white-space:nowrap;font-weight:600}
+.matrix .m-label-yt{position:absolute;left:-8px;top:-22px;font-size:12px;color:var(--accent);font-weight:600}
+.matrix .m-label-yb{position:absolute;left:-8px;bottom:-22px;font-size:12px;color:var(--text-light)}
+.matrix .m-label-xl{position:absolute;left:-10px;bottom:-22px;font-size:12px;color:var(--text-light)}
+.matrix .m-label-xr{position:absolute;right:-10px;bottom:-22px;font-size:12px;color:var(--accent);font-weight:600}
+.quadrant{position:absolute;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;text-align:center;padding:12px}
+.q-tr{top:8px;right:8px;width:calc(50% - 12px);height:calc(50% - 12px);background:rgba(232,145,58,.15);border:1.5px solid var(--accent);color:var(--accent)}
+.q-tl{top:8px;left:8px;width:calc(50% - 12px);height:calc(50% - 12px);background:rgba(74,144,217,.08);border:1px dashed var(--border);color:var(--text-mid)}
+.q-br{bottom:8px;right:8px;width:calc(50% - 12px);height:calc(50% - 12px);background:rgba(74,144,217,.08);border:1px dashed var(--border);color:var(--text-mid)}
+.q-bl{bottom:8px;left:8px;width:calc(50% - 12px);height:calc(50% - 12px);background:rgba(0,0,0,.02);border:1px dashed var(--border);color:var(--text-light)}
+.matrix-side{display:flex;flex-direction:column;gap:16px}
+.matrix-side .ms-tag{padding:14px 20px;border-radius:8px;border-left:4px solid;font-size:14px;line-height:1.5}
+.ms-tag.tag-flow{border-color:var(--secondary);background:rgba(74,144,217,.06)}
+.ms-tag.tag-comm{border-color:var(--accent);background:rgba(232,145,58,.06)}
+.ms-tag.tag-interest{border-color:var(--danger);background:rgba(217,79,79,.06)}
+.ms-tag .ms-label{font-weight:700;color:var(--text-dark);margin-bottom:2px}
+.ms-tag .ms-sub{color:var(--text-mid);font-size:13px}
+
+/* ===== Timeline ===== */
+.timeline{display:flex;align-items:flex-start;justify-content:space-between;padding:40px 20px 0;position:relative}
+.timeline::before{content:'';position:absolute;top:68px;left:10%;right:10%;height:3px;background:var(--secondary);border-radius:2px}
+.tl-node{display:flex;flex-direction:column;align-items:center;width:22%;position:relative}
+.tl-dot{width:18px;height:18px;border-radius:50%;background:var(--accent);border:3px solid var(--white);box-shadow:0 0 0 3px var(--secondary);margin-bottom:16px;position:relative;z-index:2}
+.tl-date{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:8px}
+.tl-title{font-size:16px;font-weight:700;color:var(--text-dark);margin-bottom:6px;text-align:center}
+.tl-desc{font-size:13px;color:var(--text-mid);text-align:center;line-height:1.5}
+
+/* ===== Table ===== */
+.plan-table{width:100%;border-collapse:collapse;font-size:15px}
+.plan-table th{background:var(--primary);color:var(--white);padding:16px 20px;text-align:left;font-weight:600;font-size:14px}
+.plan-table th:first-child{border-radius:8px 0 0 0}
+.plan-table th:last-child{border-radius:0 8px 0 0}
+.plan-table td{padding:18px 20px;border-bottom:1px solid var(--border);color:var(--text-dark);vertical-align:middle}
+.plan-table tr:last-child td{border-bottom:none}
+.plan-table .prob-num{display:inline-block;width:28px;height:28px;line-height:28px;border-radius:6px;background:var(--accent);color:var(--white);font-size:13px;font-weight:700;text-align:center;margin-right:8px}
+.plan-table .placeholder{color:var(--text-light);font-style:italic}
+
+/* ===== Metric Cards ===== */
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.metric-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:28px 24px;text-align:center;position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--secondary)}
+.metric-card .mc-value{font-size:36px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.metric-card .mc-label{font-size:14px;font-weight:600;color:var(--primary);margin-bottom:8px}
+.metric-card .mc-desc{font-size:12px;color:var(--text-mid);line-height:1.4}
+
+/* ===== Cycle Flow ===== */
+.cycle-wrap{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px 0}
+.cycle-node{
+  width:180px;text-align:center;padding:24px 16px;
+  background:var(--bg-card);border:1.5px solid var(--border);border-radius:10px;
+}
+.cycle-node .cn-icon{width:40px;height:40px;border-radius:50%;background:var(--primary);color:var(--white);display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;margin-bottom:8px}
+.cycle-node .cn-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:4px}
+.cycle-node .cn-sub{font-size:12px;color:var(--text-mid)}
+.cycle-arrow{font-size:24px;color:var(--secondary);flex-shrink:0}
+
+/* ===== Risk Table ===== */
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.risk-row{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)}
+.risk-row:last-child{border-bottom:none}
+.risk-cell{padding:20px 24px;font-size:14px;line-height:1.6;display:flex;align-items:flex-start;gap:10px}
+.risk-cell .rc-icon{width:24px;height:24px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+.risk-cell .rc-icon.warn{background:rgba(232,145,58,.15);color:var(--accent)}
+.risk-cell .rc-icon.fix{background:rgba(46,168,111,.12);color:var(--success)}
+.risk-header{background:var(--primary);color:var(--white);font-weight:700;font-size:15px;padding:14px 24px;display:flex;align-items:center;gap:8px}
+.risk-header:first-child{border-right:1px solid rgba(255,255,255,.15)}
+
+/* ===== End Slide ===== */
+.slide-end{background:linear-gradient(135deg,#0d1f33 0%,var(--primary) 100%);color:var(--white);justify-content:center;align-items:center;text-align:center}
+.slide-end::before{display:none}
+.slide-end h2{font-size:36px;font-weight:700;margin-bottom:40px}
+.ask-list{list-style:none;text-align:left;max-width:720px;margin:0 auto}
+.ask-list li{padding:16px 0;border-bottom:1px solid rgba(255,255,255,.15);font-size:18px;display:flex;align-items:flex-start;gap:14px;line-height:1.5}
+.ask-list li:last-child{border-bottom:none}
+.ask-list .ask-num{display:inline-flex;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.slide-end .next-action{margin-top:48px;font-size:15px;color:rgba(255,255,255,.6)}
+.slide-end .next-action span{color:var(--accent);font-weight:600}
+
+/* ===== Controls ===== */
+#controls{
+  position:fixed;bottom:0;left:0;right:0;height:40px;
+  background:rgba(13,31,51,.9);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;gap:24px;
+  z-index:100;font-size:13px;color:rgba(255,255,255,.5);
+  transition:opacity .3s;
+}
+#controls .ctrl-btn{
+  background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);
+  padding:3px 14px;border-radius:4px;cursor:pointer;font-size:12px;
+  transition:all .2s;
+}
+#controls .ctrl-btn:hover{background:rgba(255,255,255,.1);color:#fff}
+#controls .page-info{color:rgba(255,255,255,.7);font-weight:600;min-width:60px;text-align:center}
+
+/* ===== Notes Panel ===== */
+#notes-panel{
+  position:fixed;top:0;right:-420px;width:400px;height:calc(100% - 40px);
+  background:#f0f4f8;border-left:1px solid var(--border);
+  z-index:200;transition:right .3s ease;overflow-y:auto;padding:32px 24px;
+  font-size:14px;line-height:1.7;color:var(--text-dark);
+}
+#notes-panel.open{right:0}
+#notes-panel h3{font-size:16px;color:var(--primary);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--secondary)}
+#notes-panel .note-section{margin-bottom:20px}
+#notes-panel .note-label{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:6px;letter-spacing:0.5px}
+#notes-panel p{margin-bottom:8px}
+#notes-panel .qa-item{padding:10px 14px;background:var(--white);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--secondary)}
+#notes-panel .qa-item .q{font-weight:600;color:var(--primary)}
+#notes-panel .qa-item .a{color:var(--text-mid);margin-top:4px;font-size:13px}
+
+/* ===== Print ===== */
+@media print{
+  #controls,#notes-panel{display:none!important}
+  .slide{position:relative!important;display:block!important;opacity:1!important;page-break-after:always;height:100vh;width:100vw}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+<!-- ==================== Slide 1: Cover ==================== -->
+<div class="slide slide-cover active" data-notes="cover">
+  <div class="cover-badge">供应商管理BP · 十大项目之六</div>
+  <div class="cover-line"></div>
+  <h1>合作健康度诊断</h1>
+  <div class="cover-sub">供应商协作问题发现与改善闭环方案</div>
+  <div class="cover-meta">汇报人：年老师 &nbsp;|&nbsp; 2026年5月</div>
+</div>
+
+<!-- ==================== Slide 2: Pain Points ==================== -->
+<div class="slide" data-notes="pain">
+  <div class="slide-header">
+    <h2>为什么现在要做健康度诊断？</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">四大痛点催生系统性诊断需求</div>
+  </div>
+  <div class="slide-body">
+    <div class="card-grid cols-2" style="max-width:1100px;margin:0 auto">
+      <div class="card card-accent">
+        <div class="card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M6 20V4M18 20v-6"/></svg>
+        </div>
+        <div class="card-label">摩擦未量化</div>
+        <div class="card-desc">日常合作存在摩擦，但从未系统性梳理"到底哪里不顺畅"</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="card-label">评估机制缺失</div>
+        <div class="card-desc">没有定期的合作满意度评估，不知道合作状态好不好</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="card-label">反馈渠道空白</div>
+        <div class="card-desc">供应商可能有很多想法，但没有正式渠道反馈</div>
+      </div>
+      <div class="card card-danger">
+        <div class="card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="card-label">效率黑洞</div>
+        <div class="card-desc">争议处理、需求传达等环节效率未知，可能存在隐性成本</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">与其等问题爆发，不如主动诊断、精准治理</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 3: Goals ==================== -->
+<div class="slide" data-notes="goals">
+  <div class="slide-header">
+    <h2>项目目标：诊断 → 改善 → 追踪</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">不做调研报告，做改善闭环 — 90天见效果</div>
+  </div>
+  <div class="slide-body">
+    <div class="arrow-flow" style="max-width:1100px;margin:0 auto">
+      <div class="arrow-step">
+        <div class="step-num">1</div>
+        <div class="step-title">识别卡点</div>
+        <div class="step-desc">数据收集 + 供应商访谈<br>锁定影响最大的 Top 3 问题</div>
+        <div class="step-time">1 周</div>
+      </div>
+      <div class="arrow-arrow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="arrow-step">
+        <div class="step-num" style="background:var(--accent)">2</div>
+        <div class="step-title">快速改善</div>
+        <div class="step-desc">每个问题绑定四要素<br>责任人 · 路径 · 时间 · 验收标准</div>
+        <div class="step-time">90 天闭环</div>
+      </div>
+      <div class="arrow-arrow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="arrow-step">
+        <div class="step-num" style="background:var(--success)">3</div>
+        <div class="step-title">持续追踪</div>
+        <div class="step-desc">季度健康度评估<br>问题追踪 + 仪表盘更新</div>
+        <div class="step-time">季度循环</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">从模糊感知到精准定位，从一次性改善到持续机制</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 4: Data Collection ==================== -->
+<div class="slide" data-notes="data">
+  <div class="slide-header">
+    <h2>数据收集框架：定量 + 定性双线并行</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">不凭感觉判断，用数据锁定范围，用访谈深挖根因</div>
+  </div>
+  <div class="slide-body">
+    <div class="dual-col" style="max-width:1100px;margin:0 auto">
+      <div class="dual-col-left">
+        <div class="col-header">
+          <span class="col-badge">定量数据</span>
+          <span>近3个月系统数据</span>
+        </div>
+        <ul class="item-list">
+          <li><span class="dot"></span><span>争议处理数量与平均处理时长</span></li>
+          <li><span class="dot"></span><span>投诉次数与类型分布</span></li>
+          <li><span class="dot"></span><span>需求传达的响应时效</span></li>
+          <li><span class="dot"></span><span>供应商人员流失率变化</span></li>
+        </ul>
+      </div>
+      <div class="dual-col-right">
+        <div class="col-header">
+          <span class="col-badge col-badge-alt" style="background:var(--accent)">定性访谈</span>
+          <span>5-8家关键供应商</span>
+        </div>
+        <ul class="item-list">
+          <li><span class="dot dot-accent"></span><span>合作中最顺畅的是什么？</span></li>
+          <li><span class="dot dot-accent"></span><span>最不顺畅的是什么？</span></li>
+          <li><span class="dot dot-accent"></span><span>最希望我们改进什么？</span></li>
+          <li><span class="dot dot-accent"></span><span>如果只改一件事，你选什么？</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">1周完成双线数据收集，交叉验证确保结论可靠</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 5: Matrix ==================== -->
+<div class="slide" data-notes="matrix">
+  <div class="slide-header">
+    <h2>问题排序矩阵：影响面 × 严重度锁定 Top 3</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">有标准排序，不是拍脑袋 — 只抓影响最大、最紧迫的 3 个</div>
+  </div>
+  <div class="slide-body">
+    <div class="matrix-wrap">
+      <div class="matrix">
+        <span class="m-label-y">严重度（对业务影响）</span>
+        <span class="m-label-yt">影响重大</span>
+        <span class="m-label-yb">影响较小</span>
+        <span class="m-label-x">影响面（受影响供应商数量）</span>
+        <span class="m-label-xl">少数</span>
+        <span class="m-label-xr">多数</span>
+        <div class="quadrant q-tl">次优先<br><span style="font-size:11px;font-weight:400">Backlog</span></div>
+        <div class="quadrant q-tr">优先解决<br><span style="font-size:11px;font-weight:400">Top 3</span></div>
+        <div class="quadrant q-bl">暂不处理</div>
+        <div class="quadrant q-br">次优先<br><span style="font-size:11px;font-weight:400">Backlog</span></div>
+      </div>
+      <div class="matrix-side">
+        <div class="ms-tag tag-flow">
+          <div class="ms-label">流程类</div>
+          <div class="ms-sub">步骤多、审批慢</div>
+        </div>
+        <div class="ms-tag tag-comm">
+          <div class="ms-label">沟通类</div>
+          <div class="ms-sub">需求不清、反馈慢</div>
+        </div>
+        <div class="ms-tag tag-interest">
+          <div class="ms-label">利益类</div>
+          <div class="ms-sub">分配不公、激励不足</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">只抓 Top 3，其余入 Backlog，不贪多</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 6: Implementation Path ==================== -->
+<div class="slide" data-notes="path">
+  <div class="slide-header">
+    <h2>实施路径：四步闭环</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">4周完成诊断和计划制定，90天完成改善，季度持续追踪</div>
+  </div>
+  <div class="slide-body">
+    <div class="arrow-flow" style="max-width:1200px;margin:0 auto">
+      <div class="arrow-step">
+        <div class="step-num">1</div>
+        <div class="step-title">数据收集</div>
+        <div class="step-desc">定量数据拉取<br>+ 5-8家供应商访谈</div>
+        <div class="step-time">1 周</div>
+      </div>
+      <div class="arrow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="arrow-step">
+        <div class="step-num" style="background:var(--secondary)">2</div>
+        <div class="step-title">问题分析</div>
+        <div class="step-desc">影响面×严重度排序<br>输出 Top 3 清单</div>
+        <div class="step-time">3 天</div>
+      </div>
+      <div class="arrow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="arrow-step">
+        <div class="step-num" style="background:var(--accent)">3</div>
+        <div class="step-title">改善计划</div>
+        <div class="step-desc">责任人 + 路径<br>+ 时间 + 验收标准</div>
+        <div class="step-time">2 天</div>
+      </div>
+      <div class="arrow-arrow">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="arrow-step" style="border-style:dashed;border-color:var(--secondary)">
+        <div class="step-num" style="background:var(--success)">4</div>
+        <div class="step-title">季度追踪</div>
+        <div class="step-desc">问卷 + 数据<br>更新健康度仪表盘</div>
+        <div class="step-time">持续循环</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">闭环设计：不是开环调研，是持续改善机制</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 7: Milestones ==================== -->
+<div class="slide" data-notes="milestones">
+  <div class="slide-header">
+    <h2>里程碑：4周诊断，7月复盘</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">每个节点有可交付物，可追踪可验收</div>
+  </div>
+  <div class="slide-body">
+    <div class="timeline">
+      <div class="tl-node">
+        <div class="tl-date">5月第1周</div>
+        <div class="tl-dot"></div>
+        <div class="tl-title">数据+访谈完成</div>
+        <div class="tl-desc">定量数据拉取到位<br>5-8家访谈记录归档</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-date">5月第2周</div>
+        <div class="tl-dot"></div>
+        <div class="tl-title">Top 3 输出</div>
+        <div class="tl-desc">分析报告完成<br>问题排序与军哥确认</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-date">5月第3周</div>
+        <div class="tl-dot"></div>
+        <div class="tl-title">改善计划启动</div>
+        <div class="tl-desc">90天计划发布<br>责任人确认，倒计时开始</div>
+      </div>
+      <div class="tl-node">
+        <div class="tl-date">8月</div>
+        <div class="tl-dot" style="background:var(--success);box-shadow:0 0 0 3px var(--success)"></div>
+        <div class="tl-title">90天复盘</div>
+        <div class="tl-desc">改善效果评估<br>量化指标对标验收</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">每个节点有交付物，可追踪可验收</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 8: 90-Day Plan ==================== -->
+<div class="slide" data-notes="plan">
+  <div class="slide-header">
+    <h2>90天改善计划：三个问题，三条闭环</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">每个问题绑定四要素 — 可追踪、可验收、不可推诿</div>
+  </div>
+  <div class="slide-body">
+    <div style="max-width:1100px;margin:0 auto;width:100%">
+      <table class="plan-table">
+        <thead>
+          <tr>
+            <th style="width:14%">问题</th>
+            <th style="width:18%">责任人</th>
+            <th style="width:26%">解决路径</th>
+            <th style="width:16%">完成时间</th>
+            <th style="width:26%">验收标准</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="prob-num">1</span>Top 1</td>
+            <td class="placeholder">待诊断确认</td>
+            <td class="placeholder">待诊断确认</td>
+            <td>45天内</td>
+            <td class="placeholder">待诊断确认</td>
+          </tr>
+          <tr>
+            <td><span class="prob-num">2</span>Top 2</td>
+            <td class="placeholder">待诊断确认</td>
+            <td class="placeholder">待诊断确认</td>
+            <td>90天内</td>
+            <td class="placeholder">待诊断确认</td>
+          </tr>
+          <tr>
+            <td><span class="prob-num">3</span>Top 3</td>
+            <td class="placeholder">待诊断确认</td>
+            <td class="placeholder">待诊断确认</td>
+            <td>90天内</td>
+            <td class="placeholder">待诊断确认</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span>框架已就绪，Top 3 确认后立即填入</span>
+    <span class="bottom-value">每个问题有人盯、有标准验、有时间逼</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 9: Metrics ==================== -->
+<div class="slide" data-notes="metrics">
+  <div class="slide-header">
+    <h2>量化目标：四个指标衡量改善效果</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">每个改善动作都有量化验收，不做无目标的事</div>
+  </div>
+  <div class="slide-body">
+    <div class="metric-grid" style="max-width:1100px;margin:0 auto">
+      <div class="metric-card">
+        <div class="mc-value">&ge; 2/3</div>
+        <div class="mc-label">问题解决率</div>
+        <div class="mc-desc">Top 3 问题中至少解决 2 个，90天内完成改善</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-value">-50%</div>
+        <div class="mc-label">争议处理周期</div>
+        <div class="mc-desc">从争议发生到解决的平均天数缩短一半</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-value">+1</div>
+        <div class="mc-label">供应商满意度</div>
+        <div class="mc-desc">建立 1-10 分基线，Q2 末提升 1 分</div>
+      </div>
+      <div class="metric-card">
+        <div class="mc-value">-30%</div>
+        <div class="mc-label">跨部门协作效率</div>
+        <div class="mc-desc">需求从提出到解决的平均天数压缩三成</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">基线建立后对标跟踪，效果用数据说话</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 10: Quarterly Tracking ==================== -->
+<div class="slide" data-notes="tracking">
+  <div class="slide-header">
+    <h2>季度追踪机制：防复发、可持续</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">改善不是一次性运动，季度追踪确保效果不回退</div>
+  </div>
+  <div class="slide-body">
+    <div class="cycle-wrap">
+      <div class="cycle-node">
+        <div class="cn-icon">1</div>
+        <div class="cn-title">季度评估</div>
+        <div class="cn-sub">问卷 + 数据双线<br>轻量设计，2天内完成</div>
+      </div>
+      <div class="cycle-arrow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="cycle-node">
+        <div class="cn-icon" style="background:var(--accent)">2</div>
+        <div class="cn-title">问题追踪</div>
+        <div class="cn-sub">Top 3 改善进度<br>是否回退，是否需调整</div>
+      </div>
+      <div class="cycle-arrow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="cycle-node">
+        <div class="cn-icon" style="background:var(--success)">3</div>
+        <div class="cn-title">仪表盘更新</div>
+        <div class="cn-sub">健康度可视化<br>一眼看清当前状态</div>
+      </div>
+      <div class="cycle-arrow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+      <div class="cycle-node">
+        <div class="cn-icon" style="background:var(--primary)">4</div>
+        <div class="cn-title">改善行动</div>
+        <div class="cn-sub">新一轮改善<br>或维持现状</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">改善不是运动，是机制 — 季度循环，长期积累</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 11: Risk ==================== -->
+<div class="slide" data-notes="risk">
+  <div class="slide-header">
+    <h2>风险预案：四个关键风险已预判</h2>
+    <div class="header-line"></div>
+    <div class="header-sub">每个风险有具体应对，不是走一步看一步</div>
+  </div>
+  <div class="slide-body">
+    <div style="max-width:1100px;margin:0 auto;width:100%">
+      <div class="risk-grid">
+        <div class="risk-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          风险
+        </div>
+        <div class="risk-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          应对方案
+        </div>
+        <div class="risk-row">
+          <div class="risk-cell"><span class="rc-icon warn">!</span><span>供应商不愿说真话</span></div>
+          <div class="risk-cell"><span class="rc-icon fix">&#10003;</span><span>匿名问卷 + 私下访谈，保证"说了不会有问题"</span></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-cell"><span class="rc-icon warn">!</span><span>问题太多无从下手</span></div>
+          <div class="risk-cell"><span class="rc-icon fix">&#10003;</span><span>严格按影响面×严重度排序，只抓 Top 3</span></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-cell"><span class="rc-icon warn">!</span><span>改善变"纸上改善"</span></div>
+          <div class="risk-cell"><span class="rc-icon fix">&#10003;</span><span>责任人 + 时间线 + 季度跟踪，到期验收</span></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-cell"><span class="rc-icon warn">!</span><span>暴露内部协作问题</span></div>
+          <div class="risk-cell"><span class="rc-icon fix">&#10003;</span><span>内部问题单独向军哥汇报，不和供应商反馈混在一起</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-bottom">
+    <span></span>
+    <span class="bottom-value">风险可控，预案到位，不走一步看一步</span>
+  </div>
+</div>
+
+<!-- ==================== Slide 12: End ==================== -->
+<div class="slide slide-end" data-notes="end">
+  <h2>请示与下一步</h2>
+  <ul class="ask-list">
+    <li>
+      <span class="ask-num">1</span>
+      <span>方案方向是否认可？有无需要调整的地方？</span>
+    </li>
+    <li>
+      <span class="ask-num">2</span>
+      <span>访谈 5-8 家供应商，是否需要您跟对方打招呼？</span>
+    </li>
+    <li>
+      <span class="ask-num">3</span>
+      <span>改善计划涉及跨部门协调时，能否请您出面推动？</span>
+    </li>
+  </ul>
+  <div class="next-action">下一步：<span>5月第1周启动数据收集</span></div>
+</div>
+
+</div><!-- end #deck -->
+
+<!-- ===== Controls ===== -->
+<div id="controls">
+  <button class="ctrl-btn" onclick="prevSlide()" title="上一页 (Left/Up)">&#9664; 上一页</button>
+  <span class="page-info" id="pageInfo">1 / 12</span>
+  <button class="ctrl-btn" onclick="nextSlide()" title="下一页 (Right/Down)">下一页 &#9654;</button>
+  <button class="ctrl-btn" onclick="toggleNotes()" title="演讲者备注 (N)">备注</button>
+  <button class="ctrl-btn" onclick="toggleFullscreen()" title="全屏 (F)">全屏</button>
+</div>
+
+<!-- ===== Notes Panel ===== -->
+<div id="notes-panel"></div>
+
+<script>
+// ===== Slide Data =====
+const slides = document.querySelectorAll('.slide');
+let current = 0;
+const total = slides.length;
+
+const notesData = {
+  cover: {
+    title: '第1页 — 封面',
+    script: '军哥好。今天汇报供应商管理BP的第六个项目——合作健康度诊断。对标HRBP做组织健康度诊断的思路，我们准备系统性地梳理我方跟供应商之间的协作卡点，锁定问题、快速改善、建立追踪机制，防止问题反复出现。这个项目不是写调研报告，是带动作、带责任人、带验收标准的闭环。',
+    time: '30秒',
+    qa: [
+      { q: '健康度诊断？你打算怎么量化？', a: '用四组定量指标（争议处理周期、投诉次数、响应时效、人员流失率）加上供应商访谈双线交叉验证，不是拍脑袋打分。' },
+      { q: '为什么是第六个？前五个什么进度？', a: '前五个项目按计划推进中，健康度诊断是独立模块，不依赖其他项目产出。' }
+    ]
+  },
+  pain: {
+    title: '第2页 — 四大痛点',
+    script: '先说为什么要做这件事。我们跟30多家供应商的日常合作中，摩擦是存在的。但这些摩擦从来没有被系统梳理过——不知道哪个环节效率最低、供应商有什么不满、争议处理到底拖多久。摩擦未量化，评估机制缺失，反馈渠道空白，效率黑洞。与其等问题爆发再救火，不如主动诊断、精准治理。',
+    time: '45秒',
+    qa: [
+      { q: '你说的摩擦，能举几个具体例子吗？', a: '比如需求传达后供应商理解偏差导致返工、争议处理环节多方拉扯耗时过长、人员流失后交接不畅影响产能。数据收集阶段会量化。' },
+      { q: '供应商有想法为什么不说？', a: '缺乏正式渠道是一个原因，另一个是担心说了影响关系。所以我们设计了匿名问卷加私下访谈两条线。' }
+    ]
+  },
+  goals: {
+    title: '第3页 — 项目目标',
+    script: '项目目标分三步。第一步，用数据和访谈找出最影响业务的Top 3协作问题。第二步，90天闭环改善，每个问题绑定责任人、解决路径、完成时间、验收标准。第三步，建立季度追踪机制，防止复发。总结一句话：不做调研报告，做改善闭环。',
+    time: '40秒',
+    qa: [
+      { q: '90天的依据是什么？能不能更快？', a: 'Top 1问题可以加速到45天内闭环，其余两个按90天推进。90天是留了缓冲的。' },
+      { q: 'Top 3够吗？万一问题很多呢？', a: 'Top 3之外的问题全部入backlog，不会丢。但改善阶段严控范围，贪多嚼不烂。' }
+    ]
+  },
+  data: {
+    title: '第4页 — 数据收集框架',
+    script: '数据收集分两条线并行。定量方面，拉取近3个月的四组数据：争议处理数量和平均时长、投诉次数和类型分布、需求传达的响应时效、供应商人员流失率变化。定性方面，访谈5到8家关键供应商的对接人，围绕四个核心问题。两条线交叉验证，1周内完成。',
+    time: '50秒',
+    qa: [
+      { q: '为什么是5-8家而不是全量？', a: '5-8家关键供应商覆盖80%以上业务量，样本代表性足够。全量访谈成本高周期长。' },
+      { q: '数据从哪取？系统里有吗？', a: '争议数据在工单系统，投诉数据在质检台账，响应时效在需求管理记录，人员流失率在供应商月报。' }
+    ]
+  },
+  matrix: {
+    title: '第5页 — 问题排序矩阵',
+    script: '数据收完后，用影响面×严重度矩阵排序。落在右上角的就是优先解决的Top 3。问题分三类：流程类、沟通类、利益类。核心原则：只抓Top 3，不贪多，其余入backlog。',
+    time: '50秒',
+    qa: [
+      { q: '影响面和严重度怎么量化？谁说了算？', a: '影响面用受影响供应商数量占比，是客观的。严重度分三档打分：是否影响产能、是否导致客诉、是否造成资金损失。' },
+      { q: '如果Top 3集中在同一类怎么办？', a: '说明这类问题确实最突出，反而更容易集中解决。会确保至少有一个结构性问题。' }
+    ]
+  },
+  path: {
+    title: '第6页 — 实施路径',
+    script: '整体路径四步。第一步1周完成数据收集，第二步3天完成问题分析，第三步2天制定改善计划，第四步进入持续追踪。从启动到计划定好大约4周，然后进入90天改善期。',
+    time: '40秒',
+    qa: [
+      { q: '4周定计划会不会太慢？', a: '数据收集1周是最耗时的，其余都是分析和制定。数据顺畅可压缩到3周。' },
+      { q: '谁来做这些事？', a: '年老师主导，数据拉取配合质检组和业务管理组，访谈我亲自做。' }
+    ]
+  },
+  milestones: {
+    title: '第7页 — 里程碑',
+    script: '5月第一周完成数据和访谈，第二周输出Top 3问题并确认，第三周启动改善计划，8月做90天复盘。每个节点都有明确交付物。',
+    time: '40秒',
+    qa: [
+      { q: '7月复盘时如果没改善呢？', a: '分析是执行问题还是定位问题。执行问题换方案，定位问题回溯数据重新诊断。不会不了了之。' }
+    ]
+  },
+  plan: {
+    title: '第8页 — 90天改善计划',
+    script: '90天改善计划的核心是三个绑死。每个Top问题绑定四要素：谁负责、怎么解决、什么时候完成、怎么验收。目前问题是待确认状态，框架已搭好，Top 3一旦确认立刻填入并启动。',
+    time: '45秒',
+    qa: [
+      { q: '责任人是你还是供应商？', a: '我方内部问题，责任人是我方内部对应负责人。涉及供应商配合的由我对接推动。' },
+      { q: '验收标准怎么定？谁来验？', a: '用数据说话——比如争议处理周期从X天降到Y天。最终向军哥汇报验收结果。' },
+      { q: '如果改善涉及制度调整呢？', a: '拆成短期缓解动作和长期制度优化两步，短期90天内完成。' }
+    ]
+  },
+  metrics: {
+    title: '第9页 — 量化目标',
+    script: '改善效果用四个量化指标衡量。Top 3问题解决率不低于三分之二；争议处理周期缩短50%；供应商满意度Q2末提升1分；跨部门协作效率缩短30%。每个指标都有明确衡量方法。',
+    time: '50秒',
+    qa: [
+      { q: '50%缩短的依据是什么？', a: '50%是目标值，基线建立后根据实际调整。现有争议处理周期偏长，有较大压缩空间。' },
+      { q: '满意度提升1分，基数是多少？', a: '基数在数据收集阶段建立。1-10分制下，1分提升是显著变化。' }
+    ]
+  },
+  tracking: {
+    title: '第10页 — 季度追踪机制',
+    script: '每季度做一次轻量评估，用问卷加数据追踪Top 3改善进度，更新健康度仪表盘。如果发现回退，立刻启动新一轮改善。改善不是一次性运动，是持续机制。',
+    time: '40秒',
+    qa: [
+      { q: '季度评估工作量多大？别变成负担。', a: '轻量设计，问卷10题以内，数据用现成系统导出。单次评估不超过2天。' },
+      { q: '仪表盘谁看？', a: '向军哥和王易人同步开放，供应商侧不开放。' }
+    ]
+  },
+  risk: {
+    title: '第11页 — 风险预案',
+    script: '四个关键风险已预判。供应商不愿说真话——匿名问卷加私下访谈。问题太多——严格排序只抓Top 3。改善变纸上谈兵——绑死责任人和时间线。暴露内部问题——单独向军哥汇报。风险想清楚了，不是走一步看一步。',
+    time: '50秒',
+    qa: [
+      { q: '暴露内部问题是什么意思？', a: '供应商反馈可能涉及我们内部部门协调效率、需求传达质量等。这些单独整理成内部改善清单，向军哥汇报。' },
+      { q: '匿名问卷供应商会信吗？', a: '不收集身份信息，用第三方工具发放，数据汇总后才给看原始数据。会提前说清匿名机制。' }
+    ]
+  },
+  end: {
+    title: '第12页 — 请示与下一步',
+    script: '请示三件事。第一，方案方向您是否认可？第二，访谈5-8家供应商，是否需要您跟对方打个招呼？第三，改善计划涉及跨部门协调，能否请您出面推动？如果您认可，5月第一周启动数据收集。',
+    time: '30秒',
+    qa: [
+      { q: '访谈需要多长时间？别影响正常业务。', a: '每家30-45分钟，约在日常对接间隙。不影响业务。' },
+      { q: '你一个人能搞定吗？', a: '数据收集和分析我主导，改善执行阶段分配给对应负责人，跨部门的需军哥支持。' }
+    ]
+  }
+};
+
+// ===== Rendering =====
+function showSlide(idx) {
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'prev');
+    if (i === idx) s.classList.add('active');
+  });
+  document.getElementById('pageInfo').textContent = (idx + 1) + ' / ' + total;
+  renderNotes(idx);
+}
+
+function nextSlide() { if (current < total - 1) { current++; showSlide(current); } }
+function prevSlide() { if (current > 0) { current--; showSlide(current); } }
+
+function renderNotes(idx) {
+  const key = slides[idx].dataset.notes;
+  const data = notesData[key];
+  const panel = document.getElementById('notes-panel');
+  if (!data) { panel.innerHTML = '<p style="color:#888">无备注</p>'; return; }
+  let html = `<h3>${data.title}</h3>`;
+  html += `<div class="note-section"><div class="note-label">演讲词（${data.time}）</div><p>${data.script}</p></div>`;
+  if (data.qa && data.qa.length) {
+    html += `<div class="note-section"><div class="note-label">军哥可能追问</div>`;
+    data.qa.forEach(item => {
+      html += `<div class="qa-item"><div class="q">Q: ${item.q}</div><div class="a">A: ${item.a}</div></div>`;
+    });
+    html += '</div>';
+  }
+  panel.innerHTML = html;
+}
+
+function toggleNotes() {
+  document.getElementById('notes-panel').classList.toggle('open');
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// ===== Keyboard =====
+document.addEventListener('keydown', function(e) {
+  switch(e.key) {
+    case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown':
+      e.preventDefault(); nextSlide(); break;
+    case 'ArrowLeft': case 'ArrowUp': case 'PageUp':
+      e.preventDefault(); prevSlide(); break;
+    case 'Home': e.preventDefault(); current = 0; showSlide(0); break;
+    case 'End': e.preventDefault(); current = total - 1; showSlide(current); break;
+    case 'f': case 'F':
+      toggleFullscreen(); break;
+    case 'n': case 'N':
+      toggleNotes(); break;
+  }
+});
+
+// ===== Init =====
+showSlide(0);
+</script>
+</body>
+</html>

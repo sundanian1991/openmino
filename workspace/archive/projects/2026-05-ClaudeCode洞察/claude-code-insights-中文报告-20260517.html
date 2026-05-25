@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 使用洞察报告</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ivory:  #FAF9F5;
+  --paper:  #FFFFFF;
+  --slate:  #141413;
+  --clay:   #D97757;
+  --clay-d: #B85C3E;
+  --oat:    #E3DACC;
+  --olive:  #788C5D;
+  --g100:   #F0EEE6;
+  --g200:   #E6E3DA;
+  --g300:   #D1CFC5;
+  --g500:   #87867F;
+  --g700:   #3D3D3A;
+  --serif:  ui-serif, Georgia, "Times New Roman", Times, serif;
+  --sans:   system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:   ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+}
+body {
+  font-family: var(--sans);
+  background: var(--ivory);
+  color: var(--g700);
+  line-height: 1.7;
+  padding: 0;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 48px 24px; }
+
+/* 标题区 */
+.report-header { margin-bottom: 40px; }
+.report-header h1 {
+  font-size: 2.2em; font-weight: 700; color: var(--slate);
+  margin-bottom: 8px; letter-spacing: -0.02em;
+}
+.report-header .subtitle {
+  color: var(--g500); font-size: 0.95em;
+  margin-bottom: 24px;
+}
+.report-header .report-summary {
+  border-left: 3px solid var(--clay);
+  padding-left: 16px; margin: 1.5em 0;
+  font-size: 1.05em; line-height: 1.7;
+  color: var(--g700);
+}
+
+/* 核心指标行 */
+.hero-metrics {
+  display: flex; gap: 16px; margin: 28px 0;
+  flex-wrap: wrap;
+}
+.hero-metric {
+  flex: 1; min-width: 140px;
+  padding: 18px 20px;
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px;
+  text-align: center;
+}
+.hero-value {
+  font-size: 2em; font-weight: 800;
+  font-family: var(--mono); color: var(--slate);
+  line-height: 1.2;
+}
+.hero-label {
+  font-size: 0.7em; color: var(--g500);
+  margin-top: 4px;
+}
+
+/* 导航 */
+.nav-toc {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin: 24px 0 32px 0; padding: 12px 16px;
+  background: var(--paper);
+  border-radius: 10px;
+  border: 1px solid var(--g200);
+}
+.nav-toc a {
+  font-size: 0.75em; color: var(--g500);
+  text-decoration: none; padding: 5px 10px;
+  border-radius: 6px; background: var(--g100);
+  transition: all 0.15s;
+}
+.nav-toc a:hover { background: var(--oat); color: var(--slate); }
+
+/* Section */
+section { margin-bottom: 48px; }
+.section-title {
+  font-size: 1.3em; font-weight: 600; color: var(--slate);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--g200);
+}
+.section-intro {
+  font-size: 0.9em; color: var(--g500);
+  margin-bottom: 20px;
+}
+
+/* 项目区域卡片 */
+.project-list { display: flex; flex-direction: column; gap: 10px; }
+.project-card {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px; padding: 16px 20px;
+  transition: border-color 0.15s;
+}
+.project-card:hover { border-color: var(--clay); }
+.project-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 6px;
+}
+.project-name { font-weight: 600; font-size: 0.95em; color: var(--slate); }
+.project-count {
+  font-size: 0.7em; color: var(--g500);
+  background: var(--g100); padding: 2px 8px;
+  border-radius: 4px;
+}
+.project-desc { font-size: 0.85em; color: var(--g700); line-height: 1.6; }
+
+/* 叙事 */
+.narrative-box {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px; padding: 24px;
+  margin-bottom: 20px;
+}
+.narrative-box p {
+  margin-bottom: 14px; font-size: 0.9em;
+  color: var(--g700); line-height: 1.8;
+}
+.narrative-box p:last-child { margin-bottom: 0; }
+.key-insight {
+  background: var(--g100); border-left: 3px solid var(--olive);
+  border-radius: 0 8px 8px 0;
+  padding: 12px 16px; margin-top: 14px;
+  font-size: 0.85em; color: var(--g700);
+}
+
+/* 图表卡片网格 */
+.charts-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; margin: 20px 0;
+}
+.chart-card {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px; padding: 18px;
+}
+.chart-card.full { grid-column: 1 / -1; }
+.chart-title {
+  font-size: 0.75em; font-weight: 700; color: var(--g500);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+.chart-footer {
+  font-size: 0.7em; color: var(--g500);
+  margin-top: 10px; text-align: right;
+}
+
+/* 水平条形图 */
+.h-bar-chart { display: flex; flex-direction: column; gap: 8px; }
+.h-bar-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 3px 0;
+}
+.h-bar-label {
+  min-width: 90px; font-size: 0.78em; color: var(--g700);
+  text-align: right; flex-shrink: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.h-bar-track {
+  flex: 1; height: 18px; background: var(--g100);
+  border-radius: 4px; overflow: hidden;
+}
+.h-bar-fill { height: 100%; border-radius: 4px; }
+.h-bar-value {
+  min-width: 36px; font-family: var(--mono);
+  font-size: 0.78em; font-weight: 600; color: var(--g500);
+  text-align: right;
+}
+
+/* 大成就 */
+.wins-grid { display: grid; gap: 14px; }
+.win-card {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px; padding: 18px 20px;
+  position: relative;
+}
+.win-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--olive), transparent);
+}
+.win-title {
+  font-weight: 600; font-size: 0.95em;
+  color: var(--olive); margin-bottom: 6px;
+}
+.win-desc { font-size: 0.85em; color: var(--g700); line-height: 1.6; }
+
+/* 摩擦区 */
+.friction-list { display: flex; flex-direction: column; gap: 14px; }
+.friction-card {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px; padding: 18px 20px;
+}
+.friction-title {
+  font-weight: 600; font-size: 0.95em;
+  color: var(--slate); margin-bottom: 6px;
+}
+.friction-desc {
+  font-size: 0.82em; color: var(--g700);
+  margin-bottom: 10px; line-height: 1.6;
+}
+.friction-examples {
+  margin: 0 0 0 18px; font-size: 0.8em;
+  color: var(--g500);
+}
+.friction-examples li { margin-bottom: 4px; }
+
+/* Horizon */
+.horizon-list { display: flex; flex-direction: column; gap: 16px; }
+.horizon-card {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px; padding: 20px;
+  position: relative;
+}
+.horizon-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--clay), transparent);
+}
+.horizon-title {
+  font-weight: 600; font-size: 0.95em;
+  color: var(--slate); margin-bottom: 8px;
+}
+.horizon-desc {
+  font-size: 0.85em; color: var(--g700);
+  line-height: 1.6; margin-bottom: 10px;
+}
+.horizon-tip {
+  font-size: 0.8em; color: var(--g500);
+  background: var(--g100); padding: 10px 14px;
+  border-radius: 8px; line-height: 1.5;
+}
+
+/* 花絮 */
+.fun-ending {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 12px; padding: 28px;
+  text-align: center; margin-top: 24px;
+}
+.fun-headline {
+  font-size: 1.1em; font-weight: 600;
+  color: var(--slate); margin-bottom: 8px;
+}
+.fun-detail {
+  font-size: 0.85em; color: var(--g500);
+}
+
+/* 折叠区 */
+details.detail-block {
+  border: 1px solid var(--g200);
+  border-radius: 10px; padding: 14px 18px;
+  margin: 16px 0;
+}
+details.detail-block summary {
+  cursor: pointer; font-weight: 600;
+  color: var(--clay); font-size: 0.85em;
+}
+details.detail-block[open] { background: var(--paper); }
+
+/* 指标卡片内联 */
+.dual-stat { display: flex; gap: 24px; flex-wrap: wrap; }
+.dual-stat-item { text-align: center; }
+.dual-stat-value {
+  font-size: 1.4em; font-weight: 700;
+  font-family: var(--mono); color: var(--slate);
+}
+.dual-stat-label {
+  font-size: 0.65em; color: var(--g500);
+  text-transform: uppercase;
+}
+
+/* 语义标注 */
+[data-entity="value"] { color: var(--clay); font-family: var(--mono); font-weight: 600; }
+[data-entity="time"] { font-family: var(--mono); font-size: 0.9em; color: var(--g500); }
+[data-assessment="positive"] { color: var(--olive); font-weight: 600; }
+[data-assessment="negative"] { color: #D94848; font-weight: 600; }
+
+/* 辅助 */
+.badge {
+  display: inline-block; font-size: 0.65em; font-weight: 600;
+  padding: 2px 8px; border-radius: 4px;
+}
+.badge-green { background: rgba(120,140,93,0.12); color: var(--olive); }
+.badge-red { background: rgba(217,72,72,0.1); color: #D94848; }
+
+@media (max-width: 640px) {
+  .charts-grid { grid-template-columns: 1fr; }
+  .hero-metrics { flex-direction: column; }
+  .hero-metric { min-width: auto; }
+  .container { padding: 24px 16px; }
+  .report-header h1 { font-size: 1.6em; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="report-header">
+    <h1>Claude Code 使用洞察报告</h1>
+    <p class="subtitle">
+      <span data-entity="time">2026-04-10</span> 至 <span data-entity="time">2026-05-15</span>
+      · 累计 224 次会话 ·
+      <span data-entity="value" data-origin="6366">6,366 条消息</span> ·
+      <span data-entity="value">1,606 小时</span>
+    </p>
+
+    <div class="report-summary">
+      年老师使用 Claude Code 的方式清晰可辨：<strong>数据驱动的迭代分析师</strong>，将 AI 作为协作分析实验室而非一次性工具。<br>
+      核心模式是 <strong>"审查 → 纠正 → 重执行"</strong>，在数据解读和可视化渲染上投入大量迭代精力，同时持续重构技能系统本身。
+    </div>
+
+    <div class="hero-metrics">
+      <div class="hero-metric">
+        <div class="hero-value">224</div>
+        <div class="hero-label">会话数</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-value">6,366</div>
+        <div class="hero-label">消息数</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-value">374</div>
+        <div class="hero-label">日均消息</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-value">42</div>
+        <div class="hero-label">提交数</div>
+      </div>
+    </div>
+
+    <nav class="nav-toc">
+      <a href="#s-work">工作领域</a>
+      <a href="#s-usage">使用方式</a>
+      <a href="#s-wins">亮点成就</a>
+      <a href="#s-friction">常见痛点</a>
+      <a href="#s-horizon">未来方向</a>
+    </nav>
+  </header>
+
+  <!-- ===== 工作领域 ===== -->
+  <section id="s-work">
+    <h2 class="section-title">一、年老师在 Claude Code 上做什么</h2>
+    <p class="section-intro">五大工作领域覆盖了 92% 的会话，以 HR 数据分析与可视化仪表盘为核心。</p>
+
+    <div class="project-list">
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-name">HR 人力分析与仪表盘</span>
+          <span class="project-count">~17 次会话</span>
+        </div>
+        <div class="project-desc">人力绩效、流失率、留存率、生产力等指标的综合分析。通过 Chart.js 生成交互式 HTML 仪表盘，反复调试渲染 bug（IIFE 闭包、缺失数据数组），通过 Bash 驱动数据清洗和 Read/Grep 文件探索来迭代数据解读逻辑。</div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-name">供应商管理体系</span>
+          <span class="project-count">~7 次会话</span>
+        </div>
+        <div class="project-desc">供应商分级策略、评估模板、分档框架的开发。通过 XML/xlsx 生成 Excel 模板含公式，交叉比对参考资料校验政策文档，并生成含动画的 HTML 展示。</div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-name">交互式报告与文档生成</span>
+          <span class="project-count">~7 次会话</span>
+        </div>
+        <div class="project-desc">学术论文、商务沟通、展示材料等格式化 HTML 报告的制作。自定义视觉风格（亮色/暗色主题、排版），生成可交互的幻灯片和正式商务文档。</div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-name">技能工程与设计系统</span>
+          <span class="project-count">~5 次会话</span>
+        </div>
+        <div class="project-desc">交互式 HTML 和可视化技能的拆解与增强。将内联 Marp 组件提取为独立参考文件（21 个），将工作流从 3 循环重构为 4 阶段门禁，新增编辑风格模式。</div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-header">
+          <span class="project-name">工具配置与流程自动化</span>
+          <span class="project-count">~7 次会话</span>
+        </div>
+        <div class="project-desc">外部工具集成，包括 CLI 插件、工作流编辑器、API 配置。诊断连接问题（缺失环境变量）、安装配置插件、排查运行时错误、设置自动化 Cron 任务。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 使用方式 ===== -->
+  <section id="s-usage">
+    <h2 class="section-title">二、年老师如何使用 Claude Code</h2>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">使用目标</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">数据分析</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#D97757"></div></div>
+            <span class="h-bar-value">21</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">数据可视化</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:52%;background:#D97757"></div></div>
+            <span class="h-bar-value">11</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">可视化设计</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:48%;background:#D97757"></div></div>
+            <span class="h-bar-value">10</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">报告生成</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:24%;background:#D97757"></div></div>
+            <span class="h-bar-value">5</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">仪表盘创建</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:24%;background:#D97757"></div></div>
+            <span class="h-bar-value">5</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">可视化设计</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:14%;background:#D97757"></div></div>
+            <span class="h-bar-value">3</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">常用工具</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">Bash</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#788C5D"></div></div>
+            <span class="h-bar-value">2,859</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">Read</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:45%;background:#788C5D"></div></div>
+            <span class="h-bar-value">1,299</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">Edit</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:22%;background:#788C5D"></div></div>
+            <span class="h-bar-value">642</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">Write</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:20%;background:#788C5D"></div></div>
+            <span class="h-bar-value">567</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">TodoWrite</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:11%;background:#788C5D"></div></div>
+            <span class="h-bar-value">328</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">Agent</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:7%;background:#788C5D"></div></div>
+            <span class="h-bar-value">211</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="narrative-box">
+      <p>年老师是典型的 <strong>"审查加修正"型用户</strong>，把 Claude 当作协作数据实验室而非一次性解决方案。每次会话通常以宽泛的分析目标开头（如"诊断职场绩效问题"），然后 <strong>严格审计输出</strong>，在 Claude 误解数据或风格偏好时给出精准纠正。</p>
+      <p>工具使用偏好鲜明：<strong>Bash（2,859次）和 Read（1,299次）</strong> 远超 Edit 和 Write，说明你习惯先读文件审查输出再跑脚本验证，最后才提修改要求。你在构建 <strong>复杂多文件项目</strong>：将图表组件合并到 HTML 交互技能、重构 viz-design 从 3 阶段到 4 阶段门禁、创建 21 个参考文件。</p>
+      <p>最独特的行为是 <strong>同一次会话中混合业务分析和元技能工程</strong>：前一段还在诊断某职场的流失模式，下一段就在重构 SKILL.md 的阶段门禁。你生成超大型 HTML 产物（37K 的幻灯片、10 标签的交互仪表盘），但同时关心像素级的间距和注释定位。</p>
+      <div class="key-insight">
+        <strong>核心模式：</strong>你 aggressively 审计 Claude 的解读，立即发现数据错误，通过精准纠正反复迭代直到分析和视觉输出符合你心中标准——把每次会话当作协作调试循环而非一次性任务。
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">编程语言分布</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">Markdown</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#639922"></div></div>
+            <span class="h-bar-value">1,375</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">HTML</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:39%;background:#639922"></div></div>
+            <span class="h-bar-value">531</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">JSON</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:11%;background:#639922"></div></div>
+            <span class="h-bar-value">154</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">Python</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:6%;background:#639922"></div></div>
+            <span class="h-bar-value">88</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">TypeScript</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:3%;background:#639922"></div></div>
+            <span class="h-bar-value">44</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">JavaScript</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:3%;background:#639922"></div></div>
+            <span class="h-bar-value">40</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">会话类型</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">迭代修正</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">44</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">单任务</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:66%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">29</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">多任务</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:41%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">18</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">探索</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:18%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">8</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">快速问答</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:7%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">3</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">Bug 修复</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:2%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 时段分布与多会话 -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">消息时段分布（北京时间）</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">凌晨 (0-6)</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#378ADD"></div></div>
+            <span class="h-bar-value">3,134</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">上午 (6-12)</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:50%;background:#378ADD"></div></div>
+            <span class="h-bar-value">1,571</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">晚间 (18-24)</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:32%;background:#378ADD"></div></div>
+            <span class="h-bar-value">996</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">下午 (12-18)</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:21%;background:#378ADD"></div></div>
+            <span class="h-bar-value">665</span>
+          </div>
+        </div>
+        <div class="chart-footer">典型夜猫子模式，凌晨是最高频时段</div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">并行会话（Multi-Clauding）</div>
+        <div class="dual-stat" style="justify-content:space-around;margin:16px 0;">
+          <div class="dual-stat-item">
+            <div class="dual-stat-value">176</div>
+            <div class="dual-stat-label">重叠事件</div>
+          </div>
+          <div class="dual-stat-item">
+            <div class="dual-stat-value">165</div>
+            <div class="dual-stat-label">涉及会话</div>
+          </div>
+          <div class="dual-stat-item">
+            <div class="dual-stat-value">12%</div>
+            <div class="dual-stat-label">消息占比</div>
+          </div>
+        </div>
+        <p style="font-size:0.8em;color:var(--g500);">你会同时运行多个 Claude Code 会话，实现并行工作流</p>
+      </div>
+    </div>
+
+    <!-- 工具错误 -->
+    <div class="chart-card full">
+      <div class="chart-title">工具错误统计</div>
+      <div class="h-bar-chart">
+        <div class="h-bar-row">
+          <span class="h-bar-label">命令失败</span>
+          <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#E24B4A"></div></div>
+          <span class="h-bar-value">232</span>
+        </div>
+        <div class="h-bar-row">
+          <span class="h-bar-label">其他错误</span>
+          <div class="h-bar-track"><div class="h-bar-fill" style="width:59%;background:#E24B4A"></div></div>
+          <span class="h-bar-value">136</span>
+        </div>
+        <div class="h-bar-row">
+          <span class="h-bar-label">编辑失败</span>
+          <div class="h-bar-track"><div class="h-bar-fill" style="width:14%;background:#E24B4A"></div></div>
+          <span class="h-bar-value">33</span>
+        </div>
+        <div class="h-bar-row">
+          <span class="h-bar-label">文件未找到</span>
+          <div class="h-bar-track"><div class="h-bar-fill" style="width:10%;background:#E24B4A"></div></div>
+          <span class="h-bar-value">24</span>
+        </div>
+        <div class="h-bar-row">
+          <span class="h-bar-label">文件过大</span>
+          <div class="h-bar-track"><div class="h-bar-fill" style="width:3%;background:#E24B4A"></div></div>
+          <span class="h-bar-value">8</span>
+        </div>
+        <div class="h-bar-row">
+          <span class="h-bar-label">文件变更</span>
+          <div class="h-bar-track"><div class="h-bar-fill" style="width:1%;background:#E24B4A"></div></div>
+          <span class="h-bar-value">3</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 亮点成就 ===== -->
+  <section id="s-wins">
+    <h2 class="section-title">三、年老师的亮点成就</h2>
+    <p class="section-intro">你是高产的高级用户，将深入的数据调查与严格的技能工程相结合，不断迭代复杂任务，产出高规格、可交付的成果。</p>
+
+    <div class="wins-grid">
+      <div class="win-card">
+        <div class="win-title">调研式数据仪表盘</div>
+        <div class="win-desc">你解决深层职场诊断问题，引导 Claude 进行多维人力分析和图表创建。通过迭代修正数据解读、构建交互式 HTML 仪表盘，将原始数据转化为有说服力的组织根因叙事。</div>
+      </div>
+      <div class="win-card">
+        <div class="win-title">模块化技能重构</div>
+        <div class="win-desc">你用软件架构师的思维构建技能。系统性地将技能文件拆解为可复用模块库，合并跨技能组件模式，重新设计工作流循环，在 AI 工具健壮性和可扩展性上投入了大量精力。</div>
+      </div>
+      <div class="win-card">
+        <div class="win-title">高保真文档工程</div>
+        <div class="win-desc">你对文档生成有极高的精度要求，通过与多个参考文件交叉比对、数十轮迭代来校验供应商政策。推动技术边界 —— 生成基于 XML 的 Excel 文件和可导航的幻灯片 —— 确保每个交付物达到专业标准。</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">最有帮助的能力</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">多文件修改</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#788C5D"></div></div>
+            <span class="h-bar-value">31</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">主动帮助</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:55%;background:#788C5D"></div></div>
+            <span class="h-bar-value">17</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">优秀调试</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:42%;background:#788C5D"></div></div>
+            <span class="h-bar-value">13</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">优秀解释</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:39%;background:#788C5D"></div></div>
+            <span class="h-bar-value">12</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">正确代码编辑</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:32%;background:#788C5D"></div></div>
+            <span class="h-bar-value">10</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">快速精确搜索</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:26%;background:#788C5D"></div></div>
+            <span class="h-bar-value">8</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">任务达成率</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">基本完成</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">49</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">完全完成</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:61%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">30</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">未完成</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:22%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">11</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">部分完成</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:20%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">10</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">不明确</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:8%;background:#7F77DD"></div></div>
+            <span class="h-bar-value">4</span>
+          </div>
+        </div>
+        <div class="chart-footer">79/98 任务基本或完全完成</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 常见痛点 ===== -->
+  <section id="s-friction">
+    <h2 class="section-title">四、常见痛点</h2>
+    <p class="section-intro">三大类摩擦反复出现，导致需要额外的修正循环才能达到预期输出。</p>
+
+    <div class="friction-list">
+      <div class="friction-card">
+        <div class="friction-title">数据解读错误</div>
+        <div class="friction-desc">Claude 经常误解 HR 和工作力数据（如混淆零活跃与未分配状态、算错活跃员工数、流失逻辑应用错误），迫使你多次修正。</div>
+        <ul class="friction-examples">
+          <li>你要求分析"未评估"人员，但 Claude 最初将其视为全体不使用系统的不良员工，而非零活跃度，修正后指标基线完全改变</li>
+          <li>计算活跃员工时，Claude 用了过去 7 天的通话窗口，但你只需要 5 月 12 日当天的外呼记录 — 下游所有图表需重新生成</li>
+        </ul>
+      </div>
+
+      <div class="friction-card">
+        <div class="friction-title">可视化渲染缺陷</div>
+        <div class="friction-desc">交互式 HTML 仪表盘经常出现 JS 语法错误、缺失数据数组、布局问题，导致图表完全无法渲染，迫使你花时间调试。</div>
+        <ul class="friction-examples">
+          <li>第一个 HTML 仪表盘存在未闭合标签和无效操作符（&& 在 Chart.js options 中），所有 6 个图表静默失效</li>
+          <li>"GMV vs 在职天数"散点图因为数据格式错误和轴配置问题无法渲染，Claude 未主动发现</li>
+        </ul>
+      </div>
+
+      <div class="friction-card">
+        <div class="friction-title">首次交付偏离规范</div>
+        <div class="friction-desc">Claude 反复忽略明确的前置指令——如主题偏好、输出格式、角色加载——第一次交付就错了方向。</div>
+        <ul class="friction-examples">
+          <li>你明确要求亮色主题无 emoji，但 Claude 交付了暗色主题的 emoji 仪表盘</li>
+          <li>你要独立 HTML 文件，但 Claude 开始构建交互式 widget 组件，误解了交付格式</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">摩擦类型分布</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">有 Bug 的代码</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#E24B4A"></div></div>
+            <span class="h-bar-value">44</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">错误方法</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:98%;background:#E24B4A"></div></div>
+            <span class="h-bar-value">43</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">误解请求</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:68%;background:#E24B4A"></div></div>
+            <span class="h-bar-value">30</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">过度修改</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:23%;background:#E24B4A"></div></div>
+            <span class="h-bar-value">10</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">被拒绝的操作</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:18%;background:#E24B4A"></div></div>
+            <span class="h-bar-value">8</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">误诊断</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:5%;background:#E24B4A"></div></div>
+            <span class="h-bar-value">2</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">用户满意度（模型推断）</div>
+        <div class="h-bar-chart">
+          <div class="h-bar-row">
+            <span class="h-bar-label">基本满意</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:100%;background:#BA7517"></div></div>
+            <span class="h-bar-value">81</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">满意</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:51%;background:#BA7517"></div></div>
+            <span class="h-bar-value">41</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">不满意</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:27%;background:#BA7517"></div></div>
+            <span class="h-bar-value">22</span>
+          </div>
+          <div class="h-bar-row">
+            <span class="h-bar-label">沮丧</span>
+            <div class="h-bar-track"><div class="h-bar-fill" style="width:2%;background:#BA7517"></div></div>
+            <span class="h-bar-value">2</span>
+          </div>
+        </div>
+        <div class="chart-footer">122/145 次正评</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 未来方向 ===== -->
+  <section id="s-horizon">
+    <h2 class="section-title">五、未来方向</h2>
+    <p class="section-intro">从手动单线程编码走向自治多智能体工作流，让 AI 学会自我修正和并行探索。</p>
+
+    <div class="horizon-list">
+      <div class="horizon-card">
+        <div class="horizon-title">自愈代码与自主调试</div>
+        <div class="horizon-desc">Claude Code 自动检测运行时错误、lint 违规和逻辑 bug——运行测试套件、监控控制台输出、外科手术式修复代码而无需人工介入。这直接针对 44 次有 Bug 代码这一最大摩擦点。</div>
+        <div class="horizon-tip"><strong>切入方式：</strong>使用 Agent 工具执行测试、捕获失败、对问题文件调用 Edit。配合 TodoWrite 追踪多文件项目中的 bug 类型和修复。</div>
+      </div>
+
+      <div class="horizon-card">
+        <div class="horizon-title">并行数据分析研究员</div>
+        <div class="horizon-desc">不再是单线程探索，而是并行启动多个子代理，各分配不同分析视角——趋势检测、异常识别、分群、因果分析。它们产出独立结果后由协调者合成一份交互式 HTML 报告，从源头上减少 30 次误解和 43 次方向错误。</div>
+        <div class="horizon-tip"><strong>切入方式：</strong>利用 Agent-in-Agent 能力：每个子代理带独立角色 prompt 和共享数据文件，协调者合并结果。</div>
+      </div>
+
+      <div class="horizon-card">
+        <div class="horizon-title">测试驱动的自主功能开发</div>
+        <div class="horizon-desc">Claude Code 收到需求后先写完整测试用例覆盖边界场景，然后通过快速红-绿-重构循环迭代实现。这将 10 次"正确代码编辑"的成功变为系统性流程。</div>
+        <div class="horizon-tip"><strong>切入方式：</strong>链式调用 Write（创建测试）→ Bash（运行）→ Read（检查失败）→ Edit（修复），用 Agent 循环直到全部通过。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 花絮 ===== -->
+  <div class="fun-ending">
+    <div class="fun-headline">"用户问现在几点——结果被登录提示循环困住，始终没得到答案"</div>
+    <div class="fun-detail">
+      在 <span data-entity="time">2026-04-10</span> 至 <span data-entity="time">2026-05-15</span> 的某次会话中，用户只是问了一个简单问题——当前时间——但系统反复提示登录，从未给出所请求的信息。
+    </div>
+  </div>
+
+  <footer style="margin-top:48px;padding-top:24px;border-top:1px solid var(--g200);font-size:0.75em;color:var(--g500);text-align:center;">
+    <p>数据来源：Claude Code 使用统计数据 · 分析范围：224 个已分析会话</p>
+    <p style="margin-top:4px;">统计口径：2026-04-10 至 2026-05-15 · 模型推断的满意度仅供参考</p>
+  </footer>
+
+</div>
+</body>
+</html>

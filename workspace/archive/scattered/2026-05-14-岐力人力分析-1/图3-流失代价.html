@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>岐力职场流失人员散点图</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: system-ui, Helvetica Neue, sans-serif; }
+</style>
+</head>
+<body>
+<div id="chart" style="width:900px;height:500px;"></div>
+<script>
+var chart = echarts.init(document.getElementById('chart'));
+
+// TOP5 名单
+var top5 = ['吴才亮','万泽珊','詹焱','刘玉立','吴珍珍'];
+
+// GMV>=500 的17人
+var highGmv = [
+  {name:'吴才亮', x:73, y:1430},
+  {name:'万泽珊', x:307, y:939},
+  {name:'詹焱', x:66, y:871},
+  {name:'刘玉立', x:66, y:845},
+  {name:'吴珍珍', x:66, y:841},
+  {name:'颜樱', x:60, y:782},
+  {name:'李文超', x:330, y:758},
+  {name:'杨丹丹', x:66, y:757},
+  {name:'李佳', x:116, y:753},
+  {name:'黄素云', x:60, y:744},
+  {name:'罗豪', x:50, y:871},
+  {name:'龚梅', x:70, y:613},
+  {name:'龚盼星', x:71, y:561},
+  {name:'吴泽昊', x:208, y:557},
+  {name:'钱凯平', x:116, y:691},
+  {name:'李勋凯', x:330, y:701},
+  {name:'胡小康', x:330, y:671}
+];
+
+// GMV<500 的27人
+var lowGmv = [
+  {name:'涂宇丹', x:27, y:0},
+  {name:'付思康', x:28, y:0.21},
+  {name:'李永康', x:28, y:16.51},
+  {name:'戴丽', x:40, y:273.36},
+  {name:'熊诵勇', x:40, y:354.03},
+  {name:'李柯', x:56, y:155.1},
+  {name:'杨云鹏', x:66, y:378.25},
+  {name:'邓彩霞', x:66, y:223.65},
+  {name:'言琴', x:66, y:95.44},
+  {name:'邓喻荣', x:66, y:104.12},
+  {name:'王婷', x:67, y:0},
+  {name:'许亚芬', x:70, y:461.19},
+  {name:'吴伟标', x:70, y:69.18},
+  {name:'郭树文', x:70, y:116.06},
+  {name:'罗柳云', x:70, y:132.08},
+  {name:'鄢志颖', x:71, y:120.15},
+  {name:'吴昊', x:71, y:476.71},
+  {name:'叶修垄', x:208, y:145.78},
+  {name:'熊港忠', x:200, y:582.67},
+  {name:'张悦', x:120, y:378.66},
+  {name:'郭星风', x:147, y:139.69},
+  {name:'赵欢', x:7, y:28.1},
+  {name:'涂思敏', x:7, y:180.48},
+  {name:'张国庆', x:20, y:115.52},
+  {name:'王筱', x:32, y:0},
+  {name:'金继昌', x:1, y:0},
+  {name:'程志', x:22, y:0},
+  {name:'唐艳琴', x:307, y:222.28}
+];
+
+// 计算点大小：GMV范围 557~1430，映射到 14~22
+function highSize(val) {
+  var minV = 557, maxV = 1430, minS = 14, maxS = 22;
+  return Math.round(minS + (val - minV) / (maxV - minV) * (maxS - minS));
+}
+// TOP5 更大
+function top5Size(val) {
+  var minV = 782, maxV = 1430, minS = 22, maxS = 30;
+  return Math.round(minS + (val - minV) / (maxV - minV) * (maxS - minS));
+}
+
+var option = {
+  animation: false,
+  title: {
+    text: '流失44人累计带走16821万GMV，其中17人为GMV≥500万的熟手',
+    subtext: '岐力职场流失人员在职天数 vs 近30天复贷GMV · 流失≠淘汰，是熟手流失',
+    left: 'center',
+    top: 12,
+    textStyle: { fontSize: 15, fontWeight: 600, color: '#4F302D', fontFamily: 'system-ui, Helvetica Neue, sans-serif' },
+    subtextStyle: { fontSize: 11, fontWeight: 400, color: '#87867F', fontFamily: 'system-ui, Helvetica Neue, sans-serif' }
+  },
+  grid: {
+    left: 75,
+    right: 40,
+    top: 80,
+    bottom: 65
+  },
+  xAxis: {
+    name: '在职天数',
+    nameLocation: 'middle',
+    nameGap: 30,
+    nameTextStyle: { fontSize: 12, fontWeight: 400, color: '#87867F' },
+    type: 'value',
+    min: 0,
+    max: 360,
+    splitLine: { show: true, lineStyle: { color: '#F0EEE6', type: 'dashed' } },
+    axisLine: { lineStyle: { color: '#ACA9A2' } },
+    axisTick: { lineStyle: { color: '#ACA9A2' } },
+    axisLabel: { color: '#87867F', fontSize: 11 }
+  },
+  yAxis: {
+    name: '近30天复贷GMV(万)',
+    nameLocation: 'middle',
+    nameGap: 55,
+    nameTextStyle: { fontSize: 12, fontWeight: 400, color: '#87867F' },
+    type: 'value',
+    min: 0,
+    max: 1600,
+    splitLine: { show: true, lineStyle: { color: '#F0EEE6', type: 'dashed' } },
+    axisLine: { lineStyle: { color: '#ACA9A2' } },
+    axisTick: { lineStyle: { color: '#ACA9A2' } },
+    axisLabel: { color: '#87867F', fontSize: 11 }
+  },
+  series: [
+    // GMV<500 灰色小点
+    {
+      name: 'GMV<500万',
+      type: 'scatter',
+      data: lowGmv.map(function(d) { return [d.x, d.y]; }),
+      symbolSize: 6,
+      itemStyle: { color: 'rgba(172,169,162,0.45)' },
+      label: { show: false },
+      z: 1
+    },
+    // GMV>=500 红色大点
+    {
+      name: 'GMV>=500万',
+      type: 'scatter',
+      data: highGmv.map(function(d) {
+        var isTop = top5.indexOf(d.name) !== -1;
+        return {
+          value: [d.x, d.y],
+          name: d.name,
+          symbolSize: isTop ? top5Size(d.y) : highSize(d.y),
+          itemStyle: {
+            color: isTop ? '#782626' : '#B04A4A',
+            borderColor: isTop ? '#4D4D4A' : 'transparent',
+            borderWidth: isTop ? 1.5 : 0
+          },
+          label: {
+            show: true,
+            formatter: d.name,
+            position: 'right',
+            fontSize: isTop ? 11 : 10,
+            fontWeight: isTop ? 600 : 400,
+            color: isTop ? '#4F302D' : '#87867F',
+            distance: 4
+          }
+        };
+      }),
+      z: 2
+    }
+  ],
+  // Y=500 参考线
+  markLine: {},
+  graphic: [
+    // 参考线用 graphic 画，避免 series markLine 兼容问题
+    {
+      type: 'line',
+      shape: { x1: 0, y1: 0, x2: 1, y2: 0 },
+      left: 75,
+      // y=500 在坐标系中的像素位置：grid.top + (1600-500)/1600 * (500-80-65)
+      // grid高度 = 500 - 80 - 65 = 355
+      // y像素 = 80 + (1600-500)/1600 * 355 = 80 + 1100/1600 * 355 = 80 + 244 = 324
+      top: 324,
+      right: 40,
+      style: { stroke: '#B04A4A', lineWidth: 1, lineDash: [6, 4] },
+      silent: true
+    },
+    {
+      type: 'text',
+      right: 44,
+      top: 310,
+      style: {
+        text: 'GMV=500万分界线',
+        fill: '#B04A4A',
+        fontSize: 10,
+        fontWeight: 400,
+        fontFamily: 'system-ui, Helvetica Neue, sans-serif'
+      },
+      silent: true
+    },
+    // 右下角灰色文字
+    {
+      type: 'text',
+      right: 40,
+      bottom: 38,
+      style: {
+        text: '流失人员累计GMV = 在职参评总GMV的78%（近30天累计值）',
+        fill: '#ACA9A2',
+        fontSize: 10,
+        fontWeight: 400,
+        fontFamily: 'system-ui, Helvetica Neue, sans-serif'
+      },
+      silent: true
+    },
+    // 脚注
+    {
+      type: 'text',
+      left: 75,
+      bottom: 14,
+      style: {
+        text: '数据来源：岐力职场人力分析 · 在职口径：5.11-12有有效外呼',
+        fill: '#ACA9A2',
+        fontSize: 9,
+        fontWeight: 400,
+        fontFamily: 'system-ui, Helvetica Neue, sans-serif'
+      },
+      silent: true
+    }
+  ]
+};
+
+chart.setOption(option);
+</script>
+</body>
+</html>

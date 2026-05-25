@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI提效落地策略 — 供应商管理岗</title>
+  <style>
+    :root {
+      --ivory:  #FAF9F5;
+      --paper:  #FFFFFF;
+      --slate:  #141413;
+      --clay:   #D97757;
+      --clay-d: #B85C3E;
+      --oat:    #E3DACC;
+      --olive:  #788C5D;
+      --g100:   #F0EEE6;
+      --g200:   #E6E3DA;
+      --g300:   #D1CFC5;
+      --g500:   #87867F;
+      --g700:   #3D3D3A;
+      --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+      --sans:  system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono:  ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans); font-size: 16px; line-height: 1.8;
+      color: var(--slate); background: var(--ivory);
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 48px; }
+
+    /* Header */
+    .doc-header { padding: 60px 0 40px; border-bottom: 3px solid var(--clay); }
+    .doc-header .tag {
+      display: inline-block; font-size: 0.75em; font-weight: 700;
+      color: var(--clay); letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .doc-header h1 {
+      font-family: var(--serif); font-size: 2.2em; font-weight: 800;
+      line-height: 1.3; margin-bottom: 16px;
+    }
+    .doc-header h1 em { font-style: normal; color: var(--clay); }
+    .doc-summary {
+      font-size: 1.05em; line-height: 1.8; color: var(--g700);
+      border-left: 3px solid var(--clay); padding-left: 16px;
+      margin: 20px 0;
+    }
+
+    /* TOC */
+    .toc {
+      margin: 1.5em 0; padding: 16px 20px;
+      background: var(--g100); border-radius: 10px;
+    }
+    .toc h3 {
+      font-size: 0.85em; font-weight: 700;
+      color: var(--g500); margin: 0 0 10px;
+      letter-spacing: 0.5px;
+    }
+    .toc ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px 20px; }
+    .toc li { margin: 0; }
+    .toc a { font-size: 0.9em; color: var(--clay); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* Sections */
+    section { padding: 48px 0; }
+    section + section { border-top: 1px solid var(--g200); }
+    h2 {
+      font-family: var(--serif); font-size: 1.6em; font-weight: 700;
+      margin-bottom: 0.3em; color: var(--slate);
+    }
+    h2 .num { color: var(--clay); font-family: var(--mono); font-size: 0.7em; margin-right: 8px; }
+    h2 .subtitle { display: block; font-size: 0.5em; font-weight: 400; color: var(--g500); margin-top: 4px; }
+    h3 { font-size: 1.15em; font-weight: 700; margin: 1.5em 0 0.5em; color: var(--g700); }
+    p { margin-bottom: 1em; line-height: 1.9; }
+    .highlight { color: var(--clay); font-weight: 600; }
+    .note {
+      background: var(--g100); border-radius: 8px; padding: 16px 20px;
+      border-left: 3px solid var(--olive); margin: 1.5em 0;
+    }
+    .note strong { color: var(--olive); }
+
+    /* Quadrant Chart */
+    .chart-container { margin: 2em 0; overflow-x: auto; }
+    .chart-container svg { display: block; margin: 0 auto; }
+
+    /* Step Groups */
+    .step-group {
+      border: 1px solid var(--g200); border-radius: 10px;
+      margin-bottom: 8px; overflow: hidden;
+    }
+    .step-group summary {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px; cursor: pointer;
+      font-weight: 600; color: var(--g700);
+      background: var(--paper); list-style: none;
+      transition: background 150ms;
+    }
+    .step-group summary:hover { background: var(--g100); }
+    .step-group summary::-webkit-details-marker { display: none; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8em; font-weight: 700; flex-shrink: 0;
+    }
+    .step-num.deep { background: #FEF3C7; color: #92400E; }
+    .step-num.quick { background: #DCFCE7; color: #166534; }
+    .step-num.human { background: #F1F5F9; color: #475569; }
+    .step-num.auto { background: #DBEAFE; color: #1E40AF; }
+    .step-content {
+      padding: 16px 20px 16px 60px;
+      font-size: 0.95em; line-height: 1.8;
+      color: var(--g700); border-top: 1px solid var(--g200);
+    }
+    .step-content ul { margin: 0.5em 0; padding-left: 1.2em; }
+    .step-content li { margin-bottom: 0.3em; }
+
+    /* Data Table */
+    .data-table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.9em; }
+    .data-table th {
+      text-align: left; padding: 10px 12px;
+      border-bottom: 2px solid var(--g300); font-weight: 700;
+      color: var(--g500); font-size: 0.85em; letter-spacing: 0.3px;
+    }
+    .data-table td {
+      padding: 10px 12px; border-bottom: 1px solid var(--g200);
+      vertical-align: top;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 0.8em; font-weight: 600;
+    }
+    .badge-deep { background: #FEF3C7; color: #92400E; }
+    .badge-quick { background: #DCFCE7; color: #166534; }
+    .badge-human { background: #F1F5F9; color: #475569; }
+    .badge-auto { background: #DBEAFE; color: #1E40AF; }
+
+    /* Action Cards */
+    .action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 1.5em 0; }
+    .action-card {
+      background: var(--paper); border: 1.5px solid var(--g200);
+      border-radius: 12px; padding: 20px;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+    .action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(20,20,19,0.08);
+    }
+    .action-card .step-label {
+      font-family: var(--mono); font-size: 0.75em; font-weight: 700;
+      color: var(--clay); letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .action-card h4 { font-size: 1em; font-weight: 700; margin-bottom: 8px; }
+    .action-card p { font-size: 0.9em; color: var(--g500); margin-bottom: 0; line-height: 1.7; }
+    .action-card .focus {
+      display: block; margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--g200);
+      font-size: 0.85em; color: var(--g700);
+    }
+    .action-card .focus strong { color: var(--clay); }
+
+    /* Pipeline Visual */
+    .pipeline { display: flex; align-items: center; gap: 8px; margin: 1.5em 0; flex-wrap: wrap; }
+    .pipeline-step {
+      padding: 8px 16px; border-radius: 8px; font-size: 0.85em; font-weight: 600;
+      white-space: nowrap;
+    }
+    .pipeline-step.bg-clay { background: var(--clay); color: white; }
+    .pipeline-step.bg-olive { background: var(--olive); color: white; }
+    .pipeline-step.bg-g100 { background: var(--g100); color: var(--g700); }
+    .pipeline-arrow { color: var(--g300); font-size: 1.2em; }
+
+    /* Footer */
+    footer {
+      padding: 32px 0; text-align: center;
+      font-size: 0.8em; color: var(--g500);
+      border-top: 1px solid var(--g200);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container { padding: 0 24px; }
+      .doc-header h1 { font-size: 1.6em; }
+      .action-grid { grid-template-columns: 1fr; }
+      .step-content { padding-left: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="doc-header">
+      <span class="tag">供应商管理岗 &middot; AI提效</span>
+      <h1>AI提效落地策略<br><em>深水区</em>怎么破</h1>
+      <p class="doc-summary">
+        40项工作按"AI提效潜力 &times; 经验可提取度"定位到四个象限。速赢区直接落地，深水区是最大杠杆——经验一旦提取成管线，AI提效从0跳到60%。本文给出象限定位、深水区破局路径和三步行动计划。
+      </p>
+      <nav class="toc">
+        <h3>目录</h3>
+        <ul>
+          <li><a href="#s1">象限定位图</a></li>
+          <li><a href="#s2">四象限详解</a></li>
+          <li><a href="#s3">深水区破局</a></li>
+          <li><a href="#s4">速赢区清单</a></li>
+          <li><a href="#s5">行动计划</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Section 1: Quadrant Chart -->
+    <section id="s1">
+      <h2><span class="num">01</span>象限定位图<span class="subtitle">40项工作：AI提效潜力 &times; 经验可提取度</span></h2>
+      <p>核心判断维度：<span class="highlight">横轴</span>是AI能提效到什么程度，<span class="highlight">纵轴</span>是你的经验能不能被提取成AI能沿着的管线。经验可提取的工作，AI提效立竿见影；经验难提取的，先沉淀打法再AI化。</p>
+
+      <div class="chart-container">
+        <svg width="100%" viewBox="0 0 720 560" xmlns="http://www.w3.org/2000/svg" font-family="system-ui,-apple-system,sans-serif">
+          <rect width="720" height="560" fill="#fafbfc" rx="8"/>
+          <text x="360" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#1e293b">40项工作象限定位</text>
+          <text x="360" y="46" text-anchor="middle" font-size="10" fill="#64748b">横轴：AI提效潜力（低→高） | 纵轴：经验可提取度 / 打法成熟度（低→高）</text>
+
+          <!-- Axes -->
+          <line x1="90" y1="490" x2="670" y2="490" stroke="#94a3b8" stroke-width="1.5"/>
+          <line x1="90" y1="490" x2="90" y2="65" stroke="#94a3b8" stroke-width="1.5"/>
+          <text x="380" y="528" text-anchor="middle" font-size="11" fill="#64748b">AI提效潜力 →</text>
+          <text x="38" y="280" text-anchor="middle" font-size="11" fill="#64748b" transform="rotate(-90,38,280)">经验可提取度 →</text>
+
+          <!-- Quadrant dividers -->
+          <line x1="380" y1="66" x2="380" y2="490" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="6,4"/>
+          <line x1="91" y1="280" x2="670" y2="280" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="6,4"/>
+
+          <!-- Quadrant backgrounds -->
+          <rect x="91" y="66" width="289" height="214" fill="#fef3c7" opacity="0.35" rx="0"/>
+          <rect x="380" y="66" width="289" height="214" fill="#dcfce7" opacity="0.3" rx="0"/>
+          <rect x="91" y="280" width="289" height="210" fill="#f1f5f9" opacity="0.5" rx="0"/>
+          <rect x="380" y="280" width="289" height="210" fill="#dbeafe" opacity="0.3" rx="0"/>
+
+          <!-- Quadrant labels -->
+          <rect x="96" y="72" width="8" height="8" rx="2" fill="#f59e0b"/>
+          <text x="110" y="80" font-size="12" font-weight="700" fill="#92400e">深水区（10项）</text>
+          <text x="96" y="95" font-size="9" fill="#a16207">AI潜力中 × 经验难提取</text>
+          <text x="96" y="108" font-size="9" fill="#a16207">先沉淀打法再AI化</text>
+
+          <rect x="386" y="72" width="8" height="8" rx="2" fill="#22c55e"/>
+          <text x="400" y="80" font-size="12" font-weight="700" fill="#166534">速赢区（11项）</text>
+          <text x="386" y="95" font-size="9" fill="#15803d">AI潜力高 × 打法成熟</text>
+          <text x="386" y="108" font-size="9" fill="#15803d">立即落地，快速见效</text>
+
+          <rect x="96" y="286" width="8" height="8" rx="2" fill="#94a3b8"/>
+          <text x="110" y="294" font-size="12" font-weight="700" fill="#475569">人的领地（9项）</text>
+          <text x="96" y="309" font-size="9" fill="#64748b">AI潜力低 × 经验难提取</text>
+          <text x="96" y="322" font-size="9" fill="#64748b">AI做信息汇总辅助</text>
+
+          <rect x="386" y="286" width="8" height="8" rx="2" fill="#3b82f6"/>
+          <text x="400" y="294" font-size="12" font-weight="700" fill="#1e40af">自动化区（10项）</text>
+          <text x="386" y="309" font-size="9" fill="#2563eb">AI可全自动执行</text>
+          <text x="386" y="322" font-size="9" fill="#2563eb">人只做最终验收</text>
+
+          <!-- Deep Water Zone -->
+          <rect x="100" y="120" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="165" y="135" text-anchor="middle" font-size="10" fill="#92400e">方案设计</text>
+          <rect x="240" y="120" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="305" y="135" text-anchor="middle" font-size="10" fill="#92400e">决策支持</text>
+          <rect x="100" y="150" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="165" y="165" text-anchor="middle" font-size="10" fill="#92400e">风险识别</text>
+          <rect x="240" y="150" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="305" y="165" text-anchor="middle" font-size="10" fill="#92400e">优化建议</text>
+          <rect x="100" y="180" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="165" y="195" text-anchor="middle" font-size="10" fill="#92400e">产品评审</text>
+          <rect x="240" y="180" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="305" y="195" text-anchor="middle" font-size="10" fill="#92400e">流程框架撰写</text>
+          <rect x="100" y="210" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="165" y="225" text-anchor="middle" font-size="10" fill="#92400e">合规咨询</text>
+          <rect x="240" y="210" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="305" y="225" text-anchor="middle" font-size="10" fill="#92400e">预测分析</text>
+
+          <!-- Quick Win Zone -->
+          <rect x="390" y="120" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="445" y="135" text-anchor="middle" font-size="10" fill="#166534">合规检查</text>
+          <rect x="510" y="120" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="565" y="135" text-anchor="middle" font-size="10" fill="#166534">制度审查</text>
+          <rect x="390" y="148" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="445" y="163" text-anchor="middle" font-size="10" fill="#166534">审计追踪</text>
+          <rect x="510" y="148" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="565" y="163" text-anchor="middle" font-size="10" fill="#166534">牌照管理</text>
+          <rect x="390" y="176" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="445" y="191" text-anchor="middle" font-size="10" fill="#166534">流程规范</text>
+          <rect x="510" y="176" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="565" y="191" text-anchor="middle" font-size="10" fill="#166534">趋势分析</text>
+          <rect x="390" y="204" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="445" y="219" text-anchor="middle" font-size="10" fill="#166534">风险报告</text>
+          <rect x="510" y="204" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="565" y="219" text-anchor="middle" font-size="10" fill="#166534">文案撰写</text>
+          <rect x="390" y="232" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="445" y="247" text-anchor="middle" font-size="10" fill="#166534">培训材料</text>
+          <rect x="510" y="232" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="565" y="247" text-anchor="middle" font-size="10" fill="#166534">汇报材料</text>
+
+          <!-- Human Territory -->
+          <rect x="100" y="340" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="155" y="355" text-anchor="middle" font-size="10" fill="#475569">跨部门协调</text>
+          <rect x="220" y="340" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="275" y="355" text-anchor="middle" font-size="10" fill="#475569">投诉处理</text>
+          <rect x="100" y="368" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="155" y="383" text-anchor="middle" font-size="10" fill="#475569">活动执行</text>
+          <rect x="220" y="368" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="275" y="383" text-anchor="middle" font-size="10" fill="#475569">绩效管理</text>
+          <rect x="100" y="396" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="155" y="411" text-anchor="middle" font-size="10" fill="#475569">任务分配</text>
+          <rect x="220" y="396" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="275" y="411" text-anchor="middle" font-size="10" fill="#475569">资源调配</text>
+          <rect x="100" y="424" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="155" y="439" text-anchor="middle" font-size="10" fill="#475569">成果验收</text>
+          <rect x="220" y="424" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="275" y="439" text-anchor="middle" font-size="10" fill="#475569">信息传达</text>
+
+          <!-- Automation Zone -->
+          <rect x="390" y="340" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="445" y="355" text-anchor="middle" font-size="10" fill="#1e40af">代码编写</text>
+          <rect x="510" y="340" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="565" y="355" text-anchor="middle" font-size="10" fill="#1e40af">数据底层建设</text>
+          <rect x="390" y="368" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="445" y="383" text-anchor="middle" font-size="10" fill="#1e40af">测试部署</text>
+          <rect x="510" y="368" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="565" y="383" text-anchor="middle" font-size="10" fill="#1e40af">翻译校对</text>
+          <rect x="390" y="396" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="445" y="411" text-anchor="middle" font-size="10" fill="#1e40af">可视化呈现</text>
+          <rect x="510" y="396" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="565" y="411" text-anchor="middle" font-size="10" fill="#1e40af">信息配置</text>
+          <rect x="390" y="424" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="445" y="439" text-anchor="middle" font-size="10" fill="#1e40af">设计制作</text>
+          <rect x="510" y="424" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="565" y="439" text-anchor="middle" font-size="10" fill="#1e40af">异常检测</text>
+          <rect x="390" y="452" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="445" y="467" text-anchor="middle" font-size="10" fill="#1e40af">系统开发</text>
+          <rect x="510" y="452" width="110" height="22" rx="4" fill="#dbeafe" stroke="#3b82f6" stroke-width="0.5"/>
+          <text x="565" y="467" text-anchor="middle" font-size="10" fill="#1e40af">进度跟踪</text>
+
+          <!-- Deep Water extras -->
+          <rect x="100" y="240" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="165" y="255" text-anchor="middle" font-size="10" fill="#92400e">咨询解答</text>
+          <rect x="240" y="240" width="130" height="22" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="0.5"/>
+          <text x="305" y="255" text-anchor="middle" font-size="10" fill="#92400e">视频制作</text>
+
+          <!-- Human Territory extras -->
+          <rect x="100" y="452" width="110" height="22" rx="4" fill="#f1f5f9" stroke="#94a3b8" stroke-width="0.5"/>
+          <text x="155" y="467" text-anchor="middle" font-size="10" fill="#475569">知识管理</text>
+
+          <!-- Quick Win extra -->
+          <rect x="390" y="260" width="110" height="22" rx="4" fill="#dcfce7" stroke="#22c55e" stroke-width="0.5"/>
+          <text x="445" y="275" text-anchor="middle" font-size="10" fill="#166534">文案创作</text>
+
+          <!-- Footer -->
+          <text x="360" y="510" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">深水区10项是最大杠杆——经验一旦提取成管线，AI提效从 0 跳到 60%</text>
+          <text x="360" y="528" text-anchor="middle" font-size="9" fill="#94a3b8">速赢区11项直接落地 | 深水区10项先沉淀打法再AI化 | 自动化区10项技术团队执行 | 人的领地9项只做信息汇总</text>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Section 2: Quadrant Details -->
+    <section id="s2">
+      <h2><span class="num">02</span>四象限详解<span class="subtitle">每个象限的特征、策略和预期提效</span></h2>
+
+      <details class="step-group" open>
+        <summary>
+          <span class="step-num deep">!</span>
+          <span>深水区 — AI潜力中 × 经验难提取（10项）</span>
+        </summary>
+        <div class="step-content">
+          <p><strong>特征</strong>：这些工作高度依赖人的经验判断，没有现成的管线和checklist。AI知道"做什么"，但不知道"怎么做才算好"。</p>
+          <p><strong>核心矛盾</strong>：AI潜力不低，但打法不成熟。直接上AI只能做表面，做不出深度。</p>
+          <p><strong>策略</strong>：先提取经验成管线，再让AI沿着管线跑。管线化后，AI从"0%提效"跳到"60%提效"。</p>
+          <table class="data-table">
+            <thead><tr><th>工作项</th><th>经验依赖点</th><th>管线化方向</th></tr></thead>
+            <tbody>
+              <tr><td>方案设计</td><td>需求优先级判断、方案取舍</td><td>需求确认→现状评估→选项生成→对比评估</td></tr>
+              <tr><td>决策支持</td><td>信息筛选、权重赋值</td><td>决策框架→信息收集→初步判断→人拍板</td></tr>
+              <tr><td>风险识别</td><td>风险信号敏感度、关联推演</td><td>信号清单→扫描规则→预警分级</td></tr>
+              <tr><td>优化建议</td><td>根因分析、改进行动排序</td><td>问题诊断→根因→改进方案→优先级</td></tr>
+              <tr><td>产品评审</td><td>评审维度选择、标准把握</td><td>评审checklist→评分→风险标注</td></tr>
+              <tr><td>流程框架撰写</td><td>框架设计、要素取舍</td><td>框架模板→填充→校验</td></tr>
+              <tr><td>合规咨询</td><td>合规判断、场景适配</td><td>问题分类→判断框架→回答模板</td></tr>
+              <tr><td>预测分析</td><td>变量选择、场景推演</td><td>趋势信号→场景推演→概率评估</td></tr>
+              <tr><td>咨询解答</td><td>问题定性、答案定制</td><td>问题分类→知识检索→答案框架</td></tr>
+              <tr><td>视频制作</td><td>内容编排、品牌调性</td><td>脚本模板→素材组织→AI生成初剪</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <details class="step-group">
+        <summary>
+          <span class="step-num quick">✓</span>
+          <span>速赢区 — AI潜力高 × 打法成熟（11项）</span>
+        </summary>
+        <div class="step-content">
+          <p><strong>特征</strong>：这些工作有成熟的框架、模板和判断标准。AI可以直接按规则执行，人做最终审核。</p>
+          <p><strong>策略</strong>：立即落地。模板→AI生成→人审核。预期提效50-70%。</p>
+          <table class="data-table">
+            <thead><tr><th>工作项</th><th>已有基础</th><th>AI落地方式</th></tr></thead>
+            <tbody>
+              <tr><td>合规检查</td><td>合规标准清单</td><td>AI按清单逐项检查</td></tr>
+              <tr><td>制度审查</td><td>制度框架模板</td><td>AI比对模板+标注偏差</td></tr>
+              <tr><td>审计追踪</td><td>审计流程标准</td><td>AI自动记录+时间线生成</td></tr>
+              <tr><td>牌照管理</td><td>牌照清单+到期规则</td><td>AI到期预警+续期提醒</td></tr>
+              <tr><td>流程规范</td><td>流程文档结构</td><td>AI生成规范初稿</td></tr>
+              <tr><td>趋势分析</td><td>历史数据+分析维度</td><td>AI自动出趋势图+解读</td></tr>
+              <tr><td>风险报告</td><td>风险信号清单+报告模板</td><td>AI采集信号→填充模板</td></tr>
+              <tr><td>文案撰写</td><td>场景模板（处罚/巡检/项目）</td><td>AI按模板生成初稿</td></tr>
+              <tr><td>培训材料</td><td>培训框架+知识库</td><td>AI按框架生成材料</td></tr>
+              <tr><td>汇报材料</td><td>汇报结构+数据源</td><td>AI聚合数据+生成汇报</td></tr>
+              <tr><td>文案创作</td><td>创意文案模板+风格库</td><td>AI按风格生成创意文案</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <details class="step-group">
+        <summary>
+          <span class="step-num human">○</span>
+          <span>人的领地 — AI潜力低 × 经验难提取（9项）</span>
+        </summary>
+        <div class="step-content">
+          <p><strong>特征</strong>：这些工作依赖人际感知、现场判断和实时应变。AI做不了核心决策，但可以做信息汇总辅助。</p>
+          <p><strong>策略</strong>：AI做信息层（会前资料、会后纪要、背景梳理），人做决策层。</p>
+          <ul>
+            <li><strong>跨部门协调</strong> — AI整理各方立场和利益点，人做协调和推动</li>
+            <li><strong>投诉处理</strong> — AI归类投诉+检索历史类似案例，人做沟通和安抚</li>
+            <li><strong>活动执行</strong> — AI生成checklist+提醒，人做现场执行</li>
+            <li><strong>绩效管理</strong> — AI汇总数据+异常标注，人做反馈和面谈</li>
+            <li><strong>任务分配</strong> — AI推荐匹配方案，人做最终分配</li>
+            <li><strong>资源调配</strong> — AI呈现资源现状+缺口，人做调配决策</li>
+            <li><strong>成果验收</strong> — AI对照标准逐项检查，人做专业判断</li>
+            <li><strong>信息传达</strong> — AI生成传达要点，人做沟通</li>
+            <li><strong>知识管理</strong> — AI自动归档+检索，人做知识提炼和体系搭建</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="step-group">
+        <summary>
+          <span class="step-num auto">⚡</span>
+          <span>自动化区 — AI可全自动执行（10项）</span>
+        </summary>
+        <div class="step-content">
+          <p><strong>特征</strong>：这些工作有明确规则、标准流程、可验证结果。AI可以全自动执行，人只做最终验收。</p>
+          <p><strong>策略</strong>：交给技术团队开发自动化工具/脚本。预期提效80-95%。</p>
+          <ul>
+            <li><strong>代码编写</strong> — AI根据需求自动生成代码</li>
+            <li><strong>数据底层建设</strong> — AI按设计自动建表/ETL</li>
+            <li><strong>测试部署</strong> — AI自动测试+部署流水线</li>
+            <li><strong>翻译校对</strong> — AI翻译+人工校对</li>
+            <li><strong>可视化呈现</strong> — AI按数据自动出图</li>
+            <li><strong>信息配置</strong> — AI按规则自动配置</li>
+            <li><strong>设计制作</strong> — AI按模板生成设计稿</li>
+            <li><strong>异常检测</strong> — AI设定阈值自动扫描预警</li>
+            <li><strong>系统开发</strong> — AI根据需求规格自动开发</li>
+            <li><strong>进度跟踪</strong> — AI自动采集进度+偏差预警</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- Section 3: Deep Water Breakthrough -->
+    <section id="s3">
+      <h2><span class="num">03</span>深水区破局<span class="subtitle">经验提取成管线，AI就能沿着跑</span></h2>
+
+      <div class="note">
+        <strong>关键洞察</strong>：你已经做过这件事了。准入6问、业绩6问、清退6问——这就是"把经验提取成管线"的活案例。你把判断过程结构化了，AI就能沿着管线跑。深水区的破局逻辑一模一样。
+      </div>
+
+      <h3>管线化 = 把"我怎么想的"变成"AI怎么跑的"</h3>
+
+      <div class="pipeline">
+        <span class="pipeline-step bg-clay">经验内隐</span>
+        <span class="pipeline-arrow">→</span>
+        <span class="pipeline-step bg-olive">外显为步骤+验证点</span>
+        <span class="pipeline-arrow">→</span>
+        <span class="pipeline-step bg-g100">AI按步骤生成初稿</span>
+        <span class="pipeline-arrow">→</span>
+        <span class="pipeline-step bg-clay">人在验证点介入判断</span>
+      </div>
+
+      <h3>10项深水区工作管线化对照</h3>
+      <table class="data-table">
+        <thead><tr><th>深水区工作</th><th>管线化思路</th><th>已有基础（你做过的）</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-deep">风险识别</span></td>
+            <td>风险信号清单→扫描规则→预警分级</td>
+            <td>方法层已有风险信号清单（高风险/中风险5类信号）</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">合规咨询</span></td>
+            <td>合规问题分类→判断框架→回答模板</td>
+            <td>日常合规处理已有模式（轻微→口头警告；严重→发邮件）</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">决策支持</span></td>
+            <td>决策框架→信息收集→初步判断→人拍板</td>
+            <td>准入6问就是决策框架</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">方案设计</span></td>
+            <td>需求确认→现状评估→选项生成→对比评估→推荐</td>
+            <td>六步管线Phase 4已有多方案生成</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">流程框架撰写</span></td>
+            <td>框架模板(要素清单)→填充→校验</td>
+            <td>供应商管理规范体系已有结构</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">优化建议</span></td>
+            <td>问题诊断→根因分析→改进方案→优先级</td>
+            <td>业绩诊断管线已覆盖</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">预测分析</span></td>
+            <td>趋势信号→场景推演→概率评估</td>
+            <td>趋势分析已有数据基础</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">产品评审</span></td>
+            <td>评审checklist→评分→风险标注</td>
+            <td>准入9维度评估是同类框架</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">咨询解答</span></td>
+            <td>问题分类→知识检索→答案框架</td>
+            <td>合规咨询判断框架可复用</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-deep">视频制作</span></td>
+            <td>脚本模板→素材组织→AI生成初剪</td>
+            <td>PPT技能脚本逻辑可迁移</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>管线化的核心难点：验证点设计</h3>
+      <p>管线不是"AI全做"——而是<span class="highlight">AI做步骤、人在验证点介入</span>。验证点设计决定了AI提效的天花板。</p>
+      <p>以"风险识别"为例：</p>
+      <div class="pipeline">
+        <span class="pipeline-step bg-g100">AI扫描5类信号</span>
+        <span class="pipeline-arrow">→</span>
+        <span class="pipeline-step bg-olive">验证点1：信号是否为真？</span>
+        <span class="pipeline-arrow">→</span>
+        <span class="pipeline-step bg-g100">AI按规则分级</span>
+        <span class="pipeline-arrow">→</span>
+        <span class="pipeline-step bg-olive">验证点2：分级是否合理？</span>
+        <span class="pipeline-arrow">→</span>
+        <span class="pipeline-step bg-clay">输出预警清单</span>
+      </div>
+      <p>两个验证点，人就只做两步判断，其余AI全做。提效约60%。</p>
+    </section>
+
+    <!-- Section 4: Quick Win Checklist -->
+    <section id="s4">
+      <h2><span class="num">04</span>速赢区落地清单<span class="subtitle">11项工作，打法成熟，立即可执行</span></h2>
+
+      <p>这11项不需要管线化，<span class="highlight">模板→AI生成→人审核</span>三步即可落地。优先级按业务频率和提效空间排序。</p>
+
+      <table class="data-table">
+        <thead><tr><th>#</th><th>工作项</th><th>AI落地方式</th><th>预期提效</th><th>优先级</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>文案撰写</td><td>场景模板（处罚/巡检/项目/汇报）→ AI生成初稿</td><td>60%</td><td><span class="badge badge-quick">P0</span></td></tr>
+          <tr><td>2</td><td>合规检查</td><td>合规标准清单 → AI逐项检查 → 标注风险项</td><td>55%</td><td><span class="badge badge-quick">P0</span></td></tr>
+          <tr><td>3</td><td>汇报材料</td><td>数据聚合 + 汇报结构模板 → AI生成汇报</td><td>50%</td><td><span class="badge badge-quick">P0</span></td></tr>
+          <tr><td>4</td><td>风险报告</td><td>风险信号清单 + 报告模板 → AI采集填充</td><td>50%</td><td><span class="badge badge-quick">P1</span></td></tr>
+          <tr><td>5</td><td>培训材料</td><td>培训框架 + 知识库 → AI按框架生成</td><td>45%</td><td><span class="badge badge-quick">P1</span></td></tr>
+          <tr><td>6</td><td>趋势分析</td><td>历史数据 + 分析维度 → AI自动出图+解读</td><td>45%</td><td><span class="badge badge-quick">P1</span></td></tr>
+          <tr><td>7</td><td>制度审查</td><td>制度框架模板 → AI比对+标注偏差</td><td>40%</td><td><span class="badge badge-quick">P2</span></td></tr>
+          <tr><td>8</td><td>流程规范</td><td>流程文档结构 → AI生成规范初稿</td><td>40%</td><td><span class="badge badge-quick">P2</span></td></tr>
+          <tr><td>9</td><td>审计追踪</td><td>审计流程标准 → AI自动记录+时间线</td><td>35%</td><td><span class="badge badge-quick">P2</span></td></tr>
+          <tr><td>10</td><td>牌照管理</td><td>牌照清单+到期规则 → AI到期预警</td><td>35%</td><td><span class="badge badge-quick">P2</span></td></tr>
+          <tr><td>11</td><td>文案创作</td><td>创意文案模板+风格库 → AI按风格生成</td><td>50%</td><td><span class="badge badge-quick">P1</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section 5: Action Plan -->
+    <section id="s5">
+      <h2><span class="num">05</span>行动计划<span class="subtitle">三步走：沉淀 → 管线化 → 验证</span></h2>
+
+      <div class="action-grid">
+        <div class="action-card">
+          <div class="step-label">STEP 1 / 本周</div>
+          <h4>沉淀经验</h4>
+          <p>从最熟的2项开始：风险识别 + 合规咨询。写下"我怎么想的"——不是写规范，是写判断过程。</p>
+          <span class="focus"><strong>产出</strong>：每项1页经验文档（步骤+判断依据+典型案例）</span>
+        </div>
+        <div class="action-card">
+          <div class="step-label">STEP 2 / 下周</div>
+          <h4>管线化</h4>
+          <p>把经验文档变成管线——明确步骤+验证点。AI按步骤生成初稿，人在验证点介入判断。</p>
+          <span class="focus"><strong>产出</strong>：2条AI管线（风险识别管线+合规咨询管线）</span>
+        </div>
+        <div class="action-card">
+          <div class="step-label">STEP 3 / 第三周</div>
+          <h4>验证</h4>
+          <p>拿真实案例跑一遍，看AI初稿到什么水平，验证点是否准确。迭代管线设计。</p>
+          <span class="focus"><strong>产出</strong>：管线验证报告+下一步6项管线化计划</span>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>会议讨论要点</strong>：1) 速赢区11项是否优先级正确？2) 深水区10项先从哪两项开始？3) 自动化区10项需要哪些技术资源？4) 人的领地9项AI辅助到什么程度算够？
+      </div>
+    </section>
+
+    <footer>
+      供应商管理岗 AI提效落地策略 &middot; 2026年5月
+    </footer>
+  </div>
+
+  <!-- 快速编辑器注入开始 -->
+  <style id="qe-styles">
+    #qe-toolbar {
+      position: fixed; top: 12px; right: 12px; z-index: 99999;
+      display: flex; gap: 6px;
+    }
+    #qe-toolbar button {
+      padding: 6px 14px; border: 1.5px solid var(--g300);
+      border-radius: 8px; background: var(--paper);
+      color: var(--g700); font-size: 0.85em; font-weight: 600;
+      cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all 150ms ease;
+    }
+    #qe-toolbar button:hover {
+      border-color: var(--clay); color: var(--clay);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+    }
+    #qe-toolbar button.active {
+      background: var(--clay); color: #fff; border-color: var(--clay);
+    }
+    #qe-toolbar button:disabled { opacity: 0.4; cursor: default; }
+    #qe-text-toolbar {
+      position: fixed; z-index: 99998;
+      display: none; flex-direction: row; align-items: center; gap: 4px;
+      padding: 4px 8px; border-radius: 8px;
+      background: var(--slate); box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    #qe-text-toolbar button {
+      width: 30px; height: 30px; border: none; border-radius: 4px;
+      background: transparent; color: #fff; font-size: 0.85em;
+      cursor: pointer; font-weight: 700;
+    }
+    #qe-text-toolbar button:hover { background: rgba(255,255,255,0.15); }
+    #qe-text-toolbar .qe-sep {
+      width: 1px; height: 20px; background: rgba(255,255,255,0.2); margin: 0 2px;
+    }
+    #qe-text-toolbar input[type="color"] {
+      width: 24px; height: 24px; border: none; padding: 0;
+      border-radius: 4px; cursor: pointer; background: transparent;
+    }
+    #qe-text-toolbar select {
+      padding: 2px 4px; border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px; background: rgba(255,255,255,0.1);
+      color: #fff; font-size: 0.75em; outline: none;
+    }
+    #qe-prop-panel {
+      position: fixed; top: 60px; right: 12px; z-index: 99997;
+      width: 220px; display: none;
+      background: var(--paper); border: 1.5px solid var(--g300);
+      border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+    #qe-prop-panel.open { display: block; }
+    .qe-pp-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; font-size: 0.8em; font-weight: 700;
+      color: var(--g500); text-transform: uppercase;
+      background: var(--g100); border-bottom: 1px solid var(--g200);
+    }
+    .qe-pp-header button {
+      border: none; background: none; font-size: 1.2em;
+      cursor: pointer; color: var(--g500);
+    }
+    .qe-pp-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .qe-pp-body label {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8em; color: var(--g700);
+    }
+    .qe-pp-body input[type="color"] {
+      width: 28px; height: 28px; border: 1px solid var(--g200);
+      border-radius: 4px; cursor: pointer; padding: 1px;
+    }
+    .qe-pp-body input[type="range"] { width: 100px; }
+    .qe-drag-handle {
+      display: none; padding: 4px 8px; margin: 0 auto;
+      font-size: 1.2em; cursor: grab; color: var(--g300);
+      user-select: none; text-align: center; transition: color 150ms;
+    }
+    body.qe-editing .qe-drag-handle { display: block; }
+    .qe-drag-handle:hover { color: var(--clay); }
+    section.qe-dragging { opacity: 0.5; }
+    section.qe-drop-target::before {
+      content: ''; display: block; height: 3px;
+      background: var(--clay); border-radius: 2px; margin-bottom: 4px;
+    }
+    body.qe-editing [contenteditable="true"] {
+      outline: 1px dashed transparent; transition: outline-color 200ms;
+    }
+    body.qe-editing [contenteditable="true"]:hover { outline-color: var(--clay); }
+    body.qe-editing [contenteditable="true"]:focus { outline-color: var(--clay); outline-offset: 2px; }
+  </style>
+
+  <div id="qe-toolbar">
+    <button id="qe-toggle" title="切换编辑模式">编辑</button>
+    <button id="qe-undo" title="撤销" disabled>↩</button>
+    <button id="qe-redo" title="重做" disabled>↪</button>
+    <button id="qe-export" title="导出干净 HTML">导出</button>
+  </div>
+
+  <div id="qe-text-toolbar">
+    <button data-cmd="bold" title="加粗" style="font-weight:800">B</button>
+    <button data-cmd="italic" title="斜体" style="font-style:italic">I</button>
+    <button data-cmd="underline" title="下划线" style="text-decoration:underline">U</button>
+    <span class="qe-sep"></span>
+    <button data-cmd="color" title="文字颜色">
+      <input type="color" id="qe-color-picker" value="#D97757">
+    </button>
+    <select id="qe-font-size" title="字号">
+      <option value="">字号</option>
+      <option value="0.85em">小</option>
+      <option value="1em">正常</option>
+      <option value="1.15em">大</option>
+      <option value="1.3em">加大</option>
+      <option value="1.5em">超大</option>
+    </select>
+  </div>
+
+  <div id="qe-prop-panel">
+    <div class="qe-pp-header">
+      <span>属性</span>
+      <button id="qe-pp-close">×</button>
+    </div>
+    <div class="qe-pp-body">
+      <label>背景色 <input type="color" data-prop="backgroundColor" value="#ffffff"></label>
+      <label>文字色 <input type="color" data-prop="color" value="#141413"></label>
+      <label>字号 <input type="range" min="10" max="48" value="16" data-prop="fontSize"></label>
+      <label>内间距 <input type="range" min="0" max="60" value="16" data-prop="padding"></label>
+      <label>外间距 <input type="range" min="0" max="60" value="0" data-prop="margin"></label>
+      <label>圆角 <input type="range" min="0" max="30" value="0" data-prop="borderRadius"></label>
+      <label>边框色 <input type="color" data-prop="borderColor" value="#d1cfc5"></label>
+      <label>边框宽 <input type="range" min="0" max="5" value="0" data-prop="borderWidth"></label>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+    let editing = false;
+    const undoStack = [];
+    const redoStack = [];
+    let observer = null;
+    const toolbar = document.getElementById('qe-toolbar');
+    const toggleBtn = document.getElementById('qe-toggle');
+    const exportBtn = document.getElementById('qe-export');
+    const undoBtn = document.getElementById('qe-undo');
+    const redoBtn = document.getElementById('qe-redo');
+    const editableSelector = 'h1,h2,h3,h4,h5,h6,p,li,td,th,figcaption,blockquote,span[data-entity]';
+
+    toggleBtn.addEventListener('click', function() {
+      editing = !editing;
+      document.body.classList.toggle('qe-editing', editing);
+      toggleBtn.classList.toggle('active', editing);
+      toggleBtn.textContent = editing ? '编辑中' : '编辑';
+      document.querySelectorAll(editableSelector).forEach(function(el) {
+        el.contentEditable = editing ? 'true' : 'false';
+      });
+      if (editing) { startObserver(); injectDragHandles(); }
+      else { stopObserver(); removeDragHandles(); hideTextToolbar(); hidePropPanel(); }
+    });
+
+    exportBtn.addEventListener('click', function() {
+      if (editing) toggleBtn.click();
+      var clone = document.documentElement.cloneNode(true);
+      clone.querySelectorAll('#qe-toolbar, #qe-text-toolbar, #qe-prop-panel, style#qe-styles').forEach(function(el) { el.remove(); });
+      var html = clone.outerHTML
+        .replace(/<!-- 快速编辑器注入开始 -->[\s\S]*?<!-- 快速编辑器注入结束 -->/g, '')
+        .replace(/<div class="qe-drag-handle"[^>]*>.*?<\/div>/g, '')
+        .replace(/\s*contenteditable="true"/g, '')
+        .replace(/\s*class="qe-dragging"/g, '')
+        .replace(/\s*class="qe-drop-target"/g, '')
+        .replace(/body class="[^"]*qe-editing[^"]*"/g, 'body');
+      var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (document.title || 'page') + '.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    function saveSnapshot() {
+      undoStack.push(document.body.innerHTML);
+      redoStack.length = 0;
+      if (undoStack.length > 50) undoStack.shift();
+      undoBtn.disabled = false;
+    }
+    undoBtn.addEventListener('click', function() {
+      if (undoStack.length === 0) return;
+      redoStack.push(document.body.innerHTML);
+      document.body.innerHTML = undoStack.pop();
+      undoBtn.disabled = undoStack.length === 0;
+      redoBtn.disabled = false;
+    });
+    redoBtn.addEventListener('click', function() {
+      if (redoStack.length === 0) return;
+      undoStack.push(document.body.innerHTML);
+      document.body.innerHTML = redoStack.pop();
+      redoBtn.disabled = redoStack.length === 0;
+      undoBtn.disabled = false;
+    });
+
+    function startObserver() {
+      if (observer) return;
+      var debounce = null;
+      observer = new MutationObserver(function() {
+        clearTimeout(debounce);
+        debounce = setTimeout(saveSnapshot, 500);
+      });
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true });
+    }
+    function stopObserver() { if (observer) { observer.disconnect(); observer = null; } }
+
+    var textToolbar = document.getElementById('qe-text-toolbar');
+    function showTextToolbar() {
+      var sel = window.getSelection();
+      if (!sel || sel.isCollapsed) return;
+      var range = sel.getRangeAt(0);
+      var rect = range.getBoundingClientRect();
+      textToolbar.style.display = 'flex';
+      textToolbar.style.left = (rect.left + rect.width / 2 - 100) + 'px';
+      textToolbar.style.top = (rect.top - 44 + window.scrollY) + 'px';
+    }
+    function hideTextToolbar() { textToolbar.style.display = 'none'; }
+
+    document.addEventListener('mouseup', function(e) {
+      if (!editing) return;
+      if (textToolbar.contains(e.target)) return;
+      setTimeout(function() {
+        var sel = window.getSelection();
+        if (sel && !sel.isCollapsed) showTextToolbar();
+        else hideTextToolbar();
+      }, 10);
+    });
+    textToolbar.querySelectorAll('button[data-cmd]').forEach(function(btn) {
+      btn.addEventListener('mousedown', function(e) { e.preventDefault(); });
+      btn.addEventListener('click', function() { document.execCommand(btn.dataset.cmd, false, null); });
+    });
+    var colorPicker = document.getElementById('qe-color-picker');
+    colorPicker.addEventListener('input', function() { document.execCommand('foreColor', false, colorPicker.value); });
+    var fontSizeSelect = document.getElementById('qe-font-size');
+    fontSizeSelect.addEventListener('change', function() {
+      if (!fontSizeSelect.value) return;
+      document.execCommand('fontSize', false, '7');
+      document.querySelectorAll('font[size="7"]').forEach(function(el) {
+        var span = document.createElement('span');
+        span.style.fontSize = fontSizeSelect.value;
+        el.parentNode.insertBefore(span, el);
+        span.appendChild(el);
+        el.outerHTML = el.innerHTML;
+      });
+      fontSizeSelect.value = '';
+    });
+
+    var propPanel = document.getElementById('qe-prop-panel');
+    var activeElement = null;
+    function showPropPanel(el) {
+      activeElement = el;
+      propPanel.classList.add('open');
+      var cs = window.getComputedStyle(el);
+      propPanel.querySelectorAll('input[data-prop]').forEach(function(input) {
+        var prop = input.dataset.prop;
+        if (input.type === 'color') { input.value = rgbToHex(cs[prop]); }
+        else if (input.type === 'range') { input.value = parseInt(cs[prop]); }
+      });
+    }
+    function hidePropPanel() { propPanel.classList.remove('open'); activeElement = null; }
+    document.getElementById('qe-pp-close').addEventListener('click', hidePropPanel);
+    document.addEventListener('dblclick', function(e) {
+      if (!editing) return;
+      if (propPanel.contains(e.target) || toolbar.contains(e.target)) return;
+      var target = e.target.closest('section, .card, article, .metric-card, .action-card, [class*="card"]');
+      if (target) { e.preventDefault(); showPropPanel(target); }
+    });
+    propPanel.querySelectorAll('input[data-prop]').forEach(function(input) {
+      input.addEventListener('input', function() {
+        if (!activeElement) return;
+        var prop = input.dataset.prop;
+        activeElement.style[prop] = input.type === 'range' ? input.value + 'px' : input.value;
+      });
+    });
+
+    function injectDragHandles() {
+      document.querySelectorAll('section').forEach(function(section) {
+        if (section.querySelector('.qe-drag-handle')) return;
+        var handle = document.createElement('div');
+        handle.className = 'qe-drag-handle';
+        handle.textContent = '⠇';
+        handle.draggable = true;
+        section.insertBefore(handle, section.firstChild);
+        handle.addEventListener('dragstart', function(e) {
+          section.classList.add('qe-dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', '');
+        });
+        handle.addEventListener('dragend', function() {
+          section.classList.remove('qe-dragging');
+          document.querySelectorAll('.qe-drop-target').forEach(function(el) { el.classList.remove('qe-drop-target'); });
+        });
+      });
+      document.querySelectorAll('section').forEach(function(section) {
+        section.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          document.querySelectorAll('.qe-drop-target').forEach(function(el) { el.classList.remove('qe-drop-target'); });
+          section.classList.add('qe-drop-target');
+        });
+        section.addEventListener('drop', function(e) {
+          e.preventDefault();
+          var dragging = document.querySelector('.qe-dragging');
+          if (!dragging || dragging === section) return;
+          var sections = [].slice.call(document.querySelectorAll('body > section, main > section, .container > section'));
+          var dragIdx = sections.indexOf(dragging);
+          var dropIdx = sections.indexOf(section);
+          if (dragIdx < dropIdx) section.after(dragging);
+          else section.before(dragging);
+          section.classList.remove('qe-drop-target');
+          saveSnapshot();
+        });
+      });
+    }
+    function removeDragHandles() {
+      document.querySelectorAll('.qe-drag-handle').forEach(function(el) { el.remove(); });
+      document.querySelectorAll('.qe-dragging, .qe-drop-target').forEach(function(el) {
+        el.classList.remove('qe-dragging');
+        el.classList.remove('qe-drop-target');
+      });
+    }
+    function rgbToHex(rgb) {
+      if (!rgb || rgb.startsWith('#')) return rgb || '#000000';
+      var match = rgb.match(/(\d+)/g);
+      if (!match || match.length < 3) return '#000000';
+      return '#' + match.slice(0, 3).map(function(x) {
+        var hex = parseInt(x).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('');
+    }
+  })();
+  </script>
+  <!-- 快速编辑器注入结束 -->
+</body>
+</html>

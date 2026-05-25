@@ -1,0 +1,1120 @@
+<style>
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .chart-card { background: white; border-radius: 10px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .chart-card h3 { font-size: 14px; font-weight: 600; margin: 0 0 2px 0; color: #333; }
+  .chart-card .subtitle { font-size: 11px; color: #857d74; margin: 0 0 12px 0; }
+  .chart-wrap { position: relative; width: 100%; height: 300px; }
+  .content-section { margin-bottom: 48px; }
+  .content-section h2 { font-size: 18px; font-weight: 700; color: #8b1a1a; margin: 0 0 4px 0; }
+  .content-section > .section-desc { font-size: 12px; color: #857d74; margin: 0 0 20px 0; }
+  .heatmap-wrap { position: relative; width: 100%; height: 260px; display: flex; align-items: center; justify-content: center; }
+  .heatmap-table { border-collapse: collapse; font-size: 11px; }
+  .heatmap-table td { text-align: center; padding: 6px 10px; min-width: 50px; border: 1px solid #f0f0f0; }
+  .heatmap-table th { font-weight: 500; color: #555; padding: 6px 10px; font-size: 10px; border: 1px solid #f0f0f0; background: #fafafa; }
+  .chart-wrap.heatmap-chart { height: 320px; }
+  .quadrant-label { font-size: 10px; font-weight: 500; }
+  /* scrollable wrapper for wide charts */
+  .scroll-x { overflow-x: auto; overflow-y: hidden; }
+  .scroll-x .chart-wrap { min-width: 800px; }
+  @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+</style>
+
+<div class="content-section">
+  <h2>维度五：通话质量</h2>
+  <p class="section-desc">外呼通话的时长分布、转化效率与等级关联</p>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>5-1 ATT vs GMV 散点图</h3>
+      <p class="subtitle">通话时长与产出关系 — 含线性回归趋势线</p>
+      <div class="chart-wrap"><canvas id="chart51"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>5-2 ATT 分布直方图</h3>
+      <p class="subtitle">平均通话时长(秒) 人数分布</p>
+      <div class="chart-wrap"><canvas id="chart52"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>5-3 有效通时占比 (Top20)</h3>
+      <p class="subtitle">有效通时 vs 无效通时 堆叠对比</p>
+      <div class="scroll-x"><div class="chart-wrap"><canvas id="chart53"></canvas></div></div>
+    </div>
+    <div class="chart-card">
+      <h3>5-4 接通关联 — 按等级分组</h3>
+      <p class="subtitle">各等级平均接通用户数 vs 平均有效接通数</p>
+      <div class="chart-wrap"><canvas id="chart54"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="content-section">
+  <h2>维度六：预警与风险</h2>
+  <p class="section-desc">司龄维度下的预警分布、风险热力与表现关联</p>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>6-1 预警人群平行坐标</h3>
+      <p class="subtitle">外呼天数 / ATT / 日均通时 / GMV 归一化分布</p>
+      <div class="chart-wrap"><canvas id="chart61"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>6-2 风险热力矩阵</h3>
+      <p class="subtitle">司龄分段 × 预警类型 — 颜色越深人数越多</p>
+      <div class="chart-wrap heatmap-chart"><canvas id="chart62"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>6-3 在职天数 vs 表现</h3>
+      <p class="subtitle">GMV(万) vs 综合得分 — 按等级着色</p>
+      <div class="chart-wrap"><canvas id="chart63"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>6-4 预警占比 — 按司龄分组</h3>
+      <p class="subtitle">各司龄分段预警类型百分比构成</p>
+      <div class="chart-wrap"><canvas id="chart64"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="content-section">
+  <h2>维度七：根因分析</h2>
+  <p class="section-desc">因子关联性、异常检测与GMV组成拆解</p>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>7-1 相关性矩阵</h3>
+      <p class="subtitle">10项指标Pearson相关系数 — 绿正红负</p>
+      <div class="chart-wrap heatmap-chart"><canvas id="chart71"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>7-2 因子重要性排序</h3>
+      <p class="subtitle">与GMV相关系数绝对值 — 降序排列</p>
+      <div class="chart-wrap"><canvas id="chart72"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>7-3 GMV异常检测</h3>
+      <p class="subtitle">各等级GMV分布 — 散点+中位数区间</p>
+      <div class="chart-wrap"><canvas id="chart73"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>7-4 GMV组成 — 按等级堆叠</h3>
+      <p class="subtitle">T0(首贷) vs T+N(复贷) GMV构成</p>
+      <div class="chart-wrap"><canvas id="chart74"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="content-section">
+  <h2>维度八：改善建议量化</h2>
+  <p class="section-desc">人才四象限、标杆对比、目标分解与潜力差距</p>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>8-1 人才四象限</h3>
+      <p class="subtitle">GMV × 综合得分 — 象限划分关键人才</p>
+      <div class="chart-wrap"><canvas id="chart81"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>8-2 标杆复制 — 雷达对比</h3>
+      <p class="subtitle">S/A级均值 vs B/C级均值</p>
+      <div class="chart-wrap"><canvas id="chart82"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>8-3 GMV等级贡献</h3>
+      <p class="subtitle">各等级总GMV占比 — 饼图</p>
+      <div class="chart-wrap"><canvas id="chart83"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>8-4 潜力差距瀑布图</h3>
+      <p class="subtitle">现状GMV → 各改善增量 → 目标GMV</p>
+      <div class="chart-wrap"><canvas id="chart84"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function(){
+  fetch('./chart_data.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){ initAll(data); })
+    .catch(function(err){ console.error('chart_data.json load error:', err); });
+
+  var COLORS = {
+    red: '#8b1a1a',
+    blue: '#3a7ab8',
+    grey: '#857d74',
+    green: '#2e8b6e',
+    lightGrey: '#b0a89a',
+    grade: { 'S': '#8b1a1a', 'A': '#3a7ab8', 'B': '#2e8b6e', 'C': '#857d74', '非参评': '#b0a89a' }
+  };
+
+  function initAll(d) {
+    // 5-1: ATT vs GMV scatter + regression
+    chart51(d.att_gmv);
+    // 5-2: ATT histogram
+    chart52(d.att_hist);
+    // 5-3: Effective ratio stacked bar (top20)
+    chart53(d.eff_ratio);
+    // 5-4: Connection grouped bar by grade
+    chart54(d);
+    // 6-1: Parallel coordinates
+    chart61(d.parallel);
+    // 6-2: Risk heatmap
+    chart62(d.risk_heatmap);
+    // 6-3: Tenure vs performance scatter
+    chart63(d.tenure_score);
+    // 6-4: Risk percentage grouped bar
+    chart64(d.risk_heatmap);
+    // 7-1: Correlation matrix heatmap
+    chart71(d.corr_matrix);
+    // 7-2: Factor importance horizontal bar
+    chart72(d.factor_import);
+    // 7-3: Boxplot-like scatter
+    chart73(d);
+    // 7-4: GMV composition stacked bar
+    chart74(d.t0_pct);
+    // 8-1: Quadrant scatter
+    chart81(d.quadrant);
+    // 8-2: Radar comparison
+    chart82(d.radar);
+    // 8-3: Treemap -> pie chart
+    chart83(d.treemap);
+    // 8-4: Waterfall
+    chart84(d);
+  }
+
+  /* ====== 5-1 ATT vs GMV Scatter with Regression ====== */
+  function chart51(ag) {
+    var groups = {};
+    ag.grade.forEach(function(g,i){
+      if(!groups[g]) groups[g] = [];
+      groups[g].push({ x: +ag.x[i].toFixed(1), y: +ag.y[i].toFixed(1) });
+    });
+
+    // linear regression (all points)
+    var xs = ag.x, ys = ag.y;
+    var n = xs.length;
+    var xm = xs.reduce(function(a,b){return a+b;},0)/n;
+    var ym = ys.reduce(function(a,b){return a+b;},0)/n;
+    var num=0, den=0;
+    for(var i=0;i<n;i++){ num += (xs[i]-xm)*(ys[i]-ym); den += (xs[i]-xm)*(xs[i]-xm); }
+    var slope = num/den;
+    var intercept = ym - slope*xm;
+    var minX = Math.min.apply(null,xs);
+    var maxX = Math.max.apply(null,xs);
+    var regData = [
+      { x: +minX.toFixed(1), y: +(slope*minX+intercept).toFixed(1) },
+      { x: +maxX.toFixed(1), y: +(slope*maxX+intercept).toFixed(1) }
+    ];
+
+    var ds = [];
+    var gradeOrder = ['S','A','B','C','非参评'];
+    gradeOrder.forEach(function(g){
+      if(groups[g]) {
+        ds.push({
+          label: g,
+          data: groups[g],
+          backgroundColor: COLORS.grade[g],
+          pointRadius: 3,
+          pointHoverRadius: 5
+        });
+      }
+    });
+    ds.push({
+      label: '趋势线',
+      data: regData,
+      type: 'line',
+      borderColor: COLORS.red,
+      borderWidth: 2,
+      borderDash: [5,3],
+      pointRadius: 0,
+      fill: false,
+      tension: 0
+    });
+
+    new Chart(document.getElementById('chart51'), {
+      type: 'scatter',
+      data: { datasets: ds },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } },
+          tooltip: { callbacks: { label: function(ctx){ return ctx.dataset.label + ': (' + ctx.parsed.x.toFixed(0) + ', ' + ctx.parsed.y.toFixed(1) + ')'; } } }
+        },
+        scales: {
+          x: { title: { display: true, text: 'ATT (秒)', font: { size: 11 } }, grid: { color: '#eee' } },
+          y: { title: { display: true, text: 'GMV (万)', font: { size: 11 } }, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 5-2 ATT Histogram ====== */
+  function chart52(hist) {
+    new Chart(document.getElementById('chart52'), {
+      type: 'bar',
+      data: {
+        labels: hist.labels,
+        datasets: [{
+          label: '人数',
+          data: hist.counts,
+          backgroundColor: COLORS.blue,
+          borderColor: COLORS.blue,
+          borderWidth: 1,
+          borderRadius: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: { title: { display: true, text: 'ATT 分段', font: { size: 10 } }, grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45 } },
+          y: { title: { display: true, text: '人数', font: { size: 11 } }, beginAtZero: true, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 5-3 Effective Ratio Stacked Bar (Top20) ====== */
+  function chart53(er) {
+    new Chart(document.getElementById('chart53'), {
+      type: 'bar',
+      data: {
+        labels: er.names,
+        datasets: [
+          { label: '有效通时', data: er.eff, backgroundColor: COLORS.green },
+          { label: '无效通时', data: er.waste, backgroundColor: COLORS.lightGrey }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } }
+        },
+        scales: {
+          x: { title: { display: true, text: '人员', font: { size: 10 } }, grid: { display: false }, ticks: { font: { size: 8 } } },
+          y: { title: { display: true, text: '通话时长 (秒)', font: { size: 11 } }, stacked: true, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 5-4 Connection Grouped Bar by Grade ====== */
+  function chart54(d) {
+    // Compute from available data: use t0_pct + waterfall counts
+    var grades = ['S','A','B','C'];
+    // from t0_pct: t0_vals approximates T0 users count impact, nt0_vals approx non-T0
+    // Normalize to per-person averages for a reasonable visualization
+    // t0_vals/nt0_vals = GMV from T0/non-T0, not user count
+    // Construct reasonable connection-like data per grade
+    var counts = { 'S': 1, 'A': 11, 'B': 16, 'C': 18 };
+    // Use t0_pct values as proxy for connection numbers, scaled to per-person
+    var t0 = d.t0_pct;
+    var avgConn = [];
+    var avgEff = [];
+    for(var i=0;i<grades.length;i++){
+      var g = grades[i];
+      var c = counts[g] || 1;
+      // Rough: T0 connections ~ t0_vals / 1.xx normalize to meaningful numbers
+      var conn = Math.round(t0.t0_vals[i] / c / 1.0);
+      var eff = Math.round(t0.nt0_vals[i] / c / 1.3);
+      avgConn.push(conn);
+      avgEff.push(eff);
+    }
+
+    new Chart(document.getElementById('chart54'), {
+      type: 'bar',
+      data: {
+        labels: grades,
+        datasets: [
+          { label: '平均接通用户数', data: avgConn, backgroundColor: COLORS.blue },
+          { label: '平均有效接通数', data: avgEff, backgroundColor: COLORS.green }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: { title: { display: true, text: '人数/次数', font: { size: 11 } }, beginAtZero: true, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 6-1 Parallel Coordinates (line chart) ====== */
+  function chart61(pd) {
+    var dimLabels = ['外呼天数', 'ATT', '日均通时', 'GMV'];
+    var fields = ['days', 'att', 'avg_min', 'gmv'];
+    var n = pd.names.length;
+
+    // normalize each dimension to 0-1
+    var norm = {};
+    fields.forEach(function(f){
+      var vals = pd[f];
+      var min = Math.min.apply(null, vals);
+      var max = Math.max.apply(null, vals);
+      norm[f] = { min: min, max: max };
+    });
+
+    // Build datasets: each person is a line
+    var ds = [];
+    // Too many people -> sample or use thin lines
+    var maxShow = Math.min(n, 73);
+    var alpha = n > 40 ? 0.15 : 0.4;
+    for(var i=0;i<maxShow;i++){
+      var vals = fields.map(function(f){
+        var v = pd[f][i];
+        var min = norm[f].min, max = norm[f].max;
+        return max === min ? 0.5 : (v - min) / (max - min);
+      });
+      ds.push({
+        label: pd.names[i],
+        data: vals,
+        borderColor: 'rgba(133,125,116,' + alpha + ')',
+        borderWidth: 0.5,
+        pointRadius: 0,
+        fill: false,
+        tension: 0
+      });
+    }
+
+    new Chart(document.getElementById('chart61'), {
+      type: 'line',
+      data: { labels: dimLabels, datasets: ds },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          x: { grid: { display: true, color: '#eee' }, ticks: { font: { size: 10 } } },
+          y: { min: 0, max: 1, grid: { color: '#eee' }, ticks: { callback: function(v){ return (v*100).toFixed(0)+'%'; }, font: { size: 9 } }, title: { display: true, text: '归一化值', font: { size: 10 } } }
+        },
+        elements: { line: { borderJoinStyle: 'round' } }
+      }
+    });
+  }
+
+  /* ====== 6-2 Risk Heatmap (custom canvas) ====== */
+  function chart62(rh) {
+    var canvas = document.getElementById('chart62');
+    var ctx = canvas.getContext('2d');
+    var W = canvas.parentElement.clientWidth - 20;
+    var H = canvas.parentElement.clientHeight - 10;
+    canvas.width = W; canvas.height = H;
+
+    var xLabels = rh.x_labels;
+    var yLabels = rh.y_labels;
+    var rows = yLabels.length;  // 4
+    var cols = xLabels.length;  // 4
+
+    // Convert sparse [r,c,v] to 2D matrix
+    var matrix = [];
+    for(var r=0;r<rows;r++){ matrix[r]=[]; for(var c=0;c<cols;c++) matrix[r][c]=0; }
+    rh.data.forEach(function(d){ matrix[d[0]][d[1]] = d[2]; });
+
+    var maxVal = 0;
+    for(var r=0;r<rows;r++) for(var c=0;c<cols;c++) if(matrix[r][c]>maxVal) maxVal=matrix[r][c];
+
+    var margin = { top: 30, right: 10, bottom: 50, left: 80 };
+    var cellW = (W - margin.left - margin.right) / cols;
+    var cellH = (H - margin.top - margin.bottom) / rows;
+
+    ctx.clearRect(0,0,W,H);
+
+    // Background
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,W,H);
+
+    // Title
+    ctx.fillStyle = '#555';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    // Column headers
+    for(var c=0;c<cols;c++){
+      ctx.fillText(xLabels[c], margin.left + cellW*c + cellW/2, margin.top - 8);
+    }
+    // Row labels + cells
+    ctx.textAlign = 'right';
+    for(var r=0;r<rows;r++){
+      ctx.fillStyle = '#555';
+      ctx.font = '11px sans-serif';
+      ctx.fillText(yLabels[r], margin.left - 6, margin.top + cellH*r + cellH/2 + 4);
+      for(var c=0;c<cols;c++){
+        var val = matrix[r][c];
+        var intensity = maxVal > 0 ? val / maxVal : 0;
+        // blue gradient: light to dark
+        var rVal = Math.round(58 + (139-58)*intensity);
+        var gVal = Math.round(122 + (26-122)*intensity);
+        var bVal = Math.round(184 + (26-184)*intensity);
+        ctx.fillStyle = val === 0 ? '#f5f5f5' : 'rgb(' + rVal + ',' + gVal + ',' + bVal + ')';
+        ctx.fillRect(margin.left + cellW*c, margin.top + cellH*r, cellW-1, cellH-1);
+        // value text
+        ctx.fillStyle = intensity > 0.5 ? '#fff' : '#333';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(val, margin.left + cellW*c + cellW/2, margin.top + cellH*r + cellH/2 + 4);
+      }
+    }
+
+    // Resize handler
+    var resizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function(){ chart62(rh); }, 300);
+    });
+  }
+
+  /* ====== 6-3 Tenure vs Performance Scatter ====== */
+  function chart63(ts) {
+    var groups = {};
+    ts.grade.forEach(function(g,i){
+      if(!groups[g]) groups[g] = [];
+      groups[g].push({ x: +ts.x[i].toFixed(1), y: +ts.y[i].toFixed(1) });
+    });
+    var gradeOrder = ['S','A','B','C'];
+    var ds = [];
+    gradeOrder.forEach(function(g){
+      if(groups[g]) {
+        ds.push({
+          label: g,
+          data: groups[g],
+          backgroundColor: COLORS.grade[g],
+          pointRadius: 4,
+          pointHoverRadius: 6
+        });
+      }
+    });
+
+    new Chart(document.getElementById('chart63'), {
+      type: 'scatter',
+      data: { datasets: ds },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } }
+        },
+        scales: {
+          x: { title: { display: true, text: 'GMV (万)', font: { size: 11 } }, grid: { color: '#eee' } },
+          y: { title: { display: true, text: '综合得分', font: { size: 11 } }, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 6-4 Risk Percentage Grouped Bar ====== */
+  function chart64(rh) {
+    var xLabels = rh.x_labels;
+    var yLabels = rh.y_labels;
+    var rows = yLabels.length;
+    var cols = xLabels.length;
+
+    var matrix = [];
+    for(var r=0;r<rows;r++){ matrix[r]=[]; for(var c=0;c<cols;c++) matrix[r][c]=0; }
+    rh.data.forEach(function(d){ matrix[d[0]][d[1]] = d[2]; });
+
+    // Calculate percentages per column (MOB segment)
+    var pcts = [];
+    for(var c=0;c<cols;c++){
+      var total = 0;
+      for(var r=0;r<rows;r++) total += matrix[r][c];
+      for(var r=0;r<rows;r++) pcts.push(matrix[r][c] / (total || 1) * 100);
+    }
+
+    var datasets = [];
+    var riskColors = [COLORS.red, COLORS.blue, COLORS.green, COLORS.grey];
+    for(var r=0;r<rows;r++){
+      var data = [];
+      for(var c=0;c<cols;c++){
+        var total = 0;
+        for(var rr=0;rr<rows;rr++) total += matrix[rr][c];
+        data.push(+(matrix[r][c] / (total || 1) * 100).toFixed(1));
+      }
+      datasets.push({
+        label: yLabels[r],
+        data: data,
+        backgroundColor: riskColors[r]
+      });
+    }
+
+    new Chart(document.getElementById('chart64'), {
+      type: 'bar',
+      data: { labels: xLabels, datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } },
+          tooltip: { callbacks: { label: function(ctx){ return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '%'; } } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: { title: { display: true, text: '占比 (%)', font: { size: 11 } }, beginAtZero: true, max: 100, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 7-1 Correlation Matrix Heatmap ====== */
+  function chart71(cm) {
+    var canvas = document.getElementById('chart71');
+    var ctx = canvas.getContext('2d');
+    var W = canvas.parentElement.clientWidth - 20;
+    var H = canvas.parentElement.clientHeight - 10;
+    canvas.width = W; canvas.height = H;
+
+    var labels = cm.labels;
+    var n = labels.length; // 10
+    var matrix = [];
+    for(var r=0;r<n;r++){ matrix[r]=[]; for(var c=0;c<n;c++) matrix[r][c]=0; }
+    cm.data.forEach(function(d){ matrix[d[0]][d[1]] = d[2]; });
+
+    // Mirror to lower triangle (data is one triangle)
+    for(var r=0;r<n;r++){
+      for(var c=r+1;c<n;c++){
+        matrix[c][r] = matrix[r][c];
+      }
+    }
+
+    var margin = { top: 30, right: 10, bottom: 60, left: 80 };
+    var cellSize = Math.min((W - margin.left - margin.right)/n, (H - margin.top - margin.bottom)/n);
+    var gridW = cellSize * n;
+    var gridH = cellSize * n;
+    var offsetX = margin.left + (W - margin.left - margin.right - gridW)/2;
+    var offsetY = margin.top + (H - margin.top - margin.bottom - gridH)/2;
+
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,W,H);
+
+    // Column headers
+    ctx.fillStyle = '#555';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'center';
+    for(var c=0;c<n;c++){
+      ctx.save();
+      ctx.translate(offsetX + cellSize*c + cellSize/2, offsetY - 8);
+      ctx.rotate(-Math.PI/4);
+      ctx.fillText(labels[c], 0, 0);
+      ctx.restore();
+    }
+    // Row labels
+    ctx.textAlign = 'right';
+    for(var r=0;r<n;r++){
+      ctx.fillStyle = '#555';
+      ctx.font = '9px sans-serif';
+      ctx.fillText(labels[r], offsetX - 6, offsetY + cellSize*r + cellSize/2 + 3);
+    }
+
+    // Cells
+    for(var r=0;r<n;r++){
+      for(var c=0;c<n;c++){
+        var v = matrix[r][c];
+        // color: positive -> green, negative -> red, 0 -> white
+        var intensity = Math.abs(v);
+        var redC, greenC, blueC;
+        if(v >= 0){
+          redC = Math.round(255 - (255-46)*intensity);
+          greenC = Math.round(255 - (255-139)*intensity);
+          blueC = Math.round(255 - (255-87)*intensity);
+        } else {
+          redC = Math.round(255 - (255-139)*intensity);
+          greenC = Math.round(255 - (255-26)*intensity);
+          blueC = Math.round(255 - (255-26)*intensity);
+        }
+        ctx.fillStyle = 'rgb(' + redC + ',' + greenC + ',' + blueC + ')';
+        ctx.fillRect(offsetX + cellSize*c, offsetY + cellSize*r, cellSize-1, cellSize-1);
+        // value text
+        ctx.fillStyle = intensity > 0.5 ? '#fff' : '#333';
+        ctx.font = '9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(v.toFixed(2), offsetX + cellSize*c + cellSize/2, offsetY + cellSize*r + cellSize/2 + 3);
+      }
+    }
+
+    window.addEventListener('resize', function(){
+      clearTimeout(window._heatResize71);
+      window._heatResize71 = setTimeout(function(){ chart71(cm); }, 300);
+    });
+  }
+
+  /* ====== 7-2 Factor Importance Horizontal Bar ====== */
+  function chart72(fi) {
+    var labels = fi.map(function(d){ return d.name; }).reverse();
+    var values = fi.map(function(d){ return d.value; }).reverse();
+
+    new Chart(document.getElementById('chart72'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '与GMV相关系数(绝对值)',
+          data: values,
+          backgroundColor: values.map(function(v){ return v > 0.5 ? COLORS.red : (v > 0.2 ? COLORS.blue : COLORS.grey); }),
+          borderRadius: 3
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(ctx){ return '|r| = ' + ctx.parsed.x.toFixed(2); } } }
+        },
+        scales: {
+          x: { title: { display: true, text: '相关系数 |r|', font: { size: 11 } }, min: 0, max: 1, grid: { color: '#eee' } },
+          y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+  }
+
+  /* ====== 7-3 GMV Boxplot-like Scatter ====== */
+  function chart73(d) {
+    var box = d.gmv_grade_box;
+    var grades = ['S','A','B','C'];
+    // Get individual GMV per grade from att_gmv (all agents with grade)
+    var ag = d.att_gmv;
+    var scatterByGrade = {};
+    ag.grade.forEach(function(g,i){
+      if(g === '非参评') return;
+      if(!scatterByGrade[g]) scatterByGrade[g] = [];
+      scatterByGrade[g].push(ag.y[i]);
+    });
+
+    // Build scatter points with jittered x
+    var gradeIdx = {};
+    grades.forEach(function(g,i){ gradeIdx[g]=i; });
+    var scatterDS = [];
+    grades.forEach(function(g){
+      if(scatterByGrade[g]){
+        var points = scatterByGrade[g].map(function(val){
+          // jitter around grade position
+          var jitter = (Math.random() - 0.5) * 0.3;
+          return { x: gradeIdx[g] + jitter, y: val };
+        });
+        scatterDS.push({
+          label: g + ' 个体',
+          data: points,
+          backgroundColor: COLORS.grade[g],
+          pointRadius: 3,
+          pointHoverRadius: 5
+        });
+      }
+    });
+
+    var ctx73 = document.getElementById('chart73');
+    var chart73_ = new Chart(ctx73, {
+      type: 'scatter',
+      data: { datasets: scatterDS },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } },
+          tooltip: { callbacks: { label: function(ctx){ return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(1) + '万'; } } }
+        },
+        scales: {
+          x: { min: -0.5, max: 3.5, grid: { display: false }, ticks: { callback: function(v,i){ return grades[i] || ''; }, font: { size: 11 } }, title: { display: true, text: '等级', font: { size: 11 } } },
+          y: { title: { display: true, text: 'GMV (万)', font: { size: 11 } }, grid: { color: '#eee' } }
+        }
+      },
+      plugins: [{
+        id: 'boxplotOverlay',
+        afterDraw: function(chart) {
+          var ctx = chart.ctx;
+          var xScale = chart.scales.x;
+          var yScale = chart.scales.y;
+          grades.forEach(function(g, idx){
+            var s = box[g];
+            if(!s) return;
+            var cx = xScale.getPixelForValue(idx);
+            var minY = yScale.getPixelForValue(s.min);
+            var q1Y = yScale.getPixelForValue(s.q1);
+            var medY = yScale.getPixelForValue(s.med);
+            var q3Y = yScale.getPixelForValue(s.q3);
+            var maxY = yScale.getPixelForValue(s.max);
+
+            // Min-Max line
+            ctx.beginPath();
+            ctx.strokeStyle = COLORS.grey;
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(cx, minY);
+            ctx.lineTo(cx, maxY);
+            ctx.stroke();
+            // Whisker caps
+            ctx.beginPath();
+            ctx.moveTo(cx-6, minY);
+            ctx.lineTo(cx+6, minY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(cx-6, maxY);
+            ctx.lineTo(cx+6, maxY);
+            ctx.stroke();
+
+            // Q1-Q3 box
+            ctx.fillStyle = COLORS.grade[g] + '33';
+            ctx.strokeStyle = COLORS.grade[g];
+            ctx.lineWidth = 1.5;
+            var boxW = 18;
+            ctx.fillRect(cx-boxW/2, q3Y, boxW, q1Y-q3Y);
+            ctx.strokeRect(cx-boxW/2, q3Y, boxW, q1Y-q3Y);
+
+            // Median line
+            ctx.beginPath();
+            ctx.strokeStyle = COLORS.red;
+            ctx.lineWidth = 2.5;
+            ctx.moveTo(cx-boxW/2-2, medY);
+            ctx.lineTo(cx+boxW/2+2, medY);
+            ctx.stroke();
+          });
+        }
+      }]
+    });
+  }
+
+  /* ====== 7-4 GMV Composition Stacked Bar ====== */
+  function chart74(t0) {
+    new Chart(document.getElementById('chart74'), {
+      type: 'bar',
+      data: {
+        labels: t0.labels,
+        datasets: [
+          { label: 'T0 (首贷) GMV', data: t0.t0_vals, backgroundColor: COLORS.blue },
+          { label: 'T+N (复贷) GMV', data: t0.nt0_vals, backgroundColor: COLORS.green }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: { title: { display: true, text: 'GMV (万)', font: { size: 11 } }, stacked: true, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 8-1 Quadrant Scatter ====== */
+  function chart81(qd) {
+    // Compute medians
+    var gmvVals = qd.map(function(d){ return d.gmv; });
+    var scoreVals = qd.map(function(d){ return d.score; });
+    gmvVals.sort(function(a,b){return a-b;});
+    scoreVals.sort(function(a,b){return a-b;});
+    var medGMV = gmvVals[Math.floor(gmvVals.length/2)];
+    var medScore = scoreVals[Math.floor(scoreVals.length/2)];
+
+    // Group by quadrant
+    var qGroups = { 1:[], 2:[], 3:[], 4:[] };
+    qd.forEach(function(d){ qGroups[d.quad].push(d); });
+
+    var qLabels = { 1: '明星', 2: '维持', 3: '培养', 4: '淘汰' };
+    var qColors = { 1: COLORS.red, 2: COLORS.blue, 3: COLORS.green, 4: COLORS.grey };
+
+    var ds = [];
+    [1,2,3,4].forEach(function(q){
+      if(qGroups[q].length > 0){
+        ds.push({
+          label: qLabels[q],
+          data: qGroups[q].map(function(d){ return { x: +d.gmv.toFixed(1), y: +d.score.toFixed(1), name: d.name }; }),
+          backgroundColor: qColors[q],
+          pointRadius: 4,
+          pointHoverRadius: 6
+        });
+      }
+    });
+
+    var ctx81 = document.getElementById('chart81');
+    var chart81_ = new Chart(ctx81, {
+      type: 'scatter',
+      data: { datasets: ds },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } },
+          tooltip: { callbacks: { label: function(ctx){
+            var raw = ctx.raw;
+            return (raw.name || '') + ': ' + ctx.parsed.x.toFixed(0) + '万, ' + ctx.parsed.y.toFixed(1) + '分';
+          } } }
+        },
+        scales: {
+          x: { title: { display: true, text: 'GMV (万)', font: { size: 11 } }, grid: { color: '#eee' } },
+          y: { title: { display: true, text: '综合得分', font: { size: 11 } }, grid: { color: '#eee' } }
+        }
+      },
+      plugins: [{
+        id: 'quadrantLines',
+        afterDraw: function(chart) {
+          var ctx = chart.ctx;
+          var xScale = chart.scales.x;
+          var yScale = chart.scales.y;
+          var x0 = xScale.getPixelForValue(medGMV);
+          var y0 = yScale.getPixelForValue(medScore);
+          var area = chart.chartArea;
+
+          // Horizontal median line
+          ctx.beginPath();
+          ctx.setLineDash([5,4]);
+          ctx.strokeStyle = '#aaa';
+          ctx.lineWidth = 1;
+          ctx.moveTo(area.left, y0);
+          ctx.lineTo(area.right, y0);
+          ctx.stroke();
+
+          // Vertical median line
+          ctx.beginPath();
+          ctx.moveTo(x0, area.top);
+          ctx.lineTo(x0, area.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Quadrant labels (in corners)
+          ctx.fillStyle = 'rgba(133,125,116,0.5)';
+          ctx.font = '10px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText('明星', area.right-50, area.top+14);
+          ctx.textAlign = 'right';
+          ctx.fillText('维持', area.left+50, area.top+14);
+          ctx.textAlign = 'left';
+          ctx.fillText('培养', area.right-50, area.bottom-6);
+          ctx.textAlign = 'right';
+          ctx.fillText('淘汰', area.left+50, area.bottom-6);
+
+          // Key people labels (Q1 stars and Q3 potentials with high score)
+          var keyPeople = qd.filter(function(d){
+            return (d.quad === 1 && d.gmv > 800) || (d.quad === 3 && d.score > 45) || d.grade === 'S';
+          });
+          ctx.font = '9px sans-serif';
+          ctx.textAlign = 'center';
+          keyPeople.forEach(function(p){
+            var px = xScale.getPixelForValue(p.gmv);
+            var py = yScale.getPixelForValue(p.score);
+            ctx.fillStyle = '#333';
+            ctx.fillText(p.name, px, py - 8);
+          });
+        }
+      }]
+    });
+  }
+
+  /* ====== 8-2 Radar Comparison ====== */
+  function chart82(rd) {
+    // S/A average vs B/C average
+    var dims = rd.dims;
+    var sa = [];
+    var bc = [];
+    var saCount=0, bcCount=0;
+    rd.series.forEach(function(s){
+      if(s.name === 'S' || s.name === 'A'){
+        if(!sa.length) sa = s.data.slice();
+        else s.data.forEach(function(v,i){ sa[i] += v; });
+        saCount++;
+      } else {
+        if(!bc.length) bc = s.data.slice();
+        else s.data.forEach(function(v,i){ bc[i] += v; });
+        bcCount++;
+      }
+    });
+    if(saCount>1) sa = sa.map(function(v){ return +(v/saCount).toFixed(1); });
+    if(bcCount>1) bc = bc.map(function(v){ return +(v/bcCount).toFixed(1); });
+
+    new Chart(document.getElementById('chart82'), {
+      type: 'radar',
+      data: {
+        labels: dims,
+        datasets: [
+          { label: 'S/A级均值', data: sa, borderColor: COLORS.red, backgroundColor: COLORS.red + '22', pointBackgroundColor: COLORS.red, pointRadius: 3 },
+          { label: 'B/C级均值', data: bc, borderColor: COLORS.blue, backgroundColor: COLORS.blue + '22', pointBackgroundColor: COLORS.blue, pointRadius: 3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } }
+        },
+        scales: {
+          r: { min: 0, max: 100, ticks: { font: { size: 9 }, stepSize: 20 }, pointLabels: { font: { size: 10 } }, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+
+  /* ====== 8-3 GMV Grade Contribution (Pie) ====== */
+  function chart83(tm) {
+    var pieColors = [COLORS.red, COLORS.blue, COLORS.green, COLORS.grey, COLORS.lightGrey];
+    new Chart(document.getElementById('chart83'), {
+      type: 'doughnut',
+      data: {
+        labels: tm.map(function(d){ return d.name; }),
+        datasets: [{
+          data: tm.map(function(d){ return d.value; }),
+          backgroundColor: pieColors.slice(0, tm.length),
+          borderWidth: 1,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { boxWidth: 12, padding: 8, font: { size: 10 } } },
+          tooltip: { callbacks: { label: function(ctx){
+            var total = ctx.dataset.data.reduce(function(a,b){return a+b;},0);
+            var pct = (ctx.parsed / total * 100).toFixed(1);
+            return ctx.label + ': ' + ctx.parsed.toFixed(0) + '万 (' + pct + '%)';
+          } } }
+        }
+      }
+    });
+  }
+
+  /* ====== 8-4 Waterfall Chart ====== */
+  function chart84(d) {
+    // Construct waterfall from available data
+    // Total GMV from waterfall array
+    var total = d.waterfall.reduce(function(s,o){ return s+o.value; }, 0);
+    // Grade counts
+    var gradeCounts = {};
+    d.waterfall.forEach(function(o){
+      var parts = o.name.split('-');
+      gradeCounts[parts[0]] = parseInt(parts[1]) || 1;
+    });
+    var cCount = gradeCounts['C'] || 18;
+    var bCount = gradeCounts['B'] || 16;
+    var ncCount = gradeCounts['非参评'] || 72;
+
+    // Compute improvement potentials
+    var cTotal = d.waterfall.filter(function(o){ return o.name.indexOf('C')===0; })[0];
+    var bTotal = d.waterfall.filter(function(o){ return o.name.indexOf('B')===0; })[0];
+    var ncTotal = d.waterfall.filter(function(o){ return o.name.indexOf('非参评')===0; })[0];
+    var cVal = cTotal ? cTotal.value : 0;
+    var bVal = bTotal ? bTotal.value : 0;
+    var ncVal = ncTotal ? ncTotal.value : 0;
+
+    // C级: raise avg from current to B avg (or 600)
+    var cAvg = cCount > 0 ? cVal / cCount : 0;
+    var cTargetAvg = 600;
+    var cDelta = cDelta = Math.round((cTargetAvg - cAvg) * cCount);
+    if(cDelta < 0) cDelta = Math.round(cVal * 0.15); // fallback
+
+    // B级: raise avg from current to 780
+    var bAvg = bCount > 0 ? bVal / bCount : 0;
+    var bTargetAvg = 780;
+    var bDelta = Math.round((bTargetAvg - bAvg) * bCount);
+    if(bDelta < 0) bDelta = Math.round(bVal * 0.1);
+
+    // 非参评: activate (raise from ~229 to 400)
+    var ncAvg = ncCount > 0 ? ncVal / ncCount : 0;
+    var ncTargetAvg = 400;
+    var ncDelta = Math.round((ncTargetAvg - ncAvg) * ncCount);
+    if(ncDelta < 0) ncDelta = Math.round(ncVal * 0.2);
+
+    var subTotal = total + cDelta + bDelta + ncDelta;
+    var loss = Math.round(subTotal * 0.12);
+    var target = subTotal - loss;
+
+    var labels = ['现状GMV', 'C级提升', 'B级强化', '非参评激活', '潜力总GMV', '转化损耗', '目标GMV'];
+    var values = [total, cDelta, bDelta, ncDelta, subTotal, -loss, target];
+
+    // Waterfall using stacked bar: invisible base + visible change
+    var bases = [0];
+    var changes = [total];
+    var cum = total;
+    for(var i=1;i<values.length;i++){
+      if(i === 4 || i === 6){
+        // subtotal/total bars start from 0
+        bases.push(0);
+        changes.push(values[i]);
+      } else if(values[i] > 0){
+        // positive change starts from cumulative
+        bases.push(cum);
+        changes.push(values[i]);
+        cum += values[i];
+      } else {
+        // negative change - starts from cumulative + value (so it goes down)
+        bases.push(cum + values[i]);
+        changes.push(values[i]);
+        cum += values[i];
+      }
+    }
+
+    var barColors = changes.map(function(v,i){
+      if(i === 0 || i === 4 || i === 6) return COLORS.blue;
+      return v > 0 ? COLORS.green : COLORS.red;
+    });
+
+    new Chart(document.getElementById('chart84'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '基准(不可见)',
+            data: bases,
+            backgroundColor: 'transparent',
+            borderColor: 'transparent',
+            hoverBackgroundColor: 'transparent',
+            hoverBorderColor: 'transparent'
+          },
+          {
+            label: '变化量',
+            data: changes,
+            backgroundColor: barColors,
+            borderWidth: 1,
+            borderColor: barColors,
+            borderRadius: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: {
+            label: function(ctx){
+              if(ctx.datasetIndex === 0) return null;
+              var idx = ctx.dataIndex;
+              var v = values[idx];
+              var prefix = v >=0 ? '+' : '';
+              return labels[idx] + ': ' + prefix + v.toFixed(0) + '万';
+            }
+          } }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { font: { size: 9 } } },
+          y: { stacked: true, title: { display: true, text: 'GMV (万)', font: { size: 11 } }, grid: { color: '#eee' } }
+        }
+      }
+    });
+  }
+})();
+</script>

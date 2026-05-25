@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岐力职场 — 通时 × GMV 散点图</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #FAFAF8; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #chart { width: 900px; height: 500px; }
+</style>
+</head>
+<body>
+<div id="chart"></div>
+<script>
+(function () {
+  var chart = echarts.init(document.getElementById('chart'));
+
+  // 中位线
+  var medX = 115;
+  var medY = 595;
+
+  // 颜色
+  var olive = '#788C5D';
+  var danger = '#B04A4A';
+  var clay = '#D97757';
+
+  // 45 人数据: [通时, GMV, 件均, 姓名]
+  var raw = [
+    [167.2,1110,29443,'言莹'],[154.9,841,29003,'吴珍珍'],[147.9,971.6,28243,'徐锦'],
+    [159.8,814.2,29288,'邓清清'],[109.5,811.8,35760,'郑民'],[134.3,886.7,22002,'蔡子虎'],
+    [104,1030,34333,'彭科'],[151.2,639.7,26217,'刘莉莉'],[182.1,752.7,23972,'李佳'],
+    [141.8,855.8,25622,'黎鑫'],[134.6,782.1,25475,'颜樱'],[111.3,871.2,26480,'詹焱'],
+    [126.7,849.2,22171,'熊晨'],[125.5,815,24922,'刘强'],[110,691.1,23508,'钱凯平'],
+    [114.2,758.3,23049,'李文超'],[118.3,653.4,21853,'余学伟'],[143,613.5,24057,'龚梅'],
+    [122,743.7,23386,'黄素云'],[128.8,623.8,20385,'杨文婷'],[122,561.9,18983,'徐鸿宇'],
+    [174.1,597.3,20813,'胡帅'],[109.2,709,24965,'龚洋洋'],[99.2,729.2,21075,'陈家伟'],
+    [100.7,844.7,23929,'刘玉立'],[114.8,756.6,23280,'杨丹丹'],[119,287.5,20681,'罗干'],
+    [164.1,700.9,18691,'李勋凯'],[84.6,466.6,33565,'张爱飞'],[89,344.8,16186,'邹泽勇'],
+    [141.9,421.9,15014,'王诗琦'],[122.7,443.9,16320,'李博闻'],[106.6,409,22978,'程芬芬'],
+    [48.1,271.1,20850,'徐乐富'],[127.2,486.8,17385,'熊仕铭'],[87.5,594.7,20578,'罗来江'],
+    [135.9,443.9,14697,'张波'],[120.7,594.5,18126,'易慕康'],[108.8,549,17317,'吴文豪'],
+    [77.6,348.1,15968,'刘智帆'],[105.8,335.5,17383,'冯子豪'],[92,222.3,22915,'唐艳琴'],
+    [95,530.1,16260,'徐志雄'],[68.9,419.4,17404,'齐梦华'],[121.9,768.9,19467,'刘波波']
+  ];
+
+  // 件均取对数映射到半径 6~20
+  var minLog = Math.log(14697);
+  var maxLog = Math.log(35760);
+  function mapSize(avg) {
+    var t = (Math.log(avg) - minLog) / (maxLog - minLog);
+    return 6 + t * 14;
+  }
+
+  // 为每个点分配象限颜色
+  function pointColor(d) {
+    var x = d[0], y = d[1];
+    if (x >= medX && y >= medY) return olive;   // 高产高效
+    if (x < medX && y < medY) return danger;    // 低产低效
+    return clay;                                  // 中间
+  }
+
+  var top3Names = ['言莹', '徐锦', '彭科'];
+
+  var scatterData = raw.map(function (d) {
+    var isTop3 = top3Names.indexOf(d[3]) !== -1;
+    return {
+      value: [d[0], d[1], d[2]],
+      name: d[3],
+      symbolSize: mapSize(d[2]),
+      itemStyle: {
+        color: isTop3 ? pointColor(d) : pointColor(d),
+        opacity: isTop3 ? 0.95 : 0.55,
+        borderColor: isTop3 ? '#4F302D' : 'transparent',
+        borderWidth: isTop3 ? 1.5 : 0
+      },
+      label: {
+        show: isTop3,
+        formatter: d[3],
+        position: 'top',
+        distance: 6,
+        fontSize: 11,
+        fontWeight: 600,
+        color: '#4F302D',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }
+    };
+  });
+
+  var option = {
+    animation: false,
+    backgroundColor: 'transparent',
+    title: {
+      text: '出勤是最大的杠杆——通时越高，GMV越高',
+      subtext: '岐力职场参评坐席 日均通时 × GMV | 2026.05.14',
+      left: 'center',
+      top: 12,
+      textStyle: {
+        fontSize: 16,
+        fontWeight: 600,
+        color: '#4F302D',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      },
+      subtextStyle: {
+        fontSize: 11,
+        fontWeight: 400,
+        color: '#9CA3AF',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }
+    },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: '#FFFBF5',
+      borderColor: '#E8DDD4',
+      borderWidth: 1,
+      padding: [8, 12],
+      textStyle: {
+        fontSize: 12,
+        color: '#4F302D',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      },
+      formatter: function (p) {
+        return '<b>' + p.name + '</b><br/>'
+          + '日均通时：' + p.value[0] + ' min<br/>'
+          + '复贷GMV：' + p.value[1] + ' 万<br/>'
+          + '件均金额：' + p.value[2] + ' 元';
+      }
+    },
+    grid: {
+      left: 70,
+      right: 40,
+      top: 70,
+      bottom: 65,
+      containLabel: false
+    },
+    xAxis: {
+      type: 'value',
+      name: '日均有效通时（分钟）',
+      nameLocation: 'middle',
+      nameGap: 32,
+      nameTextStyle: {
+        fontSize: 11,
+        color: '#6B7280',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      },
+      min: 35,
+      max: 200,
+      axisLine: { lineStyle: { color: '#D1D5DB' } },
+      axisTick: { show: false },
+      splitLine: { show: false },
+      axisLabel: {
+        fontSize: 10,
+        color: '#9CA3AF',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '复贷GMV（万）',
+      nameLocation: 'middle',
+      nameGap: 48,
+      nameTextStyle: {
+        fontSize: 11,
+        color: '#6B7280',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      },
+      min: 100,
+      max: 1200,
+      axisLine: { lineStyle: { color: '#D1D5DB' } },
+      axisTick: { show: false },
+      splitLine: { lineStyle: { color: '#F3F4F6', type: 'dashed' } },
+      axisLabel: {
+        fontSize: 10,
+        color: '#9CA3AF',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }
+    },
+    graphic: [
+      // 右上：高产高效
+      {
+        type: 'rect',
+        shape: { x: 0, y: 0, width: 0, height: 0 },
+        left: 70, top: 70, // 需动态计算，改用 zr 绘制
+        invisible: true
+      }
+    ],
+    series: [{
+      type: 'scatter',
+      data: scatterData,
+      emphasis: {
+        itemStyle: {
+          opacity: 1,
+          borderColor: '#4F302D',
+          borderWidth: 2
+        }
+      },
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        animation: false,
+        lineStyle: {
+          color: '#A0A0A0',
+          type: 'dashed',
+          width: 1
+        },
+        label: {
+          fontSize: 10,
+          color: '#9CA3AF',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          padding: [2, 4],
+          backgroundColor: '#FAFAF5',
+          borderRadius: 2
+        },
+        data: [
+          {
+            yAxis: medY,
+            label: {
+              formatter: 'GMV中位 ' + medY + '万',
+              position: 'insideStartTop'
+            }
+          },
+          {
+            xAxis: medX,
+            label: {
+              formatter: '通时中位 ' + medX + 'min',
+              position: 'insideEndTop'
+            }
+          }
+        ]
+      },
+      markArea: {
+        silent: true,
+        animation: false,
+        data: [
+          // 右上：高产高效 — Olive
+          [{ xAxis: medX, yAxis: medY, itemStyle: { color: 'rgba(120,140,93,0.06)' } },
+           { xAxis: 200, yAxis: 1200 }],
+          // 左下：低产低效 — Danger
+          [{ xAxis: 35, yAxis: 100, itemStyle: { color: 'rgba(176,74,74,0.06)' } },
+           { xAxis: medX, yAxis: medY }],
+          // 左上：高产低效 — Clay
+          [{ xAxis: 35, yAxis: medY, itemStyle: { color: 'rgba(217,119,87,0.04)' } },
+           { xAxis: medX, yAxis: 1200 }],
+          // 右下：低产高效 — Clay
+          [{ xAxis: medX, yAxis: 100, itemStyle: { color: 'rgba(217,119,87,0.04)' } },
+           { xAxis: 200, yAxis: medY }]
+        ]
+      }
+    }]
+  };
+
+  // 象限标签用 graphic 叠加（ECharts 渲染后定位）
+  chart.setOption(option);
+
+  // 计算象限标签位置（基于 grid 像素坐标）
+  chart.on('rendered', function () {
+    // 只绑定一次
+    chart.off('rendered');
+  });
+
+  // 延迟追加象限标签
+  setTimeout(function () {
+    var gridRect = chart.getModel().getComponent('grid', 0).coordinateSystem;
+    // 用 convertToPixel 做坐标转换
+    var px = function (val) { return chart.convertToPixel('grid', [val, 0])[0]; };
+    var py = function (val) { return chart.convertToPixel('grid', [0, val])[1]; };
+
+    // 四象限标签位置
+    var labels = [
+      { text: '高产高效', x: (px(medX) + px(200)) / 2, y: (py(1200) + py(medY)) / 2 - 8, color: olive },
+      { text: '低产低效', x: (px(35) + px(medX)) / 2, y: (py(medY) + py(100)) / 2 + 8, color: danger },
+      { text: '高产低效', x: (px(35) + px(medX)) / 2, y: (py(1200) + py(medY)) / 2 - 8, color: clay },
+      { text: '低产高效', x: (px(medX) + px(200)) / 2, y: (py(medY) + py(100)) / 2 + 8, color: clay }
+    ];
+
+    chart.setOption({
+      graphic: labels.map(function (lb) {
+        return {
+          type: 'text',
+          left: lb.x,
+          top: lb.y,
+          style: {
+            text: lb.text,
+            fill: lb.color,
+            opacity: 0.5,
+            fontSize: 12,
+            fontWeight: 600,
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            textAlign: 'center',
+            textVerticalAlign: 'middle'
+          },
+          z: 1
+        };
+      })
+    });
+
+    // 脚注
+    var container = document.getElementById('chart');
+    var footnote = document.createElement('div');
+    footnote.style.cssText = 'text-align:center;font-size:10px;color:#D1D5DB;font-family:system-ui,-apple-system,sans-serif;margin-top:-4px;padding:0 70px;';
+    footnote.textContent = '数据来源：岐力职场参评坐席 2026.05.14 | 中位线：通时115min / GMV 595万';
+    container.parentNode.insertBefore(footnote, container.nextSibling);
+  }, 100);
+})();
+</script>
+</body>
+</html>

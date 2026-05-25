@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>供应商分级盘点 · Blue Professional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: oklch(0.975 0.012 85);
+      --primary: oklch(0.40 0.24 268);
+      --text: oklch(0.16 0.015 268);
+      --text-muted: oklch(0.46 0.01 268);
+      --text-light: oklch(0.63 0.008 268);
+      --accent-light: oklch(0.40 0.24 268 / 0.08);
+      --accent-medium: oklch(0.40 0.24 268 / 0.15);
+      --border: oklch(0.40 0.24 268 / 0.2);
+      --card-bg: oklch(0.40 0.24 268 / 0.04);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      font-family: 'Noto Sans SC', system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+    }
+
+    .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+    .slide {
+      position: absolute; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      display: flex; flex-direction: column;
+      padding: 3.5vw 4vw 8.5vh 4vw;
+      opacity: 0; pointer-events: none;
+      transform: translateX(40px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .slide.active { opacity: 1; pointer-events: all; transform: translateX(0); z-index: 10; }
+    .slide.prev { transform: translateX(-40px); }
+
+    h1, h2, h3, h4 { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(2.8rem, 5vw, 4.2rem); font-weight: 700; }
+    h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); margin-bottom: 1.5rem; }
+    h3 { font-size: clamp(1.1rem, 1.8vw, 1.5rem); font-weight: 500; line-height: 1.3; }
+    h4 { font-size: clamp(0.85rem, 1.2vw, 1rem); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); }
+    p, li { font-size: clamp(0.85rem, 1.1vw, 1.05rem); line-height: 1.6; color: var(--text-muted); }
+
+    .slide-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5vh; flex-shrink: 0; }
+    .slide-header h4 { margin: 0; }
+    .slide-header .tag { font-family: 'Noto Sans SC', system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; color: var(--primary); background: var(--accent-light); padding: 0.35rem 0.9rem; border-radius: 100px; }
+
+    .slide-content { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+
+    .nav-controls { position: fixed; bottom: 2.5vh; right: 3vw; display: flex; align-items: center; gap: 0.8rem; z-index: 100; }
+    .nav-btn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--bg); color: var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); font-size: 1.1rem; }
+    .nav-btn:hover { background: var(--primary); color: var(--bg); border-color: var(--primary); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .slide-counter { font-family: 'Noto Sans SC', system-ui, sans-serif; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); letter-spacing: 0.05em; position: fixed; bottom: 2.5vh; left: 3vw; z-index: 100; }
+    .progress-bar { position: fixed; bottom: 0; left: 0; height: 3px; background: var(--primary); transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); z-index: 100; }
+
+    .accent-line { width: 60px; height: 4px; background: var(--primary); border-radius: 2px; margin-bottom: 1.5rem; }
+    .accent-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; display: inline-block; }
+
+    /* COVER */
+    .layout-cover { justify-content: center; align-items: flex-start; padding-left: 8vw; }
+    .layout-cover h1 { max-width: 55vw; margin-bottom: 1.5rem; line-height: 1.05; }
+    .layout-cover .subtitle { font-size: clamp(1rem, 1.5vw, 1.25rem); color: var(--text-muted); max-width: 40vw; margin-bottom: 3rem; font-weight: 400; }
+    .layout-cover .meta { font-family: 'Noto Sans SC', system-ui, sans-serif; font-size: 0.8rem; color: var(--text-light); letter-spacing: 0.05em; }
+    .layout-cover .cover-decoration { position: absolute; top: 0; right: 0; width: 35vw; height: 100vh; background: var(--accent-light); clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%); }
+    .layout-cover .cover-dots { position: absolute; bottom: 12vh; right: 8vw; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; opacity: 0.25; }
+    .layout-cover .cover-dots .dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+
+    /* AGENDA */
+    .layout-agenda .agenda-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 1rem 3rem; margin-top: 1rem; flex: 1; min-height: 0; }
+    .agenda-item { display: flex; gap: 1.2rem; align-items: center; padding: 1rem 1.2rem; border-radius: 12px; transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1); border-bottom: 1px solid var(--border); }
+    .agenda-item:hover { background: var(--card-bg); }
+    .agenda-num { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--primary); line-height: 1; min-width: 36px; }
+    .agenda-item h3 { margin-bottom: 0.3rem; font-size: clamp(1rem, 1.4vw, 1.2rem); }
+    .agenda-item p { font-size: clamp(0.8rem, 1vw, 0.95rem); line-height: 1.5; }
+
+    /* METRICS (3 cards) */
+    .layout-metrics .slide-content { justify-content: flex-start; }
+    .layout-metrics .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 0.5rem; align-items: stretch; }
+    .metric-card { display: flex; flex-direction: column; gap: 0.7rem; padding: 1.5rem 1.6rem; border-radius: 14px; border: 1.5px solid var(--border); background: var(--card-bg); }
+    .metric-card .metric-value { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: clamp(2.2rem, 3.4vw, 3rem); font-weight: 700; color: var(--primary); line-height: 1; }
+    .metric-card .metric-label { font-size: clamp(0.95rem, 1.3vw, 1.1rem); font-weight: 600; color: var(--text); line-height: 1.3; }
+    .metric-card .metric-desc { font-size: clamp(0.78rem, 0.95vw, 0.9rem); color: var(--text-muted); line-height: 1.5; }
+    .metric-card .metric-supports { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; margin: 0; padding: 0.7rem 0 0; border-top: 1px solid var(--border); }
+    .metric-card .metric-supports li { font-size: clamp(0.75rem, 0.9vw, 0.85rem); color: var(--text-muted); padding-left: 1rem; position: relative; line-height: 1.45; }
+    .metric-card .metric-supports li::before { content: '—'; position: absolute; left: 0; color: var(--text-light); }
+
+    /* DASHBOARD (6 stat grid) */
+    .layout-dashboard .slide-content { justify-content: flex-start; }
+    .layout-dashboard .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-top: 0.5rem; }
+    .stat-cell { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.4rem 1.5rem; border-radius: 12px; background: var(--card-bg); border: 1px solid var(--border); }
+    .stat-cell .stat-top { display: flex; align-items: baseline; gap: 0.5rem; }
+    .stat-cell .stat-num { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: clamp(1.6rem, 2.4vw, 2.1rem); font-weight: 700; color: var(--primary); line-height: 1; }
+    .stat-cell .stat-unit { font-size: 0.8rem; color: var(--text-light); font-weight: 500; }
+    .stat-cell .stat-name { font-size: clamp(0.85rem, 1vw, 0.95rem); color: var(--text); line-height: 1.35; font-weight: 500; }
+    .stat-cell .stat-context { font-size: 0.75rem; color: var(--text-light); line-height: 1.4; padding-top: 0.4rem; border-top: 1px solid var(--border); }
+
+    /* SPLIT (two column) */
+    .layout-split .slide-content { justify-content: flex-start; }
+    .layout-split .split-body { display: grid; grid-template-columns: 1.05fr 1fr; gap: 3.5rem; margin-top: 0.5rem; }
+    .split-left, .split-right { display: flex; flex-direction: column; gap: 1.4rem; }
+    .split-right { padding-left: 2.5rem; border-left: 2px solid var(--border); }
+    .insight-list { list-style: none; display: flex; flex-direction: column; gap: 1.1rem; margin: 0; counter-reset: insight; }
+    .insight-list li { position: relative; padding-left: 2.6rem; font-size: clamp(0.88rem, 1.05vw, 1rem); color: var(--text); line-height: 1.55; counter-increment: insight; }
+    .insight-list li::before { content: counter(insight, decimal-leading-zero); position: absolute; left: 0; top: 0; font-family: 'Noto Sans SC', system-ui, sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--primary); letter-spacing: 0.05em; line-height: 1.7; }
+    .split-highlight { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: clamp(1.15rem, 1.55vw, 1.5rem); font-weight: 500; color: var(--text); line-height: 1.4; padding: 1.3rem 1.5rem; background: var(--accent-light); border-radius: 12px; }
+    .split-highlight cite { display: block; margin-top: 0.7rem; font-style: normal; font-size: 0.78rem; font-weight: 500; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+    .mini-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; padding-top: 0.4rem; }
+    .mini-stat { padding: 0.9rem 1rem; border-radius: 10px; background: var(--card-bg); border: 1px solid var(--border); }
+    .mini-stat .mini-val { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--primary); line-height: 1; }
+    .mini-stat .mini-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.4rem; line-height: 1.35; }
+
+    /* BAR RANKING */
+    .layout-bars .bars-container { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0.8rem; margin-top: 0.5rem; }
+    .bar-item { display: grid; grid-template-columns: minmax(180px, 30%) 1fr auto; align-items: center; gap: 1rem; padding: 0.6rem 0; }
+    .bar-label { font-size: clamp(0.8rem, 1.1vw, 1rem); color: var(--text); font-weight: 500; }
+    .bar-track { height: 28px; background: var(--accent-light); border-radius: 6px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; background: var(--primary); border-radius: 6px; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    .bar-pct { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--primary); min-width: 45px; text-align: right; }
+
+    /* QUOTE */
+    .layout-quote { justify-content: center; align-items: center; text-align: center; }
+    .layout-quote .quote-mark { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: 8rem; font-weight: 700; color: var(--primary); opacity: 0.15; line-height: 0.5; margin-bottom: 1rem; }
+    .layout-quote blockquote { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: clamp(1.6rem, 2.8vw, 2.4rem); font-weight: 500; line-height: 1.35; color: var(--text); max-width: 65vw; margin-bottom: 2rem; }
+    .layout-quote .quote-source { font-size: clamp(0.85rem, 1.1vw, 1rem); color: var(--text-muted); }
+    .layout-quote .quote-source strong { color: var(--text); font-weight: 600; }
+    .layout-quote .quote-decoration { position: absolute; top: 10vh; left: 5vw; width: 80px; height: 80px; border: 2px solid var(--border); border-radius: 50%; }
+    .layout-quote .quote-decoration-2 { position: absolute; bottom: 12vh; right: 6vw; width: 60px; height: 60px; background: var(--accent-light); border-radius: 50%; }
+
+    /* TIMELINE */
+    .layout-timeline .timeline-track { display: flex; gap: 1.5rem; flex: 1; align-items: center; justify-content: center; margin-top: 0.5rem; }
+    .timeline-step { flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+    .timeline-step:not(:last-child)::after { content: ''; position: absolute; top: 28px; right: -0.75rem; width: 1.5rem; height: 2px; background: var(--border); }
+    .step-circle { width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: var(--bg); display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.2rem; flex-shrink: 0; }
+    .timeline-step:nth-child(2) .step-circle { opacity: 0.85; }
+    .timeline-step:nth-child(3) .step-circle { opacity: 0.7; }
+    .timeline-step:nth-child(4) .step-circle { opacity: 0.55; }
+    .step-title { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: clamp(0.95rem, 1.4vw, 1.15rem); font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+    .step-desc { font-size: clamp(0.75rem, 1vw, 0.9rem); color: var(--text-muted); line-height: 1.5; max-width: 220px; }
+
+    /* DETAIL (analysis blocks) */
+    .layout-detail .detail-body { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem 3rem; flex: 1; margin-top: 0.5rem; overflow: hidden; }
+    .detail-col { display: flex; flex-direction: column; gap: 1.2rem; }
+    .detail-block { padding: 1rem 1.2rem; border-radius: 10px; background: var(--card-bg); border: 1px solid var(--border); }
+    .detail-block h3 { font-size: clamp(0.95rem, 1.3vw, 1.1rem); margin-bottom: 0.6rem; color: var(--text); }
+    .detail-block ul { list-style: none; margin: 0; padding: 0; }
+    .detail-block ul li { position: relative; padding-left: 1.1rem; padding-bottom: 0.4rem; font-size: clamp(0.78rem, 1vw, 0.9rem); line-height: 1.5; }
+    .detail-block ul li::before { content: ''; position: absolute; left: 0; top: 0.55rem; width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
+    .detail-block ul li:last-child { padding-bottom: 0; }
+
+    /* MATRIX */
+    .layout-matrix .slide-content { justify-content: center; }
+    .matrix-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 1px; flex: 1; margin-top: 0.5rem; border: 2px solid var(--primary); border-radius: 12px; overflow: hidden; background: var(--border); }
+    .matrix-cell { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 0.4rem; padding: 1rem; background: var(--bg); }
+    .matrix-cell .cell-label { font-family: 'Noto Sans SC', system-ui, sans-serif; font-size: clamp(0.75rem, 0.9vw, 0.85rem); font-weight: 700; color: var(--primary); letter-spacing: 0.04em; text-transform: uppercase; }
+    .matrix-cell .cell-title { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: clamp(1rem, 1.3vw, 1.2rem); font-weight: 600; color: var(--text); line-height: 1.2; }
+    .matrix-cell .cell-desc { font-size: clamp(0.68rem, 0.8vw, 0.78rem); color: var(--text-muted); line-height: 1.4; max-width: 90%; }
+    .matrix-cell.blue-bg { background: var(--primary); }
+    .matrix-cell.blue-bg .cell-label { color: var(--bg); }
+    .matrix-cell.blue-bg .cell-title { color: var(--bg); }
+    .matrix-cell.blue-bg .cell-desc { color: var(--bg); opacity: 0.8; }
+    .matrix-cell.blue-tint { background: var(--accent-medium); }
+    .matrix-header { font-family: 'Noto Sans SC', system-ui, sans-serif; display: flex; justify-content: space-around; padding: 0 0 0.8rem 0; font-size: clamp(0.75rem, 0.9vw, 0.85rem); font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* PROCESS */
+    .layout-process .slide-content { justify-content: center; }
+    .process-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-top: 1rem; }
+    .process-card { display: flex; flex-direction: column; gap: 0.8rem; padding: 1.6rem 1.2rem; border-radius: 14px; background: var(--card-bg); border: 1.5px solid var(--border); position: relative; }
+    .process-card:not(:last-child)::after { content: ''; position: absolute; top: 50%; right: -0.8rem; width: 0.6rem; height: 0.6rem; border-top: 2px solid var(--text-light); border-right: 2px solid var(--text-light); transform: translateY(-50%) rotate(45deg); }
+    .process-num { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: 0.7rem; font-weight: 700; color: var(--bg); background: var(--primary); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .process-card h3 { font-family: 'Noto Serif SC', 'Noto Sans SC', sans-serif; font-size: clamp(0.95rem, 1.2vw, 1.1rem); font-weight: 600; color: var(--text); }
+    .process-card ul { list-style: none; margin: 0; padding: 0; }
+    .process-card ul li { position: relative; padding-left: 0.9rem; padding-bottom: 0.35rem; font-size: clamp(0.7rem, 0.8vw, 0.78rem); line-height: 1.45; }
+    .process-card ul li::before { content: ''; position: absolute; left: 0; top: 0.45rem; width: 4px; height: 4px; border-radius: 50%; background: var(--primary); opacity: 0.6; }
+    .process-card ul li:last-child { padding-bottom: 0; }
+
+    /* CLOSING */
+    .layout-closing { justify-content: center; align-items: center; text-align: center; }
+    .layout-closing h1 { margin-bottom: 1rem; }
+    .layout-closing .closing-sub { font-size: clamp(1rem, 1.5vw, 1.3rem); color: var(--text-muted); max-width: 45vw; margin-bottom: 2.5rem; }
+    .layout-closing .closing-contact { margin-top: 3rem; font-size: 0.85rem; color: var(--text-light); }
+    .layout-closing .closing-decoration { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; border: 1px solid var(--border); border-radius: 50%; opacity: 0.4; pointer-events: none; }
+    .layout-closing .closing-decoration-2 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 360px; border: 1px solid var(--border); border-radius: 50%; opacity: 0.3; pointer-events: none; }
+
+    .keyboard-hint { position: fixed; bottom: 2.5vh; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-light); z-index: 100; opacity: 0.6; }
+
+    @media (max-height: 700px) {
+      .slide { padding: 2.5vh 3vw; }
+      .layout-agenda .agenda-grid { gap: 0.8rem 2rem; }
+      .agenda-item { padding: 0.8rem; }
+      .metric-card { padding: 1rem; }
+      .bar-item { padding: 0.4rem 0; }
+      .detail-block { padding: 0.8rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide layout-cover active">
+    <div class="cover-decoration"></div>
+    <div class="cover-dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <div class="accent-line"></div>
+    <h1>供应商分级盘点</h1>
+    <p class="subtitle">九宫格三维评估（业绩+合规+潜力）— 对 30+ 供应商进行系统分级，<br>输出保留/培养/优化三张清单，为资源分配提供决策依据。</p>
+    <p class="meta">Q2 2026 &nbsp;&middot;&nbsp; 自我学习 &nbsp;&middot;&nbsp; 年老师</p>
+  </div>
+
+  <!-- SLIDE 2: AGENDA -->
+  <div class="slide layout-agenda">
+    <div class="slide-header">
+      <h4>目录</h4>
+      <span class="tag">概览</span>
+    </div>
+    <div class="slide-content">
+      <div class="accent-line"></div>
+      <div class="agenda-grid">
+        <div class="agenda-item">
+          <span class="agenda-num">01</span>
+          <div>
+            <h3>项目背景与目标</h3>
+            <p>为什么要做分级、要达成什么</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="agenda-num">02</span>
+          <div>
+            <h3>现状分析</h3>
+            <p>30+ 供应商格局、现存问题</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="agenda-num">03</span>
+          <div>
+            <h3>实施路径</h3>
+            <p>四步走：数据收集→九宫格→三清单→汇报</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="agenda-num">04</span>
+          <div>
+            <h3>九宫格映射</h3>
+            <p>三维评估 × 九宫格定位</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="agenda-num">05</span>
+          <div>
+            <h3>三张管理清单</h3>
+            <p>保留/培养/优化分类与对应策略</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="agenda-num">06</span>
+          <div>
+            <h3>里程碑与风险</h3>
+            <p>时间线、量化指标、风险应对</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: 项目背景与目标 (SPLIT) -->
+  <div class="slide layout-split">
+    <div class="slide-header">
+      <h4>项目背景与目标</h4>
+      <span class="tag">Overview</span>
+    </div>
+    <div class="slide-content">
+      <h2>为什么要做供应商分级？</h2>
+      <div class="split-body">
+        <div class="split-left">
+          <ul class="insight-list">
+            <li>30+ 供应商覆盖金条、企金、信用卡、财富四条产线，管理复杂度持续上升</li>
+            <li>头部 6 家（毅航、毛毛虫、伽玛等）贡献绝大部分产能，但缺乏系统性的分级评估机制</li>
+            <li>目前分级多凭经验和直觉，没有正式的"三张清单"（保留/培养/优化）</li>
+            <li>赛马机制有相对排名，但只看业绩一个维度</li>
+          </ul>
+        </div>
+        <div class="split-right">
+          <div class="split-highlight">
+            对 30+ 供应商进行三维评估，输出分级清单，为后续资源分配、培养优化、淘汰清退提供决策依据。
+            <cite>项目核心目标</cite>
+          </div>
+          <div class="mini-stat-row">
+            <div class="mini-stat">
+              <div class="mini-val">30+</div>
+              <div class="mini-label">供应商总数</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-val">4</div>
+              <div class="mini-label">业务产线</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-val">6</div>
+              <div class="mini-label">头部供应商</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: 三元评估框架 (METRICS) -->
+  <div class="slide layout-metrics">
+    <div class="slide-header">
+      <h4>评估框架</h4>
+      <span class="tag">三维评估</span>
+    </div>
+    <div class="slide-content">
+      <h2>三维评估指标体系</h2>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-value">40%</div>
+          <div class="metric-label">业绩维度</div>
+          <div class="metric-desc">衡量供应商实际产出能力和交付水平</div>
+          <ul class="metric-supports">
+            <li>目标达成率 — 月度/季度 KPI 完成情况</li>
+            <li>产能规模 — 坐席数、承接量、人均产能</li>
+            <li>转化率 — 营销/催收/服务转化效率</li>
+          </ul>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">30%</div>
+          <div class="metric-label">合规维度</div>
+          <div class="metric-desc">评估供应商运营规范性和风险控制水平</div>
+          <ul class="metric-supports">
+            <li>质检合格率 — 录音/工单抽检通过率</li>
+            <li>投诉率 — 客户投诉及升级事件</li>
+            <li>违规次数 — 制度违规、信息安全事件</li>
+          </ul>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">30%</div>
+          <div class="metric-label">潜力维度</div>
+          <div class="metric-desc">判断供应商成长性和战略匹配度</div>
+          <ul class="metric-supports">
+            <li>规模扩张能力 — 快速扩缩容响应</li>
+            <li>技术能力 — 系统对接、数据安全</li>
+            <li>配合度与战略意义 — 积极响应、长期绑定意愿</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: 实施路径 (TIMELINE) -->
+  <div class="slide layout-timeline">
+    <div class="slide-header">
+      <h4>实施路径</h4>
+      <span class="tag">四步走</span>
+    </div>
+    <div class="slide-content">
+      <h2>从数据到决策 — 四步实施路径</h2>
+      <div class="timeline-track">
+        <div class="timeline-step">
+          <div class="step-circle">1</div>
+          <div class="step-title">数据收集</div>
+          <div class="step-desc">统一 Excel 模板采集 30+ 供应商的三维指标数据，覆盖 10 个核心评估列</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">2</div>
+          <div class="step-title">九宫格映射</div>
+          <div class="step-desc">业绩得分（纵轴）× 潜力得分（横轴），各按高中低三分位切分，每家供应商落入对应格</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">3</div>
+          <div class="step-title">输出三清单</div>
+          <div class="step-desc">保留清单（头部6-10家）+ 培养清单（腰部12-15家）+ 优化清单（尾部5-8家）</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">4</div>
+          <div class="step-title">汇报共识</div>
+          <div class="step-desc">向易人汇报确认，视情况向军哥汇报整体格局，纳入日常管理决策参考</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 九宫格定义 (MATRIX) -->
+  <div class="slide layout-matrix">
+    <div class="slide-header">
+      <h4>九宫格映射</h4>
+      <span class="tag">核心框架</span>
+    </div>
+    <div class="slide-content">
+      <div style="display: flex; align-items: flex-end; gap: 1.5rem; margin-bottom: 0.3rem;">
+        <h2 style="margin-bottom: 0;">九宫格定位矩阵</h2>
+        <span style="font-size: clamp(0.75rem, 0.9vw, 0.85rem); color: var(--text-muted);">横轴：潜力得分 &nbsp;·&nbsp; 纵轴：业绩+合规得分</span>
+      </div>
+      <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.8rem; flex: 1; margin-top: 0.3rem;">
+        <!-- Y-axis label -->
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 0; writing-mode: vertical-lr; text-orientation: mixed; font-family: 'Noto Sans SC', system-ui, sans-serif; font-size: clamp(0.7rem, 0.85vw, 0.8rem); font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding-right: 0.3rem;">
+          <span>业绩</span>
+          <span style="margin-top: 0.3rem;">▼</span>
+        </div>
+        <!-- Grid + top header -->
+        <div>
+          <!-- Column headers -->
+          <div class="matrix-header">
+            <span></span>
+            <span>低潜力</span>
+            <span>中潜力</span>
+            <span>高潜力</span>
+          </div>
+          <!-- Rows -->
+          <div class="matrix-grid">
+            <!-- Row 1: 高业绩 -->
+            <div style="position: relative; display: contents;">
+              <div class="matrix-cell blue-bg">
+                <span class="cell-label">高业绩</span>
+                <span class="cell-title">现金牛</span>
+                <span class="cell-desc">维持策略 · 稳定输出</span>
+              </div>
+              <div class="matrix-cell blue-bg">
+                <span class="cell-label"></span>
+                <span class="cell-title">成长星</span>
+                <span class="cell-desc">投入策略 · 加速成长</span>
+              </div>
+              <div class="matrix-cell blue-bg">
+                <span class="cell-label"></span>
+                <span class="cell-title">明星</span>
+                <span class="cell-desc">重点投入 · 深度绑定</span>
+              </div>
+            </div>
+            <!-- Row 2: 中业绩 -->
+            <div style="position: relative; display: contents;">
+              <div class="matrix-cell blue-tint">
+                <span class="cell-label">中业绩</span>
+                <span class="cell-title">观察区</span>
+                <span class="cell-desc">关注策略 · 密切跟踪</span>
+              </div>
+              <div class="matrix-cell">
+                <span class="cell-label"></span>
+                <span class="cell-title">中坚</span>
+                <span class="cell-desc">培养策略 · 提升能力</span>
+              </div>
+              <div class="matrix-cell blue-tint">
+                <span class="cell-label"></span>
+                <span class="cell-title">潜力股</span>
+                <span class="cell-desc">倾斜资源 · 重点孵化</span>
+              </div>
+            </div>
+            <!-- Row 3: 低业绩 -->
+            <div style="position: relative; display: contents;">
+              <div class="matrix-cell">
+                <span class="cell-label">低业绩</span>
+                <span class="cell-title">淘汰区</span>
+                <span class="cell-desc">优化策略 · 准备清退</span>
+              </div>
+              <div class="matrix-cell blue-tint">
+                <span class="cell-label"></span>
+                <span class="cell-title">待改进</span>
+                <span class="cell-desc">辅导策略 · 限期提升</span>
+              </div>
+              <div class="matrix-cell">
+                <span class="cell-label"></span>
+                <span class="cell-title">问题星</span>
+                <span class="cell-desc">诊断策略 · 原因排查</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 三张清单 (SPLIT) -->
+  <div class="slide layout-split">
+    <div class="slide-header">
+      <h4>三张管理清单</h4>
+      <span class="tag">分类策略</span>
+    </div>
+    <div class="slide-content">
+      <h2>保留 · 培养 · 优化</h2>
+      <div class="split-body">
+        <div class="split-left">
+          <div class="split-highlight" style="background: oklch(0.55 0.10 160 / 0.12);">
+            保留清单（头部）· 6-10 家
+            <cite>明星 + 成长星 + 现金牛</cite>
+          </div>
+          <ul class="insight-list">
+            <li>资源倾斜、优先分配、深度绑定</li>
+            <li>建立长期战略合作关系</li>
+            <li>季度复盘，确保头部稳定性</li>
+          </ul>
+        </div>
+        <div class="split-right">
+          <div class="split-highlight" style="background: oklch(0.72 0.08 90 / 0.15); margin-bottom: 1rem;">
+            培养清单（腰部）· 12-15 家
+            <cite>中坚 + 潜力股 + 观察区</cite>
+          </div>
+          <p style="font-size: clamp(0.85rem, 1vw, 0.95rem); color: var(--text-muted); line-height: 1.5;">针对性辅导、明确提升方向、季度跟踪，目标 Q2 末 ≥1 家进入头部</p>
+          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+            <div class="split-highlight" style="background: oklch(0.55 0.14 30 / 0.12);">
+              优化清单（尾部）· 5-8 家
+              <cite>淘汰区 + 待改进 + 问题星</cite>
+            </div>
+            <p style="font-size: clamp(0.85rem, 1vw, 0.95rem); color: var(--text-muted); line-height: 1.5; margin-top: 0.8rem;">限期整改、减少份额、准备替代供应商</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 里程碑 (TIMELINE) -->
+  <div class="slide layout-timeline">
+    <div class="slide-header">
+      <h4>里程碑</h4>
+      <span class="tag">时间线</span>
+    </div>
+    <div class="slide-content">
+      <h2>三周交付路线</h2>
+      <div class="timeline-track">
+        <div class="timeline-step">
+          <div class="step-circle">1</div>
+          <div class="step-title">第 1 周</div>
+          <div class="step-desc"><strong>数据收集</strong><br>30+ 供应商评估表填写完毕，三维指标数据对齐</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">2</div>
+          <div class="step-title">第 2 周</div>
+          <div class="step-desc"><strong>九宫格 + 三清单</strong><br>每家供应商有明确位置，保留/培养/优化清单确认</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">3</div>
+          <div class="step-title">第 3 周</div>
+          <div class="step-desc"><strong>汇报共识</strong><br>向易人汇报确认分级结果，纳入日常管理参考</div>
+        </div>
+        <div class="timeline-step">
+          <div class="step-circle">4</div>
+          <div class="step-title">持续跟踪</div>
+          <div class="step-desc"><strong>动态调整</strong><br>分级季度更新，腰部转化率 ≥1 家/Q</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: 量化指标 (DASHBOARD) -->
+  <div class="slide layout-dashboard">
+    <div class="slide-header">
+      <h4>量化指标</h4>
+      <span class="tag">KPI</span>
+    </div>
+    <div class="slide-content">
+      <h2>关键衡量指标</h2>
+      <div class="stats-grid">
+        <div class="stat-cell">
+          <div class="stat-top">
+            <span class="stat-num">100%</span>
+            <span class="stat-unit">目标值</span>
+          </div>
+          <div class="stat-name">评估覆盖率</div>
+          <div class="stat-context">完成评估供应商数 / 总供应商数</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-top">
+            <span class="stat-num">基线</span>
+            <span class="stat-unit"></span>
+          </div>
+          <div class="stat-name">头部产能占比</div>
+          <div class="stat-context">头部供应商产能 / 总产能 · 当前未知，首次建立基线</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-top">
+            <span class="stat-num">≥1</span>
+            <span class="stat-unit">家 / Q</span>
+          </div>
+          <div class="stat-name">腰部转化率</div>
+          <div class="stat-context">季度内从腰部进入头部的供应商数量</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-top">
+            <span class="stat-num">动态</span>
+            <span class="stat-unit"></span>
+          </div>
+          <div class="stat-name">尾部淘汰率</div>
+          <div class="stat-context">季度内从优化清单清退的供应商数 · 根据业务实际</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-top">
+            <span class="stat-num">季度</span>
+            <span class="stat-unit">调整</span>
+          </div>
+          <div class="stat-name">分级动态更新</div>
+          <div class="stat-context">分级是动态管理工具，每季度重新评估调整</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-top">
+            <span class="stat-num">进步榜</span>
+            <span class="stat-unit">激励</span>
+          </div>
+          <div class="stat-name">正面激励</div>
+          <div class="stat-context">每次公布进步榜，保持腰部供应商积极性</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: 风险与应对 (DETAIL) -->
+  <div class="slide layout-detail">
+    <div class="slide-header">
+      <h4>风险与应对</h4>
+      <span class="tag">风险管理</span>
+    </div>
+    <div class="slide-content">
+      <h2>主要风险与应对措施</h2>
+      <div class="detail-body">
+        <div class="detail-col">
+          <div class="detail-block">
+            <h3>数据不全，部分供应商缺关键指标</h3>
+            <ul>
+              <li>先用已有数据做粗略分级，标注"待完善"</li>
+              <li>后续逐步补充，第一期允许不完全精确</li>
+            </ul>
+          </div>
+          <div class="detail-block">
+            <h3>供应商对分级结果有异议</h3>
+            <ul>
+              <li>分级是内部管理工具，不对外公布具体排名</li>
+              <li>只告知供应商"提升方向"，不暴露具体位置</li>
+            </ul>
+          </div>
+        </div>
+        <div class="detail-col">
+          <div class="detail-block">
+            <h3>分级变成"贴标签"，腰部供应商失去积极性</h3>
+            <ul>
+              <li>强调分级是动态的，季度调整</li>
+              <li>每次公布"进步榜"，鼓励向上跃迁</li>
+            </ul>
+          </div>
+          <div class="detail-block">
+            <h3>精力集中在分级本身，后续动作跟不上</h3>
+            <ul>
+              <li>分级只是起点，重点是三张清单对应的后续动作</li>
+              <li>明确每家的提升计划和跟踪机制</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: 实施要点 (PROCESS) -->
+  <div class="slide layout-process">
+    <div class="slide-header">
+      <h4>实施要点</h4>
+      <span class="tag">操作指南</span>
+    </div>
+    <div class="slide-content">
+      <h2>四步实施操作要点</h2>
+      <div class="process-row">
+        <div class="process-card">
+          <div class="process-num">1</div>
+          <h3>数据采集</h3>
+          <ul>
+            <li>统一 Excel 模板，每家供应商一行</li>
+            <li>10 个指标列，覆盖业绩/合规/潜力三维</li>
+            <li>来源：业务系统 + 质检培训 + 评估访谈</li>
+          </ul>
+        </div>
+        <div class="process-card">
+          <div class="process-num">2</div>
+          <h3>九宫格操作</h3>
+          <ul>
+            <li>横轴：业绩40% + 合规30%</li>
+            <li>纵轴：潜力得分 = 30% 权重</li>
+            <li>各按高中低三分位切分</li>
+          </ul>
+        </div>
+        <div class="process-card">
+          <div class="process-num">3</div>
+          <h3>清单管理</h3>
+          <ul>
+            <li>头部：资源倾斜、深度绑定</li>
+            <li>腰部：辅导跟踪、设立进步榜</li>
+            <li>尾部：限期整改、准备替代</li>
+          </ul>
+        </div>
+        <div class="process-card">
+          <div class="process-num">4</div>
+          <h3>汇报路径</h3>
+          <ul>
+            <li>先向易人汇报确认分类</li>
+            <li>视情况向军哥汇报格局</li>
+            <li>纳入日常管理决策参考</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: CLOSING -->
+  <div class="slide layout-closing">
+    <div class="closing-decoration"></div>
+    <div class="closing-decoration-2"></div>
+    <div class="accent-line" style="margin: 0 auto 1.5rem;"></div>
+    <h1>供应商分级盘点</h1>
+    <p class="closing-sub">分级是起点，后续动作才是关键。<br>三张清单驱动管理决策，季度动态跟踪调整。</p>
+    <p class="closing-contact">年老师 &nbsp;&middot;&nbsp; 自我学习 &nbsp;&middot;&nbsp; Q2 2026</p>
+  </div>
+
+</div>
+
+<div class="slide-counter"><span id="current">1</span> / <span id="total">12</span></div>
+<div class="keyboard-hint">← → 方向键切换</div>
+<div class="progress-bar" id="progress"></div>
+<div class="nav-controls">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)" aria-label="上一页">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+  </button>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)" aria-label="下一页">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+  </button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const currentEl = document.getElementById('current');
+  const totalEl = document.getElementById('total');
+  const progressEl = document.getElementById('progress');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+  const total = slides.length;
+  totalEl.textContent = total;
+
+  function updateSlide() {
+    slides.forEach((slide, i) => {
+      slide.classList.remove('active', 'prev');
+      if (i === current) { slide.classList.add('active'); }
+      else if (i < current) { slide.classList.add('prev'); }
+    });
+    currentEl.textContent = current + 1;
+    progressEl.style.width = ((current + 1) / total * 100) + '%';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < total) { current = next; updateSlide(); }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); changeSlide(1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); changeSlide(-1); }
+    else if (e.key === 'Home') { e.preventDefault(); current = 0; updateSlide(); }
+    else if (e.key === 'End') { e.preventDefault(); current = total - 1; updateSlide(); }
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+  }, { passive: true });
+
+  updateSlide();
+</script>
+
+</body>
+</html>

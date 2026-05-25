@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>伽玛职场人力与流失诊断</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --clay-800: #4F302D;
+    --clay-500: #D97757;
+    --clay-100: #E3DACC;
+    --clay-50: #F7F6F1;
+    --gray-500: #87867F;
+    --gray-300: #ACA9A2;
+    --gray-100: #F0EEE6;
+    --danger-500: #B04A4A;
+    --danger-100: #EDC8C8;
+    --olive-500: #788C5D;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: var(--clay-50);
+    color: var(--clay-800);
+    padding: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .report-header {
+    text-align: center;
+    padding: 32px 0 24px;
+    border-bottom: 1px solid var(--clay-100);
+    margin-bottom: 32px;
+  }
+  .report-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--clay-800);
+    margin-bottom: 8px;
+  }
+  .report-header .subtitle {
+    font-size: 12px;
+    color: var(--gray-500);
+    font-weight: 400;
+  }
+  .big-idea {
+    background: #fff;
+    border: 1px solid var(--clay-100);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--clay-800);
+  }
+  .big-idea strong {
+    color: var(--danger-500);
+  }
+  .section {
+    margin-bottom: 28px;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--clay-800);
+    margin-bottom: 16px;
+    padding-left: 10px;
+    border-left: 3px solid var(--clay-500);
+  }
+  .chart-card {
+    background: #fff;
+    border: 1px solid var(--clay-100);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .chart-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--clay-800);
+    margin-bottom: 4px;
+  }
+  .chart-subtitle {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-bottom: 14px;
+  }
+  .chart-container {
+    width: 100%;
+    height: 320px;
+  }
+  .chart-container.tall {
+    height: 400px;
+  }
+  .chart-container.short {
+    height: 260px;
+  }
+  .chart-footnote {
+    font-size: 10px;
+    color: var(--gray-300);
+    margin-top: 10px;
+  }
+  .kpi-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .kpi-card {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--clay-100);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  .kpi-value {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .kpi-value.danger { color: var(--danger-500); }
+  .kpi-value.primary { color: var(--clay-800); }
+  .kpi-value.muted { color: var(--gray-500); }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--gray-500);
+  }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .summary-box {
+    background: #fff;
+    border: 1px solid var(--clay-100);
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 32px;
+  }
+  .summary-box h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--clay-800);
+    margin-bottom: 12px;
+    padding-left: 10px;
+    border-left: 3px solid var(--clay-500);
+  }
+  .summary-box p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--clay-800);
+  }
+  .limitation-box {
+    background: var(--clay-50);
+    border: 1px solid var(--clay-100);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .limitation-box h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-500);
+    margin-bottom: 8px;
+  }
+  .limitation-box ul {
+    list-style: none;
+    padding: 0;
+  }
+  .limitation-box li {
+    font-size: 11px;
+    color: var(--gray-500);
+    line-height: 1.7;
+    padding-left: 12px;
+    position: relative;
+  }
+  .limitation-box li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gray-300);
+  }
+</style>
+</head>
+<body>
+
+<div class="report-header">
+  <h1>伽玛职场人力与流失诊断</h1>
+  <div class="subtitle">数据截至 2026-05-12 | 在职判定：5月12日有外呼记录 | 数据源：金条业务外呼系统</div>
+</div>
+
+<div class="big-idea">
+  伽玛的漏桶在新兵：3-4月招入150人流失44%，老员工底盘稳健（>75%留存）。不修新兵留存，扩招就是浪费。
+</div>
+
+<!-- 第一幕：铺垫 -->
+<div class="section">
+  <div class="section-title">第一幕：现状全景</div>
+
+  <!-- 图 1: KPI 大数字 -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-value primary">216</div>
+      <div class="kpi-label">在职人数</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value danger">127</div>
+      <div class="kpi-label">已离开</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value danger">37%</div>
+      <div class="kpi-label">整体流失率</div>
+    </div>
+  </div>
+
+  <!-- 图 1b: 按坐席类型拆分 -->
+  <div class="chart-card">
+    <div class="chart-title">首贷与复贷的在职 / 流失对比</div>
+    <div class="chart-subtitle">首贷流失率 43%，复贷流失率 34%</div>
+    <div id="chart1" class="chart-container short"></div>
+    <div class="chart-footnote">数据口径：以 5月12日有外呼判定在职，343人总盘中1人无外呼记录</div>
+  </div>
+
+  <!-- 图 2: 入职时间线 -->
+  <div class="chart-card">
+    <div class="chart-title">老员工底盘稳健，4 月新兵留存率仅 47%</div>
+    <div class="chart-subtitle">逐月入职人数与截至5月12日的留存率</div>
+    <div id="chart2" class="chart-container tall"></div>
+    <div class="chart-footnote">留存率 = 5月12日在职人数 / 该月入职人数 | 2025.10前入职的老员工留存率 >75%</div>
+  </div>
+</div>
+
+<!-- 第二幕：冲突 -->
+<div class="section">
+  <div class="section-title">第二幕：问题在哪</div>
+
+  <!-- 图 3: 流失节奏 -->
+  <div class="chart-card">
+    <div class="chart-title">5月第二周单周流失 27 人，为连续三周集中爆发</div>
+    <div class="chart-subtitle">已离开人员按"最近一次有效外呼日期"按周聚合</div>
+    <div id="chart3" class="chart-container short"></div>
+    <div class="chart-footnote">4/25起连续三周共流失 86 人，占全部流失 127 人的 68%</div>
+  </div>
+
+  <!-- 图 4: 流失人员构成 -->
+  <div class="two-col">
+    <div class="chart-card">
+      <div class="chart-title">流失人员等级构成</div>
+      <div class="chart-subtitle">127名已离开人员按等级分布</div>
+      <div id="chart4" class="chart-container short"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">高绩效流失：带走 1.14 亿月 GMV</div>
+      <div class="chart-subtitle">已离开人员中 89 人有 GMV 产出</div>
+      <div id="chart4b" class="chart-container short"></div>
+      <div class="chart-footnote">含 A 级 4 人（汪甜/刘欢/胡文云/李志林），在职 A 级仅剩 9 人</div>
+    </div>
+  </div>
+
+  <!-- 图 5: 首贷 vs 复贷 -->
+  <div class="chart-card">
+    <div class="chart-title">首贷人均产出仅为复贷的 1/4，是产能短板</div>
+    <div class="chart-subtitle">在职人员近30天业绩对比 | 首贷 68 人 vs 复贷 148 人</div>
+    <div id="chart5" class="chart-container short"></div>
+    <div class="chart-footnote">复贷 30 人零产出均为 MOB1 新兵爬坡期，非低效标识</div>
+  </div>
+</div>
+
+<!-- 第三幕：决议 -->
+<div class="section">
+  <div class="section-title">第三幕：行动建议</div>
+
+  <!-- 图 6: 4月新兵留存拆解 -->
+  <div class="chart-card">
+    <div class="chart-title">4月首贷新兵留存率 44%，是扩张期的核心漏点</div>
+    <div class="chart-subtitle">4月入职 76 人的首贷 / 复贷留存对比</div>
+    <div id="chart6" class="chart-container short"></div>
+  </div>
+
+  <!-- 图 7: 行动矩阵 -->
+  <div class="chart-card">
+    <div class="chart-title">四个行动，对应四个问题</div>
+    <div class="chart-subtitle">按紧急度与影响力排列的行动优先级</div>
+    <div id="chart7" class="chart-container"></div>
+  </div>
+</div>
+
+<!-- 底部总结 -->
+<div class="summary-box">
+  <h3>结论</h3>
+  <p>伽玛的问题不是"人力不行"，而是"新兵留不住"。老员工底盘稳健（>75%），4月新兵留存率仅47%，首贷线尤为薄弱（44%）。当前最紧急的两件事：对4月入职首贷新兵做1v1跟进识别流失原因，对在职工9名A级坐席建挽留机制。扩招节奏应暂停，先把漏桶补上。</p>
+</div>
+
+<div class="limitation-box">
+  <h4>反对证据与局限性</h4>
+  <ul>
+    <li>在职判定口径：以5月12日当天有无外呼判定在职，可能遗漏请假/轮休人员（周二工作日，误差极小）</li>
+    <li>GMV口径："近30天"业绩数据包含已离开人员在离职前的产出，不完全代表在职业绩水平</li>
+    <li>积极面：3月入职74人仍有48人在职（65%）；老员工（2025.10前入职）留存率普遍>75%，底盘稳固</li>
+    <li>零产出30人：29人为MOB1新兵，处于爬坡期，非低效标识</li>
+  </ul>
+</div>
+
+<script>
+const WARM = '#D97757';
+const STONE = '#87867F';
+const TEAL = '#788C5D';
+const GRID = '#F7F6F1';
+const LABEL = '#87867F';
+const DANGER = '#B04A4A';
+const DANGER_BG = '#EDC8C8';
+const CLAY800 = '#4F302D';
+const CLAY100 = '#E3DACC';
+
+function baseOpt() {
+  return {
+    backgroundColor: 'transparent',
+    animation: false,
+    textStyle: { fontFamily: '-apple-system, PingFang SC, sans-serif' },
+    grid: { top: 30, right: 20, bottom: 30, left: 50, containLabel: true },
+    xAxis: {
+      axisLine: { lineStyle: { color: '#ACA9A2' } },
+      splitLine: { show: false },
+      axisLabel: { color: LABEL, fontSize: 11 }
+    },
+    yAxis: {
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: GRID, type: 'dashed' } },
+      axisLabel: { color: LABEL, fontSize: 11 }
+    },
+    tooltip: {
+      textStyle: { fontSize: 11, color: CLAY800 },
+      backgroundColor: '#fff',
+      borderColor: CLAY100,
+      borderWidth: 1
+    }
+  };
+}
+
+// === 图1: 首贷/复贷 在职 vs 流失 ===
+(function() {
+  var el = document.getElementById('chart1');
+  var opt = Object.assign(baseOpt(), {
+    grid: { top: 10, right: 20, bottom: 30, left: 60, containLabel: true }
+  });
+  opt.xAxis.type = 'category';
+  opt.xAxis.data = ['首贷', '复贷'];
+  opt.yAxis.type = 'value';
+  opt.yAxis.name = '人数';
+  opt.series = [
+    {
+      name: '在职',
+      type: 'bar',
+      stack: 'total',
+      barWidth: 48,
+      data: [68, 148],
+      itemStyle: { color: STONE, borderRadius: [0, 0, 0, 0] },
+      label: { show: true, position: 'inside', color: '#fff', fontSize: 11, fontWeight: 600 }
+    },
+    {
+      name: '已离开',
+      type: 'bar',
+      stack: 'total',
+      data: [52, 75],
+      itemStyle: { color: DANGER, borderRadius: [4, 4, 0, 0] },
+      label: { show: true, position: 'inside', color: '#fff', fontSize: 11, fontWeight: 600 }
+    }
+  ];
+  opt.legend = {
+    top: 0, right: 20,
+    textStyle: { fontSize: 11, color: LABEL },
+    itemWidth: 12, itemHeight: 8
+  };
+  echarts.init(el).setOption(opt);
+})();
+
+// === 图2: 入职时间线 + 留存率 ===
+(function() {
+  var el = document.getElementById('chart2');
+  var months = ['24/11','24/12','25/02','25/03','25/06','25/07','25/08','25/09','25/10','25/11','25/12','26/01','26/02','26/03','26/04','26/05'];
+  var onboard = [19, 8, 6, 5, 5, 10, 7, 13, 19, 11, 3, 5, 11, 74, 76, 15];
+  var retention = [89, 88, 100, 40, 80, 50, 100, 62, 95, 36, 100, 80, 73, 65, 47, 80];
+
+  var opt = baseOpt();
+  opt.grid = { top: 40, right: 60, bottom: 30, left: 50, containLabel: true };
+  opt.xAxis.type = 'category';
+  opt.xAxis.data = months;
+  opt.xAxis.axisLabel = { color: LABEL, fontSize: 10, rotate: 30 };
+  opt.yAxis = [
+    {
+      type: 'value',
+      name: '入职人数',
+      nameTextStyle: { color: LABEL, fontSize: 10 },
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: GRID, type: 'dashed' } },
+      axisLabel: { color: LABEL, fontSize: 10 }
+    },
+    {
+      type: 'value',
+      name: '留存率 %',
+      nameTextStyle: { color: LABEL, fontSize: 10 },
+      min: 0, max: 110,
+      axisLine: { show: false },
+      splitLine: { show: false },
+      axisLabel: { color: LABEL, fontSize: 10, formatter: '{value}%' }
+    }
+  ];
+  opt.series = [
+    {
+      name: '入职人数',
+      type: 'bar',
+      yAxisIndex: 0,
+      barWidth: 20,
+      data: onboard.map(function(v, i) {
+        var isApr = months[i] === '26/04';
+        return {
+          value: v,
+          itemStyle: { color: isApr ? DANGER : STONE, borderRadius: [3, 3, 0, 0] }
+        };
+      }),
+      label: {
+        show: true, position: 'top', fontSize: 9, color: LABEL,
+        formatter: function(p) { return p.value >= 10 ? p.value : ''; }
+      }
+    },
+    {
+      name: '留存率',
+      type: 'line',
+      yAxisIndex: 1,
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 4,
+      lineStyle: { color: WARM, width: 2 },
+      itemStyle: { color: WARM },
+      data: retention.map(function(v, i) {
+        var isApr = months[i] === '26/04';
+        return {
+          value: v,
+          symbolSize: isApr ? 8 : 4,
+          itemStyle: { color: isApr ? DANGER : WARM, borderWidth: isApr ? 2 : 0 },
+          label: {
+            show: isApr,
+            position: 'bottom',
+            formatter: v + '%',
+            color: DANGER,
+            fontSize: 11,
+            fontWeight: 600
+          }
+        };
+      }),
+      markLine: {
+        silent: true,
+        symbol: 'none',
+        lineStyle: { color: TEAL, type: 'dashed', width: 1 },
+        label: { show: true, position: 'end', fontSize: 9, color: TEAL, formatter: '老员工基准 75%' },
+        data: [{ yAxis: 75 }]
+      }
+    }
+  ];
+  opt.legend = {
+    top: 0, right: 20,
+    textStyle: { fontSize: 10, color: LABEL },
+    itemWidth: 12, itemHeight: 8
+  };
+  echarts.init(el).setOption(opt);
+})();
+
+// === 图3: 流失节奏 ===
+(function() {
+  var el = document.getElementById('chart3');
+  var weeks = ['3月', '4/1-4/17', '4/18-4/24', '4/25-5/1', '5/2-5/8', '5/9-5/11'];
+  var counts = [1, 17, 22, 30, 29, 27];
+  var colors = [STONE, STONE, STONE, STONE, STONE, DANGER];
+
+  var opt = baseOpt();
+  opt.grid = { top: 10, right: 20, bottom: 30, left: 50, containLabel: true };
+  opt.xAxis.type = 'category';
+  opt.xAxis.data = weeks;
+  opt.yAxis.type = 'value';
+  opt.yAxis.name = '离开人数';
+  opt.series = [{
+    type: 'bar',
+    barWidth: 40,
+    data: counts.map(function(v, i) {
+      return {
+        value: v,
+        itemStyle: { color: colors[i], borderRadius: [4, 4, 0, 0] },
+        label: { show: true, position: 'top', color: colors[i] === DANGER ? DANGER : LABEL, fontSize: 11, fontWeight: colors[i] === DANGER ? 600 : 400 }
+      };
+    })
+  }];
+  opt.tooltip.formatter = function(p) { return p.name + '<br/>离开: ' + p.value + ' 人'; };
+  echarts.init(el).setOption(opt);
+})();
+
+// === 图4: 流失等级构成 ===
+(function() {
+  var el = document.getElementById('chart4');
+  var levels = ['MOB1-', 'MOB1-3', 'MOB3-6', 'MOB6-12', 'MOB12+', '非参评', 'B级', 'A级'];
+  var counts = [15, 18, 5, 3, 11, 67, 4, 4];
+  var colors = [STONE, STONE, STONE, STONE, STONE, STONE, STONE, DANGER];
+
+  var opt = baseOpt();
+  opt.grid = { top: 10, right: 30, bottom: 20, left: 70, containLabel: true };
+  opt.xAxis.type = 'value';
+  opt.yAxis.type = 'category';
+  opt.yAxis.data = levels;
+  opt.yAxis.axisLabel = { color: LABEL, fontSize: 10 };
+  opt.xAxis.axisLabel = { color: LABEL, fontSize: 10 };
+  opt.series = [{
+    type: 'bar',
+    data: counts.map(function(v, i) {
+      return {
+        value: v,
+        itemStyle: { color: colors[i], borderRadius: [0, 3, 3, 0] },
+        label: { show: true, position: 'right', color: colors[i] === DANGER ? DANGER : LABEL, fontSize: 10, fontWeight: colors[i] === DANGER ? 600 : 400 }
+      };
+    })
+  }];
+  opt.tooltip.formatter = function(p) { return p.name + ': ' + p.value + ' 人'; };
+  echarts.init(el).setOption(opt);
+})();
+
+// === 图4b: 流失 GMV 构成 ===
+(function() {
+  var el = document.getElementById('chart4b');
+  var totalLeft = 127;
+  var withGmv = 89;
+  var noGmv = totalLeft - withGmv;
+  var aLevel = 4;
+
+  var opt = baseOpt();
+  opt.grid = { top: 10, right: 20, bottom: 20, left: 20, containLabel: true };
+  delete opt.xAxis;
+  delete opt.yAxis;
+  opt.series = [{
+    type: 'pie',
+    radius: ['45%', '70%'],
+    center: ['50%', '55%'],
+    avoidLabelOverlap: true,
+    label: { show: true, color: LABEL, fontSize: 10, formatter: '{b}\n{c}人' },
+    data: [
+      { value: aLevel, name: 'A级', itemStyle: { color: DANGER } },
+      { value: withGmv - aLevel, name: '有产出(非A)', itemStyle: { color: WARM } },
+      { value: noGmv, name: '零产出', itemStyle: { color: CLAY100 } }
+    ]
+  }];
+  opt.graphic = [{
+    type: 'text',
+    left: 'center',
+    top: '42%',
+    style: {
+      text: '1.14亿',
+      fontSize: 18,
+      fontWeight: 600,
+      fill: DANGER,
+      textAlign: 'center'
+    }
+  }, {
+    type: 'text',
+    left: 'center',
+    top: '52%',
+    style: {
+      text: '月GMV',
+      fontSize: 10,
+      fill: LABEL,
+      textAlign: 'center'
+    }
+  }];
+  echarts.init(el).setOption(opt);
+})();
+
+// === 图5: 首贷 vs 复贷 ===
+(function() {
+  var el = document.getElementById('chart5');
+  var categories = ['在职人数', '人均GMV(万)', '有产出人数'];
+  var first = [68, 108, 67];
+  var repeat = [148, 486, 119];
+
+  var opt = baseOpt();
+  opt.grid = { top: 30, right: 20, bottom: 30, left: 50, containLabel: true };
+  opt.xAxis.type = 'category';
+  opt.xAxis.data = categories;
+  opt.yAxis.type = 'value';
+  opt.series = [
+    {
+      name: '首贷',
+      type: 'bar',
+      barWidth: 36,
+      data: first.map(function(v) {
+        return {
+          value: v,
+          itemStyle: { color: DANGER, borderRadius: [4, 4, 0, 0] },
+          label: { show: true, position: 'top', color: DANGER, fontSize: 11, fontWeight: 600 }
+        };
+      })
+    },
+    {
+      name: '复贷',
+      type: 'bar',
+      barWidth: 36,
+      data: repeat.map(function(v) {
+        return {
+          value: v,
+          itemStyle: { color: STONE, borderRadius: [4, 4, 0, 0] },
+          label: { show: true, position: 'top', color: LABEL, fontSize: 11 }
+        };
+      })
+    }
+  ];
+  opt.legend = {
+    top: 0, right: 20,
+    textStyle: { fontSize: 10, color: LABEL },
+    itemWidth: 12, itemHeight: 8
+  };
+  echarts.init(el).setOption(opt);
+})();
+
+// === 图6: 4月新兵留存拆解 ===
+(function() {
+  var el = document.getElementById('chart6');
+  var categories = ['首贷', '复贷'];
+  var activeData = [16, 20];
+  var leftData = [20, 20];
+  var rateData = [44, 50];
+
+  var opt = baseOpt();
+  opt.grid = { top: 10, right: 60, bottom: 30, left: 50, containLabel: true };
+  opt.xAxis.type = 'category';
+  opt.xAxis.data = categories;
+  opt.yAxis = [
+    {
+      type: 'value',
+      name: '人数',
+      nameTextStyle: { color: LABEL, fontSize: 10 },
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: GRID, type: 'dashed' } },
+      axisLabel: { color: LABEL, fontSize: 10 }
+    },
+    {
+      type: 'value',
+      name: '留存率 %',
+      nameTextStyle: { color: LABEL, fontSize: 10 },
+      min: 0, max: 100,
+      axisLine: { show: false },
+      splitLine: { show: false },
+      axisLabel: { color: LABEL, fontSize: 10, formatter: '{value}%' }
+    }
+  ];
+  opt.series = [
+    {
+      name: '在职',
+      type: 'bar',
+      stack: 's',
+      barWidth: 56,
+      yAxisIndex: 0,
+      data: activeData.map(function(v, i) {
+        return {
+          value: v,
+          itemStyle: { color: i === 0 ? DANGER : STONE },
+          label: { show: true, position: 'inside', color: '#fff', fontSize: 11, fontWeight: 600, formatter: '在职 ' + v }
+        };
+      })
+    },
+    {
+      name: '已离开',
+      type: 'bar',
+      stack: 's',
+      yAxisIndex: 0,
+      data: leftData.map(function(v) {
+        return {
+          value: v,
+          itemStyle: { color: DANGER_BG },
+          label: { show: true, position: 'inside', color: DANGER, fontSize: 11, formatter: '流失 ' + v }
+        };
+      })
+    },
+    {
+      name: '留存率',
+      type: 'line',
+      yAxisIndex: 1,
+      symbol: 'circle',
+      symbolSize: 8,
+      lineStyle: { width: 0 },
+      data: rateData.map(function(v, i) {
+        return {
+          value: v,
+          itemStyle: { color: i === 0 ? DANGER : TEAL },
+          label: {
+            show: true,
+            position: 'top',
+            color: i === 0 ? DANGER : TEAL,
+            fontSize: 13,
+            fontWeight: 600,
+            formatter: v + '%'
+          }
+        };
+      })
+    }
+  ];
+  echarts.init(el).setOption(opt);
+})();
+
+// === 图7: 行动矩阵 ===
+(function() {
+  var el = document.getElementById('chart7');
+  var opt = baseOpt();
+  delete opt.xAxis;
+  delete opt.yAxis;
+  delete opt.grid;
+  opt.grid = { top: 20, right: 30, bottom: 30, left: 50, containLabel: true };
+
+  var actions = [
+    { name: '新兵留存干预\n4月首贷新兵1v1跟进', x: 4, y: 4, color: DANGER, size: 60 },
+    { name: 'A级挽留机制\n9名A级坐席定期关怀', x: 4, y: 3.2, color: DANGER, size: 50 },
+    { name: '招募调速\n暂停集中招募，改小批量', x: 2.5, y: 3.5, color: WARM, size: 45 },
+    { name: '首贷产能提升\n培训+标杆带教', x: 1, y: 2, color: STONE, size: 35 }
+  ];
+
+  opt.xAxis = {
+    type: 'value',
+    min: 0, max: 5,
+    name: '紧急度',
+    nameLocation: 'center',
+    nameGap: 25,
+    nameTextStyle: { color: LABEL, fontSize: 11 },
+    axisLine: { lineStyle: { color: '#ACA9A2' } },
+    splitLine: { lineStyle: { color: GRID, type: 'dashed' } },
+    axisLabel: {
+      color: LABEL, fontSize: 10,
+      formatter: function(v) {
+        var labels = {0: '低', 1: '', 2: '中', 3: '', 4: '高', 5: ''};
+        return labels[v] || '';
+      }
+    }
+  };
+  opt.yAxis = {
+    type: 'value',
+    min: 0, max: 5,
+    name: '影响力',
+    nameLocation: 'center',
+    nameGap: 35,
+    nameTextStyle: { color: LABEL, fontSize: 11 },
+    axisLine: { show: false },
+    splitLine: { lineStyle: { color: GRID, type: 'dashed' } },
+    axisLabel: {
+      color: LABEL, fontSize: 10,
+      formatter: function(v) {
+        var labels = {0: '低', 1: '', 2: '中', 3: '', 4: '高', 5: ''};
+        return labels[v] || '';
+      }
+    }
+  };
+
+  opt.series = actions.map(function(a) {
+    return {
+      type: 'scatter',
+      symbolSize: a.size,
+      data: [{
+        value: [a.x, a.y],
+        itemStyle: { color: a.color, opacity: 0.85 },
+        label: {
+          show: true,
+          formatter: a.name,
+          position: 'right',
+          color: CLAY800,
+          fontSize: 10,
+          lineHeight: 14,
+          fontWeight: 400,
+          distance: 8
+        }
+      }],
+      silent: true
+    };
+  });
+
+  // 分隔线
+  opt.series.push({
+    type: 'line',
+    markLine: {
+      silent: true,
+      symbol: 'none',
+      lineStyle: { color: '#ACA9A2', type: 'dotted', width: 1 },
+      label: { show: false },
+      data: [[{ coord: [2.5, 0] }, { coord: [2.5, 5] }]]
+    },
+    data: []
+  });
+
+  echarts.init(el).setOption(opt);
+})();
+
+// 响应式
+window.addEventListener('resize', function() {
+  document.querySelectorAll('.chart-container').forEach(function(el) {
+    var chart = echarts.getInstanceByDom(el);
+    if (chart) chart.resize();
+  });
+});
+</script>
+</body>
+</html>

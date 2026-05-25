@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岐力职场人力分析看板</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #FAFAF8; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; color: #293C54; padding: 24px; }
+
+.header { text-align: center; margin-bottom: 32px; }
+.header h1 { font-size: 28px; font-weight: 700; color: #293C54; margin-bottom: 8px; }
+.header p { font-size: 14px; color: #888; }
+
+.summary-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 32px; }
+.card { background: #fff; border-radius: 12px; padding: 20px 16px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #eee; }
+.card .label { font-size: 13px; color: #888; margin-bottom: 8px; }
+.card .value { font-size: 32px; font-weight: 700; color: #293C54; }
+.card .value.red { color: #C13531; }
+.card .sub { font-size: 12px; color: #aaa; margin-top: 4px; }
+
+.charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.chart-box { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border: 1px solid #eee; }
+.chart-box .chart-title { font-size: 16px; font-weight: 600; color: #293C54; margin-bottom: 4px; }
+.chart-box .chart-insight { font-size: 13px; color: #C13531; margin-bottom: 16px; font-style: italic; }
+.chart-container { width: 100%; height: 400px; }
+
+@media (max-width: 1200px) {
+  .summary-cards { grid-template-columns: repeat(3, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .summary-cards { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>岐力职场人力分析看板</h1>
+  <p>数据截止 2026-05-14 | 在职判定：最近有效外呼 >= 2026-05-12</p>
+</div>
+
+<div class="summary-cards">
+  <div class="card"><div class="label">总人数</div><div class="value">118</div><div class="sub">全量坐席</div></div>
+  <div class="card"><div class="label">在职人数</div><div class="value">63</div><div class="sub">5月12日后有外呼</div></div>
+  <div class="card"><div class="label">离职/流失</div><div class="value red">55</div><div class="sub">5月12日前停止外呼</div></div>
+  <div class="card"><div class="label">在职率</div><div class="value">53.4%</div><div class="sub">不足六成</div></div>
+  <div class="card"><div class="label">参评人数</div><div class="value">46</div><div class="sub">在职31 + 离职15</div></div>
+  <div class="card"><div class="label">非参评人数</div><div class="value">72</div><div class="sub">在职32 + 离职40</div></div>
+</div>
+
+<div class="charts-grid">
+
+  <!-- 图1：人力漏斗 -->
+  <div class="chart-box">
+    <div class="chart-title">人力漏斗：从总人数到有效产出者</div>
+    <div class="chart-insight">118人仅1人S级，B级以上28人占参评60.9%，但15名参评者已离职</div>
+    <div id="chart1" class="chart-container"></div>
+  </div>
+
+  <!-- 图2：司龄分布 -->
+  <div class="chart-box">
+    <div class="chart-title">司龄分布：在职 vs 离职</div>
+    <div class="chart-insight">1-3个月是流失重灾区（28人离职），司龄6个月以上留存稳定</div>
+    <div id="chart2" class="chart-container"></div>
+  </div>
+
+  <!-- 图3：参评等级金字塔 -->
+  <div class="chart-box">
+    <div class="chart-title">在职人员参评等级金字塔</div>
+    <div class="chart-insight">C级占参评39.1%，A级11人但超半数已离职，中尾部偏重</div>
+    <div id="chart3" class="chart-container"></div>
+  </div>
+
+  <!-- 图4：出勤与通时 -->
+  <div class="chart-box">
+    <div class="chart-title">日均通时 vs GMV 产出（在职人员）</div>
+    <div class="chart-insight">参评坐席通时与GMV正相关，非参评坐席集中在低GMV区</div>
+    <div id="chart4" class="chart-container"></div>
+  </div>
+
+  <!-- 图5：头部 vs 尾部 -->
+  <div class="chart-box">
+    <div class="chart-title">参评坐席 Top5 vs Bottom5 多维度对比</div>
+    <div class="chart-insight">Top5在GMV和件均上全面碾压，Bottom5的通时投入也不够</div>
+    <div id="chart5" class="chart-container"></div>
+  </div>
+
+  <!-- 图6：流失画像 -->
+  <div class="chart-box">
+    <div class="chart-title">流失坐席画像：司龄与历史GMV</div>
+    <div class="chart-insight">高司龄流失者多带走较高GMV能力，低司龄流失多为零产出</div>
+    <div id="chart6" class="chart-container"></div>
+  </div>
+
+  <!-- 图7a：GMV vs 接通量 -->
+  <div class="chart-box">
+    <div class="chart-title">GMV驱动因素：接通量 vs GMV</div>
+    <div class="chart-insight">接通量3000+的坐席GMV显著跃升，量是质的基础</div>
+    <div id="chart7a" class="chart-container"></div>
+  </div>
+
+  <!-- 图7b：T0 GMV占比 -->
+  <div class="chart-box">
+    <div class="chart-title">参评坐席 T0 GMV 占比</div>
+    <div class="chart-insight">T0占比分化严重：刘莉莉75.4% vs 刘波波仅5.9%，转化路径差异大</div>
+    <div id="chart7b" class="chart-container"></div>
+  </div>
+
+  <!-- 图8：离职参评者GMV损失 -->
+  <div class="chart-box">
+    <div class="chart-title">产能流失：离职参评者带走的GMV</div>
+    <div class="chart-insight">15名离职参评者合计带走约8328万GMV，占全量参评GMV的32%</div>
+    <div id="chart8" class="chart-container"></div>
+  </div>
+
+</div>
+
+<script>
+var colors = { red: '#C13531', blue: '#293C54', gray: '#CDCECD', bg: '#FAFAF8', lightRed: '#E8D0CF', lightBlue: '#D0D6DE' };
+
+// ============ 图1：漏斗图 ============
+var c1 = echarts.init(document.getElementById('chart1'));
+c1.setOption({
+  tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
+  series: [{
+    type: 'funnel',
+    left: '10%', right: '10%', top: 20, bottom: 20,
+    width: '80%',
+    min: 0, max: 118,
+    minSize: '0%', maxSize: '100%',
+    sort: 'descending',
+    gap: 4,
+    label: { show: true, position: 'inside', fontSize: 14, fontWeight: 'bold', color: '#fff' },
+    itemStyle: { borderColor: '#fff', borderWidth: 2 },
+    data: [
+      { value: 118, name: '总人数 118', itemStyle: { color: colors.blue } },
+      { value: 63, name: '在职人数 63', itemStyle: { color: '#3D5A80' } },
+      { value: 46, name: '参评人数 46', itemStyle: { color: '#C17767' } },
+      { value: 28, name: 'B级以上 28', itemStyle: { color: colors.red } },
+      { value: 1, name: 'S级 1', itemStyle: { color: '#8B1A1A' } }
+    ].reverse()
+    ]
+  }]
+});
+
+// ============ 图2：司龄分布堆叠条形图 ============
+var c2 = echarts.init(document.getElementById('chart2'));
+c2.setOption({
+  tooltip: { trigger: 'axis' },
+  legend: { data: ['在职', '离职/流失'], top: 0 },
+  grid: { left: 80, right: 20, top: 40, bottom: 30 },
+  xAxis: { type: 'value' },
+  yAxis: { type: 'category', data: ['1个月以内', '1-3个月', '3-6个月', '6-12个月'] },
+  series: [
+    {
+      name: '在职', type: 'bar', stack: 'total', barWidth: 30,
+      data: [23, 29, 5, 6],
+      itemStyle: { color: colors.blue },
+      label: { show: true, position: 'inside', formatter: '{c}', color: '#fff' }
+    },
+    {
+      name: '离职/流失', type: 'bar', stack: 'total',
+      data: [13, 28, 5, 9],
+      itemStyle: { color: colors.red },
+      label: { show: true, position: 'inside', formatter: '{c}', color: '#fff' }
+    }
+  ]
+});
+
+// ============ 图3：参评等级金字塔 ============
+var c3 = echarts.init(document.getElementById('chart3'));
+c3.setOption({
+  tooltip: { trigger: 'axis' },
+  grid: { left: 60, right: 20, top: 20, bottom: 30 },
+  xAxis: { type: 'value', axisLabel: { formatter: '{value}人' } },
+  yAxis: { type: 'category', data: ['S级', 'A级', 'B级', 'C级'] },
+  series: [{
+    type: 'bar',
+    data: [
+      { value: 1, itemStyle: { color: '#8B1A1A' } },
+      { value: 11, itemStyle: { color: colors.red } },
+      { value: 16, itemStyle: { color: '#D4836F' } },
+      { value: 18, itemStyle: { color: colors.gray } }
+    ],
+    barWidth: 32,
+    label: { show: true, position: 'right', formatter: '{c}人', fontSize: 13 }
+  }]
+});
+
+// ============ 图4：日均通时 vs GMV 散点 ============
+var canpingScatter = [[99.2,729.2,"陈家伟"],[135.9,443.85,"张波"],[109.2,709.02,"龚洋洋"],[89.0,344.77,"邹泽勇"],[77.4,871.01,"罗豪"],[174.1,597.34,"胡帅"],[167.2,1110.0,"言莹"],[106.6,409.0,"程芬芬"],[141.9,421.9,"王诗琦"],[120.7,594.53,"易慕康"],[105.8,335.49,"冯子豪"],[108.8,548.95,"吴文豪"],[141.8,855.79,"黎鑫"],[128.8,623.77,"杨文婷"],[122.0,561.89,"徐鸿宇"],[110.2,601.74,"熊智"],[125.5,814.95,"刘强"],[118.3,653.41,"余学伟"],[147.9,971.56,"徐锦"],[84.6,466.56,"张爱飞"],[104.0,1030.0,"彭科"],[126.7,849.15,"熊晨"],[95.0,530.09,"徐志雄"],[48.1,271.05,"徐乐富"],[127.2,486.79,"熊仕铭"],[87.5,594.71,"罗来江"],[121.9,768.93,"刘波波"],[134.3,886.7,"蔡子虎"],[159.8,814.22,"邓清清"],[68.9,419.43,"齐梦华"],[151.2,639.7,"刘莉莉"]];
+var notCanpingScatter = [[116.7,3.14,"付璇"],[115.9,8.86,"吴雅平"],[96.4,4.58,"谈惟珍"],[144.9,30.05,"舒慧"],[92.1,1.6,"庞子童"],[115.2,0.2,"徐协宇"],[110.2,13.46,"龚林聪"],[140.4,17.98,"易文斌"],[128.1,49.74,"熊兴发"],[143.1,101.36,"陈财"],[141.1,48.88,"喻明新"],[162.7,28.19,"李丽"],[147.5,22.63,"蔡红梅"],[125.0,56.98,"李芸"],[143.5,52.85,"周小平"],[142.9,174.26,"殷敏"],[128.2,237.14,"胡志超"],[116.7,270.21,"曾文杰"],[119.0,287.47,"罗干"],[137.4,287.09,"胡文燕"],[109.9,231.48,"吴蕊"],[132.8,641.55,"胡丽梅"],[88.4,382.62,"陈红霞"],[152.2,732.07,"刘颖"],[117.4,461.19,"许亚芬"],[134.5,582.12,"康俊"],[72.2,150.13,"樊文霞"],[99.2,255.31,"游美丽"],[81.9,247.24,"涂爱婷"]];
+
+var c4 = echarts.init(document.getElementById('chart4'));
+c4.setOption({
+  tooltip: {
+    formatter: function(p) { return p.data[2] + '<br/>日均通时: ' + p.data[0] + '分<br/>GMV: ' + p.data[1] + '万'; }
+  },
+  legend: { data: ['参评', '非参评'], top: 0 },
+  grid: { left: 70, right: 20, top: 40, bottom: 40 },
+  xAxis: { name: '日均有效通时(分)', type: 'value', nameLocation: 'middle', nameGap: 25 },
+  yAxis: { name: 'GMV(万)', type: 'value', nameLocation: 'middle', nameGap: 50 },
+  series: [
+    {
+      name: '参评', type: 'scatter', symbolSize: 10,
+      data: canpingScatter,
+      itemStyle: { color: colors.red }
+    },
+    {
+      name: '非参评', type: 'scatter', symbolSize: 7,
+      data: notCanpingScatter,
+      itemStyle: { color: colors.gray }
+    }
+  ]
+});
+
+// ============ 图5：Top5 vs Bottom5 雷达图 ============
+var c5 = echarts.init(document.getElementById('chart5'));
+c5.setOption({
+  tooltip: {},
+  legend: { data: ['Top5 均值', 'Bottom5 均值'], top: 0 },
+  radar: {
+    indicator: [
+      { name: 'ATT(秒)', max: 100 },
+      { name: 'GMV(万)', max: 100 },
+      { name: '件均(元)', max: 100 },
+      { name: '日均通时(分)', max: 100 }
+    ],
+    radius: '60%',
+    axisName: { color: '#666', fontSize: 12 }
+  },
+  series: [{
+    type: 'radar',
+    data: [
+      {
+        value: [38.5, 76.1, 63.6, 86.1],
+        name: 'Top5 均值',
+        areaStyle: { color: 'rgba(193,53,49,0.2)' },
+        lineStyle: { color: colors.red, width: 2 },
+        itemStyle: { color: colors.red }
+      },
+      {
+        value: [10.0, 13.7, 13.6, 22.2],
+        name: 'Bottom5 均值',
+        areaStyle: { color: 'rgba(41,60,84,0.15)' },
+        lineStyle: { color: colors.blue, width: 2 },
+        itemStyle: { color: colors.blue }
+      }
+    ]
+  }]
+});
+
+// ============ 图6：流失画像散点 ============
+var lossData = [{"name":"张露丹","days":1,"gmv":0,"mob":"MOB1-"},{"name":"金继昌","days":1,"gmv":0,"mob":"MOB1-","over7":"是"},{"name":"赵欢","days":7,"gmv":28.1,"mob":"MOB1-"},{"name":"涂思敏","days":7,"gmv":180.48,"mob":"MOB1-"},{"name":"宗亚琴","days":13,"gmv":124.42,"mob":"MOB1-"},{"name":"张国庆","days":20,"gmv":115.52,"mob":"MOB1-"},{"name":"谢紫怡","days":22,"gmv":462.02,"mob":"MOB1-"},{"name":"陈林","days":22,"gmv":145.77,"mob":"MOB1-"},{"name":"程志","days":22,"gmv":0,"mob":"MOB1-","over7":"是"},{"name":"涂子开","days":22,"gmv":296.05,"mob":"MOB1-"},{"name":"涂宇丹","days":27,"gmv":0,"mob":"MOB1-"},{"name":"付思康","days":28,"gmv":0.21,"mob":"MOB1-"},{"name":"李永康","days":28,"gmv":16.51,"mob":"MOB1-"},{"name":"王筱","days":32,"gmv":0,"mob":"MOB1-3"},{"name":"戴丽","days":40,"gmv":273.36,"mob":"MOB1-3"},{"name":"李博闻","days":40,"gmv":443.9,"mob":"MOB1-3"},{"name":"熊诵勇","days":40,"gmv":354.03,"mob":"MOB1-3"},{"name":"刘智帆","days":53,"gmv":348.11,"mob":"MOB1-3"},{"name":"洪诚","days":56,"gmv":823.46,"mob":"MOB1-3"},{"name":"李柯","days":56,"gmv":155.1,"mob":"MOB1-3"},{"name":"颜樱","days":60,"gmv":782.08,"mob":"MOB1-3"},{"name":"黄素云","days":60,"gmv":743.67,"mob":"MOB1-3"},{"name":"刘玉立","days":66,"gmv":844.68,"mob":"MOB1-3"},{"name":"吴珍珍","days":66,"gmv":841.09,"mob":"MOB1-3"},{"name":"詹焱","days":66,"gmv":871.18,"mob":"MOB1-3"},{"name":"杨云鹏","days":66,"gmv":378.25,"mob":"MOB1-3"},{"name":"邓彩霞","days":66,"gmv":223.65,"mob":"MOB1-3"},{"name":"言琴","days":66,"gmv":95.44,"mob":"MOB1-3"},{"name":"杨丹丹","days":66,"gmv":756.61,"mob":"MOB1-3"},{"name":"邓喻荣","days":66,"gmv":104.12,"mob":"MOB1-3"},{"name":"王婷","days":67,"gmv":0,"mob":"MOB1-3"},{"name":"吴伟标","days":70,"gmv":69.18,"mob":"MOB1-3"},{"name":"龚梅","days":70,"gmv":613.45,"mob":"MOB1-3"},{"name":"郭树文","days":70,"gmv":116.06,"mob":"MOB1-3"},{"name":"罗柳云","days":70,"gmv":132.08,"mob":"MOB1-3"},{"name":"龚盼星","days":71,"gmv":561.14,"mob":"MOB1-3"},{"name":"周建兰","days":71,"gmv":742.85,"mob":"MOB1-3"},{"name":"孙慧芳","days":71,"gmv":297.9,"mob":"MOB1-3"},{"name":"鄢志颖","days":71,"gmv":120.15,"mob":"MOB1-3"},{"name":"吴昊","days":71,"gmv":476.71,"mob":"MOB1-3"},{"name":"吴才亮","days":73,"gmv":1430.0,"mob":"MOB1-3"},{"name":"钱凯平","days":116,"gmv":691.14,"mob":"MOB3-6"},{"name":"李佳","days":116,"gmv":752.71,"mob":"MOB3-6"},{"name":"张悦","days":120,"gmv":378.66,"mob":"MOB3-6"},{"name":"郭星风","days":147,"gmv":139.69,"mob":"MOB3-6"},{"name":"郑民","days":172,"gmv":811.75,"mob":"MOB3-6"},{"name":"熊港忠","days":200,"gmv":582.67,"mob":"MOB6-12"},{"name":"叶修垄","days":208,"gmv":145.78,"mob":"MOB6-12"},{"name":"吴泽昊","days":208,"gmv":556.74,"mob":"MOB6-12"},{"name":"万泽珊","days":307,"gmv":939.02,"mob":"MOB6-12"},{"name":"唐艳琴","days":307,"gmv":222.28,"mob":"MOB6-12"},{"name":"袁爱珍","days":329,"gmv":0,"mob":"MOB6-12"},{"name":"李文超","days":330,"gmv":758.32,"mob":"MOB6-12"},{"name":"胡小康","days":330,"gmv":670.55,"mob":"MOB6-12"},{"name":"李勋凯","days":330,"gmv":700.92,"mob":"MOB6-12"}];
+
+var mobColors = { 'MOB1-': colors.red, 'MOB1-3': '#D4836F', 'MOB3-6': colors.blue, 'MOB6-12': '#3D5A80' };
+var lossSeriesMap = {};
+lossData.forEach(function(d) {
+  if (!lossSeriesMap[d.mob]) lossSeriesMap[d.mob] = [];
+  lossSeriesMap[d.mob].push([d.days, d.gmv, d.name, d.over7 === '是']);
+});
+var lossSeries = Object.keys(lossSeriesMap).map(function(mob) {
+  return {
+    name: mob,
+    type: 'scatter',
+    symbolSize: function(d) { return d[3] ? 16 : 10; },
+    data: lossSeriesMap[mob],
+    itemStyle: { color: mobColors[mob] },
+    markPoint: lossSeriesMap[mob].filter(function(d){ return d[3]; }).length > 0 ? {
+      data: lossSeriesMap[mob].filter(function(d){ return d[3]; }).map(function(d) {
+        return { coord: [d[0], d[1]], name: d[2], symbol: 'diamond', symbolSize: 20, itemStyle: { color: '#FF4444' } };
+      })
+    } : undefined
+  };
+});
+
+var c6 = echarts.init(document.getElementById('chart6'));
+c6.setOption({
+  tooltip: {
+    formatter: function(p) { return p.data[2] + '<br/>在职天数: ' + p.data[0] + '天<br/>历史GMV: ' + p.data[1] + '万'; }
+  },
+  legend: { data: Object.keys(lossSeriesMap), top: 0 },
+  grid: { left: 70, right: 20, top: 40, bottom: 40 },
+  xAxis: { name: '在职天数', type: 'value', nameLocation: 'middle', nameGap: 25 },
+  yAxis: { name: '历史GMV(万)', type: 'value', nameLocation: 'middle', nameGap: 55 },
+  series: lossSeries
+});
+
+// ============ 图7a：GMV vs 接通量 ============
+var connectData = [[82,3.14,"付璇"],[118,8.86,"吴雅平"],[213,4.58,"谈惟珍"],[329,30.05,"舒慧"],[215,1.6,"庞子童"],[239,0.2,"徐协宇"],[616,13.46,"龚林聪"],[478,17.98,"易文斌"],[466,49.74,"熊兴发"],[568,101.36,"陈财"],[639,48.88,"喻明新"],[636,28.19,"李丽"],[555,22.63,"蔡红梅"],[644,56.98,"李芸"],[658,52.85,"周小平"],[596,174.26,"殷敏"],[1875,237.14,"胡志超"],[1917,270.21,"曾文杰"],[1870,287.47,"罗干"],[1727,287.09,"胡文燕"],[3038,729.2,"陈家伟"],[2876,443.85,"张波"],[3200,709.02,"龚洋洋"],[1944,344.77,"邹泽勇"],[3616,871.01,"罗豪"],[3211,597.34,"胡帅"],[3487,1110.0,"言莹"],[2838,231.48,"吴蕊"],[3582,409.0,"程芬芬"],[3327,421.9,"王诗琦"],[3499,594.53,"易慕康"],[3571,335.49,"冯子豪"],[3241,548.95,"吴文豪"],[2978,855.79,"黎鑫"],[3358,623.77,"杨文婷"],[2646,641.55,"胡丽梅"],[3063,561.89,"徐鸿宇"],[3250,601.74,"熊智"],[2673,814.95,"刘强"],[2746,653.41,"余学伟"],[2017,382.62,"陈红霞"],[2584,732.07,"刘颖"],[3409,971.56,"徐锦"],[2265,461.19,"许亚芬"],[2095,582.12,"康俊"],[2121,150.13,"樊文霞"],[2001,466.56,"张爱飞"],[1516,255.31,"游美丽"],[3024,1030.0,"彭科"],[3171,849.15,"熊晨"],[3469,530.09,"徐志雄"],[2245,271.05,"徐乐富"],[2311,486.79,"熊仕铭"],[3125,594.71,"罗来江"],[3552,768.93,"刘波波"],[2946,886.7,"蔡子虎"],[2822,814.22,"邓清清"],[3333,419.43,"齐梦华"],[2567,639.7,"刘莉莉"],[1549,247.24,"涂爱婷"]];
+
+var c7a = echarts.init(document.getElementById('chart7a'));
+c7a.setOption({
+  tooltip: {
+    formatter: function(p) { return p.data[2] + '<br/>接通用户: ' + p.data[0] + '<br/>GMV: ' + p.data[1] + '万'; }
+  },
+  grid: { left: 70, right: 20, top: 20, bottom: 40 },
+  xAxis: { name: '接通用户数', type: 'value', nameLocation: 'middle', nameGap: 25 },
+  yAxis: { name: 'GMV(万)', type: 'value', nameLocation: 'middle', nameGap: 55 },
+  series: [{
+    type: 'scatter', symbolSize: 8,
+    data: connectData,
+    itemStyle: { color: colors.red, opacity: 0.7 }
+  }],
+  visualMap: {
+    show: false,
+    dimension: 0,
+    pieces: [
+      { lt: 1500, visualMap: { color: colors.gray } },
+      { gte: 1500, lt: 3000, visualMap: { color: '#D4836F' } },
+      { gte: 3000, visualMap: { color: colors.red } }
+    ]
+  }
+});
+
+// ============ 图7b：T0 GMV占比 ============
+var t0Data = [{"name":"陈家伟","gmv":729.2,"t0_ratio":32.8},{"name":"张波","gmv":443.85,"t0_ratio":20.6},{"name":"龚洋洋","gmv":709.02,"t0_ratio":35.5},{"name":"李博闻","gmv":443.9,"t0_ratio":11.1},{"name":"邹泽勇","gmv":344.77,"t0_ratio":27.4},{"name":"罗豪","gmv":871.01,"t0_ratio":17.9},{"name":"胡帅","gmv":597.34,"t0_ratio":25.6},{"name":"言莹","gmv":1110.0,"t0_ratio":44.6},{"name":"程芬芬","gmv":409.0,"t0_ratio":40.0},{"name":"刘智帆","gmv":348.11,"t0_ratio":12.4},{"name":"王诗琦","gmv":421.9,"t0_ratio":24.2},{"name":"易慕康","gmv":594.53,"t0_ratio":21.9},{"name":"冯子豪","gmv":335.49,"t0_ratio":32.8},{"name":"吴文豪","gmv":548.95,"t0_ratio":18.0},{"name":"黎鑫","gmv":855.79,"t0_ratio":32.3},{"name":"杨文婷","gmv":623.77,"t0_ratio":34.8},{"name":"徐鸿宇","gmv":561.89,"t0_ratio":36.5},{"name":"颜樱","gmv":782.08,"t0_ratio":38.5},{"name":"熊智","gmv":601.74,"t0_ratio":7.2},{"name":"刘强","gmv":814.95,"t0_ratio":40.0},{"name":"黄素云","gmv":743.67,"t0_ratio":29.0},{"name":"刘玉立","gmv":844.68,"t0_ratio":27.5},{"name":"吴珍珍","gmv":841.09,"t0_ratio":51.2},{"name":"詹焱","gmv":871.18,"t0_ratio":40.0},{"name":"余学伟","gmv":653.41,"t0_ratio":24.4},{"name":"徐锦","gmv":971.56,"t0_ratio":63.4},{"name":"杨丹丹","gmv":756.61,"t0_ratio":35.3},{"name":"龚梅","gmv":613.45,"t0_ratio":29.1},{"name":"张爱飞","gmv":466.56,"t0_ratio":66.0},{"name":"彭科","gmv":1030.0,"t0_ratio":52.7},{"name":"钱凯平","gmv":691.14,"t0_ratio":47.2},{"name":"李佳","gmv":752.71,"t0_ratio":44.5},{"name":"熊晨","gmv":849.15,"t0_ratio":35.3},{"name":"徐志雄","gmv":530.09,"t0_ratio":17.5},{"name":"徐乐富","gmv":271.05,"t0_ratio":31.0},{"name":"熊仕铭","gmv":486.79,"t0_ratio":17.2},{"name":"郑民","gmv":811.75,"t0_ratio":52.6},{"name":"罗来江","gmv":594.71,"t0_ratio":28.3},{"name":"刘波波","gmv":768.93,"t0_ratio":5.9},{"name":"蔡子虎","gmv":886.7,"t0_ratio":41.0},{"name":"邓清清","gmv":814.22,"t0_ratio":45.2},{"name":"唐艳琴","gmv":222.28,"t0_ratio":55.6},{"name":"齐梦华","gmv":419.43,"t0_ratio":40.0},{"name":"刘莉莉","gmv":639.7,"t0_ratio":75.4},{"name":"李文超","gmv":758.32,"t0_ratio":37.1},{"name":"李勋凯","gmv":700.92,"t0_ratio":34.0}];
+
+var c7b = echarts.init(document.getElementById('chart7b'));
+var t0Sorted = t0Data.slice().sort(function(a,b){ return a.t0_ratio - b.t0_ratio; });
+c7b.setOption({
+  tooltip: {
+    formatter: function(p) { return p.name + '<br/>GMV: ' + p.data.gmv + '万<br/>T0占比: ' + p.data.t0_ratio + '%'; }
+  },
+  grid: { left: 70, right: 20, top: 10, bottom: 80 },
+  xAxis: {
+    type: 'category',
+    data: t0Sorted.map(function(d){ return d.name; }),
+    axisLabel: { rotate: 45, fontSize: 10, interval: 0 }
+  },
+  yAxis: { name: 'T0占比(%)', type: 'value', max: 100 },
+  series: [{
+    type: 'bar',
+    data: t0Sorted.map(function(d) {
+      var color = d.t0_ratio >= 50 ? colors.red : (d.t0_ratio >= 30 ? '#D4836F' : colors.blue);
+      return { value: d.t0_ratio, gmv: d.gmv, name: d.name, itemStyle: { color: color } };
+    }),
+    barMaxWidth: 16,
+    label: { show: true, position: 'top', formatter: '{c}%', fontSize: 9, rotate: 45 }
+  }]
+});
+
+// ============ 图8：离职参评者 GMV 损失 ============
+var leftData = [
+  {name:"李博闻",gmv:443.9},{name:"刘智帆",gmv:348.11},{name:"颜樱",gmv:782.08},
+  {name:"黄素云",gmv:743.67},{name:"刘玉立",gmv:844.68},{name:"吴珍珍",gmv:841.09},
+  {name:"詹焱",gmv:871.18},{name:"杨丹丹",gmv:756.61},{name:"龚梅",gmv:613.45},
+  {name:"钱凯平",gmv:691.14},{name:"李佳",gmv:752.71},{name:"郑民",gmv:811.75},
+  {name:"唐艳琴",gmv:222.28},{name:"李文超",gmv:758.32},{name:"李勋凯",gmv:700.92}
+].sort(function(a,b){ return a.gmv - b.gmv; });
+
+var c8 = echarts.init(document.getElementById('chart8'));
+c8.setOption({
+  tooltip: {
+    formatter: function(p) { return p.name + '<br/>近30天GMV: ' + p.value + '万'; }
+  },
+  grid: { left: 70, right: 30, top: 10, bottom: 80 },
+  xAxis: {
+    type: 'category',
+    data: leftData.map(function(d){ return d.name; }),
+    axisLabel: { rotate: 45, fontSize: 10, interval: 0 }
+  },
+  yAxis: { name: 'GMV(万)', type: 'value' },
+  series: [{
+    type: 'bar',
+    data: leftData.map(function(d) {
+      return { value: d.gmv, itemStyle: { color: d.gmv >= 700 ? colors.red : (d.gmv >= 500 ? '#D4836F' : colors.gray) } };
+    }),
+    barMaxWidth: 24,
+    label: { show: true, position: 'top', formatter: '{c}', fontSize: 9, rotate: 45 },
+    markLine: {
+      silent: true,
+      data: [{ type: 'average', name: '均值' }],
+      lineStyle: { color: colors.red, type: 'dashed' },
+      label: { formatter: '均值: {c}万', color: colors.red }
+    }
+  }]
+});
+
+// 响应式
+window.addEventListener('resize', function() {
+  c1.resize(); c2.resize(); c3.resize(); c4.resize(); c5.resize(); c6.resize(); c7a.resize(); c7b.resize(); c8.resize();
+});
+</script>
+
+</body>
+</html>

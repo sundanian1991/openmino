@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主贷大额拉新 3 月目标达成分析</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #f7f7f7;
+    font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 32px 20px;
+  }
+  .dashboard {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .dashboard-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1A1A2E;
+    margin-bottom: 4px;
+  }
+  .dashboard-subtitle {
+    font-size: 13px;
+    color: #8B8680;
+    margin-bottom: 24px;
+  }
+  .row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A1A2E;
+    margin-bottom: 8px;
+    padding-left: 2px;
+  }
+  .chart-container { width: 100%; }
+  .card-h { height: 180px; }
+  .card-h2 { height: 260px; }
+  .card-h3 { height: 320px; }
+  .card-full { width: 100%; }
+  .card-half { flex: 1; }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .kpi {
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 6px;
+    background: #fafafa;
+  }
+  .kpi-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1A1A2E;
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: #8B8680;
+    margin-top: 4px;
+  }
+  .kpi-green .kpi-value { color: #D45400; }
+  .kpi-red .kpi-value { color: #CC0000; }
+  .footnote {
+    font-size: 11px;
+    color: #8B8680;
+    margin-top: 12px;
+    padding-left: 2px;
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="dashboard-title">主贷大额拉新 3 月目标达成分析</div>
+  <div class="dashboard-subtitle">2026 年 3 月 · B 端企业主贷大额人工 · 新客-未授信</div>
+
+  <!-- Row 1: KPI Cards (E) -->
+  <div class="card card-full" style="margin-bottom:16px">
+    <div class="card-title">总体概览</div>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-value">2.86 亿</div>
+        <div class="kpi-label">合计放款</div>
+      </div>
+      <div class="kpi kpi-green">
+        <div class="kpi-value">101.3%</div>
+        <div class="kpi-label">整体达成率</div>
+      </div>
+      <div class="kpi kpi-red">
+        <div class="kpi-value">5/8</div>
+        <div class="kpi-label">未达标职场数</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-value">64pp</div>
+        <div class="kpi-label">最高 vs 最低差距</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Goal Gap (A) -->
+  <div class="card card-full" style="margin-bottom:16px">
+    <div class="card-title">A. 目标达成分化</div>
+    <div id="chart-gap" class="chart-container card-h2"></div>
+  </div>
+
+  <!-- Row 3: Pull vs Promote (B) -->
+  <div class="card card-full" style="margin-bottom:16px">
+    <div class="card-title">B. 拉新 vs 促提构成</div>
+    <div id="chart-stack" class="chart-container card-h2"></div>
+  </div>
+
+  <!-- Row 4: Lead Value + Efficiency (C + D side by side) -->
+  <div class="row">
+    <div class="card card-half">
+      <div class="card-title">C. 单线索转化价值（元）</div>
+      <div id="chart-lead" class="chart-container card-h2"></div>
+    </div>
+    <div class="card card-half">
+      <div class="card-title">D. 效率 vs 规模</div>
+      <div id="chart-scatter" class="chart-container card-h2"></div>
+    </div>
+  </div>
+
+  <div class="footnote">数据来源：业务系统，2026 年 3 月 | B 端企业主贷大额人工 · 新客-未授信</div>
+</div>
+
+<script>
+const WARM = '#D45400';
+const CORAL = '#CC0000';
+const DEEP = '#293C54';
+const GRAY = '#CDCECD';
+const GRAY_LIGHT = '#eee';
+
+// ===== Chart A: Goal Gap =====
+(function(){
+  const chart = echarts.init(document.getElementById('chart-gap'));
+  const wp = ['汇讯','新动力','锦瑞','德辰','广达','中乾','速腾','九通'];
+  const rates = [132.5, 105.8, 103.9, 93.9, 85.3, 80.3, 76.0, 68.2];
+  const colors = rates.map(r => r >= 100 ? WARM : CORAL);
+
+  chart.setOption({
+    tooltip: { trigger:'axis', axisPointer:{type:'shadow'}, formatter: p => {
+      const i = p[0].dataIndex;
+      const g = (rates[i]-100).toFixed(1);
+      return `<b>${wp[i]}</b><br/>达成率：${rates[i]}%<br/>偏离目标：${g>=0?'+':''}${g}pp`;
+    }},
+    grid: { left:80, right:80, top:8, bottom:24 },
+    xAxis: { type:'value', min:50, max:145, axisLabel:{formatter:'{value}%',color:'#8B8680',fontSize:10}, splitLine:{lineStyle:{color:GRAY_LIGHT}}, axisTick:{show:false}, axisLine:{show:false} },
+    yAxis: { type:'category', data:wp, inverse:true, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:'#1A1A2E',fontSize:11,fontWeight:500} },
+    series: [{ type:'bar', data:rates.map((r,i)=>({value:r, itemStyle:{color:colors[i],borderRadius:[0,2,2,0]}, label:{show:true,position:'right',formatter:r+'%',color:'#1A1A2E',fontSize:10,fontWeight:500}})), barWidth:20,
+      markLine: { symbol:'none', data:[{xAxis:100}], lineStyle:{color:'#8B8680',type:'dashed',width:2}, label:{show:true,formatter:'达标线',position:'insideStartTop',color:'#8B8680',fontSize:10,offset:[0,-10]} }
+    }]
+  });
+})();
+
+// ===== Chart B: Pull vs Promote Stacked =====
+(function(){
+  const chart = echarts.init(document.getElementById('chart-stack'));
+  const wp = ['汇讯','新动力','锦瑞','德辰','广达','中乾','速腾','九通'];
+  const pull = [7824, 4416, 2160, 2256, 2517, 2032, 741, 793];
+  const promote = [874, 1709, 595, 550, 1072, 806, 217, 67];
+  const total = pull.map((p,i) => p + promote[i]);
+
+  chart.setOption({
+    tooltip: { trigger:'axis', axisPointer:{type:'shadow'}, formatter: p => {
+      const i = p[0].dataIndex;
+      return `<b>${wp[i]}</b><br/>拉新：${pull[i]}万<br/>促提：${promote[i]}万<br/>合计：${total[i]}万`;
+    }},
+    legend: { data:['拉新','促提'], bottom:0, textStyle:{fontSize:11} },
+    grid: { left:80, right:80, top:8, bottom:36 },
+    xAxis: { type:'value', axisLabel:{formatter:'{value}万',color:'#8B8680',fontSize:10}, splitLine:{lineStyle:{color:GRAY_LIGHT}}, axisTick:{show:false}, axisLine:{show:false} },
+    yAxis: { type:'category', data:wp, inverse:true, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:'#1A1A2E',fontSize:11,fontWeight:500} },
+    series: [
+      { name:'拉新', type:'bar', stack:'total', data:pull, itemStyle:{color:WARM, borderRadius:[0,2,0,0]}, label:{show:true,position:'insideRight',formatter:p=>pull[p.dataIndex]+'万',fontSize:9,color:'#fff',fontWeight:600}, barWidth:16 },
+      { name:'促提', type:'bar', stack:'total', data:promote, itemStyle:{color:DEEP, borderRadius:[0,0,2,0]}, label:{show:true,position:'insideRight',formatter:p=>promote[p.dataIndex]+'万',fontSize:9,color:'#fff',fontWeight:600}, barWidth:16 }
+    ]
+  });
+})();
+
+// ===== Chart C: Lead Value (Horizontal Bar) =====
+(function(){
+  const chart = echarts.init(document.getElementById('chart-lead'));
+  const convAmt = [52785700, 28349300, 16391200, 18198800, 16525800, 10980400, 4200600, 5016100];
+  const convCnt = [320604, 286620, 130157, 147530, 208724, 176187, 60941, 60941];
+  const wp = ['汇讯','新动力','锦瑞','德辰','广达','中乾','速腾','九通'];
+  const leadVal = convAmt.map((a,i) => (a/convCnt[i]).toFixed(0));
+  // Sort descending
+  const sorted = wp.map((w,i) => ({wp:w, val:parseInt(leadVal[i])})).sort((a,b) => b.val - a.val);
+
+  chart.setOption({
+    tooltip: { trigger:'axis', axisPointer:{type:'shadow'}, formatter: p => `<b>${p[0].name}</b><br/>单线索价值：${p[0].value} 元` },
+    grid: { left:60, right:80, top:8, bottom:24 },
+    xAxis: { type:'value', axisLabel:{formatter:'{value}元',color:'#8B8680',fontSize:10}, splitLine:{lineStyle:{color:GRAY_LIGHT}}, axisTick:{show:false}, axisLine:{show:false} },
+    yAxis: { type:'category', data:sorted.map(s=>s.wp), inverse:true, axisLine:{show:false}, axisTick:{show:false}, axisLabel:{color:'#1A1A2E',fontSize:11,fontWeight:500} },
+    series: [{ type:'bar', data:sorted.map((s,i)=>({value:s.val, itemStyle:{color: i===0?WARM:i>=3?CORAL:GRAY}, borderRadius:[0,2,2,0]})), barWidth:16,
+      label: { show:true, position:'right', formatter:p=>p.value+'元', color:'#1A1A2E', fontSize:10 }
+    }]
+  });
+})();
+
+// ===== Chart D: Scatter (Efficiency vs Scale) =====
+(function(){
+  const chart = echarts.init(document.getElementById('chart-scatter'));
+  const wp = ['汇讯','新动力','锦瑞','德辰','广达','中乾','速腾','九通'];
+  const rates = [132.5, 105.8, 103.9, 93.9, 85.3, 80.3, 76.0, 68.2];
+  const pull = [7824, 4416, 2160, 2256, 2517, 2032, 741, 793];
+  const promote = [874, 1709, 595, 550, 1072, 806, 217, 67];
+  const cnt = [320604, 286620, 130157, 147530, 208724, 176187, 60941, 60941];
+  const total = pull.map((p,i) => p + promote[i]);
+  const efficiency = total.map((t,i) => ((t*1e4)/cnt[i]).toFixed(0));
+
+  const data = wp.map((w,i) => ({
+    name: w,
+    value: [cnt[i]/1e4, parseInt(efficiency[i]), rates[i], w],
+    itemStyle: { color: rates[i]>=100 ? WARM : CORAL }
+  }));
+
+  chart.setOption({
+    tooltip: { formatter: p => `<b>${p.data.value[3]}</b><br/>线索数：${p.data.value[0]}万<br/>单线索产出：${p.data.value[1]}元<br/>达成率：${p.data.value[2]}%` },
+    grid: { left:60, right:24, top:8, bottom:48 },
+    xAxis: { name:'线索数（万）', nameLocation:'middle', nameGap:26, nameTextStyle:{color:'#8B8680',fontSize:10}, type:'value', axisLabel:{color:'#8B8680',fontSize:10}, splitLine:{lineStyle:{color:GRAY_LIGHT}}, axisTick:{show:false}, axisLine:{show:false} },
+    yAxis: { name:'单线索产出（元）', nameLocation:'end', nameGap:8, nameTextStyle:{color:'#8B8680',fontSize:10}, type:'value', axisLabel:{color:'#8B8680',fontSize:10}, splitLine:{lineStyle:{color:GRAY_LIGHT}}, axisTick:{show:false}, axisLine:{show:false} },
+    series: [{ type:'scatter', data, symbolSize: p => 8 + (p[2]/132.5)*28,
+      label: { show:true, formatter:p=>p.data.value[3], position:'top', fontSize:9, color:'#1A1A2E', fontWeight:500 }
+    }]
+  });
+})();
+
+window.addEventListener('resize', () => {
+  echarts.getInstanceByDom(document.getElementById('chart-gap'))?.resize();
+  echarts.getInstanceByDom(document.getElementById('chart-stack'))?.resize();
+  echarts.getInstanceByDom(document.getElementById('chart-lead'))?.resize();
+  echarts.getInstanceByDom(document.getElementById('chart-scatter'))?.resize();
+});
+</script>
+</body>
+</html>

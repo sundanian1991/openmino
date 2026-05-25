@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上证指数月度量价分析 | 麦肯锡风格</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #F4F7F9; color: #051c2c; }
+        .nav { height: 48px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+        .nav-title { font-size: 14px; font-weight: 600; color: #051c2c; }
+        .nav-actions { display: flex; gap: 8px; }
+        .btn { padding: 6px 14px; font-size: 12px; font-weight: 500; border: 1px solid #e2e8f0; border-radius: 4px; background: #fff; color: #051c2c; cursor: pointer; transition: all 0.2s; }
+        .btn:hover { border-color: #00A9E0; color: #00A9E0; }
+        .main { display: flex; justify-content: center; align-items: flex-start; padding: 32px; }
+        .card { background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; }
+        .watermark { position: absolute; bottom: 12px; right: 18px; font-size: 11px; color: rgba(5,28,44,0.25); font-weight: 600; pointer-events: none; letter-spacing: 0.04em; }
+        #svgExport { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <span class="nav-title">上证指数月度量价分析</span>
+        <div class="nav-actions">
+            <button class="btn" onclick="exportChart('png')">导出 4K PNG</button>
+            <button class="btn" onclick="exportChart('svg')">导出 SVG</button>
+        </div>
+    </div>
+    <div class="main">
+        <div class="card" style="width:1400px;height:700px;">
+            <div id="chart" style="width:100%;height:100%;"></div>
+            <div class="watermark">TR | Strategic Analysis</div>
+        </div>
+    </div>
+    <div id="svgExport"></div>
+
+<script>
+var months = ['2023-01','2023-02','2023-03','2023-04','2023-05','2023-06','2023-07','2023-08','2023-09','2023-10','2023-11','2023-12','2024-01','2024-02','2024-03','2024-04','2024-05','2024-06','2024-07','2024-08','2024-09','2024-10','2024-11','2024-12','2025-01','2025-02','2025-03','2025-04'];
+var close = [3255.67,3279.61,3272.86,3323.63,3204.58,3202.06,3291.04,3119.47,3110.48,3018.77,3029.26,2974.93,2788.49,3027.02,3041.17,3104.82,3089.37,2967.41,2938.73,2842.21,3336.50,3261.44,3326.46,3351.78,3250.60,3313.53,3344.99,3258.89];
+var volume = [425,398,382,356,361,378,345,389,362,358,334,321,385,352,338,312,305,298,286,274,421,456,438,412,405,423,441,418];
+
+var fontFam = 'Inter, "PingFang SC", "Microsoft YaHei", sans-serif';
+
+var chart = echarts.init(document.getElementById('chart'));
+
+var option = {
+    backgroundColor: '#fff',
+    title: {
+        text: '2023-2025 上证指数收盘价与成交量',
+        left: 60, top: 20,
+        textStyle: { fontFamily: fontFam, fontSize: 20, fontWeight: 600, color: '#051c2c' }
+    },
+    tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        textStyle: { color: '#333', fontFamily: fontFam },
+        borderColor: '#ddd',
+        formatter: function(ps) {
+            var s = '<b>' + ps[0].axisValue + '</b><br/>';
+            ps.forEach(function(p) {
+                s += p.marker + ' ' + p.seriesName + ': ';
+                if (p.seriesName === '成交量（亿）') s += p.value + ' 亿';
+                else s += p.value.toFixed(2);
+                s += '<br/>';
+            });
+            return s;
+        }
+    },
+    legend: {
+        top: 25, right: 60,
+        icon: 'circle', itemWidth: 10, itemHeight: 10,
+        textStyle: { color: '#666', fontFamily: fontFam }
+    },
+    grid: { top: 80, bottom: 80, left: 60, right: 60, containLabel: true },
+    xAxis: {
+        type: 'category', data: months, boundaryGap: true,
+        axisLabel: { fontSize: 11, fontFamily: fontFam, rotate: 45, interval: 0 }
+    },
+    yAxis: [
+        {
+            type: 'value', name: '收盘价',
+            splitLine: { show: true, lineStyle: { type: 'dashed', color: '#e2e8f0' } },
+            axisLabel: { fontSize: 11, fontFamily: fontFam },
+            nameTextStyle: { fontSize: 11, fontFamily: fontFam },
+            scale: true
+        },
+        {
+            type: 'value', name: '亿',
+            splitLine: { show: false },
+            axisLabel: { fontSize: 11, fontFamily: fontFam },
+            nameTextStyle: { fontSize: 11, fontFamily: fontFam },
+            scale: true
+        }
+    ],
+    textStyle: { fontFamily: fontFam },
+    dataZoom: [
+        { type: 'inside', start: 0, end: 100 },
+        { type: 'slider', start: 0, end: 100, height: 24, bottom: 10,
+          borderColor: '#e2e8f0', fillerColor: 'rgba(0,169,224,0.1)',
+          handleStyle: { color: '#051c2c' }, textStyle: { fontFamily: fontFam }
+        }
+    ],
+    series: [
+        {
+            name: '成交量（亿）', type: 'bar',
+            data: volume,
+            barWidth: '30%',
+            itemStyle: { color: 'rgba(5,28,44,0.2)', borderRadius: [2,2,0,0] },
+            label: { show: false }
+        },
+        {
+            name: '收盘价', type: 'line', yAxisIndex: 0,
+            data: close,
+            itemStyle: { color: '#051c2c' },
+            lineStyle: { width: 2.5 },
+            symbol: 'none',
+            areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                colorStops: [{ offset: 0, color: 'rgba(0,169,224,0.15)' }, { offset: 1, color: 'rgba(0,169,224,0)' }]
+            }},
+            label: { show: false }
+        }
+    ]
+};
+
+chart.setOption(option);
+
+function exportChart(fmt) {
+    if (fmt === 'png') {
+        var url = chart.getDataURL({ type: 'png', pixelRatio: 4, backgroundColor: '#fff' });
+        download(url, '上证指数月度量价分析.png');
+    } else {
+        var container = document.getElementById('svgExport');
+        container.style.width = '1400px';
+        container.style.height = '700px';
+        var svgChart = echarts.init(container, null, { renderer: 'svg' });
+        var svgOpt = JSON.parse(JSON.stringify(option));
+        svgOpt.animation = false;
+        svgChart.setOption(svgOpt);
+        setTimeout(function() {
+            var svgData = svgChart.getDataURL({ type: 'svg' });
+            download(svgData, '上证指数月度量价分析.svg');
+            svgChart.dispose();
+        }, 100);
+    }
+}
+
+function download(url, filename) {
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+window.addEventListener('resize', function() { chart.resize(); });
+</script>
+</body>
+</html>

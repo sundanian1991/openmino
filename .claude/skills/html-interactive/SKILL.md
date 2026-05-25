@@ -159,6 +159,7 @@ description: "把任意材料（文字/PDF/PPTX/Word/链接/HTML/MD/SVG/Excel）
 | 文化哲思、中文审美、高端本土材料 | **chinese-minimal** | 中式留白、中式、留白、文化、宣纸、东方美学 |
 | 数据密集型话题、数据叙事、可视化报道 | **ft-data-story** | FT数据叙事、数据叙事、FT、数据可视化、ig.ft.com |
 | 品牌产品文档、企业级方案展示、专业力量感 | **loreal** | 欧莱雅、品牌、产品文档、黑红金、L'Oreal |
+| 报告看板、数据表格、产品对比页、整洁内容页 | **apple-minimal** | 苹果简约风、苹果内容页、简约、留白、信息 |
 | 理性网格排版、字体即语言、极度克制 | **01-pentagram** | 建筑风、pentagram, 网格, 排版, Bierut, 信息建筑 |
 | 数据可视化诗学、有机地图感、温暖数据色调 | **02-stamen** | 地形图、stamen, 数据诗学, 地图, 有机 |
 | 内容优先极简、系统字体、蓝链接、阅读体验 | **03-ia** | 白纸风、ia, 内容优先, 系统字体, 阅读, Writer |
@@ -345,6 +346,68 @@ description: "把任意材料（文字/PDF/PPTX/Word/链接/HTML/MD/SVG/Excel）
 - **不允许出现 emoji**、亮色、渐变
 - feel 是欧莱雅品牌手册——克制的力量感，黑底衬红，精密的专业感
 - 详细组件配方见 `references/editorial-loreal.md`
+
+### 风格 G：苹果简约风
+
+**适合** — 报告看板、数据表格、产品对比页、整洁内容页、需要 Apple 官网新闻室气质的页面。
+
+```css
+/* 设计系统覆盖 */
+:root {
+  --bg:              #ffffff;
+  --card-bg:         #f5f5f7;
+  --text:            #1d1d1f;
+  --text-secondary:  #86868b;
+  --border:          #d2d2d7;
+  --accent:          #0071e3;
+  --accent-hover:    #0077ed;
+  --chart-blue:      #0071e3;
+  --chart-gray:      #86868b;
+  --chart-orange:    #bf4800;
+  --chart-black:     #1d1d1f;
+  --font:            -apple-system, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', sans-serif;
+  --mono:            ui-monospace, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+}
+```
+
+**标题层级**：
+- h1: 48px, font-weight: 700, letter-spacing: -0.02em — 报告主标题
+- h2: 28px, font-weight: 600 — 章节标题
+- h3: 21px, font-weight: 600 — 子标题
+- body: 17px, line-height: 1.65 — 正文
+- caption: 12px, color: var(--text-secondary) — 图表注释
+
+**间距**：
+- 章节间距: 80px
+- 卡片内边距: 32px
+- 卡片圆角: 16px
+- 卡片无边框，用背景色区分: `background: var(--card-bg)`
+
+**布局**：
+- `max-width: 980px`，居中阅读
+- 单列为主，数据对比时用双列
+
+**Chart.js 配置**（引用时自动注入）：
+```javascript
+Chart.defaults.color = '#86868b';
+Chart.defaults.borderColor = '#e5e5e5';
+Chart.defaults.font.family = "-apple-system, 'SF Pro Display', sans-serif";
+
+// 低饱和高辨识配色
+const appleChartColors = ['#0071e3', '#86868b', '#bf4800', '#1d1d1f'];
+```
+
+**硬约束**：
+- 背景色固定 `#ffffff`，卡片背景 `#f5f5f7`，禁止深色/暗黑背景
+- 禁止渐变色背景、霓虹色、高饱和度配色
+- 禁止发光效果、阴影过重（卡片 hover 只允许轻微 translateY）
+- 表格：无竖线，表头全大写+浅灰横线，`border-collapse: collapse`
+- 数字用 `font-variant-numeric: tabular-nums` 等宽
+- 卡片无边框，仅用背景色 `#f5f5f7` 区分
+- 品牌蓝 `#0071e3` 只做强调/链接，不大面积使用
+- 图表配色限于蓝/灰/橙/黑四种低饱和色
+- 不允许出现"AI 生成的仪表盘"风格——禁用多重仪表盘、花哨环形图、过多标签徽章
+- feel 像 apple.com/newsroom 的产品对比页——大量留白、黑白为主、品牌色点缀
 
 ### 设计哲学风格（扩展）
 
@@ -654,4 +717,4 @@ a.card:hover {
 - 不生成"看起来像但用不了"的静态模拟（如果要拖拽，就实现真正的拖拽）
 - 不在亮色系设计系统中使用紫色渐变
 - 不使用编辑风格时，必须严格遵循该风格的硬约束（配色/字体/排版），不得混搭默认暖色系统
-- apple-keynote 风格不允许出现 bullet point；chinese-minimal 不允许出现 emoji/亮色/渐变
+- apple-keynote 风格不允许出现 bullet point；chinese-minimal 不允许出现 emoji/亮色/渐变；apple-minimal 不允许深色背景/渐变色/过重阴影

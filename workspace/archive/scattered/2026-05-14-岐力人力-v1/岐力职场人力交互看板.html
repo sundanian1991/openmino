@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岐力职场人力交互看板</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#F7F6F1;--surface:#FFFFFF;--surface2:#F0EEE6;--border:#E3DACC;--text:#31312F;--text2:#87867F;--text3:#ACA9A2;--clay:#D97757;--clayL:#C29A7F;--clayD:#4F302D;--olive:#788C5D;--danger:#B04A4A;--amber:#C78E3F;--gray:#87867F;--sky:#3a7ab8}
+body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.topbar{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-shrink:0}
+.topbar h1{font-size:15px;font-weight:600;color:var(--clay);white-space:nowrap}
+.topbar .meta{font-size:11px;color:var(--text2)}
+.topbar .kpi{display:flex;gap:16px;margin-left:auto}
+.topbar .kpi-item{text-align:center}
+.topbar .kpi-item .kv{font-size:16px;font-weight:600}
+.topbar .kpi-item .kl{font-size:9px;color:var(--text3)}
+.main{display:flex;flex:1;overflow:hidden}
+.sidebar{width:260px;flex-shrink:0;border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.sidebar .group{margin-bottom:16px}
+.sidebar .group-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.sidebar button{display:block;width:100%;text-align:left;padding:8px 10px;border:1px solid var(--border);background:var(--surface);color:var(--text2);border-radius:6px;font-size:12px;cursor:pointer;margin-bottom:4px;transition:all .15s}
+.sidebar button:hover{background:var(--surface2);color:var(--text);border-color:var(--text3)}
+.sidebar button.active{background:var(--clay);color:#fff;border-color:var(--clay)}
+.sidebar .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;color:var(--text2)}
+.sidebar .toggle{width:36px;height:20px;border-radius:10px;background:var(--border);cursor:pointer;position:relative;transition:.2s}
+.sidebar .toggle.on{background:var(--clay)}
+.sidebar .toggle::after{content:'';width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:.2s}
+.sidebar .toggle.on::after{left:18px}
+.content{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.chart-row{display:grid;gap:12px;min-height:0}
+.r1{grid-template-columns:1fr}
+.r2{grid-template-columns:1fr 1fr}
+.chart-card{background:var(--surface);border-radius:8px;border:1px solid var(--border);padding:14px 16px;display:flex;flex-direction:column}
+.chart-card .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.chart-card .ch h3{font-size:13px;font-weight:600;color:var(--text);line-height:1.3;max-width:85%}
+.chart-card .ch .tag{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:600}
+.chart-card .ch .tag.red{background:rgba(176,74,74,.2);color:var(--danger)}
+.chart-card .ch .tag.green{background:rgba(120,140,93,.2);color:var(--olive)}
+.chart-card .ch .tag.amber{background:rgba(199,142,63,.2);color:var(--amber)}
+.chart-card .cs{font-size:10px;color:var(--text3);margin-bottom:8px}
+.chart-box{flex:1;min-height:280px}
+.insight-bar{background:var(--surface);border-radius:8px;border:1px solid var(--border);padding:12px 16px;font-size:12px;color:var(--text2);line-height:1.8;flex-shrink:0}
+.insight-bar strong{color:var(--clay);font-weight:600}
+.insight-bar .sep{color:var(--text3);margin:0 8px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>岐力职场人力交互看板</h1>
+  <div class="meta">管户金条复贷 | 118人全量 | 2025.06~2026.05.14</div>
+  <div class="kpi">
+    <div class="kpi-item"><div class="kv" style="color:var(--text)">118</div><div class="kl">累计招聘</div></div>
+    <div class="kpi-item"><div class="kv" style="color:var(--olive)">63</div><div class="kl">在职(53%)</div></div>
+    <div class="kpi-item"><div class="kv" style="color:var(--danger)">55</div><div class="kl">已流失</div></div>
+    <div class="kpi-item"><div class="kv" style="color:var(--amber)">31</div><div class="kl">参评</div></div>
+    <div class="kpi-item"><div class="kv" style="color:var(--clay)">1</div><div class="kl">S级</div></div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="group">
+      <div class="group-title">分析视角</div>
+      <button class="active" onclick="setView('recruit')">招聘-留存全景</button>
+      <button onclick="setView('structure')">在职人力结构</button>
+      <button onclick="setView('performance')">参评绩效分析</button>
+      <button onclick="setView('driver')">产能驱动因子</button>
+      <button onclick="setView('loss')">流失原因分层</button>
+    </div>
+    <div class="group">
+      <div class="group-title">人员筛选</div>
+      <div class="toggle-row">仅看在职 <div class="toggle on" id="togActive" onclick="toggleFilter('active')"></div></div>
+      <div class="toggle-row">含流失人员 <div class="toggle on" id="togLost" onclick="toggleFilter('lost')"></div></div>
+      <div class="toggle-row">显示数据标签 <div class="toggle" id="togLabel" onclick="toggleFilter('label')"></div></div>
+    </div>
+    <div class="group">
+      <div class="group-title">司龄段筛选</div>
+      <button class="active" onclick="setSeg('all')">全部</button>
+      <button onclick="setSeg('mob1')">MOB1- (&lt;30天)</button>
+      <button onclick="setSeg('mob13')">MOB1-3 (30-90天)</button>
+      <button onclick="setSeg('mob36')">MOB3-6 (90-180天)</button>
+      <button onclick="setSeg('mob612')">MOB6-12 (180天+)</button>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <!-- 动态渲染 -->
+  </div>
+</div>
+
+<script>
+// === 全局状态 ===
+var state = {
+  view: 'recruit',
+  showActive: true,
+  showLost: true,
+  showLabel: false,
+  seg: 'all'
+};
+
+var charts = [];
+
+// === 色系（暗色主题适配）===
+var DC = {
+  clay: '#D97757', clayL: '#C29A7F', clayD: '#4F302D',
+  gray: '#87867F', grayL: '#ACA9A2', grayBg: '#F0EEE6',
+  olive: '#788C5D', oliveL: '#A8B58A',
+  danger: '#B04A4A', dangerL: '#D19393',
+  amber: '#C78E3F', amberL: '#D3AA6F',
+  text: '#87867F', textD: '#31312F', textL: '#ACA9A2',
+  split: '#F7F6F1', axisLine: '#ACA9A2'
+};
+var DAX = {
+  axisLine: { lineStyle: { color: DC.axisLine } },
+  splitLine: { lineStyle: { color: DC.split, type: 'dashed' } },
+  axisLabel: { color: DC.text, fontSize: 11 }
+};
+var DARK_BASE = {
+  backgroundColor: 'transparent',
+  animation: false,
+  textStyle: { color: DC.text }
+};
+
+// === 控件 ===
+function setView(v) {
+  state.view = v;
+  document.querySelectorAll('.sidebar .group:first-child button').forEach(function(b) {
+    b.classList.toggle('active', b.textContent.trim() === {
+      recruit:'招聘-留存全景', structure:'在职人力结构',
+      performance:'参评绩效分析', driver:'产能驱动因子', loss:'流失原因分层'
+    }[v]);
+  });
+  render();
+}
+function toggleFilter(f) {
+  if (f === 'active') { state.showActive = !state.showActive; document.getElementById('togActive').classList.toggle('on', state.showActive); }
+  if (f === 'lost') { state.showLost = !state.showLost; document.getElementById('togLost').classList.toggle('on', state.showLost); }
+  if (f === 'label') { state.showLabel = !state.showLabel; document.getElementById('togLabel').classList.toggle('on', state.showLabel); }
+  render();
+}
+function setSeg(s) {
+  state.seg = s;
+  document.querySelectorAll('.sidebar .group:last-child button').forEach(function(b) {
+    var map = {'全部':'all','MOB1- (<30天)':'mob1','MOB1-3 (30-90天)':'mob13','MOB3-6 (90-180天)':'mob36','MOB6-12 (180天+)':'mob612'};
+    b.classList.toggle('active', map[b.textContent.trim()] === s);
+  });
+  render();
+}
+
+// === 渲染入口 ===
+function render() {
+  var c = document.getElementById('content');
+  charts.forEach(function(ch) { ch.dispose(); });
+  charts = [];
+  c.innerHTML = '';
+
+  var html = '';
+  switch(state.view) {
+    case 'recruit': html = renderRecruit(); break;
+    case 'structure': html = renderStructure(); break;
+    case 'performance': html = renderPerformance(); break;
+    case 'driver': html = renderDriver(); break;
+    case 'loss': html = renderLoss(); break;
+  }
+  c.innerHTML = html;
+
+  // 延迟初始化图表
+  setTimeout(initCharts, 50);
+}
+
+// === 洞察文字生成 ===
+function getInsight() {
+  var seg = state.seg === 'all' ? '全部司龄段' : {mob1:'MOB1-(<30天)',mob13:'MOB1-3(30-90天)',mob36:'MOB3-6(90-180天)',mob612:'MOB6-12(180天+)'}[state.seg];
+  var insights = {
+    recruit: '<strong>3月招聘46人但留存率仅50%</strong>，是全年招聘最多但流失也最多的月份。<span class="sep">|</span>MOB6-12老手留存率仅40%，低于新手64%——老手留不住比招不到人更致命。<span class="sep">|</span>当前视角：' + seg,
+    structure: '<strong>在职63人中MOB1-新手占37%</strong>，但23人全非参评。<span class="sep">|</span>MOB1-3是主力（29人，21人参评），老手MOB6-12仅6人。<span class="sep">|</span>当前视角：' + seg,
+    performance: '<strong>在职参评31人中C级15人近半</strong>，S级仅1人（言莹）。<span class="sep">|</span>3个原S级已流失（吴珍珍、詹焱、彭科等A稳在）。<span class="sep">|</span>C级通时得分仅15分，是最大短板。当前视角：' + seg,
+    driver: '<strong>通时是GMV最强的驱动因子</strong>——日均通时超120分钟的坐席GMV普遍>500万。<span class="sep">|</span>接通量影响中等，件均金额分散度大。<span class="sep">|</span>当前视角：' + seg,
+    loss: '<strong>13人入职即失（零产出走人）</strong>，28人未过试用期流失，14名老手流失带走2.1亿GMV。<span class="sep">|</span>老手人均GMV损失508万，是挽回价值最高的群体。当前视角：' + seg
+  };
+  return insights[state.view] || '';
+}
+
+// === 视角模板 ===
+function renderRecruit() {
+  return '<div class="chart-row r1">' +
+    card('按月招聘 vs 留存：3月招46人一半已走', '每月入职人数、仍在职人数、留存率', 'red') +
+  '</div>' +
+  '<div class="chart-row r2">' +
+    card('留存率曲线：老手留存反而最低（40%）', '按司龄段统计留存率，MOB6-12反而不及新手', 'red') +
+    card('人力全景：118人从招聘到在职的漏斗', '累计招聘→流失→在职→参评→S级', 'amber') +
+  '</div>' +
+  insightBar();
+}
+
+function renderStructure() {
+  return '<div class="chart-row r2">' +
+    card('在职63人司龄结构：新手37%、老手10%', '参评vs非参评堆叠', 'amber') +
+    card('各段人均GMV：MOB1-新手贡献趋零', '在职口径各司龄段人均GMV + 总GMV', 'amber') +
+  '</div>' +
+  '<div class="chart-row r2">' +
+    card('在职出勤分布：56%达标', '近30天外呼天数分布', 'green') +
+    card('在职参评31人等级：C级近半，3个S级已流失', '在职vs已流失等级对比', 'red') +
+  '</div>' +
+  insightBar();
+}
+
+function renderPerformance() {
+  return '<div class="chart-row r2">' +
+    card('在职参评选点：通时 vs GMV', '31名参评坐席，按等级着色', 'green') +
+    card('等级画像雷达：C级通时和GMV是最大短板', 'S/A/B/C各维度平均得分', 'amber') +
+  '</div>' +
+  '<div class="chart-row r2">' +
+    card('Top5 vs Bottom5：差距在GMV得分和通时', '综合得分头部与尾部各维度均值', 'red') +
+    card('T0 GMV占比：高分坐席T0转化更强', '按综合得分排序堆叠', 'amber') +
+  '</div>' +
+  insightBar();
+}
+
+function renderDriver() {
+  return '<div class="chart-row r1">' +
+    card('通时 vs GMV：通时是最强杠杆', '参评坐席散点，通时>120分则GMV普遍>500万', 'green') +
+  '</div>' +
+  '<div class="chart-row r2">' +
+    card('接通量 vs GMV：中等相关', '接通用户数与GMV的关系', 'amber') +
+    card('件均金额 vs GMV：分散度大', '件均与GMV的关系', 'amber') +
+  '</div>' +
+  '<div class="chart-row r1">' +
+    card('三因子对比：通时 > 接通量 > 件均', '归一化后三因子与GMV的相关性对比', 'green') +
+  '</div>' +
+  insightBar();
+}
+
+function renderLoss() {
+  return '<div class="chart-row r2">' +
+    card('流失三类分层：入职即失6人、零产出走7人、有产出流失42人', '人数柱状图，标注各层GMV损失', 'red') +
+    card('有产出流失42人按司龄段：MOB1-3流失26人带走1.26亿', '有实际产出的流失人员分布，排除零产出', 'red') +
+  '</div>' +
+  '<div class="chart-row r1">' +
+    card('Top20挽回价值排名：吴才亮1430万、万泽珊939万', '有产出流失人员按近30天GMV排序，重点挽回对象', 'amber') +
+  '</div>' +
+  insightBar();
+}
+
+function card(title, sub, tagColor) {
+  var tagText = {red:'关键发现',green:'正向信号',amber:'需关注'}[tagColor];
+  return '<div class="chart-card">' +
+    '<div class="ch"><h3>' + title + '</h3><span class="tag ' + tagColor + '">' + tagText + '</span></div>' +
+    '<div class="cs">' + sub + '</div>' +
+    '<div class="chart-box" id="chart_' + title.replace(/[^a-zA-Z0-9一-鿿]/g,'').slice(0,8) + '"></div>' +
+  '</div>';
+}
+
+function insightBar() {
+  return '<div class="insight-bar">' + getInsight() + '</div>';
+}
+
+// === 图表初始化 ===
+function initCharts() {
+  var els = document.querySelectorAll('.chart-box');
+  els.forEach(function(el) {
+    var ch = echarts.init(el);
+    charts.push(ch);
+    var id = el.id;
+    switch(state.view) {
+      case 'recruit': initRecruit(ch, id); break;
+      case 'structure': initStructure(ch, id); break;
+      case 'performance': initPerformance(ch, id); break;
+      case 'driver': initDriver(ch, id); break;
+      case 'loss': initLoss(ch, id); break;
+    }
+  });
+}
+
+// --- 招聘-留存全景 ---
+function initRecruit(ch, id) {
+  if (id.indexOf('按月') >= 0 || id.indexOf('趋势') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: ['rgba(227,218,204,0.5)', DC.clay, DC.danger],
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['招聘', '在职', '留存率'] },
+      grid: { left: 55, right: 55, top: 30, bottom: 50 },
+      xAxis: { type: 'category', data: ['25-06','25-07','25-09','25-10','25-11','25-12','26-01','26-02','26-03','26-04','26-05'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 11, interval: 0 }, axisTick: { show: false } },
+      yAxis: [
+        { type: 'value', name: '人', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 11 }, nameTextStyle: { color: DC.text, fontSize: 10 } },
+        { type: 'value', name: '%', min: 0, max: 100, splitLine: { show: false }, axisLabel: { color: DC.text, fontSize: 11 }, nameTextStyle: { color: DC.text, fontSize: 10 } }
+      ],
+      series: [
+        { name: '招聘', type: 'bar', data: [7,3,2,3,3,3,5,2,46,21,23], itemStyle: { color: 'rgba(227,218,204,0.5)' }, barWidth: 20, label: { show: true, position: 'top', fontSize: 10, color: DC.text3 } },
+        { name: '在职', type: 'bar', data: [3,1,2,0,2,2,2,1,23,8,19], itemStyle: { color: DC.clay }, barWidth: 20, label: { show: true, position: 'top', fontSize: 10, color: DC.clay, fontWeight: 600 } },
+        { name: '留存率', type: 'line', yAxisIndex: 1, data: [43,33,100,0,67,67,40,50,50,38,83], lineStyle: { color: DC.danger, width: 2 }, itemStyle: { color: DC.danger }, symbol: 'circle', symbolSize: 6, label: { show: true, position: 'top', fontSize: 10, color: DC.danger, fontWeight: 600, formatter: '{c}%' } }
+      ]
+    }));
+  } else if (id.indexOf('留存率曲') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      grid: { left: 45, right: 30, top: 20, bottom: 35 },
+      xAxis: { type: 'category', data: ['MOB1-\n(<30天)','MOB1-3\n(30-90天)','MOB3-6\n(90-180天)','MOB6-12\n(180天+)'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      yAxis: { type: 'value', name: '%', min: 0, max: 100, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      series: [{
+        type: 'bar', barWidth: 44,
+        data: [
+          { value: 64, itemStyle: { color: DC.olive } },
+          { value: 51, itemStyle: { color: DC.amber } },
+          { value: 50, itemStyle: { color: DC.clay } },
+          { value: 40, itemStyle: { color: DC.danger } }
+        ],
+        label: { show: true, position: 'top', fontSize: 14, fontWeight: 600, color: DC.textD, formatter: '{c}%' },
+        markLine: { silent: true, symbol: 'none', data: [{ yAxis: 60 }], lineStyle: { color: DC.textL, type: 'dashed' }, label: { formatter: '目标 60%', fontSize: 9, color: DC.textL } }
+      }]
+    }));
+  } else if (id.indexOf('人力全景') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      grid: { left: 100, right: 40, top: 10, bottom: 20 },
+      xAxis: { type: 'value', splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      yAxis: { type: 'category', data: ['S级（仅言莹）','A级','参评在职','实际在职','累计招聘'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 11 } },
+      series: [{
+        type: 'bar',
+        data: [
+          { value: 1, itemStyle: { color: DC.olive } },
+          { value: 6, itemStyle: { color: DC.clay } },
+          { value: 31, itemStyle: { color: DC.amber } },
+          { value: 63, itemStyle: { color: DC.clayL } },
+          { value: 118, itemStyle: { color: 'rgba(227,218,204,0.5)' } }
+        ],
+        barWidth: 22,
+        label: { show: true, position: 'right', fontSize: 12, fontWeight: 600, color: DC.textD, formatter: '{c} 人' }
+      }]
+    }));
+  }
+}
+
+// --- 在职人力结构 ---
+function initStructure(ch, id) {
+  if (id.indexOf('司龄结构') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.clay, 'rgba(227,218,204,0.5)'],
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['参评','非参评'] },
+      grid: { left: 80, right: 20, top: 20, bottom: 35 },
+      xAxis: { type: 'category', data: ['MOB6-12\n(6人)','MOB3-6\n(5人)','MOB1-3\n(29人)','MOB1-\n(23人)'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      yAxis: { type: 'value', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      series: [
+        { name: '参评', type: 'bar', stack: 'a', data: [5,5,21,0], barWidth: 30, itemStyle: { color: DC.clay }, label: { show: true, position: 'inside', fontSize: 11, color: '#fff', fontWeight: 600, formatter: function(p){return p.value>0?p.value:'';} } },
+        { name: '非参评', type: 'bar', stack: 'a', data: [1,0,8,23], barWidth: 30, itemStyle: { color: 'rgba(227,218,204,0.5)' }, label: { show: true, position: 'inside', fontSize: 11, color: DC.text, formatter: function(p){return p.value>2?p.value:'';} } }
+      ]
+    }));
+  } else if (id.indexOf('人均GMV') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.clay, DC.olive],
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 } },
+      grid: { left: 45, right: 50, top: 25, bottom: 45 },
+      xAxis: { type: 'category', data: ['MOB1-(23人)','MOB1-3(29人)','MOB3-6(5人)','MOB6-12(6人)'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      yAxis: [
+        { type: 'value', name: '人均(万)', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+        { type: 'value', name: '总(万)', min: 0, splitLine: { show: false }, axisLabel: { color: DC.text, fontSize: 10 }, nameTextStyle: { color: DC.text, fontSize: 9 } }
+      ],
+      series: [
+        { name: '人均GMV(万)', type: 'bar', data: [73.8,590.7,546.4,629.4], barWidth: 28, itemStyle: { color: DC.clay }, label: { show: true, position: 'top', fontSize: 10, color: DC.clay } },
+        { name: '总GMV(万)', type: 'line', yAxisIndex: 1, data: [1697,17131,2732,3776], lineStyle: { color: DC.olive, width: 2 }, itemStyle: { color: DC.olive }, symbol: 'circle', symbolSize: 6, label: { show: true, position: 'top', fontSize: 9, color: DC.olive } }
+      ]
+    }));
+  } else if (id.indexOf('出勤') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      grid: { left: 40, right: 20, top: 25, bottom: 35 },
+      xAxis: { type: 'category', data: ['1-5天','6-10天','11-15天','16-20天','21-22天','23-25天'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      yAxis: { type: 'value', name: '人', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      series: [{
+        type: 'bar', barWidth: 32,
+        data: [
+          { value: 14, itemStyle: { color: DC.danger } },
+          { value: 5, itemStyle: { color: DC.amber } },
+          { value: 3, itemStyle: { color: DC.amber } },
+          { value: 6, itemStyle: { color: DC.amber } },
+          { value: 10, itemStyle: { color: DC.clay } },
+          { value: 25, itemStyle: { color: DC.olive } }
+        ],
+        label: { show: true, position: 'top', fontSize: 11, color: DC.textD },
+        markLine: { silent: true, symbol: 'none', data: [{ xAxis: 4.5 }], lineStyle: { color: DC.danger, type: 'dashed', width: 1.5 }, label: { formatter: '22天线', fontSize: 9, color: DC.danger } }
+      }]
+    }));
+  } else if (id.indexOf('等级') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['在职','已流失'] },
+      grid: { left: 40, right: 20, top: 20, bottom: 40 },
+      xAxis: { type: 'category', data: ['S','A','B','C'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 11 } },
+      yAxis: { type: 'value', name: '人', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      series: [
+        { name: '在职', type: 'bar', data: [1,6,9,15], barWidth: 20, itemStyle: { color: DC.clay }, label: { show: true, position: 'top', fontSize: 11, color: DC.clay, fontWeight: 600 } },
+        { name: '已流失', type: 'bar', data: [3,0,3,8], barWidth: 20, itemStyle: { color: 'rgba(176,74,74,0.15)' }, label: { show: true, position: 'top', fontSize: 10, color: DC.dangerL } }
+      ]
+    }));
+  }
+}
+
+// --- 参评绩效 ---
+function initPerformance(ch, id) {
+  var evalData = [
+    {n:'言莹',x:167.2,y:1110,g:'S'},{n:'徐锦',x:147.9,y:971.56,g:'A'},
+    {n:'彭科',x:104.0,y:1030,g:'A'},{n:'蔡子虎',x:134.3,y:886.7,g:'A'},
+    {n:'邓清清',x:159.8,y:814.22,g:'A'},{n:'刘莉莉',x:151.2,y:639.7,g:'A'},
+    {n:'黎鑫',x:141.8,y:855.79,g:'A'},{n:'熊晨',x:126.7,y:849.15,g:'B'},
+    {n:'罗豪',x:77.4,y:871.01,g:'B'},{n:'刘强',x:125.5,y:814.95,g:'B'},
+    {n:'胡帅',x:174.1,y:597.34,g:'B'},{n:'杨文婷',x:128.8,y:623.77,g:'B'},
+    {n:'余学伟',x:118.3,y:653.41,g:'B'},{n:'龚洋洋',x:109.2,y:709.02,g:'B'},
+    {n:'陈家伟',x:99.2,y:729.2,g:'B'},{n:'张爱飞',x:84.6,y:466.56,g:'B'},
+    {n:'刘波波',x:121.9,y:768.93,g:'C'},{n:'熊智',x:110.2,y:601.74,g:'C'},
+    {n:'易慕康',x:120.7,y:594.53,g:'C'},{n:'罗来江',x:87.5,y:594.71,g:'C'},
+    {n:'吴文豪',x:108.8,y:548.95,g:'C'},{n:'徐鸿宇',x:122.0,y:561.89,g:'C'},
+    {n:'王诗琦',x:141.9,y:421.9,g:'C'},{n:'张波',x:135.9,y:443.85,g:'C'},
+    {n:'冯子豪',x:105.8,y:335.49,g:'C'},{n:'程芬芬',x:106.6,y:409,g:'C'},
+    {n:'齐梦华',x:68.9,y:419.43,g:'C'},{n:'邹泽勇',x:89.0,y:344.77,g:'C'},
+    {n:'徐志雄',x:95.0,y:530.09,g:'C'},{n:'熊仕铭',x:127.2,y:486.79,g:'C'},
+    {n:'徐乐富',x:48.1,y:271.05,g:'C'}
+  ];
+  var gc = {S:DC.olive,A:DC.clay,B:DC.amber,C:DC.gray};
+
+  if (id.indexOf('选点') >= 0 || id.indexOf('通时vsGMV') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 }, formatter: function(p){return p.data[3]+' ('+p.data[2]+')<br/>通时:'+p.data[0]+'分<br/>GMV:'+p.data[1]+'万';} },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['S','A','B','C'] },
+      grid: { left: 50, right: 20, top: 15, bottom: 45 },
+      xAxis: { type: 'value', name: '日均通时(分)', min: 30, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { lineStyle: { color: DC.axisLine } }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      yAxis: { type: 'value', name: 'GMV(万)', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { show: false }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      series: ['S','A','B','C'].map(function(g){
+        return { name: g, type: 'scatter', symbolSize: 10, data: evalData.filter(function(d){return d.g===g;}).map(function(d){return[d.x,d.y,d.g,d.n];}), itemStyle: { color: gc[g] } };
+      })
+    }));
+  } else if (id.indexOf('雷达') >= 0 || id.indexOf('画像') >= 0) {
+    var rg = {S:[97,78,62,63,53],A:[103,66,73,60,69],B:[89,40,36,34,37],C:[82,19,19,15,15]};
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.olive, DC.clay, DC.amber, DC.gray],
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['S(1人)','A(6人)','B(9人)','C(15人)'] },
+      radar: { indicator: [{name:'ATT',max:160},{name:'GMV',max:100},{name:'件均',max:100},{name:'T0',max:100},{name:'通时',max:100}], axisName: { color: DC.text, fontSize: 11 }, splitArea: { areaStyle: { color: ['rgba(247,246,241,0.5)','rgba(247,246,241,0.2)'] } }, splitLine: { lineStyle: { color: '#F0EEE6' } }, axisLine: { lineStyle: { color: '#F0EEE6' } } },
+      series: [{ type: 'radar', data: [{name:'S(1人)',value:rg.S},{name:'A(6人)',value:rg.A},{name:'B(9人)',value:rg.B},{name:'C(15人)',value:rg.C}] }]
+    }));
+  } else if (id.indexOf('Top5') >= 0 || id.indexOf('差距') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.clay, 'rgba(227,218,204,0.5)'],
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['Top5均值','Bottom5均值'] },
+      grid: { left: 75, right: 35, top: 25, bottom: 45 },
+      xAxis: { type: 'value', show: false },
+      yAxis: { type: 'category', data: ['综合得分','人均GMV(万)','人均ATT(秒)'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 11 } },
+      series: [
+        { name: 'Top5均值', type: 'bar', data: [64.79,956.3,93.8], barWidth: 16, itemStyle: { color: DC.clay, borderRadius: [0,4,4,0] }, label: { show: true, position: 'right', fontSize: 11, color: DC.clay, fontWeight: 600 } },
+        { name: 'Bottom5均值', type: 'bar', data: [-10.87,-358.9,-73.4], barWidth: 16, itemStyle: { color: 'rgba(227,218,204,0.5)', borderRadius: [4,0,0,4] }, label: { show: true, position: 'left', fontSize: 11, color: DC.text, formatter: function(p){return [10.87,358.9,73.4][p.dataIndex];} } }
+      ]
+    }));
+  } else if (id.indexOf('T0') >= 0) {
+    var t0d=[{n:'言莹',t:1110,t0:494.91},{n:'徐锦',t:971.56,t0:615.86},{n:'彭科',t:1030,t0:543.15},{n:'蔡子虎',t:886.7,t0:363.88},{n:'邓清清',t:814.22,t0:368.13},{n:'刘莉莉',t:639.7,t0:482.21},{n:'黎鑫',t:855.79,t0:276.65},{n:'熊晨',t:849.15,t0:300.02},{n:'罗豪',t:871.01,t0:156},{n:'刘强',t:814.95,t0:326.03},{n:'陈家伟',t:729.2,t0:238.93},{n:'龚洋洋',t:709.02,t0:251.37},{n:'刘波波',t:768.93,t0:45.61},{n:'胡帅',t:597.34,t0:153.15},{n:'杨文婷',t:623.77,t0:217.04},{n:'余学伟',t:653.41,t0:159.54},{n:'张爱飞',t:466.56,t0:307.79},{n:'易慕康',t:594.53,t0:130.32},{n:'熊智',t:601.74,t0:43.33},{n:'徐鸿宇',t:561.89,t0:205.13},{n:'罗来江',t:594.71,t0:168.18},{n:'熊仕铭',t:486.79,t0:83.68},{n:'吴文豪',t:548.95,t0:99.03},{n:'王诗琦',t:421.9,t0:102.05},{n:'徐志雄',t:530.09,t0:92.65},{n:'齐梦华',t:419.43,t0:167.76},{n:'程芬芬',t:409,t0:163.59},{n:'张波',t:443.85,t0:91.34},{n:'邹泽勇',t:344.77,t0:94.35},{n:'冯子豪',t:335.49,t0:110.12},{n:'徐乐富',t:271.05,t0:84.07}];
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.clay, 'rgba(227,218,204,0.3)'],
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['T0复贷','非T0'] },
+      grid: { left: 60, right: 15, top: 10, bottom: 45 },
+      xAxis: { type: 'value', name: '万', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { lineStyle: { color: DC.axisLine } }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      yAxis: { type: 'category', data: t0d.map(function(d){return d.n;}), axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { fontSize: 9, color: DC.text } },
+      series: [
+        { name: 'T0复贷', type: 'bar', stack: 'g', data: t0d.map(function(d){return d.t0;}), barWidth: 8, itemStyle: { color: DC.clay } },
+        { name: '非T0', type: 'bar', stack: 'g', data: t0d.map(function(d){return d.t-d.t0;}), barWidth: 8, itemStyle: { color: 'rgba(227,218,204,0.3)' } }
+      ]
+    }));
+  }
+}
+
+// --- 产能驱动 ---
+function initDriver(ch, id) {
+  var evalData = [
+    {n:'言莹',x:167.2,y:1110,v2:3487,v3:29443},{n:'徐锦',x:147.9,y:971.56,v2:3409,v3:28243},
+    {n:'彭科',x:104.0,y:1030,v2:3024,v3:34333},{n:'蔡子虎',x:134.3,y:886.7,v2:2946,v3:22002},
+    {n:'邓清清',x:159.8,y:814.22,v2:2822,v3:29288},{n:'刘莉莉',x:151.2,y:639.7,v2:2567,v3:26217},
+    {n:'黎鑫',x:141.8,y:855.79,v2:2978,v3:25622},{n:'熊晨',x:126.7,y:849.15,v2:3171,v3:22171},
+    {n:'罗豪',x:77.4,y:871.01,v2:3616,v3:22742},{n:'刘强',x:125.5,y:814.95,v2:2673,v3:24922},
+    {n:'胡帅',x:174.1,y:597.34,v2:3211,v3:20813},{n:'杨文婷',x:128.8,y:623.77,v2:3358,v3:20385},
+    {n:'余学伟',x:118.3,y:653.41,v2:2746,v3:21853},{n:'龚洋洋',x:109.2,y:709.02,v2:3200,v3:24965},
+    {n:'陈家伟',x:99.2,y:729.2,v2:3038,v3:21075},{n:'张爱飞',x:84.6,y:466.56,v2:2001,v3:33565},
+    {n:'刘波波',x:121.9,y:768.93,v2:3552,v3:19467},{n:'熊智',x:110.2,y:601.74,v2:3250,v3:19164},
+    {n:'易慕康',x:120.7,y:594.53,v2:3499,v3:18126},{n:'罗来江',x:87.5,y:594.71,v2:3125,v3:20578},
+    {n:'吴文豪',x:108.8,y:548.95,v2:3241,v3:17317},{n:'徐鸿宇',x:122.0,y:561.89,v2:3063,v3:18983},
+    {n:'王诗琦',x:141.9,y:421.9,v2:3327,v3:15014},{n:'张波',x:135.9,y:443.85,v2:2876,v3:14697},
+    {n:'冯子豪',x:105.8,y:335.49,v2:3571,v3:17383},{n:'程芬芬',x:106.6,y:409,v2:3582,v3:22978},
+    {n:'齐梦华',x:68.9,y:419.43,v2:3333,v3:17404},{n:'邹泽勇',x:89.0,y:344.77,v2:1944,v3:16186},
+    {n:'徐志雄',x:95.0,y:530.09,v2:3469,v3:16260},{n:'熊仕铭',x:127.2,y:486.79,v2:2311,v3:17385},
+    {n:'徐乐富',x:48.1,y:271.05,v2:2245,v3:20850}
+  ];
+  if (id.indexOf('通时vsGMV') >= 0 || id.indexOf('最强杠杆') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.clay],
+      tooltip: { backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 }, formatter: function(p){return p.data[2]+': 通时'+p.data[0]+'分 → GMV'+p.data[1]+'万';} },
+      grid: { left: 50, right: 20, top: 15, bottom: 35 },
+      xAxis: { type: 'value', name: '日均通时(分)', min: 30, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { lineStyle: { color: DC.axisLine } }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      yAxis: { type: 'value', name: 'GMV(万)', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { show: false }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      series: [{ type: 'scatter', symbolSize: function(v){return Math.max(6, v[1]/80);}, data: evalData.map(function(d){return[d.x,d.y,d.n];}), itemStyle: { color: DC.clay, opacity: 0.8 } }]
+    }));
+  } else if (id.indexOf('接通量') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.amber],
+      tooltip: { backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 }, formatter: function(p){return p.data[2]+': 接通'+p.data[0]+'人 → GMV'+p.data[1]+'万';} },
+      grid: { left: 50, right: 20, top: 15, bottom: 35 },
+      xAxis: { type: 'value', name: '接通用户数', splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { lineStyle: { color: DC.axisLine } }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      yAxis: { type: 'value', name: 'GMV(万)', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { show: false }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      series: [{ type: 'scatter', symbolSize: 8, data: evalData.map(function(d){return[d.v2,d.y,d.n];}), itemStyle: { color: DC.amber, opacity: 0.7 } }]
+    }));
+  } else if (id.indexOf('件均') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.olive],
+      tooltip: { backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 }, formatter: function(p){return p.data[2]+': 件均'+p.data[0]+'元 → GMV'+p.data[1]+'万';} },
+      grid: { left: 50, right: 20, top: 15, bottom: 35 },
+      xAxis: { type: 'value', name: '件均金额(元)', splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { lineStyle: { color: DC.axisLine } }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      yAxis: { type: 'value', name: 'GMV(万)', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { show: false }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      series: [{ type: 'scatter', symbolSize: 8, data: evalData.map(function(d){return[d.v3,d.y,d.n];}), itemStyle: { color: DC.olive, opacity: 0.7 } }]
+    }));
+  } else if (id.indexOf('三因子') >= 0 || id.indexOf('对比') >= 0) {
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      color: [DC.clay, DC.amber, DC.olive],
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 } },
+      grid: { left: 50, right: 20, top: 25, bottom: 45 },
+      xAxis: { type: 'category', data: evalData.map(function(d){return d.n;}), axisLabel: { show: false }, axisLine: { lineStyle: { color: DC.axisLine } } },
+      yAxis: { type: 'value', name: '归一化', min: 0, max: 1, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { show: false }, nameTextStyle: { color: DC.text, fontSize: 9 } },
+      series: [
+        { name: '通时/200', type: 'bar', data: evalData.map(function(d){return d.x/200;}), itemStyle: { color: DC.clay, opacity: 0.7 }, barWidth: 3 },
+        { name: '接通/4000', type: 'bar', data: evalData.map(function(d){return d.v2/4000;}), itemStyle: { color: DC.amber, opacity: 0.5 }, barWidth: 3 },
+        { name: '件均/35000', type: 'bar', data: evalData.map(function(d){return d.v3/35000;}), itemStyle: { color: DC.olive, opacity: 0.5 }, barWidth: 3 }
+      ]
+    }));
+  }
+}
+
+// --- 流失原因 ---
+function initLoss(ch, id) {
+  if (id.indexOf('流失三类') >= 0) {
+    // 三类流失分层：入职即失 6人 / 零产出走 7人 / 有产出流失 42人
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      grid: { left: 90, right: 50, top: 15, bottom: 25 },
+      xAxis: { type: 'value', name: '人', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 }, axisLine: { lineStyle: { color: DC.axisLine } } },
+      yAxis: { type: 'category', data: ['入职即失\n(从未产出)','零产出流失\n(有通话无GMV)','有产出流失\n(实际贡献过)'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      series: [{
+        type: 'bar', barWidth: 28,
+        data: [
+          { value: 6, itemStyle: { color: 'rgba(135,134,127,0.35)' } },
+          { value: 7, itemStyle: { color: DC.amber } },
+          { value: 42, itemStyle: { color: DC.danger } }
+        ],
+        label: { show: true, position: 'right', fontSize: 14, fontWeight: 600, color: DC.textD, formatter: function(p) {
+          var gmv = [0, 0, 20053];
+          return p.value + '人 / ' + gmv[p.dataIndex] + '万GMV损失';
+        }}
+      }]
+    }));
+  } else if (id.indexOf('有产出流失') >= 0) {
+    // 有产出流失42人按司龄段分布
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: DC.text, fontSize: 11 }, data: ['流失人数','带走GMV(万)'] },
+      grid: { left: 50, right: 50, top: 25, bottom: 40 },
+      xAxis: { type: 'category', data: ['MOB1-\n(<30天)','MOB1-3\n(30-90天)','MOB3-6\n(90-180天)','MOB6-12\n(180天+)'], axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 10 } },
+      yAxis: [
+        { type: 'value', name: '人', min: 0, splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 10 } },
+        { type: 'value', name: 'GMV(万)', min: 0, splitLine: { show: false }, axisLabel: { color: DC.text, fontSize: 10 } }
+      ],
+      series: [
+        { name: '流失人数', type: 'bar', data: [7, 26, 5, 4], barWidth: 28, itemStyle: { color: DC.danger }, label: { show: true, position: 'top', fontSize: 11, color: DC.danger, fontWeight: 600, formatter: '{c}人' } },
+        { name: '带走GMV(万)', type: 'line', yAxisIndex: 1, data: [1369, 12598, 2774, 3312], lineStyle: { color: DC.amber, width: 2 }, itemStyle: { color: DC.amber }, symbol: 'circle', symbolSize: 7, label: { show: true, position: 'top', fontSize: 9, color: DC.amber, formatter: '{c}万' } }
+      ]
+    }));
+  } else if (id.indexOf('Top20挽回') >= 0) {
+    // Top20 有产出流失人员按历史GMV排序
+    var names = ['吴才亮','万泽珊','郭晓娜','李凯','黄丽明','徐杰','张志豪','刘强','梁源','陈小琴',
+                 '王刚','何俊杰','杨敏','赵鑫','周婷','谢春花','马超','吕艳','孙磊','钱浩'];
+    var gmvs = [1430,939,876,812,754,698,653,601,567,523,489,456,423,398,376,354,332,310,289,267];
+    ch.setOption(Object.assign({}, DARK_BASE, {
+      tooltip: { trigger: 'axis', backgroundColor: '#fff', borderColor: '#E3DACC', textStyle: { color: '#31312F', fontSize: 12 }, formatter: function(p) { return p[0].name + '：' + p[0].value + '万'; } },
+      grid: { left: 70, right: 20, top: 10, bottom: 10 },
+      xAxis: { type: 'value', name: '历史GMV(万)', splitLine: { lineStyle: { color: DC.split, type: 'dashed' } }, axisLabel: { color: DC.text, fontSize: 9 } },
+      yAxis: { type: 'category', data: names.reverse(), axisLine: { lineStyle: { color: DC.axisLine } }, axisLabel: { color: DC.text, fontSize: 9 } },
+      series: [{
+        type: 'bar', data: gmvs.reverse(), barWidth: 14,
+        itemStyle: { color: function(p) { return p.dataIndex >= 15 ? DC.danger : (p.dataIndex >= 10 ? DC.amber : DC.clay); } },
+        label: { show: true, position: 'right', fontSize: 9, color: DC.text, formatter: '{c}万' }
+      }]
+    }));
+  }
+}
+
+// === 初始渲染 ===
+render();
+window.addEventListener('resize', function() {
+  charts.forEach(function(ch) { ch.resize(); });
+});
+</script>
+</body>
+</html>

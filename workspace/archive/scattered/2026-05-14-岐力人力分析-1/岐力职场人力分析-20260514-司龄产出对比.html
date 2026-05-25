@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>岐力职场 — 司龄分段产出效率对比</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: transparent; }
+  .chart-wrap { width: 100%; max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+  h2 { font-size: 18px; font-weight: 600; color: #333; text-align: center; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #888; text-align: center; margin-bottom: 16px; }
+  .charts { display: flex; gap: 24px; align-items: stretch; }
+  .chart-box { flex: 1; min-width: 0; position: relative; }
+  .chart-box canvas { width: 100% !important; height: 400px !important; }
+  .note { font-size: 12px; color: #999; text-align: center; margin-top: 12px; }
+</style>
+</head>
+<body>
+<div class="chart-wrap">
+  <h2>岐力职场 — 司龄分段产出效率对比</h2>
+  <p class="subtitle">在职人员（05-10 ~ 05-12 有效外呼） · 人均指标</p>
+  <div class="charts">
+    <div class="chart-box"><canvas id="gmvChart"></canvas></div>
+    <div class="chart-box"><canvas id="tsChart"></canvas></div>
+  </div>
+  <p class="note">MOB1- 28人 / MOB1-3 40人 / MOB3-6 6人 / MOB6-12 8人 &nbsp;·&nbsp; MOB1- 不参评（展示结构性产出差异）</p>
+</div>
+
+<script>
+var labels = ['MOB1-', 'MOB1-3', 'MOB3-6', 'MOB6-12'];
+var perNonT0 = [52.27, 397.22, 398.06, 386.71];
+var perT0 = [45.05, 212.01, 192.53, 241.97];
+var perTs = [118.0, 118.7, 99.0, 105.4];
+
+var TEAL = '#2e8b6e';
+var TEAL300 = '#5dbf9e';
+var WARM = '#c26d3a';
+
+/* custom datalabels */
+var dataLabelsPlugin = {
+  id: 'customDataLabels',
+  afterDatasetsDraw: function(chart) {
+    var ctx = chart.ctx;
+    chart.data.datasets.forEach(function(dataset, di) {
+      var meta = chart.getDatasetMeta(di);
+      if (meta.hidden) return;
+      meta.data.forEach(function(el, idx) {
+        var val = dataset.data[idx];
+        if (val === 0 || val == null) return;
+        ctx.save();
+        ctx.font = '600 11px system-ui';
+        ctx.fillStyle = '#555';
+        ctx.textAlign = 'center';
+        ctx.fillText(val, el.x, el.y - 6);
+        ctx.restore();
+      });
+    });
+  }
+};
+
+/* 左图：人均GMV 堆叠 */
+var gmvCtx = document.getElementById('gmvChart').getContext('2d');
+new Chart(gmvCtx, {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: '非T0复贷GMV(万)',
+        data: perNonT0,
+        backgroundColor: TEAL,
+        borderRadius: 2,
+        barPercentage: 0.6
+      },
+      {
+        label: 'T0复贷GMV(万)',
+        data: perT0,
+        backgroundColor: TEAL300,
+        borderRadius: { topLeft: 3, topRight: 3 },
+        barPercentage: 0.6
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: '人均复贷GMV（堆叠）',
+        font: { size: 14, weight: '600' },
+        color: '#444',
+        padding: { bottom: 12 }
+      },
+      legend: {
+        position: 'bottom',
+        labels: { font: { size: 12 }, color: '#666', boxWidth: 14, padding: 16 }
+      },
+      tooltip: {
+        callbacks: {
+          afterBody: function(items) {
+            var idx = items[0].dataIndex;
+            return '合计: ' + (perNonT0[idx] + perT0[idx]).toFixed(2) + ' 万';
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 13, weight: '600' }, color: '#444' }
+      },
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: '人均GMV(万)', font: { size: 12 }, color: '#888' },
+        grid: { color: '#f0f0f0' },
+        ticks: { font: { size: 11 }, color: '#888' }
+      }
+    }
+  },
+  plugins: [dataLabelsPlugin]
+});
+
+/* 右图：人均日均通时 */
+var tsCtx = document.getElementById('tsChart').getContext('2d');
+new Chart(tsCtx, {
+  type: 'bar',
+  data: {
+    labels: labels,
+    datasets: [{
+      label: '人均日均有效通时(分钟)',
+      data: perTs,
+      backgroundColor: WARM,
+      borderRadius: 3,
+      barPercentage: 0.5
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      title: {
+        display: true,
+        text: '人均日均有效通时',
+        font: { size: 14, weight: '600' },
+        color: '#444',
+        padding: { bottom: 12 }
+      },
+      legend: {
+        position: 'bottom',
+        labels: { font: { size: 12 }, color: '#666', boxWidth: 14, padding: 16 }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 13, weight: '600' }, color: '#444' }
+      },
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: '分钟', font: { size: 12 }, color: '#888' },
+        grid: { color: '#f0f0f0' },
+        ticks: { font: { size: 11 }, color: '#888' }
+      }
+    }
+  },
+  plugins: [dataLabelsPlugin]
+});
+</script>
+</body>
+</html>
