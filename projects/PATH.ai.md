@@ -34,4 +34,5 @@ Base: `/Users/sundanian/Documents/projects/ai-agents/my-agent/projects`
 - `/Users/sundanian/Documents/projects/ai-agents/my-agent/projects/职业辅导/`
 - `/Users/sundanian/Documents/projects/ai-agents/my-agent/projects/自我觉察/`
 - `/Users/sundanian/Documents/projects/ai-agents/my-agent/projects/长期放养/`
+- `/Users/sundanian/Documents/projects/ai-agents/my-agent/projects/麦肯锡图表/`
 <!-- AI_GENERATED_END -->

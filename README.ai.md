@@ -11,6 +11,7 @@
 - **myagents_files/** — directory
 - **node_modules/** — directory
 - **plans/** — directory
+- **ppt_decks/** — directory
 - **projects/** — directory
 - **reference/** — directory
 - **scripts/** — directory
@@ -33,5 +34,5 @@
 - user.md
 
 ## Structure
-This workspace contains 15 directories and 14 root files.
+This workspace contains 16 directories and 15 root files.
 <!-- AI_GENERATED_END -->

@@ -12,6 +12,7 @@ Base: `/Users/sundanian/Documents/projects/ai-agents/my-agent`
 - `myagents_files/`
 - `node_modules/`
 - `plans/`
+- `ppt_decks/`
 - `projects/`
 - `reference/`
 - `scripts/`

@@ -32,4 +32,5 @@ Base: `/Users/sundanian/Documents/projects/ai-agents/my-agent/plans`
 - `/Users/sundanian/Documents/projects/ai-agents/my-agent/plans/一季度电销工作复盘写作风格分析-2026-04-08/`
 - `/Users/sundanian/Documents/projects/ai-agents/my-agent/plans/电影版叙事/`
 - `/Users/sundanian/Documents/projects/ai-agents/my-agent/plans/设计技能对比测试-20260424/`
+- `/Users/sundanian/Documents/projects/ai-agents/my-agent/plans/麦肯锡图表使用指南-20260524/`
 <!-- AI_GENERATED_END -->

@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心智操作系统 · 34条原则</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F5F5;
+  --surface: #FFFFFF;
+  --surface-raised: #F0F0F0;
+  --border: #E8E8E8;
+  --border-visible: #CCCCCC;
+  --text-disabled: #999999;
+  --text-secondary: #666666;
+  --text-primary: #1A1A1A;
+  --text-display: #000000;
+  --accent: #D71921;
+  --success: #4A9E5C;
+  --warning: #D4A843;
+  --interactive: #007AFF;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Space Grotesk','DM Sans',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text-primary);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+body.editing{outline:2px solid var(--accent);outline-offset:-2px}
+
+/* Hero */
+.hero{
+  padding:64px 48px 48px;
+  max-width:1200px;
+  margin:0 auto;
+  position:relative;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;bottom:0;
+  background-image:radial-gradient(circle,var(--border) 0.5px,transparent 0.5px);
+  background-size:14px 14px;
+  opacity:0.5;
+  pointer-events:none;
+  z-index:0;
+}
+.hero-content{position:relative;z-index:1}
+.hero-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.08em;
+  color:var(--text-secondary);
+  margin-bottom:16px;
+}
+.hero-title{
+  font-size:48px;
+  font-weight:700;
+  line-height:1.08;
+  letter-spacing:-0.02em;
+  color:var(--text-display);
+  max-width:720px;
+  margin-bottom:32px;
+}
+.hero-stats{display:flex;gap:48px;margin-bottom:24px}
+.hero-stat{}
+.hero-stat .val{
+  font-family:'Space Mono',monospace;
+  font-size:36px;
+  font-weight:400;
+  color:var(--text-display);
+  line-height:1;
+}
+.hero-stat .lbl{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.08em;
+  color:var(--text-secondary);
+  margin-top:4px;
+}
+.hero-meta{
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  color:var(--text-disabled);
+  letter-spacing:0.04em;
+}
+
+/* Filter Bar */
+.filter-bar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:0;
+}
+.filter-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:12px 48px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  overflow-x:auto;
+}
+.filter-label{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.08em;
+  color:var(--text-disabled);
+  white-space:nowrap;
+  margin-right:8px;
+}
+.tag-btn{
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  letter-spacing:0.04em;
+  padding:6px 16px;
+  border:1px solid var(--border-visible);
+  border-radius:999px;
+  background:transparent;
+  color:var(--text-secondary);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all 150ms ease-out;
+  display:flex;align-items:center;gap:6px;
+}
+.tag-btn:hover{border-color:var(--text-secondary);color:var(--text-primary)}
+.tag-btn.active{background:var(--text-display);color:var(--bg);border-color:var(--text-display)}
+.tag-n{
+  font-size:10px;
+  opacity:0.6;
+}
+.tag-btn.active .tag-n{opacity:0.8}
+
+/* Main */
+main{max-width:1200px;margin:0 auto;padding:0 48px 96px}
+
+/* Theme */
+.theme-section{margin-top:48px}
+.theme-header{
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  margin-bottom:8px;
+}
+.theme-label{
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-0.01em;
+  color:var(--text-display);
+}
+.theme-count{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.08em;
+  color:var(--text-disabled);
+}
+.theme-desc{
+  font-size:14px;
+  color:var(--text-secondary);
+  margin-bottom:32px;
+  max-width:480px;
+}
+
+/* Card Grid */
+.p-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+}
+.p-card{
+  background:var(--surface);
+  padding:24px;
+  display:flex;
+  gap:16px;
+  transition:background 150ms ease-out;
+}
+.p-card:hover{background:var(--surface-raised)}
+.p-card.hidden{display:none}
+.p-num{
+  font-family:'Space Mono',monospace;
+  font-size:28px;
+  font-weight:700;
+  color:var(--text-disabled);
+  line-height:1;
+  flex-shrink:0;
+  width:40px;
+}
+.p-body{flex:1;min-width:0}
+.p-title{
+  font-size:18px;
+  font-weight:500;
+  letter-spacing:-0.01em;
+  color:var(--text-display);
+  margin-bottom:8px;
+  line-height:1.3;
+}
+.p-quote{
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+  font-style:italic;
+  color:var(--text-secondary);
+  margin-bottom:8px;
+  line-height:1.5;
+  padding-left:12px;
+  border-left:2px solid var(--border-visible);
+}
+.p-insight{
+  font-size:14px;
+  color:var(--text-primary);
+  line-height:1.6;
+}
+.ref-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-top:12px;
+}
+.ref-tag{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.04em;
+  color:var(--text-disabled);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:2px 8px;
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero{padding:40px 24px 32px}
+  .hero-title{font-size:32px}
+  .hero-stats{gap:32px}
+  .hero-stat .val{font-size:28px}
+  .filter-inner{padding:12px 24px}
+  main{padding:0 24px 64px}
+  .p-grid{grid-template-columns:1fr}
+}
+
+/* Edit mode */
+body.editing [data-edit]{
+  outline:1px dashed transparent;
+  cursor:text;
+  transition:outline 150ms;
+}
+body.editing [data-edit]:hover{outline-color:rgba(0,0,0,0.15)}
+body.editing [data-edit]:focus{outline-color:var(--accent);outline-style:solid}
+
+/* Editor toolbar */
+#ne-toolbar{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:9999;
+  display:flex;
+  gap:0;
+  background:var(--surface);
+  border:1px solid var(--border-visible);
+  border-radius:999px;
+  overflow:hidden;
+  padding:4px;
+}
+#ne-toolbar button{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.06em;
+  padding:8px 16px;
+  border:none;
+  background:transparent;
+  color:var(--text-secondary);
+  cursor:pointer;
+  border-radius:999px;
+  transition:all 150ms ease-out;
+}
+#ne-toolbar button:hover:not(:disabled){color:var(--text-display)}
+#ne-toolbar button:disabled{opacity:0.3;cursor:default}
+#ne-toolbar #ne-toggle.editing{
+  background:var(--accent);
+  color:#FFF;
+}
+.ne-sep{
+  width:1px;
+  background:var(--border);
+  margin:4px 4px;
+}
+.ne-mode-label{
+  position:fixed;
+  bottom:16px;
+  right:16px;
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:3px;
+  color:var(--text-disabled);
+  z-index:9999;
+}
+body.editing .ne-mode-label{color:var(--accent)}
+.ne-toast{
+  position:fixed;
+  top:72px;
+  right:16px;
+  z-index:9999;
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.06em;
+  color:var(--bg);
+  background:var(--text-display);
+  padding:8px 16px;
+  border-radius:999px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 200ms ease-out;
+}
+.ne-toast.show{opacity:1}
+
+/* Print */
+@media print{
+  body{background:#FFF}
+  .filter-bar,#ne-toolbar,.ne-mode-label,.ne-toast{display:none!important}
+  .p-card{break-inside:avoid}
+  .p-grid{grid-template-columns:1fr 1fr;gap:0;border:none;background:none}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">MENTAL OPERATING SYSTEM</div>
+    <h1 class="hero-title" data-edit>一个让你在复杂世界里做出高质量决策的思维操作系统</h1>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="val">34</div>
+        <div class="lbl">核心原则</div>
+      </div>
+      <div class="hero-stat">
+        <div class="val">4</div>
+        <div class="lbl">主题维度</div>
+      </div>
+      <div class="hero-stat">
+        <div class="val">50+</div>
+        <div class="lbl">引用人物</div>
+      </div>
+    </div>
+    <div class="hero-meta" data-edit>涵盖气候变化、衰老、商业、生物学、物理学中的常见模式。来自书籍、思考、轶事和观察。</div>
+  </div>
+</div>
+
+<nav class="filter-bar" id="filterBar">
+  <div class="filter-inner">
+    <span class="filter-label">FILTER</span>
+    <button class="tag-btn active" data-filter="all">全部<span class="tag-n">34</span></button>
+    <button class="tag-btn" data-filter="决策">决策与判断<span class="tag-n">8</span></button> <button class="tag-btn" data-filter="成长">成长与成就<span class="tag-n">9</span></button> <button class="tag-btn" data-filter="认知">认知与人性<span class="tag-n">7</span></button> <button class="tag-btn" data-filter="系统">系统与协作<span class="tag-n">10</span></button>
+  </div>
+</nav>
+
+<main>
+    <section class="theme-section" id="theme-决策">
+      <div class="theme-header">
+        <div class="theme-label">决策与判断</div>
+        <div class="theme-count">8 条原则</div>
+      </div>
+      <div class="theme-desc" data-edit>如何在不确定中做出更好的选择</div>
+      <div class="p-grid">
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">02</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>你的对错不取决于民调是否赞同你</div>
+            <div class="p-quote" data-edit>"你之所以正确，是因为事实和推理正确，他人的意见与真理无关。"</div>
+            <div class="p-insight" data-edit>真理独立存在。达尔文、哥白尼、伽利略都曾站在全社会的对立面。社会认定的'真理'极其脆弱，一项观察就能粉碎旧范式。</div>
+            <div class="ref-row"><span class="ref-tag">达尔文</span> <span class="ref-tag">哥白尼</span> <span class="ref-tag">辛格尔顿</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">03</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>成功的关键是平庸的竞争</div>
+            <div class="p-quote" data-edit>"如果你坐下30分钟还不知道谁是桌上的凯子，那你就是那个凯子。"</div>
+            <div class="p-insight" data-edit>选择一个你相对他人有优势的领域。利基市场足以养家。巴菲特：对抗通胀的最佳盾牌是当镇上最好的医生或律师。</div>
+            <div class="ref-row"><span class="ref-tag">巴菲特</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">15</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>把砖摞起来</div>
+            <div class="p-quote" data-edit>"如果某个元素并非必需，就删掉它。"</div>
+            <div class="p-insight" data-edit>100块砖平铺在地=无人注意。摞成塔=每个人都会驻足。乔布斯用纸团实验说明：心智资源极其有限。谷歌清空搜索栏以外的一切，iPhone起初只有一个按钮。</div>
+            <div class="ref-row"><span class="ref-tag">乔布斯</span> <span class="ref-tag">谷歌</span> <span class="ref-tag">苹果</span> <span class="ref-tag">马克·安德森</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">19</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>只需稍稍改变问题的切入点，就能将不可能变为容易</div>
+            <div class="p-quote" data-edit>"学习不同学科，能帮你在别人只看见一堵墙的地方发现捷径。"</div>
+            <div class="p-insight" data-edit>针穿不过冰块→加热冰块或加热针即可。索普将复杂微积分题变成5秒心算。找出看似要紧实则无关的要素，绕过它们。</div>
+            <div class="ref-row"><span class="ref-tag">索普</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">22</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>为什么思考别人所未想，会带来巨大回报</div>
+            <div class="p-quote" data-edit>"在投资中，光是逆势而行并不够。你必须逆势且正确。"</div>
+            <div class="p-insight" data-edit>达尔文发表进化论时无一支持者。1859年后所有人的心智软件升级了。越多人不同意你的正确观点，回报越大。保罗·格雷厄姆：对主流保持无意识+让独立思考者包围自己。</div>
+            <div class="ref-row"><span class="ref-tag">达尔文</span> <span class="ref-tag">保罗·格雷厄姆</span> <span class="ref-tag">格雷厄姆·汉考克</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">26</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>找出什么管用，然后去做</div>
+            <div class="p-quote" data-edit>"李光耀不是意识形态的信徒，唯一的检验标准就是现实。"</div>
+            <div class="p-insight" data-edit>去有鱼的地方钓鱼。去没人看的地方找。巴菲特年轻时翻遍穆迪手册寻找机会。当你在寻找上下足功夫，就能找到更多。</div>
+            <div class="ref-row"><span class="ref-tag">李光耀</span> <span class="ref-tag">巴菲特</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">27</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>企业到了规模之后，资本配置比任何事都重要</div>
+            <div class="p-quote" data-edit>"Teledyne制造什么、销售什么，远没有掌控它的那个人是什么风格重要。"</div>
+            <div class="p-insight" data-edit>从0到100万的手段≠从1000万到1亿。当企业每年产生数千万现金，怎么用这些钱变得最关键。巴菲特将平庸纺织厂变成万亿conglomerate。</div>
+            <div class="ref-row"><span class="ref-tag">巴菲特</span> <span class="ref-tag">Teledyne</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="决策">
+          <div class="p-num">34</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>让事情尽可能简单，但不要过分简单</div>
+            <div class="p-quote" data-edit>"牛顿用四个元素构建了一个关于世界如何运作的体系。"</div>
+            <div class="p-insight" data-edit>爱因斯坦的剃刀：寻找最简洁的解释，但不是过度简化。牛顿用惯性、反作用、受力、万有引力四元素解释宏观世界。</div>
+            <div class="ref-row"><span class="ref-tag">爱因斯坦</span> <span class="ref-tag">牛顿</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="theme-section" id="theme-成长">
+      <div class="theme-header">
+        <div class="theme-label">成长与成就</div>
+        <div class="theme-count">9 条原则</div>
+      </div>
+      <div class="theme-desc" data-edit>积累知识、技能与心智资本</div>
+      <div class="p-grid">
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">01</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>发现天才，就给他全部的权力</div>
+            <div class="p-quote" data-edit>"当你能不断叠加顺风时，生活自然会轻松起来。"</div>
+            <div class="p-insight" data-edit>遇到能力远超自己且具备道德驱动力的人，全力合作。巴菲特、李光耀的例子说明：识别非凡个体并押注，比亲力亲为更高效。</div>
+            <div class="ref-row"><span class="ref-tag">李光耀</span> <span class="ref-tag">巴菲特</span> <span class="ref-tag">查理·芒格</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">04</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>一本30美元的历史书里，藏着价值数十亿美元的答案</div>
+            <div class="p-quote" data-edit>"你并不比过去的自己更聪明，只是更有知识。知识在很大程度上是可以'速通'的。"</div>
+            <div class="p-insight" data-edit>芒格读了三四十年杂志，一个想法赚了8000万→4亿。精读1000本挑选过的书，构建心智数据库，用五十年产生复利。</div>
+            <div class="ref-row"><span class="ref-tag">查理·芒格</span> <span class="ref-tag">李录</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">05</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>说到底，永远是技能问题</div>
+            <div class="p-quote" data-edit>"得到你想要的，最简单的方式就是配得上你想要的。"</div>
+            <div class="p-insight" data-edit>如果长期得不到想要的东西，问题多半出在自己身上。从'是别人的错'转变为'是我自己的错'。天赋只能送你到一定地步，勤奋无可替代。</div>
+            <div class="ref-row"><span class="ref-tag">达·芬奇</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">11</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>教育是给大脑安装的软件</div>
+            <div class="p-quote" data-edit>"读一本书是在向大脑添加观念，每一个小时的阅读都在构筑理解层次。"</div>
+            <div class="p-insight" data-edit>没有操作系统的电脑毫无用处。教育就是给大脑装OS。观念会复合：决策经由层层过滤变得更周全、更优。</div>
+            
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">13</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>品质</div>
+            <div class="p-quote" data-edit>"我们内心有一种对品质的感知。它是一个在所有感官交汇处被触发的开关。"</div>
+            <div class="p-insight" data-edit>两篇主题相同的文章，所有人都能识别更好的那篇——但没人能精确量化为什么。品质是一种你能观察到却看不见的东西。</div>
+            
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">14</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>非凡的结果，不过是1000个无聊的日子串在一起</div>
+            <div class="p-quote" data-edit>"要想在人前受到赞誉，你必须在无人看见处付出超越所有人的努力。"</div>
+            <div class="p-insight" data-edit>一夜成名需要十年。牛顿闭门数月、达·芬奇画蒙娜丽莎16年、克里克与沃森苦钻两三年——所有最伟大的人都经历过漫长的黑暗与虚无。</div>
+            <div class="ref-row"><span class="ref-tag">牛顿</span> <span class="ref-tag">达·芬奇</span> <span class="ref-tag">克里克与沃森</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">17</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>真正的理解，来自持续的心智浸染</div>
+            <div class="p-quote" data-edit>"理解如果不是指能从知识中获利的能力，那又是什么呢？"</div>
+            <div class="p-insight" data-edit>花15-35小时读书≠听一两小时播客≠读摘要。理解源于持续思考、层层叠加信息、推演新知识如何融入整体。荣格分析梦境会'翻过来掉过去分析每个角度'。</div>
+            <div class="ref-row"><span class="ref-tag">荣格</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">24</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>你会逐渐趋向周围人的平均水平</div>
+            <div class="p-quote" data-edit>"无论你认为自己思想多独立，都很难例外。我们会趋向身边最密切5个人的平均水平。"</div>
+            <div class="p-insight" data-edit>我们通过模仿学习。7-17岁朋友踢球→我也踢球。周围人健身→我也会效仿。周围人读书→越读越多。影响在很大程度上是无意识的。</div>
+            
+          </div>
+        </div>
+        <div class="p-card" data-theme="成长">
+          <div class="p-num">31</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>粉刷栅栏</div>
+            <div class="p-quote" data-edit>"哪怕没有别人会知道，你自己会知道。所以，把活干漂亮。"</div>
+            <div class="p-insight" data-edit>乔布斯父亲修栅栏时连背朝小巷、永远不会有人看见的那一面也刷得完美。乔布斯把这种精神带到苹果：每款产品的内部和外部一样美。自尊是我们与自己的名声。</div>
+            <div class="ref-row"><span class="ref-tag">乔布斯</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="theme-section" id="theme-认知">
+      <div class="theme-header">
+        <div class="theme-label">认知与人性</div>
+        <div class="theme-count">7 条原则</div>
+      </div>
+      <div class="theme-desc" data-edit>理解思维本身的局限与力量</div>
+      <div class="p-grid">
+        <div class="p-card" data-theme="认知">
+          <div class="p-num">06</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>货物崇拜科学</div>
+            <div class="p-quote" data-edit>"第一原则是你绝不能愚弄自己——而你是最容易被愚弄的人。"</div>
+            <div class="p-insight" data-edit>费曼警告：警惕声称有科学依据却缺乏知识诚实的人。复杂适应系统中隔离变量几乎不可能。失败的实验被排除，噪声数据不报告。</div>
+            <div class="ref-row"><span class="ref-tag">费曼</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="认知">
+          <div class="p-num">09</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>机敏不同于智慧，两者都可能干蠢事</div>
+            <div class="p-quote" data-edit>"要做到智慧地行动，需要的不仅仅是智慧。"</div>
+            <div class="p-insight" data-edit>机敏=脑子快、微观模式识别。智慧=看见深度、全局模式识别。诺贝尔奖得主也会做灾难性决策（长期资本管理公司）。越聪明越难接受不可控。</div>
+            <div class="ref-row"><span class="ref-tag">长期资本管理公司</span> <span class="ref-tag">mjmauboussin</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="认知">
+          <div class="p-num">10</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>普世智慧</div>
+            <div class="p-quote" data-edit>"你不能指望全凭自己凭空想象——没人能那么聪明。"</div>
+            <div class="p-insight" data-edit>现代教育让我们精通一个领域却忽略其余。但真实问题不可能塞进整洁的盒子。最好的决策者是既深知自己领域的通才。</div>
+            
+          </div>
+        </div>
+        <div class="p-card" data-theme="认知">
+          <div class="p-num">16</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>存在多种不同的思考方式</div>
+            <div class="p-quote" data-edit>"达·芬奇通过素描，看出某样东西在现实中是否可行——就像在计算机模拟器里改动参数。"</div>
+            <div class="p-insight" data-edit>了解自己的思考方式并善加利用。视觉型思考者用画图解决问题。用恰当的方式给自己输入知识，依天性优化环境。</div>
+            <div class="ref-row"><span class="ref-tag">达·芬奇</span> <span class="ref-tag">切萨雷·波吉亚</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="认知">
+          <div class="p-num">23</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>困难不在于新观念，而在于摆脱旧观念</div>
+            <div class="p-quote" data-edit>"科学一次只前进一个葬礼。"</div>
+            <div class="p-insight" data-edit>凯恩斯：我们会爱上自己的造物，强行让新事实迁就旧观念。拿锤子的人看什么都像钉子。习得观念成本太高，不舍得放弃。</div>
+            <div class="ref-row"><span class="ref-tag">凯恩斯</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="认知">
+          <div class="p-num">25</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>人类误判的根源</div>
+            <div class="p-quote" data-edit>"如果让人滚蛋这件事真是个绝好的主意，你明天再做也完全来得及。"</div>
+            <div class="p-insight" data-edit>愤怒遮蔽判断。饥饿时决策更差。察觉不到渐变。扭曲痛苦现实。易同意喜欢的人。这些失灵根深蒂固，发生时你毫无察觉——它们感觉起来那么正确。</div>
+            <div class="ref-row"><span class="ref-tag">汤姆·墨菲</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="认知">
+          <div class="p-num">28</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>历史不会重演，但常常押韵</div>
+            <div class="p-quote" data-edit>"不知道曾发生过什么，会使你处于残疾状态。"</div>
+            <div class="p-insight" data-edit>国际象棋大师脑中存有几百个过去棋局，面对几乎任何局面都知道该走什么。熟谙过往市场崩盘为未来崩盘做准备。但需要强迫自己铭记的心理仪式——这个教训极易被遗忘。</div>
+            <div class="ref-row"><span class="ref-tag">马克·吐温</span> <span class="ref-tag">杜兰特</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="theme-section" id="theme-系统">
+      <div class="theme-header">
+        <div class="theme-label">系统与协作</div>
+        <div class="theme-count">10 条原则</div>
+      </div>
+      <div class="theme-desc" data-edit>洞察复杂世界底层的运作规律</div>
+      <div class="p-grid">
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">07</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>能管理人的人，管理那些只能管事物的人；能管钱的人，管理一切</div>
+            <div class="p-quote" data-edit>"你所能调动的产出，取决于你拥有的杠杆以及对每个时间单位的运用。"</div>
+            <div class="p-insight" data-edit>单人领时薪=线性收入。管理他人=杠杆放大。管理资本=理解时间的回报。层层递进的杠杆体系。</div>
+            <div class="ref-row"><span class="ref-tag">杜兰特</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">08</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>激励</div>
+            <div class="p-quote" data-edit>"我们只做符合自身利益的事。当激励足够大，任何事情都可能发生。"</div>
+            <div class="p-insight" data-edit>若想让某事发生，把所有人的利益都对准它。苏联逮捕配额、销售佣金反转、巴甫洛夫的条件反射——激励塑造一切行为。</div>
+            <div class="ref-row"><span class="ref-tag">巴甫洛夫</span> <span class="ref-tag">约翰·亚当斯</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">12</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>规模经济</div>
+            <div class="p-quote" data-edit>"你的利润，正是别人的机会。"</div>
+            <div class="p-insight" data-edit>规模带来效率——生物体越大，每克组织所需能量越少。但利润是别人的机会。Costco/Walmart/Amazon把节省让给顾客，几乎不可能被淘汰。</div>
+            <div class="ref-row"><span class="ref-tag">索尔·普莱斯</span> <span class="ref-tag">Costco</span> <span class="ref-tag">Amazon</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">18</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>深层的简单</div>
+            <div class="p-quote" data-edit>"在事物的底部，只有少数几个元件充当着乐高积木。"</div>
+            <div class="p-insight" data-edit>95%生物物质仅由4种元素构成。3条定律+引力解释所有运动。麦克斯韦4个方程统一电磁学。贝索斯将亚马逊建立在3点上：更低价格、更快配送、更丰富选择。</div>
+            <div class="ref-row"><span class="ref-tag">米兰科维奇</span> <span class="ref-tag">贝索斯</span> <span class="ref-tag">麦克斯韦</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">20</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>系统天然趋向去中心化与特化</div>
+            <div class="p-quote" data-edit>"一群各有所长的工人，产出远超一群通才。"</div>
+            <div class="p-insight" data-edit>亚当·斯密的分工针厂、达尔文的器官特化、哈耶克对中央计划的批判、社会从君主制到民主制的演进——都指向同一方向。</div>
+            <div class="ref-row"><span class="ref-tag">亚当·斯密</span> <span class="ref-tag">达尔文</span> <span class="ref-tag">哈耶克</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">21</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>复杂适应系统</div>
+            <div class="p-quote" data-edit>"世界就是它自己最快的计算器。"</div>
+            <div class="p-insight" data-edit>经济学、心理学、社会学由复杂适应系统构成。一个节点的行为影响所有节点，反过来又影响一切。输入稍有变动，整个系统震荡，输出无法确定。线性思维在这些领域必然失败。</div>
+            
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">29</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>均变论 vs 灾变论</div>
+            <div class="p-quote" data-edit>"护城河几乎在一夜之间就消失了。公司一直享受超额回报，直到某个瞬间，它突然不再享有。"</div>
+            <div class="p-insight" data-edit>达尔文的渐进演化vs古尔德的间断平衡。市场相信超额收益线性压缩至零，但现实是护城河一夜消失。克里斯滕森的'颠覆'同理。</div>
+            <div class="ref-row"><span class="ref-tag">达尔文</span> <span class="ref-tag">古尔德</span> <span class="ref-tag">克里斯滕森</span> <span class="ref-tag">mjmauboussin</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">30</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>鲁拉帕鲁扎效应（合奏效应）</div>
+            <div class="p-quote" data-edit>"非凡的结果，通常是多个因素同时同向合力的产物。"</div>
+            <div class="p-insight" data-edit>多件事同时往同方向使劲，使结果发生的可能性大大增加。芒格用此解释可口可乐的成功和统一教信徒的皈依。帮你以'多股平行顺风'的方式思考。</div>
+            <div class="ref-row"><span class="ref-tag">查理·芒格</span> <span class="ref-tag">可口可乐</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">32</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>技术的角色，就是把复杂昂贵的东西变便宜、变普及</div>
+            <div class="p-quote" data-edit>"技术将一种饱受渴求的资源变得日益充裕，其价格和使用门槛则不断下降。"</div>
+            <div class="p-insight" data-edit>冯·诺依曼的第一台计算机→IBM大型机百万美元→苹果PC数百美元→手机/iPad数百美元，幼儿也能直觉使用。</div>
+            <div class="ref-row"><span class="ref-tag">冯·诺依曼</span> <span class="ref-tag">苹果</span></div>
+          </div>
+        </div>
+        <div class="p-card" data-theme="系统">
+          <div class="p-num">33</div>
+          <div class="p-body">
+            <div class="p-title" data-edit>吸引子状态</div>
+            <div class="p-quote" data-edit>"系统会收敛到某个均衡——识别出那个地方，能让你做出好得多的决策。"</div>
+            <div class="p-insight" data-edit>自由市场中买卖双方的推拉博弈使价格落于均衡点。这种'系统收敛到均衡'的心智模型几乎适用于任何领域。</div>
+            
+          </div>
+        </div>
+      </div>
+    </section>
+</main>
+
+<!-- Nothing Editor -->
+<div id="ne-toolbar">
+  <button id="ne-toggle">编辑</button>
+  <span class="ne-sep"></span>
+  <button id="ne-undo" disabled>撤销</button>
+  <button id="ne-redo" disabled>重做</button>
+  <span class="ne-sep"></span>
+  <button id="ne-export">导出</button>
+</div>
+<div class="ne-mode-label" id="ne-mode">浏览</div>
+<div class="ne-toast" id="ne-toast"></div>
+
+<script>
+(function(){
+  var body = document.body;
+  var toggle = document.getElementById('ne-toggle');
+  var undoBtn = document.getElementById('ne-undo');
+  var redoBtn = document.getElementById('ne-redo');
+  var exportBtn = document.getElementById('ne-export');
+  var modeLabel = document.getElementById('ne-mode');
+  var toast = document.getElementById('ne-toast');
+  var editing = false;
+  var undoStack = [], redoStack = [];
+  var observer = null;
+  var snapshotTimer = null;
+
+  function snapshot() {
+    undoStack.push(body.innerHTML);
+    if(undoStack.length > 50) undoStack.shift();
+    redoStack = [];
+    undoBtn.disabled = false;
+    redoBtn.disabled = true;
+  }
+
+  function startObserving() {
+    snapshot();
+    observer = new MutationObserver(function() {
+      clearTimeout(snapshotTimer);
+      snapshotTimer = setTimeout(snapshot, 500);
+    });
+    observer.observe(body,{childList:true,subtree:true,characterData:true,attributes:false});
+  }
+
+  function stopObserving() {
+    if(observer) { observer.disconnect(); observer = null; }
+    clearTimeout(snapshotTimer);
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function(){toast.classList.remove('show')},1200);
+  }
+
+  toggle.addEventListener('click',function(){
+    editing = !editing;
+    if(editing){
+      body.classList.add('editing');
+      toggle.textContent = '编辑中';
+      toggle.classList.add('editing');
+      modeLabel.textContent = '编辑模式';
+      var eds = document.querySelectorAll('[data-edit]');
+      for(var i=0;i<eds.length;i++) eds[i].contentEditable = true;
+      startObserving();
+    }else{
+      body.classList.remove('editing');
+      toggle.textContent = '编辑';
+      toggle.classList.remove('editing');
+      modeLabel.textContent = '浏览';
+      var eds = document.querySelectorAll('[data-edit]');
+      for(var i=0;i<eds.length;i++) eds[i].contentEditable = false;
+      stopObserving();
+    }
+  });
+
+  undoBtn.addEventListener('click',function(){
+    if(!undoStack.length) return;
+    redoStack.push(body.innerHTML);
+    body.innerHTML = undoStack.pop();
+    redoBtn.disabled = false;
+    if(!undoStack.length) undoBtn.disabled = true;
+    if(editing){
+      var eds = document.querySelectorAll('[data-edit]');
+      for(var i=0;i<eds.length;i++) eds[i].contentEditable = true;
+    }
+    showToast('[已撤销]');
+  });
+
+  redoBtn.addEventListener('click',function(){
+    if(!redoStack.length) return;
+    undoStack.push(body.innerHTML);
+    body.innerHTML = redoStack.pop();
+    undoBtn.disabled = false;
+    if(!redoStack.length) redoBtn.disabled = true;
+    if(editing){
+      var eds = document.querySelectorAll('[data-edit]');
+      for(var i=0;i<eds.length;i++) eds[i].contentEditable = true;
+    }
+    showToast('[已重做]');
+  });
+
+  exportBtn.addEventListener('click',function(){
+    var clone = document.body.cloneNode(true);
+    clone.classList.remove('editing');
+    var remove = clone.querySelectorAll('#ne-toolbar,.ne-mode-label,.ne-toast,style[id]');
+    for(var i=0;i<remove.length;i++) remove[i].remove();
+    var eds = clone.querySelectorAll('[data-edit]');
+    for(var i=0;i<eds.length;i++){ eds[i].removeAttribute('contenteditable'); eds[i].removeAttribute('data-edit'); }
+    var html = '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1.0">\n<title>心智操作系统·34条原则</title>\n' +
+      document.head.innerHTML.replace(/\s*\/\* Nothing Editor.*?\*\//gs,'') +
+      '\n</head>\n' + clone.outerHTML + '\n</html>';
+    var blob = new Blob([html],{type:'text/html'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '心智操作系统-34条原则.html';
+    a.click();
+    showToast('[已导出]');
+  });
+
+  document.addEventListener('keydown',function(e){
+    if(!editing) return;
+    if(e.key==='Enter' && !e.shiftKey){
+      e.preventDefault();
+      document.activeElement.blur();
+    }
+    if(e.key==='Escape'){ document.activeElement.blur(); }
+  });
+
+  /* Filter */
+  var filterBtns = document.querySelectorAll('.tag-btn[data-filter]');
+  var cards = document.querySelectorAll('.p-card');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click',function(){
+      filterBtns.forEach(function(b){b.classList.remove('active')});
+      btn.classList.add('active');
+      var f = btn.dataset.filter;
+      cards.forEach(function(c){
+        if(f==='all' || c.dataset.theme===f){c.classList.remove('hidden')}
+        else{c.classList.add('hidden')}
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

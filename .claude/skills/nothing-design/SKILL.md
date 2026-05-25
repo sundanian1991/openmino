@@ -125,7 +125,7 @@ Lead section → heaviest treatment. Secondary → different form. Tertiary → 
 - No gradients in UI chrome
 - No shadows. No blur. Flat surfaces, border separation.
 - No skeleton loading screens. Use `[LOADING...]` text or segmented spinner.
-- No toast popups. Use inline status text: `[SAVED]`, `[ERROR: ...]`
+- No toast popups. Use inline status text: `[已保存]`, `[错误：...]`
 - No sad-face illustrations, cute mascots, or multi-paragraph empty states
 - No zebra striping in tables
 - No filled icons, multi-color icons, or emoji as UI
@@ -161,12 +161,12 @@ For detailed token values, component specs, and platform-specific guidance:
 
 | Level | Feature | Behavior |
 |-------|---------|----------|
-| **P0** | Edit mode toggle | Top-right button: `EDIT` / `EDITING` with red highlight |
+| **P0** | Edit mode toggle | Top-right button: `编辑` / `编辑中` with red highlight |
 | **P0** | Full text editing | All `[data-edit]` elements become `contenteditable` in edit mode |
-| **P0** | Edit state indicator | Three-layer feedback: button turns red + page `inset` red border + bottom `EDIT MODE` label |
+| **P0** | Edit state indicator | Three-layer feedback: button turns red + page `inset` red border + bottom `编辑模式` label |
 | **P0** | Export clean HTML | Strip editor code + `data-edit` + `contenteditable`, download as `.html` |
-| **P1** | Undo / Redo | MutationObserver snapshots (500ms debounce, max 50). `UNDO` / `REDO` buttons in toolbar |
-| **P1** | Inline toast feedback | `[SAVED]` `[UNDO]` `[REDO]` `[EXPORTED]` — short-lived, no popup |
+| **P1** | Undo / Redo | MutationObserver snapshots (500ms debounce, max 50). `撤销` / `重做` buttons in toolbar |
+| **P1** | Inline toast feedback | `[已保存]` `[已撤销]` `[已重做]` `[已导出]` — short-lived, no popup |
 
 ### 6.2 Editable Elements
 
@@ -191,14 +191,14 @@ Inject before `</body>` with comment markers for clean export:
 <!-- Nothing Editor 注入开始 -->
 <style id="ne-styles">/* Editor CSS */</style>
 <div id="ne-toolbar">
-  <button id="ne-toggle">EDIT</button>
+  <button id="ne-toggle">编辑</button>
   <span class="ne-sep"></span>
-  <button id="ne-undo" disabled>UNDO</button>
-  <button id="ne-redo" disabled>REDO</button>
+  <button id="ne-undo" disabled>撤销</button>
+  <button id="ne-redo" disabled>重做</button>
   <span class="ne-sep"></span>
-  <button id="ne-export">EXPORT</button>
+  <button id="ne-export">导出</button>
 </div>
-<div class="ne-mode-label" id="ne-mode">VIEW</div>
+<div class="ne-mode-label" id="ne-mode">浏览</div>
 <div class="ne-toast" id="ne-toast"></div>
 <script>/* Editor JS */</script>
 <!-- Nothing Editor 注入结束 -->
@@ -219,12 +219,12 @@ The editor follows Nothing design principles — monochrome, mechanical, precise
 - **Edit mode**: Page gets `inset` 2px red `#D71921` border (not a separate frame — the page IS the frame)
 - **Editable elements**: Dashed outline `transparent` → hover `rgba(255,255,255,.1)` → focus `#D71921`
 - **Toast**: White pill on dark, black pill on light. 1.2s fade, no animation
-- **Mode label**: `Space Mono` 9px, ALL CAPS, letter-spacing 3px, `--text3` color
+- **Mode label**: `Space Mono` 9px, letter-spacing 3px, `--text3` color（中文内容不做 ALL CAPS 转换）
 
 ### 6.5 Editor JS Logic (Summary)
 
 ```
-1. Toggle: click EDIT → body.editing → [data-edit].contentEditable = true → start MutationObserver
+1. Toggle: click 编辑 → body.editing → [data-edit].contentEditable = true → start MutationObserver
 2. Snapshot: MutationObserver (500ms debounce) → push to undoStack, clear redoStack, max 50
 3. Undo: swap current innerHTML ↔ undoStack.pop(), push to redoStack
 4. Redo: swap current innerHTML ↔ redoStack.pop(), push to undoStack
@@ -240,7 +240,7 @@ The editor follows Nothing design principles — monochrome, mechanical, precise
 - No image upload/replace
 - No localStorage persistence — each open is fresh state
 - No property panel for CSS tweaks — if layout needs changing, redesign in AI
-- No toast popups for saves — inline text `[SAVED]` only (per Section 3 anti-patterns)
+- No toast popups for saves — inline text `[已保存]` only (per Section 3 anti-patterns)
 
 ### 6.7 Edit vs. Create Boundary
 
