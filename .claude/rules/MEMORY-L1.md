@@ -12,27 +12,11 @@ pos: .claude/rules/MEMORY-L1.md
 
 ## 用户画像
 
-**时区**：Asia/Shanghai | **高效时段**：晚上、工作日早10前/晚9后
+**时区**：Asia/Shanghai | **高效**：晚上、工作日早10前/晚9后 | **沟通**：结构化、直白、数据说话
 
-**沟通**：结构化、直白、数据说话，不说"看情况"。不清先问。
+**职责**：服务组-供应商管理，上级王易人 | 主责：全量管理（合规/准入/清退/分工）| 重点6家：毅航、毛毛虫、伽玛、赛维斯、岐力、翰锐（金条头部，3亿+职场）
 
-**核心工作**：供应商管理 + BPO运营 | 30+供应商，3000+人团队
-
-**职责**：服务组-供应商管理（非负责人），上级王易人 | 主责：全量管理（合规、准入、清退、分工）| 重点：毅航、毛毛虫、伽玛、赛维斯、岐力、翰锐（金条头部6家，3亿+职场）
-
-**理念**：三问原则、边界清晰、职责明确
-
-**一年愿景**：制度细化到场景 | 供应商双赢 | 业绩节节高
-
-**理想生活**：周末自驾旅行 | 深入理解人生
-
-### 主动行为
-
-**月度提醒**：每月5号提醒上月业绩和排名；收到后自动分析，输出 3-5 家重点供应商及沟通重点
-
-**逆向提示**：业绩下滑/新准入/制度问题/月底季末 → 主动问要不要分析/框架/规则/汇报
-
-**安全**：敏感操作前确认（删除、修改、发送）
+**主动行为**：每月5号提醒业绩排名+分析 | 业绩下滑/新准入/制度问题 → 主动问 | 敏感操作前确认
 
 ---
 
@@ -56,11 +40,7 @@ pos: .claude/rules/MEMORY-L1.md
 
 ## 会话启动
 
-**默认（心跳/简单对话）**：读本文件 + `memory/state.json`，不读 todo。
-
-**完整启动（新任务/上下文恢复）**：+ 读 `memory/context/todo.md` + `memory/events/` 最近2天。
-
-**截断恢复**：`<context_truncated>` / "继续" / "我们刚才到哪了" → 读 `workspace/*/对话总结-*.md`
+**心跳**：读本文件 + `memory/state.json` | **完整启动**：+ todo.md + events 最近2天 | **截断恢复**：读 `workspace/*/对话总结-*.md`
 
 ---
 
@@ -69,22 +49,12 @@ pos: .claude/rules/MEMORY-L1.md
 关键信息先写后答 | 触发：修正、专有名词、偏好、决策、具体值、异常、年老师原话
 
 **三层落盘**：
-1. **Working Buffer**（实时）：`memory/thinking/buffer.md` — 对话中发现就写，不等结束
-2. **事件化压缩**（对话结束时）：buffer 内容按 events schema 结构化写入 `memory/events/YYYY-MM/YYYY-MM-DD.json`，更新 `memory/state.json`
-3. **正式记忆**（定期合并）：合并到 `memory/MEMORY.md` / `insights.md` / `thinking/journal.md`，然后清空 buffer
+1. **Buffer**（实时）：`memory/thinking/buffer.md`
+2. **事件化**（对话结束时）：buffer → `memory/events/YYYY-MM/YYYY-MM-DD.json` + `memory/state.json`
+3. **正式记忆**（定期合并）：→ `memory/MEMORY.md` / `insights.md`，清空 buffer
 
 ---
 
 ## 记忆文件
 
 详见 `memory/` 目录
-
----
-
-## GitHub CLI
-
-**账号**：sundanian1991 | 已登录（keyring）| https | admin:org, repo
-
----
-
-*更新：2026-05-04 — 三层落盘（追加事件化压缩层 + state.json 状态快照）*
