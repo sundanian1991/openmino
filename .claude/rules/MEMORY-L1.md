@@ -54,10 +54,13 @@ pos: .claude/rules/MEMORY-L1.md
 
 ---
 
-## 当前状态
+## 会话启动
 
-> 权威：`06-NOW.md` | 待办：`memory/context/todo.md` | 状态快照：`memory/state.json`
-> 近期事件：`memory/events/YYYY-MM/`（会话结束时结构化写入）
+**默认（心跳/简单对话）**：读本文件 + `memory/state.json`，不读 todo。
+
+**完整启动（新任务/上下文恢复）**：+ 读 `memory/context/todo.md` + `memory/events/` 最近2天。
+
+**截断恢复**：`<context_truncated>` / "继续" / "我们刚才到哪了" → 读 `workspace/*/对话总结-*.md`
 
 ---
 
