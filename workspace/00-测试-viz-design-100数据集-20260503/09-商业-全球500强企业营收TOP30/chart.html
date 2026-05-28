@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球500强企业营收TOP30</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #FAFAFA; font-family: system-ui, -apple-system, sans-serif; padding: 32px; }
+  .chart-container { max-width: 960px; margin: 0 auto; }
+  .main-title { font-size: 17px; font-weight: 600; color: #141413; margin-bottom: 4px; }
+  .sub-title { font-size: 11px; color: #A3A29B; margin-bottom: 20px; }
+  #chart { width: 100%; height: 820px; }
+  .insight { font-size: 13px; color: #5F5A54; margin-top: 16px; line-height: 1.7; max-width: 720px; }
+  .insight strong { color: #3D3D3A; }
+  .source { font-size: 11px; color: #A3A29B; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="chart-container">
+  <div class="main-title">Top 30 企业营收差距达 5.6 倍，Walmart 领先末位中国银行 46 万亿</div>
+  <div class="sub-title">2024 年度 Fortune Global 500 营收前 30 位 | 单位：亿美元 | 灰色虚线为均值</div>
+  <div id="chart"></div>
+  <div class="insight">
+    <strong>均值约 32 万亿美元</strong>，Top 5（Walmart、Amazon、国家电网、中石油、中石化）全部超过均值。<strong>美国 12 家</strong>入榜横跨零售到医疗，<strong>中国 10 家</strong>集中在公用事业、炼油和银行业。
+  </div>
+  <div class="source">数据来源：Fortune Global 500 | 2024 年度排名</div>
+</div>
+
+<script>
+const WARM = '#c26d3a';
+const STONE = '#C8C3BA';
+
+const companies = [
+  { name: 'Walmart', revenue: 648125, country: '美国' },
+  { name: 'Amazon', revenue: 574785, country: '美国' },
+  { name: 'State Grid', revenue: 530097, country: '中国' },
+  { name: 'CNPC', revenue: 483015, country: '中国' },
+  { name: 'Sinopec', revenue: 471149, country: '中国' },
+  { name: 'Saudi Aramco', revenue: 461640, country: '沙特' },
+  { name: 'Apple', revenue: 383482, country: '美国' },
+  { name: 'UnitedHealth', revenue: 371622, country: '美国' },
+  { name: 'Berkshire', revenue: 364482, country: '美国' },
+  { name: 'CVS Health', revenue: 357776, country: '美国' },
+  { name: 'Volkswagen', revenue: 349346, country: '德国' },
+  { name: 'Exxon Mobil', revenue: 334707, country: '美国' },
+  { name: 'CSCEC', revenue: 325610, country: '中国' },
+  { name: 'Toyota', revenue: 310606, country: '日本' },
+  { name: 'Alphabet', revenue: 307394, country: '美国' },
+  { name: 'McKesson', revenue: 297183, country: '美国' },
+  { name: 'Cencora', revenue: 262172, country: '美国' },
+  { name: 'Shell', revenue: 280145, country: '英国' },
+  { name: 'Costco', revenue: 242290, country: '美国' },
+  { name: 'Microsoft', revenue: 245122, country: '美国' },
+  { name: 'BP', revenue: 224844, country: '英国' },
+  { name: 'TotalEnergies', revenue: 217393, country: '法国' },
+  { name: 'Chevron', revenue: 200949, country: '美国' },
+  { name: 'Samsung', revenue: 189350, country: '韩国' },
+  { name: 'Home Depot', revenue: 152669, country: '美国' },
+  { name: 'ICBC', revenue: 138789, country: '中国' },
+  { name: 'CCB', revenue: 132074, country: '中国' },
+  { name: 'ABC', revenue: 125479, country: '中国' },
+  { name: 'Ping An', revenue: 124533, country: '中国' },
+  { name: 'BOC', revenue: 114918, country: '中国' },
+];
+
+companies.sort((a, b) => b.revenue - a.revenue);
+
+const mean = companies.reduce((s, c) => s + c.revenue, 0) / companies.length;
+const maxVal = companies[0].revenue;
+const minVal = companies[companies.length - 1].revenue;
+
+const names = companies.map(c => c.name);
+const barData = companies.map((c, i) => {
+  const item = {
+    value: c.revenue,
+    itemStyle: {
+      color: i === 0 ? WARM : STONE,
+      borderRadius: [0, 2, 2, 0]
+    }
+  };
+  // Top 1 标注
+  if (c.revenue === maxVal) {
+    item.label = {
+      show: true, position: 'right', fontSize: 11, fontWeight: 600,
+      color: WARM,
+      formatter: (c.revenue / 10000).toFixed(1) + '万'
+    };
+  }
+  // 尾部标注
+  if (c.revenue === minVal) {
+    item.label = {
+      show: true, position: 'right', fontSize: 11, fontWeight: 600,
+      color: '#8B4513',
+      formatter: (c.revenue / 10000).toFixed(1) + '万'
+    };
+  }
+  return item;
+});
+
+const chart = echarts.init(document.getElementById('chart'));
+
+chart.setOption({
+  animation: false,
+  grid: { top: 10, right: 80, bottom: 22, left: 155 },
+  xAxis: {
+    type: 'value',
+    axisLine: { show: false },
+    axisTick: { show: false },
+    splitLine: { show: false },
+    axisLabel: {
+      color: '#A3A29B', fontSize: 10,
+      formatter: function(v) { return (v / 10000).toFixed(0) + '万'; }
+    }
+  },
+  yAxis: {
+    type: 'category',
+    data: names,
+    inverse: true,
+    axisLine: { show: false },
+    axisTick: { show: false },
+    splitLine: { show: false },
+    axisLabel: {
+      color: '#5F5A54', fontSize: 11,
+      formatter: function(value, index) {
+        const c = companies[index];
+        return value + '  ' + c.country;
+      }
+    }
+  },
+  series: [{
+    type: 'bar',
+    data: barData,
+    barWidth: '58%',
+    barCategoryGap: '28%',
+    label: {
+      show: true, position: 'right', fontSize: 10, color: '#87867F',
+      formatter: function(p) {
+        if (p.value === maxVal || p.value === minVal) return '';
+        return (p.value / 10000).toFixed(0) + '万';
+      }
+    },
+    markLine: {
+      silent: true, symbol: 'none',
+      data: [{ xAxis: mean }],
+      lineStyle: { color: '#8B4513', type: 'dashed', width: 1 },
+      label: { show: false }
+    }
+  }],
+  graphic: [{
+    type: 'text',
+    left: 200,
+    top: 30,
+    style: {
+      text: '均值 ' + (mean / 10000).toFixed(0) + '万',
+      fill: '#8B4513',
+      fontSize: 10
+    },
+    z: 100
+  }]
+});
+
+window.addEventListener('resize', () => chart.resize());
+</script>
+</body>
+</html>

@@ -251,3 +251,37 @@ The editor follows Nothing design principles — monochrome, mechanical, precise
 | Change color or layout | AI conversation | Design system constraint, needs validation |
 | Add a new section | AI conversation | Affects three-layer hierarchy |
 | Switch dark/light mode | AI conversation | Full palette swap, not a text edit |
+
+---
+## 7. SHOWCASE & EVOLUTION
+
+### 7.1 自动存档规则
+
+每次产出最终 HTML 后，复制一份到 `references/showcase/`，命名格式 `YYYY-MM-DD-主题简述.html`。
+
+**筛选标准**：只存最终版，不存中间迭代（v1/v2 除非设计有本质变化）。同一主题多次产出只保留最新。
+
+### 7.2 Showcase 目录
+
+`references/showcase/` — 按日期+主题命名的设计作品集。
+
+启动时可回看近 3 份产出，校准设计水准。
+
+### 7.3 Evolution Log
+
+记录每次回溯评审发现的调整，不修改核心设计原则。
+
+> **格式**：`| 日期 | 发现 | 调整 |`
+>
+> 核心原则（Section 1-2）是价值观，不是参数。Evolution Log 只记录 tokens/components 层面的微调，以及"常见错误"的补充。
+
+| 日期 | 发现 | 调整 |
+|------|------|------|
+| 2026-05-26 | 初始化 showcase，收录 12 份历史产出 | 建档 |
+| 2026-05-27 | 补充 7 份 review 目录产出至 showcase（共 21 份） | 同步 |
+
+### 7.4 回溯评审触发
+
+- 年老师主动要求时
+- 累计新增 5 份产出后自动提醒
+- 评审内容：对照 Section 2 规则检查近期产出的一致性和质量
