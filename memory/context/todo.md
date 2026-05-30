@@ -27,6 +27,10 @@
 | 17 | mck-chart-render 交互式图表选择流程 | 05-24 | 年老师想法：输入数据→列出可做维度→AskUserQuestion 多选→批量出图 |
 | 18 | 合同签署自动化（27家供应商） | 05-29 | 批量填表脚本已建，探索 Playwright MCP / Computer Use 替代笨脚本，batch_fill_contract.js 待入库 doc 知识库 |
 | 19 | Storytelling with Data 可视化 | 05-29 | nothing-design 风格、策展流程驱动、信息密度+可读性综合考量 |
+| 20 | esther-design-system 品牌规范定制 | 05-30 | 安装后按年老师偏好调整（黑色主色+红色蓝色强调+暖底偏灰背景），组件库 emoji 处理 |
+| 21 | AI 转型方案（技能搜索+自建+引导流程） | 05-30 | Windows 场景痛点挖掘→搜索已有 Skill 匹配→确认哪些可自建/组合→产出完整方案+HTML 报告，发综合运营转型群 |
+| 22 | 外呼频控接口可视化 | 05-30 | nothing-design 风格，内容整理便于信息传递 |
+| 23 | 供应商活水机制方案落地 | 05-30 | 三级升降+赛季制，企业主贷试点，Q3 测试 |
 
 ---
 
