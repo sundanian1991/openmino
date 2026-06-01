@@ -159,7 +159,10 @@ mkdir -p memory/daily/$(date +%Y-%m)
 
 **触发条件**：修正、专有名词、偏好、决策、草稿修改、具体值
 
-**执行方式**：触发时立即写入 `MEMORY.md` 或 `insights.md`
+**三层落盘**（详见 `.claude/rules/MEMORY-L1.md`）：
+1. **Buffer**（实时）：对话中发现触发信息时，立即追加到 `memory/thinking/buffer.md`
+2. **事件化**（自动化）：Stop Hook → `memory/.wal-queue.ndjson` → Cron 21:00 处理 → `memory/events/` + `memory/state.json`
+3. **正式记忆**（定期合并）：每周记忆维护 → `memory/MEMORY.md` / `insights.md`，清空 buffer
 
 ---
 
