@@ -60,17 +60,57 @@ Georgia 是系统字体，不需加载。
 
 ### Step 4: 选视觉形式
 
-**4a. 判定锚点 → 推荐组件速查**
+**4a. 锚点 → 组件速查（所有组件名与 CSS 精确匹配）**
 
-| 锚点 | 识别信号 | Hero 级 | Section 级 | Detail 级 |
-|------|---------|---------|-----------|----------|
-| 宣言 | 一句话结论 | `hero-split` `hero-marquee` | `brand-statement` | — |
-| 数据矩阵 | 2-4 个硬数据 | `hero-stat-grid` | `data-matrix` `numeral-grid` | `stat-block` `metric-card` |
-| 对比/张力 | 两股对立 | `hero-split` | `tension-grid` | `comparison-row` |
-| 时间线 | 有先后顺序 | — | `timeline` `progress-trail` | `step-number` |
-| 结构/体系 | 层级/组成 | — | `layer-stack` `bento-grid` | `spec-table` |
-| 进度/仪表 | 达成率/健康度 | — | `progress-section` | `gauge` `segmented-bar` `sparkline` |
-| 图像 | 视觉主体是图 | `hero-frame` | `image-grid` | — |
+Hero 级（整页 1 处）：
+
+| 锚点 | 推荐组件 | 所在 CSS |
+|------|---------|---------|
+| 宣言/立场 | `hero-statement` | dataviz |
+| 宣言+视觉 | `hero-split` | components, ext |
+| 大数字阵列 | `hero-numeral` | dataviz |
+| 深色冲击 | `hero-dark` | dataviz |
+| 深色+脉冲 | `hero-pulse` | ext |
+| 图片/产品 | `hero-clip` | components |
+
+Section 级（每区 1 处）：
+
+| 锚点 | 推荐组件 | 所在 CSS |
+|------|---------|---------|
+| 对比/张力 | `tension-grid` | dataviz, components |
+| 对比双列 | `comparison` | dataviz |
+| 流程对比 | `flow-pipeline` | dataviz |
+| 时间线 | `timeline-track` | dataviz |
+| 层级/组成 | `layer-stack` | dataviz, ext |
+| 不等分网格 | `bento` | dataviz |
+| 步骤序列 | `step-sequence` | dataviz |
+| 进度轨道 | `level-track` | dataviz |
+| 卡片组 | `card-triad` / `card-quad` | dataviz |
+| 深色数据矩阵 | `data-matrix` | ext |
+| 章节索引 | `chapter-index` | ext |
+
+Detail 级（每区可多处）：
+
+| 用途 | 推荐组件 | 所在 CSS |
+|------|---------|---------|
+| 单数字+标签 | `stat-block` | dataviz |
+| 指标卡 | `metric-card` | components, dataviz |
+| KPI+变化量 | `kpi-card` | dataviz |
+| 排名条 | `rank-bar` | dataviz |
+| 分段条 | `seg-bar` | dataviz |
+| 进度条+标签 | `progress-row` | dataviz |
+| 堆叠条 | `stacked-bar` | dataviz |
+| 子弹图 | `bullet-chart` | dataviz |
+| 仪表盘 | `gauge-unit` | dataviz |
+| 趋势线 | `sparkline` | dataviz |
+| 小多图 | `small-multiples` | dataviz |
+| 权重行 | `weight-row` | dataviz |
+| 数据表 | `data-table` | dataviz, components |
+| 规格表 | `spec-table` | components, ext |
+| 内联数据行 | `inline-data-row` | dataviz |
+| 提示框 | `callout` | dataviz, components |
+
+品牌场景组件（Economist/FT/Bloomberg/F1/Spotify 等，按需）：见 `references/components-ext.md`
 
 **4b. 节奏检查**
 
