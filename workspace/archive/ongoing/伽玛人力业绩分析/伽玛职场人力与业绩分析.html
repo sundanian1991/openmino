@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>伽玛职场人力结构与业绩低迷根因分析</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --ink: #000000;
+    --ground: #FFFFFF;
+    --bone: #F5F2EB;
+    --brick: #B83A1F;
+    --brick-dim: rgba(184, 58, 31, 0.07);
+    --muted: #6B6B6B;
+    --rule: #D0CEC8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Grid shell ── */
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* ── Full-bleed rule ── */
+  .full-rule {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    height: 1px;
+    background: var(--ink);
+    margin-bottom: 0;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 80px 0 56px;
+    border-bottom: 3px solid var(--ink);
+    margin-bottom: 0;
+  }
+  .hero-meta {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    margin-bottom: 24px;
+    max-width: 900px;
+  }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 640px;
+    line-height: 1.65;
+  }
+
+  /* ── Section divider: color block with huge number ── */
+  .act-divider {
+    display: flex;
+    align-items: stretch;
+    margin: 64px 0 0;
+    border-top: 3px solid var(--ink);
+  }
+  .act-num {
+    background: var(--ink);
+    color: var(--ground);
+    font-size: clamp(48px, 8vw, 80px);
+    font-weight: 900;
+    line-height: 1;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    letter-spacing: -0.03em;
+  }
+  .act-title-block {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+  }
+  .act-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .act-title {
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Stat strip ── */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 48px 0;
+  }
+  .stat-cell {
+    background: var(--ground);
+    padding: 28px 24px;
+  }
+  .stat-cell .num {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .stat-cell .num.red { color: var(--brick); }
+  .stat-cell .label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  /* ── Content blocks ── */
+  .content {
+    padding: 48px 0;
+  }
+  .content p {
+    max-width: 680px;
+    margin-bottom: 16px;
+  }
+  .content h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 40px 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Big idea callout ── */
+  .big-idea {
+    background: var(--brick-dim);
+    padding: 32px;
+    margin: 0 0 48px;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .big-idea strong {
+    color: var(--brick);
+    font-weight: 700;
+  }
+
+  /* ── Chart block ── */
+  .chart-block {
+    margin: 48px 0;
+  }
+  .chart-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+  .chart-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--brick);
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+  .chart-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .chart-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-left: 36px;
+  }
+  .chart-canvas-wrap {
+    position: relative;
+    background: var(--bone);
+    padding: 28px 24px 20px;
+    max-width: 720px;
+  }
+
+  /* ── Data table ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 24px 0;
+  }
+  .data-table th {
+    text-align: left;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table .r {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-weight: 500;
+  }
+  .data-table .hl td {
+    background: var(--brick-dim);
+    font-weight: 700;
+  }
+  .data-table .dim td {
+    color: var(--muted);
+  }
+
+  /* ── Strategy table ── */
+  .strategy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 32px 0;
+  }
+  .strategy-card {
+    background: var(--ground);
+    padding: 28px;
+  }
+  .strategy-card .tag {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--ground);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .strategy-card h4 {
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .strategy-card .target {
+    font-size: 13px;
+    color: var(--brick);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .strategy-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .strategy-card .effect {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* ── Limitations ── */
+  .limitations {
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+  }
+  .limitations h3 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .limitations ol {
+    padding-left: 18px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .limitations li { margin-bottom: 4px; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 64px;
+    padding: 24px 0;
+    border-top: 3px solid var(--ink);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 768px) {
+    .page { padding: 0 20px; }
+    .stat-strip { grid-template-columns: 1fr 1fr; }
+    .strategy-grid { grid-template-columns: 1fr; }
+    .act-num { min-width: 80px; font-size: 48px; padding: 0 16px; }
+    .act-title-block { padding: 20px 16px; }
+    .chart-canvas-wrap { padding: 20px 16px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════ HERO ══════ -->
+  <header class="hero">
+    <div class="hero-meta">Internal Analysis / May 2026</div>
+    <h1>伽玛职场<br>人力结构与业绩低迷<br>根因分析</h1>
+    <p class="hero-sub">数据导出 5月12日。近30天外呼天数 = 通话时长>30分钟的天数。近30日累计转化GMV为滚动口径，非自然月。22天为月度外呼考核基准线。</p>
+  </header>
+
+  <!-- ══════ BIG IDEA ══════ -->
+  <div class="big-idea" style="margin-top:0; border-top:3px solid var(--ink);">
+    <strong>核心判断：</strong>3-4月集中入职165名新人（占当前48%），叠加复贷非参评130人中47人(36%)零通话、83人低效，形成"少数人扛绝大部分业绩"的脆弱结构。业绩压力的根因不是老手产出下降，而是团队膨胀但新人尚未贡献 + 存量低效人员未清理。
+  </div>
+
+  <!-- ══════ STATS ══════ -->
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <div class="num">343</div>
+      <div class="label">在职总人数</div>
+    </div>
+    <div class="stat-cell">
+      <div class="num red">90%</div>
+      <div class="label">93人SABC核心贡献的GMV</div>
+    </div>
+    <div class="stat-cell">
+      <div class="num">165</div>
+      <div class="label">3-4月集中入职新人</div>
+    </div>
+    <div class="stat-cell">
+      <div class="num red">47</div>
+      <div class="label">复贷非参评零通话人数</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- ACT 01 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="act-divider">
+    <div class="act-num">01</div>
+    <div class="act-title-block">
+      <div class="act-label">现状</div>
+      <div class="act-title">全团队人力画像——三种形态</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <h3>首贷 vs 复贷：两条业务线必须分开看</h3>
+    <table class="data-table">
+      <thead>
+        <tr><th>维度</th><th>首贷 (120人)</th><th>复贷 (223人)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>业务本质</td><td>从0到1获取新用户</td><td>老客户持续经营转化</td></tr>
+        <tr><td>近30日总GMV</td><td class="r">9,040万 (10%)</td><td class="r">8.16亿 (90%)</td></tr>
+        <tr><td>通话活跃度</td><td>83人(69%) 日均通时90分钟+</td><td>SABC 92人(99%) 日均通时90分钟+</td></tr>
+        <tr><td>核心价值</td><td>客户池积累 + 新客转化</td><td>直接GMV产出</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 图1 -->
+    <div class="chart-block">
+      <div class="chart-header">
+        <span class="chart-num">FIG 01</span>
+        <span class="chart-title">343人实况——93人扛9成业绩，47人零通话</span>
+      </div>
+      <div class="chart-note">按通话活跃度分层：全勤产出 / 低效育成 / 零活动</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart1" height="200"></canvas>
+      </div>
+      <table class="data-table" style="margin-top:16px;">
+        <thead>
+          <tr><th>形态</th><th>群体</th><th class="r">人数</th><th class="r">占比</th><th class="r">日均通时</th><th class="r">GMV</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl"><td>全勤产出</td><td>复贷SABC核心</td><td class="r">93</td><td class="r">27%</td><td class="r">>120分钟</td><td class="r">7.96亿</td></tr>
+          <tr><td>全勤产出</td><td>首贷主力</td><td class="r">99</td><td class="r">29%</td><td class="r">90-120分钟</td><td class="r">—</td></tr>
+          <tr><td>低效/育成</td><td>复贷非参评（有通话）</td><td class="r">83</td><td class="r">24%</td><td class="r">60-120分钟</td><td class="r">2.07亿</td></tr>
+          <tr><td>低效/育成</td><td>首贷MOB1-3新手</td><td class="r">21</td><td class="r">6%</td><td class="r">—</td><td class="r">—</td></tr>
+          <tr class="hl"><td>零活动</td><td>复贷非参评（零通时）</td><td class="r">47</td><td class="r">14%</td><td class="r">0分钟</td><td class="r">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- ACT 02 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="act-divider">
+    <div class="act-num">02</div>
+    <div class="act-title-block">
+      <div class="act-label">冲突</div>
+      <div class="act-title">三个问题</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- 图2 -->
+    <div class="chart-block">
+      <div class="chart-header">
+        <span class="chart-num">FIG 02</span>
+        <span class="chart-title">3-4月入职150人 ≈ 此前约两年半的总招聘量</span>
+      </div>
+      <div class="chart-note">2026年月度入职人数，红色 = 异常峰值，虚线 = 历史月均</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart2" height="210"></canvas>
+      </div>
+      <table class="data-table" style="margin-top:16px;">
+        <thead>
+          <tr><th>时期</th><th class="r">入职人数</th><th>相对历史</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2021-2023 合计</td><td class="r">~28人</td><td>年均不到10人</td></tr>
+          <tr><td>2024 全年</td><td class="r">~56人</td><td>月均4.7人</td></tr>
+          <tr><td>2025 全年</td><td class="r">~91人</td><td>月均7.6人</td></tr>
+          <tr><td>2026 1-2月</td><td class="r">~16人</td><td>正常水平</td></tr>
+          <tr class="hl"><td>2026 3月</td><td class="r">74人</td><td>≈ 历史月均的10倍</td></tr>
+          <tr class="hl"><td>2026 4月</td><td class="r">76人</td><td>再次刷新纪录</td></tr>
+          <tr><td>2026 5月(前12天)</td><td class="r">15人</td><td>继续高位</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 图3 -->
+    <div class="chart-block">
+      <div class="chart-header">
+        <span class="chart-num">FIG 03</span>
+        <span class="chart-title">复贷非参评130人——36%完全闲置，44%效率远低于SABC</span>
+      </div>
+      <div class="chart-note">日均有效通时分段。基准：SABC核心74%日均通时>120分钟</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart3" height="200"></canvas>
+      </div>
+      <table class="data-table" style="margin-top:16px;">
+        <thead>
+          <tr><th>日均通时</th><th class="r">人数</th><th class="r">占比</th><th>判定</th></tr>
+        </thead>
+        <tbody>
+          <tr class="hl"><td>0 分钟</td><td class="r">47</td><td class="r">36%</td><td>完全闲置</td></tr>
+          <tr class="hl"><td>30-60 分钟</td><td class="r">26</td><td class="r">20%</td><td>严重低效</td></tr>
+          <tr><td>60-90 分钟</td><td class="r">19</td><td class="r">15%</td><td>低效</td></tr>
+          <tr><td>90-120 分钟</td><td class="r">15</td><td class="r">12%</td><td>偏低</td></tr>
+          <tr><td>> 120 分钟</td><td class="r">23</td><td class="r">18%</td><td>达标</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 图4 -->
+    <div class="chart-block">
+      <div class="chart-header">
+        <span class="chart-num">FIG 04</span>
+        <span class="chart-title">前30%扛着76%的业绩——核心流失 = 短期无法接替</span>
+      </div>
+      <div class="chart-note">GMV帕累托曲线：柱 = 单分位占比，线 = 累积</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart4" height="210"></canvas>
+      </div>
+      <table class="data-table" style="margin-top:16px;">
+        <thead>
+          <tr><th>分位</th><th class="r">人数</th><th class="r">累积GMV占比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>前 5%</td><td class="r">9人</td><td class="r">20.3%</td></tr>
+          <tr><td>前 10%</td><td class="r">19人</td><td class="r">34.9%</td></tr>
+          <tr><td>前 20%</td><td class="r">39人</td><td class="r">59.2%</td></tr>
+          <tr class="hl"><td>前 30%</td><td class="r">58人</td><td class="r">76.4%</td></tr>
+          <tr><td>前 50%</td><td class="r">97人</td><td class="r">95.7%</td></tr>
+          <tr class="dim"><td>后 50%</td><td class="r">98人</td><td class="r">4.3%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- ACT 03 -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="act-divider">
+    <div class="act-num">03</div>
+    <div class="act-title-block">
+      <div class="act-label">决议</div>
+      <div class="act-title">改善方向</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- 图5 -->
+    <div class="chart-block">
+      <div class="chart-header">
+        <span class="chart-num">FIG 05</span>
+        <span class="chart-title">3月入职新人已贡献21.8%总GMV——育成周期约2个月</span>
+      </div>
+      <div class="chart-note">3月入职 vs 4月入职当前产出对比</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="chart5" height="200"></canvas>
+      </div>
+      <table class="data-table" style="margin-top:16px;">
+        <thead>
+          <tr><th>指标</th><th class="r">3月入职 (45-75天)</th><th class="r">4月入职 (15-45天)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>人数</td><td class="r">74</td><td class="r">76</td></tr>
+          <tr><td>总GMV贡献</td><td class="r">6,970万 (21.8%)</td><td class="r">943万 (2.9%)</td></tr>
+          <tr><td>有GMV人数</td><td class="r">48人 (64.9%)</td><td class="r">33人 (43.4%)</td></tr>
+          <tr><td>人均外呼天数</td><td class="r">16.7天</td><td class="r">10.9天</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 图6: 行动框架 -->
+    <div class="chart-block">
+      <div class="chart-header">
+        <span class="chart-num">FIG 06</span>
+        <span class="chart-title">分群体施策——四条杠杆</span>
+      </div>
+      <div class="chart-note">按群体特征匹配改善策略</div>
+      <div class="strategy-grid">
+        <div class="strategy-card">
+          <div class="tag">杠杆 1</div>
+          <h4>清理 / 激活</h4>
+          <div class="target">零活动 47人</div>
+          <p>7天内确认状态：离岗 / 转岗 / 需淘汰</p>
+          <div class="effect">释放工位+成本，或激活后贡献</div>
+        </div>
+        <div class="strategy-card">
+          <div class="tag">杠杆 2</div>
+          <h4>提效</h4>
+          <div class="target">低效 83人</div>
+          <p>分析根因：技能差距 / 名单质量 / 管理缺位</p>
+          <div class="effect">人均通时+30分钟 = 可量化增量</div>
+        </div>
+        <div class="strategy-card">
+          <div class="tag">杠杆 3</div>
+          <h4>育成</h4>
+          <div class="target">新人 165人</div>
+          <p>标准化新人带教SOP，首月外呼达标率监控</p>
+          <div class="effect">缩短育成周期2-4周</div>
+        </div>
+        <div class="strategy-card">
+          <div class="tag">杠杆 4</div>
+          <h4>防守</h4>
+          <div class="target">SABC核心 93人</div>
+          <p>流失预警 + 激励锁定</p>
+          <div class="effect">月流失率 < 3%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ 结论 ══════ -->
+  <div class="content" style="border-top:1px solid var(--rule); padding-top:40px;">
+    <p>伽玛职场343人分层清晰：复贷SABC核心93人(27%)贡献约90%GMV；复贷非参评130人中47人零通话、83人低效；首贷120人通话活跃但短期GMV有限；165名新人在育成期。业绩压力本质是团队高速膨胀后的"产出滞后"叠加存量低效人员未清理。3月入职新人已贡献21.8%GMV，育成路径跑得通。四线推进：零活动清理、低效提效、新人育成标准化、核心防守。</p>
+  </div>
+
+  <!-- ══════ 反对证据 ══════ -->
+  <div class="limitations">
+    <h3>反对证据与局限性</h3>
+    <ol>
+      <li>"零活动"可能有二线职能（培训/质检/管理），需逐个确认岗位职责</li>
+      <li>首贷近30日转化2,356个首贷用户（MOB12+转化997人），进入复贷池后持续贡献</li>
+      <li>新人集中入职背景不明：业务扩张 → 育成正解；替代流失 → 需分析留人问题</li>
+      <li>近30日GMV ≈ 3.2亿为滚动口径，非自然月。4月完整数据需另行拉取</li>
+      <li>首贷MOB1-3新手(21人)中部分4月下旬刚上线，不宜过早定性</li>
+    </ol>
+  </div>
+
+  <!-- ══════ FOOTER ══════ -->
+  <div class="footer">
+    <span>数据来源：工作簿3-伽玛.xlsx（2026-05-12导出）</span>
+    <span>分析日期 2026-05</span>
+  </div>
+
+</div>
+
+<script>
+// ── Chart.js Global Defaults ──
+Chart.defaults.font.family = "'Noto Sans SC', 'PingFang SC', sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#6B6B6B';
+Chart.defaults.plugins.legend.display = false;
+Chart.defaults.animation.duration = 600;
+
+var INK = '#000000';
+var BRICK = '#B83A1F';
+var MUTED = '#6B6B6B';
+var RULE = '#D0CEC8';
+var BONE = '#F5F2EB';
+
+// ── FIG 01: 人力形态 ──
+new Chart(document.getElementById('chart1'), {
+  type: 'bar',
+  data: {
+    labels: ['全勤产出', '低效/育成', '零活动'],
+    datasets: [
+      { label: '复贷SABC核心', data: [93, 0, 0], backgroundColor: INK },
+      { label: '首贷主力', data: [99, 0, 0], backgroundColor: '#4A4A4A' },
+      { label: '复贷非参评(有通话)', data: [0, 83, 0], backgroundColor: BRICK },
+      { label: '首贷MOB1-3', data: [0, 21, 0], backgroundColor: 'rgba(184,58,31,0.35)' },
+      { label: '零通时', data: [0, 0, 47], backgroundColor: '#6B2015' }
+    ]
+  },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    scales: {
+      x: {
+        stacked: true,
+        grid: { color: RULE, drawBorder: false },
+        border: { display: false },
+        title: { display: true, text: '人数', font: { size: 11, weight: '500' }, color: MUTED }
+      },
+      y: {
+        stacked: true,
+        grid: { display: false },
+        border: { display: false },
+        ticks: { font: { size: 13, weight: '700' }, color: INK }
+      }
+    }
+  }
+});
+
+// ── FIG 02: 入职时间线 ──
+new Chart(document.getElementById('chart2'), {
+  type: 'bar',
+  data: {
+    labels: ['1月', '2月', '3月', '4月', '5月(前12天)'],
+    datasets: [{
+      data: [8, 8, 74, 76, 15],
+      backgroundColor: [INK, INK, BRICK, BRICK, INK],
+      barPercentage: 0.6
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: RULE, drawBorder: false },
+        border: { display: false },
+        title: { display: true, text: '入职人数', font: { size: 11, weight: '500' }, color: MUTED }
+      },
+      x: {
+        grid: { display: false },
+        border: { display: false },
+        ticks: { font: { size: 12, weight: '700' } }
+      }
+    }
+  },
+  plugins: [{
+    id: 'avgLine',
+    afterDraw: function(chart) {
+      var y = chart.scales.y.getPixelForValue(8);
+      var ctx = chart.ctx;
+      ctx.save();
+      ctx.strokeStyle = BRICK;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(chart.chartArea.left, y);
+      ctx.lineTo(chart.chartArea.right, y);
+      ctx.stroke();
+      ctx.fillStyle = BRICK;
+      ctx.font = "700 11px 'Noto Sans SC'";
+      ctx.textAlign = 'right';
+      ctx.fillText('历史月均 ~8人', chart.chartArea.right, y - 6);
+      ctx.restore();
+    }
+  }]
+});
+
+// ── FIG 03: 通时分布 ──
+new Chart(document.getElementById('chart3'), {
+  type: 'bar',
+  data: {
+    labels: ['0 分钟', '30-60', '60-90', '90-120', '>120'],
+    datasets: [{
+      data: [47, 26, 19, 15, 23],
+      backgroundColor: [BRICK, '#C4652A', INK, '#4A4A4A', '#2D6A4F'],
+      barPercentage: 0.65
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: RULE, drawBorder: false },
+        border: { display: false },
+        title: { display: true, text: '人数', font: { size: 11, weight: '500' }, color: MUTED }
+      },
+      x: {
+        grid: { display: false },
+        border: { display: false },
+        ticks: { font: { size: 12, weight: '700' } }
+      }
+    }
+  },
+  plugins: [{
+    id: 'barLabels3',
+    afterDatasetsDraw: function(chart) {
+      var ctx = chart.ctx;
+      var meta = chart.getDatasetMeta(0);
+      var pcts = ['36%', '20%', '15%', '12%', '18%'];
+      ctx.save();
+      meta.data.forEach(function(bar, i) {
+        ctx.fillStyle = INK;
+        ctx.font = "700 12px 'Noto Sans SC'";
+        ctx.textAlign = 'center';
+        ctx.fillText(chart.data.datasets[0].data[i] + '人', bar.x, bar.y - 8);
+        ctx.fillStyle = MUTED;
+        ctx.font = "400 10px 'Noto Sans SC'";
+        ctx.fillText(pcts[i], bar.x, bar.y + 14);
+      });
+      ctx.restore();
+    }
+  }]
+});
+
+// ── FIG 04: 帕累托 ──
+var pLabels = ['前5%', '前10%', '前20%', '前30%', '前50%', '后50%'];
+var pGMV = [20.3, 14.6, 24.3, 17.2, 19.3, 4.3];
+var pCumul = [20.3, 34.9, 59.2, 76.4, 95.7, 100];
+var pColors = pGMV.map(function(v, i) {
+  return i === 3 ? BRICK : (i === 5 ? 'rgba(0,0,0,0.12)' : INK);
+});
+
+new Chart(document.getElementById('chart4'), {
+  type: 'bar',
+  data: {
+    labels: pLabels,
+    datasets: [
+      {
+        type: 'bar',
+        data: pGMV,
+        backgroundColor: pColors,
+        barPercentage: 0.55,
+        yAxisID: 'y',
+        order: 2
+      },
+      {
+        type: 'line',
+        data: pCumul,
+        borderColor: BRICK,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 4,
+        pointBackgroundColor: BRICK,
+        tension: 0.3,
+        yAxisID: 'y1',
+        order: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true, max: 30,
+        grid: { color: RULE, drawBorder: false },
+        border: { display: false },
+        ticks: { callback: function(v) { return v + '%'; } },
+        title: { display: true, text: '单分位占比', font: { size: 11, weight: '500' }, color: MUTED }
+      },
+      y1: {
+        position: 'right', beginAtZero: true, max: 105,
+        grid: { display: false },
+        border: { display: false },
+        ticks: { callback: function(v) { return v + '%'; } },
+        title: { display: true, text: '累积占比', font: { size: 11, weight: '500' }, color: MUTED }
+      },
+      x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 12, weight: '700' } } }
+    }
+  },
+  plugins: [{
+    id: 'cumulLabels',
+    afterDatasetsDraw: function(chart) {
+      var ctx = chart.ctx;
+      var meta = chart.getDatasetMeta(1);
+      ctx.save();
+      ctx.fillStyle = BRICK;
+      ctx.font = "700 11px 'Noto Sans SC'";
+      ctx.textAlign = 'center';
+      meta.data.forEach(function(pt, i) {
+        ctx.fillText(pCumul[i] + '%', pt.x, pt.y - 10);
+      });
+      ctx.restore();
+    }
+  }]
+});
+
+// ── FIG 05: 新人育成 ──
+new Chart(document.getElementById('chart5'), {
+  type: 'bar',
+  data: {
+    labels: ['总GMV (万)', '有GMV人数', '人均外呼天数'],
+    datasets: [
+      { label: '3月入职', data: [6970, 48, 16.7], backgroundColor: BRICK, barPercentage: 0.5, categoryPercentage: 0.55 },
+      { label: '4月入职', data: [943, 33, 10.9], backgroundColor: INK, barPercentage: 0.5, categoryPercentage: 0.55 }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: RULE, drawBorder: false },
+        border: { display: false }
+      },
+      x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 12, weight: '700' } } }
+    },
+    plugins: {
+      legend: {
+        display: true, position: 'top', align: 'end',
+        labels: { boxWidth: 12, boxHeight: 12, font: { size: 12, weight: '700' }, color: INK, padding: 16 }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

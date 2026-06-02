@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mino 操作 SOP — 京东电子签约平台批量合同签署</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================
+   HALLMARK TOKENS — Quiet Theme
+   ============================ */
+:root {
+  --color-paper: #FFFFFF;
+  --color-paper-2: #F8F8F8;
+  --color-paper-3: #F0F0F0;
+  --color-ink: #0A0A0A;
+  --color-ink-2: #525252;
+  --color-ink-3: #A3A3A3;
+  --color-border: #E5E5E5;
+  --color-border-strong: #D4D4D4;
+  --color-accent: #0A0A0A;
+  --color-success: #16A34A;
+  --color-error: #DC2626;
+
+  --font-display: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-body: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', monospace;
+
+  --text-display: clamp(2.5rem, 5vw + 0.5rem, 4.75rem);
+  --text-3xl: 1.875rem;
+  --text-2xl: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-lg: 1.125rem;
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+}
+
+/* ============================
+   RESET
+   ============================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  line-height: 1.6;
+}
+
+/* ============================
+   LAYOUT
+   ============================ */
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-24) var(--space-6);
+}
+
+/* ============================
+   HEADER
+   ============================ */
+.header {
+  margin-bottom: var(--space-16);
+}
+
+.header-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  margin-bottom: var(--space-3);
+}
+
+.header h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-ink);
+}
+
+.header-meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-ink-3);
+  margin-top: var(--space-3);
+}
+
+/* ============================
+   HERO STATS
+   ============================ */
+.hero-stats {
+  display: flex;
+  gap: var(--space-10);
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-16);
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.hero-stat-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+.hero-stat-value {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.hero-stat-value.success { color: var(--color-success); }
+.hero-stat-value.error { color: var(--color-error); }
+
+/* ============================
+   NARRATIVE WORKFLOW — STAGE
+   ============================ */
+.stage {
+  margin-bottom: var(--space-16);
+}
+
+.stage-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: 3px solid var(--color-ink);
+}
+
+.stage-num {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.stage-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.stage-content {
+  font-size: var(--text-base);
+  line-height: 1.7;
+  color: var(--color-ink-2);
+}
+
+/* ============================
+   TABLE
+   ============================ */
+.table-wrap {
+  overflow-x: auto;
+  margin: var(--space-6) 0;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+th, td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  font-weight: 500;
+  background: var(--color-paper-2);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: var(--color-paper-2);
+}
+
+/* ============================
+   CODE BLOCK
+   ============================ */
+.code-block {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: var(--space-6);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: var(--space-6) 0;
+}
+
+.code-comment {
+  color: var(--color-ink-3);
+}
+
+/* ============================
+   CALLOUT
+   ============================ */
+.callout {
+  padding: var(--space-4) var(--space-5);
+  border-radius: 8px;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  margin: var(--space-6) 0;
+}
+
+.callout-warning {
+  background: #FEF2F2;
+  border-left: 3px solid var(--color-error);
+  color: #991B1B;
+}
+
+.callout-tip {
+  background: #F0FDF4;
+  border-left: 3px solid var(--color-success);
+  color: #166534;
+}
+
+.callout-title {
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+}
+
+/* ============================
+   CHECKLIST
+   ============================ */
+.checklist {
+  padding: var(--space-8);
+  background: var(--color-paper-2);
+  border-radius: 8px;
+  margin: var(--space-8) 0;
+}
+
+.checklist-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+}
+
+.checklist-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+.checklist-box {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ============================
+   FOOTER
+   ============================ */
+.footer {
+  margin-top: var(--space-24);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-ink-3);
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media (max-width: 640px) {
+  .page {
+    padding: var(--space-12) var(--space-4);
+  }
+
+  .hero-stats {
+    flex-wrap: wrap;
+    gap: var(--space-6);
+  }
+
+  .stage-header {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  table {
+    font-size: var(--text-xs);
+  }
+
+  th, td {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-label">Mino SOP</div>
+    <h1>京东电子签约平台批量合同签署</h1>
+    <div class="header-meta">基于河北创博实际操作验证 · 2026-05-29</div>
+  </header>
+
+  <!-- HERO STATS -->
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-label">步骤</span>
+      <span class="hero-stat-value">9</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-label">模板变量</span>
+      <span class="hero-stat-value">23</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-label">单家耗时</span>
+      <span class="hero-stat-value success">3-5 min</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-label">待处理</span>
+      <span class="hero-stat-value error">27 家</span>
+    </div>
+  </div>
+
+  <!-- STAGE 1.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">1.0</span>
+      <span class="stage-title">启动浏览器并导航到签约页面</span>
+    </div>
+    <div class="stage-content">
+      Playwright MCP 需要独占启动 Chrome。导航到京东签约平台，确认已登录状态。
+    </div>
+    <div class="code-block">
+      <span class="code-comment">// 导航到签约页面</span><br>
+      browser_navigate → https://xingkong.jd.com/qu渠道/793559463196729346<br>
+      browser_snapshot → 确认已登录
+    </div>
+    <div class="callout callout-warning">
+      <div class="callout-title">注意</div>
+      如果未登录 → 暂停，等年老师手动登录后继续。
+    </div>
+  </div>
+
+  <!-- STAGE 2.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">2.0</span>
+      <span class="stage-title">创建新合同并选择合作意向</span>
+    </div>
+    <div class="stage-content">
+      点击"新建E签"进入表单。选择合作意向是弹出对话框模式——搜索供应商名称后精准匹配。
+    </div>
+    <div class="code-block">
+      <span class="code-comment">// 操作序列</span><br>
+      1. 找到"新建E签" → click<br>
+      2. 等待 2s → snapshot 确认表单已加载<br>
+      3. 找到"合作意向"输入框 → click<br>
+      4. 搜索框输入供应商名称<br>
+      5. 选中匹配行的 radio → 点击"确定"
+    </div>
+    <div class="callout callout-tip">
+      <div class="callout-title">自动带出字段</div>
+      伙伴名称、合作模式（渠道代理）、客方签约主体信息。
+    </div>
+  </div>
+
+  <!-- STAGE 3.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">3.0</span>
+      <span class="stage-title">选择合同模板</span>
+    </div>
+    <div class="stage-content">
+      el-select remote 组件，普通点击无法触发搜索。需要通过 Vue 实例设值。
+    </div>
+    <div class="code-block">
+      <span class="code-comment">// 已验证方案：通过 Vue 实例设值</span><br>
+      1. 找到合同模板的 el-select 组件<br>
+      2. 获取其 __vue__ 实例<br>
+      3. 调用 remoteMethod 搜索<br>
+      4. 等待 options 加载<br>
+      5. 设置 value 为目标选项的 value
+    </div>
+    <div class="callout callout-warning">
+      <div class="callout-title">注意</div>
+      需要先 snapshot 确认 el-select 的 DOM 位置。目标选项：<strong>客户服务外包合同-202604</strong>
+    </div>
+  </div>
+
+  <!-- STAGE 4.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">4.0</span>
+      <span class="stage-title">填写合同信息</span>
+    </div>
+    <div class="stage-content">
+      6 个字段需要填写。合同期限选"固定期限"后会自动出现"是否宿迁承接对账"字段。
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>字段</th>
+            <th>操作方式</th>
+            <th>目标值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>合同类型</td>
+            <td>el-select → 选"渠道主协议"</td>
+            <td>渠道主协议</td>
+          </tr>
+          <tr>
+            <td>资金流向</td>
+            <td>el-select → 选"支出"</td>
+            <td>支出</td>
+          </tr>
+          <tr>
+            <td>合同期限</td>
+            <td>el-select → 选"固定期限"</td>
+            <td>固定期限</td>
+          </tr>
+          <tr>
+            <td>是否宿迁承接对账</td>
+            <td>radio → 选"是"</td>
+            <td>是</td>
+          </tr>
+          <tr>
+            <td>客方签约方标识</td>
+            <td>下拉选"乙方" → 点"完成"</td>
+            <td>乙方</td>
+          </tr>
+          <tr>
+            <td>我方签约方标识</td>
+            <td>下拉选"甲方" → 点"完成"</td>
+            <td>甲方</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STAGE 5.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">5.0</span>
+      <span class="stage-title">批量填写模板变量</span>
+    </div>
+    <div class="stage-content">
+      选择合同模板后，页面展开显示所有 ${xxx} 变量字段。通过 evaluate 批量设置 23 个变量。
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Excel列</th>
+            <th>平台变量</th>
+            <th>取值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>供应商名称</td>
+            <td>${party_b_name}</td>
+            <td>直接取</td>
+          </tr>
+          <tr>
+            <td>乙方地址/电话/邮箱</td>
+            <td>${party_b_address/phone/email}</td>
+            <td>直接取</td>
+          </tr>
+          <tr>
+            <td>测试期相关</td>
+            <td>${trial_period} 等7个</td>
+            <td>统一填 "/"</td>
+          </tr>
+          <tr>
+            <td>续约开始</td>
+            <td>${renewal_start_year/month/day}</td>
+            <td>2026 / 6 / 1</td>
+          </tr>
+          <tr>
+            <td>续约结束</td>
+            <td>${renewal_end_year/month/day}</td>
+            <td>2027 / 5 / 31</td>
+          </tr>
+          <tr>
+            <td>银行信息</td>
+            <td>${account_name/number/bank_name}</td>
+            <td>直接取</td>
+          </tr>
+          <tr>
+            <td>统一信用代码</td>
+            <td>${uniform_credit_code}</td>
+            <td>直接取</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STAGE 6.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">6.0</span>
+      <span class="stage-title">填写发票信息</span>
+    </div>
+    <div class="stage-content">
+      发票类型选择增值税专用发票，开票税率选择 6%。
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>字段</th>
+            <th>操作方式</th>
+            <th>目标值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>发票类型</td>
+            <td>el-select</td>
+            <td>增值税专用发票</td>
+          </tr>
+          <tr>
+            <td>开票税率</td>
+            <td>el-select（可能被遮挡）</td>
+            <td>6%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-warning">
+      <div class="callout-title">开票税率注意</div>
+      下拉可能被页面底部遮挡。先 scroll 到发票区域再点击。
+    </div>
+  </div>
+
+  <!-- STAGE 7.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">7.0</span>
+      <span class="stage-title">截图确认并保存</span>
+    </div>
+    <div class="stage-content">
+      截图保存当前表单状态，点击保存按钮，等待 3 秒确认保存成功。
+    </div>
+    <div class="code-block">
+      browser_take_screenshot → 保存当前表单状态<br>
+      browser_click → 点击"保存"按钮<br>
+      wait → 3s<br>
+      snapshot → 确认保存成功
+    </div>
+  </div>
+
+  <!-- STAGE 8.0 -->
+  <div class="stage">
+    <div class="stage-header">
+      <span class="stage-num">8.0</span>
+      <span class="stage-title">继续下一家</span>
+    </div>
+    <div class="stage-content">
+      保存成功后，页面回到合同列表。直接回到 Stage 2.0 点击"新建E签"。
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="checklist">
+    <div class="checklist-title">每家执行检查清单</div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 2.0: 新建E签</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 2.0: 合作意向 → 搜索供应商名 → 选中 → 确定</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 3.0: 合同模板 → 客户服务外包合同-202604</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 4.0: 合同类型=渠道主协议 | 资金流向=支出 | 合同期限=固定期限</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 4.0: 是否宿迁承接对账=是 | 签约方标识=甲方/乙方</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 5.0: 23个模板变量（evaluate批量）</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 6.0: 发票类型=增值税专用发票 | 开票税率=6%</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 7.0: 截图 + 保存</span>
+    </div>
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <span>Stage 8.0: 确认保存成功 → 下一家</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Mino SOP · 京东电子签约平台批量合同签署 · 2026-05-29 · 基于河北创博实际操作验证
+  </div>
+
+</div>
+
+</body>
+</html>

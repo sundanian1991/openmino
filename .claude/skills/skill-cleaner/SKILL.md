@@ -1,6 +1,6 @@
 ---
 name: skill-cleaner
-description: "Audit skills across Claude Code and Codex/OpenClaw: loaded roots, duplicate skills, unused skills, prompt-budget costs, compact descriptions."
+description: "审计 Claude Code 与 Codex/OpenClaw 中的技能加载根目录、重复项、未使用项及 prompt 预算占用。当需要清理技能或减少 prompt 开销时触发。"
 ---
 
 # Skill Cleaner

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金融电销中心 Q1 运营效能报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background: #FAFBFC;
+            color: #1D1D1F;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 48px 32px; }
+
+        /* Header */
+        .header {
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid #E5E5E7;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .header .subtitle {
+            font-size: 15px;
+            color: #86868B;
+        }
+        .header .scope {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #6E6E73;
+            background: #F5F5F7;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 56px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1D1D1F;
+        }
+        .section-subtitle {
+            font-size: 14px;
+            color: #86868B;
+            margin-bottom: 24px;
+        }
+
+        /* Charts */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .chart-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E5E7;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .chart-card.full {
+            grid-column: 1 / -1;
+        }
+        .chart-card h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .chart-card .desc {
+            font-size: 13px;
+            color: #86868B;
+            margin-bottom: 16px;
+        }
+        canvas { max-height: 360px; }
+
+        /* Tier Table */
+        .tier-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .tier-table th {
+            text-align: left;
+            padding: 10px 16px;
+            background: #F5F5F7;
+            font-weight: 600;
+            border-bottom: 2px solid #E5E5E7;
+        }
+        .tier-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #F0F0F2;
+        }
+        .tier-table tr:last-child td { border-bottom: none; }
+        .tier-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .tier-1 { background: #E8F5E9; color: #2E7D32; }
+        .tier-2 { background: #FFF8E1; color: #F57F17; }
+        .tier-3 { background: #FFEBEE; color: #C62828; }
+
+        /* Causal Chain */
+        .causal-chain {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 32px 0;
+            flex-wrap: wrap;
+        }
+        .causal-box {
+            background: #FFFFFF;
+            border: 1px solid #E5E5E7;
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: center;
+            min-width: 140px;
+        }
+        .causal-box.input { border-left: 3px solid #007AFF; }
+        .causal-box.lever { border-left: 3px solid #FF9500; }
+        .causal-box.output { border-left: 3px solid #34C759; }
+        .causal-box .label {
+            font-size: 12px;
+            color: #86868B;
+            margin-bottom: 4px;
+        }
+        .causal-box .metrics {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .causal-arrow {
+            font-size: 20px;
+            color: #C7C7CC;
+        }
+
+        /* Insight Cards */
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .insight-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E5E7;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .insight-card.highlight {
+            border-left: 3px solid #007AFF;
+        }
+        .insight-card.warning {
+            border-left: 3px solid #FF3B30;
+        }
+        .insight-card .num {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1D1D1F;
+        }
+        .insight-card .unit {
+            font-size: 13px;
+            color: #86868B;
+        }
+        .insight-card .text {
+            font-size: 14px;
+            color: #6E6E73;
+            margin-top: 8px;
+        }
+
+        /* Actions */
+        .action-list { list-style: none; }
+        .action-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F2;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .action-list li:last-child { border-bottom: none; }
+        .action-num {
+            width: 24px;
+            height: 24px;
+            background: #007AFF;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .action-content .title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .action-content .detail {
+            font-size: 13px;
+            color: #86868B;
+            margin-top: 2px;
+        }
+
+        /* Correlation Annotation */
+        .corr-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #86868B;
+        }
+        .corr-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chart-row { grid-template-columns: 1fr; }
+            .insight-grid { grid-template-columns: 1fr; }
+            .causal-chain { flex-direction: column; }
+            .causal-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <h1>金融电销中心 Q1 运营效能报告</h1>
+        <div class="subtitle">2025年1-3月 · 6个团队 · 312名坐席</div>
+        <div class="scope">
+            <strong>数据范围</strong>：信用卡分期 + 现金贷业务<br>
+            <strong>分析维度</strong>：量（外呼量）→ 质（接通率/通话时长）→ 效（转化率/人效）<br>
+            <strong>核心判断</strong>：效能瓶颈在"质"不在"量"，接通率是最强杠杆
+        </div>
+    </div>
+
+    <!-- Section 1: Tier Analysis -->
+    <div class="section">
+        <h2 class="section-title">一、团队分层</h2>
+        <p class="section-subtitle">按综合效能分三个梯队，B/D领先、C/F掉队</p>
+
+        <div class="chart-row">
+            <div class="chart-card">
+                <h3>团队分层雷达图</h3>
+                <p class="desc">四个维度：转化率、接通率、通话时长、人效</p>
+                <canvas id="radarChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Q1 成交金额对比</h3>
+                <p class="desc">单位：万元</p>
+                <div class="tier-table">
+                    <table class="tier-table">
+                        <thead>
+                            <tr>
+                                <th>梯队</th>
+                                <th>团队</th>
+                                <th>Q1成交额</th>
+                                <th>人效</th>
+                                <th>转化率</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="tier-badge tier-1">第一梯队</span></td>
+                                <td>B组</td>
+                                <td>11,955万</td>
+                                <td>22.1</td>
+                                <td>2.6%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-badge tier-1">第一梯队</span></td>
+                                <td>D组</td>
+                                <td>10,848万</td>
+                                <td>20.1</td>
+                                <td>2.4%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-badge tier-2">第二梯队</span></td>
+                                <td>A组</td>
+                                <td>10,014万</td>
+                                <td>18.6</td>
+                                <td>2.2%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-badge tier-2">第二梯队</span></td>
+                                <td>E组</td>
+                                <td>10,119万</td>
+                                <td>18.8</td>
+                                <td>2.3%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-badge tier-3">第三梯队</span></td>
+                                <td>C组</td>
+                                <td>7,092万</td>
+                                <td>13.7</td>
+                                <td>1.8%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="tier-badge tier-3">第三梯队</span></td>
+                                <td>F组</td>
+                                <td>6,993万</td>
+                                <td>13.0</td>
+                                <td>1.7%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Trends -->
+    <div class="section">
+        <h2 class="section-title">二、月度趋势</h2>
+        <p class="section-subtitle">2月收缩（春节），3月反弹，但C/F组掉队</p>
+
+        <div class="chart-row">
+            <div class="chart-card">
+                <h3>转化率月度变化</h3>
+                <p class="desc">B组2月反升，C组持续恶化</p>
+                <canvas id="conversionChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>成交金额月度变化</h3>
+                <p class="desc">3月B组创Q1新高</p>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-card full">
+                <h3>外呼量 vs 接通率</h3>
+                <p class="desc">C组日均拨打最高，接通率却最低——量大≠质高</p>
+                <canvas id="volumeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Key Metrics -->
+    <div class="section">
+        <h2 class="section-title">三、关键指标</h2>
+        <p class="section-subtitle">接通率是最强前置指标，通话时长是第二杠杆</p>
+
+        <div class="chart-row">
+            <div class="chart-card full">
+                <h3>接通率 vs 转化率</h3>
+                <p class="desc">排序高度吻合，接通率每提升1pp，转化率约提升0.3pp</p>
+                <canvas id="scatterChart"></canvas>
+            </div>
+        </div>
+
+        <div class="insight-grid">
+            <div class="insight-card highlight">
+                <div class="num">32%</div>
+                <div class="unit">B组接通率（最高）</div>
+                <div class="text">对应转化率2.8%，Q1最高</div>
+            </div>
+            <div class="insight-card highlight">
+                <div class="num">348秒</div>
+                <div class="unit">B组平均通话（最长）</div>
+                <div class="text">话术能力强，客户停留时间长</div>
+            </div>
+            <div class="insight-card warning">
+                <div class="num">330通</div>
+                <div class="unit">C组日均拨打（最高）</div>
+                <div class="text">但转化率仅1.7%，量大≠质高</div>
+            </div>
+            <div class="insight-card warning">
+                <div class="num">25%</div>
+                <div class="unit">C组接通率（持续恶化）</div>
+                <div class="text">3个月：26.1%→26.0%→25.0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Causal Chain -->
+    <div class="section">
+        <h2 class="section-title">四、因果路径</h2>
+        <p class="section-subtitle">效能驱动因素的传导链</p>
+
+        <div class="chart-card">
+            <div class="causal-chain">
+                <div class="causal-box input">
+                    <div class="label">过程指标（团队可控）</div>
+                    <div class="metrics">日均拨打量</div>
+                </div>
+                <div class="causal-arrow">→</div>
+                <div class="causal-box lever">
+                    <div class="label">中间指标（受名单影响）</div>
+                    <div class="metrics">接通率</div>
+                </div>
+                <div class="causal-arrow">→</div>
+                <div class="causal-box lever">
+                    <div class="label">中间指标（受话术影响）</div>
+                    <div class="metrics">通话时长 + 意向率</div>
+                </div>
+                <div class="causal-arrow">→</div>
+                <div class="causal-box output">
+                    <div class="label">结果指标</div>
+                    <div class="metrics">转化率 → 成交额</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; padding: 16px; background: #F5F5F7; border-radius: 8px; font-size: 14px; color: #6E6E73;">
+                <strong>B组的优势路径</strong>：名单质量好 → 接通率32%（最高） → 话术能力强 → 通话时长348秒（最长） → 转化率2.8%（最高）<br><br>
+                <strong>C组的瓶颈</strong>：名单质量差 → 接通率25%（最低） → 即使日均拨打330通（最高），转化率仍垫底1.7%
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 5: Anomaly -->
+    <div class="section">
+        <h2 class="section-title">五、异常值</h2>
+        <p class="section-subtitle">两个值得关注的数据点</p>
+
+        <div class="chart-row">
+            <div class="insight-card">
+                <h3 style="margin-bottom: 8px;">E组2月逆势增长</h3>
+                <div style="font-size: 14px; color: #6E6E73;">
+                    外呼量降18%，成交却从1005→1095（+9%），意向率12%为当月最高。<br>
+                    可能原因：名单优化或话术调整。<strong>值得复盘。</strong>
+                </div>
+            </div>
+            <div class="insight-card">
+                <h3 style="margin-bottom: 8px;">F组数据冻结</h3>
+                <div style="font-size: 14px; color: #6E6E73;">
+                    1月/3月成交金额完全相同（2421万），接通量、意向客户、成交单数几乎复制粘贴。<br>
+                    可能是数据录入问题，或团队处于停滞状态。<strong>需要核实。</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 6: Actions -->
+    <div class="section">
+        <h2 class="section-title">六、行动建议</h2>
+        <p class="section-subtitle">基于数据判断的四个优先行动</p>
+
+        <div class="chart-card">
+            <ul class="action-list">
+                <li>
+                    <div class="action-num">1</div>
+                    <div class="action-content">
+                        <div class="title">提升C/F组名单质量</div>
+                        <div class="detail">接通率是转化率最强杠杆。C组接通率25%，每提升1pp，转化率约提升0.3pp。建议：优化号码筛选规则，减少无效拨打。</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="action-num">2</div>
+                    <div class="action-content">
+                        <div class="title">复制B组话术经验</div>
+                        <div class="detail">B组通话时长348秒（最长），对应转化率2.8%。建议：录制B组优秀坐席通话，提炼话术模板，向全组推广。</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="action-num">3</div>
+                    <div class="action-content">
+                        <div class="title">停止盲目加量</div>
+                        <div class="detail">C组日均拨打330通（最高）但转化率垫底。建议：降低C/F组日均拨打目标至280通，把精力转向提升接通率和通话时长。</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="action-num">4</div>
+                    <div class="action-content">
+                        <div class="title">核实F组数据</div>
+                        <div class="detail">F组1月/3月数据近乎相同，需确认是数据录入问题还是团队真实状态。如属实，需启动专项诊断。</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// Color palette
+const colors = {
+    A: '#007AFF',
+    B: '#34C759',
+    C: '#FF3B30',
+    D: '#FF9500',
+    E: '#AF52DE',
+    F: '#8E8E93'
+};
+
+// Radar Chart
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+new Chart(radarCtx, {
+    type: 'radar',
+    data: {
+        labels: ['转化率', '接通率', '通话时长', '人效'],
+        datasets: [
+            { label: 'B组', data: [2.6, 32, 348/35, 22.1], borderColor: colors.B, backgroundColor: 'rgba(52,199,89,0.1)', borderWidth: 2 },
+            { label: 'D组', data: [2.4, 31, 333/35, 20.1], borderColor: colors.D, backgroundColor: 'rgba(255,149,0,0.1)', borderWidth: 2 },
+            { label: 'A组', data: [2.2, 29, 324/35, 18.6], borderColor: colors.A, backgroundColor: 'rgba(0,122,255,0.1)', borderWidth: 2 },
+            { label: 'C组', data: [1.8, 26, 290/35, 13.7], borderColor: colors.C, backgroundColor: 'rgba(255,59,48,0.1)', borderWidth: 2 },
+            { label: 'F组', data: [1.7, 27, 278/35, 13.0], borderColor: colors.F, backgroundColor: 'rgba(142,142,147,0.1)', borderWidth: 2 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 16 } } },
+        scales: { r: { beginAtZero: true, ticks: { display: false }, grid: { color: '#E5E5E7' } } }
+    }
+});
+
+// Conversion Trend
+const convCtx = document.getElementById('conversionChart').getContext('2d');
+new Chart(convCtx, {
+    type: 'line',
+    data: {
+        labels: ['1月', '2月', '3月'],
+        datasets: [
+            { label: 'B组', data: [2.3, 2.8, 2.6], borderColor: colors.B, tension: 0.3, borderWidth: 2 },
+            { label: 'D组', data: [2.2, 2.6, 2.5], borderColor: colors.D, tension: 0.3, borderWidth: 2 },
+            { label: 'A组', data: [2.0, 2.3, 2.3], borderColor: colors.A, tension: 0.3, borderWidth: 2 },
+            { label: 'E组', data: [2.0, 2.5, 2.3], borderColor: colors.E, tension: 0.3, borderWidth: 2 },
+            { label: 'C组', data: [1.7, 1.9, 1.7], borderColor: colors.C, tension: 0.3, borderWidth: 2 },
+            { label: 'F组', data: [1.7, 1.9, 1.7], borderColor: colors.F, tension: 0.3, borderWidth: 2 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12 } } },
+        scales: {
+            y: { beginAtZero: false, min: 1.5, max: 3.0, ticks: { callback: function(v) { return v + '%'; } }, grid: { color: '#F0F0F2' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// Revenue Trend
+const revCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revCtx, {
+    type: 'bar',
+    data: {
+        labels: ['1月', '2月', '3月'],
+        datasets: [
+            { label: 'B组', data: [3591, 3660, 4704], backgroundColor: colors.B },
+            { label: 'D组', data: [3249, 3327, 4272], backgroundColor: colors.D },
+            { label: 'A组', data: [3126, 2967, 3921], backgroundColor: colors.A },
+            { label: 'C组', data: [2565, 2241, 2586], backgroundColor: colors.C },
+            { label: 'F组', data: [2421, 2151, 2421], backgroundColor: colors.F }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12 } } },
+        scales: {
+            y: { beginAtZero: true, ticks: { callback: function(v) { return v + '万'; } }, grid: { color: '#F0F0F2' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// Volume vs Connect Rate
+const volCtx = document.getElementById('volumeChart').getContext('2d');
+new Chart(volCtx, {
+    type: 'bar',
+    data: {
+        labels: ['A组', 'B组', 'C组', 'D组', 'E组', 'F组'],
+        datasets: [
+            { label: '日均拨打', data: [299, 289, 317, 277, 300, 284], backgroundColor: 'rgba(0,122,255,0.6)', yAxisID: 'y' },
+            { label: '接通率', data: [29.0, 31.3, 25.7, 31.1, 28.9, 27.2], type: 'line', borderColor: '#FF3B30', backgroundColor: 'transparent', yAxisID: 'y1', borderWidth: 2, pointRadius: 4 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12 } } },
+        scales: {
+            y: { beginAtZero: true, position: 'left', title: { display: true, text: '日均拨打（通）' }, grid: { color: '#F0F0F2' } },
+            y1: { beginAtZero: false, min: 20, max: 35, position: 'right', title: { display: true, text: '接通率（%）' }, grid: { display: false } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// Scatter: Connect Rate vs Conversion
+const scatterCtx = document.getElementById('scatterChart').getContext('2d');
+new Chart(scatterCtx, {
+    type: 'scatter',
+    data: {
+        datasets: [
+            { label: '1月', data: [{x:28,y:2.0},{x:30,y:2.3},{x:26.1,y:1.7},{x:30,y:2.2},{x:28,y:2.0},{x:28,y:1.7}], backgroundColor: '#C7C7CC', pointRadius: 6 },
+            { label: '2月', data: [{x:30,y:2.3},{x:32,y:2.8},{x:26,y:1.9},{x:31.3,y:2.6},{x:29.6,y:2.5},{x:27.7,y:1.9}], backgroundColor: '#007AFF', pointRadius: 6 },
+            { label: '3月', data: [{x:29.1,y:2.3},{x:32,y:2.6},{x:25,y:1.7},{x:32,y:2.5},{x:29,y:2.3},{x:26,y:1.7}], backgroundColor: '#34C759', pointRadius: 6 }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12 } },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        var teamNames = ['A组','B组','C组','D组','E组','F组'];
+                        var idx = ctx.dataIndex;
+                        var monthIdx = ctx.datasetIndex;
+                        var monthNames = ['1月','2月','3月'];
+                        return monthNames[monthIdx] + ' ' + teamNames[idx] + ': 接通率' + ctx.parsed.x + '% → 转化率' + ctx.parsed.y + '%';
+                    }
+                }
+            }
+        },
+        scales: {
+            x: { title: { display: true, text: '接通率（%）' }, min: 24, max: 34, grid: { color: '#F0F0F2' } },
+            y: { title: { display: true, text: '转化率（%）' }, min: 1.5, max: 3.0, grid: { color: '#F0F0F2' } }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

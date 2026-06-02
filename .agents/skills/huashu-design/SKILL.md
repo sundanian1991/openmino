@@ -1,6 +1,6 @@
 ---
 name: huashu-design
-description: "用HTML做高保真原型、交互Demo、幻灯片、动画、设计变体探索的一体化设计能力。HTML是工具不是媒介，根据任务embody不同专家（UX设计师/动画师/幻灯片设计师/原型师）。支持HTML动画→MP4/GIF视频导出、带解说的长动画pipeline（TTS+混音）、设计方向顾问模式（5流派×20种哲学推荐3个方向）、交付后5维度专家评审。触发词：做原型、设计Demo、交互原型、HTML演示、动画Demo、设计变体、UI mockup、prototype、导出MP4/GIF、设计风格、评审、好不好看。"
+description: "用HTML做高保真原型、交互Demo、幻灯片、动画、设计变体的一体化设计能力。触发词：做原型、设计Demo、交互原型、HTML演示、动画Demo、设计变体、导出MP4/GIF、设计风格评审。"
 ---
 
 # 花叔Design · Huashu-Design

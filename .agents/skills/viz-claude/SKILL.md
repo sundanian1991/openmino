@@ -1,14 +1,6 @@
 ---
 name: viz:claude-charts
-description: >
-  Generate visual charts, diagrams, and interactive widgets in the style of Claude's artifact system.
-  Produces clean, flat, professional outputs — either standalone SVG files or self-contained HTML pages —
-  with a 9-color ramp palette, proper typography, and light/dark mode support.
-  Use this skill whenever the user asks to "draw a chart", "make a diagram", "visualize data",
-  "generate a flowchart", "create an interactive explainer", "build a mockup", "make a dashboard",
-  "draw an SVG", "make an HTML widget", or any request involving visual output.
-  Also trigger for "Claude style chart", "artifact style diagram", "flat design", or any
-  request to explain something visually. When in doubt, use this skill.
+description: "以 Claude artifact 风格生成图表、图示和交互组件。输出扁平简洁的 SVG 或自包含 HTML，支持 9 色阶与亮暗模式。触发词：画图表、做流程图、可视化数据、仪表盘等任何视觉输出请求。"
 ---
 
 # Claude-style visual output generator

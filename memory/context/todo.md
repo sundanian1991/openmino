@@ -38,6 +38,8 @@
 | 28 | Storytelling with Data 可视化 | 05-31 | 1.6 万行读书笔记，nothing-design 风格 HTML，策展流程+信息密度 |
 | 29 | OpenCode 品牌系统扒取 | 05-31 | opencode.ai 品牌系统拆解 + CSS 生成，后续文章可用此风格 |
 | 30 | Anthropic 研究文章下载 | 05-31 | 下载 research 文章，翻译中文，存 Markdown，配插图 |
+| 31 | WAL 积压清理 + Cron 重建 | 06-01 | 5/30-6/1 WAL queue 积压 38 条已清空，需重建夜间自动处理链路 |
+| 32 | 生图功能使用手册 | 06-01 | likecodenex_generate_image 直接调用方式 + Skill 专业路线说明 |
 
 ---
 

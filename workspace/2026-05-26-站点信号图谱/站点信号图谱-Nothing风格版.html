@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 站点信号图谱 — Nothing Style</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --black: #000000;
+  --surface: #111111;
+  --surface-raised: #1A1A1A;
+  --border: #222222;
+  --border-visible: #333333;
+  --text-disabled: #666666;
+  --text-secondary: #999999;
+  --text-primary: #E8E8E8;
+  --text-display: #FFFFFF;
+  --accent: #D71921;
+  --accent-subtle: rgba(215,25,33,0.15);
+  --success: #4A9E5C;
+  --warning: #D4A843;
+  --info: #999999;
+
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  --font-display: 'Doto', 'Space Mono', monospace;
+  --font-body: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'Space Mono', 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--black);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout */
+.app { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 200px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-brand {
+  padding: var(--space-lg) var(--space-md) var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  margin-bottom: var(--space-xs);
+}
+.sidebar-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+.nav-section { padding: var(--space-md) 0; border-bottom: 1px solid var(--border); }
+.nav-section:last-child { border-bottom: none; flex: 1; }
+.nav-section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  padding: 0 var(--space-md) var(--space-sm);
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 150ms ease-out;
+}
+.nav-item:hover { color: var(--text-primary); background: var(--surface-raised); }
+.nav-item.active {
+  color: var(--text-display);
+  border-left-color: var(--accent);
+  background: var(--accent-subtle);
+}
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--text-disabled);
+  flex-shrink: 0;
+}
+.nav-dot.expand { background: var(--success); }
+.nav-dot.contract { background: var(--accent); }
+
+/* Main */
+.main { flex: 1; margin-left: 200px; padding: var(--space-xl) var(--space-2xl); max-width: 1100px; }
+
+/* Page header */
+.page-header { margin-bottom: var(--space-2xl); }
+.page-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  margin-bottom: var(--space-xs);
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-display);
+  margin-bottom: var(--space-xs);
+  letter-spacing: -0.02em;
+}
+.page-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* Metric cards */
+.metrics-row {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+.metric-card { display: flex; flex-direction: column; gap: var(--space-xs); }
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+}
+.metric-value {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-display);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.metric-value.teal { color: var(--success); }
+.metric-value.coral { color: var(--accent); }
+.metric-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-disabled);
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border);
+}
+.card-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+}
+.card-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--border-visible);
+  color: var(--text-secondary);
+}
+.card-badge.teal { border-color: var(--success); color: var(--success); }
+.card-badge.coral { border-color: var(--accent); color: var(--accent); }
+
+/* Chart */
+.chart-container { position: relative; height: 240px; }
+
+/* Signal list */
+.signal-list { display: flex; flex-direction: column; }
+.signal-item {
+  display: grid;
+  grid-template-columns: 24px 80px 1fr auto;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 150ms;
+}
+.signal-item:last-child { border-bottom: none; }
+.signal-item:hover { background: var(--surface-raised); margin: 0 calc(-1 * var(--space-sm)); padding: var(--space-sm); }
+.signal-item.expand { border-left: 2px solid var(--success); padding-left: var(--space-sm); margin-left: 0; }
+.signal-item.contract { border-left: 2px solid var(--accent); padding-left: var(--space-sm); margin-left: 0; }
+.signal-rank { font-family: var(--font-mono); font-size: 10px; color: var(--text-disabled); }
+.signal-company { font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.signal-company.warm { color: var(--warning); }
+.signal-company.teal { color: var(--success); }
+.signal-site { font-family: var(--font-body); font-size: 12px; color: var(--text-secondary); }
+.signal-change {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+}
+.signal-change.up { color: var(--success); }
+.signal-change.down { color: var(--accent); }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border-visible);
+  margin-bottom: var(--space-md);
+}
+.tab {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: transparent;
+  color: var(--text-disabled);
+  cursor: pointer;
+  transition: all 150ms;
+}
+.tab:hover { color: var(--text-secondary); }
+.tab.active { background: var(--text-display); color: var(--black); }
+
+/* Site cards */
+.site-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); }
+.site-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  padding: var(--space-md);
+  cursor: pointer;
+  transition: border-color 150ms;
+}
+.site-card:hover { border-color: var(--border-visible); }
+.site-card.contract { border-left: 2px solid var(--accent); }
+.site-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-xs);
+}
+.site-card-company { font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--text-display); }
+.site-card-site { font-family: var(--font-mono); font-size: 10px; color: var(--text-disabled); margin-bottom: var(--space-sm); }
+.site-card-stats { display: flex; gap: var(--space-md); }
+.stat-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-value { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--text-display); }
+.stat-change { font-family: var(--font-mono); font-size: 9px; font-weight: 700; }
+.stat-change.up { color: var(--success); }
+.stat-change.down { color: var(--accent); }
+
+/* Province list */
+.province-list { display: flex; flex-direction: column; }
+.province-item {
+  display: grid;
+  grid-template-columns: 20px 56px 1fr 56px 48px;
+  gap: var(--space-sm);
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.province-item:last-child { border-bottom: none; }
+.province-item:hover { background: var(--surface-raised); margin: 0 calc(-1 * var(--space-sm)); padding: var(--space-sm); }
+.province-rank { font-family: var(--font-mono); font-size: 10px; color: var(--text-disabled); }
+.province-name { font-family: var(--font-body); font-size: 12px; color: var(--text-primary); }
+.province-bar-wrap { height: 4px; background: var(--border); }
+.province-bar { height: 100%; }
+.province-bar.up { background: var(--success); }
+.province-bar.down { background: var(--accent); }
+.province-value { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); text-align: right; }
+.province-change { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-align: right; }
+.province-change.up { color: var(--success); }
+.province-change.down { color: var(--accent); }
+
+/* Supplier header */
+.supplier-header {
+  display: flex;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  margin-bottom: var(--space-md);
+}
+.supplier-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--warning);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--black);
+  flex-shrink: 0;
+}
+.supplier-info { flex: 1; }
+.supplier-name { font-family: var(--font-body); font-size: 18px; font-weight: 500; color: var(--text-display); margin-bottom: 2px; }
+.supplier-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text-disabled); margin-bottom: var(--space-md); }
+.supplier-stats { display: flex; gap: var(--space-xl); }
+.supplier-stat { display: flex; flex-direction: column; gap: 2px; }
+.supplier-stat-value { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--text-display); }
+.supplier-stat-value.teal { color: var(--success); }
+.supplier-stat-label { font-family: var(--font-mono); font-size: 9px; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Jingkala special */
+.jingka-special {
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent);
+  padding: var(--space-md) var(--space-lg);
+  margin-top: var(--space-md);
+}
+.jingka-special-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+.jingka-table { width: 100%; border-collapse: collapse; }
+.jingka-table th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  text-align: left;
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--border-visible);
+}
+.jingka-table td {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--border);
+}
+.jingka-table tr:last-child td { border-bottom: none; }
+.jingka-note { font-family: var(--font-mono); font-size: 10px; color: var(--accent); margin-top: var(--space-sm); }
+
+/* Evidence block */
+.evidence-block {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  padding: var(--space-md) var(--space-lg);
+  margin-top: var(--space-md);
+}
+.evidence-block p {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.evidence-block p strong { color: var(--text-primary); font-weight: 500; }
+.evidence-block p em { font-style: normal; color: var(--accent); }
+.evidence-block p + p { margin-top: var(--space-sm); }
+.evidence-footer {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-disabled);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border);
+}
+
+/* Legend */
+.legend { display: flex; gap: var(--space-md); margin-bottom: var(--space-md); }
+.legend-item { display: flex; align-items: center; gap: var(--space-xs); font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); }
+.legend-dot { width: 6px; height: 6px; border-radius: 50%; }
+.legend-dot.jintiao { background: var(--warning); }
+.legend-dot.qidai { background: var(--success); }
+.legend-dot.jingka { background: var(--accent); }
+.legend-dot.jiqi { background: #5B9BF6; }
+.legend-dot.caifu { background: var(--warning); }
+
+/* Sections */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  margin: var(--space-xl) 0 var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Page sections */
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+@media (max-width: 900px) {
+  .metrics-row { flex-wrap: wrap; gap: var(--space-md); }
+  .site-cards { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { margin-left: 0; padding: var(--space-lg); }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-title">站点信号图谱</div>
+      <div class="sidebar-meta">Q1 2026</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">入口</div>
+      <div class="nav-item active" onclick="showPage('p0')">
+        <span class="nav-dot"></span>P0 SIGNAL
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">索引</div>
+      <div class="nav-item" onclick="showPage('p1')">
+        <span class="nav-dot"></span>P1 OVERVIEW
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">信号</div>
+      <div class="nav-item" onclick="showPage('p2')">
+        <span class="nav-dot expand"></span>P2 EXPAND
+      </div>
+      <div class="nav-item" onclick="showPage('p3')">
+        <span class="nav-dot contract"></span>P3 CONTRACT
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-label">分析</div>
+      <div class="nav-item" onclick="showPage('p4')">
+        <span class="nav-dot"></span>P4 GEO
+      </div>
+      <div class="nav-item" onclick="showPage('p5')">
+        <span class="nav-dot"></span>P5 DRILL
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- P0: Signal Overview -->
+    <section id="p0" class="page-section active">
+      <div class="page-header">
+        <div class="page-label">P0 — ENTRY</div>
+        <h1 class="page-title">SITE SIGNAL ATLAS</h1>
+        <p class="page-subtitle">108 SITES · 28 SUPPLIERS · 3,340 STAFF</p>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric-card">
+          <span class="metric-label">TOTAL</span>
+          <span class="metric-value">3,340</span>
+          <span class="metric-sub">STAFF</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Q1 GROWTH</span>
+          <span class="metric-value teal">+0.9%</span>
+          <span class="metric-sub">MARGINAL</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">SIGNALS</span>
+          <span class="metric-value">10</span>
+          <span class="metric-sub">5 EXPAND / 5 CONTRACT</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">TOP 5 SHARE</span>
+          <span class="metric-value">48%</span>
+          <span class="metric-sub">1,608 STAFF</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">SUPPLIER QUADRANT</span>
+          <span class="card-badge">SIZE × GROWTH</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="bubbleChart"></canvas>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">EXPAND SIGNALS — TOP 5</span>
+            <span class="card-badge teal">+ GROWTH</span>
+          </div>
+          <div class="signal-list">
+            <div class="signal-item expand" onclick="showPage('p2')">
+              <span class="signal-rank">01</span>
+              <span class="signal-company">秦冀德辰</span>
+              <span class="signal-site">辛集 · 企业主贷</span>
+              <span class="signal-change up">+150%</span>
+            </div>
+            <div class="signal-item expand" onclick="showPage('p2')">
+              <span class="signal-rank">02</span>
+              <span class="signal-company teal">岐力</span>
+              <span class="signal-site">红谷滩 · 金企融合</span>
+              <span class="signal-change up">+125%</span>
+            </div>
+            <div class="signal-item expand" onclick="showPage('p2')">
+              <span class="signal-rank">03</span>
+              <span class="signal-company warm">毅航</span>
+              <span class="signal-site">蜀山 · 财富固收</span>
+              <span class="signal-change up">+44%</span>
+            </div>
+            <div class="signal-item expand" onclick="showPage('p2')">
+              <span class="signal-rank">04</span>
+              <span class="signal-company">承德新动力</span>
+              <span class="signal-site">兴隆 · 企业主贷</span>
+              <span class="signal-change up">+47%</span>
+            </div>
+            <div class="signal-item expand" onclick="showPage('p2')">
+              <span class="signal-rank">05</span>
+              <span class="signal-company">锦瑞裕华</span>
+              <span class="signal-site">裕华 · 企业主贷</span>
+              <span class="signal-change up">+91%</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">CONTRACT SIGNALS — TOP 5</span>
+            <span class="card-badge coral">− RISK</span>
+          </div>
+          <div class="signal-list">
+            <div class="signal-item contract" onclick="showPage('p3')">
+              <span class="signal-rank">01</span>
+              <span class="signal-company">汇讯</span>
+              <span class="signal-site">合肥 · 金条</span>
+              <span class="signal-change down">−54%</span>
+            </div>
+            <div class="signal-item contract" onclick="showPage('p3')">
+              <span class="signal-rank">02</span>
+              <span class="signal-company">汇讯</span>
+              <span class="signal-site">陇西 · 菁卡拉新</span>
+              <span class="signal-change down">−53%</span>
+            </div>
+            <div class="signal-item contract" onclick="showPage('p3')">
+              <span class="signal-rank">03</span>
+              <span class="signal-company">速讯达</span>
+              <span class="signal-site">沈阳和平 · 菁卡拉新</span>
+              <span class="signal-change down">−42%</span>
+            </div>
+            <div class="signal-item contract" onclick="showPage('p3')">
+              <span class="signal-rank">04</span>
+              <span class="signal-company">创世伙伴</span>
+              <span class="signal-site">盐湖 · 财富固收</span>
+              <span class="signal-change down">−40%</span>
+            </div>
+            <div class="signal-item contract" onclick="showPage('p3')">
+              <span class="signal-rank">05</span>
+              <span class="signal-company">速讯达</span>
+              <span class="signal-site">沈阳和平 · 金企融合</span>
+              <span class="signal-change down">−36%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- P1: Overview -->
+    <section id="p1" class="page-section">
+      <div class="page-header">
+        <div class="page-label">P1 — OVERVIEW</div>
+        <h1 class="page-title">BASE MAP</h1>
+        <p class="page-subtitle">REMEMBER: 3,340 TOTAL · JINTIAO 51% · ANHUI + HEBEI 61%</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">SUPPLIER RANKING — CLICK TO DRILL</span>
+          <span class="card-badge">8 OF 28</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-xs);">
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">01</span>
+            <span class="signal-company warm">毅航</span>
+            <span class="signal-site">481 / APR 527</span>
+          </div>
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">02</span>
+            <span class="signal-company">毛毛虫</span>
+            <span class="signal-site">280</span>
+          </div>
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">03</span>
+            <span class="signal-company">伽玛</span>
+            <span class="signal-site">262</span>
+          </div>
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">04</span>
+            <span class="signal-company">汇讯</span>
+            <span class="signal-site">280</span>
+          </div>
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">05</span>
+            <span class="signal-company">赛维斯</span>
+            <span class="signal-site">238</span>
+          </div>
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">06</span>
+            <span class="signal-company teal">岐力</span>
+            <span class="signal-site">138 / +84%</span>
+          </div>
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">07</span>
+            <span class="signal-company">翰锐</span>
+            <span class="signal-site">198</span>
+          </div>
+          <div class="signal-item" style="cursor:pointer" onclick="showPage('p5')">
+            <span class="signal-rank">08</span>
+            <span class="signal-company teal">华啸</span>
+            <span class="signal-site">134 / +27%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">PROJECT TREND — JAN TO MAR</span>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><span class="legend-dot jintiao"></span>JINTIAO 51%</div>
+          <div class="legend-item"><span class="legend-dot qidai"></span>QIDAI 21%</div>
+          <div class="legend-item"><span class="legend-dot jingka"></span>JINGKA 13%</div>
+          <div class="legend-item"><span class="legend-dot jiqi"></span>JIQI 8%</div>
+          <div class="legend-item"><span class="legend-dot caifu"></span>CAIFU 7%</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">PROVINCE CHANGE — JAN → MAR</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl);">
+          <div>
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;color:var(--success);text-transform:uppercase;margin-bottom:var(--space-sm);">+ EXPAND</div>
+            <div class="province-list">
+              <div class="province-item" onclick="showPage('p4')">
+                <span class="province-rank">01</span><span class="province-name">江西</span>
+                <div class="province-bar-wrap"><div class="province-bar up" style="width:100%"></div></div>
+                <span class="province-value">138</span>
+                <span class="province-change up">+84%</span>
+              </div>
+              <div class="province-item" onclick="showPage('p4')">
+                <span class="province-rank">02</span><span class="province-name">山东</span>
+                <div class="province-bar-wrap"><div class="province-bar up" style="width:55%"></div></div>
+                <span class="province-value">70</span>
+                <span class="province-change up">+56%</span>
+              </div>
+              <div class="province-item" onclick="showPage('p4')">
+                <span class="province-rank">03</span><span class="province-name">湖南</span>
+                <div class="province-bar-wrap"><div class="province-bar up" style="width:30%"></div></div>
+                <span class="province-value">28</span>
+                <span class="province-change up">+33%</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;color:var(--accent);text-transform:uppercase;margin-bottom:var(--space-sm);">− CONTRACT</div>
+            <div class="province-list">
+              <div class="province-item" onclick="showPage('p4')">
+                <span class="province-rank">01</span><span class="province-name">甘肃</span>
+                <div class="province-bar-wrap"><div class="province-bar down" style="width:100%"></div></div>
+                <span class="province-value">24</span>
+                <span class="province-change down">−43%</span>
+              </div>
+              <div class="province-item" onclick="showPage('p4')">
+                <span class="province-rank">02</span><span class="province-name">辽宁</span>
+                <div class="province-bar-wrap"><div class="province-bar down" style="width:55%"></div></div>
+                <span class="province-value">132</span>
+                <span class="province-change down">−20%</span>
+              </div>
+              <div class="province-item" onclick="showPage('p4')">
+                <span class="province-rank">03</span><span class="province-name">黑龙江</span>
+                <div class="province-bar-wrap"><div class="province-bar down" style="width:40%"></div></div>
+                <span class="province-value">51</span>
+                <span class="province-change down">−16%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- P2: Expansion -->
+    <section id="p2" class="page-section">
+      <div class="page-header">
+        <div class="page-label">P2 — EXPAND SIGNALS</div>
+        <h1 class="page-title">GROWING SITES</h1>
+        <p class="page-subtitle">5 SUPPLIERS >30% GROWTH · GROWTH IS NOT THE PROBLEM</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">EXPAND SIGNALS — TOP 5</span>
+          <span class="card-badge teal">+ GROWTH</span>
+        </div>
+        <div class="tabs">
+          <button class="tab active" onclick="switchMode(this, 'all')">ALL</button>
+          <button class="tab" onclick="switchMode(this, 'new-line')">NEW LINE</button>
+          <button class="tab" onclick="switchMode(this, 'old-site')">OLD SITE</button>
+          <button class="tab" onclick="switchMode(this, 'small-supplier')">SMALL</button>
+        </div>
+        <div id="expand-cards" class="site-cards">
+          <div class="site-card" data-mode="small-supplier">
+            <div class="site-card-head">
+              <span class="site-card-company">秦冀德辰</span>
+              <span class="card-badge teal">+150%</span>
+            </div>
+            <div class="site-card-site">辛集 · 企业主贷</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">10</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">25</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value">+15</span></div>
+            </div>
+          </div>
+          <div class="site-card" data-mode="new-line">
+            <div class="site-card-head">
+              <span class="site-card-company teal">岐力</span>
+              <span class="card-badge teal">+125%</span>
+            </div>
+            <div class="site-card-site">红谷滩 · 金企融合 · NEW LINE</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">20</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">45</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value">+25</span></div>
+            </div>
+          </div>
+          <div class="site-card" data-mode="old-site">
+            <div class="site-card-head">
+              <span class="site-card-company warm">毅航</span>
+              <span class="card-badge teal">+44%</span>
+            </div>
+            <div class="site-card-site">蜀山 · 财富固收</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">68</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">98</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value">+30</span></div>
+            </div>
+          </div>
+          <div class="site-card" data-mode="small-supplier">
+            <div class="site-card-head">
+              <span class="site-card-company">承德新动力</span>
+              <span class="card-badge teal">+47%</span>
+            </div>
+            <div class="site-card-site">兴隆 · 企业主贷</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">36</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">53</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value">+17</span></div>
+            </div>
+          </div>
+          <div class="site-card" data-mode="small-supplier">
+            <div class="site-card-head">
+              <span class="site-card-company">锦瑞裕华</span>
+              <span class="card-badge teal">+91%</span>
+            </div>
+            <div class="site-card-site">裕华 · 企业主贷</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">11</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">21</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value">+10</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="evidence-block">
+        <p><strong>NEW LINE CLIMB:</strong> 岐力红谷滩金企融合 20→45人，南昌县3月新开24人。Q1总人力 75→138 (+84%)。<em>RISK: 新团队的质量管控和培训是否跟上节奏。</em></p>
+        <p><strong>OLD SITE SCALE:</strong> 毅航蜀山 68→98人，埇桥金条 170→190人。3月481人，4月527人，整体+15.3%。<em>RISK: 大规模快速扩张时的管理半径。</em></p>
+        <p><strong>SMALL SUPPLIER BURST:</strong> 秦冀德辰辛集+150%，但同站点金企融合−36%。不是整体扩张，是项目间调配。<em>RISK: 增长是真实业务需求还是人力腾挪。</em></p>
+      </div>
+      <div class="evidence-footer">SOURCE: 站点2026.xlsx | GROWTH = (MAR−JAN)/JAN×100%</div>
+    </section>
+
+    <!-- P3: Contraction -->
+    <section id="p3" class="page-section">
+      <div class="page-header">
+        <div class="page-label">P3 — CONTRACT SIGNALS</div>
+        <h1 class="page-title">SHRINKING SITES</h1>
+        <p class="page-subtitle">JINGKA全线下滑 IS THE KEY SYSTEM SIGNAL · CONTRACT NEEDS MORE ATTENTION</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">CONTRACT SIGNALS — TOP 5</span>
+          <span class="card-badge coral">− RISK</span>
+        </div>
+        <div class="tabs">
+          <button class="tab active" onclick="switchMode(this, 'all')">ALL</button>
+          <button class="tab" onclick="switchMode(this, 'project')">PROJECT</button>
+          <button class="tab" onclick="switchMode(this, 'internal')">INTERNAL</button>
+          <button class="tab" onclick="switchMode(this, 'decline')">DECLINE</button>
+        </div>
+        <div id="contract-cards" class="site-cards">
+          <div class="site-card contract" data-mode="internal">
+            <div class="site-card-head">
+              <span class="site-card-company">汇讯</span>
+              <span class="card-badge coral">−54%</span>
+            </div>
+            <div class="site-card-site">合肥 · 金条</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">35</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">16</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value" style="color:var(--accent)">−19</span></div>
+            </div>
+          </div>
+          <div class="site-card contract" data-mode="project">
+            <div class="site-card-head">
+              <span class="site-card-company">汇讯</span>
+              <span class="card-badge coral">−53%</span>
+            </div>
+            <div class="site-card-site">陇西 · 菁卡拉新</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">32</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">15</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value" style="color:var(--accent)">−17</span></div>
+            </div>
+          </div>
+          <div class="site-card contract" data-mode="project">
+            <div class="site-card-head">
+              <span class="site-card-company">速讯达</span>
+              <span class="card-badge coral">−42%</span>
+            </div>
+            <div class="site-card-site">沈阳和平 · 菁卡拉新</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">59</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">34</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value" style="color:var(--accent)">−25</span></div>
+            </div>
+          </div>
+          <div class="site-card contract" data-mode="decline">
+            <div class="site-card-head">
+              <span class="site-card-company">创世伙伴</span>
+              <span class="card-badge coral">−40%</span>
+            </div>
+            <div class="site-card-site">盐湖 · 财富固收</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">20</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">12</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value" style="color:var(--accent)">−8</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="jingka-special">
+        <div class="jingka-special-title">JINGKA专题 — 15 SITES ALL CONTRACT</div>
+        <table class="jingka-table">
+          <thead>
+            <tr><th>SITE</th><th>SUPPLIER</th><th>JAN</th><th>MAR</th><th>Δ</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>沈阳和平</td><td>速讯达</td><td>59</td><td>34</td><td style="color:var(--accent)">−42%</td></tr>
+            <tr><td>陇西</td><td>汇讯</td><td>32</td><td>15</td><td style="color:var(--accent)">−53%</td></tr>
+            <tr><td>盐湖</td><td>中弘智享</td><td>48</td><td>38</td><td style="color:var(--accent)">−21%</td></tr>
+            <tr><td>铁岭</td><td>艾斯欧艾斯</td><td>26</td><td>20</td><td style="color:var(--accent)">−23%</td></tr>
+            <tr><td>合肥</td><td>靖涵</td><td>41</td><td>37</td><td style="color:var(--accent)">−10%</td></tr>
+            <tr><td>长沙</td><td>拓银</td><td>24</td><td>32</td><td style="color:var(--success)">+33%</td></tr>
+          </tbody>
+        </table>
+        <div class="jingka-note">Q1 TOTAL: 531→430 (−19%) · ALL-LINE CONTRACT · SOLE HIGHLIGHT: 拓银长沙 +33%</div>
+      </div>
+
+      <div class="evidence-block">
+        <p><strong>PROJECT SYSTEMIC:</strong> 菁卡拉新15站，Q1 531→430人（−19%），唯一全线收缩主力项目。5家供应商：速讯达−27.6%、艾斯欧艾斯−23.1%、中弘智享−12%、靖涵−9.8%、汇讯陇西−53%。<em>这不是单点问题，是产品线层面的信号。</em></p>
+        <p><strong>INTERNAL IMBALANCE:</strong> 汇讯9站280人（+1.8%），表面平稳，内部两极分化：洪山+67%，合肥−54%，陇西−53%。<em>总量持平掩盖了站点级的剧烈变化。</em></p>
+        <p><strong>OVERALL DECLINE:</strong> 创世伙伴2站，西安高新60→52（−13%），盐湖20→12（−40%），全公司−20%。<em>小型供应商的收缩更难逆转。</em></p>
+      </div>
+    </section>
+
+    <!-- P4: Geographic -->
+    <section id="p4" class="page-section">
+      <div class="page-header">
+        <div class="page-label">P4 — GEOGRAPHIC</div>
+        <h1 class="page-title">WHERE IS STAFF MOVING</h1>
+        <p class="page-subtitle">GROWTH IS NOT UNIFORM · JIANGXI DOUBLED · CHONGQING FROM ZERO · LIAONING FADING</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">PROVINCE GROWTH RANKING</span>
+        </div>
+        <div class="province-list" style="gap:var(--space-xs);">
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">01</span><span class="province-name">江西</span>
+            <div class="province-bar-wrap"><div class="province-bar up" style="width:100%"></div></div>
+            <span class="province-value">138</span>
+            <span class="province-change up">+84%</span>
+          </div>
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">02</span><span class="province-name">山东</span>
+            <div class="province-bar-wrap"><div class="province-bar up" style="width:65%"></div></div>
+            <span class="province-value">70</span>
+            <span class="province-change up">+56%</span>
+          </div>
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">03</span><span class="province-name">湖南</span>
+            <div class="province-bar-wrap"><div class="province-bar up" style="width:38%"></div></div>
+            <span class="province-value">28</span>
+            <span class="province-change up">+33%</span>
+          </div>
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">04</span><span class="province-name">安徽</span>
+            <div class="province-bar-wrap"><div class="province-bar up" style="width:28%"></div></div>
+            <span class="province-value">1,140</span>
+            <span class="province-change up">+5%</span>
+          </div>
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">05</span><span class="province-name">河北</span>
+            <div class="province-bar-wrap"><div class="province-bar up" style="width:22%"></div></div>
+            <span class="province-value">908</span>
+            <span class="province-change up">+4%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">CONTRACT — NORTHEAST & NORTHWEST</span>
+          <span class="card-badge coral">− RISK</span>
+        </div>
+        <div class="province-list" style="gap:var(--space-xs);">
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">01</span><span class="province-name">甘肃</span>
+            <div class="province-bar-wrap"><div class="province-bar down" style="width:100%"></div></div>
+            <span class="province-value">24</span>
+            <span class="province-change down">−43%</span>
+          </div>
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">02</span><span class="province-name">辽宁</span>
+            <div class="province-bar-wrap"><div class="province-bar down" style="width:65%"></div></div>
+            <span class="province-value">132</span>
+            <span class="province-change down">−20%</span>
+          </div>
+          <div class="province-item" style="padding:var(--space-sm);">
+            <span class="province-rank">03</span><span class="province-name">黑龙江</span>
+            <div class="province-bar-wrap"><div class="province-bar down" style="width:50%"></div></div>
+            <span class="province-value">51</span>
+            <span class="province-change down">−16%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="evidence-block">
+        <p><strong>GROWTH POLES:</strong> 安徽+河北双中心未变，合计2,048人。但增量来自边缘：江西+63、山东+25、重庆+40（4月）。新增长点供应商都是中小型——岐力、华啸、速腾，非头部5家。</p>
+        <p><strong>RETREAT ZONES:</strong> 东北三省（辽宁−20%、黑龙江−16%）和西北（甘肃−43%）是最明确的退缩区域。反映当地招聘难度和运营成本。</p>
+        <p><strong>GEOGRAPHIC DISPLACEMENT IS SUPPLIER STRATEGY:</strong> 在哪里开站点、在哪里收缩。不是被动的人口流动，是主动的资源配置。</p>
+      </div>
+      <div class="evidence-footer">重庆华啸永川：1-3月为0，4月突增至40人（新开站点？）| 辽宁5站全属菁卡拉新项目，萎缩本质是产品线的地理表现</div>
+    </section>
+
+    <!-- P5: Supplier Drill -->
+    <section id="p5" class="page-section">
+      <div class="page-header">
+        <div class="page-label">P5 — DRILL DOWN</div>
+        <h1 class="page-title">SUPPLIER PROFILE</h1>
+        <p class="page-subtitle">CURRENT: 毅航 · KEY SUPPLIER · 9 SITES · 4 PROJECTS</p>
+      </div>
+
+      <div class="supplier-header">
+        <div class="supplier-avatar">毅</div>
+        <div class="supplier-info">
+          <div class="supplier-name">毅航</div>
+          <div class="supplier-meta">KEY SUPPLIER · 9 SITES · 4 PROJECTS</div>
+          <div class="supplier-stats">
+            <div class="supplier-stat">
+              <div class="supplier-stat-value">527</div>
+              <div class="supplier-stat-label">APR STAFF</div>
+            </div>
+            <div class="supplier-stat">
+              <div class="supplier-stat-value teal">+15%</div>
+              <div class="supplier-stat-label">Q1 GROWTH</div>
+            </div>
+            <div class="supplier-stat">
+              <div class="supplier-stat-value">9</div>
+              <div class="supplier-stat-label">SITES</div>
+            </div>
+            <div class="supplier-stat">
+              <div class="supplier-stat-value">4</div>
+              <div class="supplier-stat-label">PROJECTS</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">SITE OVERVIEW</span>
+        </div>
+        <div class="site-cards">
+          <div class="site-card">
+            <div class="site-card-head">
+              <span class="site-card-company">埇桥</span>
+              <span class="card-badge teal">+12%</span>
+            </div>
+            <div class="site-card-site">安徽 · 金条</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">170</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">190</span></div>
+              <div class="stat-item"><span class="stat-label">APR</span><span class="stat-value">200</span></div>
+            </div>
+          </div>
+          <div class="site-card">
+            <div class="site-card-head">
+              <span class="site-card-company">蜀山</span>
+              <span class="card-badge teal">+44%</span>
+            </div>
+            <div class="site-card-site">安徽 · 财富固收 · EXPAND SIGNAL</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">68</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">98</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value">+30</span></div>
+            </div>
+          </div>
+          <div class="site-card contract">
+            <div class="site-card-head">
+              <span class="site-card-company">高新</span>
+              <span class="card-badge coral">−8%</span>
+            </div>
+            <div class="site-card-site">四川 · 金条</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">55</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">51</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value" style="color:var(--accent)">−4</span></div>
+            </div>
+          </div>
+          <div class="site-card">
+            <div class="site-card-head">
+              <span class="site-card-company">高新</span>
+              <span class="card-badge teal">+5%</span>
+            </div>
+            <div class="site-card-site">贵州 · 企业主贷</div>
+            <div class="site-card-stats">
+              <div class="stat-item"><span class="stat-label">JAN</span><span class="stat-value">42</span></div>
+              <div class="stat-item"><span class="stat-label">MAR</span><span class="stat-value">44</span></div>
+              <div class="stat-item"><span class="stat-label">Δ</span><span class="stat-value">+2</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">TREND — JAN TO APR</span>
+        </div>
+        <div style="height:160px;position:relative;">
+          <canvas id="supplierTrendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="evidence-block">
+        <p><strong>SIGNAL TAGS:</strong> 蜀山财富固收 appears in P2 expand (+44%). 高新金条 in contract side (−8%).</p>
+        <p><strong>MANAGEMENT NOTE:</strong> 毅航 is the largest supplier (3月481人, 4月527人). Overall +15.3%. <em>RISK: 管理半径在大规模快速扩张时是否足够。</em></p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const target = document.querySelector(`.nav-item[onclick="showPage('${id}')"]`);
+  if (target) target.classList.add('active');
+  if (id === 'p0') initBubbleChart();
+  if (id === 'p1') initTrendChart();
+  if (id === 'p5') initSupplierTrendChart();
+}
+
+function switchMode(el, mode) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const container = el.closest('.page-section').querySelector('.site-cards');
+  if (!container) return;
+  container.querySelectorAll('.site-card').forEach(card => {
+    card.style.display = (mode === 'all' || card.dataset.mode === mode) ? '' : 'none';
+  });
+}
+
+let bubbleChart, trendChart, supplierTrendChart;
+
+function initBubbleChart() {
+  const ctx = document.getElementById('bubbleChart');
+  if (!ctx) return;
+  if (bubbleChart) bubbleChart.destroy();
+  bubbleChart = new Chart(ctx, {
+    type: 'bubble',
+    data: {
+      datasets: [
+        { label: '毅航', data: [{ x: 480, y: 15.3, r: 22 }], backgroundColor: 'rgba(194,109,58,0.6)' },
+        { label: '毛毛虫', data: [{ x: 280, y: 5, r: 17 }], backgroundColor: 'rgba(153,153,153,0.4)' },
+        { label: '伽玛', data: [{ x: 262, y: 8, r: 16 }], backgroundColor: 'rgba(153,153,153,0.4)' },
+        { label: '汇讯', data: [{ x: 280, y: 1.8, r: 17 }], backgroundColor: 'rgba(153,153,153,0.4)' },
+        { label: '赛维斯', data: [{ x: 238, y: -3, r: 15 }], backgroundColor: 'rgba(153,153,153,0.4)' },
+        { label: '岐力', data: [{ x: 138, y: 84, r: 14 }], backgroundColor: 'rgba(74,158,92,0.6)' },
+        { label: '翰锐', data: [{ x: 198, y: 12, r: 14 }], backgroundColor: 'rgba(153,153,153,0.4)' },
+        { label: '华啸', data: [{ x: 134, y: 27, r: 13 }], backgroundColor: 'rgba(74,158,92,0.6)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(c) {
+              const d = c.raw;
+              return `${c.dataset.label}: ${d.x} STAFF, ${d.y > 0 ? '+' : ''}${d.y}%`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'HEADCOUNT', font: { family: "'Space Mono'", size: 10 } },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#666', font: { family: "'Space Mono'", size: 9 } }
+        },
+        y: {
+          title: { display: true, text: 'Q1 GROWTH %', font: { family: "'Space Mono'", size: 10 } },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          ticks: { color: '#666', font: { family: "'Space Mono'", size: 9 } }
+        }
+      }
+    }
+  });
+}
+
+function initTrendChart() {
+  const ctx = document.getElementById('trendChart');
+  if (!ctx) return;
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['JAN', 'FEB', 'MAR'],
+      datasets: [
+        { label: 'JINTIAO', data: [1700, 1720, 1710], borderColor: '#c26d3a', backgroundColor: 'rgba(194,109,58,0.15)', fill: true, tension: 0.3 },
+        { label: 'QIDAI', data: [680, 720, 700], borderColor: '#4A9E5C', backgroundColor: 'rgba(74,158,92,0.15)', fill: true, tension: 0.3 },
+        { label: 'JINGKA', data: [531, 477, 430], borderColor: '#D71921', backgroundColor: 'rgba(215,25,33,0.15)', fill: true, tension: 0.3 },
+        { label: 'JIQI', data: [260, 290, 310], borderColor: '#5B9BF6', backgroundColor: 'rgba(91,155,246,0.15)', fill: true, tension: 0.3 },
+        { label: 'CAIFU', data: [220, 235, 240], borderColor: '#b88018', backgroundColor: 'rgba(184,128,24,0.15)', fill: true, tension: 0.3 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666', font: { family: "'Space Mono'", size: 9 } } },
+        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666', font: { family: "'Space Mono'", size: 9 } } }
+      }
+    }
+  });
+}
+
+function initSupplierTrendChart() {
+  const ctx = document.getElementById('supplierTrendChart');
+  if (!ctx) return;
+  if (supplierTrendChart) supplierTrendChart.destroy();
+  supplierTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['JAN', 'FEB', 'MAR', 'APR'],
+      datasets: [{ label: '毅航', data: [460, 475, 481, 527], borderColor: '#c26d3a', backgroundColor: 'rgba(194,109,58,0.15)', fill: true, tension: 0.3 }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 400, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666', font: { family: "'Space Mono'", size: 9 } } },
+        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666', font: { family: "'Space Mono'", size: 9 } } }
+      }
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initBubbleChart);
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 ---
 name: word-formatter
-description: Use when user has a messy Word document or plain text that needs professional formatting, auto-layout, and intelligent image generation. Triggers on requests to format, beautify, or reorganize documents.
+description: "将杂乱的 Word 文档或纯文本转为专业排版，支持自动布局与智能配图。触发词：格式化、美化、重组文档。"
 ---
 
 # Word Formatter

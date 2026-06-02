@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 转型落地执行方案 — Muller-Brockmann Swiss Grid</title>
+<style>
+  :root {
+    --white: #FFFFFF;
+    --black: #000000;
+    --ink: #111111;
+    --accent: #0066CC;
+    --grid: 24px;
+    --font: "Helvetica Neue", "Arial", "Noto Sans SC", sans-serif;
+    --mono: "Menlo", "Monaco", "Courier New", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { font-size: 15px; }
+
+  body {
+    font-family: var(--font);
+    background: var(--white);
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 48px 24px;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.3;
+    margin-top: 48px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--black);
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .meta {
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    margin-bottom: 64px;
+  }
+
+  /* ── RULES ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--black);
+    margin: 48px 0;
+  }
+  hr.light {
+    border-color: #CCCCCC;
+    margin: 24px 0;
+  }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin: 8px 0 16px;
+  }
+  th {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--black);
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #CCCCCC;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.label-cell {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: 120px;
+    vertical-align: top;
+    padding-top: 11px;
+  }
+
+  /* ── CODE ── */
+  code {
+    font-family: var(--mono);
+    font-size: 13px;
+    background: #F0F0F0;
+    padding: 1px 5px;
+    color: var(--ink);
+  }
+  pre {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.55;
+    background: #F0F0F0;
+    padding: 16px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 8px 0 16px;
+    border: 1px solid #CCCCCC;
+  }
+
+  /* ── TAGS ── */
+  .tag {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .tag-hi { color: var(--accent); }
+  .tag-mid { color: #666666; }
+  .tag-lo { color: #999999; }
+  .source-sys { font-size: 12px; color: #666666; }
+  .source-user { font-size: 12px; color: var(--accent); }
+
+  /* ── ROUTE LABELS ── */
+  .route {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .route-buy { color: var(--ink); }
+  .route-build { color: var(--accent); }
+  .route-hold { color: #999999; }
+
+  /* ── STATUS ── */
+  .status-needed {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .status-installed {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #666666;
+  }
+  .status-wait {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #999999;
+  }
+
+  /* ── PRIORITY BLOCK ── */
+  .priority-block {
+    padding: 0 0 0 24px;
+    border-left: 4px solid #CCCCCC;
+    margin-bottom: 32px;
+  }
+  .priority-block.buy { border-left-color: var(--ink); }
+  .priority-block.build { border-left-color: var(--accent); }
+  .priority-block .pb-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  /* ── KPI GRID ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 24px 0;
+  }
+  .kpi-cell {
+    text-align: center;
+    padding: 24px 16px;
+    border: 1px solid #CCCCCC;
+  }
+  .kpi-value {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .kpi-value.accent { color: var(--accent); }
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666666;
+  }
+
+  /* ── COMPARISON ── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 16px 0;
+  }
+  .compare-col {
+    padding: 0;
+  }
+  .compare-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #CCCCCC;
+    margin-bottom: 12px;
+  }
+  .compare-item {
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 6px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .compare-item::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+  .col-agent .compare-item::before { background: var(--accent); }
+  .col-manual .compare-item::before { background: var(--ink); }
+
+  /* ── BUILD STEPS ── */
+  .step-list {
+    list-style: none;
+    counter-reset: step;
+  }
+  .step-list li {
+    counter-increment: step;
+    padding: 12px 0 12px 64px;
+    position: relative;
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .step-list li:last-child { border-bottom: none; }
+  .step-list li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 12px;
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* ── SKILL SCAN ── */
+  .skill-row {
+    padding: 16px 0;
+    border-bottom: 1px solid #CCCCCC;
+  }
+  .skill-row:last-child { border-bottom: none; }
+  .skill-name {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .skill-desc {
+    font-size: 15px;
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+  .skill-meta {
+    font-size: 13px;
+    color: #666666;
+    margin-top: 4px;
+  }
+
+  /* ── CRON PLATFORM ── */
+  .cron-platform {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid #CCCCCC;
+  }
+  .cron-platform .platform-name {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .cron-platform code {
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ── WEEKLY CHECKLIST ── */
+  .week-block {
+    margin-bottom: 32px;
+    page-break-inside: avoid;
+  }
+  .week-header {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .week-sub {
+    font-size: 13px;
+    color: #666666;
+    margin-bottom: 8px;
+  }
+  .week-target {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 12px;
+    padding-left: 16px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 15px;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .cb {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--ink);
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    position: relative;
+  }
+  .cb.checked {
+    background: var(--ink);
+  }
+  .cb.checked::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 5px;
+    height: 9px;
+    border: solid var(--white);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .task-content { flex: 1; }
+  .task-name { font-weight: 700; }
+  .task-detail {
+    font-size: 13px;
+    color: #666666;
+    margin-top: 2px;
+  }
+  .task-tag {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .task-tag.must { color: var(--accent); }
+  .task-tag.should { color: #666666; }
+  .task-tag.nice { color: #999999; }
+  .task-est {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #999999;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 64px;
+    padding-top: 16px;
+    border-top: 2px solid var(--black);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666666;
+  }
+
+  /* ── HIGHLIGHT TD ── */
+  .col-hi {
+    background: #F0F0F0;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; padding: 24px; max-width: 100%; }
+    h1 { font-size: 20px; }
+    h2 { font-size: 17px; margin-top: 32px; }
+    table { font-size: 13px; }
+    pre { background: #f5f5f5; }
+    .cb { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .kpi-grid { gap: 8px; }
+    .kpi-value { font-size: 24px; }
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 24px 16px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .compare-grid { grid-template-columns: 1fr; gap: 32px; }
+    .checklist-item { flex-wrap: wrap; }
+    .task-tag, .task-est { margin-left: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>AI 转型落地执行方案</h1>
+  <p class="meta">2026-05-29 &nbsp;|&nbsp; 综合运营 AI 转型通道 &mdash; 个性化方案</p>
+
+  <!-- ═══ 01. USER PROFILE ═══ -->
+  <h2>01 / 用户画像</h2>
+  <table>
+    <tr><td class="label-cell">姓名</td><td>张明</td></tr>
+    <tr><td class="label-cell">部门</td><td>数据科技业务部 - 服务组 - 供应商管理组</td></tr>
+    <tr><td class="label-cell">岗位</td><td>供应商管理岗</td></tr>
+    <tr><td class="label-cell">技术背景</td><td><span class="tag tag-lo">小白</span> &mdash; 偶尔用豆包对话</td></tr>
+    <tr><td class="label-cell">切换容忍度</td><td><span class="tag tag-mid">平衡型</span> &mdash; 效率提升 50% 以上愿意迁移</td></tr>
+    <tr><td class="label-cell">时间预算</td><td>每周 1&ndash;2 小时</td></tr>
+    <tr><td class="label-cell">工作模块</td><td>共 6 项（系统记录 4 项，自行补充 2 项）</td></tr>
+  </table>
+
+  <!-- ═══ 02. WORK MODULE INVENTORY ═══ -->
+  <h2>02 / 工作模块全貌</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:32px;">#</th>
+        <th>工作内容</th>
+        <th style="width:56px;">来源</th>
+        <th style="width:48px;">频次</th>
+        <th style="width:56px;">月工时</th>
+        <th style="width:72px;">AI 潜力</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>供应商准入材料审核</td>
+        <td><span class="source-sys">系统</span></td>
+        <td>高频</td>
+        <td>32h</td>
+        <td><span class="tag tag-hi">高</span></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>月度绩效数据整理与排名</td>
+        <td><span class="source-sys">系统</span></td>
+        <td>高频</td>
+        <td>20h</td>
+        <td><span class="tag tag-hi">高</span></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>供应商对账</td>
+        <td><span class="source-sys">系统</span></td>
+        <td>中频</td>
+        <td>16h</td>
+        <td><span class="tag tag-mid">中</span></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>合规报告撰写</td>
+        <td><span class="source-sys">系统</span></td>
+        <td>中频</td>
+        <td>12h</td>
+        <td><span class="tag tag-hi">高</span></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>供应商沟通协调（催材料、解释审核结论）</td>
+        <td><span class="source-user">补充</span></td>
+        <td>高频</td>
+        <td>24h</td>
+        <td><span class="tag tag-mid">中</span></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>临时数据查询与汇总（对接人临时要数据）</td>
+        <td><span class="source-user">补充</span></td>
+        <td>高频</td>
+        <td>8h</td>
+        <td><span class="tag tag-hi">高</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ═══ 03. PRIORITY ITEMS ═══ -->
+  <h2>03 / 优先改造项</h2>
+
+  <div class="priority-block buy">
+    <div><span class="route route-buy">Buy &mdash; 有现成 Skill</span></div>
+    <div class="pb-title">供应商准入材料审核</div>
+    <table>
+      <tr><td class="label-cell">你的描述</td><td>审核供应商提交的准入材料，逐份核对营业执照、经营许可证等，检查有效期和经营范围</td></tr>
+      <tr><td class="label-cell">AI 翻译</td><td>文档理解 + 合规项逐条核验 + 差异标记</td></tr>
+      <tr><td class="label-cell">瓶颈环节</td><td>2&ndash;3 步的文件逐份核对，占整体耗时 70%</td></tr>
+      <tr><td class="label-cell">月节省</td><td>约 22 小时（32h &times; 70% 自动化率）</td></tr>
+    </table>
+  </div>
+
+  <div class="priority-block build">
+    <div><span class="route route-build">Build &mdash; 需要自建</span></div>
+    <div class="pb-title">临时数据查询与汇总</div>
+    <table>
+      <tr><td class="label-cell">你的描述</td><td>对接人或上级临时要某个供应商的数据汇总，需要从多个系统里手动拉数据、整理格式</td></tr>
+      <tr><td class="label-cell">AI 翻译</td><td>自然语言数据查询 + 自动格式化 + 报告生成</td></tr>
+      <tr><td class="label-cell">瓶颈环节</td><td>跨系统查数据 + 手动拼 Excel</td></tr>
+      <tr><td class="label-cell">月节省</td><td>约 6 小时（8h &times; 75% 自动化率）</td></tr>
+    </table>
+  </div>
+
+  <!-- ═══ 04. AGENTAI VS MANUAL ═══ -->
+  <h2>04 / AgentAI 方案 vs 手动 AI 对话</h2>
+  <div class="compare-grid">
+    <div class="compare-col col-agent">
+      <div class="compare-label" style="border-color:var(--accent); color:var(--accent);">AgentAI 方案</div>
+      <div class="compare-item">Skill 自动读取文件、比对、输出结论</div>
+      <div class="compare-item">审核流程自动执行，每月省 22 小时</div>
+      <div class="compare-item">一次搭建，持续自动运行</div>
+      <div class="compare-item">数据查询模板化，自然语言驱动</div>
+      <div class="compare-item">报告自动生成，格式标准化</div>
+    </div>
+    <div class="compare-col col-manual">
+      <div class="compare-label">手动 AI 对话</div>
+      <div class="compare-item">每次打开豆包，手动粘贴材料</div>
+      <div class="compare-item">单次审核 30 分钟 &rarr; 15 分钟</div>
+      <div class="compare-item">每次手动操作</div>
+      <div class="compare-item">反复查系统、导 Excel、手动汇总</div>
+      <div class="compare-item">报告靠模板填，数据更新滞后</div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi-cell">
+      <div class="kpi-value">112h</div>
+      <div class="kpi-label">月总工时</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-value accent">34h</div>
+      <div class="kpi-label">可释放</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-value accent">30%</div>
+      <div class="kpi-label">效率提升</div>
+    </div>
+    <div class="kpi-cell">
+      <div class="kpi-value">3</div>
+      <div class="kpi-label">需安装技能</div>
+    </div>
+  </div>
+
+  <!-- ═══ 05. BUY/BUILD BREAKDOWN ═══ -->
+  <h2>05 / Buy / Build 分流明细</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>工作模块</th>
+        <th style="width:64px;">方案</th>
+        <th>匹配 Skill</th>
+        <th style="width:64px;">状态</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>供应商准入材料审核</td>
+        <td><span class="route route-buy">Buy</span></td>
+        <td><code>doc-xlsx</code>, <code>grill-with-docs</code></td>
+        <td><span class="status-needed">需安装</span></td>
+      </tr>
+      <tr>
+        <td>临时数据查询与汇总</td>
+        <td><span class="route route-build">Build</span></td>
+        <td>无现成 Skill，建议自建</td>
+        <td><span class="status-needed">待自建</span></td>
+      </tr>
+      <tr>
+        <td>月度绩效数据整理</td>
+        <td><span class="route route-buy">Buy</span></td>
+        <td><code>doc-xlsx</code>, <code>sn-research-report</code></td>
+        <td><span class="status-needed">需安装</span></td>
+      </tr>
+      <tr>
+        <td>供应商沟通协调</td>
+        <td><span class="route route-hold">暂缓</span></td>
+        <td>人际互动性高，当前不建议 AI 化</td>
+        <td><span class="status-wait">观望</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ═══ 06. BUILD PATH GUIDANCE ═══ -->
+  <h2>06 / 自建 Skill 引导</h2>
+  <p style="margin-bottom:16px;">目标：<strong>临时数据查询与汇总</strong> &mdash; 当前没有现成 Skill 覆盖此场景。</p>
+  <ol class="step-list">
+    <li><strong>定义查询模板</strong> &mdash; 列出最常收到的 5&ndash;10 种数据查询（供应商状态、绩效排名、合同到期、费用汇总、准入进度），每种写明输入字段和期望输出格式。</li>
+    <li><strong>映射数据源</strong> &mdash; 标注每种查询的数据来源（系统名/表名/导出路径），明确数据格式（Excel/CSV/API）和更新频率。</li>
+    <li><strong>编写 Skill 描述文件</strong> &mdash; 在 SKILL.md 中定义技能名称、触发条件、输入输出规范、处理逻辑。</li>
+    <li><strong>编写处理 Prompt</strong> &mdash; 将查询逻辑转写为 AI 可执行的 prompt：解析用户问题 &rarr; 匹配查询模板 &rarr; 提取参数 &rarr; 格式化输出。</li>
+    <li><strong>本地测试</strong> &mdash; 用 3&ndash;5 个真实查询案例测试，验证输出准确性和格式一致性。</li>
+    <li><strong>迭代优化</strong> &mdash; 根据测试结果调整 prompt，补充异常处理逻辑。</li>
+  </ol>
+
+  <!-- ═══ 07. TECH STACK CHECKLIST ═══ -->
+  <h2>07 / 当前技术栈清单</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>工具 / 平台</th>
+        <th>用途</th>
+        <th style="width:64px;">状态</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>MyAgents / JoyClaw（小龙虾）</td>
+        <td>Agent 运行平台</td>
+        <td><span class="status-installed">已安装</span></td>
+      </tr>
+      <tr>
+        <td><code>doc-xlsx</code></td>
+        <td>读取 Excel 附件并逐项比对</td>
+        <td><span class="status-needed">需安装</span></td>
+      </tr>
+      <tr>
+        <td><code>grill-with-docs</code></td>
+        <td>按合规清单逐条审核文档</td>
+        <td><span class="status-needed">需安装</span></td>
+      </tr>
+      <tr>
+        <td><code>sn-research-report</code></td>
+        <td>自动生成格式化报告</td>
+        <td><span class="status-needed">需安装</span></td>
+      </tr>
+      <tr>
+        <td>定时任务脚本</td>
+        <td>每月自动检查工具迭代</td>
+        <td><span class="status-needed">待配置</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ═══ 08. SKILL SCAN RESULTS ═══ -->
+  <h2>08 / Skill 扫描结果</h2>
+
+  <div class="skill-row">
+    <div class="skill-name"><code>doc-xlsx</code> <span class="status-needed">&mdash; 需安装</span></div>
+    <div class="skill-desc">读取 Excel 文件，逐项比对数据，标记差异行。适用于对账、核验等场景。</div>
+    <div class="skill-meta">匹配场景：供应商准入材料审核、月度绩效数据整理</div>
+  </div>
+
+  <div class="skill-row">
+    <div class="skill-name"><code>grill-with-docs</code> <span class="status-needed">&mdash; 需安装</span></div>
+    <div class="skill-desc">按预设清单逐条审核文档，输出通过/不通过结论。适用于合规审核、资质校验。</div>
+    <div class="skill-meta">匹配场景：供应商准入材料审核</div>
+  </div>
+
+  <div class="skill-row">
+    <div class="skill-name"><code>sn-research-report</code> <span class="status-needed">&mdash; 需安装</span></div>
+    <div class="skill-desc">自动生成格式化报告，支持数据表格和可视化。适用于月度报告、绩效排名。</div>
+    <div class="skill-meta">匹配场景：月度绩效数据整理</div>
+  </div>
+
+  <!-- ═══ 09. ITERATION SUGGESTIONS ═══ -->
+  <h2>09 / 工具迭代建议</h2>
+  <p style="margin-bottom:16px;">基于<span class="tag tag-mid">平衡型</span>策略，当前建议：</p>
+
+  <div class="skill-row">
+    <div class="skill-name"><code>doc-xlsx</code> <span class="tag tag-hi">建议安装</span></div>
+    <div class="skill-desc">ROI 明确：每月可省 22h 审核时间，安装后立即可用。</div>
+  </div>
+
+  <div class="skill-row">
+    <div class="skill-name"><code>grill-with-docs</code> <span class="tag tag-mid">建议安装</span></div>
+    <div class="skill-desc">配合 <code>doc-xlsx</code> 使用，审核效率可再提升 30%。建议先装 <code>doc-xlsx</code> 跑 1 周，再装此 Skill。</div>
+  </div>
+
+  <div class="skill-row">
+    <div class="skill-name">自建 Skill：临时数据查询 <span class="tag tag-mid">W3 动手</span></div>
+    <div class="skill-desc">前两周熟悉 AI 工具后，第三周尝试自建。月省 6h。</div>
+  </div>
+
+  <!-- ═══ 10. CRON TASK ═══ -->
+  <h2>10 / 定时任务配置</h2>
+  <p style="font-size:13px; color:#666666; margin-bottom:16px;">
+    频率：每月一次 &nbsp;|&nbsp; 容忍度：平衡型 &nbsp;|&nbsp; 下次检查：2026-06-29
+  </p>
+
+  <p style="font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:4px;">Prompt（复制后直接使用）</p>
+  <pre id="cron-prompt">你是 AI 工具迭代顾问。现在是每月检查时间。
+
+请帮我完成以下检查：
+
+1. 检查以下 Skill 是否有新版本：
+   - doc-xlsx
+   - grill-with-docs
+   - sn-research-report
+
+2. 如果有更新，列出：
+   - 更新了什么
+   - 是否影响我当前的审核流程
+   - 是否建议立即升级
+
+3. 检查是否有新的 Skill 可以覆盖以下场景：
+   - 供应商对账（中潜力）
+   - 供应商沟通协调（中潜力）
+
+4. 输出格式：
+   | Skill | 当前版本 | 最新版本 | 是否需要更新 | 备注 |
+   |-------|---------|---------|------------|------|
+
+我的技术背景：小白（平衡型）
+当前已安装：doc-xlsx, grill-with-docs, sn-research-report</pre>
+
+  <div class="cron-platform">
+    <div class="platform-name">JoyClaw（小龙虾）</div>
+    <code>jl cron add --name "AgentAI工具迭代检查" --prompt "你是 AI 工具迭代顾问..." --every 2592000</code>
+  </div>
+
+  <div class="cron-platform">
+    <div class="platform-name">MyAgents</div>
+    <code>myagents cron add --name "AgentAI工具迭代检查" --prompt-file output/agentai-check-prompt.txt --every 43200</code>
+  </div>
+
+  <div class="cron-platform">
+    <div class="platform-name">Crontab（macOS 本地）</div>
+    <code>0 9 28 * * echo "你是 AI 工具迭代顾问..." | myagents run --stdin</code>
+  </div>
+
+  <div class="cron-platform">
+    <div class="platform-name">无定时任务平台</div>
+    <p style="font-size:14px; margin-top:4px;">每月 28 日，手动把上方 Prompt 复制给 AI 即可。</p>
+  </div>
+
+  <!-- ═══ 11. WEEKLY CHECKLIST ═══ -->
+  <h2>11 / 周度执行清单</h2>
+  <p style="font-size:13px; color:#666666; margin-bottom:24px;">按 Cmd+P 可打印。勾选后状态保持至当前页面。</p>
+
+  <!-- W1 -->
+  <div class="week-block">
+    <div class="week-header">第一周 &mdash; 跑通第一个 AI 工具</div>
+    <div class="week-sub">约 40 分钟</div>
+    <div class="week-target">验收标准：用 <code>doc-xlsx</code> 自动比对一份 Excel 附件，输出差异结果</div>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">安装 <code>doc-xlsx</code> Skill</div>
+          <div class="task-detail">在 Skill 商店搜索 <code>doc-xlsx</code>，点击安装。安装后无需配置即可使用。</div>
+        </div>
+        <span class="task-tag must">必做</span>
+        <span class="task-est">5 min</span>
+      </li>
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">用 <code>doc-xlsx</code> 比对一份真实的供应商材料</div>
+          <div class="task-detail">找一份最近审核过的 Excel 附件，上传给 AI，让它自动比对。对比手动和 AI 的结果差异。</div>
+        </div>
+        <span class="task-tag must">必做</span>
+        <span class="task-est">20 min</span>
+      </li>
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">记录体验：哪些环节快了，哪些还不准</div>
+          <div class="task-detail">写 2&ndash;3 句话就行。这些反馈后续优化 Skill 时会用到。</div>
+        </div>
+        <span class="task-tag should">建议</span>
+        <span class="task-est">10 min</span>
+      </li>
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">安装 <code>grill-with-docs</code> Skill</div>
+          <div class="task-detail">如果 W1 的 <code>doc-xlsx</code> 体验不错，提前装好下周要用的 Skill。</div>
+        </div>
+        <span class="task-tag nice">可选</span>
+        <span class="task-est">5 min</span>
+      </li>
+    </ul>
+  </div>
+
+  <hr class="light">
+
+  <!-- W2 -->
+  <div class="week-block">
+    <div class="week-header">第二周 &mdash; 串联工作流：审核全流程 AI 化</div>
+    <div class="week-sub">约 55 分钟</div>
+    <div class="week-target">验收标准：一次供应商准入审核，从材料上传到结论输出，全程 AI 辅助完成</div>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">用两个 Skill 完整跑一次审核流程</div>
+          <div class="task-detail">上传供应商材料包 &rarr; <code>doc-xlsx</code> 比对数据 &rarr; <code>grill-with-docs</code> 逐条合规核验 &rarr; 输出审核结论。</div>
+        </div>
+        <span class="task-tag must">必做</span>
+        <span class="task-est">30 min</span>
+      </li>
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">对比全流程耗时：手动 vs AI 辅助</div>
+          <div class="task-detail">记录这次审核花了多少时间，和之前纯手动的 30 分钟对比。</div>
+        </div>
+        <span class="task-tag should">建议</span>
+        <span class="task-est">10 min</span>
+      </li>
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">把"临时数据查询"的流程写下来</div>
+          <div class="task-detail">按"输入 &rarr; 处理 &rarr; 输出"格式，写下这个工作的具体步骤。下周自建 Skill 时直接用。</div>
+        </div>
+        <span class="task-tag should">建议</span>
+        <span class="task-est">15 min</span>
+      </li>
+    </ul>
+  </div>
+
+  <hr class="light">
+
+  <!-- W3 -->
+  <div class="week-block">
+    <div class="week-header">第三周 &mdash; 自建 Skill：让 AI 学会你的专属工作</div>
+    <div class="week-sub">约 60 分钟</div>
+    <div class="week-target">验收标准：自建 Skill 能接收文字查询需求，自动输出格式化数据汇总</div>
+    <ul class="checklist">
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">用 <code>skill-creator</code> 创建自定义 Skill</div>
+          <div class="task-detail">把 W2 写好的流程描述告诉 AI，让它生成 Skill 文件。放到 skills 目录即可用。</div>
+        </div>
+        <span class="task-tag must">必做</span>
+        <span class="task-est">30 min</span>
+      </li>
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">测试自建 Skill：跑一次真实查询</div>
+          <div class="task-detail">用对接人最近的一次真实需求测试，看输出是否可用。不够好就微调描述，再试一次。</div>
+        </div>
+        <span class="task-tag should">建议</span>
+        <span class="task-est">20 min</span>
+      </li>
+      <li class="checklist-item">
+        <div class="cb" onclick="this.classList.toggle('checked')"></div>
+        <div class="task-content">
+          <div class="task-name">配置定时检查脚本</div>
+          <div class="task-detail">把定时任务 Prompt 配到你的平台（JoyClaw / MyAgents / crontab），每月自动检查工具更新。</div>
+        </div>
+        <span class="task-tag nice">可选</span>
+        <span class="task-est">10 min</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>AI 转型落地执行方案 &nbsp;|&nbsp; Muller-Brockmann Swiss Grid Style &nbsp;|&nbsp; Generated 2026-05-29</p>
+    <p>下次工具迭代检查：2026-06-29 &nbsp;|&nbsp; 报告路径：output/demo-muller.html</p>
+  </div>
+
+</div>
+</body>
+</html>

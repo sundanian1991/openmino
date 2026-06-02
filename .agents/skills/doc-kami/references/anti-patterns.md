@@ -56,3 +56,20 @@ Common failures when AI generates professional documents. Organized by failure t
 |---|---------|-----|-----|
 | 24 | Chinese AI corporate speak | "赋能企业数字化转型", "打造一站式解决方案" | Say what it does: "帮公司把纸质流程搬到线上" |
 | 25 | English AI corporate speak | "Leverage our platform to unlock synergies" | "Use the platform to share data between teams" |
+| 26 | Caption restates the flow diagram | "六类来源 → 六道过滤 → 配比设计 → 训练分片，四步串联" | Cap 给出图意以外的判断："来源决定知识边界，过滤决定干净程度，配比决定能力侧重" |
+| 27 | AI tone cliches (CN dashes and connectors) | "本质上是模型在做预测——这意味着..." / 大量破折号 | 删元评论框架，直接说结论。破折号换冒号或句号。自检: `grep -nE '本质是\|这意味着\|值得注意的是\|不仅.*而且\|[——–]'` |
+| 28 | Sans font stack missing CJK fallback | `font-family: Inter` 用在含中文的 th / h3 | CJK 回退到系统 sans (PingFang) 跟 serif 主调冲突。任何可能渲染 CJK 的元素用 `var(--serif)` |
+| 29 | Caption restates the slide title | Title: "ORM vs PRM 对比" / Cap: "ORM 跟 PRM 的对比" | Cap 必须给出标题之外的信息：取舍判据、适用场景、或讲到这里要带出的下一步。同义重写浪费了 cap 的注意力位 |
+
+## Landing Page
+
+The main `landing-page.html` template does not ship a price card or language switcher by default. Rules #30 and #31 below apply when you add either component (Kami's own `styles.css` L67-151 has a working `.lang-switch` reference).
+
+| # | Pattern | Bad | Fix |
+|---|---------|-----|-----|
+| 30 | Currency glyph shrunk and raised | `.price-currency { font-size: 0.5em; vertical-align: super }` floats `$` above the digit and breaks baseline | `font-size: 0.74em; line-height: 1; transform: translateY(0.015em)` keeps `$` and the digit on a shared baseline |
+| 31 | Language menu clips descenders | `.lang-menu a { line-height: 1 }` cuts the bottom of 'g' / 'y' / 'p' | `min-height: 32px; padding: 6px 10px; line-height: 1.35` plus an invisible `::before` bridge so the cursor can travel from trigger to menu without dismissal |
+| 32 | Sitemap lists locales without hreflang | `<url><loc>example.com/zh/</loc></url>` standing alone | Add `<xhtml:link rel="alternate" hreflang>` for every shipped locale plus `hreflang="x-default"` inside the same `<url>` entry |
+| 33 | Mixed CJK and Latin digits drift on baseline | `Mac/22/$19` shows digits at different heights because the serif falls back to oldstyle nums | `font-variant-numeric: lining-nums tabular-nums` on every node that displays numbers |
+| 34 | Hardcoded business data in the template | `<meta name="description" content="Acme is a $9 cleaner">` checked into the template file | Keep `{{PLACEHOLDER}}` slots so the user fills them at copy time. Templates ship with no real product data |
+| 35 | Multilingual site without `og:locale:alternate` | Single `og:locale` and no alternates listed | Self-reference the current page locale and list the others on `og:locale:alternate` so social previews pick the right thumbnail per region |

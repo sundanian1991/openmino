@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>从混乱到清晰 — Storytelling with Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F5F5F5;--surface:#FFF;--surface-raised:#F0F0F0;
+  --border:#E8E8E8;--border-visible:#CCC;
+  --text-disabled:#999;--text-secondary:#666;--text-primary:#1A1A1A;--text-display:#000;
+  --accent:#D71921;--accent-subtle:rgba(215,25,33,0.08);
+  --font-display:'Doto','Space Mono',monospace;
+  --font-body:'Space Grotesk','DM Sans',system-ui,sans-serif;
+  --font-mono:'Space Mono','SF Mono',monospace;
+  --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;--space-4xl:96px;
+}
+html{font-size:16px;scroll-behavior:smooth;scroll-padding-top:48px}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);line-height:1.6;-webkit-font-smoothing:antialiased}
+body.editing{outline:2px solid var(--accent);outline-offset:-2px}
+a{color:inherit;text-decoration:none}
+.container{max-width:960px;margin:0 auto;padding:0 var(--space-lg)}
+
+/* Dot grid */
+.dot-grid{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.dot-grid::after{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle,var(--border-visible) .5px,transparent .5px);
+  background-size:16px 16px;opacity:0.15}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;height:44px;
+  background:rgba(245,245,245,.95);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--space-xl);border-bottom:1px solid var(--border)}
+.nav-brand{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--accent);text-transform:uppercase}
+.nav-links{display:flex;gap:0;align-items:center}
+.nav-links a{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;
+  color:var(--text-disabled);padding:0 var(--space-sm);transition:color .15s}
+.nav-links a:hover{color:var(--text-primary)}
+.nav-links a.active{color:var(--accent)}
+.nav-sep{color:var(--border);font-family:var(--font-mono);font-size:10px}
+.nav-progress{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;color:var(--text-disabled);min-width:48px;text-align:right}
+
+/* Hero */
+.hero{min-height:90vh;display:flex;align-items:center;position:relative;
+  padding:var(--space-4xl) 0 var(--space-3xl)}
+.hero-inner{position:relative;z-index:1}
+.hero-meta{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;
+  color:var(--text-secondary);margin-bottom:var(--space-lg);text-transform:uppercase}
+.hero-meta em{font-style:normal;color:var(--accent)}
+.hero h1{font-family:var(--font-display);font-size:64px;font-weight:400;line-height:1.06;
+  letter-spacing:-.03em;color:var(--text-display);margin-bottom:var(--space-lg);max-width:720px}
+.hero-line{width:48px;height:2px;background:var(--accent);margin-bottom:var(--space-lg)}
+.hero-desc{font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:480px;margin-bottom:var(--space-2xl)}
+.hero-scroll{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--text-disabled);
+  animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* Segmented progress bar (Nothing signature) */
+.seg-strip{display:flex;gap:2px;margin-bottom:var(--space-lg);max-width:480px}
+.seg-strip .seg{flex:1;height:6px;background:var(--border);transition:background .3s;cursor:pointer}
+.seg-strip .seg.filled{background:var(--accent)}
+.seg-strip .seg.current{background:var(--text-display)}
+
+/* Unit */
+.u{padding:var(--space-4xl) 0;border-top:1px solid var(--border)}
+.u-header{margin-bottom:var(--space-2xl)}
+.u-number{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;
+  color:var(--text-disabled);margin-bottom:var(--space-md);text-transform:uppercase}
+.u-number em{font-style:normal;color:var(--accent)}
+.u-title{font-size:32px;font-weight:500;line-height:1.15;letter-spacing:-.015em;
+  color:var(--text-display);margin-bottom:var(--space-sm)}
+.u-position{font-size:16px;color:var(--text-secondary);line-height:1.5;max-width:600px}
+.u-ruler{width:32px;height:1px;background:var(--border-visible);margin-top:var(--space-md)}
+
+/* Layer */
+.layer{margin-bottom:var(--space-2xl)}
+.layer:last-of-type{margin-bottom:0}
+.layer-wide{max-width:100%}
+.layer-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;
+  color:var(--text-disabled);margin-bottom:var(--space-sm);text-transform:uppercase}
+.layer p{font-size:15px;line-height:1.7;color:var(--text-primary)}
+.layer p+p{margin-top:var(--space-sm)}
+.layer .text-mono{font-family:var(--font-mono)}
+
+/* Thesis block */
+.thesis{background:var(--accent-subtle);border-left:3px solid var(--accent);
+  padding:var(--space-lg) var(--space-xl);margin-bottom:var(--space-2xl)}
+.thesis .layer-label{color:var(--accent)}
+.thesis p{font-size:16px;line-height:1.65;color:var(--text-primary)}
+
+/* Closure — 知行鸿沟 */
+.closure{border:1px solid var(--border-visible);padding:var(--space-md) var(--space-lg);
+  margin-bottom:var(--space-md)}
+.closure p{font-family:var(--font-mono);font-size:13px;line-height:1.6;color:var(--text-secondary)}
+
+/* Comparison grid */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--border);margin-bottom:var(--space-lg)}
+.compare>div{padding:var(--space-xl) var(--space-xl);background:var(--surface)}
+.compare-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;
+  color:var(--text-disabled);margin-bottom:var(--space-sm);text-transform:uppercase}
+.compare p,.compare li{font-size:14px;line-height:1.65}
+
+/* Card grid */
+.card-grid{display:flex;flex-wrap:wrap;gap:var(--space-sm);margin-bottom:var(--space-lg)}
+.card{background:var(--surface);border:1px solid var(--border);padding:var(--space-md);flex:1;min-width:160px}
+.card-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;
+  color:var(--text-secondary);margin-bottom:var(--space-xs);text-transform:uppercase}
+.card p{font-size:13px;line-height:1.55;color:var(--text-primary)}
+
+/* Flow steps */
+.flow{margin-bottom:var(--space-lg)}
+.flow-step{display:flex;gap:var(--space-md);position:relative;padding-bottom:var(--space-md)}
+.flow-step:last-child{padding-bottom:0}
+.flow-step:not(:last-child)::before{content:'';position:absolute;left:7px;top:16px;bottom:0;width:1px;background:var(--border)}
+.flow-dot{width:15px;height:15px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:3px}
+.flow-head{font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;color:var(--accent);margin-bottom:2px}
+.flow-step p{font-size:14px;line-height:1.55}
+
+/* Quote block */
+.quote{border-left:3px solid var(--accent);padding:var(--space-lg) var(--space-xl);margin-bottom:var(--space-lg)}
+.quote p{font-size:16px;line-height:1.7;font-style:italic;color:var(--text-primary)}
+.quote-source{font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);margin-top:var(--space-sm);font-style:normal}
+
+/* Table */
+.table{width:100%;border-collapse:collapse;margin-bottom:var(--space-lg);font-size:14px}
+.table th{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-secondary);
+  text-align:left;padding:6px 12px;border-bottom:1px solid var(--border-visible);font-weight:400;text-transform:uppercase}
+.table td{padding:6px 12px;border-bottom:1px solid var(--border);line-height:1.5}
+.table td:first-child{font-weight:500}
+
+/* Number matrix (Unit 4) */
+.matrix{display:grid;grid-template-columns:repeat(6,44px);gap:3px;
+  font-family:var(--font-mono);font-size:18px;margin-bottom:var(--space-md)}
+.matrix span{background:var(--surface);border:1px solid var(--border);
+  padding:8px;text-align:center;line-height:1}
+.matrix span.highlight{color:var(--accent);font-weight:700;
+  background:var(--accent-subtle);border-color:var(--accent)}
+
+/* Three-act arc (Unit 6) */
+.arc{display:flex;gap:1px;margin-bottom:var(--space-lg)}
+.arc>div{flex:1;padding:var(--space-lg);background:var(--surface);
+  border:1px solid var(--border);text-align:center}
+.arc>div:not(:first-child){border-left:none}
+.arc-num{font-family:var(--font-mono);font-size:11px;color:var(--accent);margin-bottom:var(--space-xs)}
+.arc-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;
+  color:var(--text-secondary);margin-bottom:var(--space-sm);text-transform:uppercase}
+.arc p{font-size:13px;line-height:1.5;color:var(--text-primary)}
+
+/* Transition */
+.transition{padding-top:var(--space-xl);border-top:1px solid var(--border);margin-top:var(--space-sm);display:flex;justify-content:space-between;align-items:baseline}
+.transition-hint{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;color:var(--text-disabled)}
+.transition a{font-size:15px;color:var(--accent);font-weight:500}
+.transition a:hover{text-decoration:underline}
+
+/* Footer */
+.footer{padding:var(--space-2xl) 0;text-align:center;border-top:1px solid var(--border)}
+.footer p{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;color:var(--text-disabled)}
+
+/* Responsive */
+@media(max-width:768px){
+  .container{padding:0 var(--space-md)}
+  .hero h1{font-size:36px}
+  .u-title{font-size:24px}
+  .u{padding:var(--space-3xl) 0}
+  .compare{grid-template-columns:1fr}
+  .arc{flex-direction:column}
+  .arc>div:not(:first-child){border-left:1px solid var(--border);border-top:none}
+  .matrix{grid-template-columns:repeat(6,36px)}
+  .matrix span{padding:6px;font-size:15px}
+  .nav{padding:0 var(--space-md)}
+  .nav-links a{padding:0 6px}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <span class="nav-brand">[ 从混乱到清晰 ]</span>
+  <div class="nav-links">
+    <a href="#hero" class="active">00</a><span class="nav-sep">|</span>
+    <a href="#u1">01</a><span class="nav-sep">|</span>
+    <a href="#u2">02</a><span class="nav-sep">|</span>
+    <a href="#u3">03</a><span class="nav-sep">|</span>
+    <a href="#u4">04</a><span class="nav-sep">|</span>
+    <a href="#u5">05</a><span class="nav-sep">|</span>
+    <a href="#u6">06</a><span class="nav-sep">|</span>
+    <a href="#u7">07</a>
+  </div>
+  <span class="nav-progress" id="navPr">00 / 07</span>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <div class="dot-grid"></div>
+  <div class="container hero-inner">
+    <div class="hero-meta">Storytelling with Data · Cole Nussbaumer Knaflic <em>/ 策展</em></div>
+    <h1 data-edit>做图表最难的<br>不是 Excel<br>是选择</h1>
+    <div class="hero-line"></div>
+    <p class="hero-desc" data-edit>这本书不是教你用什么工具——是教你每次做图表时都在做的 7 个隐形选择。每个选择都决定了观众看到什么、记住什么、做什么。</p>
+    <div class="seg-strip" id="segStrip">
+      <div class="seg filled" data-idx="0"></div>
+      <div class="seg" data-idx="1"></div>
+      <div class="seg" data-idx="2"></div>
+      <div class="seg" data-idx="3"></div>
+      <div class="seg" data-idx="4"></div>
+      <div class="seg" data-idx="5"></div>
+      <div class="seg" data-idx="6"></div>
+    </div>
+    <div class="hero-scroll">[ 向下滚动 ]</div>
+  </div>
+</section>
+
+<div class="container">
+
+<!-- ===== U1 ===== -->
+<section class="u" id="u1">
+  <div class="u-header">
+    <div class="u-number"><em>01</em> / 07</div>
+    <div class="u-title" data-edit>你以为在展示珍珠，观众看到的全是壳</div>
+    <div class="u-position" data-edit>大多数数据汇报失败的原因不是数据不好，是没有上下文。</div>
+    <div class="u-ruler"></div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">导言</div>
+    <p data-edit>你做了一份数据汇报，数据齐全，图表清晰，但观众看完后不知道该做什么。问题出在哪？</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">入口层 · 错误 vs 正确</div>
+    <div class="compare">
+      <div>
+        <div class="compare-label">错误 · 只有数据</div>
+        <p data-edit>一位四年级科学老师完成暑期科学实验项目。数据明显改善。她做了汇报展示调查结果，申请继续经费。但预算委员会没有批准。</p>
+      </div>
+      <div>
+        <div class="compare-label" style="color:var(--accent)">正确 · 有上下文</div>
+        <p data-edit>她没告诉预算委员会"需要你们做什么"。回答了"数据是什么"，没回答"然后呢"。数据是珍珠，上下文才是壳。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="layer-label">主题</div>
+    <p data-edit>汇报失败的原因是缺少上下文。她没有回答：受众是谁？需要他们做什么？核心信息是什么？数据只是珍珠，上下文才是壳——没有壳，珍珠散落一地，观众不知道该捡哪颗。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">展开层 · 上下文五问</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-label" data-edit>受众</div><p data-edit>预算委员会，关心投入产出比</p></div>
+      <div class="card"><div class="card-label" data-edit>诉求</div><p data-edit>批准经费，不是"了解成果"</p></div>
+      <div class="card"><div class="card-label" data-edit>方式</div><p data-edit>3 分钟汇报，不是 30 页报告</p></div>
+      <div class="card"><div class="card-label" data-edit>核心</div><p data-edit>Big Idea 一句话说清楚</p></div>
+      <div class="card"><div class="card-label" data-edit>数据</div><p data-edit>只留下支撑核心信息的那些</p></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">证据层</div>
+    <div class="quote"><p data-edit>"Exploratory analysis is opening 100 oysters to see what's inside. Explanatory analysis is presenting the one with a pearl."</p><div class="quote-source">— Cole Nussbaumer Knaflic</div></div>
+  </div>
+
+  <div class="closure"><p data-edit>你知道汇报前要搞清楚"受众是谁、核心信息是什么"——但你直接打开了 Excel，从做图开始。因为"先做图"比"先想清楚"感觉像是在工作。</p></div>
+
+  <div class="transition">
+    <span class="transition-hint">下一个单元</span>
+    <a href="#u2">图表不是画出来的，是选出来的 →</a>
+  </div>
+</section>
+
+<!-- ===== U2 ===== -->
+<section class="u" id="u2">
+  <div class="u-header">
+    <div class="u-number"><em>02</em> / 07</div>
+    <div class="u-title" data-edit>Pie charts are evil</div>
+    <div class="u-position" data-edit>饼图不是"不好看"，是人类视觉系统读不懂角度和面积。</div>
+    <div class="u-ruler"></div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">导言</div>
+    <p data-edit>"Pie charts are evil"——这句话听起来像偏见，但后面站着认知科学。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">入口层 · Y 轴截断的欺骗</div>
+    <div style="display:flex;gap:var(--space-xl);align-items:flex-start;flex-wrap:wrap">
+      <div style="font-family:var(--font-display);font-size:72px;line-height:1;color:var(--accent);font-weight:400;letter-spacing:-.03em;flex-shrink:0">34%</div>
+      <div style="flex:1;min-width:240px">
+        <p data-edit>Fox News 的一张条形图，Y 轴从 34% 开始。视觉上 35.7% 看起来是 34% 的两倍多。数据没造假，但图表在撒谎。饼图更糟——人脑不擅长比较角度和面积。你以为是审美问题，其实是认知问题。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="layer-label">主题</div>
+    <p data-edit>选图表不是审美问题，是认知问题。用最简单的图表传达最清晰的信息。你的观众不该花费认知资源去解码图表本身——图表应该透明到让数据自己说话。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">展开层 · 四种替代</div>
+    <table class="table">
+      <thead><tr><th data-edit>场景</th><th data-edit>饼图的意图</th><th data-edit>更好的选择</th></tr></thead>
+      <tbody>
+        <tr><td data-edit>占比对比</td><td data-edit>A 比 B 大多少</td><td data-edit>水平条形图</td></tr>
+        <tr><td data-edit>部分 vs 整体</td><td data-edit>A 占整体的比例</td><td data-edit>100% 堆叠条形图</td></tr>
+        <tr><td data-edit>一个关键数字</td><td data-edit>"85% 的用户…"</td><td data-edit>大字展示，不画图</td></tr>
+        <tr><td data-edit>前后占比变化</td><td data-edit>从 60% 到 75%</td><td data-edit>坡度图</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">证据层 · 图表底线</div>
+    <p data-edit>条形图值轴必须从 0 开始，截断 Y 轴 = 视觉欺骗。折线图可以不从 0 开始但必须透明标注。3D 效果永远不用。双 Y 轴暗示虚假关联。</p>
+  </div>
+
+  <div class="closure"><p data-edit>你知道饼图不好——但开会时你用了 Excel 默认饼图。因为"默认"比"选择"轻松。</p></div>
+
+  <div class="transition">
+    <span class="transition-hint">下一个单元</span>
+    <a href="#u3">去杂不是删除，是判断 →</a>
+  </div>
+</section>
+
+<!-- ===== U3 ===== -->
+<section class="u" id="u3">
+  <div class="u-header">
+    <div class="u-number"><em>03</em> / 07</div>
+    <div class="u-title" data-edit>这句话该留还是该删</div>
+    <div class="u-position" data-edit>去杂不是机械删除，是判断力。</div>
+    <div class="u-ruler"></div>
+  </div>
+
+  <div class="layer" style="max-width:520px">
+    <div class="layer-label">导言</div>
+    <p data-edit>给你一张图表——网格线、边框、多余标签、装饰阴影。你删什么？</p>
+  </div>
+
+  <div class="layer" style="max-width:520px">
+    <div class="layer-label">入口层</div>
+    <p style="font-size:22px;font-weight:300;color:var(--text-secondary);line-height:1.4" data-edit>核心问题不是"删什么"——是"每个元素的信息价值值得它的认知成本吗？"</p>
+  </div>
+
+  <div class="thesis">
+    <div class="layer-label">主题</div>
+    <p data-edit>去杂是判断力不是删除术。知道留什么比知道删什么更难。留下来的每个元素都必须回答一个问题：没有它，观众会误解吗？</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">展开层 · 格式塔原理</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-label" data-edit>接近性</div><p data-edit>间距即关系。靠在一起的就是一组的。</p></div>
+      <div class="card"><div class="card-label" data-edit>相似性</div><p data-edit>同色同类。颜色即分类。</p></div>
+      <div class="card"><div class="card-label" data-edit>封闭性</div><p data-edit>大脑自动补全不完整的图形。</p></div>
+      <div class="card"><div class="card-label" data-edit>连续性</div><p data-edit>视线沿平滑路径流动。</p></div>
+    </div>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">展开层 · 六步去杂</div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-dot"></div><div><div class="flow-head" data-edit>一</div><p data-edit>去掉多余网格线和边框——只留必要的参考线</p></div></div>
+      <div class="flow-step"><div class="flow-dot"></div><div><div class="flow-head" data-edit>二</div><p data-edit>减少颜色——不超过 3 种有彩色</p></div></div>
+      <div class="flow-step"><div class="flow-dot"></div><div><div class="flow-head" data-edit>三</div><p data-edit>去掉冗余标签——数据自己会说话</p></div></div>
+      <div class="flow-step"><div class="flow-dot"></div><div><div class="flow-head" data-edit>四</div><p data-edit>对齐一切——不对齐 = 不用心</p></div></div>
+      <div class="flow-step"><div class="flow-dot"></div><div><div class="flow-head" data-edit>五</div><p data-edit>用间距替代分隔线——间距不够才需要线条</p></div></div>
+      <div class="flow-step"><div class="flow-dot"></div><div><div class="flow-head" data-edit>六</div><p data-edit>眯眼测试——跳出来的是数据还是装饰？</p></div></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">证据层 · 10 秒测试</div>
+    <p data-edit>眯起眼睛看图表，跳出来的是数据还是装饰？非专业人士能否 10 秒内理解要点？如果答案是否，继续删。</p>
+  </div>
+
+  <div class="closure"><p data-edit>你知道图表 80% 的元素是多余的——但你觉得"多比少安全"。因为删错了的风险比多放几条线的风险大。</p></div>
+
+  <div class="transition">
+    <span class="transition-hint">下一个单元</span>
+    <a href="#u4">你的眼睛比你的大脑快 →</a>
+  </div>
+</section>
+
+<!-- ===== U4 ===== -->
+<section class="u" id="u4">
+  <div class="u-header">
+    <div class="u-number"><em>04</em> / 07</div>
+    <div class="u-title" data-edit>数 3 有多难</div>
+    <div class="u-position" data-edit>大脑有两个视觉通道——一个快如闪电，一个慢如蜗牛。</div>
+    <div class="u-ruler"></div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">导言</div>
+    <p data-edit>给你一个数字矩阵数 3。没有颜色时逐个扫描；标红后一眼看到。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">入口层 · 数 3 实验</div>
+    <div class="matrix">
+      <span>2</span><span>7</span><span>4</span><span>9</span><span>1</span><span>6</span>
+      <span>8</span><span class="highlight">3</span><span>5</span><span>2</span><span>7</span><span>4</span>
+      <span class="highlight">3</span><span>1</span><span>9</span><span>6</span><span>8</span><span class="highlight">3</span>
+    </div>
+    <p class="text-mono" style="font-size:12px;color:var(--text-secondary)" data-edit>找到所有 3。没有标记时逐个扫描；红色标记后它们瞬间跳出。这就是前注意属性。</p>
+  </div>
+
+  <div class="thesis">
+    <div class="layer-label">主题</div>
+    <p data-edit>大脑有前注意处理（在你意识到之前已识别颜色、大小、方向差异）和顺序处理（逐个扫描，慢且累）。好的可视化利用前注意通道让信息在观众意识到之前就被理解了。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">展开层 · 前注意属性</div>
+    <table class="table">
+      <thead><tr><th data-edit>属性</th><th data-edit>用途</th><th data-edit>例子</th></tr></thead>
+      <tbody>
+        <tr><td data-edit>颜色</td><td data-edit>分类</td><td data-edit>红色标记异常值</td></tr>
+        <tr><td data-edit>强度</td><td data-edit>层级</td><td data-edit>淡灰背景，黑色焦点</td></tr>
+        <tr><td data-edit>长度</td><td data-edit>大小判断</td><td data-edit>条形图长度对比</td></tr>
+        <tr><td data-edit>位置</td><td data-edit>模式识别</td><td data-edit>散点图聚类</td></tr>
+        <tr><td data-edit>方向</td><td data-edit>趋势指示</td><td data-edit>折线图上升/下降</td></tr>
+        <tr><td data-edit>形状</td><td data-edit>标识差异</td><td data-edit>圆点 vs 三角形</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">证据层 · 色彩策略</div>
+    <p data-edit>彩虹色每个颜色等权重 = 没有重点。策略色只强调一个，其余安静。同一页面不超过 3 种有彩色。这不是审美约束——每个额外颜色 = 额外认知负载。</p>
+  </div>
+
+  <div class="closure"><p data-edit>你知道用颜色引导视线——但你的老板喜欢彩虹色，说"不好看"。因为"让老板满意"比"让数据清晰"优先级高。</p></div>
+
+  <div class="transition">
+    <span class="transition-hint">下一个单元</span>
+    <a href="#u5">设计不是美工，是意义 →</a>
+  </div>
+</section>
+
+<!-- ===== U5 ===== -->
+<section class="u" id="u5">
+  <div class="u-header">
+    <div class="u-number"><em>05</em> / 07</div>
+    <div class="u-title" data-edit>同一数据，两种感受</div>
+    <div class="u-position" data-edit>设计影响理解，不只是美化。</div>
+    <div class="u-ruler"></div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">导言</div>
+    <p data-edit>Pew Research Center 2014 年关于 stay-at-home moms 的报告。同样的数据换一种视觉处理，感受完全不同。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">入口层 · 原始 vs 改造</div>
+    <div class="compare">
+      <div style="background:var(--surface-raised)">
+        <div class="compare-label">原始版</div>
+        <p data-edit>灰色、拥挤、没有焦点。数据全部都在，但观众不知道该看哪里。所有条形的视觉权重相同。看完后：嗯，几个条形。</p>
+      </div>
+      <div>
+        <div class="compare-label" style="color:var(--accent)">改造版</div>
+        <p data-edit>核心数据高亮，次要数据淡出。标题说人话。观众一眼看到最重要的那个条形。看完后：哦这个最重要。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="layer-label">主题</div>
+    <p data-edit>设计是 affordance（可供性）——让正确的事变得容易做。视觉层次是 affordance 的核心。好的设计不告诉观众"看这里"——它让观众自然看向这里。</p>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">展开层 · 行动标题</div>
+    <p data-edit>行动标题 vs 描述标题——"Q3 销售低于目标 12%"（行动标题，告诉观众看什么）vs "Q3 销售数据"（只是标签）。三层级规则：标题 > 关键数据 > 正文 > 来源脚注。每一层都在引导观众注意力——不要浪费它。</p>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">证据层</div>
+    <div class="quote"><p data-edit>"Don't let chart aesthetics override functional clarity."</p><div class="quote-source">— Cole Nussbaumer Knaflic</div></div>
+    <p style="font-size:14px;color:var(--text-secondary);margin-top:var(--space-sm)" data-edit>功能优先于形式。如果只有一两个数字重要，用大字展示，不画图。</p>
+  </div>
+
+  <div class="closure"><p data-edit>你知道标题要说人话——但你写的是"Q3 数据分析报告"。因为"销售低于目标 12%"听起来太主观，"报告"很专业。</p></div>
+
+  <div class="transition">
+    <span class="transition-hint">下一个单元</span>
+    <a href="#u6">小红帽不需要 PPT →</a>
+  </div>
+</section>
+
+<!-- ===== U6 ===== -->
+<section class="u" id="u6">
+  <div class="u-header">
+    <div class="u-number"><em>06</em> / 07</div>
+    <div class="u-title" data-edit>小红帽不需要 PPT</div>
+    <div class="u-position" data-edit>故事比清单有效，因为利用了因果和情感。</div>
+    <div class="u-ruler"></div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">导言</div>
+    <p data-edit>闭上眼睛回忆小红帽的故事——你能记住情节、转折和结局。现在回忆一份 PPT 大纲。同一个内容，故事和清单的记忆效果天差地别。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">入口层 · 红帽姑娘实验</div>
+    <div style="border-left:2px solid var(--border-visible);padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-md)">
+      <p style="font-size:20px;font-weight:300;line-height:1.5;color:var(--text-display)" data-edit>小红帽去看外婆 → 遇到狼 → 狼伪装外婆 → 猎人营救</p>
+      <p class="text-mono" style="font-size:11px;color:var(--text-disabled);margin-top:var(--space-sm)" data-edit>大多数人能记住这个序列。但没人记得住同一情节的 PPT 大纲版本。</p>
+    </div>
+    <p style="font-size:14px;color:var(--text-secondary)" data-edit>不是内容不同——是格式不同。故事的因果链给了大脑一个挂钩，清单没有。</p>
+  </div>
+
+  <div class="thesis">
+    <div class="layer-label">主题</div>
+    <p data-edit>故事利用两种说服方式——理性论证（logos）和情感（pathos）。McKee："If all you do is intellectually frame your case, you haven't moved people to act." 数据告诉你该做什么，故事让你想做。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">展开层 · 三幕结构</div>
+    <div class="arc">
+      <div>
+        <div class="arc-num">I</div>
+        <div class="arc-label" data-edit>铺垫</div>
+        <p data-edit>设定场景，指出失衡。我们面临什么问题？为什么现在需要解决？</p>
+      </div>
+      <div>
+        <div class="arc-num">II</div>
+        <div class="arc-label" data-edit>冲突</div>
+        <p data-edit>用证据展开问题。数据的张力和矛盾在这里呈现。</p>
+      </div>
+      <div>
+        <div class="arc-num">III</div>
+        <div class="arc-label" data-edit>解决</div>
+        <p data-edit>明确行动号召。数据回答了问题，故事让人行动。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">证据层 · 零售定价拆解</div>
+    <p data-edit>零售定价 9 页叙事拆解——原始数据 5 条线交织，标题"价格变化"。改造后从"这是价格变化"变成"基于市场分析，建议定价在这个范围"。变化不是数据变了——是叙事变了。故事是骨架，数据是肉。</p>
+  </div>
+
+  <div class="closure"><p data-edit>你知道数据需要故事——但你发的邮件仍然是"请查收附件，有问题随时沟通"。因为写故事比贴附件难。</p></div>
+
+  <div class="transition">
+    <span class="transition-hint">下一个单元</span>
+    <a href="#u7">没有唯一正确答案 →</a>
+  </div>
+</section>
+
+<!-- ===== U7 ===== -->
+<section class="u" id="u7">
+  <div class="u-header">
+    <div class="u-number"><em>07</em> / 07</div>
+    <div class="u-title" data-edit>没有唯一正确答案</div>
+    <div class="u-position" data-edit>好不是唯一标准，是选择后的自洽。</div>
+    <div class="u-ruler"></div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">导言</div>
+    <p data-edit>意面图——多条线重叠的图表。同一个数据三种解法，都是好的。</p>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">入口层 · 风味不同的好</div>
+    <p data-edit>"Flavors of good"——选择取决于受众、场景、要传达的信息。好不是一个模板，是你的判断力。</p>
+  </div>
+
+  <div class="thesis">
+    <div class="layer-label">主题</div>
+    <p data-edit>没有唯一标准。好是你理解原理后的选择，是选择后的自洽。这本书教的不是"怎么做对"，是"怎么判断"。</p>
+  </div>
+
+  <div class="layer layer-wide">
+    <div class="layer-label">展开层 · 意面图三种解法</div>
+    <div class="card-grid">
+      <div class="card" style="flex:1"><div class="card-label" style="color:var(--accent)" data-edit>A · 逐条高亮</div><p data-edit>其他线条灰化，目标线加粗。适合演讲——你在讲，观众跟着你的视线。</p></div>
+      <div class="card" style="flex:1"><div class="card-label" data-edit>B · 空间分离</div><p data-edit>小多图，每个面板一条线。适合报告——读者自己探索。</p></div>
+      <div class="card" style="flex:1"><div class="card-label" data-edit>C · 组合方案</div><p data-edit>小多图 + 高亮。信息密度最高——适合专业受众。</p></div>
+    </div>
+  </div>
+
+  <div class="layer">
+    <div class="layer-label">证据层 · 两个证明</div>
+    <p data-edit><strong>证明一：</strong>深色背景也可以很好——前提是你知道自己在做什么。打破规则的前提是理解规则。</p>
+    <p data-edit><strong>证明二：</strong>回到饼图——当只有 2-3 个类别且一扇区占 70% 以上时，饼图也可以用。关键不是"永远不用"，是理解原理。</p>
+  </div>
+
+  <div class="closure" style="border-width:2px;border-color:var(--accent);padding:var(--space-lg) var(--space-xl)">
+    <p style="color:var(--text-primary)" data-edit>从单元一到单元七，每一步都是选择。好不是你"知道"了所有规则——是你理解原理后做出选择，而且每个选择都是自洽的。混乱不是敌人——不做选择才是。</p>
+  </div>
+
+  <div class="transition">
+    <span class="transition-hint">回到开始</span>
+    <a href="#hero">从混乱到清晰 ↑</a>
+  </div>
+</section>
+
+</div><!-- container -->
+
+<footer class="footer"><p data-edit>Storytelling with Data · Cole Nussbaumer Knaflic · 策展：从混乱到清晰</p></footer>
+
+<!-- Inline Editor -->
+<style>
+#ne{position:fixed;top:52px;right:16px;z-index:2000;display:flex;gap:3px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:3px;opacity:.4;transition:opacity .2s}
+#ne:hover{opacity:1}
+#ne button{font-family:var(--font-mono);font-size:8px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--border-visible);border-radius:999px;padding:4px 10px;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all .15s}
+#ne button:hover{border-color:var(--text-primary);color:var(--text-primary)}
+#ne button.active{border-color:var(--accent);color:var(--accent);background:var(--accent-subtle)}
+#ne button:disabled{opacity:.2;cursor:default}
+.ne-sep{width:1px;height:14px;background:var(--border);margin:0 1px}
+.ne-mode{position:fixed;bottom:10px;right:16px;z-index:2000;font-family:var(--font-mono);font-size:7px;letter-spacing:2px;color:var(--text-disabled);pointer-events:none;transition:color .2s}
+body.editing .ne-mode{color:var(--accent)}
+[contenteditable=true]:focus{outline:2px dashed var(--accent);outline-offset:2px;background:var(--accent-subtle);border-radius:2px}
+.ne-toast{position:fixed;bottom:36px;left:50%;transform:translateX(-50%);z-index:3000;background:var(--text-primary);color:var(--bg);font-family:var(--font-mono);font-size:8px;letter-spacing:.04em;padding:5px 16px;border-radius:999px;opacity:0;transition:opacity .3s;pointer-events:none}
+.ne-toast.visible{opacity:1}
+</style>
+<div id="ne">
+  <button id="neToggle">编辑</button><span class="ne-sep"></span>
+  <button id="neUndo" disabled>撤销</button><button id="neRedo" disabled>重做</button><span class="ne-sep"></span>
+  <button id="neExport">导出</button>
+</div>
+<div class="ne-mode" id="neMode">浏览</div>
+<div class="ne-toast" id="neToast"></div>
+
+<script>
+// Navigation scroll spy + segment progress
+const SECTIONS=['hero','u1','u2','u3','u4','u5','u6','u7'];
+const NAV_LINKS=document.querySelectorAll('.nav-links a');
+const PROGRESS=document.getElementById('navPr');
+const SEGMENTS=document.querySelectorAll('.seg');
+let currentIdx=0;
+
+function updateScroll(){
+  const sp=window.scrollY+50;let idx=0;
+  SECTIONS.forEach((id,i)=>{const el=document.getElementById(id);if(el&&el.offsetTop<=sp)idx=i;});
+  if(idx!==currentIdx){
+    currentIdx=idx;
+    NAV_LINKS.forEach((l,i)=>l.classList.toggle('active',i===idx));
+    PROGRESS.textContent=String(idx).padStart(2,'0')+' / 07';
+    SEGMENTS.forEach((s,i)=>s.classList.toggle('filled',i<idx));
+    if(SEGMENTS[idx])SEGMENTS[idx].classList.add('current');
+    SEGMENTS.forEach((s,i)=>{if(i!==idx)s.classList.remove('current');});
+  }
+}
+window.addEventListener('scroll',updateScroll);
+updateScroll();
+
+// Segments click to navigate
+SEGMENTS.forEach((seg,i)=>{
+  seg.addEventListener('click',()=>{
+    const target=document.getElementById(SECTIONS[i]);
+    if(target)target.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+// Inline Editor
+const eBtn=document.getElementById('neToggle'),uBtn=document.getElementById('neUndo'),rBtn=document.getElementById('neRedo'),xBtn=document.getElementById('neExport'),mEl=document.getElementById('neMode'),tEl=document.getElementById('neToast');
+let editing=false,undoStack=[],redoStack=[],observer=null,timer=null;
+
+function toast(msg){tEl.textContent=msg;tEl.classList.add('visible');setTimeout(()=>tEl.classList.remove('visible'),1200);}
+function snap(){const h=document.body.innerHTML;if(!undoStack.length||undoStack[undoStack.length-1]!==h){undoStack.push(h);if(undoStack.length>50)undoStack.shift();redoStack=[];}uBtn.disabled=undoStack.length<=1;rBtn.disabled=true;}
+
+eBtn.addEventListener('click',()=>{
+  editing=!editing;
+  document.body.classList.toggle('editing',editing);
+  eBtn.textContent=editing?'编辑中':'编辑';
+  eBtn.classList.toggle('active',editing);
+  mEl.textContent=editing?'编辑模式':'浏览';
+  document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable=editing);
+  if(editing){snap();observer=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(snap,500);});observer.observe(document.body,{childList:true,subtree:true,characterData:true});}else if(observer)observer.disconnect();
+});
+
+uBtn.addEventListener('click',()=>{
+  if(undoStack.length<2)return;
+  const c=undoStack.pop();redoStack.push(c);
+  document.body.innerHTML=undoStack[undoStack.length-1];
+  rBtn.disabled=false;uBtn.disabled=undoStack.length<=1;
+  toast('[已撤销]');editing=false;document.body.classList.remove('editing');
+  eBtn.textContent='编辑';eBtn.classList.remove('active');mEl.textContent='浏览';
+});
+
+rBtn.addEventListener('click',()=>{
+  if(!redoStack.length)return;
+  const n=redoStack.pop();undoStack.push(n);
+  document.body.innerHTML=n;
+  uBtn.disabled=false;rBtn.disabled=!redoStack.length;
+  toast('[已重做]');editing=false;document.body.classList.remove('editing');
+  eBtn.textContent='编辑';eBtn.classList.remove('active');mEl.textContent='浏览';
+});
+
+xBtn.addEventListener('click',()=>{
+  const c=document.body.cloneNode(true);
+  c.querySelectorAll('#ne,.ne-mode,#neToast,[contenteditable]').forEach(el=>{
+    if(el.id==='ne'||el.id==='neToast'||el.classList.contains('ne-mode'))el.remove();
+    else if(el.hasAttribute('contenteditable'))el.removeAttribute('contenteditable');
+  });
+  c.querySelectorAll('[data-edit]').forEach(el=>el.removeAttribute('data-edit'));
+  const s=document.querySelector('style').outerHTML;
+  const h='<!DOCTYPE html>\n<html lang="zh-CN">\n<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>从混乱到清晰 — Storytelling with Data</title><link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">\n<style>\n'+s+'\n</style>\n</head>\n<body>\n'+c.innerHTML+'\n</body>\n</html>';
+  const b=new Blob([h],{type:'text/html'}),u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download='Storytelling-with-Data-策展.html';a.click();
+  URL.revokeObjectURL(u);toast('[已导出]');
+});
+
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){if(e.shiftKey)rBtn.click();else uBtn.click();e.preventDefault();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();if(editing)toast('[已保存]');}
+});
+</script>
+</body>
+</html>

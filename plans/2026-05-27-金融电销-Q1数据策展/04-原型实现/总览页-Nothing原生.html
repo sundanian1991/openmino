@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 电销中心运营数据</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+<style>
+  :root {
+    --bg: #F5F5F5;
+    --surface: #FFFFFF;
+    --border: #E0E0E0;
+    --text1: #000000;
+    --text2: #666666;
+    --text3: #999999;
+    --red: #D71921;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text2);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== NAV ===== */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+  }
+
+  .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 48px;
+  }
+
+  .nav a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav a:hover { color: var(--text1); }
+  .nav a.active { color: var(--text1); font-weight: 700; }
+
+  /* ===== LAYOUT ===== */
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 96px 48px;
+    padding-top: 144px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    margin-bottom: 96px;
+  }
+
+  .hero .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 16px;
+  }
+
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--text1);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+  }
+
+  .hero .tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--red);
+    letter-spacing: 0.02em;
+  }
+
+  /* ===== BIG NUMBER ===== */
+  .big-section {
+    margin-bottom: 96px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .big-left {
+    background: var(--surface);
+    padding: 64px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .big-left .val {
+    font-family: 'Space Mono', monospace;
+    font-size: 96px;
+    font-weight: 700;
+    color: var(--text1);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .big-left .unit {
+    font-family: 'Space Mono', monospace;
+    font-size: 24px;
+    color: var(--text3);
+    margin-left: 8px;
+  }
+
+  .big-left .desc {
+    font-size: 16px;
+    color: var(--text2);
+    margin-top: 16px;
+    max-width: 320px;
+    line-height: 1.6;
+  }
+
+  .big-right {
+    background: var(--surface);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-cell {
+    background: var(--surface);
+    padding: 24px;
+    border: 1px solid var(--border);
+    margin: -1px;
+  }
+
+  .stat-cell .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+
+  .stat-cell .val {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text1);
+  }
+
+  .stat-cell .note {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  .stat-cell .note.accent { color: var(--red); }
+
+  /* ===== TABLE ===== */
+  .table-section {
+    margin-bottom: 96px;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-head h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text1);
+  }
+
+  .section-head .meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    text-align: right;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  th:first-child { text-align: left; }
+
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    text-align: right;
+    transition: background 0.1s;
+  }
+
+  td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text1);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: var(--bg); }
+
+  .num {
+    font-family: 'Space Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .em { font-weight: 700; color: var(--text1); }
+  .dim { opacity: 0.4; }
+
+  /* ===== CHARTS ===== */
+  .chart-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 96px;
+  }
+
+  .chart-cell {
+    background: var(--surface);
+    padding: 32px;
+  }
+
+  .chart-cell .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 20px;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 260px;
+  }
+
+  /* ===== INSIGHT ===== */
+  .insight-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 96px;
+  }
+
+  .insight-cell {
+    background: var(--surface);
+    padding: 24px;
+  }
+
+  .insight-cell .val {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text1);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .insight-cell .val.accent { color: var(--red); }
+
+  .insight-cell .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .caption {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  @media (max-width: 900px) {
+    .big-section,
+    .chart-section { grid-template-columns: 1fr; }
+    .big-right { grid-template-columns: 1fr 1fr; }
+    .insight-strip { grid-template-columns: repeat(3, 1fr); }
+    .page { padding: 48px 24px; padding-top: 120px; }
+    .hero h1 { font-size: 32px; }
+    .big-left .val { font-size: 64px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="总览页-Nothing原生.html" class="active">总览</a>
+    <a href="驱动因素页-Nothing原生.html">驱动因素</a>
+    <a href="转化漏斗页-Nothing原生.html">转化漏斗</a>
+    <a href="时间趋势页-Nothing原生.html">时间趋势</a>
+    <a href="行动建议页-Nothing原生.html">行动建议</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <header class="hero">
+    <div class="label">Q1 2025 / 6 teams / 312 seats</div>
+    <h1>电销中心运营数据</h1>
+    <div class="tagline">B 组转化率是 F 组的 1.5 倍——差距来自通话时长，不是拨打量。</div>
+  </header>
+
+  <div class="big-section">
+    <div class="big-left">
+      <div><span class="val">2.6</span><span class="unit">%</span></div>
+      <div class="desc">标杆团队转化率。B 组。通话时长 352 秒，是 F 组的 1.27 倍。</div>
+    </div>
+    <div class="big-right">
+      <div class="stat-cell">
+        <div class="label">Q1 成交</div>
+        <div class="val">56,247<span style="font-size:14px;color:var(--text3)">万</span></div>
+      </div>
+      <div class="stat-cell">
+        <div class="label">平均转化</div>
+        <div class="val">2.1<span style="font-size:14px;color:var(--text3)">%</span></div>
+      </div>
+      <div class="stat-cell">
+        <div class="label">极差</div>
+        <div class="val" style="color:var(--red)">1.1<span style="font-size:14px;color:var(--text3)">pp</span></div>
+        <div class="note accent">B 2.6% vs F 1.7%</div>
+      </div>
+      <div class="stat-cell">
+        <div class="label">3月回暖</div>
+        <div class="val">+10<span style="font-size:14px;color:var(--text3)">%</span></div>
+        <div class="note">外呼量回升</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="table-section">
+    <div class="section-head">
+      <h2>团队排名</h2>
+      <span class="meta">按转化率排序</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left">团队</th>
+            <th>转化率</th>
+            <th>接通率</th>
+            <th>通话时长</th>
+            <th>日均拨打</th>
+            <th>成交金额</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>B</td>
+            <td class="num em">2.6%</td>
+            <td class="num">31.3%</td>
+            <td class="num em">352s</td>
+            <td class="num">289</td>
+            <td class="num">11,955万</td>
+          </tr>
+          <tr>
+            <td>D</td>
+            <td class="num em">2.4%</td>
+            <td class="num">31.1%</td>
+            <td class="num">342s</td>
+            <td class="num">277</td>
+            <td class="num">10,848万</td>
+          </tr>
+          <tr>
+            <td>E</td>
+            <td class="num">2.3%</td>
+            <td class="num">28.9%</td>
+            <td class="num">316s</td>
+            <td class="num">300</td>
+            <td class="num">10,119万</td>
+          </tr>
+          <tr>
+            <td>A</td>
+            <td class="num">2.2%</td>
+            <td class="num">29.0%</td>
+            <td class="num">324s</td>
+            <td class="num">299</td>
+            <td class="num">10,014万</td>
+          </tr>
+          <tr>
+            <td>C</td>
+            <td class="num dim">1.8%</td>
+            <td class="num dim">25.7%</td>
+            <td class="num dim">290s</td>
+            <td class="num dim">330</td>
+            <td class="num">7,392万</td>
+          </tr>
+          <tr>
+            <td>F</td>
+            <td class="num dim">1.7%</td>
+            <td class="num dim">27.2%</td>
+            <td class="num dim">278s</td>
+            <td class="num dim">284</td>
+            <td class="num">6,993万</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="chart-section">
+    <div class="chart-cell">
+      <div class="label">转化率趋势</div>
+      <div class="chart-wrap"><canvas id="trend"></canvas></div>
+    </div>
+    <div class="chart-cell">
+      <div class="label">通话时长 vs 转化率</div>
+      <div class="chart-wrap"><canvas id="scatter"></canvas></div>
+    </div>
+  </div>
+
+  <div class="insight-strip">
+    <div class="insight-cell">
+      <div class="val">0.92</div>
+      <div class="label">通话时长相关性</div>
+    </div>
+    <div class="insight-cell">
+      <div class="val">0.89</div>
+      <div class="label">接通率相关性</div>
+    </div>
+    <div class="insight-cell">
+      <div class="val" style="color:var(--red)">-0.71</div>
+      <div class="label">日均拨打相关性</div>
+    </div>
+    <div class="insight-cell">
+      <div class="val">352s</div>
+      <div class="label">B组平均通话</div>
+    </div>
+    <div class="insight-cell">
+      <div class="val" style="color:var(--red)">278s</div>
+      <div class="label">F组平均通话</div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span class="caption">Source: 金融电销中心 Q1 运营数据 / 2025</span>
+    <span class="caption">Nothing</span>
+  </footer>
+
+</div>
+
+<script>
+const font = { family: "'Space Mono', monospace", size: 10 };
+const gridColor = '#E0E0E0';
+const tickColor = '#999';
+
+// Trend Chart
+const tCtx = document.getElementById('trend').getContext('2d');
+new Chart(tCtx, {
+  type: 'line',
+  data: {
+    labels: ['1月','2月','3月'],
+    datasets: [
+      { label: 'B', data: [2.3,2.8,2.6], borderColor: '#000', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#000', tension: 0 },
+      { label: 'D', data: [2.2,2.6,2.5], borderColor: '#000', borderWidth: 1.5, pointRadius: 4, tension: 0 },
+      { label: 'E', data: [2.0,2.5,2.3], borderColor: '#000', borderWidth: 1.5, pointRadius: 4, tension: 0 },
+      { label: 'A', data: [2.0,2.3,2.3], borderColor: '#000', borderWidth: 1.5, pointRadius: 4, tension: 0 },
+      { label: 'C', data: [1.7,1.9,1.7], borderColor: '#000', borderWidth: 1, pointRadius: 3, tension: 0, borderDash: [4,4] },
+      { label: 'F', data: [1.7,1.9,1.7], borderColor: '#000', borderWidth: 1, pointRadius: 3, tension: 0, borderDash: [4,4] },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      annotation: {
+        annotations: {
+          peak: {
+            type: 'point',
+            xValue: '2月',
+            yValue: 2.8,
+            backgroundColor: '#D71921',
+            radius: 8,
+            borderWidth: 0,
+          },
+          peakLabel: {
+            type: 'label',
+            xValue: '2月',
+            yValue: 2.8,
+            content: ['2.8%'],
+            font: { family: "'Space Mono', monospace", size: 11, weight: 'bold' },
+            color: '#D71921',
+            position: { x: 'center', y: 'start' },
+            yAdjust: -16,
+          }
+        }
+      }
+    },
+    scales: {
+      y: { min: 1.5, max: 3.0, ticks: { stepSize: 0.5, font, color: tickColor, callback: v => v.toFixed(1)+'%' }, grid: { color: gridColor } },
+      x: { ticks: { font, color: tickColor }, grid: { display: false } }
+    }
+  }
+});
+
+// Scatter Chart
+const sCtx = document.getElementById('scatter').getContext('2d');
+new Chart(sCtx, {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { label: 'B', data: [{x:352,y:2.6}], backgroundColor: '#000', pointRadius: 10 },
+      { label: 'D', data: [{x:342,y:2.4}], backgroundColor: '#000', pointRadius: 7 },
+      { label: 'E', data: [{x:316,y:2.3}], backgroundColor: '#000', pointRadius: 7 },
+      { label: 'A', data: [{x:324,y:2.2}], backgroundColor: '#000', pointRadius: 7 },
+      { label: 'C', data: [{x:290,y:1.8}], backgroundColor: '#000', pointRadius: 7, pointStyle: 'rect' },
+      { label: 'F', data: [{x:278,y:1.7}], backgroundColor: '#000', pointRadius: 7, pointStyle: 'rect' },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      annotation: {
+        annotations: {
+          bLabel: {
+            type: 'label',
+            xValue: 352,
+            yValue: 2.6,
+            content: ['B'],
+            font: { family: "'Space Mono', monospace", size: 11, weight: 'bold' },
+            color: '#000',
+            position: { x: 'end', y: 'start' },
+            xAdjust: 12,
+          },
+          fLabel: {
+            type: 'label',
+            xValue: 278,
+            yValue: 1.7,
+            content: ['F'],
+            font: { family: "'Space Mono', monospace", size: 11, weight: 'bold' },
+            color: '#999',
+            position: { x: 'start', y: 'end' },
+            xAdjust: -12,
+            yAdjust: 8,
+          }
+        }
+      }
+    },
+    scales: {
+      x: { min: 260, max: 370, title: { display: true, text: '通话时长 (秒)', font, color: tickColor }, ticks: { font, color: tickColor }, grid: { color: gridColor } },
+      y: { min: 1.5, max: 3.0, ticks: { stepSize: 0.5, font, color: tickColor, callback: v => v.toFixed(1)+'%' }, grid: { color: gridColor } }
+    }
+  }
+});
+</script>
+</body>
+</html>

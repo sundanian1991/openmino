@@ -21,30 +21,27 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from optional_deps import (
+    MissingDepError,
+    require_pypdf_reader,
+    require_weasyprint_html,
+)
 from shared import (
     COOL_GRAY_BLOCKLIST,
+    PARCHMENT_RGB as SHARED_PARCHMENT_RGB,
     ROOT,
     TEMPLATES,
     TOKENS_FILE,
-    configure_weasyprint_runtime,
+    load_cool_gray_buckets,
+    stabilize_targets,
 )
 
 PROFILES_FILE = ROOT / "references" / "stabilizer_profiles.json"
 DEFAULT_OUT_DIR = ROOT / "dist" / "stabilized"
 
 # HTML targets only. Diagrams/slides are intentionally excluded from stabilize v0.
-HTML_TARGETS: dict[str, tuple[str, int]] = {
-    "one-pager": ("one-pager.html", 1),
-    "letter": ("letter.html", 1),
-    "long-doc": ("long-doc.html", 9),
-    "portfolio": ("portfolio.html", 8),
-    "resume": ("resume.html", 2),
-    "one-pager-en": ("one-pager-en.html", 1),
-    "letter-en": ("letter-en.html", 1),
-    "long-doc-en": ("long-doc-en.html", 9),
-    "portfolio-en": ("portfolio-en.html", 8),
-    "resume-en": ("resume-en.html", 2),
-}
+# Sourced from shared.HTML_TEMPLATES so build.py and stabilize.py never drift.
+HTML_TARGETS: dict[str, tuple[str, int]] = stabilize_targets()
 
 STYLE_BLOCK_RE = re.compile(r"(<style>\s*)(?P<css>.*?)(\s*</style>)", re.DOTALL | re.IGNORECASE)
 ROOT_BLOCK_RE = re.compile(r"(^[ \t]*:root[ \t]*\{)(?P<body>.*?)(^[ \t]*\})", re.DOTALL | re.MULTILINE)
@@ -66,7 +63,7 @@ PAGE_MARGIN_MM_RE = re.compile(
     re.IGNORECASE,
 )
 
-PARCHMENT_RGB = (245, 244, 237)
+PARCHMENT_RGB = SHARED_PARCHMENT_RGB
 
 
 @dataclass
@@ -221,6 +218,14 @@ def luminance(rgb: tuple[int, int, int]) -> float:
 
 def normalize_cool_grays(css: str) -> tuple[str, int]:
     changed = 0
+    # Buckets are sorted by ascending lum_max in references/cool_gray_buckets.json.
+    buckets = load_cool_gray_buckets()
+
+    def pick_replacement(lum: float) -> str:
+        for bucket in buckets:
+            if lum < float(bucket["lum_max"]):
+                return str(bucket["replacement"])
+        return str(buckets[-1]["replacement"])
 
     def repl(m: re.Match[str]) -> str:
         nonlocal changed
@@ -230,13 +235,7 @@ def normalize_cool_grays(css: str) -> tuple[str, int]:
             normalized = "#" + "".join(ch * 2 for ch in normalized[1:])
         if normalized not in COOL_GRAY_BLOCKLIST:
             return raw
-        lum = luminance(parse_hex(normalized))
-        if lum < 0.35:
-            replacement = "#4D4C48"
-        elif lum < 0.72:
-            replacement = "#87867F"
-        else:
-            replacement = "#E8E6DC"
+        replacement = pick_replacement(luminance(parse_hex(normalized)))
         if replacement.lower() == normalized:
             return raw
         changed += 1
@@ -400,12 +399,11 @@ def tighten_page_margin(
 
 
 def count_pages(html: str, base_dir: Path) -> int:
-    configure_weasyprint_runtime()
     try:
-        from weasyprint import HTML
-        from pypdf import PdfReader
-    except ImportError as exc:
-        raise RuntimeError("missing deps: pip install weasyprint pypdf --break-system-packages") from exc
+        HTML = require_weasyprint_html()
+        PdfReader = require_pypdf_reader()
+    except MissingDepError as exc:
+        raise RuntimeError(str(exc)) from exc
 
     tmp_pdf: Path | None = None
     try:
@@ -498,10 +496,11 @@ def run_for_target(
     write_in_place: bool,
     out_dir: Path,
     strict: bool,
+    templates_dir: Path = TEMPLATES,
 ) -> TargetResult:
     validate_profile(profile, target)
 
-    source_path = TEMPLATES / source_file
+    source_path = templates_dir / source_file
     html = source_path.read_text(encoding="utf-8")
     css, style_match = extract_css(html)
 
@@ -672,7 +671,7 @@ def run_for_target(
 
     result = TargetResult(
         target=target,
-        source=str(source_path.relative_to(ROOT)),
+        source=str(source_path.relative_to(ROOT) if source_path.is_relative_to(ROOT) else source_path),
         output=str(output_path.relative_to(ROOT) if output_path.is_relative_to(ROOT) else output_path),
         changed=changed,
         max_pages=max_pages,

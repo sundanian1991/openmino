@@ -1,6 +1,6 @@
 ---
 name: web-design-engineer
-description: "Build polished visual web artifacts with HTML/CSS/JavaScript/React: pages, dashboards, prototypes, slide decks, animations, UI mockups, and data visualizations. Use when the user wants a browser-rendered, interactive, or presentational front-end deliverable. Not for back-end, CLI, or non-visual coding tasks."
+description: "用 HTML/CSS/JavaScript/React 构建精致的视觉网页产物：页面、仪表盘、原型、幻灯片、动画、UI 原型和数据可视化。当用户需要浏览器渲染的交互式前端交付物时触发。不适用于后端、CLI 或非视觉编码任务。"
 ---
 
 # Web Design Engineer

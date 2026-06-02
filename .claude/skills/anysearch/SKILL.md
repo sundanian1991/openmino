@@ -1,6 +1,6 @@
 ---
 name: anysearch
-description: Real-time search engine supporting web search, vertical domain search (23 domains), parallel batch search, and URL content extraction.
+description: "实时搜索引擎，支持通用网页搜索、23 个垂直领域搜索、并行批量搜索和 URL 内容提取。当用户需要搜索网络信息或提取网页内容时触发。"
 version: 2.0.0
 authors:
   - AnySearch Team

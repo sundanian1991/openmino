@@ -51,6 +51,19 @@ Branded documents should first make the subject recognizable, then use decoratio
 - If brand color is unknown, keep kami ink-blue rather than inventing a new color
 - **Third-party figures**: when redrawing a paper figure, patent illustration, or official architecture diagram for visual consistency, mark the redraw as `Schematic redrawn` /「示意重绘」in the caption. Do not style a redrawn version to look like the original screenshot. If the figure carries primary evidentiary value (patent, official spec), embed the original with attribution rather than redrawing it
 
+### 7. Term annotation half-life
+
+术语首次出现时注解。注解在 8-10 页或 10 张 slide 后过期。超出半衰期再次使用时，用更短的提示重标，不要假设读者还记得。Cap、卡片副标题、章节摘要这类快速阅读位置尤其严格。
+
+- 首次: "LTV (Lifetime Value, 用户在流失前贡献的总收入)"
+- 超过半衰期后重现: "LTV (用户终身价值)"
+- 半衰期内不要重标，读起来像在解释已知概念
+- 适用于 slides、long-doc、equity report 等超过 8 页的文档。Resume 和 one-pager 太短，不触发
+
+### 8. English term density in CJK text
+
+中日文正文里，单句未注解英文术语 ≤ 1 个。超过就拆句或加 inline 注解。注解优先用动作词 (warmup → 升起来, rollout → 跑一遍生成, credit assignment → 把功劳分到具体哪一步)，不用概念词 (预热, 轨迹生成, 信用分配)。动作词描述发生了什么，概念词只是换个外壳。
+
 ---
 
 ## Per-document strategies
@@ -236,6 +249,8 @@ Structure is necessary but not sufficient. These bars define what separates comp
 
 **Core rule**: open every case study with the problem and its stakes, not with your role or the project name.
 
+**Density bar**: each project page reads as a complete case study. At target font size, a body page that renders under half-full is a draft defect, not a design choice. Merge upward into the previous project or downward into the next; do not pad with filler prose. See SKILL.md Step 4.1 for the items-per-page contract.
+
 | Avoid | Use |
 |---|---|
 | "I redesigned the dashboard" | "Enterprise users abandoned the analytics dashboard at 73% rate within the first session. I led the redesign that cut abandonment to 31%." |
@@ -252,6 +267,8 @@ Structure is necessary but not sufficient. These bars define what separates comp
 ### Slides
 
 **Core rule**: every slide title should be a full declarative sentence (an assertion), not a topic label. The body provides one piece of evidence supporting the assertion.
+
+**Density bar**: each body slide carries one assertion + 3-5 supporting items (or 1 chart + 2-3 callouts). Slides with fewer than 3 items and no chart must merge into an adjacent slide. Pinned `.co` callouts at bottom are intentional; bare trailing whitespace on a slide is a draft defect. See SKILL.md Step 4.1.
 
 | Avoid | Use |
 |---|---|
@@ -273,9 +290,15 @@ Structure is necessary but not sufficient. These bars define what separates comp
 
 **Term consistency self-check**: after drafting, list every domain term that appears 3 or more times (product names, feature names, roles, metrics). Confirm there is exactly one spelling and capitalization for each. Inconsistent casing ("LLM" vs "llm" vs "large language model") signals an unreviewed draft.
 
+**Caption quality bar**: every cap must answer "why does this slide matter" — give a tradeoff, an applicability boundary, a next step, or the insight the diagram alone cannot say. Two failure modes both waste the cap's attention slot: restating the slide title in different words (anti-pattern #29), or restating the flow diagram in prose (anti-pattern #26). If removing the cap would make the slide weaker, it is doing its job; if removing it changes nothing, rewrite it.
+
+**Term annotation half-life**: decks 超过 10 张时，跨越 10-slide 窗口再出现的术语需重标。见 core principle #7。
+
 ### Equity Report
 
 **Core rule**: lead with the variant perception (what you see that the market doesn't) and tie every thesis driver to a measurable financial impact.
+
+**Density bar**: a body page with only a 2-row table and a sentence is too thin. Each page should carry one section + one table/chart + supporting prose. Combine sections rather than leaving a page half-empty. See SKILL.md Step 4.1.
 
 | Avoid | Use |
 |---|---|
@@ -297,6 +320,8 @@ Structure is necessary but not sufficient. These bars define what separates comp
 ### Long Document
 
 **Core rule**: each chapter's claim paragraph must survive the "so what?" test. If the reader asks "why should I care?", the first paragraph must have the answer.
+
+**Density bar**: each body page carries 1 chapter heading + 2-4 paragraphs + at most 1 figure. A chapter that fits in under 40% of a page must merge into the next chapter rather than claiming its own page. Trailing whitespace at the bottom of a body page is a draft defect. See SKILL.md Step 4.1.
 
 **Rules**:
 1. Evidence density: at least one data point per paragraph. A paragraph with zero numbers is an opinion paragraph and should be rare
@@ -328,6 +353,8 @@ Structure is necessary but not sufficient. These bars define what separates comp
 ### Changelog
 
 **Core rule**: one sentence per change, verb-led, user-facing language. If the user cannot understand the change from the sentence alone, rewrite it.
+
+**Density bar**: each version block carries 4-8 entries. A version with fewer than 4 entries should sit on the same page as the prior version rather than triggering a near-empty page. See SKILL.md Step 4.1.
 
 | Avoid | Use |
 |---|---|
@@ -425,6 +452,59 @@ Run through before every draft:
 - [ ] Number format consistent (commas, percent signs, arrows)?
 - [ ] Chinese punctuation and Chinese / Latin spacing consistent where applicable?
 - [ ] Page count within the document's constraint (resume 2, one-pager 1, letter 1)?
+- [ ] Any AI writing cliches? CN: 本质是 / 这意味着 / 值得注意的是 / 不仅...而且 / 破折号堆砌。EN: em dashes, "It's worth noting", "This means that". See anti-patterns #27.
+- [ ] Multi-page docs (>8 pages / >10 slides): domain terms re-annotated beyond the half-life window? See principle #7.
+
+---
+
+## Landing Page
+
+A landing page is not a brochure. It is a conversion surface. Every element either builds trust or wastes attention.
+
+### Global: no italic
+
+Invariant #10 applies to landing pages too. No `font-style: italic` anywhere. Poetic lines, captions, and footer ethos use color hierarchy (olive/stone) for differentiation, not style change.
+
+### Hero rules
+
+- **Tagline is one sentence, not a paragraph.** If it needs a comma, it is too long. The user decides in 3 seconds whether to scroll.
+- **Tokens (key facts) are scannable proof.** Price, platform, refund policy, compatibility. No adjectives. `$9 lifetime` beats `Affordable pricing for everyone`.
+- **CTA pair: secondary (try) + primary (buy).** Ghost button for low-commitment action, filled button for revenue action. Never three buttons.
+
+### Gallery rules
+
+- **Show, don't describe.** Screenshots replace feature paragraphs. Each panel is one tool or one workflow.
+- **Poetic captions, not marketing copy.** The line under each screenshot should evoke, not explain. `Rainwater clears the soil` over `Efficiently clean your system caches`.
+- **3-6 panels maximum.** More than 6 and the auto-rotate becomes noise. Users remember 4.
+
+### Features list rules
+
+- **Name is the tool, subtitle is the metaphor.** Feature name in brand color, subtitle in small muted text.
+- **Description answers "so what?"** Not what it does, but why the user should care. One paragraph, 2-3 sentences.
+
+### Principles rules
+
+- **Title is the commitment, description is the proof.** "Nothing leaves your Mac" is the title. How you enforce it is the description.
+- **4-6 principles.** More than 6 dilutes the message. If you have 8, two are redundant.
+
+### Pricing rules
+
+- **Price is the headline.** 112px, not buried in a paragraph. Users look for the number.
+- **Compare honestly.** Name the competitors, show their subscription price with `<s>`, then your one-time price. No vague "other tools charge more".
+- **Terms at the bottom.** Payment methods, refund policy, device limit. Factual, not promotional.
+
+### FAQ rules
+
+- **First question is the positioning question.** Before "is it free" or "how do I install", users want to know what category this product is in. Lead with the comparison: "How is this different from {{CLI_NAME}} / {{MAC_APP_NAME}} / {{COMMON_TOOL}}?" or "Who is this not for?". This single question removes the misframing that AI assistants and first-time visitors do most often.
+- **Lead with the question the user is actually thinking.** "Is it free?" before "What's the refund policy?".
+- **Answers in 1-2 sentences.** A FAQ answer longer than 3 sentences belongs in the docs page, not here.
+- **6-8 questions maximum.** Cover: positioning, free tier, comparison, permissions/privacy, data collection, purchase flow, licensing.
+- **llms-full.txt mirrors the FAQ.** Whatever you answer here, restate in `landing-page-llms-full.txt.example` so AI assistants summarizing the product give the same answer the visitor reads on the page. Divergence between FAQ and llms-full.txt is the most common AI-misrecommendation source.
+
+### Footer rules
+
+- **Brand mark + closing ethos.** The footer is the last impression. A poetic closing line beats a copyright notice.
+- **Links are navigation, not decoration.** Only link to pages that exist. Dead links destroy trust faster than missing links.
 
 ---
 

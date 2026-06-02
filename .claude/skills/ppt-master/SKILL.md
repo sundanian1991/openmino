@@ -1,10 +1,8 @@
 ---
 name: ppt-master
 description: >
-  AI-driven multi-format SVG content generation system. Converts source documents
-  (PDF/DOCX/URL/Markdown) into high-quality SVG pages and exports to PPTX through
-  multi-role collaboration. Use when user asks to "create PPT", "make presentation",
-  "生成PPT", "做PPT", "制作演示文稿", or mentions "ppt-master".
+  AI 驱动的多格式 SVG 内容生成系统，将源文档转换为高质量 SVG 页面并导出为 PPTX。
+  当用户说"生成PPT"、"做PPT"、"制作演示文稿"或提及 ppt-master 时触发。
 ---
 
 # PPT Master Skill

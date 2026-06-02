@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workflow — 多代理编排引擎</title>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-raised: #F5F5F0;
+  --border: #E5E5E0;
+  --border-visible: #C0C0B8;
+  --text-display: #1A1A1A;
+  --text-primary: #111111;
+  --text-secondary: #4A4A4A;
+  --text-disabled: #888888;
+  --olive: #4A5D3A;
+  --earth: #8B7355;
+  --yellow: #FFD100;
+  --orange: #E55B2B;
+  --glacier: #2A4A5A;
+  --rock: #808080;
+  --success: #2E7D32;
+  --error: #C62828;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text-primary); font-family: 'Inter', -apple-system, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.container { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+
+/* ─── NAMEPLATE ─── */
+.np { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-disabled); }
+.np-olive { color: var(--olive); }
+.np-orange { color: var(--orange); }
+.np-glacier { color: var(--glacier); }
+
+/* ─── SECTIONS ─── */
+section { padding: 80px 0; }
+section + section { border-top: 1px solid var(--border); }
+
+/* ─── HERO ─── */
+.hero { padding: 96px 0 72px; position: relative; overflow: hidden; }
+.hero-watermark {
+  position: absolute; top: -40px; right: -60px;
+  font-family: 'Georgia', serif; font-size: 320px; font-weight: 700;
+  color: rgba(74,93,58,0.06); line-height: 1; letter-spacing: -0.04em;
+  pointer-events: none; user-select: none;
+}
+.hero-accent {
+  position: absolute; top: 80px; right: 120px;
+  font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--olive); opacity: 0.3;
+  transform: rotate(90deg); transform-origin: right top;
+}
+.hero-line { width: 48px; height: 3px; background: var(--olive); margin-bottom: 24px; }
+.hero-title { font-family: 'Georgia', serif; font-size: 80px; font-weight: 700; line-height: 1.0; letter-spacing: -0.03em; color: var(--text-display); position: relative; }
+.hero-sub { font-size: 17px; color: var(--text-secondary); margin-top: 20px; max-width: 560px; line-height: 1.7; }
+.hero-sub strong { color: var(--text-primary); font-weight: 600; }
+.hero-meta { display: flex; gap: 32px; margin-top: 40px; }
+.hero-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.hero-meta-val { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; color: var(--text-display); }
+.hero-meta-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-disabled); }
+.hero-seam { width: 100%; height: 1px; background: var(--border-visible); margin-top: 56px; }
+
+/* ─── SECTION HEADER ─── */
+.sec-head { margin-bottom: 48px; }
+.sec-head h2 { font-family: 'Georgia', serif; font-size: 32px; font-weight: 600; color: var(--text-primary); margin-top: 8px; margin-bottom: 12px; }
+.sec-head p { font-size: 15px; color: var(--text-secondary); max-width: 600px; line-height: 1.65; }
+
+/* ─── TWO-COL LAYOUT ─── */
+.col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.col2-wide { display: grid; grid-template-columns: 2fr 1fr; gap: 48px; align-items: start; }
+
+/* ─── MODE CARD ─── */
+.mode-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 32px; position: relative; }
+.mode-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; border-radius: 8px 8px 0 0; }
+.mode-card.subagent::before { background: var(--olive); }
+.mode-card.team::before { background: var(--orange); }
+.mode-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; margin-bottom: 16px; }
+.mode-tag.sub { background: rgba(74,93,58,0.08); color: var(--olive); border: 1px solid rgba(74,93,58,0.2); }
+.mode-tag.team { background: rgba(229,91,43,0.08); color: var(--orange); border: 1px solid rgba(229,91,43,0.2); }
+.mode-card h3 { font-family: 'Georgia', serif; font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
+.mode-card .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 20px; }
+.mode-list { list-style: none; }
+.mode-list li { font-size: 13px; color: var(--text-secondary); padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: baseline; }
+.mode-list li:last-child { border-bottom: none; }
+.mode-list .key { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-primary); min-width: 80px; flex-shrink: 0; font-weight: 500; }
+.mode-list .val { color: var(--text-secondary); }
+
+/* ─── FLOW STRIP ─── */
+.flow-strip { display: flex; align-items: center; gap: 0; margin: 32px 0; overflow-x: auto; }
+.flow-box { padding: 10px 20px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; white-space: nowrap; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); }
+.flow-box:first-child { border-radius: 4px 0 0 4px; }
+.flow-box:last-child { border-radius: 0 4px 4px 0; }
+.flow-box + .flow-box { border-left: none; }
+.flow-box.highlight { background: var(--olive); color: #fff; border-color: var(--olive); }
+.flow-arrow { font-family: 'JetBrains Mono', monospace; font-size: 16px; color: var(--text-disabled); padding: 0 4px; flex-shrink: 0; }
+
+/* ─── API CARD ─── */
+.api-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: var(--border); border-radius: 8px; overflow: hidden; }
+.api-card { background: var(--surface); padding: 24px 20px; }
+.api-card .name { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; letter-spacing: -0.01em; }
+.api-card .what { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+.api-card .tag-row { margin-top: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; border: 1px solid var(--border); color: var(--text-disabled); }
+.tag.olive { border-color: rgba(74,93,58,0.3); color: var(--olive); }
+.tag.orange { border-color: rgba(229,91,43,0.3); color: var(--orange); }
+.tag.glacier { border-color: rgba(42,74,90,0.3); color: var(--glacier); }
+
+/* ─── PATTERN GRID ─── */
+.pattern-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); border-radius: 8px; overflow: hidden; }
+.pattern-card { background: var(--surface); padding: 28px 24px; }
+.pattern-card .num { font-family: 'JetBrains Mono', monospace; font-size: 40px; font-weight: 600; color: var(--text-primary); line-height: 1; margin-bottom: 12px; }
+.pattern-card h4 { font-family: 'Georgia', serif; font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+.pattern-card .desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.pattern-card .code { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--olive); background: var(--surface-raised); padding: 4px 8px; border-radius: 2px; margin-top: 12px; display: inline-block; }
+
+/* ─── SCENE TABLE ─── */
+.scene-table { width: 100%; border-collapse: collapse; }
+.scene-table th { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-disabled); text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--border-visible); }
+.scene-table td { font-size: 14px; color: var(--text-primary); padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.scene-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text-primary); white-space: nowrap; }
+.scene-table tr:last-child td { border-bottom: none; }
+.scene-table .dim { color: var(--text-secondary); }
+
+/* ─── ARCHITECTURE ─── */
+.arch-flow { display: flex; flex-direction: column; gap: 0; margin: 32px 0; }
+.arch-step { display: grid; grid-template-columns: 160px 1fr; gap: 24px; padding: 16px 0; position: relative; }
+.arch-step + .arch-step { border-top: 1px solid var(--border); }
+.arch-step .marker { display: flex; align-items: center; gap: 12px; }
+.arch-step .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--olive); flex-shrink: 0; }
+.arch-step .dot.orange { background: var(--orange); }
+.arch-step .dot.glacier { background: var(--glacier); }
+.arch-step .step-label { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--text-primary); }
+.arch-step .content h4 { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.arch-step .content p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ─── METRIC ROW ─── */
+.metric-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; background: var(--border); border-radius: 8px; overflow: hidden; margin-top: 32px; }
+.metric-cell { background: var(--surface); padding: 24px 20px; text-align: center; }
+.metric-cell .val { font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 600; color: var(--text-primary); line-height: 1; }
+.metric-cell .unit { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-disabled); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 8px; }
+
+/* ─── SOURCE ─── */
+.source-list { list-style: none; }
+.source-list li { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; gap: 12px; align-items: baseline; }
+.source-list li:last-child { border-bottom: none; }
+.source-list .idx { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-disabled); min-width: 24px; }
+.source-list .title { font-size: 14px; color: var(--text-primary); font-weight: 500; }
+.source-list .url { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); word-break: break-all; }
+
+/* ─── FOOTER ─── */
+.footer { padding: 40px 0; border-top: 1px solid var(--border); }
+.footer-text { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-disabled); letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .hero-title { font-size: 48px; }
+  .hero-watermark { font-size: 180px; right: -40px; top: -20px; }
+  .hero-accent { display: none; }
+  .col2, .col2-wide { grid-template-columns: 1fr; }
+  .api-grid { grid-template-columns: repeat(2, 1fr); }
+  .pattern-grid { grid-template-columns: 1fr; }
+  .metric-row { grid-template-columns: repeat(2, 1fr); }
+  .hero-meta { flex-wrap: wrap; }
+  .flow-strip { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════ HERO ════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-watermark">W</div>
+    <div class="hero-accent">ORCHESTRATION</div>
+    <div class="hero-line"></div>
+    <div class="np">Claude Code / Multi-Agent Orchestration</div>
+    <h1 class="hero-title">Workflow</h1>
+    <p class="hero-sub">
+      用 JavaScript 脚本编排多个子代理<strong>并行</strong>执行。不是 prompt
+      chain——是代码级的确定性控制流，支持 barrier 同步、流水线吞吐、schema 强制输出。
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="hero-meta-val">2025 Q2</div>
+        <div class="hero-meta-label">Introduced</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-val">16</div>
+        <div class="hero-meta-label">Max Concurrent</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-val">1000</div>
+        <div class="hero-meta-label">Max Agents / Run</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-val">JS</div>
+        <div class="hero-meta-label">Script Language</div>
+      </div>
+    </div>
+    <div class="hero-seam"></div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ 两种模式 ════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sec-head">
+      <div class="np np-olive">Two Execution Modes</div>
+      <h2>两种执行模式</h2>
+      <p>Workflow 的子代理有两种运行方式。默认隔离，实验性模式可协作。</p>
+    </div>
+
+    <div class="col2">
+      <div class="mode-card subagent">
+        <div class="mode-tag sub">Default</div>
+        <h3>Subagent Mode</h3>
+        <div class="desc">每个子代理在独立 session 中运行，互不通信。主代理编排波次（wave），结果通过返回值传递。上下文效率高，适合大多数场景。</div>
+        <ul class="mode-list">
+          <li><span class="key">Execution</span><span class="val">独立 Agent() 实例</span></li>
+          <li><span class="key">Communication</span><span class="val">无（隔离）</span></li>
+          <li><span class="key">Task List</span><span class="val">框架管理 TaskCreate</span></li>
+          <li><span class="key">Coordination</span><span class="val">主代理编排波次</span></li>
+          <li><span class="key">Context</span><span class="val">通过输出文件传递</span></li>
+        </ul>
+      </div>
+      <div class="mode-card team">
+        <div class="mode-tag team">Experimental</div>
+        <h3>Team Mode</h3>
+        <div class="desc">通过 TeamCreate 创建团队，子代理变成持久 teammate。可互相发消息（SendMessage）、共享任务列表、自协调。适合复杂协作任务。</div>
+        <ul class="mode-list">
+          <li><span class="key">Execution</span><span class="val">Agent(team_name=...) 持久实例</span></li>
+          <li><span class="key">Communication</span><span class="val">SendMessage 点对点</span></li>
+          <li><span class="key">Task List</span><span class="val">共享，teammate 自认领</span></li>
+          <li><span class="key">Coordination</span><span class="val">teammate 自协调</span></li>
+          <li><span class="key">Context</span><span class="val">共享上下文 + 消息</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 开关说明 -->
+    <div style="margin-top: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; display: flex; gap: 16px; align-items: center;">
+      <div style="flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--orange);"></div>
+      <div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-display); font-weight: 500;">开启方式：</span>
+        <code style="font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--olive); background: var(--surface-raised); padding: 2px 8px; border-radius: 2px;">CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>
+        <span style="font-size: 13px; color: var(--text-secondary); margin-left: 4px;">→ 出现 TeamCreate 工具 → 自动切换 Team Mode</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ 核心 API ════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sec-head">
+      <div class="np np-glacier">Core API</div>
+      <h2>四个核心函数</h2>
+      <p>Workflow 脚本用这四个函数定义控制流。JS 脚本，不是 prompt 模板。</p>
+    </div>
+
+    <div class="api-grid">
+      <div class="api-card">
+        <div class="name">agent()</div>
+        <div class="what">派发一个子代理。可指定模型、类型、输出 schema。返回结构化结果。</div>
+        <div class="tag-row">
+          <span class="tag olive">schema</span>
+          <span class="tag glacier">model</span>
+          <span class="tag">isolation</span>
+        </div>
+      </div>
+      <div class="api-card">
+        <div class="name">parallel()</div>
+        <div class="what">多个 thunk 同时执行，全部完成后返回。Barrier 模式——最慢的决定总耗时。</div>
+        <div class="tag-row">
+          <span class="tag orange">barrier</span>
+          <span class="tag">并发</span>
+        </div>
+      </div>
+      <div class="api-card">
+        <div class="name">pipeline()</div>
+        <div class="what">每个 item 独立流过多个 stage。不等其他 item。默认模式，吞吐量最高。</div>
+        <div class="tag-row">
+          <span class="tag olive">默认</span>
+          <span class="tag">流水线</span>
+        </div>
+      </div>
+      <div class="api-card">
+        <div class="name">phase()</div>
+        <div class="what">启动新阶段。后续 agent() 自动归入该阶段，在进度面板中分组显示。</div>
+        <div class="tag-row">
+          <span class="tag glacier">进度</span>
+          <span class="tag">分组</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 执行流程可视化 -->
+    <div style="margin-top: 48px;">
+      <div class="np" style="margin-bottom: 16px;">Execution Flow</div>
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; overflow-x: auto;">
+        <pre style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-primary); line-height: 1.9; margin: 0;"><code><span style="color: var(--text-disabled);">// 定义编排脚本</span>
+export const meta = { name: 'review', description: '...' }
+
+<span style="color: var(--olive); font-weight: 600;">phase</span>('Scan')                         <span style="color: var(--text-disabled);">← 启动阶段</span>
+<span style="color: var(--olive); font-weight: 600;">const</span> bugs = <span style="color: var(--olive); font-weight: 600;">await</span> <span style="color: var(--olive); font-weight: 600;">agent</span>('find bugs', { <span style="color: var(--orange);">schema</span>: BUGS })  <span style="color: var(--text-disabled);">← 子代理 A</span>
+
+<span style="color: var(--olive); font-weight: 600;">phase</span>('Verify')
+<span style="color: var(--olive); font-weight: 600;">const</span> verified = <span style="color: var(--olive); font-weight: 600;">await</span> <span style="color: var(--olive); font-weight: 600;">parallel</span>(              <span style="color: var(--text-disabled);">← 并行验证</span>
+  bugs.map(b => () => <span style="color: var(--olive); font-weight: 600;">agent</span>(<span style="color: var(--earth);">`refute: ${b.title}`</span>, { <span style="color: var(--orange);">schema</span>: VERDICT }))
+)
+
+<span style="color: var(--olive); font-weight: 600;">return</span> verified.filter(v => v.survives)   <span style="color: var(--text-disabled);">← 返回结果</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ 质量模式 ════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sec-head">
+      <div class="np np-orange">Quality Patterns</div>
+      <h2>六个质量模式</h2>
+      <p>Workflow 不只是"能并行"，而是内置了验证正确性的模式。每个模式解决一种失败场景。</p>
+    </div>
+
+    <div class="pattern-grid">
+      <div class="pattern-card">
+        <div class="num">01</div>
+        <h4>对抗验证</h4>
+        <div class="desc">每个结论派 N 个子代理分别反驳。≥多数反驳则杀死。防止"看起来对但其实不对"的发现存活。</div>
+        <div class="code">3 skeptics → vote → survive</div>
+      </div>
+      <div class="pattern-card">
+        <div class="num">02</div>
+        <h4>多视角验证</h4>
+        <div class="desc">一个发现在多个维度可能失败。每个验证者给不同视角（正确性/安全/性能），而不是 N 个相同的反驳者。</div>
+        <div class="code">3 lenses × N findings</div>
+      </div>
+      <div class="pattern-card">
+        <div class="num">03</div>
+        <h4>评审团</h4>
+        <div class="desc">N 个独立尝试从不同角度（MVP优先/风险优先/用户优先），打分后胜者方案融合落选者最佳点。</div>
+        <div class="code">parallel → score → fuse</div>
+      </div>
+      <div class="pattern-card">
+        <div class="num">04</div>
+        <h4>循环收敛</h4>
+        <div class="desc">未知数量的发现，连续 K 轮无新增则停止。不靠固定数量限制，靠实际收敛信号。</div>
+        <div class="code">while (dry &lt; 2) { find }</div>
+      </div>
+      <div class="pattern-card">
+        <div class="num">05</div>
+        <h4>多模态扫荡</h4>
+        <div class="desc">不同搜索角度并行（按实体/按时间/按内容），每个盲区不同，合并去重后覆盖更全。</div>
+        <div class="code">parallel finders → dedupe</div>
+      </div>
+      <div class="pattern-card">
+        <div class="num">06</div>
+        <h4>完整性评审</h4>
+        <div class="desc">最终一个代理问"缺了什么？没跑的模态、没验证的声明、没读的源"，发现变成下一轮工作。</div>
+        <div class="code">critic → gap → round 2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ 适用场景 ════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sec-head">
+      <div class="np">Use Cases</div>
+      <h2>适用场景</h2>
+      <p>什么任务值得用 Workflow，什么任务 Agent 工具就够了。</p>
+    </div>
+
+    <table class="scene-table">
+      <thead>
+        <tr>
+          <th style="width: 180px;">场景</th>
+          <th style="width: 120px;">模式</th>
+          <th>为什么用 Workflow</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>代码审查</td>
+          <td><span class="tag olive">parallel</span></td>
+          <td class="dim">bug + 安全 + 性能多维度并行审查，各自独立出结论，最后合并</td>
+        </tr>
+        <tr>
+          <td>方案对比</td>
+          <td><span class="tag olive">parallel</span></td>
+          <td class="dim">3 个子代理各研究一个方案，交叉打分，选出最优</td>
+        </tr>
+        <tr>
+          <td>批量处理</td>
+          <td><span class="tag orange">pipeline</span></td>
+          <td class="dim">10 个文件各自独立分析，流水线出结果，吞吐量远超串行</td>
+        </tr>
+        <tr>
+          <td>对抗验证</td>
+          <td><span class="tag olive">parallel</span> <span class="tag glacier">agent</span></td>
+          <td class="dim">一个出结论，多个反驳，存活的才算数</td>
+        </tr>
+        <tr>
+          <td>多源搜索</td>
+          <td><span class="tag olive">parallel</span></td>
+          <td class="dim">不同搜索角度并行扫，合并去重</td>
+        </tr>
+        <tr>
+          <td>渐进发现</td>
+          <td><span class="tag orange">loop</span></td>
+          <td class="dim">未知数量的目标，循环直到连续无新增</td>
+        </tr>
+        <tr>
+          <td>大规模审计</td>
+          <td><span class="tag olive">parallel</span> <span class="tag orange">pipeline</span></td>
+          <td class="dim">多轮 fan-out，每轮独立视角，对抗验证后合成</td>
+        </tr>
+        <tr>
+          <td>文档生成</td>
+          <td><span class="tag orange">pipeline</span></td>
+          <td class="dim">研究 → 起草 → 审查 → 定稿，每个文档独立流过流水线</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ 对比 ════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sec-head">
+      <div class="np">vs. Agent Tool</div>
+      <h2>Workflow vs Agent</h2>
+      <p>Agent 工具派一个子代理。Workflow 编排一群。什么时候该用哪个？</p>
+    </div>
+
+    <table class="scene-table">
+      <thead>
+        <tr>
+          <th style="width: 160px;">维度</th>
+          <th>Agent 工具</th>
+          <th>Workflow</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>子代理数</td>
+          <td class="dim">1 个</td>
+          <td><strong>多个，可并行</strong></td>
+        </tr>
+        <tr>
+          <td>控制流</td>
+          <td class="dim">无（串行调用）</td>
+          <td><strong>JS 脚本定义</strong></td>
+        </tr>
+        <tr>
+          <td>输出验证</td>
+          <td class="dim">文本解析</td>
+          <td><strong>JSON Schema 工具层验证</strong></td>
+        </tr>
+        <tr>
+          <td>文件隔离</td>
+          <td class="dim">共享文件系统</td>
+          <td><strong>worktree 独立分支</strong></td>
+        </tr>
+        <tr>
+          <td>中断恢复</td>
+          <td class="dim">不支持</td>
+          <td><strong>支持，已缓存结果复用</strong></td>
+        </tr>
+        <tr>
+          <td>预算控制</td>
+          <td class="dim">无</td>
+          <td><strong>token 预算 + 动态检查</strong></td>
+        </tr>
+        <tr>
+          <td>适用规模</td>
+          <td class="dim">单任务委派</td>
+          <td><strong>多任务编排，100+ 子代理</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ 架构 ════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sec-head">
+      <div class="np np-glacier">Architecture</div>
+      <h2>执行架构</h2>
+      <p>从用户请求到最终结果，Workflow 经过四个阶段。</p>
+    </div>
+
+    <div class="arch-flow">
+      <div class="arch-step">
+        <div class="marker"><div class="dot"></div><div class="step-label">Step 1</div></div>
+        <div class="content">
+          <h4>任务分解</h4>
+          <p>分析复杂度 → 拆分为原子阶段 → 依赖分析 → 决定串行还是并行 → 分配子代理类型（Explore / general-purpose / code-developer）</p>
+        </div>
+      </div>
+      <div class="arch-step">
+        <div class="marker"><div class="dot orange"></div><div class="step-label">Step 2</div></div>
+        <div class="content">
+          <h4>波次执行</h4>
+          <p>独立阶段组成波次并行执行，依赖阶段串行执行。每个 agent() 调用可指定 schema 强制输出格式。worktree 隔离文件系统。</p>
+        </div>
+      </div>
+      <div class="arch-step">
+        <div class="marker"><div class="dot glacier"></div><div class="step-label">Step 3</div></div>
+        <div class="content">
+          <h4>验证合成</h4>
+          <p>对抗验证 / 多视角审查 / 评审团打分。子代理结果通过 schema 验证，不合格自动重试。结果去重、合并。</p>
+        </div>
+      </div>
+      <div class="arch-step">
+        <div class="marker"><div class="dot"></div><div class="step-label">Step 4</div></div>
+        <div class="content">
+          <h4>输出交付</h4>
+          <p>聚合所有验证后的结果，返回结构化数据。已执行的 agent() 调用缓存结果，中断后可 resume。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 关键指标 -->
+    <div class="metric-row">
+      <div class="metric-cell">
+        <div class="val">16</div>
+        <div class="unit">并发上限</div>
+      </div>
+      <div class="metric-cell">
+        <div class="val">1K</div>
+        <div class="unit">总代理上限</div>
+      </div>
+      <div class="metric-cell">
+        <div class="val">100%</div>
+        <div class="unit">缓存命中</div>
+      </div>
+      <div class="metric-cell">
+        <div class="val">OK</div>
+        <div class="unit">Resume 支持</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ 来源 ════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sec-head">
+      <div class="np">Sources</div>
+      <h2>信息来源</h2>
+    </div>
+
+    <ul class="source-list">
+      <li>
+        <span class="idx">01</span>
+        <div>
+          <div class="title">barkain/claude-code-workflow-orchestration</div>
+          <div class="url">github.com/barkain/claude-code-workflow-orchestration</div>
+        </div>
+      </li>
+      <li>
+        <span class="idx">02</span>
+        <div>
+          <div class="title">am-will/swarms — Multi-agent orchestration for Claude Code</div>
+          <div class="url">github.com/am-will/swarms</div>
+        </div>
+      </li>
+      <li>
+        <span class="idx">03</span>
+        <div>
+          <div class="title">SynBioExplorer/Claude_Code_agentic_coding — DAG-based scheduling</div>
+          <div class="url">github.com/SynBioExplorer/Claude_Code_agentic_coding</div>
+        </div>
+      </li>
+      <li>
+        <span class="idx">04</span>
+        <div>
+          <div class="title">josephneumann/claude-corps — Production workflow framework</div>
+          <div class="url">github.com/josephneumann/claude-corps</div>
+        </div>
+      </li>
+      <li>
+        <span class="idx">05</span>
+        <div>
+          <div class="title">Claude Code Swarm Orchestration Skill</div>
+          <div class="url">gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════ FOOTER ════════════════════════════════════ -->
+<div class="container">
+  <footer class="footer">
+    <div class="footer-text">Workflow — Multi-Agent Orchestration &nbsp;/&nbsp; Haglöfs Brand Design &nbsp;/&nbsp; 2026-05-31</div>
+  </footer>
+</div>
+
+</body>
+</html>

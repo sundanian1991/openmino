@@ -1,15 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-FONT_DIR="$(cd "$(dirname "$0")/../assets/fonts" && pwd)"
+# Portable across bash 3.2+ (macOS stock /bin/bash) and bash 4+ (Linux, Homebrew).
+# Avoids `declare -A` so the script runs on a fresh macOS without `brew install bash`.
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_FONT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)/assets/fonts"
+
+# Download target lives OUTSIDE the skill directory on purpose.
+#
+# Claude Desktop skill ZIPs exclude the ~36MB TsangerJinKai TTFs. The old code
+# downloaded them back into the skill's own assets/fonts, which pushed the
+# installed skill past Claude Desktop's size limit ("upload/execution too big").
+# We instead drop them in the XDG user font dir, which fontconfig scans by
+# default on both macOS (Homebrew) and Linux, yet does NOT show up in macOS
+# Font Book. WeasyPrint then resolves "TsangerJinKai02" from here when the
+# template's relative @font-face path is absent; online renders still fall back
+# to the jsDelivr URL baked alongside each @font-face declaration.
+FONT_DIR="${KAMI_FONT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/fonts/kami}"
+
 MIN_SIZE=10000000  # 10MB, prevents truncated downloads
 
-# font_name -> local_filename mapping
-declare -A FONT_MAP=(
-  ["仓耳今楷02-W04.ttf"]="TsangerJinKai02-W04.ttf"
-  ["仓耳今楷02-W05.ttf"]="TsangerJinKai02-W05.ttf"
-)
+# Parallel arrays: index N pairs CN_NAMES[N] with LOCAL_NAMES[N].
+CN_NAMES=("仓耳今楷02-W04.ttf" "仓耳今楷02-W05.ttf")
+LOCAL_NAMES=("TsangerJinKai02-W04.ttf" "TsangerJinKai02-W05.ttf")
 
+# Mirror order is intentionally jsdmirror-first here, opposite of the
+# templates' @font-face fallback (which lists jsdelivr first). Reasoning:
+# this script runs interactively when fonts are missing locally, often from
+# China where jsdmirror is reachable and faster than jsdelivr; templates run
+# anywhere and prioritize jsdelivr's broader global coverage.
 MIRROR_SOURCES=(
   "https://cdn.jsdmirror.com/gh/tw93/Kami@main/assets/fonts"
   "https://cdn.jsdelivr.net/gh/tw93/Kami@main/assets/fonts"
@@ -23,9 +43,27 @@ check_size() {
   [[ "$size" -ge "$MIN_SIZE" ]]
 }
 
+all_present_in() {
+  local dir="$1" name
+  for name in "${LOCAL_NAMES[@]}"; do
+    check_size "$dir/$name" || return 1
+  done
+  return 0
+}
+
+refresh_fontconfig() {
+  # The XDG font dir is already on fontconfig's default scan path, so a cache
+  # refresh is all that is needed for WeasyPrint to pick the fonts up. Optional:
+  # absence of fc-cache (e.g. minimal sandbox) is non-fatal, fontconfig rescans
+  # the directory lazily on next use.
+  if command -v fc-cache >/dev/null 2>&1; then
+    fc-cache -f "$FONT_DIR" >/dev/null 2>&1 || true
+  fi
+}
+
 download_font() {
   local cn_name="$1"
-  local local_name="${FONT_MAP[$cn_name]}"
+  local local_name="$2"
   local target="$FONT_DIR/$local_name"
 
   # Source 1: official tsanger.cn
@@ -64,30 +102,33 @@ download_font() {
   return 1
 }
 
-mkdir -p "$FONT_DIR"
-
-all_present=true
-for local_name in "${FONT_MAP[@]}"; do
-  if ! check_size "$FONT_DIR/$local_name"; then
-    all_present=false
-    break
-  fi
-done
-
-if $all_present; then
-  echo "OK: TsangerJinKai fonts present"
+# 1. A repo checkout ships the committed TTFs. Templates resolve their relative
+#    `../fonts/*.ttf` @font-face path against them directly, so there is nothing
+#    to download or register. This branch is skipped inside a Claude Desktop
+#    skill, whose assets/fonts has the TTFs stripped out.
+if all_present_in "$REPO_FONT_DIR"; then
+  echo "OK: TsangerJinKai fonts present in repo checkout ($REPO_FONT_DIR)"
   exit 0
 fi
 
-echo "Downloading TsangerJinKai fonts..."
+mkdir -p "$FONT_DIR"
+
+if all_present_in "$FONT_DIR"; then
+  echo "OK: TsangerJinKai fonts present ($FONT_DIR)"
+  refresh_fontconfig
+  exit 0
+fi
+
+echo "Downloading TsangerJinKai fonts to $FONT_DIR ..."
 failed=0
-for cn_name in "${!FONT_MAP[@]}"; do
-  local_name="${FONT_MAP[$cn_name]}"
+for i in "${!CN_NAMES[@]}"; do
+  cn_name="${CN_NAMES[$i]}"
+  local_name="${LOCAL_NAMES[$i]}"
   if check_size "$FONT_DIR/$local_name"; then
     echo "  OK: $local_name already present"
     continue
   fi
-  if ! download_font "$cn_name"; then
+  if ! download_font "$cn_name" "$local_name"; then
     failed=$((failed + 1))
   fi
 done
@@ -100,4 +141,5 @@ if [[ "$failed" -gt 0 ]]; then
   exit 1
 fi
 
-echo "OK: all fonts ready"
+refresh_fontconfig
+echo "OK: all fonts ready ($FONT_DIR)"

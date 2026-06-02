@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>驱动因素分析 — Nothing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --bg: #F5F5F5;
+    --surface: #FFFFFF;
+    --border: #E0E0E0;
+    --text1: #000000;
+    --text2: #666666;
+    --text3: #999999;
+    --red: #D71921;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text2);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 96px 48px;
+    padding-top: 144px;
+  }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+  }
+
+  .nav-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 48px;
+    overflow-x: auto;
+  }
+
+  .nav a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+
+  .nav a:hover { color: var(--text1); }
+  .nav a.active { color: var(--text1); font-weight: 700; }
+
+  .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+  }
+
+  .heading {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text1);
+    letter-spacing: -0.01em;
+  }
+
+  .section {
+    margin-bottom: 96px;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    margin-bottom: 96px;
+  }
+
+  .header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text1);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .header p {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 640px;
+    line-height: 1.6;
+  }
+
+  /* ===== HERO ===== */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 96px;
+  }
+
+  .hero-cell {
+    background: var(--surface);
+    padding: 48px 40px;
+  }
+
+  .hero-cell .label {
+    margin-bottom: 12px;
+  }
+
+  .hero-cell .val {
+    font-family: 'Space Mono', monospace;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--text1);
+    line-height: 1;
+  }
+
+  .hero-cell .unit {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--text3);
+    margin-left: 4px;
+  }
+
+  .hero-cell .note {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 8px;
+  }
+
+  .hero-cell .note.accent {
+    color: var(--red);
+  }
+
+  /* ===== CORRELATION MATRIX ===== */
+  .matrix-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-bottom: 32px;
+  }
+
+  .matrix-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    margin-bottom: 24px;
+  }
+
+  .matrix {
+    display: grid;
+    grid-template-columns: 140px repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .matrix-cell {
+    background: var(--surface);
+    padding: 16px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+  }
+
+  .matrix-cell.header {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text3);
+    background: var(--bg);
+  }
+
+  .matrix-cell.row-header {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text1);
+    background: var(--bg);
+  }
+
+  .matrix-cell .val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text1);
+  }
+
+  .matrix-cell .strength {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  .matrix-cell .val.strong { color: var(--text1); }
+  .matrix-cell .val.moderate { opacity: 0.7; }
+  .matrix-cell .val.weak { opacity: 0.4; }
+
+  /* ===== SCATTER GRID ===== */
+  .scatter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 96px;
+  }
+
+  .scatter-cell {
+    background: var(--surface);
+    padding: 32px;
+  }
+
+  .scatter-cell .label {
+    margin-bottom: 24px;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 280px;
+  }
+
+  /* ===== FINDINGS ===== */
+  .finding-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .finding-cell {
+    background: var(--surface);
+    padding: 40px;
+  }
+
+  .finding-cell .num {
+    font-family: 'Space Mono', monospace;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text1);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .finding-cell .label {
+    margin-bottom: 16px;
+  }
+
+  .finding-cell p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text2);
+  }
+
+  .finding-cell .num.accent {
+    color: var(--red);
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    margin-top: 96px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .caption {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text3);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid,
+    .scatter-grid,
+    .finding-grid { grid-template-columns: 1fr; }
+    .matrix { grid-template-columns: 100px repeat(3, 1fr); }
+    .page { padding: 48px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="总览页-Nothing原生.html">总览</a>
+    <a href="驱动因素页-Nothing原生.html" class="active">驱动因素</a>
+    <a href="转化漏斗页-Nothing原生.html">转化漏斗</a>
+    <a href="时间趋势页-Nothing原生.html">时间趋势</a>
+    <a href="行动建议页-Nothing原生.html">行动建议</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <header class="header">
+    <div class="label">Driver Analysis</div>
+    <h1>驱动因素分析</h1>
+    <p>哪些因素真正影响转化率？接通率、通话时长、日均拨打量——三个维度的因果关系。</p>
+  </header>
+
+  <div class="hero-grid">
+    <div class="hero-cell">
+      <div class="label">接通率相关性</div>
+      <div><span class="val">0.89</span></div>
+      <div class="note accent">强正相关</div>
+    </div>
+    <div class="hero-cell">
+      <div class="label">通话时长相关性</div>
+      <div><span class="val">0.92</span></div>
+      <div class="note accent">强正相关</div>
+    </div>
+    <div class="hero-cell">
+      <div class="label">日均拨打相关性</div>
+      <div><span class="val">-0.71</span></div>
+      <div class="note">中等负相关</div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <h2 class="heading">相关性矩阵</h2>
+      <span class="label">Pearson r / Q1 data</span>
+    </div>
+    <div class="matrix-wrap">
+      <div class="matrix">
+        <div class="matrix-cell header"></div>
+        <div class="matrix-cell header">接通率</div>
+        <div class="matrix-cell header">通话时长</div>
+        <div class="matrix-cell header">日均拨打</div>
+
+        <div class="matrix-cell row-header">转化率</div>
+        <div class="matrix-cell"><span class="val strong">0.89</span><div class="strength">强</div></div>
+        <div class="matrix-cell"><span class="val strong">0.92</span><div class="strength">强</div></div>
+        <div class="matrix-cell"><span class="val weak">-0.71</span><div class="strength">中/负</div></div>
+
+        <div class="matrix-cell row-header">成交金额</div>
+        <div class="matrix-cell"><span class="val strong">0.85</span><div class="strength">强</div></div>
+        <div class="matrix-cell"><span class="val strong">0.88</span><div class="strength">强</div></div>
+        <div class="matrix-cell"><span class="val moderate">-0.62</span><div class="strength">中/负</div></div>
+
+        <div class="matrix-cell row-header">人效</div>
+        <div class="matrix-cell"><span class="val strong">0.87</span><div class="strength">强</div></div>
+        <div class="matrix-cell"><span class="val strong">0.90</span><div class="strength">强</div></div>
+        <div class="matrix-cell"><span class="val weak">-0.68</span><div class="strength">中/负</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="scatter-grid">
+    <div class="scatter-cell">
+      <div class="label">接通率 vs 转化率</div>
+      <div class="chart-wrap"><canvas id="scatter1"></canvas></div>
+    </div>
+    <div class="scatter-cell">
+      <div class="label">通话时长 vs 转化率</div>
+      <div class="chart-wrap"><canvas id="scatter2"></canvas></div>
+    </div>
+    <div class="scatter-cell">
+      <div class="label">日均拨打 vs 转化率</div>
+      <div class="chart-wrap"><canvas id="scatter3"></canvas></div>
+    </div>
+    <div class="scatter-cell">
+      <div class="label">接通率 vs 通话时长</div>
+      <div class="chart-wrap"><canvas id="scatter4"></canvas></div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <h2 class="heading">关键发现</h2>
+      <span class="label">4 findings</span>
+    </div>
+    <div class="finding-grid">
+      <div class="finding-cell">
+        <div class="num">0.92</div>
+        <div class="label">通话时长 → 转化率</div>
+        <p>最强驱动因素。B 组 352 秒 vs F 组 278 秒，转化率差 0.9pp。深度沟通带来高转化。</p>
+      </div>
+      <div class="finding-cell">
+        <div class="num">0.89</div>
+        <div class="label">接通率 → 转化率</div>
+        <p>号码质量决定起点。B 组 31.3% vs C 组 25.7%，接通率差 5.6pp，转化率差 0.8pp。</p>
+      </div>
+      <div class="finding-cell">
+        <div class="num accent">-0.71</div>
+        <div class="label">日均拨打 → 转化率</div>
+        <p>量大不等于质高。C 组 330 通/天但转化率最低。过度拨打导致号码疲劳。</p>
+      </div>
+      <div class="finding-cell">
+        <div class="num">2.6x</div>
+        <div class="label">优化优先级</div>
+        <p>通话时长提升 1 秒 ≈ 接通率提升 2.6 秒。优先优化话术深度，其次优化号码质量。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span class="caption">Source: 金融电销中心 Q1 运营数据 / 2025</span>
+    <span class="caption">Nothing</span>
+  </footer>
+
+</div>
+
+<script>
+const font = { family: "'Space Mono', monospace", size: 11 };
+const gridColor = '#E0E0E0';
+const tickColor = '#999';
+
+// Data
+const teams = ['A','B','C','D','E','F'];
+const convRate = [2.17, 2.57, 1.77, 2.43, 2.27, 1.73];
+const connectRate = [29.0, 31.3, 25.7, 31.1, 28.9, 27.2];
+const callDuration = [324, 342, 290, 333, 316, 278];
+const dailyCalls = [299, 289, 317, 277, 300, 284];
+
+function makeScatter(canvasId, xData, yData, xLabel, yLabel, xMin, xMax, yMin, yMax) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        data: xData.map((x, i) => ({ x, y: yData[i] })),
+        backgroundColor: '#000',
+        pointRadius: 7,
+        pointHoverRadius: 9
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: {
+          min: xMin, max: xMax,
+          title: { display: true, text: xLabel, font, color: tickColor },
+          ticks: { font, color: tickColor },
+          grid: { color: gridColor }
+        },
+        y: {
+          min: yMin, max: yMax,
+          ticks: { stepSize: 0.5, font, color: tickColor, callback: v => v.toFixed(1) + '%' },
+          grid: { color: gridColor }
+        }
+      }
+    }
+  });
+}
+
+makeScatter('scatter1', connectRate, convRate, '接通率 (%)', '转化率 (%)', 24, 34, 1.5, 3.0);
+makeScatter('scatter2', callDuration, convRate, '通话时长 (秒)', '转化率 (%)', 260, 360, 1.5, 3.0);
+makeScatter('scatter3', dailyCalls, convRate, '日均拨打 (通)', '转化率 (%)', 260, 340, 1.5, 3.0);
+makeScatter('scatter4', connectRate, callDuration, '接通率 (%)', '通话时长 (秒)', 24, 34, 260, 360);
+</script>
+</body>
+</html>

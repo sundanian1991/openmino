@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 站点信号图谱</title>
+<style>
+:root {
+  --bg:        #E8E6E1;
+  --paper:     #FFFFFF;
+  --ink:       #333333;
+  --accent:    #1E3A5F;
+  --highlight: #C44E52;
+  --teal:      #1D6B55;
+  --teal-bg:   rgba(29,107,85,0.07);
+  --g100:      #F0F0F0;
+  --g200:      #E0E0E0;
+  --g300:      #CCCCCC;
+  --g500:      #888888;
+  --g700:      #555555;
+  --font-serif: "Georgia", "Times New Roman", serif;
+  --font-sans:  system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono:  ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 36px;
+  background: var(--accent);
+  display: flex; align-items: center;
+  padding: 0 40px; gap: 0;
+}
+nav .logo {
+  font-family: var(--font-mono);
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.9);
+  margin-right: 20px; letter-spacing: 0.04em;
+}
+nav a {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none; font-size: 10px;
+  font-weight: 600; letter-spacing: 0.08em;
+  padding: 0 14px; height: 100%; display: flex; align-items: center;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  text-transform: uppercase;
+}
+nav a:hover { color: rgba(255,255,255,0.85); }
+nav a.active { color: #fff; border-bottom-color: rgba(255,255,255,0.6); }
+
+/* Main */
+main { padding-top: 36px; }
+
+/* Section */
+.section {
+  padding: 56px 0 64px;
+  border-bottom: 1px solid var(--g200);
+}
+.section:last-child { border-bottom: none; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 22px; font-weight: 500; color: var(--ink);
+  line-height: 1.25; margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.section-desc {
+  font-size: 12px; color: var(--g700); margin-bottom: 28px;
+}
+
+/* Header metrics */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--g300);
+  border: 1px solid var(--g300);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+.metric {
+  background: var(--paper);
+  padding: 16px 20px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 24px; font-weight: 700;
+  font-feature-settings: "tnum";
+  line-height: 1.1; letter-spacing: -0.02em;
+}
+.metric-label {
+  font-size: 10px; color: var(--g500);
+  letter-spacing: 0.05em;
+}
+
+/* Grid */
+.grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.grid-3 {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+/* Card */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 2px;
+  padding: 20px 22px;
+}
+.card-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink);
+  margin-bottom: 2px;
+}
+.card-sub {
+  font-size: 10px; color: var(--g500); margin-bottom: 14px;
+}
+
+/* Signal list */
+.signal {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--g100);
+  cursor: pointer; transition: background .12s;
+  border-radius: 2px; padding: 8px 6px; margin: 0 -6px;
+}
+.signal:last-child { border-bottom: none; }
+.signal:hover { background: var(--g100); }
+.signal-pct {
+  font-family: var(--font-mono);
+  font-size: 17px; font-weight: 700;
+  min-width: 56px; font-feature-settings: "tnum";
+  line-height: 1;
+}
+.signal-pct.pos { color: var(--teal); }
+.signal-pct.neg { color: var(--highlight); }
+.signal-info .nm { font-size: 12px; font-weight: 600; }
+.signal-info .dt { font-size: 10px; color: var(--g500); }
+
+/* Bar row */
+.bar-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 5px; padding: 2px 0;
+}
+.bar-label {
+  font-family: var(--font-mono);
+  font-size: 10px; min-width: 64px; text-align: right;
+  color: var(--g700); letter-spacing: 0.02em;
+}
+.bar-track { flex: 1; height: 8px; background: var(--g100); border-radius: 1px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 1px; }
+.bar-val {
+  font-family: var(--font-mono);
+  font-size: 10px; font-weight: 600;
+  min-width: 52px; font-feature-settings: "tnum";
+  color: var(--g500);
+}
+
+/* Tags */
+.tag {
+  display: inline-block; padding: 1px 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+  border-radius: 1px; text-transform: uppercase;
+}
+.tag-teal { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(29,107,85,0.2); }
+.tag-red { background: rgba(196,78,82,0.07); color: var(--highlight); border: 1px solid rgba(196,78,82,0.2); }
+.tag-blue { background: rgba(30,58,95,0.07); color: var(--accent); border: 1px solid rgba(30,58,95,0.2); }
+.tag-amber { background: rgba(184,128,24,0.07); color: #8B6000; border: 1px solid rgba(184,128,24,0.2); }
+
+/* Risk note */
+.risk-note {
+  margin-top: 10px; padding: 7px 10px;
+  font-size: 10px; line-height: 1.6;
+  background: rgba(196,78,82,0.05);
+  border-left: 2px solid var(--highlight);
+  color: var(--highlight);
+}
+
+/* Evidence block */
+.evidence {
+  margin-top: 12px; padding: 10px 12px;
+  background: var(--g100); font-size: 10px;
+  color: var(--g700); line-height: 1.7;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+}
+
+/* Geo rows */
+.geo-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; border-bottom: 1px solid var(--g100);
+}
+.geo-row:last-child { border-bottom: none; }
+.geo-pr { font-family: var(--font-mono); font-size: 10px; font-weight: 700; min-width: 44px; color: var(--ink); letter-spacing: 0.02em; }
+.geo-bt { flex: 1; height: 7px; background: var(--g100); border-radius: 1px; overflow: hidden; }
+.geo-fl { height: 100%; border-radius: 1px; }
+.geo-cv {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  min-width: 68px; text-align: right; font-feature-settings: "tnum";
+}
+.geo-src { font-size: 10px; color: var(--g500); margin: -2px 0 5px 52px; font-family: var(--font-mono); }
+
+/* Supplier profile header */
+.profile-header {
+  display: flex; align-items: center; gap: 20px;
+  padding: 18px 22px; background: var(--paper);
+  border: 1px solid var(--g200); border-radius: 2px;
+  margin-bottom: 20px;
+}
+.profile-nm {
+  font-family: var(--font-serif); font-size: 22px; font-weight: 500;
+  color: var(--ink);
+}
+.profile-meta { display: flex; gap: 14px; flex-wrap: wrap; }
+.profile-meta-item {
+  font-family: var(--font-mono); font-size: 10px; color: var(--g500);
+}
+.profile-meta-item strong { color: var(--ink); font-weight: 700; }
+
+/* Trend bars */
+.trend {
+  display: flex; align-items: flex-end; gap: 8px;
+  height: 76px; padding: 0 4px;
+}
+.trend-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.trend-bar { width: 100%; min-height: 3px; border-radius: 1px 1px 0 0; }
+.trend-lbl { font-family: var(--font-mono); font-size: 9px; color: var(--g500); }
+
+/* Link */
+a.link { font-size: 10px; text-decoration: none; color: var(--accent); }
+a.link:hover { text-decoration: underline; }
+
+/* Semantic annotations */
+[data-entity="metric"] { font-weight: 600; }
+[data-entity="value"] { color: var(--accent); font-family: var(--font-mono); font-weight: 700; font-size: 1em; }
+[data-entity="delta"][data-assessment="positive"] { color: var(--teal); font-weight: 700; font-family: var(--font-mono); }
+[data-entity="delta"][data-assessment="negative"] { color: var(--highlight); font-weight: 700; font-family: var(--font-mono); }
+[data-entity="time"] { font-family: var(--font-mono); font-size: 0.88em; color: var(--g500); }
+[data-entity="dimension"] { background: var(--g100); padding: 1px 4px; border-radius: 1px; font-size: 0.88em; font-weight: 600; }
+[data-entity="anomaly"] { background: rgba(196,78,82,0.07); border-left: 2px solid var(--highlight); padding: 1px 6px; border-radius: 0 2px 2px 0; font-weight: 600; color: var(--highlight); }
+
+/* Chart title (conclusion form) */
+.chart-title {
+  font-family: var(--font-serif);
+  font-size: 13px; font-weight: 500;
+  color: var(--ink); margin-bottom: 4px;
+}
+.chart-source {
+  font-family: var(--font-mono); font-size: 9px; color: var(--g500);
+  text-align: right; margin-top: 4px;
+}
+
+/* Inline SVG chart */
+.figure-chart {
+  margin: 16px 0;
+}
+.figure-chart svg { width: 100%; height: auto; }
+
+/* Footer */
+.footer {
+  padding: 24px 0 32px;
+  max-width: 860px; margin: 0 auto;
+  padding-left: 0; padding-right: 0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-src { font-family: var(--font-mono); font-size: 9px; color: var(--g500); }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(10px); transition: opacity .4s ease, transform .4s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Divider rule (figma-style three-line table for key data) */
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 11px; margin: 12px 0;
+}
+.data-table th {
+  text-align: left; padding: 6px 10px;
+  border-bottom: 2px solid var(--ink);
+  font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: 10px; color: var(--ink);
+}
+.data-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--g200);
+  font-family: var(--font-mono); font-size: 11px;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table .pos { color: var(--teal); font-weight: 700; }
+.data-table .neg { color: var(--highlight); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Q1 · 站点信号图谱</div>
+  <a href="#p0" class="active">总览</a>
+  <a href="#p1">底图</a>
+  <a href="#p2">扩张</a>
+  <a href="#p3">收缩</a>
+  <a href="#p4">位移</a>
+  <a href="#p5">供应商</a>
+</nav>
+
+<main>
+<div class="container">
+
+<!-- ===== P0: Signal Overview ===== -->
+<section id="p0" class="section">
+  <div class="section-label">P0 — 入口</div>
+  <h1 class="section-title">Q1 站点信号图谱</h1>
+  <div class="section-desc">
+    <span data-entity="value" data-origin="108">108</span>站 ·
+    <span data-entity="value" data-origin="28">28</span>供应商 ·
+    <span data-entity="value" data-origin="15">15</span>项目 ·
+    <span data-entity="time">2026年1–3月</span> 在册人力
+  </div>
+
+  <div class="metrics reveal">
+    <div class="metric">
+      <span class="metric-value" data-entity="value" data-origin="3340">3,340</span>
+      <span class="metric-label">在册人力</span>
+    </div>
+    <div class="metric">
+      <span class="metric-value" style="color:var(--teal)" data-entity="delta" data-assessment="positive">+0.9%</span>
+      <span class="metric-label">Q1 增速</span>
+    </div>
+    <div class="metric">
+      <span class="metric-value" style="color:var(--highlight)">5</span>
+      <span class="metric-label">收缩信号</span>
+    </div>
+    <div class="metric">
+      <span class="metric-value" style="color:var(--teal)">5</span>
+      <span class="metric-label">扩张信号</span>
+    </div>
+  </div>
+
+  <div class="grid-2 reveal">
+    <div class="card">
+      <div class="card-title">扩张 TOP 4</div>
+      <div class="card-sub">增长率 >40%，1月在册 ≥10人</div>
+      <div class="signal" onclick="location.href='#p2'">
+        <span class="signal-pct pos" data-entity="delta" data-assessment="positive">+150%</span>
+        <div class="signal-info">
+          <div class="nm">秦冀德辰 · 辛集 · 企业主贷</div>
+          <div class="dt">10 → 25人</div>
+        </div>
+      </div>
+      <div class="signal" onclick="location.href='#p2'">
+        <span class="signal-pct pos" data-entity="delta" data-assessment="positive">+125%</span>
+        <div class="signal-info">
+          <div class="nm">岐力 · 红谷滩 · 金企融合</div>
+          <div class="dt">20 → 45人</div>
+        </div>
+      </div>
+      <div class="signal" onclick="location.href='#p2'">
+        <span class="signal-pct pos" data-entity="delta" data-assessment="positive">+47%</span>
+        <div class="signal-info">
+          <div class="nm">承德新动力 · 兴隆 · 企业主贷</div>
+          <div class="dt">36 → 53人</div>
+        </div>
+      </div>
+      <div class="signal" onclick="location.href='#p2'">
+        <span class="signal-pct pos" data-entity="delta" data-assessment="positive">+44%</span>
+        <div class="signal-info">
+          <div class="nm">毅航 · 蜀山 · 财富固收</div>
+          <div class="dt">68 → 98人 · 净增30人</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">收缩 TOP 4</div>
+      <div class="card-sub">下降 >25%，1月在册 ≥10人</div>
+      <div class="signal" onclick="location.href='#p3'">
+        <span class="signal-pct neg" data-entity="delta" data-assessment="negative">-54%</span>
+        <div class="signal-info">
+          <div class="nm">汇讯 · 合肥 · 金条</div>
+          <div class="dt">35 → 16人</div>
+        </div>
+      </div>
+      <div class="signal" onclick="location.href='#p3'">
+        <span class="signal-pct neg" data-entity="delta" data-assessment="negative">-53%</span>
+        <div class="signal-info">
+          <div class="nm">汇讯 · 陇西 · 菁卡拉新</div>
+          <div class="dt">32 → 15人</div>
+        </div>
+      </div>
+      <div class="signal" onclick="location.href='#p3'">
+        <span class="signal-pct neg" data-entity="delta" data-assessment="negative">-42%</span>
+        <div class="signal-info">
+          <div class="nm">速讯达 · 和平 · 菁卡拉新</div>
+          <div class="dt">59 → 34人</div>
+        </div>
+      </div>
+      <div class="signal" onclick="location.href='#p3'">
+        <span class="signal-pct neg" data-entity="delta" data-assessment="negative">-40%</span>
+        <div class="signal-info">
+          <div class="nm">创世伙伴 · 盐湖 · 财富固收</div>
+          <div class="dt">20 → 12人</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="evidence reveal" style="margin-top:20px">
+    <strong style="font-weight:700;color:var(--ink)">策展逻辑：</strong>
+    全景底图。记住三个数字：<span data-entity="value" data-origin="3340">3,340人</span>微增
+    <span data-entity="delta" data-assessment="positive">+0.9%</span>，
+    金条占51%是基本盘，<span data-entity="dimension">安徽</span>+<span data-entity="dimension">河北</span>占61%是地理重心。
+    增长信号来自边缘地带，不是中心。
+  </div>
+</section>
+
+
+<!-- ===== P1: Panorama ===== -->
+<section id="p1" class="section">
+  <div class="section-label">P1 — 参照系</div>
+  <h1 class="section-title">全景底图</h1>
+  <div class="section-desc">规模集中度高，增长来自边缘。前5家占48%人力，但平均增速仅+7%，远低于中小供应商</div>
+
+  <div class="grid-2 reveal">
+    <div class="card">
+      <div class="card-title">供应商 TOP 5（占总量48%）</div>
+      <div class="card-sub">合计 <span data-entity="value" data-origin="1608">1,608人</span> · Q1平均增速 +7%</div>
+      <div style="margin:12px 0">
+        <div class="bar-row">
+          <span class="bar-label">毅航</span>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent)"></div></div>
+          <span class="bar-val"><span data-entity="value" data-origin="481">481人</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">毛毛虫</span>
+          <div class="bar-track"><div class="bar-fill" style="width:74%;background:var(--accent)"></div></div>
+          <span class="bar-val">—</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">伽玛</span>
+          <div class="bar-track"><div class="bar-fill" style="width:66%;background:var(--accent)"></div></div>
+          <span class="bar-val">—</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">汇讯</span>
+          <div class="bar-track"><div class="bar-fill" style="width:58%;background:var(--accent)"></div></div>
+          <span class="bar-val"><span data-entity="value" data-origin="280">280人</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">赛维斯</span>
+          <div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--accent)"></div></div>
+          <span class="bar-val">—</span>
+        </div>
+      </div>
+      <div class="evidence">
+        头部5家增速 +7%，远低于岐力(<span data-entity="delta" data-assessment="positive">+84%</span>)、新动力(<span data-entity="delta" data-assessment="positive">+43.8%</span>)、华啸(<span data-entity="delta" data-assessment="positive">+26.7%</span>)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">地理双中心</div>
+      <div class="card-sub"><span data-entity="dimension">安徽</span>+<span data-entity="dimension">河北</span> 合计 <span data-entity="value" data-origin="2048">2,048人</span>，占61%</div>
+      <div style="margin:12px 0">
+        <div class="bar-row">
+          <span class="bar-label">安徽</span>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--accent)"></div></div>
+          <span class="bar-val"><span data-entity="value" data-origin="1140">1,140人</span></span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">河北</span>
+          <div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--accent)"></div></div>
+          <span class="bar-val"><span data-entity="value" data-origin="908">908人</span></span>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <div class="card-title">单体最大站点</div>
+        <div style="margin-top:8px">
+          <div class="bar-row">
+            <span class="bar-label">毅航埇桥</span>
+            <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--teal)"></div></div>
+            <span class="bar-val"><span data-entity="value" data-origin="190">190人</span></span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">毅航蜀山</span>
+            <div class="bar-track"><div class="bar-fill" style="width:52%;background:var(--teal)"></div></div>
+            <span class="bar-val" style="color:var(--teal)"><span data-entity="value" data-origin="98">98人</span> <span data-entity="delta" data-assessment="positive">▲30</span></span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">速讯达和平</span>
+            <div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--highlight)"></div></div>
+            <span class="bar-val" style="color:var(--highlight)"><span data-entity="value" data-origin="34">34人</span> <span data-entity="delta" data-assessment="negative">▼25</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== P2: Expansion ===== -->
+<section id="p2" class="section">
+  <div class="section-label">P2 — 扩张信号</div>
+  <h1 class="section-title">正在变大的站点</h1>
+  <div class="section-desc">5家供应商增速超过30%。管理介入的窗口在信号出现时，不在结果确认后。</div>
+
+  <div class="grid-3 reveal">
+    <div class="card" style="border-top:3px solid var(--teal)">
+      <div style="margin-bottom:10px"><span class="tag tag-teal">新产线爬坡</span></div>
+      <div class="card-title" style="font-size:12px;letter-spacing:0;margin-bottom:2px">岐力 · 红谷滩 · 金企融合</div>
+      <div class="card-sub">20人 → 45人 · <span data-entity="delta" data-assessment="positive">+125%</span></div>
+      <div class="card-body" style="font-size:12px;line-height:1.75">
+        金企融合是岐力的新方向。<span data-entity="time">3月</span>南昌县站点新开24人。岐力Q1总人力从75增至138人(<span data-entity="delta" data-assessment="positive">+84%</span>)。
+      </div>
+      <div class="risk-note">风险：新团队的质量管控和培训是否跟上节奏</div>
+      <div style="margin-top:10px"><a href="#p3" class="link">同供应商是否有收缩？ →</a></div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--accent)">
+      <div style="margin-bottom:10px"><span class="tag tag-blue">老站点放量</span></div>
+      <div class="card-title" style="font-size:12px;letter-spacing:0;margin-bottom:2px">毅航 · 蜀山 · 财富固收</div>
+      <div class="card-sub">68人 → 98人 · <span data-entity="delta" data-assessment="positive">+44%</span>（净增30人）</div>
+      <div class="card-body" style="font-size:12px;line-height:1.75">
+        埇桥金条同步增长(170→190人)。<span data-entity="time">3月</span>481人，<span data-entity="time">4月</span>527人，整体<span data-entity="delta" data-assessment="positive">+15.3%</span>。仍在扩张通道。
+      </div>
+      <div class="risk-note">风险：大规模快速扩张时的管理半径</div>
+      <div style="margin-top:10px"><a href="#p5" class="link">查看毅航详情 →</a></div>
+    </div>
+
+    <div class="card" style="border-top:3px solid #8B6000">
+      <div style="margin-bottom:10px"><span class="tag tag-amber">小供应商爆发</span></div>
+      <div class="card-title" style="font-size:12px;letter-spacing:0;margin-bottom:2px">秦冀德辰 · 辛集 · 企业主贷</div>
+      <div class="card-sub">10人 → 25人 · <span data-entity="delta" data-assessment="positive">+150%</span></div>
+      <div class="card-body" style="font-size:12px;line-height:1.75">
+        同站点金企融合<span data-entity="delta" data-assessment="negative">-36%</span>、另一线<span data-entity="delta" data-assessment="negative">-33%</span>，总人力137→108人(<span data-entity="delta" data-assessment="negative">-21%</span>)。增长是项目间调配，不是整体扩张。
+      </div>
+      <div class="risk-note">风险：增长是真实的业务需求还是人力腾挪</div>
+    </div>
+  </div>
+
+  <div class="evidence reveal" style="margin-top:20px">
+    <strong style="font-weight:700;color:var(--ink)">三种扩张模式：</strong>
+    新产线爬坡（岐力金企融合）、老站点放量（毅航蜀山）、小供应商爆发（秦冀德辰辛集）。不同模式需要不同的管理关注点。
+  </div>
+</section>
+
+
+<!-- ===== P3: Contraction ===== -->
+<section id="p3" class="section">
+  <div class="section-label">P3 — 收缩信号</div>
+  <h1 class="section-title">正在缩小的站点</h1>
+  <div class="section-desc"><span data-entity="anomaly" data-entity="anomaly">菁卡拉新全线收缩是Q1最明确的系统性信号</span></div>
+
+  <div class="grid-3 reveal">
+    <div class="card" style="border-top:3px solid var(--highlight)">
+      <div style="margin-bottom:10px"><span class="tag tag-red">项目系统性下滑</span></div>
+      <div class="card-title" style="font-size:12px;letter-spacing:0;margin-bottom:2px">菁卡拉新 · 15站全线收缩</div>
+      <div class="card-sub"><span data-entity="value" data-origin="531">531人</span> → <span data-entity="value" data-origin="430">430人</span> · <span data-entity="delta" data-assessment="negative">-19%</span></div>
+      <div class="card-body" style="font-size:12px;line-height:1.75">
+        唯一全线收缩的主力项目。涉及5家供应商：速讯达<span data-entity="delta" data-assessment="negative">-27.6%</span>、艾斯欧艾斯<span data-entity="delta" data-assessment="negative">-23.1%</span>、中弘智享<span data-entity="delta" data-assessment="negative">-14%</span>、靖涵<span data-entity="delta" data-assessment="negative">-9.8%</span>、汇讯陇西<span data-entity="delta" data-assessment="negative">-53%</span>。仅拓银长沙<span data-entity="delta" data-assessment="positive">+33.3%</span>。
+      </div>
+      <div class="evidence"><span data-entity="time">1月531人 → 2月477人 → 3月430人</span>，连续两月下滑</div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--highlight)">
+      <div style="margin-bottom:10px"><span class="tag tag-red">供应商内部失衡</span></div>
+      <div class="card-title" style="font-size:12px;letter-spacing:0;margin-bottom:2px">汇讯 · 9站280人</div>
+      <div class="card-sub">表面 <span data-entity="delta" data-assessment="positive">+1.8%</span>，内部两极分化</div>
+      <div class="card-body" style="font-size:12px;line-height:1.75">
+        洪山企业主贷<span data-entity="delta" data-assessment="positive">+67%</span>，合肥金条<span data-entity="delta" data-assessment="negative">-54%</span>（35→16人），陇西菁卡拉新<span data-entity="delta" data-assessment="negative">-53%</span>（32→15人）。总量持平掩盖了站点级的剧烈变化。
+      </div>
+      <div class="risk-note">合肥2月已降至28人，非单月异动</div>
+      <div style="margin-top:10px"><a href="#p4" class="link">站点地图分布 →</a></div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--g500)">
+      <div style="margin-bottom:10px"><span class="tag tag-red">整体衰退</span></div>
+      <div class="card-title" style="font-size:12px;letter-spacing:0;margin-bottom:2px">创世伙伴 · 全公司下行</div>
+      <div class="card-sub">两站合计 <span data-entity="delta" data-assessment="negative">-20%</span></div>
+      <div class="card-body" style="font-size:12px;line-height:1.75">
+        西安高新60→52人(<span data-entity="delta" data-assessment="negative">-13%</span>)，盐湖职场20→12人(<span data-entity="delta" data-assessment="negative">-40%</span>)。博岳持平，人和<span data-entity="delta" data-assessment="negative">-14.3%</span>。小型供应商的收缩更难逆转。
+      </div>
+      <div class="evidence">财富固收整体<span data-entity="delta" data-assessment="positive">+7.2%</span>，收缩是供应商自身问题而非项目萎缩</div>
+    </div>
+  </div>
+
+  <div class="evidence reveal" style="margin-top:20px">
+    <strong style="font-weight:700;color:var(--ink)">收缩三种性质：</strong>
+    项目系统性下滑（菁卡拉新）、供应商内部失衡（汇讯）、整体衰退（创世伙伴）。收缩比扩张更需要管理介入——人力流失往往先于业绩恶化。
+  </div>
+</section>
+
+
+<!-- ===== P4: Geographic Displacement ===== -->
+<section id="p4" class="section">
+  <div class="section-label">P4 — 地理位移</div>
+  <h1 class="section-title">人力正在往哪里走</h1>
+  <div class="section-desc"><span data-entity="dimension">江西</span>翻倍，<span data-entity="dimension">重庆</span>从零出现，<span data-entity="dimension">辽宁</span>和<span data-entity="dimension">甘肃</span>在消失</div>
+
+  <div class="grid-2 reveal">
+    <div class="card">
+      <div class="card-title">增长省份</div>
+      <div class="geo-row">
+        <span class="geo-pr">江西</span>
+        <div class="geo-bt"><div class="geo-fl" style="width:100%;background:var(--teal)"></div></div>
+        <span class="geo-cv" style="color:var(--teal)">75→138 <span data-entity="delta" data-assessment="positive">+84%</span></span>
+      </div>
+      <div class="geo-src">全部来自岐力南昌</div>
+      <div class="geo-row">
+        <span class="geo-pr">山东</span>
+        <div class="geo-bt"><div class="geo-fl" style="width:66%;background:var(--teal)"></div></div>
+        <span class="geo-cv" style="color:var(--teal)">45→70 <span data-entity="delta" data-assessment="positive">+55.6%</span></span>
+      </div>
+      <div class="geo-src">华啸沂水+速腾泰安</div>
+      <div class="geo-row">
+        <span class="geo-pr">重庆</span>
+        <div class="geo-bt"><div class="geo-fl" style="width:48%;background:var(--teal)"></div></div>
+        <span class="geo-cv" style="color:var(--teal)">0→40人 <span class="tag tag-teal" style="font-size:8px">新开</span></span>
+      </div>
+      <div class="geo-src">华啸永川站点（4月数据）</div>
+      <div class="geo-row">
+        <span class="geo-pr">湖南</span>
+        <div class="geo-bt"><div class="geo-fl" style="width:40%;background:var(--teal)"></div></div>
+        <span class="geo-cv" style="color:var(--teal)"><span data-entity="delta" data-assessment="positive">+33.3%</span></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">收缩省份</div>
+      <div class="geo-row">
+        <span class="geo-pr">甘肃</span>
+        <div class="geo-bt"><div class="geo-fl" style="width:100%;background:var(--highlight)"></div></div>
+        <span class="geo-cv" style="color:var(--highlight)">42→24 <span data-entity="delta" data-assessment="negative">-43%</span></span>
+      </div>
+      <div class="geo-src">汇讯陇西两项目同时缩水</div>
+      <div class="geo-row">
+        <span class="geo-pr">辽宁</span>
+        <div class="geo-bt"><div class="geo-fl" style="width:46%;background:var(--highlight)"></div></div>
+        <span class="geo-cv" style="color:var(--highlight)">165→132 <span data-entity="delta" data-assessment="negative">-20%</span></span>
+      </div>
+      <div class="geo-src">速讯达+中弘智享全线萎缩</div>
+      <div class="geo-row">
+        <span class="geo-pr">黑龙江</span>
+        <div class="geo-bt"><div class="geo-fl" style="width:37%;background:var(--highlight)"></div></div>
+        <span class="geo-cv" style="color:var(--highlight)"><span data-entity="delta" data-assessment="negative">-16%</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="evidence reveal" style="margin-top:20px">
+    <strong style="font-weight:700;color:var(--ink)">地理位移反映供应商策略选择：</strong>
+    安徽和河北双中心地位不变(2,048人)，但增量全部来自边缘省份（江西+63人、山东+25人、重庆+40人），且均为中小供应商。收缩端，东北(辽宁<span data-entity="delta" data-assessment="negative">-20%</span>、黑龙江<span data-entity="delta" data-assessment="negative">-16%</span>)和西北(甘肃<span data-entity="delta" data-assessment="negative">-43%</span>)是最明确的退缩区域。<br><br>
+    <strong style="font-weight:700;color:var(--ink)">辽宁萎缩本质：</strong>5站全属菁卡拉新项目（速讯达2站+中弘3站），辽宁的萎缩本质是菁卡拉新项目的地理表现。
+  </div>
+</section>
+
+
+<!-- ===== P5: Supplier Profile ===== -->
+<section id="p5" class="section">
+  <div class="section-label">P5 — 供应商穿透</div>
+  <h1 class="section-title">毅航</h1>
+  <div class="section-desc">
+    最大供应商 ·
+    <span data-entity="time">3月</span> <span data-entity="value" data-origin="481">481人</span> ·
+    <span data-entity="time">4月</span> <span data-entity="value" data-origin="527">527人</span> ·
+    增速 <span data-entity="delta" data-assessment="positive">+15.3%</span> ·
+    项目：金条 · 财富固收
+  </div>
+
+  <div class="profile-header reveal">
+    <div class="profile-nm">毅航</div>
+    <div class="profile-meta">
+      <span class="profile-meta-item"><strong data-entity="value" data-origin="481">481人</strong>（3月）</span>
+      <span class="profile-meta-item">4月 <strong data-entity="value" data-origin="527">527人</strong></span>
+      <span class="profile-meta-item">项目：<strong>金条 · 财富固收</strong></span>
+      <span class="profile-meta-item">增速：<strong style="color:var(--teal)"><span data-entity="delta" data-assessment="positive">+15.3%</span></strong></span>
+    </div>
+  </div>
+
+  <div class="grid-2 reveal">
+    <div class="card">
+      <div class="card-title">站点一览</div>
+      <table class="data-table" style="margin-top:12px">
+        <thead>
+          <tr>
+            <th>站点</th>
+            <th>项目</th>
+            <th>变化</th>
+            <th>增速</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>埇桥</td>
+            <td>金条</td>
+            <td>170 → 190</td>
+            <td class="pos">+11.8%</td>
+          </tr>
+          <tr>
+            <td>蜀山</td>
+            <td>财富固收 <span class="tag tag-teal" style="font-size:8px;padding:0 4px">扩张</span></td>
+            <td>68 → 98 <span style="font-size:9px;color:var(--g500)">净增30</span></td>
+            <td class="pos">+44%</td>
+          </tr>
+          <tr>
+            <td>其他</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px"><a href="#p2" class="link">查看信号详情 →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">人力趋势</div>
+      <div style="margin-top:12px;padding:18px;background:var(--g100);border-radius:2px;border:1px solid var(--g200)">
+        <div class="trend">
+          <div class="trend-col">
+            <div class="trend-bar" style="height:34px;background:var(--accent)"></div>
+            <div class="trend-lbl">1月</div>
+          </div>
+          <div class="trend-col">
+            <div class="trend-bar" style="height:46px;background:var(--accent)"></div>
+            <div class="trend-lbl">2月</div>
+          </div>
+          <div class="trend-col">
+            <div class="trend-bar" style="height:64px;background:var(--accent)"></div>
+            <div class="trend-lbl">3月</div>
+          </div>
+          <div class="trend-col">
+            <div class="trend-bar" style="height:72px;background:var(--teal)"></div>
+            <div class="trend-lbl">4月</div>
+          </div>
+        </div>
+        <div class="evidence" style="margin-top:12px"><span data-entity="time">4月</span> <span data-entity="value" data-origin="527">527人</span>，仍在扩张通道</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /.container -->
+</main>
+
+<footer class="footer">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;">
+    <span class="footer-src">数据来源：站点2026.xlsx · 2026年1-3月在册人力 · 4月数据仅毅航(527人)和华啸(90人)有值</span>
+    <span class="footer-src">Fathom · Q1站点信号图谱策展文档 · 2026-05-26</span>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.06 });
+document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+
+// Nav active state on click
+document.querySelectorAll('nav a').forEach(function(a) {
+  a.addEventListener('click', function() {
+    document.querySelectorAll('nav a').forEach(function(x) { x.classList.remove('active'); });
+    this.classList.add('active');
+  });
+});
+
+// Active section tracking on scroll
+var sections = document.querySelectorAll('section[id]');
+var navLinks = document.querySelectorAll('nav a[href^="#"]');
+window.addEventListener('scroll', function() {
+  var scroll = window.scrollY + 60;
+  sections.forEach(function(sec) {
+    if (scroll >= sec.offsetTop && scroll < sec.offsetTop + sec.offsetHeight) {
+      navLinks.forEach(function(l) {
+        l.classList.toggle('active', l.getAttribute('href') === '#' + sec.id);
+      });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

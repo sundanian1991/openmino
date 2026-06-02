@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金条首次外呼人力分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #F5F5F5;
+  --surface: #FFFFFF;
+  --surface-raised: #F0F0F0;
+  --border: #E8E8E8;
+  --border-visible: #CCCCCC;
+  --text-disabled: #999999;
+  --text-secondary: #666666;
+  --text-primary: #1A1A1A;
+  --text-display: #000000;
+  --accent: #D71921;
+  --accent-subtle: rgba(215,25,33,0.08);
+  --success: #4A9E5C;
+  --warning: #D4A843;
+  --interactive: #007AFF;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--black);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: var(--space-xl);
+  max-width: 1120px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Typography ===== */
+.mono { font-family: 'Space Mono', monospace; }
+.num { font-family: 'Space Mono', monospace; font-variant-numeric: tabular-nums; }
+.label { font-family: 'Space Mono', monospace; font-size: 10px; line-height: 1.2; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); }
+.caption { font-family: 'Space Mono', monospace; font-size: 11px; line-height: 1.4; letter-spacing: 0.04em; color: var(--text-secondary); }
+
+/* ===== Page Header ===== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid var(--text-display);
+  padding-bottom: var(--space-sm);
+  margin-bottom: var(--space-2xl);
+}
+.page-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-display);
+  letter-spacing: -0.01em;
+}
+.page-period {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+/* ===== Hero ===== */
+.hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2xl);
+  margin-bottom: var(--space-3xl);
+  align-items: end;
+}
+.hero-value {
+  font-family: 'Doto', 'Space Mono', monospace;
+  font-size: 88px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: var(--text-display);
+}
+.hero-unit {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  margin-top: var(--space-xs);
+}
+.hero-metrics {
+  display: flex;
+  gap: var(--space-2xl);
+  align-self: end;
+  padding-bottom: 6px;
+}
+.metric-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.metric-lab {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ===== Section ===== */
+.section { margin-bottom: var(--space-2xl); }
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-visible);
+  padding-bottom: var(--space-xs);
+}
+.section-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-disabled);
+}
+.section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ===== Monthly Chart ===== */
+.chart-svg { width: 100%; height: auto; }
+.chart-bar { transition: opacity 0.15s ease-out; }
+.chart-bar:hover { opacity: 0.75; }
+.avg-line { stroke: var(--text-secondary); stroke-width: 1; stroke-dasharray: 4 3; }
+.avg-label { font-family: 'Space Mono', monospace; font-size: 9px; fill: var(--text-secondary); letter-spacing: 0.04em; }
+
+/* ===== YoY ===== */
+.yoy-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-sm);
+}
+.yoy-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-md);
+}
+.yoy-month {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+.yoy-pair { display: flex; align-items: baseline; gap: var(--space-xs); margin-bottom: 2px; }
+.yoy-y25 {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  color: var(--text-disabled);
+}
+.yoy-y26 {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-display);
+}
+.yoy-change {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+}
+.yoy-change.pos { color: var(--success); }
+.yoy-change.neg { color: var(--accent); }
+.yoy-bar-track { height: 3px; background: var(--surface-raised); margin-top: var(--space-sm); position: relative; }
+.yoy-bar-25 { position: absolute; left: 0; top: 0; height: 100%; background: var(--text-disabled); }
+.yoy-bar-26 { position: absolute; left: 0; top: 0; height: 100%; background: var(--text-display); }
+
+/* ===== Ranking ===== */
+.rank-row {
+  display: grid;
+  grid-template-columns: 20px 72px 1fr 56px 56px 60px;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.rank-row:last-child { border-bottom: none; }
+.rank-idx {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text-disabled);
+}
+.rank-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+}
+.rank-track { height: 6px; background: var(--surface-raised); }
+.rank-fill { height: 100%; }
+.rank-fill.t1 { background: var(--text-display); }
+.rank-fill.t2 { background: var(--text-secondary); }
+.rank-fill.t3 { background: var(--text-disabled); }
+.rank-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  text-align: right;
+  color: var(--text-primary);
+}
+.rank-avg {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+  color: var(--text-secondary);
+}
+.rank-trend {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  text-align: center;
+}
+.rank-trend.up { color: var(--success); }
+.rank-trend.down { color: var(--accent); }
+.rank-trend.flat { color: var(--text-secondary); }
+
+/* ===== Comparison ===== */
+.comp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+.comp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-lg);
+}
+.comp-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+.comp-total {
+  font-family: 'Space Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-display);
+}
+.comp-pct {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+.comp-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.comp-item:last-child { border-bottom: none; }
+.comp-item-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+.comp-item-note {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+/* ===== Anomaly ===== */
+.anomaly-row {
+  display: grid;
+  grid-template-columns: 72px 100px 80px 1fr;
+  gap: var(--space-md);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+.anomaly-row:last-child { border-bottom: none; }
+.anomaly-name { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 500; }
+.anomaly-period { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-secondary); }
+.anomaly-pct { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent); }
+.anomaly-desc { font-family: 'Space Grotesk', sans-serif; font-size: 12px; color: var(--text-secondary); }
+
+/* ===== Insight ===== */
+.insight {
+  background: var(--surface);
+  border-left: 2px solid var(--text-display);
+  padding: var(--space-md) var(--space-lg);
+  margin-top: var(--space-md);
+}
+.insight p {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+/* ===== Footer ===== */
+.page-footer {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+}
+.page-footer span {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--text-disabled);
+}
+
+/* ===== Status colors for values ===== */
+.clr-success { color: var(--success); }
+.clr-warning { color: var(--warning); }
+.clr-accent { color: var(--accent); }
+.clr-dis { color: var(--text-disabled); }
+.clr-sec { color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-title" data-edit>金条首次外呼人力分析</div>
+  <div class="page-period">2025.01 — 2026.05 &nbsp;|&nbsp; 17个月</div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  <div>
+    <div class="hero-value" data-edit>5,174</div>
+    <div class="hero-unit">首次外呼总人力 &nbsp;人</div>
+  </div>
+  <div class="hero-metrics">
+    <div>
+      <div class="metric-val" data-edit>304</div>
+      <div class="metric-lab">月均人力</div>
+    </div>
+    <div>
+      <div class="metric-val" data-edit>746</div>
+      <div class="metric-lab">单月峰值</div>
+    </div>
+    <div>
+      <div class="metric-val" data-edit>59</div>
+      <div class="metric-lab">单月谷值</div>
+    </div>
+    <div>
+      <div class="metric-val clr-warning" data-edit>2.7x</div>
+      <div class="metric-lab">峰谷比</div>
+    </div>
+  </div>
+</div>
+
+<!-- 01 Monthly Trend -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">逐月趋势</div>
+    <div class="section-num">01</div>
+  </div>
+  <svg class="chart-svg" viewBox="0 0 1020 220" preserveAspectRatio="xMidYMid meet">
+    <!-- Average line at 304 -->
+    <line class="avg-line" x1="30" y1="132" x2="990" y2="132"/>
+    <text class="avg-label" x="990" y="128" text-anchor="end">AVG 304</text>
+
+    <!-- Bars: max=746, chart height=180, top padding=10, bottom=30 for labels -->
+    <!-- 2025-01: 59 → h=14, y=186 -->
+    <rect class="chart-bar" x="40" y="186" width="42" height="14" fill="var(--text-disabled)" rx="1"/>
+    <text x="61" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">1月</text>
+    <text x="61" y="183" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-disabled)">59</text>
+
+    <!-- 2025-02: 484 → h=117, y=83 -->
+    <rect class="chart-bar" x="96" y="83" width="42" height="117" fill="var(--text-primary)" rx="1"/>
+    <text x="117" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">2月</text>
+
+    <!-- 2025-03: 454 → h=110, y=90 -->
+    <rect class="chart-bar" x="152" y="90" width="42" height="110" fill="var(--text-primary)" rx="1"/>
+    <text x="173" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">3月</text>
+
+    <!-- 2025-04: 264 → h=64, y=136 -->
+    <rect class="chart-bar" x="208" y="136" width="42" height="64" fill="var(--text-secondary)" rx="1"/>
+    <text x="229" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">4月</text>
+
+    <!-- 2025-05: 197 → h=48, y=152 -->
+    <rect class="chart-bar" x="264" y="152" width="42" height="48" fill="var(--text-secondary)" rx="1"/>
+    <text x="285" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">5月</text>
+
+    <!-- 2025-06: 294 → h=71, y=129 -->
+    <rect class="chart-bar" x="320" y="129" width="42" height="71" fill="var(--text-primary)" rx="1"/>
+    <text x="341" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">6月</text>
+
+    <!-- 2025-07: 243 → h=59, y=141 -->
+    <rect class="chart-bar" x="376" y="141" width="42" height="59" fill="var(--text-secondary)" rx="1"/>
+    <text x="397" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">7月</text>
+
+    <!-- 2025-08: 215 → h=52, y=148 -->
+    <rect class="chart-bar" x="432" y="148" width="42" height="52" fill="var(--text-secondary)" rx="1"/>
+    <text x="453" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">8月</text>
+
+    <!-- 2025-09: 376 → h=91, y=109 -->
+    <rect class="chart-bar" x="488" y="109" width="42" height="91" fill="var(--text-primary)" rx="1"/>
+    <text x="509" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">9月</text>
+
+    <!-- 2025-10: 263 → h=64, y=136 -->
+    <rect class="chart-bar" x="544" y="136" width="42" height="64" fill="var(--text-secondary)" rx="1"/>
+    <text x="565" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">10月</text>
+
+    <!-- 2025-11: 280 → h=68, y=132 -->
+    <rect class="chart-bar" x="600" y="132" width="42" height="68" fill="var(--text-primary)" rx="1"/>
+    <text x="621" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">11月</text>
+
+    <!-- 2025-12: 247 → h=60, y=140 -->
+    <rect class="chart-bar" x="656" y="140" width="42" height="60" fill="var(--text-secondary)" rx="1"/>
+    <text x="677" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">12月</text>
+
+    <!-- Year divider -->
+    <line x1="720" y1="10" x2="720" y2="200" stroke="var(--border-visible)" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="385" y="10" font-family="Space Mono" font-size="8" fill="var(--text-disabled)" letter-spacing="0.1em">2025</text>
+    <text x="730" y="10" font-family="Space Mono" font-size="8" fill="var(--text-disabled)" letter-spacing="0.1em">2026</text>
+
+    <!-- 2026-01: 458 → h=111, y=89 -->
+    <rect class="chart-bar" x="740" y="89" width="42" height="111" fill="var(--text-primary)" rx="1"/>
+    <text x="761" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">1月</text>
+
+    <!-- 2026-02: 90 → h=22, y=178 -->
+    <rect class="chart-bar" x="796" y="178" width="42" height="22" fill="var(--accent)" rx="1"/>
+    <text x="817" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--accent)">2月</text>
+
+    <!-- 2026-03: 746 → h=180, y=20 -->
+    <rect class="chart-bar" x="852" y="20" width="42" height="180" fill="var(--text-display)" rx="1"/>
+    <text x="873" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-primary)">3月</text>
+    <text x="873" y="17" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-display)" font-weight="700">746</text>
+
+    <!-- 2026-04: 357 → h=86, y=114 -->
+    <rect class="chart-bar" x="908" y="114" width="42" height="86" fill="var(--text-primary)" rx="1"/>
+    <text x="929" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">4月</text>
+
+    <!-- 2026-05: 147 → h=36, y=164 -->
+    <rect class="chart-bar" x="964" y="164" width="42" height="36" fill="var(--warning)" rx="1"/>
+    <text x="985" y="215" text-anchor="middle" font-family="Space Mono" font-size="8" fill="var(--text-secondary)">5月</text>
+  </svg>
+</div>
+
+<!-- 02 YoY -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">同比分析</div>
+    <div class="section-num">02</div>
+  </div>
+  <div class="yoy-grid">
+    <div class="yoy-card">
+      <div class="yoy-month">1月</div>
+      <div class="yoy-pair">
+        <span class="yoy-y25">59</span>
+        <span class="yoy-y26" data-edit>458</span>
+      </div>
+      <div class="yoy-change pos">+676.3%</div>
+      <div class="yoy-bar-track"><div class="yoy-bar-26" style="width:61%"></div></div>
+    </div>
+    <div class="yoy-card">
+      <div class="yoy-month">2月</div>
+      <div class="yoy-pair">
+        <span class="yoy-y25">484</span>
+        <span class="yoy-y26" data-edit>90</span>
+      </div>
+      <div class="yoy-change neg">-81.4%</div>
+      <div class="yoy-bar-track"><div class="yoy-bar-25" style="width:65%"></div></div>
+    </div>
+    <div class="yoy-card">
+      <div class="yoy-month">3月</div>
+      <div class="yoy-pair">
+        <span class="yoy-y25">454</span>
+        <span class="yoy-y26" data-edit>746</span>
+      </div>
+      <div class="yoy-change pos">+64.3%</div>
+      <div class="yoy-bar-track"><div class="yoy-bar-26" style="width:100%"></div></div>
+    </div>
+    <div class="yoy-card">
+      <div class="yoy-month">4月</div>
+      <div class="yoy-pair">
+        <span class="yoy-y25">264</span>
+        <span class="yoy-y26" data-edit>357</span>
+      </div>
+      <div class="yoy-change pos">+35.2%</div>
+      <div class="yoy-bar-track"><div class="yoy-bar-26" style="width:48%"></div></div>
+    </div>
+    <div class="yoy-card">
+      <div class="yoy-month">5月</div>
+      <div class="yoy-pair">
+        <span class="yoy-y25">197</span>
+        <span class="yoy-y26" data-edit>147</span>
+      </div>
+      <div class="yoy-change neg">-25.4%</div>
+      <div class="yoy-bar-track"><div class="yoy-bar-25" style="width:26%"></div></div>
+    </div>
+  </div>
+  <div class="insight">
+    <p data-edit>2026年Q1同比大幅扩张（1月+676%，3月+64%），但扩张动能逐月衰减，5月已转负。春节错月是1-2月同比失真的主因，3月才是真实扩张信号。</p>
+  </div>
+</div>
+
+<!-- 03 Ranking -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">职场累计排名</div>
+    <div class="section-num">03</div>
+  </div>
+  <!-- Header -->
+  <div class="rank-row" style="border-bottom:1px solid var(--border-visible); padding-bottom:6px;">
+    <div class="label">#</div>
+    <div class="label">职场</div>
+    <div class="label"></div>
+    <div class="label" style="text-align:right">累计</div>
+    <div class="label" style="text-align:right">月均</div>
+    <div class="label" style="text-align:center">趋势</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">1</div>
+    <div class="rank-name" data-edit>伽玛</div>
+    <div class="rank-track"><div class="rank-fill t1" style="width:100%"></div></div>
+    <div class="rank-val" data-edit>878</div>
+    <div class="rank-avg">51.6</div>
+    <div class="rank-trend flat">→</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">2</div>
+    <div class="rank-name" data-edit>毅航</div>
+    <div class="rank-track"><div class="rank-fill t1" style="width:73%"></div></div>
+    <div class="rank-val" data-edit>642</div>
+    <div class="rank-avg">37.8</div>
+    <div class="rank-trend up">↑</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">3</div>
+    <div class="rank-name" data-edit>毛毛虫</div>
+    <div class="rank-track"><div class="rank-fill t1" style="width:69%"></div></div>
+    <div class="rank-val" data-edit>606</div>
+    <div class="rank-avg">35.6</div>
+    <div class="rank-trend flat">→</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">4</div>
+    <div class="rank-name" data-edit>汇讯</div>
+    <div class="rank-track"><div class="rank-fill t2" style="width:64%"></div></div>
+    <div class="rank-val" data-edit>558</div>
+    <div class="rank-avg">32.8</div>
+    <div class="rank-trend flat">→</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">5</div>
+    <div class="rank-name" data-edit>赛维斯</div>
+    <div class="rank-track"><div class="rank-fill t2" style="width:60%"></div></div>
+    <div class="rank-val" data-edit>527</div>
+    <div class="rank-avg">31.0</div>
+    <div class="rank-trend up">↑</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">6</div>
+    <div class="rank-name" data-edit>广达</div>
+    <div class="rank-track"><div class="rank-fill t2" style="width:54%"></div></div>
+    <div class="rank-val" data-edit>471</div>
+    <div class="rank-avg">27.7</div>
+    <div class="rank-trend down">↓</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">7</div>
+    <div class="rank-name" data-edit>博岳</div>
+    <div class="rank-track"><div class="rank-fill t2" style="width:50%"></div></div>
+    <div class="rank-val" data-edit>436</div>
+    <div class="rank-avg">25.6</div>
+    <div class="rank-trend flat">→</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">8</div>
+    <div class="rank-name" data-edit>翰锐</div>
+    <div class="rank-track"><div class="rank-fill t3" style="width:47%"></div></div>
+    <div class="rank-val" data-edit>409</div>
+    <div class="rank-avg">24.1</div>
+    <div class="rank-trend down">↓</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">9</div>
+    <div class="rank-name" data-edit>歧力</div>
+    <div class="rank-track"><div class="rank-fill t3" style="width:30%"></div></div>
+    <div class="rank-val" data-edit>262</div>
+    <div class="rank-avg">23.8*</div>
+    <div class="rank-trend up">↑</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">10</div>
+    <div class="rank-name" data-edit>华啸</div>
+    <div class="rank-track"><div class="rank-fill t3" style="width:30%"></div></div>
+    <div class="rank-val" data-edit>262</div>
+    <div class="rank-avg">21.8*</div>
+    <div class="rank-trend up">↑</div>
+  </div>
+  <div class="rank-row">
+    <div class="rank-idx">11</div>
+    <div class="rank-name" data-edit>人和</div>
+    <div class="rank-track"><div class="rank-fill t3" style="width:14%"></div></div>
+    <div class="rank-val" data-edit>123</div>
+    <div class="rank-avg">7.7</div>
+    <div class="rank-trend down">↓</div>
+  </div>
+  <div class="caption" style="margin-top:var(--space-sm)">* 歧力/华啸为2025-06后上线，月均按实际运行月数计算</div>
+</div>
+
+<!-- 04 TOP3 vs BOTTOM3 -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">头尾对比</div>
+    <div class="section-num">04</div>
+  </div>
+  <div class="comp-grid">
+    <div class="comp-card">
+      <div class="comp-label">TOP 3 — 人力基本盘</div>
+      <div class="comp-total" data-edit>2,126</div>
+      <div class="comp-pct">占全量 41.1%</div>
+      <div class="comp-item">
+        <div class="comp-item-name" data-edit>伽玛 — 最稳定高产</div>
+        <div class="comp-item-note">17个月中4个月破百，2026年仍在50-103人区间高位运行</div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-item-name" data-edit>毅航 — 爆发力最强</div>
+        <div class="comp-item-note">2026-03单月130人为全表第一，波动剧烈（1人到130人）</div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-item-name" data-edit>毛毛虫 — 最靠谱</div>
+        <div class="comp-item-note">月均36人无断档，两次高峰均超75人</div>
+      </div>
+    </div>
+    <div class="comp-card">
+      <div class="comp-label">BOTTOM 3 — 长尾弱势</div>
+      <div class="comp-total" data-edit>647</div>
+      <div class="comp-pct">占全量 12.5%</div>
+      <div class="comp-item">
+        <div class="comp-item-name" data-edit>歧力 — 新入场最佳</div>
+        <div class="comp-item-note">11个月累计262人，2026-05的27人位列11家职场当月第一</div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-item-name" data-edit>华啸 — 波动极大</div>
+        <div class="comp-item-note">2026-03达64人峰值后跌至7人，稳定性最差</div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-item-name" data-edit>人和 — 全场末位</div>
+        <div class="comp-item-note">2026-05仅1人，17个月累计123人。若定位续期/复访则数据合理</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 Anomaly -->
+<div class="section">
+  <div class="section-head">
+    <div class="section-title">异常检测</div>
+    <div class="section-num">05</div>
+  </div>
+  <!-- Header -->
+  <div class="anomaly-row" style="border-bottom:1px solid var(--border-visible)">
+    <div class="label">职场</div>
+    <div class="label">时段</div>
+    <div class="label">变化</div>
+    <div class="label">解读</div>
+  </div>
+  <div class="anomaly-row">
+    <div class="anomaly-name" data-edit>毅航</div>
+    <div class="anomaly-period">2026-02 → 03</div>
+    <div class="anomaly-pct" data-edit>+12,900%</div>
+    <div class="anomaly-desc">从1人到130人，近乎0到满负荷</div>
+  </div>
+  <div class="anomaly-row">
+    <div class="anomaly-name" data-edit>汇讯</div>
+    <div class="anomaly-period">2026-02 → 03</div>
+    <div class="anomaly-pct" data-edit>+5,200%</div>
+    <div class="anomaly-desc">春节后集中上量，同毅航模式</div>
+  </div>
+  <div class="anomaly-row">
+    <div class="anomaly-name" data-edit>广达</div>
+    <div class="anomaly-period">2025-01 → 02</div>
+    <div class="anomaly-pct" data-edit>+2,700%</div>
+    <div class="anomaly-desc">年初起步，2人→56人</div>
+  </div>
+  <div class="anomaly-row">
+    <div class="anomaly-name" data-edit>歧力</div>
+    <div class="anomaly-period">2026-02 → 03</div>
+    <div class="anomaly-pct" data-edit>+1,050%</div>
+    <div class="anomaly-desc">新职场爆发，6人→69人</div>
+  </div>
+  <div class="anomaly-row">
+    <div class="anomaly-name" data-edit>毛毛虫</div>
+    <div class="anomaly-period">2026-02 → 03</div>
+    <div class="anomaly-pct" data-edit>+888%</div>
+    <div class="anomaly-desc">经典节后反弹，8人→79人</div>
+  </div>
+  <div class="insight">
+    <p data-edit>所有异常均可归结为「春节后集中复岗+大规模上量」的自然节律，非异常业务事件。2月低谷+3月反弹是年度固定模式，2026年因规模扩大反弹更剧烈。</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="page-footer">
+  <span>金条首次外呼人力分析 — 20260521</span>
+  <span>数据源：职场各月上线人力 Sheet 2 | 筛选：首次外呼人数</span>
+</div>
+
+<!-- Nothing Editor 注入开始 -->
+<style id="ne-styles">
+#ne-toolbar {
+  position: fixed; top: 16px; right: 16px; z-index: 9999;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--border-visible);
+  border-radius: 999px; padding: 4px 6px;
+  font-family: 'Space Mono', monospace; font-size: 11px;
+  opacity: 0; transition: opacity 0.2s ease-out;
+  pointer-events: none;
+}
+#ne-toolbar.visible { opacity: 1; pointer-events: auto; }
+#ne-toolbar button {
+  background: transparent; border: 1px solid var(--border-visible);
+  border-radius: 999px; padding: 6px 14px; cursor: pointer;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.06em; color: var(--text-primary);
+  transition: all 0.15s ease-out;
+}
+#ne-toolbar button:hover { border-color: var(--text-primary); }
+#ne-toolbar button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+#ne-toolbar button:disabled { opacity: 0.3; cursor: default; }
+.ne-sep { width: 1px; height: 16px; background: var(--border); }
+body.editing { outline: 2px solid var(--accent); outline-offset: -2px; }
+body.editing [data-edit] { outline: 1px dashed transparent; cursor: text; transition: outline-color 0.15s; }
+body.editing [data-edit]:hover { outline-color: rgba(0,0,0,0.12); }
+body.editing [data-edit]:focus { outline-color: var(--accent); outline-offset: 2px; }
+.ne-mode-label {
+  position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+  font-family: 'Space Mono', monospace; font-size: 9px;
+  letter-spacing: 3px; color: var(--text-disabled);
+  background: var(--surface); padding: 4px 16px;
+  border: 1px solid var(--border); border-radius: 999px;
+  z-index: 9999; pointer-events: none;
+  transition: all 0.2s ease-out;
+}
+body.editing .ne-mode-label { color: var(--accent); border-color: var(--accent); }
+.ne-toast {
+  position: fixed; bottom: 48px; left: 50%; transform: translateX(-50%);
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.06em; color: #fff; background: var(--text-display);
+  padding: 6px 18px; border-radius: 999px; z-index: 9999;
+  opacity: 0; transition: opacity 0.3s ease-out; pointer-events: none;
+}
+.ne-toast.show { opacity: 1; }
+</style>
+
+<div id="ne-toolbar">
+  <button id="ne-toggle">编辑</button>
+  <span class="ne-sep"></span>
+  <button id="ne-undo" disabled>撤销</button>
+  <button id="ne-redo" disabled>重做</button>
+  <span class="ne-sep"></span>
+  <button id="ne-export">导出</button>
+</div>
+<div class="ne-mode-label" id="ne-mode">浏览</div>
+<div class="ne-toast" id="ne-toast"></div>
+
+<script>
+(function(){
+  var toolbar=document.getElementById('ne-toolbar');
+  var toggleBtn=document.getElementById('ne-toggle');
+  var undoBtn=document.getElementById('ne-undo');
+  var redoBtn=document.getElementById('ne-redo');
+  var exportBtn=document.getElementById('ne-export');
+  var modeLabel=document.getElementById('ne-mode');
+  var toastEl=document.getElementById('ne-toast');
+  var isEditing=false;
+  var undoStack=[];
+  var redoStack=[];
+  var observer=null;
+  var debounceTimer=null;
+
+  setTimeout(function(){ toolbar.classList.add('visible'); }, 500);
+
+  function toast(msg){
+    toastEl.textContent=msg;
+    toastEl.classList.add('show');
+    setTimeout(function(){ toastEl.classList.remove('show'); }, 1200);
+  }
+
+  function snapshot(){
+    var els=document.querySelectorAll('[data-edit]');
+    var state={};
+    els.forEach(function(el,i){ state[i]=el.innerHTML; });
+    return state;
+  }
+
+  function restoreState(state){
+    var els=document.querySelectorAll('[data-edit]');
+    els.forEach(function(el,i){ if(state[i]!==undefined) el.innerHTML=state[i]; });
+  }
+
+  function pushUndo(){
+    var current=snapshot();
+    undoStack.push(current);
+    if(undoStack.length>50) undoStack.shift();
+    redoStack=[];
+    undoBtn.disabled=false;
+    redoBtn.disabled=true;
+  }
+
+  toggleBtn.addEventListener('click',function(){
+    isEditing=!isEditing;
+    document.body.classList.toggle('editing',isEditing);
+    toggleBtn.classList.toggle('active',isEditing);
+    toggleBtn.textContent=isEditing?'编辑中':'编辑';
+    modeLabel.textContent=isEditing?'编辑模式':'浏览';
+    var els=document.querySelectorAll('[data-edit]');
+    els.forEach(function(el){ el.contentEditable=isEditing?'true':'false'; });
+    if(isEditing){
+      pushUndo();
+      observer=new MutationObserver(function(){
+        clearTimeout(debounceTimer);
+        debounceTimer=setTimeout(function(){ pushUndo(); },500);
+      });
+      els.forEach(function(el){ observer.observe(el,{childList:true,characterData:true,subtree:true}); });
+    } else {
+      if(observer){ observer.disconnect(); observer=null; }
+    }
+  });
+
+  undoBtn.addEventListener('click',function(){
+    if(undoStack.length<2) return;
+    var current=undoStack.pop();
+    redoStack.push(current);
+    restoreState(undoStack[undoStack.length-1]);
+    undoBtn.disabled=undoStack.length<=1;
+    redoBtn.disabled=false;
+    toast('已撤销');
+  });
+
+  redoBtn.addEventListener('click',function(){
+    if(!redoStack.length) return;
+    var state=redoStack.pop();
+    undoStack.push(state);
+    restoreState(state);
+    undoBtn.disabled=false;
+    redoBtn.disabled=!redoStack.length;
+    toast('已重做');
+  });
+
+  exportBtn.addEventListener('click',function(){
+    var clone=document.documentElement.cloneNode(true);
+    var neStyles=clone.querySelector('#ne-styles');
+    if(neStyles) neStyles.remove();
+    var neToolbar=clone.querySelector('#ne-toolbar');
+    if(neToolbar) neToolbar.remove();
+    var neMode=clone.querySelector('.ne-mode-label');
+    if(neMode) neMode.remove();
+    var neToast=clone.querySelector('.ne-toast');
+    if(neToast) neToast.remove();
+    var neScript=clone.querySelector('script');
+    if(neScript) neScript.remove();
+    clone.querySelectorAll('[data-edit]').forEach(function(el){
+      el.removeAttribute('data-edit');
+      el.removeAttribute('contenteditable');
+    });
+    clone.body.classList.remove('editing');
+    clone.body.removeAttribute('style');
+    var html='<!DOCTYPE html>\n'+clone.outerHTML;
+    var blob=new Blob([html],{type:'text/html'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='金条首次外呼人力分析.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('已导出');
+  });
+})();
+</script>
+<!-- Nothing Editor 注入结束 -->
+
+</body>
+</html>

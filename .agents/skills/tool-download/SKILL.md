@@ -1,16 +1,9 @@
 ---
 name: tool:download-anything
 description: >
-  Find and download virtually any digital resource from the internet — ebooks, academic papers,
-  movies, TV shows, music, software, images, fonts, courses, and more. Covers both English and
-  Chinese internet ecosystems. Includes CLI tool workflows (yt-dlp, aria2, gallery-dl, spotdl),
-  resource site directories, cloud drive search engines (百度/阿里/夸克网盘搜索), and search
-  techniques (Google dorks). Use when the user wants to: (1) download a video, audio, or media
-  from a URL, (2) find and download an ebook or academic paper, (3) find and download software,
-  (4) search for any digital resource, (5) batch download images or media from a gallery/site,
-  (6) download torrents or magnet links, (7) find free stock assets (images, video, audio, fonts),
-  (8) search Chinese cloud drives for resources, or (9) any task involving finding or downloading
-  digital content from the internet.
+  从互联网搜索并下载各类数字资源：电子书、论文、影视、音乐、软件、图片、字体、课程等。
+  覆盖中英文网络生态，支持 CLI 工具链、网盘搜索和高级检索技巧。
+  触发场景：下载视频/音频、查找电子书/论文、搜索软件、批量下载、找网盘资源等。
 author: MyAgents
 ---
 

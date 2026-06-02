@@ -36,7 +36,7 @@ skillsDir: ./.claude/skills
 
 详见 [workspace-conventions.md](.claude/reference/workspace-conventions.md)（workspace 命名/归档/流转规则、核心目录表）
 
-**核心原则**：workspace 入库 git 跟踪；创建文件夹用 `序号-分类-主题-YYYYMMDD`；归档/整理时按需读取详细规范。
+**核心原则**：workspace 入库 git 跟踪；创建文件夹用 `YYYY-MM-DD-主题`；归档/整理时按需读取详细规范。
 
 ---
 

@@ -17,7 +17,7 @@ This is not a UI framework. It is a constraint system for print, designed to kee
 7. Letter-spacing: Chinese body 0.3pt for comfortable reading; English body 0; tracking only for short labels and overlines
 8. Tag backgrounds must be solid hex, never rgba (WeasyPrint renders a double rectangle)
 9. Depth via ring shadow or whisper shadow, never hard drop shadows
-10. **No italic anywhere**. No `font-style: italic` in any template or demo. No italic @font-face declarations needed
+10. **No italic in print templates**. No `font-style: italic` in any PDF template or demo. Exception: landing page (screen-only) uses italic for poetic lines (gallery captions, feature subtitles, footer ethos) following the Mole pattern
 
 This system is a fusion of Anthropic's visual language and real Chinese / English resume iteration. Details below.
 
@@ -53,7 +53,7 @@ This system is a fusion of Anthropic's visual language and real Chinese / Englis
 ```css
 --near-black:  #141413;   /* Primary text - deepest but not pure black, warm olive undertone */
 --dark-warm:   #3d3d3a;   /* Secondary text, table headers, links */
---olive:       #504e49;   /* Subtext - descriptions, captions. JA override: #4d4c48 (YuMincho thin strokes need darker text) */
+--olive:       #504e49;   /* Subtext - descriptions, captions. zh-CN TsangerJinKai02 不需要 override. JA override: #4d4c48 (YuMincho thin strokes need darker text) */
 --stone:       #6b6a64;   /* Tertiary - dates, metadata */
 ```
 
@@ -136,6 +136,7 @@ Any font-family that may render Chinese or Japanese must include a CJK fallback,
 
 **Screen (px)** ≈ pt × 1.33 (9pt ≈ 12px, 18pt ≈ 24px).
 **Minimum floor**: web text >= 12px, PDF text >= 9pt.
+**Slide caption floor**: slides 上 caption 至少 24px (不是 12px)。Print 9pt 在投影距离不可读，slide caption 用 pt x 2.67。
 
 ### Weight
 
@@ -160,6 +161,7 @@ Print documents are **tighter** than English web body. English web typically run
 | Dense body | 1.40-1.45 | Resume, one-pager, dense information |
 | Reading body | 1.50-1.55 | Long-doc chapters, letters |
 | Label / caption | 1.30-1.40 | Small labels, multi-line metadata |
+| CJK screen body | 1.55-1.65 | 中日文 serif 在 slide scale (27-33px) 下比 print x1.33 更需松行高 |
 
 **Forbidden**:
 - 1.60+ - loose feel, web rhythm, not print
@@ -509,6 +511,26 @@ For displaying pseudocode or code snippets in slides. More structured than a pla
 
 **Content philosophy**: use pseudocode style. Comments should outnumber code lines. The reader sees logic, not syntax.
 
+### Syntax Highlighting
+
+Code blocks with `class="language-*"` on the `<code>` element get Pygments-based highlighting at build time. The palette uses existing tokens only:
+
+| Token | Hex | Token var |
+|---|---|---|
+| Keyword | `#1B365D` | `--brand` |
+| Comment | `#6b6a64` | `--stone` |
+| String | `#504e49` | `--olive` |
+| Number | `#3d3d3a` | `--dark-warm` |
+| Function/Class | `#141413` | `--near-black` |
+
+```html
+<pre><code class="language-python">def analyze(data):
+    """Transform raw data."""
+    return transform(data)</code></pre>
+```
+
+Blocks without `class="language-*"` stay monochrome. Requires `pip install Pygments`; without it, blocks pass through unstyled.
+
 ### Glance Grid
 
 Four key-number cells, placed after the TOC or on a chapter-opening page of a long-doc / proposal.
@@ -752,6 +774,8 @@ p    { widows: 2; orphans: 2; }
 
 CSS alone cannot prevent "the last two lines of a chapter pushed onto a fresh page". For long-doc / proposal output, follow up with a render-time density check (see production.md "Verify & Debug").
 
+**Cascading break-inside**: when two `break-inside: avoid` blocks sit next to each other and the first would split, both get pushed to the next page together. A chapter with more than two `break-inside: avoid` blocks (quote + table + callout, etc.) near a page boundary is at high risk of leaving 40-80mm of trailing whitespace on the previous page. Fix by splitting the chapter, or downgrade one block (allow the table to break with a repeating header `<thead>`).
+
 ### Force break
 
 ```css
@@ -895,7 +919,8 @@ table.data td:first-child {
 | No section divider slides | Use `.eyebrow` for section numbering instead; saves one slide per section |
 | No CJK parentheses | Replace `（...）` with `·` or `,` |
 | One line per bullet | Trim until each item fits on one line; never let it wrap |
-| Empty space handling | Priority: shrink page size > pin `.co` callout > add content > merge slides |
+| Empty space ≥50% | Draft defect. Order: merge with neighbor slide > pin `.co` callout > add a chart that earns the space. Shrinking page size is a last resort and must apply to the whole deck, not per slide. |
+| Empty space 25-50% | Acceptable if the slide has a pinned `.co` callout. Otherwise add one supporting bullet or a small inline figure. Never pad with filler prose. |
 | Cover | No horizontal rule; title centered `38pt`; subtitle on one line; bottom meta centered |
 
 ### Troubleshooting
@@ -904,7 +929,7 @@ table.data td:first-child {
 |---|---|
 | Content overflows to next page | Add `max-height` or trim content |
 | 2×2 columns misaligned | Switch from CSS Grid to `table.t2x2` |
-| Large blank at slide bottom | Reduce to `280mm 158mm` or pin `.co` callout |
+| Large blank at slide bottom | First check item count (target 3-5 items per slide). If content is genuinely short, pin a `.co` callout. Only reduce page size when the entire deck is uniformly sparse. |
 | CJK text looks tight | Add `letter-spacing: 0.3pt` |
 
 ### Core principles
@@ -916,6 +941,46 @@ table.data td:first-child {
 5. Callout pins to bottom; whitespace above is the design
 6. Each bullet fits one line
 7. Shrink page first before adding more content
+
+### Marp variant
+
+Marp is an optional third path, alongside WeasyPrint HTML and python-pptx. Use it only when the user explicitly asks for Marp, "markdown slides", or a deck that lives in a `.md` file. The repo does not bundle `marp-cli`; rendering happens with the user's local install.
+
+Files:
+
+| Asset | Path |
+|---|---|
+| CN theme CSS | `assets/templates/marp/slides-marp.css` |
+| EN theme CSS | `assets/templates/marp/slides-marp-en.css` |
+| CN sample deck | `assets/templates/marp/slides-marp.md` |
+| EN sample deck | `assets/templates/marp/slides-marp-en.md` |
+
+Shared with WeasyPrint slides: every design token (`--parchment`, `--brand`, `--serif`, `--mono`), the Kami class scale (`.eyebrow`, `.lead`, `.mt`, `.ml`, `.mb`, `.mc`, `.co`, `.c2`, `table.t2x2`, `table.data`, `section.cover`), and the 280×158mm page size. The Marp theme is a port, not a redesign.
+
+Marp-specific additions on top of that port: the theme styles bare `<p>`, `<ul>`, `<ol>`, `<li>` so that plain Markdown body content picks up Kami rhythm without explicit class attributes. These rules do not exist in `slides-weasy.html` because the WeasyPrint deck never has unclassed Markdown — they are required here because Marpit's defaults would otherwise leak through.
+
+`.co` is pinned at `bottom: 18mm` in the Marp theme, not `12mm` like in `slides-weasy.html`. Reason: the WeasyPrint deck's footer is two narrow corner labels (`.page-num` right, `.footer-mark` left) that never sit under a centered `.co`. Marp's built-in footer spans the full width at `bottom: 10mm`, so `.co` needs a wider vertical buffer to avoid stacking on top of it.
+
+Brand color and logo follow the same `brand-profile.md` Layer C rules: edit `--brand` in the theme CSS; insert a logo with `<img src="../../images/logo.svg" width="80">` on the cover slide. The output-path caveat in `production.md` Part 2.5 applies to logo URLs the same way it applies to fonts.
+
+Marp-specific syntax to know:
+
+| Need | Marp syntax |
+|---|---|
+| Page break | One blank line, then `---`, then one blank line |
+| Per-slide class (e.g. cover) | `<!-- _class: cover -->` at the top of the section |
+| Per-slide pagination off | `<!-- _paginate: false -->` (use it on the cover and the closing slide) |
+| Per-slide footer override | `<!-- _footer: "..." -->` |
+| Global header / footer / pagination | Set in the deck's YAML front-matter (`paginate: true`, `footer: "Project"`) |
+| Background image | `![bg](path.jpg)` |
+
+Constraints that bite if you arrive from the WeasyPrint slides:
+
+- The page unit is `section`, not `.slide`. CSS that targets `.slide` will not match. The theme already declares `section { width: 280mm; height: 158mm; position: relative; }`, so `.co { position: absolute; bottom: 12mm }` still pins to the bottom of the current slide.
+- Markdown blocks inside `<div>` wrappers need surrounding blank lines for Marp to parse them as Markdown. The sample deck shows the pattern for `.c2` and `table.t2x2`.
+- `paginate: true` injects a page number via the `section::after` pseudo-element. Do not also place a `.page-num` element by hand; you will get two numbers.
+
+Render commands and CLI flags live in `references/production.md` Part 2.5.
 
 ---
 
@@ -998,3 +1063,131 @@ figure img,
 ```
 
 Apply this rule to any `<img>` placed inside a fixed-size container. For `object-fit: contain` (slides, logos), `object-position` has no visible effect; omit it.
+
+---
+
+## 11. Landing Page (screen-first)
+
+The landing-page template is the only kami template designed for browser delivery, not PDF. It inherits the full parchment design system but adds interactive and responsive patterns.
+
+### Layout
+
+- `max-width: 1120px` centered, padding `88px 64px 120px`
+- Sections numbered `00 · Label` through `04 · Label` with `section-num` / `section-title` / `section-lede` pattern
+- Two responsive breakpoints: `880px` (tablet) and `480px` (phone)
+
+### Eyebrow
+
+- Flex row: `space-between`, left side = product category text + version link, right side = hero-links (lang switch, social icons)
+- Version link: brand color, weight 600, clickable to releases page. Slot: `{{VERSION}}`
+- `--latin-ui` 12px, weight 500, letter-spacing 0.4px, uppercase, stone color
+
+### Hero
+
+- Title: 96px (EN) / 88px (CN), weight 500, letter-spacing 0
+- Entrance animation: `translateY(10px) + blur(6px)` fading in over 900ms with 120ms delay
+- Tagline: 21px (EN) / 20px (CN), olive color, letter-spacing 0.2px (EN) / 0.4px (CN), max-width 820px
+- Tokens row: small key facts as `<span><b>value</b> label</span>`, 13px stone, `--latin-ui` font
+- CTA: pill buttons (border-radius 999px), primary filled + ghost outlined, 15px, 13px 28px padding
+
+### Gallery
+
+- Grid: `minmax(0, 1fr) auto`, frame spans full width, caption and tabs on row 2
+- Frame: dark background `--shot-bg: #141318`, rounded 8px, 1px border
+- Transition: direction-aware slide + scale(0.985), 620-880ms cubic-bezier(0.22, 1, 0.36, 1)
+- Sweep overlay: diagonal light gradient that slides across on switch (540-920ms)
+- Auto-rotate: 4500ms interval, pauses on hover/focus, respects prefers-reduced-motion
+- Empty gallery: script exits cleanly; single-image gallery initializes caption/tab state without starting auto-rotate
+- Tabs: pill buttons 12px `--latin-ui`, active state uses brand-tint background
+- Click navigation: left half = previous, right half = next
+- Caption `.line`: italic serif, 14px olive. Poetic one-liners describing each screenshot
+
+### Buttons
+
+Two variants only:
+
+| Variant | Background | Border | Text | Hover |
+|---|---|---|---|---|
+| `.btn-primary` | `--brand` | `--brand` | `--ivory` | `--brand-light`, translateY(-1px) |
+| `.btn-ghost` | transparent | `--brand` | `--brand` | `--brand-tint` bg, translateY(-1px) |
+
+Both: pill shape (999px radius), 15px `--latin-ui`, weight 500, 1.5px border, min-width 158px.
+
+### Pricing
+
+- Amount: 112px serif, letter-spacing 0
+- Comparison: 18px, use `<s>` for competitor prices (stone color, 1px underline)
+- Highlight: `.hl` class for brand-colored emphasis
+- Terms: 13.5px olive, centered, max-width 640px, line-height 1.5
+
+### Manifesto
+
+- Brand philosophy paragraph: 20px, weight 400, line-height 1.55, letter-spacing 0.05em
+- `<em>` renders in brand color with `font-style: normal` (brand emphasis, not typographic italic)
+
+### Code Block
+
+- `pre.code`: ivory background, 1px border, 6px radius, 18px 22px padding
+- Font: `--mono` 13.5px, tabular-nums, line-height 1.55
+- Syntax: `.c` (comments) in stone, `.k` (keywords) in brand
+
+### Metrics
+
+- Flex row with 32px gap, each metric is value (36px serif 500) + label (13px `--latin-ui` stone)
+- `font-variant-numeric: tabular-nums` on values
+
+### Demo Card Grid
+
+- `auto-fill, minmax(240px, 1fr)` grid, 18px gap
+- Cards: ivory bg, 1px border, 8px radius, whisper shadow on hover
+- Image fills top, title 15px weight 500 + desc 12px olive below
+
+### Features
+
+- Two-column grid: 200px name + 1fr description, 36px gap, separated by border-soft hairlines
+- Feature name: 22px brand, weight 500
+- Poetic subtitle: `<small>` below name, 13px olive, italic. One short line evoking the feature's character
+- Description: 15px dark-warm, line-height 1.55
+
+### FAQ
+
+- Wrap each dt/dd pair in `<div class="faq-pair">` for spacing (24px margin-bottom)
+- `<dt>` question: 16px, weight 500, no top margin
+- `<dd>` answer: 14px olive
+- Code spans: mono 12px on brand-tint background, 3px radius
+- Tail paragraph: `.faq-tail` after `</dl>`, 13px stone, links to help page. Closes the FAQ without another section
+
+### Footer
+
+- Two-column flex: brand mark (icon + name + tagline) left, colophon (links + ethos) right
+- Mark icon: 56px rounded 8px
+- Links: inline with middot (`&middot;`) separators between items, dark-warm color. Editorial pattern, not flex-gap
+- Ethos: closing italic serif line, olive color, max-width 360px. The italic voice signals a personal sign-off
+- Collapses to single column below 880px
+
+### Cross-lang typography hardening
+
+- **Numeric alignment across CJK and Latin runs.** Use `font-variant-numeric: lining-nums tabular-nums` on every node that displays numbers (prices, metrics, version strings, tabular data). Lining keeps digit height uniform; tabular keeps digit width uniform. Without lining-nums, oldstyle fonts drop descenders on 3, 4, 5, 7, 9 and break vertical rhythm.
+- **Latin fallback before CJK in the serif stack on Chinese pages.** Charter or Georgia first in `html[lang="zh-CN"] { --serif: ... }`, so mixed runs like "Mac/22/$19" share baseline with the Chinese body.
+- **Avoid scaling the currency glyph with super.** Do not write `.price-currency { font-size: 0.5em; vertical-align: super }`. That trick makes `$` and the digit visually unequal. Prefer `font-size: 0.74em; line-height: 1; transform: translateY(0.015em);`.
+- **Language menu items need vertical room for descenders.** When `<a>` inside `.lang-menu` has `line-height: 1`, the descender of 'g' / 'y' / 'p' is clipped. Use `min-height: 32px; padding: 6px 10px; line-height: 1.35;`. Add an invisible `::before` bridge between trigger and menu so the cursor can cross the gap without dismissing the menu.
+
+> The main landing-page template does not ship a language switcher or a price card by default; the `{{HERO_LINKS}}` slot is where one would go. Kami's own site at `styles.css` L67-151 ships a tested `.lang-switch` + `.lang-menu` implementation (hover bridge, descender padding, focus-within fallback). Copy it when you add multi-locale links to a landing page.
+
+### Multilingual SEO scaffolding
+
+- **hreflang link block in `<head>`.** One `<link rel="alternate" hreflang>` per shipped locale plus one `hreflang="x-default"`. Drop locales that have no actual page. Add `<link rel="alternate" type="text/plain" href="/llms.txt">` so AI assistants find the summary file.
+- **og:locale + og:locale:alternate.** Self-reference the current page locale on `og:locale`, list the others on `og:locale:alternate`. Social previews on Facebook, LinkedIn, Telegram use this to pick the right thumbnail.
+- **Canonical points at the per-locale URL.** Each locale should have a canonical that matches its own URL, not a single canonical pointing to `/`.
+
+### Companion assets
+
+The landing-page template alone is one HTML file. To deploy a production multilingual site you ship five companion files in the same folder; each is provided as `.example` and you remove the suffix before deploying:
+
+- `landing-page-vercel.json.example`: path-based rewrites for `/zh`, `/tw`, `/ja`, `/ko`, host-canonical redirect, security headers, immutable cache for static assets.
+- `landing-page-sitemap.xml.example`: one `<url>` per locale with `<xhtml:link>` cross-references; mirrors the hreflang block in `<head>`.
+- `landing-page-robots.txt.example`: AI crawler allowlist (GPTBot, ClaudeBot, PerplexityBot, Applebot, OAI-SearchBot, Claude-SearchBot).
+- `landing-page-llms.txt.example`: short brand summary; positioning, one-line competitor contrast, pricing, key links.
+- `landing-page-llms-full.txt.example`: long-form companion AI assistants pull for accurate feature-level answers. Has Overview, Pricing, Features, Comparison, FAQ.
+
+The optional Accept-Language redirect at the end of `landing-page-en.html` is commented out by default. Uncomment only after confirming `/zh/`, `/tw/`, `/ja/`, `/ko/` actually resolve on the host.

@@ -1,20 +1,6 @@
 ---
 name: mck-ppt-design
-description: >-
-  Create professional, consultant-grade PowerPoint presentations from scratch
-  using MckEngine (python-pptx wrapper) with McKinsey-style design. Use when
-  user asks to create slides, pitch decks, business presentations, strategy
-  decks, quarterly reviews, board meeting slides, or any professional PPTX.
-  AI calls eng.cover(), eng.donut(), eng.timeline() etc — 67 high-level methods
-  across 12 categories (structure, data, framework, comparison, narrative,
-  timeline, team, charts, images, advanced viz, dashboards, visual storytelling),
-  consistent typography, zero file-corruption issues, BLOCK_ARC native shapes
-  for circular charts (donut, pie, gauge), production-hardened guard rails
-  for spacing, overflow, legend consistency, title style uniformity,
-  dynamic sizing for variable-count layouts, horizontal item overflow
-  protection, chart rendering, and
-  AI-generated cover images via Tencent Hunyuan 2.0 with professional cutout,
-  cool grey-blue tint, and McKinsey-style Bézier ribbon decoration.
+description: "使用 MckEngine 创建 McKinsey 风格的专业咨询级 PPT，支持 67 种可视化方法和 AI 封面图生成。当用户要求创建商业演示文稿、战略汇报或董事会幻灯片时触发。"
 ---
 
 # McKinsey PPT Design — Harness Framework

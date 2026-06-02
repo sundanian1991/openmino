@@ -1,6 +1,6 @@
 ---
 name: baoyu-slide-deck
-description: Generates professional slide deck images from content. Creates outlines with style instructions, then generates individual slide images. Use when user asks to "create slides", "make a presentation", "generate deck", "slide deck", or "PPT".
+description: "将内容生成专业幻灯片图片，支持自动大纲和风格定制。当用户要求'做幻灯片'、'生成 PPT'、'做演示文稿'时触发。"
 ---
 
 # Slide Deck Generator

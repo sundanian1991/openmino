@@ -1,8 +1,10 @@
-# Haglöfs Design Tokens
+# Nian Design Tokens
 
-> Exact values for fonts, colors, spacing, motion, and visual motifs.
+> 精确值体系。所有组件、模板引用 token 名，不直接写色值。
 >
-> **Brand feel:** Scandinavian workshop. Natural light through a window, tools laid out on a wooden bench. Precise, warm, unhurried. #FAFAF8 isn't sterile white — it's the color of raw linen.
+> **品牌氛围：** Scandinavian workshop。自然光穿过窗户，工具整齐摆在木桌上。精确、温暖、不赶时间。`#FAFAF8` 不是无菌白——是原胚亚麻色。
+>
+> 品牌 DNA 完整描述见 `brand-dna.md`（技能根目录）。
 
 ---
 
@@ -35,26 +37,26 @@ Georgia remains the primary display font for formal/brand contexts. Doto is the 
 
 ### Type Scale
 
-| Token | Size | Weight | Line-height | Tracking | Role |
-|-------|:----:|:------:|:-----------:|:--------:|------|
-| `--display-2xl` | 120px | 700 | 1.0 | -0.03em | Hero moments, cinematic statements — one per page |
-| `--display-xl` | 96px | 700 | 1.05 | -0.025em | Full-viewport statements, key metrics |
-| `--display-lg` | 48px | 700 | 1.15 | -0.01em | Section titles, product heroes |
-| `--display-md` | 36px | 600 | 1.2 | 0 | Category titles |
-| `--heading-lg` | 24px | 600 | 1.3 | 0 | Sub-sections |
-| `--heading-md` | 20px | 500 | 1.4 | 0 | Feature titles |
-| `--body-lg` | 18px | 400 | 1.6 | 0 | Lead paragraphs |
-| `--body` | 16px | 400 | 1.6 | 0 | Body text |
-| `--body-sm` | 14px | 400 | 1.5 | 0.01em | Captions, secondary text |
-| `--label` | 12px | 500 | 1.4 | 0.06em | ALL CAPS labels, tags |
+| Token | Size | Line Height | Letter Spacing | Use |
+|-------|:----:|:-----------:|:--------------:|-----|
+| `--display-2xl` | 120px | 1.0 | -0.03em | Hero moments, cinematic statements — one per page |
+| `--display-xl` | 96px | 1.05 | -0.025em | Full-viewport statements, key metrics |
+| `--display-lg` | 48px | 1.15 | -0.01em | Section titles, product heroes |
+| `--display-md` | 36px | 1.2 | 0 | Category titles |
+| `--heading-lg` | 24px | 1.3 | 0 | Sub-sections |
+| `--heading-md` | 20px | 1.4 | 0 | Feature titles |
+| `--body-lg` | 18px | 1.6 | 0 | Lead paragraphs |
+| `--body` | 16px | 1.6 | 0 | Body text |
+| `--body-sm` | 14px | 1.5 | 0.01em | Captions, secondary text |
+| `--label` | 12px | 1.4 | 0.06em | ALL CAPS labels, tags |
 
-**Extreme size contrast is mandatory.** The ratio between hero (96-120px) and body (14-16px) must exceed 8:1. This is what creates industrial-grade visual impact.
+**Extreme size contrast is mandatory.** The ratio between hero (96-120px) and body (14-16px) must exceed 8:1.
 
 ### Typographic Rules
 
-- **Display (Georgia):** Use only for `--display-*` sizes. Brand statements, hero product names, section titles.
-- **Body (Inter):** Use for `--heading-*` through `--body-sm`. Feature descriptions, paragraphs, navigation.
-- **Data (JetBrains Mono):** Use for `--label`. Technical specs, material codes, product identifiers, status labels.
+- **Display (Georgia):** `--display-*` only. Weight 700. Brand statements, hero names, section titles.
+- **Body (Inter):** `--heading-*` through `--body-sm`. Weight 400 default, 500-600 for headings.
+- **Data (JetBrains Mono):** `--label` and data values. Weight 500. Technical specs, status labels.
 - **ALL CAPS labels** must use JetBrains Mono with 0.06em letter-spacing.
 - Never use Georgia for body text. Never use Inter for hero display. Never use Mono for paragraphs.
 
@@ -66,9 +68,10 @@ Georgia remains the primary display font for formal/brand contexts. Doto is the 
 
 | Token | Hex | RGB | HSL | Role |
 |-------|-----|-----|-----|------|
-| `--primary-darkgray` | `#2C2C2C` | 44,44,44 | 0°,0%,17% | Brand foundation, text, logos |
-| `--primary-olive` | `#4A5D3A` | 74,93,58 | 94°,23%,30% | Outdoor DNA, product primary |
-| `--primary-earth` | `#8B7355` | 139,115,85 | 33°,24%,44% | Material warmth, natural texture |
+| `--brand-olive` | `#4A5D3A` | 74,93,58 | 94°,23%,30% | Outdoor DNA, product primary |
+| `--brand-earth` | `#8B7355` | 139,115,85 | 33°,24%,44% | Material warmth, natural texture |
+
+> `--primary-darkgray`（#2C2C2C）已废弃。与 `--text-display` 同色值，统一使用 `--text-display`。
 
 ### Accent Palette (functional signals)
 
@@ -96,7 +99,7 @@ Georgia remains the primary display font for formal/brand contexts. Doto is the 
 
 | Group | Colors | Share | Purpose |
 |-------|--------|:-----:|---------|
-| Brand primary | darkgray + olive + earth | 80% | Brand identity |
+| Brand primary | text-display + olive + earth | 80% | Brand identity |
 | Accent | yellow + orange | 5-10% | Functional signals only |
 | Scene | glacier + rock | 10-15% | Atmosphere, transitions |
 
@@ -160,7 +163,7 @@ Georgia remains the primary display font for formal/brand contexts. Doto is the 
 
 ## 5. DEPTH SYSTEM (No Shadows)
 
-Haglöfs uses **border + surface color + opacity** instead of box-shadow. Four depth levels:
+Nian uses **border + surface color + opacity** instead of box-shadow. Four depth levels:
 
 | Level | How | When |
 |-------|-----|------|
@@ -199,7 +202,7 @@ Haglöfs uses **border + surface color + opacity** instead of box-shadow. Four d
 
 ## 7. MOTION & INTERACTION
 
-Haglöfs motion is **organic, not mechanical.** Transitions should feel like natural movement — gentle, predictable, never jarring.
+Nian motion is **organic, not mechanical.** Transitions should feel like natural movement — gentle, predictable, never jarring.
 
 | Context | Duration | Easing | Timing Function |
 |---------|:--------:|--------|:---------------:|
@@ -209,7 +212,7 @@ Haglöfs motion is **organic, not mechanical.** Transitions should feel like nat
 
 **Rules:**
 - **No spring/bounce easing.** Never use `cubic-bezier` overshoot curves. The brand is grounded, not playful.
-- **Prefer opacity over position.** Elements fade in/out rather than slide. Position changes imply physical movement, which Haglöfs doesn't need.
+- **Prefer opacity over position.** Elements fade in/out rather than slide. Position changes imply physical movement, which Nian doesn't need.
 - **Hover states:** border/text brightens by one token level. No scale, no shadow, no background shift.
 - **No parallax, no scroll-jacking, no gratuitous animation.** If an animation doesn't communicate function, remove it.
 - **Loading:** Use `[LOADING...]` inline text or seam divider pulse. No spinners, no skeleton screens.
@@ -228,7 +231,7 @@ Haglöfs motion is **organic, not mechanical.** Transitions should feel like nat
 
 ## 9. DOT-MATRIX MOTIF
 
-The dot-matrix H is Haglöfs' signature visual element — modular, technical, adaptable.
+The dot-matrix motif is Nian's signature decorative element — modular, technical, adaptable.
 
 **CSS implementation:**
 ```css

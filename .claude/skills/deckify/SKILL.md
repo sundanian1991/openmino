@@ -1,6 +1,6 @@
 ---
 name: deckify
-description: "From a reference URL, generate an HTML-slide Design System. Extracts color palette, typography, logo, and aesthetic mood, then writes a Design System with proven engineering rules (1280x720 fit, overflow safety, mobile fixes, currentColor logos). Use when user gives a URL and asks to 'build a design system', 'make slides like this brand', or 'skin slides to match this site'."
+description: "从参考 URL 提取品牌视觉 DNA，生成带工程安全规则的 HTML 幻灯片设计系统。当用户给出网站链接并要求'按这个品牌做幻灯片'或'提取设计系统'时触发。"
 dependencies:
   - agent-browser  # Standalone CLI from Vercel Labs (https://github.com/vercel-labs/agent-browser). Install via npm/brew/cargo — see scripts/setup.py. Used for URL fetch, computed-style introspection, screenshots in Phase 1. NOT the same as any plugin called "agent-browser" — this is the standalone binary at github.com/vercel-labs/agent-browser. Verify with `which agent-browser` and `agent-browser --version`.
   - python3        # Stdlib only (urllib, subprocess, pathlib, tempfile). All Phase 1 scripts (fetch_sitemap.py, fetch_pages.py, enumerate_assets.py, embed_logo.py, init_workspace.py) and Phase 0 (setup.py) are Python — no shell needed, runs natively on macOS / Linux / Windows.

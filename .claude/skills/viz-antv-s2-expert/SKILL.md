@@ -1,6 +1,6 @@
 ---
 name: viz:antv-s2-expert
-description: "S2 multi-dimensional cross-analysis table development assistant (Expert Skill). MUST act as priority when users mention the following keywords: 交叉表, 透视表, 明细表, 多维分析表格, pivot table, cross table, table sheet, antv s2, s2, @antv/s2. Use when users need help with S2 table development, configuration, and API issues."
+description: "S2多维交叉表分析助手。专治：交叉表、透视表、明细表、多维分析表格、pivot table、antv s2。触发于\"交叉表\"、\"透视表\"、\"S2\"、\"@antv/s2\"。"
 ---
 
 # S2 Multi-Dimensional Cross-Analysis Table Development Assistant

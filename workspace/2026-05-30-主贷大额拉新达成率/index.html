@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主贷大额拉新 3月目标达成率</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F5F5;--surface:#FFFFFF;--border:#E0E0E0;
+  --text-dim:#AAAAAA;--text-sec:#666666;--text-pri:#1A1A1A;--text-disp:#000000;
+  --accent:#D71921;--green:#4A9E5C;--amber:#C89B3C;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-pri);font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:780px;margin:0 auto;padding:56px 32px 80px}
+
+/* ── Header ── */
+.hdr{margin-bottom:48px}
+.hdr h1{font-size:32px;font-weight:700;letter-spacing:-0.02em;line-height:1}
+.hdr p{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--text-sec);margin-top:8px}
+
+/* ── Summary strip ── */
+.strip{display:flex;gap:36px;padding-bottom:24px;margin-bottom:40px;border-bottom:1px solid var(--border)}
+.strip-item .lab{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--text-sec);text-transform:uppercase;margin-bottom:2px}
+.strip-item .val{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;letter-spacing:-0.02em;line-height:1}
+
+/* ── Chart ── */
+.chart{position:relative}
+
+/* 100% baseline — vertical line + label */
+.baseline{position:absolute;top:0;bottom:0;width:2px;background:var(--text-disp);opacity:0.18;z-index:1}
+.baseline-lab{position:absolute;top:-22px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.08em;color:var(--text-sec);transform:translateX(-50%);white-space:nowrap}
+
+/* ── Row ── */
+.row{position:relative;padding:14px 0;z-index:2}
+.row+.row{border-top:1px solid var(--border)}
+
+/* Top line: name left, rate right */
+.row-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.row-name{font-size:15px;font-weight:500;color:var(--text-pri)}
+.row-rate{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;letter-spacing:-0.03em;line-height:1}
+
+/* Stacked bar */
+.bar{display:flex;height:18px;background:var(--border)}
+.bar-l,.bar-c,.bar-over{height:100%}
+.bar-l{background:var(--text-disp);opacity:0.8}
+.bar-c{background:var(--text-disp);opacity:0.25}
+.bar-over{background:var(--accent);opacity:0.7}
+
+/* Annotation line below bar */
+.ann{display:flex;gap:20px;margin-top:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.03em;color:var(--text-dim)}
+.ann .hl{color:var(--text-sec);font-weight:700}
+
+/* Status colors */
+.s-green{color:var(--green)}.s-amber{color:var(--amber)}.s-red{color:var(--accent)}
+
+/* ── Legend ── */
+.legend{display:flex;gap:20px;margin-top:32px;padding-top:20px;border-top:1px solid var(--border);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.06em;color:var(--text-sec)}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:12px;height:12px;border-radius:2px}
+.legend-dot.ld-l{background:var(--text-disp);opacity:0.8}
+.legend-dot.ld-c{background:var(--text-disp);opacity:0.25}
+.legend-dot.ld-over{background:var(--accent);opacity:0.7}
+.legend-dot.ld-target{border:1.5px solid var(--text-disp);opacity:0.3;background:transparent;width:2px;height:12px;border-radius:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hdr">
+    <h1 data-edit>主贷大额拉新 3月达成率</h1>
+    <p>2026.03 · 新客-未授信 · B端企业主贷大额人工</p>
+  </header>
+
+  <div class="strip">
+    <div class="strip-item"><div class="lab">加权达成率</div><div class="val" data-edit>101.3%</div></div>
+    <div class="strip-item"><div class="lab">达标</div><div class="val s-green" data-edit>3</div></div>
+    <div class="strip-item"><div class="lab">未达标</div><div class="val s-red" data-edit>5</div></div>
+    <div class="strip-item"><div class="lab">极差</div><div class="val s-amber" data-edit>64.3pp</div></div>
+  </div>
+
+  <div class="chart" id="chart"></div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot ld-l"></div>拉新</div>
+    <div class="legend-item"><div class="legend-dot ld-c"></div>促提</div>
+    <div class="legend-item"><div class="legend-dot ld-over"></div>超额</div>
+    <div class="legend-item"><div class="legend-dot ld-target"></div>目标线</div>
+  </div>
+
+</div>
+
+<script>
+const D=[
+  {n:'汇讯职场',r:132.5,l:7824,c:874,t:8699,g:6563},
+  {n:'新动力职场',r:105.8,l:4416,c:1709,t:6126,g:5789},
+  {n:'锦瑞职场',r:103.9,l:2160,c:595,t:2755,g:2650},
+  {n:'德辰职场',r:93.9,l:2256,c:550,t:2805,g:2987},
+  {n:'广达职场',r:85.3,l:2517,c:1072,t:3588,g:4207},
+  {n:'中乾职场',r:80.3,l:2032,c:806,t:2838,g:3534},
+  {n:'速腾职场',r:76.0,l:741,c:217,t:959,g:1262},
+  {n:'九通职场',r:68.2,l:793,c:67,t:861,g:1262},
+];
+
+const MAX_RATE=140;
+const BL_PCT=100/MAX_RATE; // 100% baseline position
+
+function sClass(r){return r>=100?'s-green':r>=80?'s-amber':'s-red'}
+function fmt(n){return n.toLocaleString('zh-CN')}
+
+const chart=document.getElementById('chart');
+
+// baseline
+chart.insertAdjacentHTML('afterbegin',
+  '<div class="baseline" style="left:'+BL_PCT+'%"></div>'+
+  '<div class="baseline-lab" style="left:'+BL_PCT+'%">100%</div>'
+);
+
+D.forEach(d=>{
+  const sc=sClass(d.r);
+  const cutiPct=(d.c/d.t*100).toFixed(0);
+
+  // bar segments: lalxin up to target, cuti after, over beyond 100%
+  // Map: target=100% position on bar = BL_PCT
+  // lalxin and cuti proportions within target
+  const lRatio=d.l/d.t; // lalxin share of total
+  const cRatio=d.c/d.t; // cuti share of total
+
+  // Width of filled area = d.r / MAX_RATE
+  const fillW=d.r/MAX_RATE*100;
+
+  // If r >= 100: lalxin+cuiti fill target area, over fills beyond
+  // If r < 100: lalxin+cuiti fill part of target area
+  let lW,cW,oW;
+  if(d.r>=100){
+    const targetW=BL_PCT;
+    lW=targetW*lRatio;
+    cW=targetW*cRatio;
+    oW=(d.r-100)/MAX_RATE*100;
+  }else{
+    const actualW=d.r/MAX_RATE*100;
+    lW=actualW*lRatio;
+    cW=actualW*cRatio;
+    oW=0;
+  }
+
+  chart.insertAdjacentHTML('beforeend',
+    '<div class="row">'+
+      '<div class="row-top">'+
+        '<span class="row-name" data-edit>'+d.n+'</span>'+
+        '<span class="row-rate '+sc+'" data-edit>'+d.r+'%</span>'+
+      '</div>'+
+      '<div class="bar">'+
+        '<div class="bar-l" style="width:'+lW.toFixed(2)+'%"></div>'+
+        '<div class="bar-c" style="width:'+cW.toFixed(2)+'%"></div>'+
+        (oW>0?'<div class="bar-over" style="width:'+oW.toFixed(2)+'%"></div>':'')+
+      '</div>'+
+      '<div class="ann">'+
+        '<span><span class="hl">'+fmt(d.t)+'万</span> / '+fmt(d.g)+'万</span>'+
+        '<span>促提 '+cutiPct+'%</span>'+
+      '</div>'+
+    '</div>'
+  );
+});
+</script>
+
+<!-- Nothing Editor 注入开始 -->
+<style id="ne-styles">
+#ne-toolbar{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;z-index:9999;font-family:'Space Mono',monospace}
+#ne-toolbar button{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.06em;padding:8px 16px;border-radius:999px;cursor:pointer;border:1px solid #CCCCCC;background:#FFFFFF;color:#1A1A1A;transition:all 0.15s ease-out;text-transform:uppercase}
+#ne-toolbar button:hover{border-color:#000000}
+#ne-toolbar button.active{background:#D71921;color:#fff;border-color:#D71921}
+.ne-sep{width:1px;height:20px;background:#E0E0E0;margin:0 4px}
+body.editing{outline:2px solid #D71921;outline-offset:-2px}
+body.editing [data-edit]{outline:1px dashed transparent;cursor:text;transition:outline-color 0.15s ease-out}
+body.editing [data-edit]:hover{outline-color:rgba(0,0,0,0.12)}
+body.editing [data-edit]:focus{outline-color:#D71921;outline-style:solid}
+#ne-mode{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:#AAAAAA;text-transform:uppercase;pointer-events:none;transition:color 0.15s ease-out}
+body.editing #ne-mode{color:#D71921}
+#ne-toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.06em;padding:6px 16px;border-radius:999px;background:#000000;color:#F5F5F5;opacity:0;transition:opacity 0.2s ease-out;pointer-events:none}
+#ne-toast.show{opacity:1}
+</style>
+<div id="ne-toolbar">
+  <button id="ne-toggle">编辑</button>
+  <span class="ne-sep"></span>
+  <button id="ne-undo" disabled>撤销</button>
+  <button id="ne-redo" disabled>重做</button>
+  <span class="ne-sep"></span>
+  <button id="ne-export">导出</button>
+</div>
+<div id="ne-mode">浏览</div>
+<div id="ne-toast"></div>
+<script>
+(function(){
+  var toggle=document.getElementById('ne-toggle');
+  var undoBtn=document.getElementById('ne-undo');
+  var redoBtn=document.getElementById('ne-redo');
+  var exportBtn=document.getElementById('ne-export');
+  var modeLabel=document.getElementById('ne-mode');
+  var toast=document.getElementById('ne-toast');
+  var editing=false;
+  var undoStack=[];
+  var redoStack=[];
+  var snapshotTimer=null;
+
+  function showToast(msg){
+    toast.textContent=msg;
+    toast.classList.add('show');
+    setTimeout(function(){toast.classList.remove('show')},1200);
+  }
+  function takeSnapshot(){
+    var edits=document.querySelectorAll('[data-edit]');
+    var snap={};
+    edits.forEach(function(el,i){snap[i]=el.innerHTML});
+    return snap;
+  }
+  function restoreSnap(snap){
+    var edits=document.querySelectorAll('[data-edit]');
+    Object.keys(snap).forEach(function(i){if(edits[i])edits[i].innerHTML=snap[i]});
+  }
+  function pushUndo(){
+    var snap=takeSnapshot();
+    if(undoStack.length>0){
+      var last=undoStack[undoStack.length-1];
+      if(JSON.stringify(last)===JSON.stringify(snap))return;
+    }
+    undoStack.push(snap);
+    if(undoStack.length>50)undoStack.shift();
+    redoStack=[];
+    undoBtn.disabled=false;
+    redoBtn.disabled=true;
+  }
+  function startSnapTimer(){
+    clearTimeout(snapshotTimer);
+    snapshotTimer=setTimeout(pushUndo,500);
+  }
+
+  toggle.addEventListener('click',function(){
+    editing=!editing;
+    document.body.classList.toggle('editing',editing);
+    toggle.classList.toggle('active',editing);
+    toggle.textContent=editing?'编辑中':'编辑';
+    modeLabel.textContent=editing?'编辑模式':'浏览';
+    document.querySelectorAll('[data-edit]').forEach(function(el){
+      el.contentEditable=editing?'true':'false';
+    });
+    if(editing){
+      pushUndo();
+      var obs=new MutationObserver(startSnapTimer);
+      document.querySelectorAll('[data-edit]').forEach(function(el){
+        obs.observe(el,{childList:true,characterData:true,subtree:true});
+      });
+      window._neObs=obs;
+    }else{
+      if(window._neObs)window._neObs.disconnect();
+    }
+  });
+
+  undoBtn.addEventListener('click',function(){
+    if(undoStack.length<2)return;
+    var current=undoStack.pop();
+    redoStack.push(current);
+    var prev=undoStack[undoStack.length-1];
+    restoreSnap(prev);
+    undoBtn.disabled=undoStack.length<2;
+    redoBtn.disabled=false;
+    showToast('已撤销');
+  });
+  redoBtn.addEventListener('click',function(){
+    if(!redoStack.length)return;
+    var snap=redoStack.pop();
+    undoStack.push(snap);
+    restoreSnap(snap);
+    undoBtn.disabled=false;
+    redoBtn.disabled=!redoStack.length;
+    showToast('已重做');
+  });
+  exportBtn.addEventListener('click',function(){
+    var clone=document.documentElement.cloneNode(true);
+    clone.querySelectorAll('#ne-toolbar,#ne-mode,#ne-toast,#ne-styles').forEach(function(el){el.remove()});
+    clone.querySelectorAll('script').forEach(function(s){if(s.textContent.indexOf('Nothing Editor')!==-1)s.remove()});
+    clone.querySelectorAll('[data-edit]').forEach(function(el){el.removeAttribute('data-edit');el.removeAttribute('contenteditable')});
+    clone.querySelectorAll('.editing').forEach(function(el){el.classList.remove('editing')});
+    var html='<!DOCTYPE html>\n'+clone.outerHTML;
+    var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='主贷大额拉新3月达成率.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('已导出');
+  });
+})();
+</script>
+<!-- Nothing Editor 注入结束 -->
+
+</body>
+</html>

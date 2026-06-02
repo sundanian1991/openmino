@@ -1,6 +1,6 @@
 ---
 name: nothing-design
-description: This skill should be used when the user explicitly says "Nothing style", "Nothing design", "/nothing-design", or directly asks to use/apply the Nothing design system. NEVER trigger automatically for generic UI or design tasks.
+description: "Nothing 风格 UI/UX 设计系统，受瑞士排版和工业设计启发，强调单色、字体驱动和信息密度。仅在用户明确提到'Nothing style'或'/nothing-design'时触发，不自动响应通用设计任务。"
 version: 3.0.0
 allowed-tools: [Read, Write, Edit, Glob, Grep]
 ---
@@ -279,6 +279,14 @@ The editor follows Nothing design principles — monochrome, mechanical, precise
 |------|------|------|
 | 2026-05-26 | 初始化 showcase，收录 12 份历史产出 | 建档 |
 | 2026-05-27 | 补充 7 份 review 目录产出至 showcase（共 21 份） | 同步 |
+| 2026-05-30 | 32份评审发现：字号纪律（多尺寸混用）是系统性扣分点；4种形态（单卡/排名条/策展/规则矩阵）占比过高属惯性非偏好 | 新增6种形态示范（区位矩阵/关联矩阵/分面条形/工业组件/图案分化/因果瀑布），均27+分 |
+| 2026-05-30 | 形态选型洞察：地图→区位矩阵、节点连线→关联矩阵、雷达图→分面条形——同数据关系换视觉形态可大幅提升清晰度 | 将"选对形态比画对图表重要"纳入 Section 2.9 视觉多样化指引 |
+| 2026-05-30 | 图案分化能力：CSS gradient + SVG pattern 可实现6种可区分填充（实心/水平线/点阵/斜线/交叉线/棋盘），彻底解决7色供应商编码违反单色约束的问题 | 补充至 Section 2.5 作为 data status colors 的单色替代方案 |
+| 2026-05-30 | 图案分化被否决：6种纹理填充视觉上比6色更吵，违反 Subtract 原则。正确方案是——单色系统中供应商身份靠位置+标签区分，颜色只编码状态（达标/预警/警告） | 从 showcase 移除图案分化 demo |
+| 2026-05-30 | 暗色模式示范：OLED #000000 基底，色板完整反转（--tx1:#FFF, --card:#111, --border:#222），LED卡片从黑底绿字变为深灰底绿字，视觉锚点不变 | 首个暗色 demo 入 showcase |
+| 2026-05-30 | 点阵标题：CSS grid 5×7 点阵渲染字形，4px dot + 3px gap + border-radius:50%，点状状态指示器（5点=满状态）替代进度条 | 适用于 hero moment 和机械感 accent |
+| 2026-05-30 | 趋势线：SVG polyline 160×32px，无轴线/无刻度/无标签，末端 r2.5 圆点用状态色，线体保持 #1A1A1A | 新增视觉模式 Sparkline |
+| 2026-05-30 | 非对称构图：三个手法（大小悬殊 >8:1、权重不均 2/3+1/3、留白偏置）替代对称网格，对比示范证明"每个框一样重要=没有东西重要" | 补充 Section 2.7 构图手法的视觉证据 |
 
 ### 7.4 回溯评审触发
 

@@ -42,6 +42,16 @@ pos: .claude/rules/MEMORY-L1.md
 
 **心跳**：读本文件 + `memory/state.json` | **完整启动**：+ todo.md + events 最近2天 | **截断恢复**：读 `workspace/*/对话总结-*.md`
 
+**WAL 队列处理**（完整启动时执行，如 `.wal-queue.ndjson` 存在）：
+1. 读 `memory/.wal-queue.ndjson`，按 ts 升序处理每个条目
+2. 读取对应 `transcript_path`，提取 WAL 触发信息（修正、偏好、决策、具体值、异常、原话）
+3. 追加到 `memory/thinking/buffer.md`（格式：`- YYYY-MM-DD HH:MM | [类型] 内容`）
+4. 创建或合并 `memory/events/YYYY-MM/YYYY-MM-DD.json`
+5. 更新 `memory/state.json`（`last_session`、`heartbeat_checks.memory`）
+6. 更新本文件的用户画像/偏好（如有变化）
+7. 清空队列文件
+8. 输出变更摘要（N 条 buffer、M 个 events）
+
 ---
 
 ## WAL 协议
@@ -49,9 +59,9 @@ pos: .claude/rules/MEMORY-L1.md
 关键信息先写后答 | 触发：修正、专有名词、偏好、决策、具体值、异常、年老师原话
 
 **三层落盘**：
-1. **Buffer**（实时）：`memory/thinking/buffer.md`
-2. **事件化**（对话结束时）：buffer → `memory/events/YYYY-MM/YYYY-MM-DD.json` + `memory/state.json`
-3. **正式记忆**（定期合并）：→ `memory/MEMORY.md` / `insights.md`，清空 buffer
+1. **Buffer**（实时）：对话中发现触发信息时，立即追加到 `memory/thinking/buffer.md`。格式：`- YYYY-MM-DD HH:MM | [类型] 内容`。不等对话结束，发现就写。
+2. **事件化**（自动化）：Stop Hook → `memory/.wal-queue.ndjson` → Cron 21:00 处理 → `memory/events/YYYY-MM/YYYY-MM-DD.json` + `memory/state.json`
+3. **正式记忆**（定期合并）：每周记忆维护 → `memory/MEMORY.md` / `insights.md`，清空 buffer
 
 ---
 

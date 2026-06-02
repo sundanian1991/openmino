@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>边界感 — P7的核心能力</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary-darkgray: #2C2C2C;
+  --primary-olive: #4A5D3A;
+  --primary-earth: #8B7355;
+  --accent-orange: #E55B2B;
+  --accent-yellow: #FFD100;
+  --scene-glacier: #2A4A5A;
+  --scene-rock: #808080;
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-raised: #F5F5F0;
+  --border: #E5E5E0;
+  --border-visible: #C0C0B8;
+  --text-display: #2C2C2C;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6B6B;
+  --text-disabled: #A0A0A0;
+  --font-display: Georgia, 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text-primary); line-height: 1.6; }
+
+/* ===== HERO — LIGHT ===== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 120px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.hero-ghost {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 360px;
+  font-weight: 300;
+  color: rgba(44,44,44,0.03);
+  line-height: 1;
+  letter-spacing: -16px;
+  user-select: none;
+  z-index: 0;
+}
+.hero-inner { position: relative; z-index: 2; max-width: 680px; }
+.hero-tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--scene-glacier);
+  margin-bottom: 48px;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: 120px;
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -4px;
+  color: var(--text-display);
+  margin-bottom: 32px;
+}
+.hero h1 strong { font-weight: 700; }
+.hero-sub {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 440px;
+  margin-bottom: 80px;
+}
+.hero-bounds {
+  display: flex;
+  gap: 48px;
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+}
+.hero-bound { display: flex; flex-direction: column; gap: 6px; }
+.hero-bound-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--scene-glacier);
+  font-weight: 600;
+}
+.hero-bound-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-display);
+}
+.hero-bound-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 160px;
+}
+
+/* ===== SECTION ===== */
+section { padding: 100px 120px; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--scene-glacier);
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  color: var(--text-display);
+  margin-bottom: 16px;
+}
+.section-title strong { font-weight: 700; }
+.section-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin-bottom: 64px;
+}
+
+/* ===== TENSION GRID ===== */
+.tension-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tension-cell {
+  background: var(--surface);
+  padding: 40px 36px;
+}
+.tension-cell--dark {
+  background: var(--scene-glacier);
+  color: var(--bg);
+}
+.tension-cell-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.tension-cell--dark .tension-cell-label { color: rgba(255,255,255,0.4); }
+.tension-cell--light .tension-cell-label { color: var(--text-secondary); }
+.tension-cell-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.tension-cell--dark .tension-cell-title { color: var(--bg); }
+.tension-cell-desc {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.tension-cell--dark .tension-cell-desc { color: rgba(255,255,255,0.6); }
+.tension-cell--light .tension-cell-desc { color: var(--text-secondary); }
+.tension-center {
+  grid-column: 1 / -1;
+  background: var(--surface-raised);
+  padding: 28px 36px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.tension-center-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tension-center-icon span {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-orange);
+}
+.tension-center-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-display);
+  line-height: 1.4;
+}
+.tension-center-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+/* ===== BOUNDARY CARDS ===== */
+.boundary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.boundary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px 24px;
+  border-top: 3px solid var(--scene-glacier);
+}
+.boundary-card-scene {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--scene-glacier);
+  margin-bottom: 12px;
+}
+.boundary-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+.boundary-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.boundary-item:last-child { margin-bottom: 0; }
+.boundary-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+.boundary-dot--ctrl { background: var(--primary-olive); }
+.boundary-dot--unctrl { background: var(--accent-orange); }
+.boundary-dot--action { background: var(--scene-glacier); }
+.boundary-item-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.boundary-item-label.ctrl { color: var(--primary-olive); }
+.boundary-item-label.unctrl { color: var(--accent-orange); }
+.boundary-item-label.action { color: var(--scene-glacier); }
+.boundary-item-text { color: var(--text-primary); }
+
+/* ===== TRACE CARDS ===== */
+.trace-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.trace-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px 24px;
+}
+.trace-card-scene {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  margin-bottom: 12px;
+}
+.trace-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.trace-card-action {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding-left: 16px;
+  border-left: 2px solid var(--scene-glacier);
+}
+
+/* ===== EFFICIENCY SECTION ===== */
+.eff-section { padding: 100px 120px; background: var(--surface-raised); }
+
+.eff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 64px;
+}
+.eff-col-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.eff-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 80px;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.eff-row:last-child { border-bottom: none; }
+.eff-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.eff-bar-wrap { display: flex; flex-direction: column; gap: 4px; }
+.eff-bar-track {
+  height: 10px;
+  background: var(--surface);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+}
+.eff-bar-ai {
+  height: 100%;
+  background: var(--scene-glacier);
+  border-radius: 5px 0 0 5px;
+}
+.eff-bar-human {
+  height: 100%;
+  background: var(--primary-olive);
+  border-radius: 0 5px 5px 0;
+}
+.eff-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+}
+.eff-val strong { color: var(--scene-glacier); font-weight: 600; }
+
+.eff-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.eff-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px 24px;
+  text-align: center;
+}
+.eff-summary-val {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.eff-summary-val.glacier { color: var(--scene-glacier); }
+.eff-summary-val.olive { color: var(--primary-olive); }
+.eff-summary-val.earth { color: var(--primary-earth); }
+.eff-summary-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+.eff-summary-sub {
+  font-size: 12px;
+  color: var(--text-disabled);
+  margin-top: 4px;
+}
+
+/* ===== BOUNDARY PRINCIPLE — 48/52 ===== */
+.principle-statement {
+  padding: 100px 120px;
+  background: var(--scene-glacier);
+  color: var(--bg);
+}
+.principle-quote {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+  color: var(--bg);
+  max-width: 680px;
+  margin-bottom: 24px;
+}
+.principle-attr {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+.split-bar {
+  margin-top: 64px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.split-bar-track {
+  height: 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+}
+.split-bar-ai {
+  height: 100%;
+  width: 48%;
+  background: rgba(255,255,255,0.7);
+  border-radius: 6px 0 0 6px;
+}
+.split-bar-human {
+  height: 100%;
+  width: 52%;
+  background: var(--primary-olive);
+  border-radius: 0 6px 6px 0;
+}
+.split-bar-legend {
+  display: flex;
+  gap: 32px;
+  margin-top: 16px;
+}
+.split-bar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+.split-bar-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* ===== AI LEVELS ===== */
+.level-section { padding: 100px 120px; }
+.level-track {
+  display: flex;
+  gap: 0;
+  margin-top: 48px;
+  position: relative;
+}
+.level-track::before {
+  content: '';
+  position: absolute;
+  top: 40px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border);
+}
+.level-card {
+  flex: 1;
+  position: relative;
+  padding: 0 24px;
+}
+.level-card:first-child { padding-left: 0; }
+.level-card:last-child { padding-right: 0; }
+.level-num {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 2;
+}
+.level-num--done { background: var(--primary-olive); color: var(--bg); }
+.level-num--doing { background: var(--scene-glacier); color: var(--bg); }
+.level-num--explore { background: var(--surface); border: 2px solid var(--border-visible); color: var(--text-secondary); }
+.level-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.level-status--done { color: var(--primary-olive); }
+.level-status--doing { color: var(--scene-glacier); }
+.level-status--explore { color: var(--text-disabled); }
+.level-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-display);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.level-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.level-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.level-role {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-top: 16px;
+}
+.level-role--tool { border-color: var(--primary-olive); color: var(--primary-olive); }
+.level-role--participant { border-color: var(--scene-glacier); color: var(--scene-glacier); }
+.level-role--engine { border-color: var(--primary-earth); color: var(--primary-earth); }
+
+/* ===== WORKFLOW LAYERS ===== */
+.layer-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.layer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px 20px;
+}
+.layer-card-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.layer-card-num.olive { color: var(--primary-olive); }
+.layer-card-num.glacier { color: var(--scene-glacier); }
+.layer-card-num.earth { color: var(--primary-earth); }
+.layer-card-num.orange { color: var(--accent-orange); }
+.layer-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.layer-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ===== REPORT STRATEGY ===== */
+.report-section { padding: 100px 120px; background: var(--surface-raised); }
+.report-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.report-card {
+  padding: 40px 28px;
+  border-top: 3px solid var(--scene-glacier);
+  background: var(--surface);
+}
+.report-card-num {
+  font-family: var(--font-mono);
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--scene-glacier);
+  line-height: 1;
+  opacity: 0.12;
+  margin-bottom: 24px;
+}
+.report-card-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-display);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.report-card-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ===== CLOSING ===== */
+.closing-section { padding: 100px 120px; }
+.closing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.closing-cell {
+  background: var(--surface);
+  padding: 48px 40px;
+}
+.closing-cell--statement {
+  background: var(--scene-glacier);
+  color: var(--bg);
+  grid-column: 1 / -1;
+  padding: 64px 48px;
+}
+.closing-cell--statement .closing-quote {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+  color: var(--bg);
+  max-width: 680px;
+}
+.closing-cell--statement .closing-attr {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-top: 24px;
+}
+.closing-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  margin-bottom: 16px;
+}
+.closing-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-display);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.closing-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--primary-darkgray);
+  color: rgba(255,255,255,0.3);
+  padding: 60px 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.footer-right {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .hero, section, .eff-section, .level-section, .report-section, .principle-statement, .closing-section, .footer {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .hero h1 { font-size: 80px; }
+  .hero-ghost { font-size: 240px; }
+  .tension-grid { grid-template-columns: 1fr; }
+  .eff-grid { grid-template-columns: 1fr; }
+  .boundary-grid { grid-template-columns: repeat(2, 1fr); }
+  .layer-cards { grid-template-columns: repeat(2, 1fr); }
+  .level-track { flex-direction: column; }
+  .level-track::before { display: none; }
+  .closing-grid { grid-template-columns: 1fr; }
+  .report-cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .hero, section, .eff-section, .level-section, .report-section, .principle-statement, .closing-section, .footer {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .hero { min-height: 80vh; }
+  .hero h1 { font-size: 56px; }
+  .hero-ghost { font-size: 180px; right: -10px; }
+  .hero-bounds { flex-direction: column; gap: 32px; }
+  .section-title { font-size: 36px; }
+  .boundary-grid { grid-template-columns: 1fr; }
+  .trace-cards { grid-template-columns: 1fr; }
+  .eff-row { grid-template-columns: 80px 1fr 60px; }
+  .eff-summary { grid-template-columns: 1fr; }
+  .layer-cards { grid-template-columns: 1fr; }
+  .principle-quote { font-size: 28px; }
+  .footer { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO — LIGHT ===== -->
+<section class="hero">
+  <div class="hero-ghost">BOUNDARY</div>
+  <div class="hero-inner">
+    <div class="hero-tag">P7 Core Ability</div>
+    <h1><strong>边界感</strong></h1>
+    <p class="hero-sub">从P6到P7，最重要的能力转变不是"做更多的事"，而是更清楚地知道哪些事该做、哪些事不该做。三种边界，三套工具。</p>
+    <div class="hero-bounds">
+      <div class="hero-bound">
+        <span class="hero-bound-num">BOUNDARY 01</span>
+        <span class="hero-bound-title">组织边界</span>
+        <span class="hero-bound-desc">权责不对等中的自我保护</span>
+      </div>
+      <div class="hero-bound">
+        <span class="hero-bound-num">BOUNDARY 02</span>
+        <span class="hero-bound-title">能力边界</span>
+        <span class="hero-bound-desc">AI可替代与不可替代的界线</span>
+      </div>
+      <div class="hero-bound">
+        <span class="hero-bound-num">BOUNDARY 03</span>
+        <span class="hero-bound-title">方法边界</span>
+        <span class="hero-bound-desc">从随机发挥到系统输出</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BOUNDARY 01: 组织边界 ===== -->
+<section>
+  <div class="section-label">Boundary 01 / 组织边界</div>
+  <div class="section-title">权责不对等中的<strong>自我保护</strong></div>
+  <p class="section-desc">策略组拥有定价权与规则制定权，服务组承担供应商管理与业务结果责任。这是组织设计的系统性问题，不是管理问题。</p>
+
+  <div class="tension-grid">
+    <div class="tension-cell tension-cell--dark">
+      <div class="tension-cell-label">Power Center</div>
+      <div class="tension-cell-title">策略组</div>
+      <div class="tension-cell-desc">拥有定价权、规则制定权。决定供应商的费率、分量规则、结算方式。决策后的后果由服务组承受。</div>
+    </div>
+    <div class="tension-cell tension-cell--light">
+      <div class="tension-cell-label">Responsibility Center</div>
+      <div class="tension-cell-title">服务组</div>
+      <div class="tension-cell-desc">承担供应商管理全责。当定价导致不满或流失时，安抚供应商、维持业务稳定的压力落在这里。</div>
+    </div>
+    <div class="tension-center">
+      <div class="tension-center-icon"><span>!</span></div>
+      <div>
+        <div class="tension-center-text">不建立保护策略，就会成为夹心层</div>
+        <div class="tension-center-sub">策略组不满意执行效果，供应商不满意定价政策——两头受压</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="boundary-grid">
+    <div class="boundary-card">
+      <div class="boundary-card-scene">准入管理</div>
+      <div class="boundary-card-title">准入决策的权力边界</div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--ctrl"></div>
+        <div>
+          <div class="boundary-item-label ctrl">可控</div>
+          <div class="boundary-item-text">准入标准制定、现场验厂判断、最终准入决策</div>
+        </div>
+      </div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--unctrl"></div>
+        <div>
+          <div class="boundary-item-label unctrl">不可控</div>
+          <div class="boundary-item-text">定价策略和结算规则制定</div>
+        </div>
+      </div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--action"></div>
+        <div>
+          <div class="boundary-item-label action">保护动作</div>
+          <div class="boundary-item-text">准入邮件抄送策略组，"定价以策略组最终确认为准"</div>
+        </div>
+      </div>
+    </div>
+    <div class="boundary-card">
+      <div class="boundary-card-scene">分量管理</div>
+      <div class="boundary-card-title">分量分配的责任切割</div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--ctrl"></div>
+        <div>
+          <div class="boundary-item-label ctrl">可控</div>
+          <div class="boundary-item-text">5维打分、供应商匹配</div>
+        </div>
+      </div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--unctrl"></div>
+        <div>
+          <div class="boundary-item-label unctrl">不可控</div>
+          <div class="boundary-item-text">名单分配规则和定价调整</div>
+        </div>
+      </div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--action"></div>
+        <div>
+          <div class="boundary-item-label action">保护动作</div>
+          <div class="boundary-item-text">分量邮件抄送策略组，"基于XX数据打分，定价调整以策略组为准"</div>
+        </div>
+      </div>
+    </div>
+    <div class="boundary-card">
+      <div class="boundary-card-scene">降价谈判</div>
+      <div class="boundary-card-title">谈判桌上的边界</div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--ctrl"></div>
+        <div>
+          <div class="boundary-item-label ctrl">可控</div>
+          <div class="boundary-item-text">数据准备、谈判策略、话术设计</div>
+        </div>
+      </div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--unctrl"></div>
+        <div>
+          <div class="boundary-item-label unctrl">不可控</div>
+          <div class="boundary-item-text">降价目标本身</div>
+        </div>
+      </div>
+      <div class="boundary-item">
+        <div class="boundary-dot boundary-dot--action"></div>
+        <div>
+          <div class="boundary-item-label action">保护动作</div>
+          <div class="boundary-item-text">谈判前邮件抄送策略组，"降价目标由策略组制定，谈判执行由服务组负责"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 留痕模板 -->
+  <div style="margin-top: 80px;">
+    <div class="section-label">Boundary 01.1 / 留痕模板</div>
+    <div class="section-title" style="font-size: 36px;">关键场景的<strong>留痕工具</strong></div>
+    <p class="section-desc">留痕不是推卸责任，是确保组织决策的透明度和可追溯性。</p>
+  </div>
+
+  <div class="trace-cards">
+    <div class="trace-card">
+      <div class="trace-card-scene">Risk 01</div>
+      <div class="trace-card-title">策略组压价导致供应商流失风险</div>
+      <div class="trace-card-action">发送邮件记录风险评估，抄送军哥和策略组。"基于XX数据，我的评估是XX风险。请策略组综合考量。"</div>
+    </div>
+    <div class="trace-card">
+      <div class="trace-card-scene">Risk 02</div>
+      <div class="trace-card-title">供应商因定价问题抱怨</div>
+      <div class="trace-card-action">记录供应商反馈，转述给策略组，明确责任边界。核心："倾听-记录-转述"，不承诺不拒绝。</div>
+    </div>
+    <div class="trace-card">
+      <div class="trace-card-scene">Risk 03</div>
+      <div class="trace-card-title">KPI未达成时的归因</div>
+      <div class="trace-card-action">诊断报告中单列"定价影响"章节，用数据证明"费效比优化 → 供应商稳定性下降 → KPI受损"的因果链。</div>
+    </div>
+  </div>
+
+  <!-- 向上汇报 -->
+  <div style="margin-top: 80px;">
+    <div class="section-label">Boundary 01.2 / 向上汇报</div>
+    <div class="section-title" style="font-size: 36px;">让上级<strong>看见边界</strong></div>
+    <p class="section-desc">汇报的核心不是全包或全推，而是让上级清楚地知道哪些是你负责的、哪些不是。</p>
+  </div>
+  <div class="report-cards">
+    <div class="report-card">
+      <div class="report-card-num">01</div>
+      <div class="report-card-title">与军哥汇报</div>
+      <div class="report-card-text">汇报材料中明确标注"可控项"和"不可控项"。避免全包或全推的极端。</div>
+    </div>
+    <div class="report-card">
+      <div class="report-card-num">02</div>
+      <div class="report-card-title">与刘伟佳对齐</div>
+      <div class="report-card-text">对齐邮件中记录"我提出XX风险，策略组决定XX"。确保每个建议和决策都有据可查。</div>
+    </div>
+    <div class="report-card">
+      <div class="report-card-num">03</div>
+      <div class="report-card-title">会议纪要</div>
+      <div class="report-card-text">记录"建议了XX，决策由XX做出"。确保组织决策的透明度和可追溯性。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BOUNDARY 02: 能力边界 ===== -->
+<section class="eff-section">
+  <div class="section-label">Boundary 02 / 能力边界</div>
+  <div class="section-title">48%可替代，<strong>52%不可替代</strong></div>
+  <p class="section-desc">数据驱动的由AI做，关系判断的由人做。AI是副驾驶，人是驾驶员。提效不是替代，是释放时间投入不可替代的价值创造。</p>
+
+  <div class="eff-grid">
+    <div>
+      <div class="eff-col-title">日常工作 · 4.6h/天</div>
+      <div class="eff-row">
+        <span class="eff-name">排名数据查看</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 60%"></div>
+            <div class="eff-bar-human" style="width: 40%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>0.3h</strong> / 0.5h</span>
+      </div>
+      <div class="eff-row">
+        <span class="eff-name">内部群监控</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 67%"></div>
+            <div class="eff-bar-human" style="width: 33%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>0.2h</strong> / 0.3h</span>
+      </div>
+      <div class="eff-row">
+        <span class="eff-name">供应商老板沟通</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 20%"></div>
+            <div class="eff-bar-human" style="width: 80%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>0.3h</strong> / 1.5h</span>
+      </div>
+      <div class="eff-row">
+        <span class="eff-name">写邮件/报告</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 60%"></div>
+            <div class="eff-bar-human" style="width: 40%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>0.3h</strong> / 0.5h</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="eff-col-title">周期性工作 · 38h/月</div>
+      <div class="eff-row">
+        <span class="eff-name">准入评估</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 50%"></div>
+            <div class="eff-bar-human" style="width: 50%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>50%</strong> 提效</span>
+      </div>
+      <div class="eff-row">
+        <span class="eff-name">分量决策</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 53%"></div>
+            <div class="eff-bar-human" style="width: 47%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>53%</strong> 提效</span>
+      </div>
+      <div class="eff-row">
+        <span class="eff-name">出差巡检</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 40%"></div>
+            <div class="eff-bar-human" style="width: 60%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>40%</strong> 提效</span>
+      </div>
+      <div class="eff-row">
+        <span class="eff-name">战略性工作</span>
+        <div class="eff-bar-wrap">
+          <div class="eff-bar-track">
+            <div class="eff-bar-ai" style="width: 15%"></div>
+            <div class="eff-bar-human" style="width: 85%"></div>
+          </div>
+        </div>
+        <span class="eff-val"><strong>低</strong> 提效</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="eff-summary">
+    <div class="eff-summary-card">
+      <div class="eff-summary-val glacier">2.2h</div>
+      <div class="eff-summary-label">日均AI提效</div>
+      <div class="eff-summary-sub">从4.6h降至2.4h</div>
+    </div>
+    <div class="eff-summary-card">
+      <div class="eff-summary-val olive">19.5h</div>
+      <div class="eff-summary-label">月度AI提效</div>
+      <div class="eff-summary-sub">从38h降至18.5h</div>
+    </div>
+    <div class="eff-summary-card">
+      <div class="eff-summary-val earth">48%</div>
+      <div class="eff-summary-label">整体提效比例</div>
+      <div class="eff-summary-sub">AI可替代 vs 不可替代</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 48/52 分界声明 ===== -->
+<section class="principle-statement">
+  <div class="principle-quote">职业发展路径不是"让AI替代所有工作"，而是"让AI替代所有可替代的工作，把节省的时间投入到不可替代的价值创造中"。</div>
+  <div class="principle-attr">48% Rule / Boundary 02</div>
+  <div class="split-bar">
+    <div class="split-bar-track">
+      <div class="split-bar-ai"></div>
+      <div class="split-bar-human"></div>
+    </div>
+    <div class="split-bar-legend">
+      <div class="split-bar-legend-item">
+        <div class="split-bar-legend-dot" style="background: rgba(255,255,255,0.7);"></div>
+        AI 可替代 48%
+      </div>
+      <div class="split-bar-legend-item">
+        <div class="split-bar-legend-dot" style="background: var(--primary-olive);"></div>
+        不可替代 52%
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BOUNDARY 03: 方法边界 ===== -->
+<section class="level-section">
+  <div class="section-label">Boundary 03 / 方法边界</div>
+  <div class="section-title">从随机发挥到<strong>系统输出</strong></div>
+  <p class="section-desc">Plan模板体系确保每个复杂任务都有规划、每个规划都有验收标准、每个验收都有明确标志。AI增强工作流让深度嵌入成为可能。</p>
+
+  <div class="level-track">
+    <div class="level-card">
+      <div class="level-num level-num--done">1</div>
+      <div class="level-status level-status--done">Completed</div>
+      <div class="level-title">AI 辅助</div>
+      <div class="level-subtitle">具体任务中的工具</div>
+      <div class="level-desc">邮件初稿、数据分析、信息搜索。人操作，AI响应。</div>
+      <div class="level-role level-role--tool">AI = Tool</div>
+    </div>
+    <div class="level-card">
+      <div class="level-num level-num--doing">2</div>
+      <div class="level-status level-status--doing">In Progress</div>
+      <div class="level-title">AI 嵌入</div>
+      <div class="level-subtitle">流程中的参与者</div>
+      <div class="level-desc">AI被嵌入标准工作流，成为流程一环。准入评估Phase 1自动完成，排名监控自动执行。</div>
+      <div class="level-role level-role--participant">AI = Participant</div>
+    </div>
+    <div class="level-card">
+      <div class="level-num level-num--explore">3</div>
+      <div class="level-status level-status--explore">Exploring</div>
+      <div class="level-title">AI 驱动</div>
+      <div class="level-subtitle">工作流的引擎</div>
+      <div class="level-desc">AI驱动整个工作流运转。人定义目标、审核结果、处理例外。</div>
+      <div class="level-role level-role--engine">AI = Engine</div>
+    </div>
+  </div>
+
+  <!-- 工作流四层 -->
+  <div style="margin-top: 80px;">
+    <div class="section-label">Boundary 03.1 / 工作流分层</div>
+  </div>
+  <div class="layer-cards">
+    <div class="layer-card">
+      <div class="layer-card-num olive">Layer 01</div>
+      <div class="layer-card-title">信息收集层</div>
+      <div class="layer-card-desc">AI自动监控排名数据、群消息、供应商动态，生成每日工作摘要。解决信息过载。</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-card-num glacier">Layer 02</div>
+      <div class="layer-card-title">分析判断层</div>
+      <div class="layer-card-desc">AI标注异常、识别趋势、提出假设。人验证和补充，不需从零分析。</div>
+    </div>
+    <div class="layer-card">
+      <div class="layer-card-num earth">Layer 03</div>
+      <div class="layer-card-title">输出交付层</div>
+      <div class="layer-card-desc">AI生成报告、邮件、整改通知初稿。人审核修改，解决写作负担。</div>
+    </div>
+    <div class="layer-card" style="border-color: var(--border-visible);">
+      <div class="layer-card-num orange">Layer 04</div>
+      <div class="layer-card-title">决策执行层</div>
+      <div class="layer-card-desc">判断力度、拿捏分寸、关系维护、战略思考——需要人的经验和直觉。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CLOSING ===== -->
+<section class="closing-section">
+  <div class="section-label">Core Insight</div>
+  <div class="closing-grid">
+    <div class="closing-cell closing-cell--statement">
+      <div class="closing-quote">边界感不是推诿，而是让每个人在自己的边界内做到最好。明确的边界对所有人都有利。</div>
+      <div class="closing-attr">Boundary Sense / P7 Core Ability</div>
+    </div>
+    <div class="closing-cell">
+      <div class="closing-num">Insight 01</div>
+      <div class="closing-title">组织边界：不是管理问题，是系统问题</div>
+      <div class="closing-text">保护策略不是推卸责任，而是明确边界。策略组清楚决策责任，服务组清楚执行责任，供应商清楚问题根源。</div>
+    </div>
+    <div class="closing-cell">
+      <div class="closing-num">Insight 02</div>
+      <div class="closing-title">能力边界：48%法则</div>
+      <div class="closing-text">AI可替代48%的工作，但剩下的52%是核心价值。职业发展不是"让AI替代所有工作"，而是"释放时间投入不可替代的价值创造"。</div>
+    </div>
+    <div class="closing-cell">
+      <div class="closing-num">Insight 03</div>
+      <div class="closing-title">方法边界：从随机到系统</div>
+      <div class="closing-text">知识工作的最大挑战是从"随机发挥"走向"系统输出"。Plan模板确保每个复杂任务都有规划、有验收、有标志。</div>
+    </div>
+    <div class="closing-cell">
+      <div class="closing-num">Insight 04</div>
+      <div class="closing-title">从个人到组织</div>
+      <div class="closing-text">系统输出的下一阶段是将隐性知识显性化、标准化、流程化。渐进式沉淀——日常记录决策和判断，隐性知识逐渐变为组织系统。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-left">Boundary Sense / P7 Core Ability</div>
+  <div class="footer-right">2026 / Mino Knowledge Base</div>
+</footer>
+
+</body>
+</html>

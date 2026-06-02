@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 站点信号图谱</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-darkgray: #2C2C2C;
+    --primary-olive: #4A5D3A;
+    --primary-earth: #8B7355;
+    --accent-yellow: #FFD100;
+    --accent-orange: #E55B2B;
+    --scene-glacier: #2A4A5A;
+    --scene-rock: #808080;
+    --success: #2E7D32;
+    --warning: #F9A825;
+    --error: #C62828;
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --surface-raised: #F5F5F0;
+    --border: #E5E5E0;
+    --border-visible: #C0C0B8;
+    --text-display: #2C2C2C;
+    --text-primary: #1A1A1A;
+    --text-secondary: #6B6B6B;
+    --text-disabled: #A0A0A0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0;
+    background: rgba(250,250,248,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    padding: 0 2rem;
+  }
+  nav .nav-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 48px;
+  }
+  nav .brand {
+    font-family: Georgia, serif;
+    font-size: 0.9375rem; font-weight: 700;
+    letter-spacing: 0.02em; color: var(--text-display);
+  }
+  nav .brand span { color: var(--primary-earth); }
+  nav .nav-pages {
+    display: flex; gap: 0.25rem;
+  }
+  nav .nav-pages a {
+    font-size: 0.6875rem; font-weight: 500;
+    color: var(--text-disabled); text-decoration: none;
+    letter-spacing: 0.04em; padding: 0.25rem 0.5rem;
+    border-radius: 4px; transition: all 150ms ease-out;
+  }
+  nav .nav-pages a:hover { color: var(--text-secondary); }
+  nav .nav-pages a.active {
+    color: var(--text-display);
+    background: var(--surface-raised);
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+  /* Hero */
+  .hero { padding: 3rem 0 2rem; }
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--primary-earth); margin-bottom: 0.75rem;
+  }
+  .hero h1 {
+    font-family: Georgia, serif;
+    font-size: 2rem; font-weight: 700;
+    line-height: 1.2; margin-bottom: 0.5rem;
+    color: var(--text-display);
+  }
+  .hero .positioning {
+    font-size: 0.9375rem; color: var(--text-secondary);
+    max-width: 640px; line-height: 1.7;
+  }
+
+  /* Metrics */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .metric {
+    background: var(--surface);
+    padding: 1.5rem;
+    display: flex; flex-direction: column;
+  }
+  .metric .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 0.5rem;
+  }
+  .metric .value {
+    font-family: Georgia, serif;
+    font-size: 2rem; font-weight: 700;
+    color: var(--text-display);
+    line-height: 1;
+  }
+  .metric .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; font-weight: 500;
+    margin-top: 0.375rem;
+  }
+  .metric .sub.up { color: var(--primary-olive); }
+  .metric .sub.down { color: var(--accent-orange); }
+  .metric .sub.neutral { color: var(--text-secondary); }
+
+  /* Section */
+  .section {
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 1.5rem;
+  }
+  .section-title {
+    font-family: Georgia, serif;
+    font-size: 1.125rem; font-weight: 700;
+    color: var(--text-display);
+  }
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.2rem 0.5rem; border-radius: 4px;
+    border: 1px solid;
+  }
+  .section-tag.expand {
+    color: var(--primary-olive); border-color: var(--primary-olive);
+  }
+  .section-tag.contract {
+    color: var(--accent-orange); border-color: var(--accent-orange);
+  }
+
+  /* Quadrant Chart */
+  .quadrant-wrap {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .quadrant {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2/1;
+    min-height: 360px;
+  }
+  .quadrant svg { width: 100%; height: 100%; }
+  .quadrant-label {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5625rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-disabled);
+  }
+  .quadrant-label.tl { top: 8px; left: 8px; }
+  .quadrant-label.tr { top: 8px; right: 8px; }
+  .quadrant-label.bl { bottom: 8px; left: 8px; }
+  .quadrant-label.br { bottom: 8px; right: 8px; }
+  .axis-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5625rem; font-weight: 500;
+    color: var(--text-disabled); letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .axis-label.x { text-align: center; margin-top: 0.5rem; }
+  .axis-label.y {
+    position: absolute; left: -0.5rem; top: 50%;
+    transform: rotate(-90deg) translateX(-50%);
+    transform-origin: left center;
+  }
+
+  /* Signal Cards */
+  .signal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .signal-list {
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .signal-list-header {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+  .signal-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+    cursor: pointer;
+    transition: background 150ms ease-out;
+  }
+  .signal-item:last-child { border-bottom: none; }
+  .signal-item:hover { background: var(--surface-raised); margin: 0 -0.5rem; padding: 0.75rem 0.5rem; border-radius: 4px; }
+  .signal-name {
+    font-size: 0.8125rem; font-weight: 500;
+    color: var(--text-primary); line-height: 1.4;
+  }
+  .signal-name .supplier {
+    font-weight: 600; color: var(--text-display);
+  }
+  .signal-name .detail {
+    display: block; font-size: 0.6875rem;
+    font-weight: 400; color: var(--text-secondary);
+    margin-top: 0.125rem;
+  }
+  .signal-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8125rem; font-weight: 600;
+    text-align: right; white-space: nowrap;
+  }
+  .signal-change.up { color: var(--primary-olive); }
+  .signal-change.down { color: var(--accent-orange); }
+  .signal-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem; color: var(--text-disabled);
+    text-align: right; white-space: nowrap;
+  }
+
+  /* Bar indicator */
+  .bar-indicator {
+    height: 3px; border-radius: 1.5px;
+    margin-top: 0.25rem;
+  }
+  .bar-indicator.up { background: var(--primary-olive); }
+  .bar-indicator.down { background: var(--accent-orange); }
+
+  /* Key Insight */
+  .insight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--primary-earth);
+    border-radius: 0 8px 8px 0;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+  }
+  .insight .insight-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5625rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--primary-earth); margin-bottom: 0.375rem;
+  }
+  .insight p {
+    font-size: 0.875rem; color: var(--text-primary);
+    line-height: 1.7;
+  }
+  .insight p strong { color: var(--text-display); font-weight: 600; }
+
+  /* Dot Matrix Decor */
+  .dot-decor {
+    display: grid;
+    grid-template-columns: repeat(5, 4px);
+    grid-template-rows: repeat(7, 4px);
+    gap: 2px;
+    opacity: 0.15;
+    position: absolute;
+  }
+  .dot-decor .d {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--primary-darkgray);
+  }
+  .dot-decor .d.e { background: transparent; }
+
+  /* Footer */
+  footer {
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    align-items: center;
+  }
+  footer .src {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.625rem; color: var(--text-disabled);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 768px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .signal-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+    nav .nav-pages { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand">站点信号<span>图谱</span></div>
+    <div class="nav-pages">
+      <a href="#" class="active">P0 总览</a>
+      <a href="#">P1 底图</a>
+      <a href="#">P2 扩张</a>
+      <a href="#">P3 收缩</a>
+      <a href="#">P4 位移</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-label">Q1 2026 / 信号总览</div>
+    <h1>增长与收缩的信号</h1>
+    <p class="positioning">
+      108个站点，28家供应商。不是静态全景图——是"哪里需要你去看"。
+      管理介入的窗口在信号出现时，不在结果确认后。
+    </p>
+  </section>
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="metric">
+      <span class="label">Total Headcount</span>
+      <span class="value" data-edit>3,340</span>
+      <span class="sub neutral">1-3月在册</span>
+    </div>
+    <div class="metric">
+      <span class="label">Q1 Growth</span>
+      <span class="value" data-edit>+0.9%</span>
+      <span class="sub up">微增</span>
+    </div>
+    <div class="metric">
+      <span class="label">Active Sites</span>
+      <span class="value" data-edit>108</span>
+      <span class="sub neutral">28家供应商 · 15个项目</span>
+    </div>
+    <div class="metric">
+      <span class="label">Signals</span>
+      <span class="value" data-edit>10</span>
+      <span class="sub neutral">5扩张 · 5收缩</span>
+    </div>
+  </div>
+
+  <!-- Quadrant -->
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">供应商象限</div>
+    </div>
+    <div class="quadrant-wrap">
+      <div class="quadrant">
+        <svg viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet">
+          <!-- Grid lines -->
+          <line x1="300" y1="0" x2="300" y2="300" stroke="#E5E5E0" stroke-width="1" stroke-dasharray="4,4"/>
+          <line x1="0" y1="150" x2="600" y2="150" stroke="#E5E5E0" stroke-width="1" stroke-dasharray="4,4"/>
+          <!-- Axis labels -->
+          <text x="300" y="295" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#A0A0A0" letter-spacing="0.08em">SCALE → 在册人力</text>
+          <text x="12" y="150" text-anchor="start" font-family="JetBrains Mono" font-size="9" fill="#A0A0A0" letter-spacing="0.08em" transform="rotate(-90,12,150)">GROWTH → Q1增速</text>
+
+          <!-- Bubbles - Size = headcount, Color = direction -->
+          <!-- 毅航 481人 +15.3% 大+快 TR -->
+          <circle cx="420" cy="75" r="28" fill="rgba(74,93,58,0.25)" stroke="#4A5D3A" stroke-width="1.5"/>
+          <text x="420" y="78" text-anchor="middle" font-family="Inter" font-size="9" font-weight="600" fill="#2C2C2C">毅航</text>
+
+          <!-- 毛毛虫 ~350人 +8% 大+稳 BR -->
+          <circle cx="390" cy="180" r="24" fill="rgba(128,128,128,0.15)" stroke="#808080" stroke-width="1"/>
+          <text x="390" y="183" text-anchor="middle" font-family="Inter" font-size="8" font-weight="500" fill="#6B6B6B">毛毛虫</text>
+
+          <!-- 伽玛 ~300人 +5% 大+稳 BR -->
+          <circle cx="365" cy="190" r="22" fill="rgba(128,128,128,0.15)" stroke="#808080" stroke-width="1"/>
+          <text x="365" y="193" text-anchor="middle" font-family="Inter" font-size="8" font-weight="500" fill="#6B6B6B">伽玛</text>
+
+          <!-- 汇讯 ~280人 +1.8% 大+平 BR -->
+          <circle cx="345" cy="200" r="21" fill="rgba(128,128,128,0.15)" stroke="#808080" stroke-width="1"/>
+          <text x="345" y="203" text-anchor="middle" font-family="Inter" font-size="8" font-weight="500" fill="#6B6B6B">汇讯</text>
+
+          <!-- 赛维斯 ~190人 +4% 中+平 -->
+          <circle cx="295" cy="195" r="17" fill="rgba(128,128,128,0.15)" stroke="#808080" stroke-width="1"/>
+          <text x="295" y="198" text-anchor="middle" font-family="Inter" font-size="7" font-weight="500" fill="#6B6B6B">赛维斯</text>
+
+          <!-- 岐力 138人 +84% 小+快 TR -->
+          <circle cx="460" cy="55" r="15" fill="rgba(74,93,58,0.3)" stroke="#4A5D3A" stroke-width="1.5"/>
+          <text x="460" y="58" text-anchor="middle" font-family="Inter" font-size="7" font-weight="600" fill="#4A5D3A">岐力</text>
+
+          <!-- 华啸 ~130人 +26.7% 小+快 TR -->
+          <circle cx="430" cy="95" r="14" fill="rgba(74,93,58,0.25)" stroke="#4A5D3A" stroke-width="1"/>
+          <text x="430" y="98" text-anchor="middle" font-family="Inter" font-size="7" font-weight="600" fill="#4A5D3A">华啸</text>
+
+          <!-- 新动力 64人 +43.8% 小+快 TR -->
+          <circle cx="445" cy="70" r="10" fill="rgba(74,93,58,0.25)" stroke="#4A5D3A" stroke-width="1"/>
+          <text x="462" y="73" text-anchor="start" font-family="Inter" font-size="6.5" font-weight="600" fill="#4A5D3A">新动力</text>
+
+          <!-- 速讯达 ~200人 -27.6% 中+缩 TL -->
+          <circle cx="180" cy="55" r="18" fill="rgba(229,91,43,0.2)" stroke="#E55B2B" stroke-width="1.5"/>
+          <text x="180" y="58" text-anchor="middle" font-family="Inter" font-size="7.5" font-weight="600" fill="#E55B2B">速讯达</text>
+
+          <!-- 创世伙伴 ~70人 -20% 小+缩 TL -->
+          <circle cx="200" cy="80" r="9" fill="rgba(229,91,43,0.15)" stroke="#E55B2B" stroke-width="1"/>
+          <text x="200" y="83" text-anchor="middle" font-family="Inter" font-size="6.5" font-weight="600" fill="#E55B2B">创世伙伴</text>
+
+          <!-- 中弘智享 ~150人 -12% 中+缩 -->
+          <circle cx="220" cy="110" r="14" fill="rgba(229,91,43,0.12)" stroke="#E55B2B" stroke-width="1"/>
+          <text x="220" y="113" text-anchor="middle" font-family="Inter" font-size="7" font-weight="500" fill="#E55B2B">中弘智享</text>
+
+          <!-- Small neutral suppliers cluster -->
+          <circle cx="270" cy="210" r="6" fill="rgba(128,128,128,0.1)" stroke="#C0C0B8" stroke-width="0.5"/>
+          <circle cx="285" cy="220" r="5" fill="rgba(128,128,128,0.1)" stroke="#C0C0B8" stroke-width="0.5"/>
+          <circle cx="260" cy="225" r="5" fill="rgba(128,128,128,0.1)" stroke="#C0C0B8" stroke-width="0.5"/>
+          <circle cx="250" cy="215" r="4" fill="rgba(128,128,128,0.1)" stroke="#C0C0B8" stroke-width="0.5"/>
+          <circle cx="275" cy="235" r="4" fill="rgba(128,128,128,0.1)" stroke="#C0C0B8" stroke-width="0.5"/>
+          <text x="268" y="248" text-anchor="middle" font-family="JetBrains Mono" font-size="6" fill="#A0A0A0">13家中小供应商</text>
+        </svg>
+
+        <!-- Quadrant labels -->
+        <div class="quadrant-label tl">大规模 · 收缩中</div>
+        <div class="quadrant-label tr">大规模 · 扩张中</div>
+        <div class="quadrant-label bl">小规模 · 收缩中</div>
+        <div class="quadrant-label br">小规模 · 平稳</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Insight -->
+  <div class="insight">
+    <div class="insight-label">Key Signal</div>
+    <p>
+      前5家供应商占总量<strong>48%</strong>，但Q1平均增速仅+7%。
+      增长来自边缘：<strong>岐力+84%</strong>、<strong>新动力+44%</strong>、<strong>华啸+27%</strong>。
+      而菁卡拉新项目15站全线收缩<strong>-19%</strong>，是Q1最明确的系统性信号。
+    </p>
+  </div>
+
+  <!-- Signal Lists -->
+  <section class="section">
+    <div class="signal-grid">
+      <!-- Expand -->
+      <div>
+        <div class="section-header">
+          <div class="section-title">正在变大</div>
+          <div class="section-tag expand">扩张</div>
+        </div>
+        <div class="signal-list">
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">秦冀德辰</span>辛集企业主贷
+              <span class="detail">河北 · 新产线爬坡</span>
+            </div>
+            <div class="signal-change up">+150%</div>
+            <div class="signal-meta">10→25</div>
+            <div class="bar-indicator up" style="width:100%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">岐力</span>红谷滩金企融合
+              <span class="detail">江西 · 新产线爬坡</span>
+            </div>
+            <div class="signal-change up">+125%</div>
+            <div class="signal-meta">20→45</div>
+            <div class="bar-indicator up" style="width:83%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">毅航</span>蜀山财富固收
+              <span class="detail">安徽 · 老站点放量</span>
+            </div>
+            <div class="signal-change up">+44%</div>
+            <div class="signal-meta">68→98</div>
+            <div class="bar-indicator up" style="width:30%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">承德新动力</span>兴隆企业主贷
+              <span class="detail">河北 · 小供应商爆发</span>
+            </div>
+            <div class="signal-change up">+47%</div>
+            <div class="signal-meta">36→53</div>
+            <div class="bar-indicator up" style="width:31%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">锦瑞裕华</span>企业主贷
+              <span class="detail">河北 · 小供应商爆发</span>
+            </div>
+            <div class="signal-change up">+91%</div>
+            <div class="signal-meta">11→21</div>
+            <div class="bar-indicator up" style="width:61%;grid-column:1/-1;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contract -->
+      <div>
+        <div class="section-header">
+          <div class="section-title">正在变小</div>
+          <div class="section-tag contract">收缩</div>
+        </div>
+        <div class="signal-list">
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">汇讯</span>合肥金条
+              <span class="detail">安徽 · 供应商内部失衡</span>
+            </div>
+            <div class="signal-change down">-54%</div>
+            <div class="signal-meta">35→16</div>
+            <div class="bar-indicator down" style="width:100%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">汇讯</span>陇西菁卡拉新
+              <span class="detail">甘肃 · 项目系统性下滑</span>
+            </div>
+            <div class="signal-change down">-53%</div>
+            <div class="signal-meta">32→15</div>
+            <div class="bar-indicator down" style="width:98%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">速讯达</span>和平菁卡拉新
+              <span class="detail">辽宁 · 项目系统性下滑</span>
+            </div>
+            <div class="signal-change down">-42%</div>
+            <div class="signal-meta">59→34</div>
+            <div class="bar-indicator down" style="width:78%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">创世伙伴</span>盐湖财富固收
+              <span class="detail">陕西 · 整体衰退</span>
+            </div>
+            <div class="signal-change down">-40%</div>
+            <div class="signal-meta">20→12</div>
+            <div class="bar-indicator down" style="width:74%;grid-column:1/-1;"></div>
+          </div>
+          <div class="signal-item" data-edit>
+            <div class="signal-name">
+              <span class="supplier">中弘智享</span>黄浦菁卡拉新
+              <span class="detail">辽宁 · 项目系统性下滑</span>
+            </div>
+            <div class="signal-change down">-23%</div>
+            <div class="signal-meta">43→33</div>
+            <div class="bar-indicator down" style="width:43%;grid-column:1/-1;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="src">DATA: 站点2026.xlsx / 2026 Q1 在册人力 / 不含业绩</div>
+    <div class="src">DESIGN: haglofs-design / urban scene</div>
+  </footer>
+
+</div>
+
+</body>
+</html>

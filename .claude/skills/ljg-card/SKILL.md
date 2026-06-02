@@ -1,6 +1,6 @@
 ---
 name: ljg:card
-description: "Content caster (铸). Transforms content into PNG visuals. Seven molds: long reading card, infograph, multi-card, visual sketchnote, comic (manga B&W), whiteboard, big-fonts attachment card. Output to ~/Downloads/. Trigger: 铸、cast、做成图、做成卡片、信息图、漫画、白板、小红书卡片。"
+description: "Content caster (铸)。把内容转为PNG图。七种模板：长阅读卡片、信息图、多卡片、视觉涂鸦、漫画、白板、大字附件卡。触发词：铸、cast、做成图、做成卡片、信息图、漫画、白板、小红书卡片。"
 user_invocable: true
 version: "1.8.0"
 ---

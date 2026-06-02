@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 转型落地执行方案</title>
+<style>
+
+  :root {
+    --bg: #faf8f5;
+    --card-bg: #ffffff;
+    --text: #2c2c2c;
+    --text-secondary: #6b6b6b;
+    --accent: #4a90d9;
+    --accent-light: #e8f1fb;
+    --border: #e8e4df;
+    --success: #3a8f6a;
+    --warning: #d4a742;
+    --danger: #d94a4a;
+    --tag-bg: #f0ede8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Serif SC", "STSong", "Songti SC", Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  /* 标题区 — 衬线装饰 */
+  .report-header {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 8px;
+  }
+  .report-header::before {
+    content: '\201C';
+    position: absolute;
+    left: -8px;
+    top: -12px;
+    font-size: 72px;
+    color: var(--accent);
+    opacity: 0.15;
+    font-family: Georgia, serif;
+    line-height: 1;
+    pointer-events: none;
+  }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; }
+  h2 {
+    font-size: 20px; font-weight: 600; margin: 32px 0 16px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2 .section-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  h3 { font-size: 16px; font-weight: 600; margin: 16px 0 8px; }
+  .subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 32px; }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card-header {
+    font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-header .icon { font-size: 18px; }
+  .tag {
+    display: inline-block; background: var(--tag-bg); padding: 3px 10px;
+    border-radius: 20px; font-size: 12px; color: var(--text-secondary); margin: 2px 4px 2px 0;
+  }
+  .tag.active { background: var(--accent-light); color: var(--accent); }
+  .tag.installed { background: #e8f5e9; color: var(--success); }
+  .tag.needed { background: #fff8e1; color: var(--warning); }
+  .tag.source-system { background: #e8f1fb; color: #4a90d9; }
+  .tag.source-user { background: #f3e8ff; color: #7c3aed; }
+  .tag.potential-high { background: #fde8e8; color: var(--danger); }
+  .tag.potential-mid { background: #fff8e1; color: var(--warning); }
+  .tag.potential-low { background: #e8f5e9; color: var(--success); }
+  /* 迭代卡片 */
+  .iter-critical { border-left: 4px solid var(--danger); }
+  .iter-recommend { border-left: 4px solid var(--warning); }
+  .iter-keep { border-left: 4px solid var(--success); }
+  .iter-badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 12px; font-weight: 600;
+  }
+  .iter-badge.critical { background: #fde8e8; color: var(--danger); }
+  .iter-badge.recommend { background: #fff8e1; color: var(--warning); }
+  .iter-badge.keep { background: #e8f5e9; color: var(--success); }
+  /* 表格 */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th {
+    background: var(--bg); text-align: left; padding: 10px 12px;
+    font-weight: 600; border-bottom: 2px solid var(--border);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-secondary);
+  }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  /* KPI 指标卡 */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px;
+  }
+  .kpi-card {
+    text-align: center; padding: 16px 12px;
+    background: var(--bg); border-radius: 10px;
+    border-top: 3px solid var(--accent);
+    transition: transform 0.15s;
+  }
+  .kpi-card:hover { transform: translateY(-2px); }
+  .kpi-card .kpi-value {
+    font-size: 26px; font-weight: 700; color: var(--accent);
+    font-family: "SF Mono", Menlo, "Noto Serif SC", serif;
+  }
+  .kpi-card .kpi-label {
+    font-size: 12px; color: var(--text-secondary); margin-top: 4px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .kpi-card.success { border-top-color: var(--success); }
+  .kpi-card.success .kpi-value { color: var(--success); }
+  /* 对比表 */
+  .compare-table th:last-child { background: var(--accent-light); color: var(--accent); }
+  .compare-table td:last-child { background: #fafcff; }
+  /* Skill 卡片 */
+  .skill-card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 16px; transition: box-shadow 0.2s;
+    border-left: 4px solid var(--accent);
+  }
+  .skill-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .skill-card .skill-info { flex: 1; }
+  .skill-card .skill-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .skill-card .skill-desc { font-size: 13px; color: var(--text-secondary); }
+  .skill-card .skill-meta { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+  .skill-card .skill-action { white-space: nowrap; }
+  /* 自动化卡片 */
+  .auto-card {
+    background: linear-gradient(135deg, #f0f7ff, #f8f5ff); border: 1px solid #dde5f0;
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  .auto-card .auto-name { font-weight: 600; font-size: 14px; }
+  .auto-card .auto-meta { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+  .auto-card .auto-meta span { margin-right: 16px; }
+  /* 对比网格 */
+  .compare-grid {
+    display: grid; grid-template-columns: 1fr 60px 1fr; gap: 8px 12px;
+    align-items: center; font-size: 14px;
+  }
+  .compare-grid .vs { text-align: center; color: var(--text-secondary); font-weight: 600; }
+  /* 周度清单 */
+  .weekly-plan { margin-bottom: 24px; }
+  .week-section {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 24px; margin-bottom: 20px; page-break-inside: avoid;
+  }
+  .week-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--accent-light);
+  }
+  .week-badge {
+    background: var(--accent); color: #fff; width: 40px; height: 40px;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; flex-shrink: 0;
+  }
+  .week-title { font-size: 17px; font-weight: 700; color: var(--text); margin: 0; }
+  .week-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .week-target {
+    background: var(--bg); border-radius: 8px; padding: 10px 14px;
+    margin-bottom: 16px; font-size: 13px; color: var(--text-secondary);
+  }
+  .week-target strong { color: var(--accent); }
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist-item {
+    display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+    border-bottom: 1px dashed var(--border); font-size: 14px; line-height: 1.6;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item .cb {
+    width: 22px; height: 22px; border: 2px solid #c4bfb8; border-radius: 4px;
+    flex-shrink: 0; margin-top: 1px; position: relative; background: #fff;
+    transition: border-color 0.2s; cursor: default;
+  }
+  .checklist-item .cb::after {
+    content: ''; position: absolute; display: none; left: 5px; top: 1px;
+    width: 8px; height: 13px; border: solid var(--success); border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .checklist-item .cb.checked { border-color: var(--success); background: #e8f5e9; }
+  .checklist-item .cb.checked::after { display: block; }
+  .checklist-item .task-content { flex: 1; }
+  .checklist-item .task-content .task-name { font-weight: 500; margin-bottom: 2px; }
+  .checklist-item .task-content .task-detail { font-size: 12px; color: var(--text-secondary); }
+  .checklist-item .task-tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 10px;
+    white-space: nowrap; flex-shrink: 0; font-weight: 500;
+  }
+  .task-tag.must { background: #fde8e8; color: var(--danger); }
+  .task-tag.should { background: #fff8e1; color: var(--warning); }
+  .task-tag.nice { background: #e8f5e9; color: var(--success); }
+  .time-summary {
+    display: flex; gap: 12px; margin-top: 16px; padding-top: 12px;
+    border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); flex-wrap: wrap;
+  }
+  .time-summary .time-badge {
+    background: var(--tag-bg); padding: 4px 10px; border-radius: 6px; font-weight: 500;
+  }
+  .time-badge.total { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .print-tip {
+    background: #f0f7ff; border: 1px dashed var(--accent); border-radius: 8px;
+    padding: 10px 16px; margin-bottom: 24px; font-size: 13px; color: var(--accent);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .print-tip .tip-icon { font-size: 20px; }
+  .footer {
+    text-align: center; color: var(--text-secondary); font-size: 12px;
+    margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  /* 分流标签 */
+  .route-buy { display: inline-flex; align-items: center; gap: 4px; background: #e8f5e9; color: var(--success); padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .route-build { display: inline-flex; align-items: center; gap: 4px; background: #fff8e1; color: var(--warning); padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .route-hold { display: inline-flex; align-items: center; gap: 4px; background: #fde8e8; color: var(--danger); padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  @media print {
+    body { background: #fff; padding: 20px; max-width: 100%; font-size: 13px; color: #000; }
+    .card, .skill-card, .auto-card, .week-section { box-shadow: none; border: 1px solid #ccc; background: #fff; }
+    .skill-card { border-left: 4px solid #999; }
+    .auto-card { border-left: 4px solid #999; }
+    .week-section { page-break-inside: avoid; }
+    .checklist-item .cb { border-color: #999; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .kpi-card { border-top-color: #999; }
+    .print-tip { display: none; }
+    .footer { border-top-color: #ccc; }
+    .report-header::before { opacity: 0.08; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 17px; }
+    table { font-size: 12px; }
+    th, td { padding: 6px 8px; }
+  }
+  @media (max-width: 600px) {
+    body { padding: 20px 12px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .compare-grid { grid-template-columns: 1fr 40px 1fr; font-size: 13px; }
+    .skill-card { flex-direction: column; }
+    .skill-card .skill-action { margin-top: 8px; }
+    .checklist-item { flex-wrap: wrap; }
+    .checklist-item .task-tag { margin-left: 34px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="report-header">
+<h1>AgentAI 工具迭代诊断报告</h1>
+</div>
+<p class="subtitle">生成日期：{{REPORT_DATE}} ｜ 基于场景驱动的个性化 AI 工具配置方案</p>
+
+<!-- 用户画像 -->
+<div class="card">
+  <div class="card-header">用户画像</div>
+  <table>
+    <tr><td style="width: 100px; color: var(--text-secondary);">姓名</td><td>{{USER_NAME}}</td></tr>
+    <tr><td style="color: var(--text-secondary);">部门</td><td>{{DEPARTMENT}}</td></tr>
+    <tr><td style="color: var(--text-secondary);">岗位</td><td>{{POSITION}}</td></tr>
+    <tr><td style="color: var(--text-secondary);">技术背景</td><td><span class="tag active">{{TECH_LEVEL}}</span></td></tr>
+    <tr><td style="color: var(--text-secondary);">切换容忍度</td><td><span class="tag active">{{SWITCHING_TOLERANCE}}</span></td></tr>
+    <tr><td style="color: var(--text-secondary);">时间预算</td><td>每周 {{TIME_BUDGET}} 小时</td></tr>
+    <tr><td style="color: var(--text-secondary);">工作模块</td><td>共 {{MODULE_COUNT}} 项（系统记录 {{SYSTEM_COUNT}} 项，补充 {{USER_COUNT}} 项）</td></tr>
+  </table>
+  <!-- 关键指标 -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">{{MODULE_COUNT}}</div>
+      <div class="kpi-label">工作模块</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">{{TOTAL_HOURS}}h</div>
+      <div class="kpi-label">月总工时</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-value">{{SAVABLE_HOURS}}h</div>
+      <div class="kpi-label">可节省/月</div>
+    </div>
+    <div class="kpi-card success">
+      <div class="kpi-value">{{EFFICIENCY_GAIN}}%</div>
+      <div class="kpi-label">效率提升</div>
+    </div>
+  </div>
+</div>
+
+<!-- 工作模块全貌 -->
+<h2><span class="section-num">1</span> 工作模块全貌</h2>
+<div class="card">
+  <table>
+    <tr>
+      <th style="width:30px;">#</th>
+      <th>工作内容</th>
+      <th style="width:60px;">来源</th>
+      <th style="width:60px;">频次</th>
+      <th style="width:60px;">月工时</th>
+      <th style="width:80px;">AI化潜力</th>
+    </tr>
+    <!-- AI 生成说明：每行 <tr><td>1</td><td>模块名</td><td><span class="source-sys">系统</span></td><td>频次</td><td>XXh</td><td><span class="pot-high">高</span></td></tr> -->
+    {{MODULE_TABLE_ROWS}}
+  </table>
+</div>
+
+<!-- 优先改造项 -->
+<h2><span class="section-num">2</span> 优先改造项</h2>
+<!-- AI 生成说明：优先改造项，每个优先级一个 priority-block -->
+<!-- 示例：<div class="priority-block"><div class="pb-route">BUY</div><div class="pb-title">场景名称</div><p>描述与收益</p></div> -->
+{{PRIORITY_BLOCKS}}
+
+<!-- 痛点 → AI 场景翻译 -->
+<h2><span class="section-num">3</span> 痛点 → AgentAI 场景翻译</h2>
+<div class="card">
+  <table>
+    <tr><th>你说的</th><th>对应的 AI 技术场景</th></tr>
+    <!-- AI 生成说明：每行 <tr><td>用户痛点</td><td>AI 技术场景</td></tr> -->
+    {{PAIN_TRANSLATION_ROWS}}
+  </table>
+</div>
+
+<!-- AgentAI vs 手动 AI 对照 -->
+<h2><span class="section-num">4</span> AgentAI 方案 vs 手动 AI 对话</h2>
+<div class="card">
+  <table class="compare-table">
+    <tr><th>维度</th><th>手动 AI 对话</th><th>AgentAI 方案</th></tr>
+    <!-- AI 生成说明：每行 <tr><td>维度</td><td>手动描述</td><td class="col-hi">AgentAI 描述</td></tr> -->
+    {{COMPARISON_ROWS}}
+  </table>
+</div>
+
+<!-- 当前技术栈 -->
+<h2><span class="section-num">5</span> 当前技术栈清单</h2>
+<div class="card">
+  <table>
+    <tr><th>工具/平台</th><th>用途</th><th>状态</th></tr>
+    <!-- AI 生成说明：每行 <tr><td>工具名</td><td>用途</td><td><span class="status-installed">已安装</span></td></tr> -->
+    {{TOOL_LIST_ROWS}}
+  </table>
+</div>
+
+<!-- Buy/Build 分流明细 -->
+<h2><span class="section-num">6</span> Buy / Build 分流明细</h2>
+<div class="card">
+  <!-- AI 生成说明：Buy/Build 分流，使用 two-col 网格或内联样式 -->
+  {{BUY_BUILD_SPLIT}}
+  <!-- 每项格式：
+  <div style="padding:16px 0; border-bottom:1px solid var(--border);">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <span class="tag active">Buy</span>
+      <span class="tag needed">需安装</span>
+    </div>
+    <div style="font-weight:600; margin-bottom:4px;">工作模块名称</div>
+    <div style="font-size:13px; color:var(--text-secondary);">skill-name-1, skill-name-2</div>
+  </div>
+  -->
+</div>
+
+<!-- Build 自建引导（如有 Build 项） -->
+<!-- AI 生成说明：Build 自建引导（仅有 BUILD 项时输出，无则留空） -->
+<!-- 示例：<div class="section"><div class="section-head"><div class="section-title">自建引导</div></div><ol class="build-steps"><li><span class="step-label">Step 1</span>准备模板</li></ol></div> -->
+{{BUILD_GUIDE_SECTION}}
+
+<!-- 定时任务配置 -->
+<h2><span class="section-num">7</span> 定时任务配置</h2>
+<div class="card">
+  <div style="font-weight:600; margin-bottom:12px;">AI 工具迭代检查</div>
+  <div style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+    <span style="margin-right:20px;">频率：{{CRON_FREQUENCY}}</span>
+    <span style="margin-right:20px;">容忍度：{{SWITCHING_TOLERANCE}}</span>
+    <span>下次检查：{{NEXT_REVIEW_DATE}}</span>
+  </div>
+  <div style="background:#1a1a1a; color:#ccc; padding:16px; font-family:'SF Mono',Menlo,monospace; font-size:12px; border-radius:8px; position:relative;">
+    <button style="position:absolute; top:8px; right:8px; background:#333; border:1px solid #555; color:#999; padding:3px 10px; font-size:11px; cursor:pointer;" onclick="var btn=this; navigator.clipboard.writeText(btn.parentElement.textContent.replace('copy','').trim()).then(function(){ btn.textContent='copied'; setTimeout(function(){btn.textContent='copy'},1500) })">copy</button>
+    {{CRON_COMMAND}}
+  </div>
+  <div style="font-size:12px; color:var(--text-secondary); margin-top:12px; line-height:1.8;">
+    <strong>平台适配：</strong><br>
+    <strong>MyAgents：</strong><code style="background:var(--bg); padding:2px 6px; font-size:11px;">myagents cron add --name "AI工具迭代检查" --prompt-file output/agentai-check-prompt.txt --every 43200</code><br>
+    <strong>JoyClaw（小龙虾）：</strong>在 JoyClaw 定时任务面板中创建新任务，将 prompt 内容配置到定时任务中<br>
+    <strong>无定时任务：</strong>每月手动把 prompt 内容发给 AI 即可
+  </div>
+</div>
+
+<!-- Skill 扫描结果 -->
+<h2><span class="section-num">8</span> Skill 市场扫描结果</h2>
+<!-- AI 生成说明：Skill 扫描，每个 skill 一个 skill-card -->
+<!-- 示例：<div class="skill-card"><div class="skill-name">Skill 名称</div><div class="skill-desc">功能描述</div><div class="skill-meta">来源 | 匹配度</div></div> -->
+{{SKILL_SCAN_CARDS}}
+
+<!-- 迭代建议 -->
+<h2><span class="section-num">9</span> 工具迭代建议</h2>
+<div class="card">
+  <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+    根据你的 <strong>{{SWITCHING_TOLERANCE}}</strong> 策略，以下是当前建议：
+  </p>
+  <!-- AI 生成说明：迭代建议，每个工具一个迭代条目 -->
+  {{ITERATION_CARDS}}
+</div>
+
+<!-- 自动化任务配置 -->
+<h2><span class="section-num">10</span> 自动化任务配置</h2>
+<!-- AI 生成说明：自动化任务，每个任务一个条目 -->
+{{AUTOMATION_CARDS}}
+
+<!-- ══════ 可打印周度 Todo 清单 ══════ -->
+<h2><span class="section-num">11</span> 周度 Todo 清单（可打印）</h2>
+<div class="print-tip">
+  <span class="tip-icon">🖨️</span>
+  按 <strong>Ctrl+P / ⌘+P</strong> 打印此清单，贴在工位旁边逐项勾选。每完成一项就用笔涂掉复选框 ☑️
+</div>
+<div class="weekly-plan">
+  <!-- AI 生成说明：周度清单，每周一个 week-block -->
+  <!-- 示例：<div class="week-block"><div class="week-header">Week 01 — 主题</div><ul class="checklist"><li class="checklist-item"><div class="cb" onclick="toggleCheck(this)"></div><div class="task-content"><div class="task-name">任务</div><div class="task-detail">说明</div></div><span class="task-tag must">必须</span><span class="task-est">30min</span></li></ul></div> -->
+  {{WEEKLY_CHECKLIST}}
+</div>
+
+<div class="footer">
+  <p>本报告由 AI 转型落地顾问自动生成 ｜ 基于你的真实工作场景设计</p>
+  <p>下次工具迭代检查：{{NEXT_REVIEW_DATE}}</p>
+</div>
+
+<script>
+function toggleCheck(el) { el.classList.toggle('checked'); }
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = 'copied'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+</script>
+
+</body>
+</html>

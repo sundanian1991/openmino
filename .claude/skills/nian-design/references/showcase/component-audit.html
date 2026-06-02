@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian-design 组件审查台</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --olive: #4A5D3A;
+  --earth: #8B7355;
+  --glacier: #2A4A5A;
+  --orange: #E55B2B;
+  --yellow: #FFD100;
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --raised: #F5F5F0;
+  --border: #E5E5E0;
+  --border-vis: #C0C0B8;
+  --text-display: #2C2C2C;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6B6B;
+  --text-disabled: #A0A0A0;
+  --keep: #2E7D32;
+  --delete: #C62828;
+  --review: #E65100;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+.nav{position:sticky;top:0;background:rgba(250,250,248,0.95);border-bottom:1px solid var(--border);z-index:100;padding:0 24px;backdrop-filter:blur(8px)}
+.nav-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:52px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand .wordmark{font-family:Georgia,serif;font-size:15px;font-weight:700;letter-spacing:0.02em;color:var(--text-display)}
+.nav-stats{display:flex;gap:16px;align-items:center}
+.stat-pill{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;padding:3px 10px;border-radius:4px;display:inline-flex;align-items:center;gap:5px}
+.stat-pill--keep{background:rgba(46,125,50,0.08);color:var(--keep);border:1px solid rgba(46,125,50,0.2)}
+.stat-pill--delete{background:rgba(198,40,40,0.08);color:var(--delete);border:1px solid rgba(198,40,40,0.2)}
+.stat-pill--review{background:rgba(230,81,0,0.08);color:var(--review);border:1px solid rgba(230,81,0,0.2)}
+.stat-pill--total{background:var(--raised);color:var(--text-secondary);border:1px solid var(--border)}
+
+/* HERO */
+.page-hero{max-width:1120px;margin:0 auto;padding:48px 40px 32px;border-bottom:1px solid var(--border)}
+.page-hero h1{font-family:Georgia,serif;font-size:32px;font-weight:700;color:var(--text-display);line-height:1.2;margin-bottom:8px}
+.page-hero p{font-size:14px;color:var(--text-secondary);max-width:640px}
+.page-hero .actions{display:flex;gap:12px;margin-top:20px}
+.btn{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:8px 16px;border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:all 150ms ease-out;background:var(--surface);color:var(--text-primary)}
+.btn:hover{background:var(--raised)}
+.btn--primary{background:var(--olive);color:#fff;border-color:var(--olive)}
+.btn--primary:hover{background:#3d4f30}
+.btn--danger{background:transparent;color:var(--delete);border-color:rgba(198,40,40,0.3)}
+.btn--danger:hover{background:rgba(198,40,40,0.06)}
+
+/* LEVEL SECTION */
+.level-section{max-width:1120px;margin:0 auto;padding:32px 40px}
+.level-header{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.level-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--earth);padding:3px 8px;border:1px solid rgba(139,115,85,0.3);border-radius:4px}
+.level-title{font-family:Georgia,serif;font-size:24px;font-weight:700;color:var(--text-display)}
+.level-desc{font-size:13px;color:var(--text-secondary)}
+.level-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-disabled);margin-left:auto}
+
+/* STRUCTURE GROUP */
+.struct-group{margin-bottom:32px}
+.struct-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.struct-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:3px}
+.struct-tag--dual{background:rgba(74,93,58,0.08);color:var(--olive);border:1px solid rgba(74,93,58,0.2)}
+.struct-tag--grid{background:rgba(42,74,90,0.08);color:var(--glacier);border:1px solid rgba(42,74,90,0.2)}
+.struct-tag--chain{background:rgba(139,115,85,0.08);color:var(--earth);border:1px solid rgba(139,115,85,0.2)}
+.struct-tag--bar{background:rgba(229,91,43,0.08);color:var(--orange);border:1px solid rgba(229,91,43,0.2)}
+.struct-tag--num{background:rgba(74,93,58,0.08);color:var(--olive);border:1px solid rgba(74,93,58,0.2)}
+.struct-tag--compact{background:rgba(42,74,90,0.08);color:var(--glacier);border:1px solid rgba(42,74,90,0.2)}
+.struct-tag--area{background:rgba(139,115,85,0.08);color:var(--earth);border:1px solid rgba(139,115,85,0.2)}
+.struct-tag--radial{background:rgba(42,74,90,0.08);color:var(--glacier);border:1px solid rgba(42,74,90,0.2)}
+.struct-tag--polygon{background:rgba(229,91,43,0.08);color:var(--orange);border:1px solid rgba(229,91,43,0.2)}
+.struct-tag--organic{background:rgba(74,93,58,0.08);color:var(--olive);border:1px solid rgba(74,93,58,0.2)}
+.struct-tag--weave{background:rgba(139,115,85,0.08);color:var(--earth);border:1px solid rgba(139,115,85,0.2)}
+.struct-tag--iso{background:rgba(42,74,90,0.08);color:var(--glacier);border:1px solid rgba(42,74,90,0.2)}
+.struct-tag--fold{background:rgba(229,91,43,0.08);color:var(--orange);border:1px solid rgba(229,91,43,0.2)}
+.struct-tag--deco{background:var(--raised);color:var(--text-secondary);border:1px solid var(--border)}
+.struct-name{font-size:13px;font-weight:500;color:var(--text-secondary)}
+
+/* COMPONENT CARD */
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.comp-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 150ms ease-out}
+.comp-card:hover{border-color:var(--border-vis)}
+.comp-card[data-state="keep"]{border-color:rgba(46,125,50,0.4);background:rgba(46,125,50,0.02)}
+.comp-card[data-state="delete"]{border-color:rgba(198,40,40,0.4);background:rgba(198,40,40,0.02);opacity:0.7}
+.comp-card[data-state="review"]{border-color:rgba(230,81,0,0.4);background:rgba(230,81,0,0.02)}
+.comp-card__head{padding:14px 16px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.comp-code{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--olive);padding:2px 6px;border:1px solid rgba(74,93,58,0.25);border-radius:3px;white-space:nowrap}
+.comp-name{font-family:Georgia,serif;font-size:16px;font-weight:700;color:var(--text-display);line-height:1.3}
+.comp-card__body{padding:10px 16px}
+.comp-desc{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:8px}
+.comp-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.meta-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:2px;background:var(--raised);color:var(--text-secondary);border:1px solid var(--border)}
+.meta-tag--css{background:rgba(42,74,90,0.06);color:var(--glacier);border-color:rgba(42,74,90,0.15)}
+.meta-tag--anchor{background:rgba(139,115,85,0.06);color:var(--earth);border-color:rgba(139,115,85,0.15)}
+.meta-tag--showcase{background:rgba(74,93,58,0.06);color:var(--olive);border-color:rgba(74,93,58,0.15)}
+.meta-tag--svg{background:rgba(229,91,43,0.06);color:var(--orange);border-color:rgba(229,91,43,0.15)}
+.comp-note{font-size:11px;color:var(--text-disabled);font-style:italic;margin-top:4px;line-height:1.5}
+
+/* ACTION BUTTONS */
+.comp-actions{display:flex;gap:0;border-top:1px solid var(--border)}
+.comp-actions button{flex:1;padding:8px 0;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;border:none;background:transparent;cursor:pointer;transition:all 150ms ease-out;color:var(--text-secondary)}
+.comp-actions button+button{border-left:1px solid var(--border)}
+.comp-actions .btn-keep:hover{background:rgba(46,125,50,0.1);color:var(--keep)}
+.comp-actions .btn-delete:hover{background:rgba(198,40,40,0.1);color:var(--delete)}
+.comp-actions .btn-review:hover{background:rgba(230,81,0,0.1);color:var(--review)}
+.comp-card[data-state="keep"] .btn-keep{background:rgba(46,125,50,0.15);color:var(--keep)}
+.comp-card[data-state="delete"] .btn-delete{background:rgba(198,40,40,0.15);color:var(--delete)}
+.comp-card[data-state="review"] .btn-review{background:rgba(230,81,0,0.15);color:var(--review)}
+
+/* OUTPUT */
+.output-section{max-width:1120px;margin:0 auto;padding:32px 40px 96px}
+.output-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;position:relative}
+.output-box h3{font-family:Georgia,serif;font-size:16px;font-weight:700;color:var(--text-display);margin-bottom:12px}
+.output-box pre{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;color:var(--text-primary);white-space:pre-wrap;word-break:break-all;background:var(--raised);padding:16px;border-radius:6px;border:1px solid var(--border);max-height:400px;overflow-y:auto}
+.output-box .copy-btn{position:absolute;top:16px;right:16px}
+
+/* LEVEL FILTER */
+.level-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.filter-btn{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);cursor:pointer;transition:all 150ms ease-out}
+.filter-btn:hover{background:var(--raised)}
+.filter-btn.active{background:var(--olive);color:#fff;border-color:var(--olive)}
+
+/* SVG TEMPLATES SECTION */
+.svg-section{max-width:1120px;margin:0 auto;padding:32px 40px;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="wordmark">nian-design</span>
+      <span style="font-size:11px;color:var(--text-disabled);font-weight:500">组件审查台</span>
+    </div>
+    <div class="nav-stats">
+      <span class="stat-pill stat-pill--total" id="stat-total">0 组件</span>
+      <span class="stat-pill stat-pill--keep" id="stat-keep">0 保留</span>
+      <span class="stat-pill stat-pill--delete" id="stat-delete">0 删除</span>
+      <span class="stat-pill stat-pill--review" id="stat-review">0 待定</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>组件审查台</h1>
+  <p>逐个审查 nian-design 全部组件。标记保留/删除/待定，完成后复制审查结果给年老师。</p>
+  <div class="actions">
+    <button class="btn btn--primary" onclick="markAll('keep')">全部保留</button>
+    <button class="btn btn--danger" onclick="markAll('delete')">全部删除</button>
+    <button class="btn" onclick="markAll('')">全部重置</button>
+    <button class="btn" onclick="scrollToOutput()">查看结果</button>
+  </div>
+</div>
+
+<div id="app"></div>
+
+<div class="output-section" id="output">
+  <div class="output-box">
+    <h3>审查结果</h3>
+    <button class="btn copy-btn" onclick="copyOutput()">复制</button>
+    <pre id="output-text">标记组件后自动生成...</pre>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  // ==================== HERO 级 ====================
+  {id:"HF-01",name:"Full-width Statement",level:"hero",struct:"宣言",
+   desc:"全幅文字声明。Georgia 超大字（96-120px），浅色背景，数据推到下方或边缘。",
+   css:".hero-statement, .hero-statement-text",anchor:"宣言",
+   note:"当核心信息是一个理念、立场、判断时选用。",
+   showcase:"design-tokens.html"},
+  {id:"HF-02",name:"Split View",level:"hero",struct:"双栏对照",
+   desc:"左右分区。一侧文字叙事，另一侧视觉元素（大数字/图像/对比块）。",
+   css:".hero-split, .hero-split-text, .hero-split-visual",anchor:"数据矩阵/对比/图像",
+   note:"Hero 区需要同时呈现叙事和量化证据时选用。",
+   showcase:"design-tokens.html, core-components.html"},
+  {id:"HF-03",name:"Numeral Grid / LED Card",level:"hero",struct:"方阵排列",
+   desc:"方阵排列的大数字卡片。JetBrains Mono 48-120px，每个数字上方小标签，下方上下文行。",
+   css:".hero-numeral, .metric-card",anchor:"数据矩阵",
+   note:"2-4 个硬数据需要同时亮相时选用。",
+   showcase:"core-components.html"},
+  {id:"HF-04",name:"Dark Statement",level:"hero",struct:"宣言",
+   desc:"深色背景全幅声明。场景色做底，白色文字，仪式感强。",
+   css:".hero-dark, .hero-dark--glacier/--olive/--gray",anchor:"宣言/对比",
+   note:"品牌宣言墙、关键原理声明。慎用——暗色 Hero 用多则廉价。",
+   showcase:"design-tokens.html"},
+  {id:"HF-05",name:"Scale Jump",level:"hero",struct:"大数字+小标签",
+   desc:"尺度跳跃。同一视口 8px 到 200px，无过渡。font-weight:200 超细大数字。",
+   css:".scale-jump, .scale-jump__macro--mono",anchor:"宣言/数据矩阵",
+   note:"Polestar spec-as-identity。一个数字撑满视口，旁边注释小到几乎看不见。",
+   showcase:"extended-components.html"},
+  {id:"HF-06",name:"Seismic Wave",level:"hero",struct:"宣言",
+   desc:"连续振动波 Hero。OLED 暗底 + 多层正弦波叠加，波形即品牌。",
+   css:".hero-seismic, .hero-seismic__waves, .hero-seismic__leds",anchor:"宣言/数据矩阵",
+   note:"波形不是装饰，是数据。8 层正弦波叠加，暗底上的波形 = 地震仪上的品牌宣言。",
+   showcase:"2026-05-31-component-showcase.html"},
+
+  // 扩展 Hero
+  {id:"H1",name:"Hero Split (ext)",level:"hero",struct:"双栏对照",
+   desc:"双栏：左文字右深色面板，ghost 水印。",
+   css:".hero-split",anchor:"品牌宣言/阅读+分析",
+   showcase:"extended-components.html"},
+  {id:"H2",name:"Hero Pulse",level:"hero",struct:"宣言",
+   desc:"全屏深色 + 动画扫描线 + 三栏指标条。",
+   css:".hero-pulse",anchor:"数据分析中心",
+   showcase:"extended-components.html"},
+  {id:"H3",name:"Hero Runway",level:"hero",struct:"双栏对照",
+   desc:"双栏：左声明右深色面板 + ghost 年份。",
+   css:".hero-runway",anchor:"时尚/产品",
+   showcase:"extended-components.html"},
+  {id:"H4",name:"Hero Sky",level:"hero",struct:"双栏对照",
+   desc:"双栏：左文字右深蓝面板+航线标签。",
+   css:".hero-sky",anchor:"航空/旅行",
+   showcase:"extended-components.html"},
+  {id:"H5",name:"Hero Bottle",level:"hero",struct:"三栏",
+   desc:"三栏：左文字+中瓶型线框+右年份。",
+   css:".hero-bottle",anchor:"烈酒/包装产品",
+   showcase:"extended-components.html"},
+  {id:"H6",name:"Hero Scoreboard",level:"hero",struct:"方阵排列",
+   desc:"深色全屏 + 比分牌三栏布局。",
+   css:".hero-scoreboard",anchor:"体育/竞赛",
+   showcase:"stadium-sport.html"},
+  {id:"H7",name:"Hero Entrance",level:"hero",struct:"宣言",
+   desc:"浅色留白 + 底部文字 + 圆形封印。",
+   css:".hero-entrance",anchor:"博物馆/展览",
+   showcase:"moderna-museet.html"},
+  {id:"H8",name:"Hero Infra",level:"hero",struct:"宣言",
+   desc:"深色全屏 + 60px 网格线背景。",
+   css:".hero-infra",anchor:"电信/基础设施",
+   showcase:"ericsson-infra.html"},
+  {id:"H9",name:"Hero Reveal",level:"hero",struct:"宣言",
+   desc:"深色全屏 + 水平速度线 + 右下徽章。",
+   css:".hero-reveal",anchor:"汽车/产品发布",
+   showcase:"f1-telemetry.html"},
+
+  // ==================== SECTION 级 ====================
+  {id:"SF-01",name:"Tension Grid",level:"section",struct:"双栏对照",
+   desc:"2x2 网格，深浅双色块承载对立力量。中间可插跨列行标注核心矛盾。",
+   css:".tension-grid",anchor:"对比/张力",
+   note:"两股对立力量需要同屏展示时，最克制也最有力的形式。",
+   showcase:"core-components.html"},
+  {id:"SF-02",name:"Pipeline / VS",level:"section",struct:"双栏对照",
+   desc:"左右双列 + 中间分隔线（VS 或竖线）。一侧一个阵营，项目对列。",
+   css:".flow-pipeline",anchor:"对比/张力",
+   note:"比文字列表更有对抗感，比 Tension Grid 更适合项目化内容。",
+   showcase:"core-components.html"},
+  {id:"SF-03",name:"Timeline Track",level:"section",struct:"链式节点",
+   desc:"垂直/水平时间轴 + 节点。每个节点含阶段标签、标题、描述、度量值。",
+   css:".timeline-track",anchor:"时间线",
+   note:"有先后顺序的内容首选。时间线本身就是叙事。",
+   showcase:"core-components.html"},
+  {id:"SF-04",name:"Bento Grid",level:"section",struct:"不等分网格",
+   desc:"不等分网格。部分单元格跨列或跨行，信息密度和视觉节奏同时最大化。",
+   css:".bento-grid",anchor:"结构/体系",
+   note:"信息块多且需要同时展示时首选。跨列打破常规。",
+   showcase:"extended-components.html"},
+  {id:"SF-05",name:"Layer Stack",level:"section",struct:"不等分网格",
+   desc:"纵向分层卡片。每层一个颜色标记，展示层级关系。",
+   css:".layer-stack",anchor:"结构/体系",
+   note:"有明确上下层级关系时选用。比 Bento 更强调从底到顶的顺序。",
+   showcase:"core-components.html"},
+  {id:"SF-06",name:"Comparison Block",level:"section",struct:"双栏对照",
+   desc:"旧/新、前/后对比。左色块 + 右色块，中间分隔线。",
+   css:".comparison",anchor:"对比/张力",
+   note:"有明确 before/after 结构时选用。比 Tension Grid 更适合规则对比。",
+   showcase:"core-components.html"},
+  {id:"SF-07",name:"Card Triad / Quad",level:"section",struct:"方阵排列",
+   desc:"3 或 4 张等宽卡片，每张卡片顶部彩色边框，内部层级分明。",
+   css:".card-triad, .card-quad",anchor:"数据矩阵/结构",
+   note:"平行概念需要并列展示时首选。",
+   showcase:"core-components.html"},
+  {id:"SF-08",name:"Level Track",level:"section",struct:"链式节点",
+   desc:"水平进度轨道。圆形节点 + 连线 + 标签，展示阶段/能力/成熟度。",
+   css:".level-track",anchor:"时间线/结构",
+   note:"有明确阶段递进关系时选用。比 Timeline 更强调当前位置。",
+   showcase:"core-components.html"},
+  {id:"SF-09",name:"Typography Showcase",level:"section",struct:"锚点+列表",
+   desc:"左固定锚点 + 右延伸内容。左侧字体/风格标签，右侧实际排版效果。",
+   css:".typo-showcase",anchor:"结构/体系",
+   note:"品牌规范页、字体展示页首选。",
+   showcase:"design-tokens.html"},
+  {id:"SF-10",name:"Step Sequence",level:"section",struct:"锚点+列表",
+   desc:"左固定步骤号 + 右延伸步骤内容。垂直连线串联各步骤。",
+   css:".step-sequence",anchor:"时间线/结构",
+   note:"有明确步骤顺序但不需要时间轴的精确时间点时选用。",
+   showcase:"extended-components.html"},
+  {id:"SF-17",name:"Kinetic Layers",level:"section",struct:"不等分网格",
+   desc:"动能分层。层叠透明度创造深度，前景全不透明，后景渐隐。",
+   css:".kinetic-layers",anchor:"层级关系",
+   note:"Sana Labs 渐变原生 + SDL Sigma 包装。",
+   showcase:"sdl-design-principles.html"},
+  {id:"SF-18",name:"Fjord Silhouette Profile",level:"section",struct:"面积填充",
+   desc:"峡湾天际线轮廓。数据曲线=山脊线，下方填充=地形。站在峡湾底部仰望数据山脉。",
+   css:".fjord-profile",anchor:"时间线/趋势",
+   note:"数据不是平的线图，是地形。视觉记忆点远超折线图。",
+   showcase:"haglofs-variant-atlas.html"},
+  {id:"SF-19",name:"Isometric 2.5D Grid",level:"section",struct:"等距投影",
+   desc:"等距 2.5D 菱形分层。三层可见面（顶/左/右），不同透明度编码层级深度。",
+   css:".iso-grid",anchor:"结构/体系",
+   note:"不是平面图，是建筑剖面。从体验到基础设施。",
+   showcase:"ericsson-infra.html"},
+  {id:"SF-20",name:"Fold/Hinge",level:"section",struct:"折叠结构",
+   desc:"折叠铰链。两侧面板 + 中间铰链线。clip-path 创造透视折叠感。",
+   css:".fold-hinge",anchor:"对比/张力",
+   note:"比 Tension Grid 更有物理感——铰链线就是折叠轴。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+
+  // 扩展 Section（D/N 类）
+  {id:"D1",name:"Data Matrix",level:"section",struct:"方阵排列",
+   desc:"4 列品牌指标，深色背景。",
+   css:".data-matrix",anchor:"数据矩阵",
+   showcase:"core-components.html"},
+  {id:"D2",name:"Insight Cards",level:"section",struct:"方阵排列",
+   desc:"3 列分析卡片，每张带进度条。",
+   css:".insight-cards",anchor:"数据矩阵",
+   showcase:"core-components.html"},
+  {id:"D3",name:"Compass Grid",level:"section",struct:"方阵排列",
+   desc:"2 列方向指标，带柱状轨迹。",
+   css:".compass-grid",anchor:"数据矩阵",
+   showcase:"core-components.html"},
+  {id:"D4",name:"Elevation Charts",level:"section",struct:"面积填充",
+   desc:"3 列 SVG 曲线趋势图，深色。",
+   css:".elevation-charts",anchor:"时间线/趋势",
+   showcase:"haglofs-dataviz-forms.html"},
+  {id:"D5",name:"Seam List",level:"section",struct:"段状条",
+   desc:"水平线迹基线 + 目标对比行。",
+   css:".seam-list",anchor:"进度/仪表",
+   showcase:"haglofs-production-grade.html"},
+  {id:"D6",name:"Layer Stack (ext)",level:"section",struct:"不等分网格",
+   desc:"地质层状结构，hover 反色。",
+   css:".layer-stack",anchor:"结构/体系",
+   showcase:"extended-components.html"},
+  {id:"D7",name:"Swatch Grid",level:"section",struct:"方阵排列",
+   desc:"4 列色块卡片 + 底部分数点。",
+   css:".swatch-grid",anchor:"结构/体系",
+   showcase:"design-tokens.html"},
+  {id:"D8",name:"Grid Matrix",level:"section",struct:"点阵编码",
+   desc:"6 列频度矩阵，深色。",
+   css:".grid-matrix",anchor:"数据矩阵",
+   showcase:"core-components.html"},
+  {id:"D9",name:"Callout (ext)",level:"section",struct:"锚点+列表",
+   desc:"单张关键发现卡，左侧绿线。",
+   css:".callout",anchor:"宣言",
+   showcase:"core-components.html"},
+  {id:"D10",name:"Action List",level:"section",struct:"锚点+列表",
+   desc:"行动建议列表，圆点标记。",
+   css:".action-list",anchor:"结构/体系",
+   showcase:"extended-components.html"},
+  {id:"D11",name:"Record List",level:"section",struct:"紧凑数据行",
+   desc:"体育记录行，首行高亮。",
+   css:".record-list",anchor:"数据矩阵",
+   showcase:"stadium-sport.html"},
+  {id:"D12",name:"League Table",level:"section",struct:"紧凑数据行",
+   desc:"足球积分榜，6 列。",
+   css:".lg-table",anchor:"数据矩阵",
+   showcase:"stadium-sport.html"},
+  {id:"N1",name:"Chapter Index",level:"section",struct:"方阵排列",
+   desc:"深色 3/2/1 列章节索引。",
+   css:".chapter-index",anchor:"结构/体系",
+   showcase:"extended-components.html"},
+  {id:"N2",name:"Heritage Strip",level:"section",struct:"链式节点",
+   desc:"水平时间线，圆点+年份+事件。",
+   css:".heritage-strip",anchor:"时间线",
+   showcase:"haglofs-heritage-gallery.html"},
+  {id:"N3",name:"Progress Trail",level:"section",struct:"链式节点",
+   desc:"圆形点进度轨迹。",
+   css:".progress-trail",anchor:"进度/仪表",
+   showcase:"core-components.html"},
+  {id:"N4",name:"Trail Path",level:"section",struct:"链式节点",
+   desc:"参观路线，连接点+标签。",
+   css:".trail-path",anchor:"时间线",
+   showcase:"moderna-museet.html"},
+
+  // ==================== DETAIL 级 ====================
+  {id:"DF-01",name:"Stat Block",level:"detail",struct:"大数字+小标签",
+   desc:"JetBrains Mono 大数字（32-48px）+ 小标签。最轻的数据展示。",
+   css:".stat-block, .stat-row",anchor:"单一指标",
+   showcase:"core-components.html"},
+  {id:"DF-02",name:"Segmented Bar",level:"detail",struct:"段状条",
+   desc:"色块拼条。每段不同颜色代表不同类别，整体宽度 = 100%。",
+   css:".seg-bar",anchor:"比例分布",
+   showcase:"core-components.html"},
+  {id:"DF-03",name:"Weight / Rank Bar",level:"detail",struct:"段状条",
+   desc:"标签 + 水平填充条 + 百分比。灰度序列优先，accent 仅标记需关注的项。",
+   css:".weight-row, .rank-bar",anchor:"权重/排名",
+   showcase:"core-components.html"},
+  {id:"DF-04",name:"Bullet Chart",level:"detail",struct:"段状条",
+   desc:"实际值条 + 目标线 + 背景范围带。单指标对标。",
+   css:".bullet-chart",anchor:"达成率",
+   showcase:"core-components.html"},
+  {id:"DF-05",name:"Gauge Arc",level:"detail",struct:"径向/极坐标",
+   desc:"SVG 弧形仪表 + 百分比 + 状态标签（HEALTHY/WARNING/CRITICAL）。",
+   css:".gauge-unit",anchor:"完成率/健康度",
+   showcase:"core-components.html"},
+  {id:"DF-06",name:"Sparkline",level:"detail",struct:"紧凑数据行",
+   desc:"嵌入文本流的极简趋势线。无轴无标签。",
+   css:".sparkline",anchor:"趋势暗示",
+   showcase:"core-components.html"},
+  {id:"DF-07",name:"Small Multiples",level:"detail",struct:"方阵排列",
+   desc:"同一模板重复 N 次，每个子图标题+趋势线+变化值。",
+   css:".small-multiples",anchor:"子集趋势对比",
+   showcase:"core-components.html"},
+  {id:"DF-08",name:"Progress Bar",level:"detail",struct:"段状条",
+   desc:"标签 + 水平轨道 + 填充 + 数值。",
+   css:".progress-bar",anchor:"目标进度",
+   showcase:"core-components.html"},
+  {id:"DF-09",name:"Stacked Bar",level:"detail",struct:"段状条",
+   desc:"多段堆叠水平条，灰度序列编码组成。",
+   css:".stacked-bar",anchor:"组成比例对比",
+   showcase:"core-components.html"},
+  {id:"DF-10",name:"Dot Grid / Heatmap",level:"detail",struct:"点阵编码",
+   desc:"方阵 + 透明度编码值大小。",
+   css:".dot-grid, .heatmap",anchor:"分布密度",
+   showcase:"core-components.html"},
+  {id:"DF-11",name:"KPI Card",level:"detail",struct:"大数字+小标签",
+   desc:"大数字 + 标签 + delta 变化量（上升/下降/持平）。",
+   css:".kpi-card",anchor:"关键指标",
+   showcase:"core-components.html"},
+  {id:"DF-12",name:"Data Table",level:"detail",struct:"紧凑数据行",
+   desc:"JetBrains Mono 表头 + Inter 数据行。最克制的表格。",
+   css:".data-table",anchor:"结构化数据",
+   showcase:"core-components.html"},
+  {id:"DF-13",name:"Callout",level:"detail",struct:"锚点+列表",
+   desc:"左侧彩色边框（3px）+ 浅色背景 + 加粗关键词。",
+   css:".callout",anchor:"核心结论/注意事项",
+   showcase:"core-components.html"},
+  {id:"DF-17",name:"Speed Line",level:"detail",struct:"紧凑数据行",
+   desc:"速度线数据编码。stroke-dasharray 密度映射值大小。",
+   css:".speed-line, .speed-line-stroke",anchor:"速度/强度编码",
+   note:"Red Bull Racing 赛车遥测。",
+   showcase:"f1-telemetry.html"},
+  {id:"DF-18",name:"Spec Numeral",level:"detail",struct:"大数字+小标签",
+   desc:"身份数字。font-weight:200 超细大数字作为视觉主体。",
+   css:".spec-numeral, .spec-numeral--glacier/--olive",anchor:"关键规格",
+   note:"Polestar spec-as-identity。",
+   showcase:"haglofs-variant-atlas.html"},
+  {id:"DF-19",name:"Brutalist Chart",level:"detail",struct:"紧凑数据行",
+   desc:"剥皮图表。去所有装饰，纯黑描边白底。信息密度最大化。",
+   css:".brutalist-chart",anchor:"工程级数据",
+   note:"Nobel Prize 极简 + Ericsson 工程精度。",
+   showcase:"bloomberg-terminal.html"},
+  {id:"DF-20",name:"Curve Personality",level:"detail",struct:"紧凑数据行",
+   desc:"曲线人格。round linejoin = 信任感，miter = 精确感。",
+   css:".curve-personality",anchor:"品牌调性",
+   note:"Ericsson EDS chart curve personality。",
+   showcase:"ericsson-infra.html"},
+  {id:"DF-21",name:"Bathymetric Depth Bands",level:"detail",struct:"面积填充",
+   desc:"水深渐变带。区域填充而非线条，深度越深色越浓。",
+   css:".bathymetric",anchor:"有序区间编码",
+   note:"航海图水深分层 + Nordic 航海传统。",
+   showcase:"haglofs-variant-atlas.html"},
+  {id:"DF-22",name:"Tree-Ring Accretion",level:"detail",struct:"径向/极坐标",
+   desc:"树轮同心圆。每环=一个时间周期，环宽=值大小。",
+   css:".tree-ring",anchor:"时间累积数据",
+   note:"年轮学 dendrochronology 视觉语言。",
+   showcase:"haglofs-variant-atlas.html"},
+  {id:"DF-23",name:"Stratum Cross-Section",level:"detail",struct:"面积填充",
+   desc:"地质剖面层。不规则曲线分隔的水平地层带。",
+   css:".stratum-section",anchor:"组成比例",
+   note:"地质学家的眼睛比饼图快。",
+   showcase:"haglofs-variant-atlas.html"},
+  {id:"DF-24",name:"Ice Fracture Tessellation",level:"detail",struct:"不规则多边形",
+   desc:"Voronoi 不规则多边形，每格填充编码值。",
+   css:".ice-fracture",anchor:"投资组合/区域分类",
+   note:"规则网格暗示秩序，冰裂暗示自然。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+  {id:"DF-25",name:"Compass-Rose Radial",level:"detail",struct:"径向/极坐标",
+   desc:"罗盘径向图。极坐标系统，角度=维度，距离=值。",
+   css:".compass-radial",anchor:"多维能力评估",
+   note:"比雷达图多了方位感。",
+   showcase:"haglofs-variant-atlas.html"},
+  {id:"DF-26",name:"Crystal Lattice Dot Matrix",level:"detail",struct:"点阵编码",
+   desc:"晶格点阵。规则网格圆点，半径/颜色编码值，缺失=不可见。",
+   css:".crystal-lattice",anchor:"存在/缺失矩阵",
+   note:"DNA 序列视觉。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+  {id:"DF-27",name:"Polar Rose / Wind Rose",level:"detail",struct:"径向/极坐标",
+   desc:"极坐标风玫瑰。8 花瓣径向图，花瓣长度 = 频率。",
+   css:".d-polarrose",anchor:"方向频率分布",
+   note:"与雷达图关键区别：每个方向独立。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+  {id:"DF-28",name:"Phyllotaxis Spiral",level:"detail",struct:"有机铺排",
+   desc:"叶序螺旋。黄金角 137.508 度逐点放置，向日葵分布模式。",
+   css:".d-phyllotaxis",anchor:"有机分布/聚类",
+   note:"不是网格，是自然。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+  {id:"DF-29",name:"Hex Grid",level:"detail",struct:"有机铺排",
+   desc:"六角格栅。六边形铺排，每格填充色/透明度编码数据值。",
+   css:".d-hexgrid",anchor:"空间密度编码",
+   note:"六边形 = 最高效的平面铺排。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+  {id:"DF-30",name:"Weave/Lattice",level:"detail",struct:"经纬交织",
+   desc:"数据编织。水平与垂直交织，交叉点标记橙色。",
+   css:".d-weave",anchor:"二维关联矩阵",
+   note:"比热力图更有触感。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+  {id:"DF-31",name:"Vortex/Spiral",level:"detail",struct:"径向/极坐标",
+   desc:"涡旋螺旋。阿基米德螺线路径 + 数据点。",
+   css:".d-vortex",anchor:"时间序列螺旋化",
+   note:"与树轮的关键区别：螺旋有方向。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+
+  // 扩展 Detail（T/C 类）
+  {id:"T1",name:"Departure Board",level:"detail",struct:"紧凑数据行",
+   desc:"航班时刻表，5 列。",
+   css:".departure-board",anchor:"结构化数据",
+   showcase:"sas-scandinavian.html"},
+  {id:"T2",name:"Protocol Table",level:"detail",struct:"紧凑数据行",
+   desc:"技术规格表，4 列深色。",
+   css:".protocol-table",anchor:"结构化数据",
+   showcase:"ericsson-infra.html"},
+  {id:"T3",name:"Spec Table (ext)",level:"detail",struct:"紧凑数据行",
+   desc:"双栏规格表，深色。",
+   css:".spec-table",anchor:"结构化数据",
+   showcase:"core-components.html"},
+  {id:"C1",name:"Term Grid",level:"detail",struct:"方阵排列",
+   desc:"2 列术语定义卡。",
+   css:".term-grid",anchor:"结构/体系",
+   showcase:"extended-components.html"},
+  {id:"C2",name:"Summary Capsule",level:"detail",struct:"大数字+小标签",
+   desc:"大数字摘要 + 条目列表。",
+   css:".summary-capsule",anchor:"关键指标",
+   showcase:"extended-components.html"},
+  {id:"C3",name:"Quote Array",level:"detail",struct:"方阵排列",
+   desc:"3 列引用片段。",
+   css:".quote-array",anchor:"宣言",
+   showcase:"extended-components.html"},
+  {id:"C4",name:"Vitrine Grid",level:"detail",struct:"方阵排列",
+   desc:"3 列展品陈列柜。",
+   css:".vitrine-grid",anchor:"结构/体系",
+   showcase:"moderna-museet.html"},
+  {id:"C5",name:"Sport Grid",level:"detail",struct:"方阵排列",
+   desc:"4 列 hover 反转，体育分类。",
+   css:".sport-grid",anchor:"结构/体系",
+   showcase:"stadium-sport.html"},
+  {id:"C6",name:"Mat Row",level:"detail",struct:"紧凑数据行",
+   desc:"3 列材质色块卡。",
+   css:".mat-row",anchor:"结构/体系",
+   showcase:"haglofs-production-grade.html"},
+  {id:"C7",name:"Gear Grid",level:"detail",struct:"方阵排列",
+   desc:"3 列装备规格，深色背景。",
+   css:".gear-grid",anchor:"结构/体系",
+   showcase:"haglofs-production-grade.html"},
+
+  // ==================== DECORATIVE 级 ====================
+  {id:"DC-01",name:"Ghost Text",level:"decorative",struct:"装饰",
+   desc:"超大（240-360px）低透明度（3-5%）文字做背景。",
+   css:".ghost-text",anchor:"品牌关键词/章节编号",
+   showcase:"design-tokens.html"},
+  {id:"DC-02",name:"Dot Pattern",level:"decorative",struct:"装饰",
+   desc:"CSS 点阵网格。部分点 opacity 高，部分低，形成视觉节奏。",
+   css:".dot-pattern",anchor:"页面纹理",
+   showcase:"design-tokens.html"},
+  {id:"DC-03",name:"Decorative Number",level:"decorative",struct:"装饰",
+   desc:"超大透明 Georgia 数字（64-120px, opacity 12%）+ 前景章节标题。",
+   css:".deco-number",anchor:"章节编号",
+   showcase:"core-components.html"},
+  {id:"DC-14",name:"Tabular Rhythm",level:"decorative",struct:"装饰",
+   desc:"等宽数字节奏。font-variant-numeric: tabular-nums 构成视觉节奏。",
+   css:".tabular-rhythm",anchor:"数字阵列纹理",
+   showcase:"bloomberg-terminal.html"},
+  {id:"DC-15",name:"Diagonal Data Flow",level:"decorative",struct:"装饰",
+   desc:"对角数据流。数据沿对角线排列而非水平。",
+   css:".diagonal-data",anchor:"运动感数据",
+   showcase:"f1-telemetry.html"},
+  {id:"DC-16",name:"Aurora Curtain",level:"decorative",struct:"装饰",
+   desc:"极光幕帘。垂直半透明色带+正弦波边缘，暗底+screen 混合模式。",
+   css:".aurora-curtain",anchor:"品牌氛围",
+   note:"色带交叠处产生第三色——screen 混合模式的魔法。",
+   showcase:"haglofs-variant-atlas.html"},
+  {id:"DC-17",name:"Moire Interference",level:"decorative",struct:"装饰",
+   desc:"叠纹/莫尔干涉。两组微偏移同心圆，交叠处产生第三种图案。",
+   css:".dc-moire",anchor:"结构差异可视化签名",
+   note:"莫尔不是装饰——它是结构差异的可视化签名。",
+   showcase:"haglofs-variant-atlas-vol2.html"},
+
+  // ==================== SVG 图表模板 ====================
+  {id:"SVG-01",name:"Box Plot",level:"detail",struct:"紧凑数据行",
+   desc:"箱线图 SVG 模板。五数概括（最小值/Q1/中位数/Q3/最大值）。",
+   css:".svg-boxplot",anchor:"分布/离群值",
+   showcase:"svg-templates/box-plot.html",isSvg:true},
+  {id:"SVG-02",name:"Treemap",level:"detail",struct:"不等分网格",
+   desc:"树图 SVG 模板。嵌套矩形表示层级比例关系。",
+   css:".svg-treemap",anchor:"层级比例",
+   showcase:"svg-templates/treemap.html",isSvg:true},
+  {id:"SVG-03",name:"Funnel Chart",level:"detail",struct:"段状条",
+   desc:"漏斗图 SVG 模板。阶段转化率可视化。",
+   css:".svg-funnel",anchor:"转化率/流程",
+   showcase:"svg-templates/funnel-chart.html",isSvg:true},
+  {id:"SVG-04",name:"Radar Chart",level:"detail",struct:"径向/极坐标",
+   desc:"雷达图 SVG 模板。多维度能力评估。",
+   css:".svg-radar",anchor:"多维评估",
+   showcase:"svg-templates/radar-chart.html",isSvg:true},
+  {id:"SVG-05",name:"Gantt Chart",level:"detail",struct:"链式节点",
+   desc:"甘特图 SVG 模板。时间轴+任务条，项目进度管理。",
+   css:".svg-gantt",anchor:"时间线/进度",
+   showcase:"svg-templates/gantt-chart.html",isSvg:true},
+  {id:"SVG-06",name:"Scatter Plot",level:"detail",struct:"点阵编码",
+   desc:"散点图 SVG 模板。双变量相关性分析。",
+   css:".svg-scatter",anchor:"相关性/分布",
+   showcase:"svg-templates/scatter-plot.html",isSvg:true},
+  {id:"SVG-07",name:"Barcode Lines",level:"detail",struct:"紧凑数据行",
+   desc:"条码线 SVG 模板。数据密度编码为线条粗细。",
+   css:".svg-barcode",anchor:"密度编码",
+   showcase:"svg-templates/barcode-lines.html",isSvg:true},
+  {id:"SVG-08",name:"Area Chart",level:"detail",struct:"面积填充",
+   desc:"面积图 SVG 模板。趋势+体量双编码。",
+   css:".svg-area",anchor:"趋势/体量",
+   showcase:"svg-templates/area-chart.html",isSvg:true},
+];
+
+const LEVELS = [
+  {key:"hero",label:"Hero 级",num:"L1",desc:"整页仅一处，决定视觉基调"},
+  {key:"section",label:"Section 级",num:"L2",desc:"每区一处，承载区块核心信息"},
+  {key:"detail",label:"Detail 级",num:"L3",desc:"每区可多处，数据细节"},
+  {key:"decorative",label:"Decorative 级",num:"L4",desc:"可选点缀，不承载信息"}
+];
+
+const STRUCT_TAGS = {
+  "双栏对照":"dual","方阵排列":"grid","不等分网格":"grid","锚点+列表":"chain",
+  "链式节点":"chain","段状条":"bar","大数字+小标签":"num","紧凑数据行":"compact",
+  "面积填充":"area","径向/极坐标":"radial","不规则多边形":"polygon","有机铺排":"organic",
+  "经纬交织":"weave","等距投影":"iso","折叠结构":"fold","点阵编码":"compact",
+  "宣言":"dual","三栏":"grid","装饰":"deco"
+};
+
+const states = {};
+DATA.forEach(d => states[d.id] = "");
+
+function render() {
+  const app = document.getElementById('app');
+  let html = '';
+
+  LEVELS.forEach(level => {
+    const items = DATA.filter(d => d.level === level.key);
+    if (!items.length) return;
+
+    html += `<div class="level-section" id="level-${level.key}">`;
+    html += `<div class="level-header">`;
+    html += `<span class="level-num">${level.num}</span>`;
+    html += `<span class="level-title">${level.label}</span>`;
+    html += `<span class="level-desc">${level.desc}</span>`;
+    html += `<span class="level-count">${items.length} 组件</span>`;
+    html += `</div>`;
+
+    // Group by structure
+    const groups = {};
+    items.forEach(item => {
+      const s = item.struct || '其他';
+      if (!groups[s]) groups[s] = [];
+      groups[s].push(item);
+    });
+
+    Object.entries(groups).forEach(([structName, comps]) => {
+      const tagClass = STRUCT_TAGS[structName] || 'deco';
+      html += `<div class="struct-group">`;
+      html += `<div class="struct-header"><span class="struct-tag struct-tag--${tagClass}">${structName}</span><span class="struct-name">${comps.length} 个同族组件</span></div>`;
+      html += `<div class="comp-grid">`;
+
+      comps.forEach(comp => {
+        const st = states[comp.id] || "";
+        html += `<div class="comp-card" data-id="${comp.id}" data-state="${st}">`;
+        html += `<div class="comp-card__head">`;
+        html += `<div><span class="comp-code">${comp.id}</span></div>`;
+        html += `<span class="comp-name">${comp.name}</span>`;
+        html += `</div>`;
+        html += `<div class="comp-card__body">`;
+        html += `<div class="comp-desc">${comp.desc}</div>`;
+        html += `<div class="comp-meta">`;
+        if (comp.css) comp.css.split(', ').forEach(c => html += `<span class="meta-tag meta-tag--css">${c}</span>`);
+        if (comp.anchor) html += `<span class="meta-tag meta-tag--anchor">${comp.anchor}</span>`;
+        if (comp.showcase) comp.showcase.split(', ').forEach(s => {
+          const cls = comp.isSvg ? 'meta-tag--svg' : 'meta-tag--showcase';
+          html += `<span class="meta-tag ${cls}">${s.replace('svg-templates/','')}</span>`;
+        });
+        html += `</div>`;
+        if (comp.note) html += `<div class="comp-note">${comp.note}</div>`;
+        html += `</div>`;
+        html += `<div class="comp-actions">`;
+        html += `<button class="btn-keep" onclick="mark('${comp.id}','keep')">保留</button>`;
+        html += `<button class="btn-delete" onclick="mark('${comp.id}','delete')">删除</button>`;
+        html += `<button class="btn-review" onclick="mark('${comp.id}','review')">待定</button>`;
+        html += `</div>`;
+        html += `</div>`;
+      });
+
+      html += `</div></div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  // SVG section header
+  const svgItems = DATA.filter(d => d.isSvg);
+  if (svgItems.length) {
+    // Already included in detail level above
+  }
+
+  app.innerHTML = html;
+  updateStats();
+  updateOutput();
+}
+
+function mark(id, state) {
+  if (states[id] === state) {
+    states[id] = "";
+  } else {
+    states[id] = state;
+  }
+  const card = document.querySelector(`.comp-card[data-id="${id}"]`);
+  if (card) card.dataset.state = states[id];
+  updateStats();
+  updateOutput();
+}
+
+function markAll(state) {
+  DATA.forEach(d => states[d.id] = state);
+  document.querySelectorAll('.comp-card').forEach(card => card.dataset.state = state);
+  updateStats();
+  updateOutput();
+}
+
+function updateStats() {
+  const total = DATA.length;
+  const keep = Object.values(states).filter(s => s === 'keep').length;
+  const del = Object.values(states).filter(s => s === 'delete').length;
+  const rev = Object.values(states).filter(s => s === 'review').length;
+  document.getElementById('stat-total').textContent = `${total} 组件`;
+  document.getElementById('stat-keep').textContent = `${keep} 保留`;
+  document.getElementById('stat-delete').textContent = `${del} 删除`;
+  document.getElementById('stat-review').textContent = `${rev} 待定`;
+}
+
+function updateOutput() {
+  const keeps = DATA.filter(d => states[d.id] === 'keep');
+  const deletes = DATA.filter(d => states[d.id] === 'delete');
+  const reviews = DATA.filter(d => states[d.id] === 'review');
+  const undecided = DATA.filter(d => !states[d.id]);
+
+  let out = '';
+  out += `=== nian-design 组件审查结果 ===\n`;
+  out += `总计: ${DATA.length} | 保留: ${keeps.length} | 删除: ${deletes.length} | 待定: ${reviews.length} | 未标记: ${undecided.length}\n\n`;
+
+  if (keeps.length) {
+    out += `--- 保留 ---\n`;
+    LEVELS.forEach(level => {
+      const levelKeeps = keeps.filter(k => k.level === level.key);
+      if (!levelKeeps.length) return;
+      out += `\n[${level.label}]\n`;
+      levelKeeps.forEach(k => out += `  ${k.id} · ${k.name}\n`);
+    });
+    out += '\n';
+  }
+
+  if (deletes.length) {
+    out += `--- 删除 ---\n`;
+    LEVELS.forEach(level => {
+      const levelDels = deletes.filter(k => k.level === level.key);
+      if (!levelDels.length) return;
+      out += `\n[${level.label}]\n`;
+      levelDels.forEach(k => out += `  ${k.id} · ${k.name}\n`);
+    });
+    out += '\n';
+  }
+
+  if (reviews.length) {
+    out += `--- 待定 ---\n`;
+    LEVELS.forEach(level => {
+      const levelRevs = reviews.filter(k => k.level === level.key);
+      if (!levelRevs.length) return;
+      out += `\n[${level.label}]\n`;
+      levelRevs.forEach(k => out += `  ${k.id} · ${k.name}\n`);
+    });
+    out += '\n';
+  }
+
+  if (undecided.length) {
+    out += `--- 未标记 ---\n`;
+    LEVELS.forEach(level => {
+      const levelUn = undecided.filter(k => k.level === level.key);
+      if (!levelUn.length) return;
+      out += `\n[${level.label}]\n`;
+      levelUn.forEach(k => out += `  ${k.id} · ${k.name}\n`);
+    });
+  }
+
+  document.getElementById('output-text').textContent = out;
+}
+
+function scrollToOutput() {
+  document.getElementById('output').scrollIntoView({behavior:'smooth'});
+}
+
+function copyOutput() {
+  const text = document.getElementById('output-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '已复制';
+    setTimeout(() => btn.textContent = '复制', 1500);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
