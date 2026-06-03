@@ -72,7 +72,7 @@ STRONG TRIGGERS: '自然色系', '品牌视觉规范', 'HTML 界面设计', '设
 - 取 CSS 变量体系和间距语义作为起点
 - 取 section 底色交替模式作为节奏参考
 - **不要复制模板的 HTML 结构或视觉设计**
-- 每个组件必须根据当前内容重新设计，从 `references/components.md` 取或自创
+- 每个组件必须根据当前内容重新设计，从 `references/all-components.md` 取或自创
 
 **组件互换**：配方给的"结构特征族"是骨架（必须遵守），具体组件在同族内自由选择。例：配方说"段状条族"，可选 seg-bar 方块格 / rank-bar / weight-bar，根据内容决定。
 
@@ -117,7 +117,7 @@ STRONG TRIGGERS: '自然色系', '品牌视觉规范', 'HTML 界面设计', '设
 ### Step 4: 读参照 + 查组件代码
 
 1. 读配方中标注的参照案例（showcase HTML 前 200 行），理解视觉节奏和 CSS 变量写法
-2. 查 `references/components.md` 或 `references/components-ext.md`，取需要的组件 HTML+CSS 代码
+2. 查 `references/all-components.md`，取需要的组件 HTML+CSS 代码
 3. **扩展库按需查取**（需要时读，不提前全部加载）：
 
 | 扩展库 | 文件 | 何时查 |
@@ -200,8 +200,7 @@ STRONG TRIGGERS: '自然色系', '品牌视觉规范', 'HTML 界面设计', '设
 | `references/tokens.md` | 字体/颜色/间距/圆角/深度精确值 | Step 1 必读 |
 | `references/recipe-book.md` | 配方手册（节奏模式+组件组合+参照案例） | Step 2 必读 |
 | `references/visual-forms.md` | 8 种结构特征 × 4 级组件完整清单 | 需要替换组件时查 |
-| `references/components.md` | 组件 HTML/CSS 代码 | 写代码时按需复制 |
-| `references/components-ext.md` | 扩展组件（Economist/FT/Bloomberg 等） | 品牌场景组件 |
+| `references/all-components.md` | 全量组件 HTML/CSS 代码（82 组件） | 写代码时按需复制 |
 | `references/extended-layouts.md` | 30 种扩展布局（从 cinematic-ui 筛选） | Step 4 按需 |
 | `references/entrances.md` | 15 种入场效果（transform+opacity+clip-path） | Step 4 按需 |
 | `references/typography-treatments.md` | 25 种文字处理效果 | Step 4 按需 |
@@ -230,7 +229,7 @@ STRONG TRIGGERS: '自然色系', '品牌视觉规范', 'HTML 界面设计', '设
 | 2026-06-02 | 步骤过载，缺需求澄清和自检 | 拆分步骤、加需求澄清和自检 |
 | 2026-06-02 | 缺 brand-dna 独立文件、tokens 仍写旧品牌 | 新建 brand-dna、tokens 改名 |
 | 2026-06-02 | 12 步过长，AI 跳过关键步骤；59 个 showcase 无索引 | 精简到 6 步；新建 recipe-book.md；强制 Step 3 输出节奏表 |
-| 2026-06-02 | 配方锁死组件选择，限制创造性；缺模板起步；缺组件代码引用 | recipe-book 改为"族/组件分离"——配方给结构特征族（骨架），组件自由选择（血肉）；加组件互换规则和互换表；Step 2 加"拷模板起步"；Step 4 加"查 components.md 取组件 CSS"；对标 MINO（模板起步+场景文件）和 Nothing（组件代码内嵌+三层视觉层级+评分体系） |
+| 2026-06-02 | 配方锁死组件选择，限制创造性；缺模板起步；缺组件代码引用 | recipe-book 改为"族/组件分离"——配方给结构特征族（骨架），组件自由选择（血肉）；加组件互换规则和互换表；Step 2 加"拷模板起步"；Step 4 加"查 all-components.md 取组件 CSS"；对标 MINO（模板起步+场景文件）和 Nothing（组件代码内嵌+三层视觉层级+评分体系） |
 | 2026-06-03 | 场景色按类型硬映射误导配色；模板依赖过重限制创意 | 场景色改按情绪基调选择（去掉 glacier=数据报告）；Step 2"拷模板"改为"读结构配组件"；recipe-book 去掉模板列，强调读结构不拷设计 |
 | 2026-06-03 | Hero 都是深色全背景；缺装饰组件；内容密度没规划 | 新增 Step 2.5（内容审计+Hero概念设计+装饰规划）；Hero 底色限定 `--bg`/`--sf`；新增装饰组件体系（ghost字/线/标签/点阵）；节奏表检查增加密度和底色两条；硬约束表增加#7(浅Hero底)和#8(装饰元素) |
 

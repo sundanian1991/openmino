@@ -10,7 +10,7 @@
 
 1. 根据内容结构选配方 → 拿到节奏模式和结构特征族
 2. 读 1 个参照案例（前 200 行）→ 理解视觉节奏和底色交替模式。参照案例统一在 `references/showcase/` 下。
-3. 查 `components.md` / `components-ext.md` → 取组件 CSS 代码
+3. 查 `all-components.md` → 取组件 CSS 代码
 4. 按节奏表组织页面，**每个组件根据当前内容重新设计**，不从模板抄 HTML
 5. 模板文件在 `templates/` 下，只取 CSS 变量体系和间距语义，不复制布局
 

@@ -1,6 +1,6 @@
 # Haglöfs 场景-组件映射
 
-> 基于 tokens.md + haglofs-components.md + components.md 提取
+> 基于 tokens.md + haglofs-components.md + all-components.md 提取
 > 核心：先判断场景，再选组件，快速实现
 
 ---
