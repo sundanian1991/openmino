@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 学习体系 — 从工具到工作流</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--brand-olive:#4A5D3A;
+--brand-earth:#8B7355;
+--scene-glacier:#2A4A5A;
+--accent-orange:#E55B2B;
+--accent-yellow:#FFD100;
+--bg:#FAFAF8;
+--surface:#FFFFFF;
+--surface-raised:#F5F5F0;
+--border:#E5E5E0;
+--border-visible:#C0C0B8;
+--text-display:#2C2C2C;
+--text-primary:#1A1A1A;
+--text-secondary:#6B6B6B;
+--text-disabled:#A0A0A0;
+--scene:var(--scene-glacier);
+--scene-bg:rgba(42,74,90,0.06);
+--scene-border:rgba(42,74,90,0.2);
+--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;--space-4xl:96px;
+--radius-sm:4px;--radius-md:8px;--container-max:1120px;
+}
+body{background:var(--bg);color:var(--text-primary);font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6;font-size:14px}
+.container{max-width:var(--container-max);margin:0 auto;padding:0 var(--space-xl)}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:var(--space-4xl) var(--space-xl) var(--space-3xl);position:relative;background:var(--bg);overflow:hidden}
+.hero-ghost{position:absolute;top:-60px;right:-40px;font-family:'Doto',monospace;font-size:clamp(12rem,30vw,36rem);font-weight:700;color:var(--text-display);opacity:0.04;line-height:1;pointer-events:none;user-select:none}
+.hero-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;color:var(--text-secondary);margin-bottom:var(--space-lg)}
+.hero h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(3.5rem,8vw,120px);font-weight:300;line-height:1.05;letter-spacing:-0.03em;color:var(--text-display);max-width:900px}
+.hero h1 strong{font-weight:700;color:var(--scene)}
+.hero-sub{font-size:clamp(1rem,2vw,18px);color:var(--text-secondary);max-width:560px;margin-top:var(--space-xl);line-height:1.7}
+.hero-line{width:80px;height:2px;background:var(--scene);margin-top:var(--space-2xl)}
+.hero-meta{display:flex;gap:var(--space-xl);margin-top:var(--space-xl);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:var(--text-disabled)}
+.hero-meta span{position:relative}
+.hero-meta span+span::before{content:'|';padding-right:var(--space-xl);color:var(--border)}
+
+/* Section base */
+section{padding:var(--space-4xl) 0;position:relative}
+.section-num{font-family:'Doto',monospace;font-size:clamp(4rem,10vw,10rem);font-weight:700;color:var(--text-display);opacity:0.03;position:absolute;top:0;right:var(--space-xl);line-height:1;pointer-events:none;user-select:none}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--scene);margin-bottom:var(--space-md)}
+.section-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.8rem,4vw,36px);font-weight:300;color:var(--text-display);margin-bottom:var(--space-lg);line-height:1.2}
+.section-desc{font-size:var(--body,16px);color:var(--text-secondary);max-width:640px;margin-bottom:var(--space-xl);line-height:1.7}
+
+/* Bento Grid */
+.bento{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;background:var(--border)}
+.bento-card{background:var(--surface);padding:var(--space-xl);display:flex;flex-direction:column;gap:var(--space-sm);position:relative;overflow:hidden;transition:background 150ms ease-out}
+.bento-card:hover{background:var(--surface-raised)}
+.bento-card--wide{grid-column:span 2}
+.bento-card--tall{grid-row:span 2}
+.bento-freq{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--scene-border);border-radius:2px;color:var(--text-secondary);display:inline-block;margin-bottom:var(--space-xs)}
+.bento-name{font-weight:600;font-size:18px;color:var(--text-primary)}
+.bento-desc{font-size:14px;color:var(--text-secondary);line-height:1.6}
+.bento-icon{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--scene);letter-spacing:0.06em;margin-top:auto}
+
+/* Dark Statement */
+.dark-statement{background:var(--scene);color:#fff;padding:var(--space-4xl) var(--space-xl);text-align:center;position:relative;overflow:hidden}
+.dark-statement .section-label{color:rgba(255,255,255,0.5)}
+.dark-statement .section-title{color:#fff;font-size:clamp(2rem,5vw,48px);max-width:700px;margin:0 auto var(--space-lg)}
+.dark-statement .section-desc{color:rgba(255,255,255,0.7);max-width:560px;margin:0 auto var(--space-xl)}
+.dark-ghost{position:absolute;bottom:-30px;left:-20px;font-family:'Doto',monospace;font-size:clamp(8rem,20vw,24rem);font-weight:700;color:rgba(255,255,255,0.03);line-height:1;pointer-events:none}
+
+/* Flow Pipeline */
+.pipeline{display:flex;align-items:stretch;gap:0;background:var(--border);padding:1px;border-radius:0}
+.pipe-stage{flex:1;background:var(--surface);padding:var(--space-lg) var(--space-md);display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-sm);position:relative;transition:background 150ms ease-out}
+.pipe-stage:hover{background:var(--surface-raised)}
+.pipe-stage+.pipe-stage{border-left:1px solid var(--border)}
+.pipe-num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;color:var(--text-disabled);line-height:1}
+.pipe-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary)}
+.pipe-name{font-weight:500;font-size:15px;color:var(--text-primary)}
+.pipe-desc{font-size:13px;color:var(--text-secondary);line-height:1.5;max-width:180px}
+
+/* Showcase block */
+.showcase-grid{display:grid;grid-template-columns:200px 1fr;gap:var(--space-2xl);align-items:start}
+.showcase-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:var(--text-disabled);position:sticky;top:var(--space-xl)}
+.showcase-tree{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:2;color:var(--text-secondary)}
+.showcase-tree .dir{color:var(--text-primary);font-weight:500}
+.showcase-tree .file{color:var(--text-disabled)}
+.showcase-tree .note{color:var(--text-disabled);font-size:11px}
+.showcase-tree .highlight{color:var(--accent-orange);font-weight:500}
+.showcase-tree .indent{padding-left:var(--space-lg);display:block}
+
+/* Callout grid */
+.callout-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+.callout{border-left:2px solid var(--scene);background:var(--surface-raised);padding:var(--space-lg)}
+.callout--warn{border-left-color:var(--accent-orange)}
+.callout--full{grid-column:1/-1}
+.callout-num{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:600;color:var(--text-disabled);line-height:1;margin-bottom:var(--space-sm)}
+.callout-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--scene);margin-bottom:var(--space-xs)}
+.callout--warn .callout-title{color:var(--accent-orange)}
+.callout-body{font-size:14px;color:var(--text-primary);line-height:1.6}
+
+/* Comparison */
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-xl)}
+.comp-card{border:1px solid var(--border);padding:var(--space-xl);position:relative}
+.comp-card--left{border-left:3px solid var(--scene)}
+.comp-card--right{border-left:3px solid var(--text-display)}
+.comp-header{display:flex;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-lg);padding-bottom:var(--space-md);border-bottom:1px solid var(--border)}
+.comp-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary)}
+.comp-marker{font-size:18px;font-weight:400}
+.comp-card--left .comp-marker{color:var(--scene)}
+.comp-card--right .comp-marker{color:var(--text-display)}
+.comp-row{display:flex;gap:var(--space-sm);padding:var(--space-sm) 0;font-size:14px;color:var(--text-primary);line-height:1.5}
+.comp-icon{color:var(--text-disabled);font-family:'JetBrains Mono',monospace;font-size:12px;min-width:16px}
+.comp-card--left .comp-icon{color:var(--scene)}
+
+/* Timeline */
+.timeline{display:flex;align-items:flex-start;gap:0;padding:var(--space-xl) 0}
+.tl-node{flex:1;text-align:center;position:relative;padding-top:var(--space-xl)}
+.tl-node::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:var(--border);border:2px solid var(--surface)}
+.tl-node--done::before{background:var(--scene)}
+.tl-node--active::before{background:var(--scene);outline:4px solid var(--scene-bg)}
+.tl-connector{flex:0 0 1px;height:1px;background:var(--border);align-self:center;margin-bottom:auto;margin-top:5px}
+.tl-step{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-xs)}
+.tl-label{font-size:14px;color:var(--text-primary);font-weight:500}
+.tl-desc{font-size:12px;color:var(--text-secondary);margin-top:var(--space-xs);max-width:140px;margin-left:auto;margin-right:auto;line-height:1.5}
+
+/* Metric grid */
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md)}
+.metric-card{background:var(--surface);border:1px solid var(--border);padding:var(--space-lg) var(--space-xl);position:relative;transition:background 150ms ease-out}
+.metric-card:hover{background:var(--surface-raised)}
+.metric-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:var(--text-disabled);text-transform:uppercase;display:block;margin-bottom:var(--space-sm)}
+.metric-hero{font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:600;color:var(--text-display);line-height:1;margin-bottom:var(--space-xs)}
+.metric-unit{font-size:16px;font-weight:400;color:var(--text-secondary);margin-left:var(--space-xs)}
+.metric-desc{font-size:13px;color:var(--text-secondary);line-height:1.5}
+
+/* Scale Jump - the "break" */
+.scale-break{position:relative;max-width:var(--container-max);margin:var(--space-2xl) auto 0;padding:0 var(--space-xl)}
+.scale-break-inner{display:flex;align-items:baseline;gap:var(--space-md);justify-content:center;padding:var(--space-2xl) 0;border-top:1px solid var(--border)}
+.scale-num{font-family:'JetBrains Mono',monospace;font-size:clamp(4rem,12vw,120px);font-weight:200;color:var(--text-display);line-height:0.9;letter-spacing:-0.05em}
+.scale-context{font-size:14px;color:var(--text-secondary);max-width:300px;line-height:1.6}
+.scale-context strong{color:var(--text-primary);font-weight:600}
+
+/* Divider */
+.seam-divider{height:1px;background:var(--border);mask-image:linear-gradient(to right,transparent 0%,#000 20%,#000 80%,transparent 100%);-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 20%,#000 80%,transparent 100%);max-width:var(--container-max);margin:0 auto}
+
+/* Footer */
+.footer{border-top:1px solid var(--border);padding:var(--space-xl) var(--space-xl);text-align:center}
+.footer-text{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;color:var(--text-disabled)}
+.footer-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--scene);margin:0 var(--space-sm);vertical-align:middle}
+
+/* Container context */
+.bg-surface{background:var(--surface)}
+.bg-surface .section-label,.bg-surface .section-desc{color:var(--text-secondary)}
+
+/* Architecture sub-section */
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2xl);margin-bottom:var(--space-2xl)}
+.arch-item{display:flex;flex-direction:column;gap:var(--space-sm)}
+.arch-key{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--scene);letter-spacing:0.06em;text-transform:uppercase}
+.arch-title{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:400;color:var(--text-display)}
+.arch-body{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.arch-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.04em;color:var(--text-disabled);border:1px solid var(--border);padding:2px 8px;border-radius:2px;display:inline-block}
+
+/* Responsive */
+@media(max-width:900px){
+.bento{grid-template-columns:1fr 1fr}
+.bento-card--wide{grid-column:span 1}
+.showcase-grid{grid-template-columns:1fr}
+.showcase-label{position:static}
+.metric-grid{grid-template-columns:repeat(2,1fr)}
+.callout-grid{grid-template-columns:1fr}
+.comparison-grid{grid-template-columns:1fr}
+.arch-grid{grid-template-columns:1fr}
+.pipeline{flex-direction:column}
+.pipe-stage+.pipe-stage{border-left:none;border-top:1px solid var(--border)}
+.timeline{flex-direction:column;align-items:center}
+.tl-node{padding-top:var(--space-lg);padding-bottom:var(--space-lg)}
+.tl-node::before{top:0}
+.tl-connector{width:1px;height:24px;flex:0 0 auto}}
+@media(max-width:600px){
+.bento{grid-template-columns:1fr}
+.metric-grid{grid-template-columns:1fr}
+section{padding:var(--space-2xl) 0}
+.hero{padding:var(--space-3xl) var(--space-md)}
+.container{padding:0 var(--space-md)}}
+</style>
+</head>
+<body>
+
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-ghost">CC</span>
+  <span class="hero-tag">CLAUDE CODE &mdash; 学习体系</span>
+  <h1>从工具<br>到<strong>工作流</strong></h1>
+  <p class="hero-sub">Claude Code 不是聊天工具，是一套从工具到工作流的完整体系。当你理解了七个层次、五步方法、三层记忆，工具才真正成为能力。</p>
+  <div class="hero-line"></div>
+  <div class="hero-meta">
+    <span>2025&ndash;2026</span>
+    <span>七大核心组件</span>
+    <span>五步工作流</span>
+  </div>
+</section>
+
+<div class="seam-divider"></div>
+
+<!-- 七大组件 -->
+<section class="bg-surface">
+  <div class="container">
+    <span class="section-num">01</span>
+    <span class="section-label">COMPONENTS</span>
+    <h2 class="section-title">七大核心组件</h2>
+    <p class="section-desc">Claude Code 的能力分七个层次，按使用频率排列。从每天必用的 CLAUDE.md 到偶尔使用的插件，形成完整的能力金字塔。</p>
+    <div class="bento">
+      <div class="bento-card bento-card--wide">
+        <span class="bento-freq">每天</span>
+        <span class="bento-name">CLAUDE.md</span>
+        <span class="bento-desc">项目记忆体，每次会话自动加载上下文。解决"每次新会话都要重复交代背景"的问题。学习体系的基石。</span>
+        <span class="bento-icon">CLAUDE.md &rarr; .claude/rules/</span>
+      </div>
+      <div class="bento-card">
+        <span class="bento-freq">经常</span>
+        <span class="bento-name">Commands</span>
+        <span class="bento-desc">快捷指令，一键触发重复任务。如 /build、/test、/deploy。</span>
+        <span class="bento-icon">.claude/commands/</span>
+      </div>
+      <div class="bento-card">
+        <span class="bento-freq">有时</span>
+        <span class="bento-name">Skills</span>
+        <span class="bento-desc">工作流模板，可复用的最佳实践。代码审查、文档生成、数据分析。</span>
+        <span class="bento-icon">.claude/skills/</span>
+      </div>
+      <div class="bento-card">
+        <span class="bento-freq">有时</span>
+        <span class="bento-name">Hooks</span>
+        <span class="bento-desc">自动化触发器，事件驱动。pre-commit 自动格式化、post-save 自动测试。</span>
+        <span class="bento-icon">.claude/hooks/</span>
+      </div>
+      <div class="bento-card">
+        <span class="bento-freq">偶尔</span>
+        <span class="bento-name">SubAgents</span>
+        <span class="bento-desc">任务分解专家，并行处理复杂任务。Explore / Planner / Code developer。</span>
+        <span class="bento-icon">Agent 工具</span>
+      </div>
+      <div class="bento-card">
+        <span class="bento-freq">有时</span>
+        <span class="bento-name">MCP Servers</span>
+        <span class="bento-desc">连接外部世界的桥梁。Figma、Slack、Jira、数据库等。</span>
+        <span class="bento-icon">mcp_servers/</span>
+      </div>
+      <div class="bento-card">
+        <span class="bento-freq">很少</span>
+        <span class="bento-name">Plugins</span>
+        <span class="bento-desc">功能大礼包，一键安装扩展能力。最底层但最厚重的组件。</span>
+        <span class="bento-icon">plugins/</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="seam-divider"></div>
+
+<!-- 透明工作流 -- Dark Statement -->
+<section class="dark-statement">
+  <span class="dark-ghost">WORKFLOW</span>
+  <span class="section-label">PRINCIPLE</span>
+  <h2 class="section-title">透明，不是黑盒</h2>
+  <p class="section-desc">透明工作流的核心价值：让 AI 的思考过程可见，不再是黑盒操作。五步法建立信任，每一步都经得起追问。</p>
+</section>
+
+<div class="seam-divider"></div>
+
+<!-- 五步工作流 -->
+<section class="bg-surface">
+  <div class="container">
+    <span class="section-num">02</span>
+    <span class="section-label">WORKFLOW</span>
+    <h2 class="section-title">五步工作法</h2>
+    <p class="section-desc">透明工作流（TRANSPARENT-WORKFLOW）定义了从接收到交付的完整路径，每一步都有明确的输出标准。</p>
+    <div class="pipeline">
+      <div class="pipe-stage">
+        <span class="pipe-num">01</span>
+        <span class="pipe-label">Step 1</span>
+        <span class="pipe-name">Intent Gate</span>
+        <span class="pipe-desc">意图分类。简单查询、复杂任务、探索、代码、数据，分而治之。</span>
+      </div>
+      <div class="pipe-stage">
+        <span class="pipe-num">02</span>
+        <span class="pipe-label">Step 2</span>
+        <span class="pipe-name">Pre-Declaration</span>
+        <span class="pipe-desc">委派前声明。使用工具前说明理由和预期，消除黑盒。</span>
+      </div>
+      <div class="pipe-stage">
+        <span class="pipe-num">03</span>
+        <span class="pipe-label">Step 3</span>
+        <span class="pipe-name">Todo Management</span>
+        <span class="pipe-desc">任务可视化。多步骤时列出拆分清单，让进度一目了然。</span>
+      </div>
+      <div class="pipe-stage">
+        <span class="pipe-num">04</span>
+        <span class="pipe-label">Step 4</span>
+        <span class="pipe-name">Progress Visibility</span>
+        <span class="pipe-desc">过程透明。执行中实时汇报进度，不做沉默运行。</span>
+      </div>
+      <div class="pipe-stage">
+        <span class="pipe-num">05</span>
+        <span class="pipe-label">Step 5</span>
+        <span class="pipe-name">Verification &amp; Summary</span>
+        <span class="pipe-desc">验证总结。完成后逐项对照验收，确保交付质量。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="seam-divider"></div>
+
+<!-- 个性化升级 + Plan5 -->
+<section>
+  <div class="container">
+    <span class="section-num">03</span>
+    <span class="section-label">EVOLUTION</span>
+    <h2 class="section-title">个性化升级</h2>
+    <p class="section-desc">从简单说明到分层结构，CLAUDE.md 的演进本身就是学习体系的缩影。</p>
+    <div class="showcase-grid">
+      <span class="showcase-label">CLAUDE.md 分层结构</span>
+      <div class="showcase-tree">
+        <span class="dir">CLAUDE.md</span><span class="note"> &mdash; 入口，索引</span>
+        <span class="indent dir">.claude/rules/</span><span class="note"> &mdash; 核心规则，每次自动加载</span>
+        <span class="indent indent" class="file">00-IDENTITY.md</span><span class="note"> &mdash; 身份与铁律</span>
+        <span class="indent indent" class="file">01-SOUL.md</span><span class="note"> &mdash; 性格与气质</span>
+        <span class="indent indent" class="file highlight">AGENT-FIRST.md</span><span class="note"> &mdash; 子代理优先</span>
+        <span class="indent indent" class="file">MEMORY-L1.md</span><span class="note"> &mdash; 记忆索引</span>
+        <span class="indent indent" class="file">06-NOW.md</span><span class="note"> &mdash; 当前状态</span>
+        <span class="indent dir">.claude/reference/</span><span class="note"> &mdash; 扩展规则，按需读取</span>
+        <span class="indent indent" class="file">03-USER.md</span><span class="note"> &mdash; 用户画像</span>
+        <span class="indent indent" class="file">07-WORK.md</span><span class="note"> &mdash; 工作契约</span>
+        <span class="indent indent" class="file">09-TOOLS.md</span><span class="note"> &mdash; 工具使用</span>
+        <span class="indent dir">.claude/commands/</span><span class="note"> &mdash; 快捷指令</span>
+        <span class="indent dir">.claude/skills/</span><span class="note"> &mdash; 工作流模板</span>
+      </div>
+    </div>
+
+    <div style="margin-top:var(--space-4xl)">
+      <span class="section-label" style="margin-bottom:var(--space-lg);display:block">PLAN5 关键教训</span>
+      <div class="callout-grid">
+        <div class="callout callout--full">
+          <span class="callout-num">01</span>
+          <span class="callout-title">不要跳过需求分析</span>
+          <div class="callout-body">直接开始写代码是最常见的错误。先问"要解决什么问题"，再问"怎么写"。</div>
+        </div>
+        <div class="callout">
+          <span class="callout-num">02</span>
+          <span class="callout-title">任务拆解要具体</span>
+          <div class="callout-body">"重构代码"不是任务。"将 X 函数从 A 文件移到 B 文件"才是可执行的任务。</div>
+        </div>
+        <div class="callout">
+          <span class="callout-num">03</span>
+          <span class="callout-title">持久化是核心</span>
+          <div class="callout-body">不记录到文件系统的讨论，下次会话就会丢失。文档即记忆。</div>
+        </div>
+        <div class="callout callout--warn">
+          <span class="callout-num">04</span>
+          <span class="callout-title">验证要对照合同</span>
+          <div class="callout-body">完成标志必须提前定义。没有验收标准的任务，永远做不完。</div>
+        </div>
+        <div class="callout callout--warn">
+          <span class="callout-num">05</span>
+          <span class="callout-title">五文件工作流</span>
+          <div class="callout-body">需求分析 &rarr; 任务拆解 &rarr; 文件持久化 &rarr; 执行追踪 &rarr; 验证总结。闭环。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="seam-divider"></div>
+
+<!-- 架构理解 + 学习路径 -->
+<section class="bg-surface">
+  <div class="container">
+    <span class="section-num">04</span>
+    <span class="section-label">ARCHITECTURE</span>
+    <h2 class="section-title">架构理解</h2>
+    <p class="section-desc">Claude Code 采用 CLI-first 路线，比 IDE 集成工具更轻量、灵活、可脚本化。AI 不只是补全代码，而是主动完成任务。</p>
+    <div class="arch-grid">
+      <div class="arch-item">
+        <span class="arch-tag">CLI-FIRST</span>
+        <span class="arch-title">命令行优先</span>
+        <div class="arch-body">比 IDE 集成更轻量、灵活、可脚本化。终端是界面，文件系统是状态，git 是版本控制。三层为基，不依赖 GUI。</div>
+      </div>
+      <div class="arch-item">
+        <span class="arch-tag">AGENTIC</span>
+        <span class="arch-title">主动代理</span>
+        <div class="arch-body">不只是补全代码，而是主动完成任务 &mdash; 编辑文件、运行命令、创建提交。Agent 即执行者。</div>
+      </div>
+    </div>
+
+    <!-- Break element: scale jump -->
+    <div class="scale-break">
+      <div class="scale-break-inner">
+        <span class="scale-num">3</span>
+        <div class="scale-context">
+          <strong>分钟内</strong>创建一个新的 CLAUDE.md<br>
+          这就是掌握上下文管理的分水岭。<br>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-disabled);display:block;margin-top:var(--space-xs)">真正的理解不在会用，在能用一句话说清</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learning Path Timeline -->
+    <div style="margin-top:var(--space-3xl)">
+      <span class="section-label" style="margin-bottom:var(--space-lg);display:block">LEARNING PATH</span>
+      <div class="timeline">
+        <div class="tl-node tl-node--done">
+          <span class="tl-step">Stage 1</span>
+          <span class="tl-label">工具定位</span>
+          <span class="tl-desc">CLI-first, Agentic Coding</span>
+        </div>
+        <div class="tl-connector"></div>
+        <div class="tl-node tl-node--done">
+          <span class="tl-step">Stage 2</span>
+          <span class="tl-label">七大组件</span>
+          <span class="tl-desc">CLAUDE.md, Commands, Skills...</span>
+        </div>
+        <div class="tl-connector"></div>
+        <div class="tl-node tl-node--done">
+          <span class="tl-step">Stage 3</span>
+          <span class="tl-label">建立工作流</span>
+          <span class="tl-desc">透明工作流, Plan5</span>
+        </div>
+        <div class="tl-connector"></div>
+        <div class="tl-node tl-node--active">
+          <span class="tl-step">Stage 4</span>
+          <span class="tl-label">个性化升级</span>
+          <span class="tl-desc">Rules分层, Hooks自动化</span>
+        </div>
+        <div class="tl-connector"></div>
+        <div class="tl-node">
+          <span class="tl-step">Stage 5</span>
+          <span class="tl-label">持续优化</span>
+          <span class="tl-desc">Skills管理, 插件评估</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="seam-divider"></div>
+
+<!-- 掌握指标 -->
+<section>
+  <div class="container">
+    <span class="section-num">05</span>
+    <span class="section-label">MASTERY</span>
+    <h2 class="section-title">掌握的关键指标</h2>
+    <p class="section-desc">判断是否真正掌握 Claude Code，四个指标比任何证书都可靠。</p>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <span class="metric-label">指标一</span>
+        <span class="metric-hero">3<span class="metric-unit">min</span></span>
+        <span class="metric-desc">创建一个新的 CLAUDE.md。理解上下文管理的核心，从零到可用。</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">指标二</span>
+        <span class="metric-hero">1<span class="metric-unit">句</span></span>
+        <span class="metric-desc">说清每个组件的用途。理解工具的定位，而非死记硬背。</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">指标三</span>
+        <span class="metric-hero">自主</span>
+        <span class="metric-desc">设计新的 hooks。理解事件驱动机制，不为框架所限。</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">指标四</span>
+        <span class="metric-hero">自动化</span>
+        <span class="metric-desc">为重复任务创建 commands。理解自动化思维，形成肌肉记忆。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="seam-divider"></div>
+
+<!-- Footer -->
+<footer class="footer">
+  <span class="footer-text">
+    CLAUDE CODE 学习体系
+    <span class="footer-dot"></span>
+    从工具到工作流
+    <span class="footer-dot"></span>
+    2025&ndash;2026
+  </span>
+</footer>
+
+</body>
+</html>

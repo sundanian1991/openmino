@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电销人机结算诊断报告 — 2026年5月</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F5F3EF;font-family:'Helvetica Neue',Inter,-apple-system,sans-serif;color:#2D2D2D;padding:24px}
+.report{max-width:1024px;margin:0 auto;background:#FFFFFF;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.06);overflow:hidden}
+.header{padding:32px 40px 20px;border-bottom:1px solid #E8E4DE}
+.header h1{font-size:22px;font-weight:700;color:#2D2D2D;margin-bottom:4px}
+.header .meta{font-size:13px;color:#8B8578;display:flex;gap:16px}
+.header .meta span{display:flex;align-items:center;gap:4px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px 40px;border-bottom:1px solid #E8E4DE}
+.kpi-card{padding:14px 16px;border-radius:8px;background:#FAF8F5}
+.kpi-card .label{font-size:11px;color:#8B8578;margin-bottom:4px;letter-spacing:0.3px}
+.kpi-card .value{font-size:20px;font-weight:700;color:#2D2D2D}
+.kpi-card .sub{font-size:11px;color:#C0392B;margin-top:2px;font-weight:500}
+.kpi-card.good .sub{color:#3A8F6E}
+.kpi-card .sub.amber{color:#D4A843}
+.tab-bar{display:flex;gap:4px;padding:16px 40px 0;border-bottom:1px solid #E8E4DE;background:#FAF8F5}
+.tab-btn{padding:10px 18px;font-size:12px;font-weight:500;border:none;background:transparent;color:#8B8578;cursor:pointer;border-radius:6px 6px 0 0;transition:all 0.15s}
+.tab-btn:hover{color:#CC6B1E;background:#F5F0E8}
+.tab-btn.active{color:#CC6B1E;background:#FFFFFF;font-weight:600;box-shadow:0 -1px 3px rgba(0,0,0,0.04)}
+.chart-wrapper{padding:20px 40px 16px}
+.chart-container{width:100%;height:500px}
+.insight{padding:0 40px 24px;font-size:13px;line-height:1.6;color:#5C5A52}
+.insight strong{color:#CC6B1E}
+.insight .key{display:inline-block;background:#F5F0E8;padding:2px 8px;border-radius:4px;font-weight:600;color:#8B3A0F;margin-right:4px}
+.footer{padding:16px 40px;border-top:1px solid #E8E4DE;font-size:11px;color:#B0ACA3;display:flex;justify-content:space-between}
+@media(max-width:768px){.kpi-row{grid-template-columns:repeat(2,1fr);padding:16px 20px}.header{padding:24px 20px}.tab-bar{padding:12px 20px 0;overflow-x:auto}.tab-btn{white-space:nowrap;padding:8px 12px;font-size:11px}.chart-wrapper{padding:12px 20px}.insight{padding:0 20px 20px}}
+</style>
+</head>
+<body>
+<div class="report" id="app">
+<div class="header">
+<h1>电销人机结算诊断报告</h1>
+<div class="meta">
+<span>报告周期：2025-12 ~ 2026-05</span>
+<span>口径：精算人均 = salary/hc × 纠偏系数 × 0.7</span>
+<span>数据来源：结算系统明细</span>
+</div>
+</div>
+<div class="kpi-row">
+<div class="kpi-card"><div class="label">人机精算人均</div><div class="value">5,518</div><div class="sub">较12月 -44.7%</div></div>
+<div class="kpi-card"><div class="label">首贷精算人均</div><div class="value">4,814</div><div class="sub">跌破5千红线</div></div>
+<div class="kpi-card good"><div class="label">复贷精算人均</div><div class="value">9,378</div><div class="sub good">较12月 -43.0%</div></div>
+<div class="kpi-card"><div class="label">人机总薪资</div><div class="value">295.8万</div><div class="sub amber">较12月 -38.6%</div></div>
+</div>
+<div class="tab-bar" id="tabBar">
+<button class="tab-btn active" data-chart="0">整体下滑趋势</button>
+<button class="tab-btn" data-chart="1">归因：三大挤压因素</button>
+<button class="tab-btn" data-chart="2">供应商诊断矩阵</button>
+<button class="tab-btn" data-chart="3">线路费占比恶化</button>
+<button class="tab-btn" data-chart="4">提前还款率影响</button>
+</div>
+<div class="chart-wrapper">
+		<div class="chart-container" id="chart0"></div>
+		<div class="chart-container" id="chart1" style="display:none"></div>
+		<div class="chart-container" id="chart2" style="display:none"></div>
+		<div class="chart-container" id="chart3" style="display:none"></div>
+		<div class="chart-container" id="chart4" style="display:none"></div>
+	</div>
+<div class="insight" id="insight0">首贷精算人均从 <strong>9,314 元</strong> 降至 <strong>4,814 元</strong>（-48%），已跌破5千红线。复贷虽绝对额更高，但降幅同样猛烈（-43%）。人机精算全面承压，这是一个系统性问题，不是个别供应商的波动。</div>
+<div class="insight" id="insight1" style="display:none">精算人均 = 显示人均 × 纠偏系数 × 0.7。从12月到5月，<strong>显示人均下滑</strong>是最主要拖累（-3,175），<strong>纠偏系数恶化</strong>贡献了-1,322，<strong>线路费及交互项</strong>叠加影响。三因素合计拖累 <strong>4,500 元</strong>。</div>
+<div class="insight" id="insight2" style="display:none">8家供应商中 <strong>5家精算人均低于6千</strong>，其中零犀伽玛（2,191）、零犀毛毛虫（2,581）、零犀赛维斯（2,741）三家处于 <strong>高线路费+低精算</strong> 的双重危险区。仅零犀系主体（8,977）和零犀毅航（6,164）处于健康区间。</div>
+<div class="insight" id="insight3" style="display:none">所有供应商线路费占比 <strong>全线飙升</strong>。零犀毛毛虫（31%→62%）、零犀伽玛（35%→60%）恶化最快。赛维斯5月高达62.6%，逼近 <strong>成本倒挂线（100%）</strong>。线路费已从"成本项"变成"盈利吞噬者"。</div>
+<div class="insight" id="insight4" style="display:none">实际提前还款率持续高于固定假设7%（1月9.1%→5月11.6%），导致纠偏系数从 <strong>0.769 一路降至 0.603</strong>。佣金调降幅度从 <strong>23% 扩大到 40%</strong>——这意味着每做一单首贷，到手的佣金不到标价的六成。</div>
+<div class="footer"><span>贝恩灰橙 · 诊断报告</span><span>生成于 2026-06-03</span></div>
+</div>
+<script>
+var chartInstances = [];
+var chartOptions = [];
+
+chartOptions[0] = {
+  backgroundColor:'#FFFFFF', color:['#CC6B1E','#F0A54A','#6C7A89','#8B3A0F'],
+  title:{text:'首贷精算人均触及红线 4,814元/月（-48%）',subtext:'人机结算持续下降，首贷5月精算人均仅4,814元/人/月 | 2025-12 ~ 2026-05',left:24,top:16,textStyle:{fontSize:18,fontWeight:600,color:'#2D2D2D'},subtextStyle:{fontSize:12,color:'#6C7A89'}},
+  tooltip:{trigger:'axis',backgroundColor:'#FFFFFF',borderColor:'#E0E0E0',borderWidth:1,formatter:function(p){var s='<b>'+p[0].axisValue+'</b><br/>';p.forEach(function(i){s+=i.marker+' '+i.seriesName+': '+i.value.toLocaleString()+' 元<br/>'});return s}},
+  legend:{left:24,top:62,textStyle:{fontSize:12,color:'#6C7A89'}},
+  grid:{left:60,right:60,top:110,bottom:50},
+  xAxis:{type:'category',data:['25-12','26-01','26-02','26-03','26-04','26-05'],axisLine:{lineStyle:{color:'#D5DDE5'}},axisLabel:{fontSize:12,color:'#6C7A89',fontWeight:500},axisTick:{alignWithLabel:true}},
+  yAxis:{type:'value',name:'精算人均（元）',nameTextStyle:{fontSize:11,color:'#6C7A89'},min:0,max:26000,splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{fontSize:11,color:'#6C7A89',formatter:function(v){return v>=1000?(v/1000).toFixed(0)+'k':v}}},
+  series:[{name:'人机精算人均',type:'line',data:[9986,13074,7409,10592,8552,5518],symbol:'circle',symbolSize:6,lineStyle:{width:2},emphasis:{lineStyle:{width:3}}},{name:'首贷精算人均',type:'line',data:[9314,12245,6225,9266,7851,4814],symbol:'circle',symbolSize:8,lineStyle:{width:3,color:'#CC6B1E'},itemStyle:{color:'#CC6B1E'},markPoint:{data:[{coord:['26-05',4814],symbol:'pin',symbolSize:64,itemStyle:{color:'#C0392B'},label:{formatter:'4,814\n红线',fontSize:13,fontWeight:'bold',color:'#FFFFFF',lineHeight:18}}],animation:false},markLine:{silent:true,data:[{yAxis:5000,label:{formatter:'警戒线 5,000',color:'#C0392B',fontSize:11,position:'insideEndTop'},lineStyle:{color:'#C0392B',type:'dashed',width:1.5}}]},emphasis:{lineStyle:{width:4}}},{name:'复贷精算人均',type:'line',data:[16464,21063,19252,23521,15839,9378],symbol:'circle',symbolSize:6,lineStyle:{width:2,color:'#6C7A89'},itemStyle:{color:'#6C7A89'},emphasis:{lineStyle:{width:3}}}],
+  graphic:[{type:'text',left:'90%',top:90,style:{text:'▼ 9,378',fill:'#6C7A89',fontSize:11,fontWeight:500}},{type:'text',left:'90%',top:'48%',style:{text:'▼ 4,814',fill:'#C0392B',fontSize:12,fontWeight:700}}]
+};
+
+chartOptions[1] = {
+  backgroundColor:'#FFFFFF',
+  title:{text:'首贷精算人均从9,314降至4,814的归因拆解',subtext:'精算人均 = 显示人均 × 纠偏系数 × 0.7 | 三大挤压因素的量化贡献',left:24,top:16,textStyle:{fontSize:18,fontWeight:600,color:'#2D2D2D'},subtextStyle:{fontSize:12,color:'#6C7A89'}},
+  tooltip:{trigger:'axis',formatter:function(p){var idx=p[0].dataIndex;if(idx===0)return'<b>12月起点</b><br/>首贷精算人均: 9,314 元';if(idx===4)return'<b>5月终点</b><br/>首贷精算人均: 4,814 元';var val=[0,-3175,-1322,-3,4814][idx];if(val<0)return'<b>'+['12月起点','显示人均变化','纠偏系数变化','线路费+交互\n及其他','5月终点'][idx]+'</b><br/>拖累: '+Math.abs(val).toLocaleString()+' 元';return'<b>'+['12月起点','显示人均变化','纠偏系数变化','线路费+交互\n及其他','5月终点'][idx]+'</b><br/>贡献: +'+val.toLocaleString()+' 元'},backgroundColor:'#FFFFFF',borderColor:'#E0E0E0',borderWidth:1},
+  grid:{left:80,right:60,top:100,bottom:80},
+  xAxis:{type:'category',data:['12月起点','显示人均变化\n(+17,298→11,396)','纠偏系数变化\n(0.538→0.422)','线路费+交互\n及其他','5月终点'],axisLine:{lineStyle:{color:'#D5DDE5'}},axisLabel:{fontSize:11,color:'#6C7A89',interval:0},axisTick:{show:false}},
+  yAxis:{type:'value',name:'精算人均（元）',min:0,max:12000,nameTextStyle:{fontSize:11,color:'#6C7A89'},splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{fontSize:11,color:'#6C7A89',formatter:function(v){return v/1000+'k'}}},
+  series:[{name:'辅助',type:'bar',stack:'waterfall',data:[9314,9314,6139,4817,0],itemStyle:{color:'transparent'},emphasis:{itemStyle:{color:'transparent'}}},{name:'因素贡献',type:'bar',stack:'waterfall',data:[{value:0,itemStyle:{color:'#CC6B1E'}},{value:-3175,itemStyle:{color:'#C0392B'}},{value:-1322,itemStyle:{color:'#C0392B'}},{value:-3,itemStyle:{color:'#C0392B'}},{value:4814,itemStyle:{color:'#CC6B1E'}}],label:{show:true,position:'outside',formatter:function(p){if(p.dataIndex===0)return'9,314';if(p.dataIndex===4)return'4,814';var v=[0,-3175,-1322,-3,4814][p.dataIndex];if(v<0)return'-'+Math.abs(v).toLocaleString();return'+'+v.toLocaleString()},fontSize:12,fontWeight:'bold',color:function(p){if(p.dataIndex===0||p.dataIndex===4)return'#CC6B1E';return[0,-3175,-1322,-3,4814][p.dataIndex]<0?'#C0392B':'#3A8F6E'}},barWidth:40,emphasis:{itemStyle:{shadowBlur:4,shadowColor:'rgba(0,0,0,0.15)'}}}],
+  graphic:[{type:'text',left:70,top:65,style:{text:'12月',fill:'#CC6B1E',fontSize:11,fontWeight:500}},{type:'text',right:70,top:65,style:{text:'5月',fill:'#CC6B1E',fontSize:11,fontWeight:500}},{type:'text',left:'42%',bottom:80,style:{text:'三大因素合计拖累 4,500 元',fill:'#C0392B',fontSize:14,fontWeight:700}}]
+};
+
+var suppliers = [{name:'零犀伽玛',x:59.8,y:2191,size:24},{name:'零犀毛毛虫',x:62.2,y:2581,size:23},{name:'零犀赛维斯',x:61.2,y:2741,size:18},{name:'零犀岐力',x:52.6,y:3241,size:13},{name:'赛维斯',x:59.3,y:3868,size:38},{name:'宿迁兆科',x:48.7,y:4449,size:14},{name:'零犀毅航',x:42.2,y:6164,size:43},{name:'零犀',x:42.6,y:8977,size:80}];
+var scatterData = suppliers.map(function(s){var color;if(s.y>=6000&&s.x<=50)color='#3A8F6E';else if(s.y<3000&&s.x>50)color='#C0392B';else if(s.y<6000&&s.x>50)color='#C0392B';else if(s.y<6000)color='#D4A843';else color='#F0A54A';return{value:[s.x,s.y,s.size,s.name],itemStyle:{color:color}}});
+
+chartOptions[2] = {
+  backgroundColor:'#FFFFFF',
+  title:{text:'7家供应商中5家精算低于6千——系统性问题',subtext:'横轴：5月线路费% | 纵轴：5月精算人均 | 气泡大小=人力规模',left:24,top:16,textStyle:{fontSize:18,fontWeight:600,color:'#2D2D2D'},subtextStyle:{fontSize:12,color:'#6C7A89'}},
+  tooltip:{formatter:function(p){var d=suppliers[p.dataIndex];return'<b>'+d.name+'</b><br/>精算人均: '+d.y.toLocaleString()+' 元<br/>线路费%: '+d.x+'%<br/>人力: '+d.size+' 人'},backgroundColor:'#FFFFFF',borderColor:'#E0E0E0',borderWidth:1},
+  grid:{left:70,right:150,top:100,bottom:60},
+  xAxis:{name:'线路费 %',min:30,max:70,nameTextStyle:{fontSize:12,color:'#6C7A89'},axisLine:{lineStyle:{color:'#D5DDE5'}},splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{fontSize:11,color:'#6C7A89',formatter:'{value}%'}},
+  yAxis:{name:'精算人均（元）',min:0,max:10000,nameTextStyle:{fontSize:12,color:'#6C7A89'},splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{fontSize:11,color:'#6C7A89',formatter:function(v){return v/1000+'k'}}},
+  series:[{type:'scatter',data:scatterData,symbolSize:function(val){return Math.sqrt(val[2])*5+8},label:{show:true,formatter:function(p){return p.value[3]},position:'right',fontSize:11,fontWeight:500,color:'#2D2D2D',offset:[5,0]},emphasis:{itemStyle:{shadowBlur:8,shadowColor:'rgba(0,0,0,0.3)'},label:{fontSize:13,fontWeight:700}},markLine:{silent:true,data:[{xAxis:50,lineStyle:{type:'dashed',color:'#B0B0B0',width:1}},{yAxis:6000,lineStyle:{type:'dashed',color:'#B0B0B0',width:1}}],label:{show:false}}}],
+  graphic:[{type:'text',left:'52%',top:95,style:{text:'警戒线 6,000',fill:'#B0B0B0',fontSize:10,fontStyle:'italic'}},{type:'text',left:70,top:105,style:{text:'50%',fill:'#B0B0B0',fontSize:10,fontStyle:'italic'}},{type:'rect',shape:{x:720,y:85,width:100,height:20},style:{fill:'#3A8F6E',opacity:0.15},z:0},{type:'text',left:725,top:87,style:{text:'健康',fill:'#3A8F6E',fontSize:10,fontWeight:600}},{type:'rect',shape:{x:62,y:345,width:80,height:20},style:{fill:'#C0392B',opacity:0.15},z:0},{type:'text',left:68,top:347,style:{text:'危险',fill:'#C0392B',fontSize:10,fontWeight:600}},{type:'rect',shape:{x:62,y:85,width:80,height:20},style:{fill:'#D4A843',opacity:0.15},z:0},{type:'text',left:68,top:87,style:{text:'关注',fill:'#D4A843',fontSize:10,fontWeight:600}}]
+};
+
+var months4 = ['12月','01月','02月','03月','04月','05月'];
+var supps4 = [{name:'赛维斯',data:[37.4,44.9,44.3,51.6,62.6,61.6]},{name:'零犀',data:[27.6,25.7,30.8,33.1,37.3,44.1]},{name:'零犀伽玛',data:[35.1,34.8,41.6,42.5,48.6,59.8]},{name:'零犀毅航',data:[28.2,28.2,37,33.6,36.5,42.2]},{name:'零犀毛毛虫',data:[31,30.1,34.6,40.7,50.8,62.2]},{name:'零犀赛维斯',data:[32.6,36,39.5,47.4,49.8,61.2]}];
+var hl4 = ['零犀毛毛虫','零犀伽玛'];
+function mkSeries4(){return supps4.map(function(s){var isHL=hl4.indexOf(s.name)>=0;return{name:s.name,type:'line',data:s.data,smooth:false,symbol:isHL?'circle':'none',symbolSize:6,lineStyle:{width:isHL?3:1.5,color:isHL?'#CC6B1E':'#B0B0B0'},itemStyle:{color:isHL?'#CC6B1E':'#B0B0B0'},label:{show:true,formatter:function(p){return p.dataIndex===5?s.data[5]+'%':''},fontSize:11,fontWeight:isHL?700:400,color:isHL?'#CC6B1E':'#B0B0B0',position:'right',offset:[4,0]},emphasis:{lineStyle:{width:isHL?4:2}}}});}
+
+chartOptions[3] = {
+  backgroundColor:'#FFFFFF',
+  title:{text:'线路费全线飙升，零犀系两家已超60%',subtext:'各供应商首贷线路费占比趋势 | 粗线=恶化最快两家 | 2025-12 ~ 2026-05',left:24,top:16,textStyle:{fontSize:18,fontWeight:600,color:'#2D2D2D'},subtextStyle:{fontSize:12,color:'#6C7A89'}},
+  tooltip:{trigger:'axis',backgroundColor:'#FFFFFF',borderColor:'#E0E0E0',borderWidth:1},
+  legend:{left:24,top:64,textStyle:{fontSize:11,color:'#6C7A89'}},
+  grid:{left:55,right:80,top:100,bottom:50},
+  xAxis:{type:'category',data:months4,axisLine:{lineStyle:{color:'#D5DDE5'}},axisLabel:{fontSize:12,color:'#6C7A89',fontWeight:500},axisTick:{alignWithLabel:true}},
+  yAxis:{type:'value',name:'线路费占比',min:0,max:120,nameTextStyle:{fontSize:11,color:'#6C7A89'},splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{fontSize:11,color:'#6C7A89',formatter:'{value}%'}},
+  series:mkSeries4().concat([{name:'成本倒挂线',type:'line',data:[100,100,100,100,100,100],lineStyle:{color:'#C0392B',type:'dashed',width:1.5},symbol:'none',label:{show:true,formatter:'成本倒挂',color:'#C0392B',fontSize:11,position:'insideEndTop'},silent:true}])
+};
+
+chartOptions[4] = {
+  backgroundColor:'#FFFFFF',color:['#CC6B1E','#B0B0B0','#C0392B'],
+  title:{text:'实际提前还款率持续高于固定假设，纠偏系数一路下行',subtext:'首贷实际提前还款率 9.1%→11.6% vs 固定假设7% | 纠偏系数 0.769→0.603',left:24,top:16,textStyle:{fontSize:18,fontWeight:600,color:'#2D2D2D'},subtextStyle:{fontSize:12,color:'#6C7A89'}},
+  tooltip:{trigger:'axis',backgroundColor:'#FFFFFF',borderColor:'#E0E0E0',borderWidth:1,formatter:function(p){var s='<b>'+p[0].axisValue+'</b><br/>';p.forEach(function(i){if(i.seriesName!=='固定假设'){s+=i.marker+' '+i.seriesName+': '+i.value+(i.seriesName==='纠偏系数'?'':'%')+'<br/>'}});var fx=p.find(function(i){return i.seriesName==='固定假设'});if(fx)s+=fx.marker+' 固定假设: 7%<br/>';return s}},
+  legend:{left:24,top:64,textStyle:{fontSize:11,color:'#6C7A89'}},
+  grid:{left:60,right:60,top:110,bottom:50},
+  xAxis:{type:'category',data:['26-01','26-02','26-03','26-04','26-05'],axisLine:{lineStyle:{color:'#D5DDE5'}},axisLabel:{fontSize:12,color:'#6C7A89',fontWeight:500},axisTick:{alignWithLabel:true}},
+  yAxis:[{type:'value',name:'提前还款率',min:0,max:15,nameTextStyle:{fontSize:11,color:'#6C7A89'},splitLine:{lineStyle:{color:'#F0F0F0',type:'dashed'}},axisLabel:{fontSize:11,color:'#6C7A89',formatter:'{value}%'}},{type:'value',name:'纠偏系数',min:0.5,max:0.85,nameTextStyle:{fontSize:11,color:'#C0392B'},splitLine:{show:false},axisLabel:{fontSize:11,color:'#C0392B'}}],
+  series:[{name:'实际提前还款率',type:'bar',data:[9.1,10.4,9.9,10.0,11.6],barWidth:22,itemStyle:{color:'#CC6B1E',borderRadius:[3,3,0,0]},label:{show:true,position:'top',formatter:'{c}%',fontSize:11,fontWeight:600,color:'#CC6B1E'}},{name:'固定假设',type:'bar',data:[7,7,7,7,7],barWidth:22,barGap:'50%',itemStyle:{color:'#D5DDE5',opacity:0.6,borderRadius:[3,3,0,0]},label:{show:true,position:'top',formatter:'7%',fontSize:10,color:'#999'}},{name:'纠偏系数',type:'line',yAxisIndex:1,data:[0.769,0.673,0.707,0.700,0.603],symbol:'diamond',symbolSize:12,lineStyle:{width:3,color:'#C0392B'},itemStyle:{color:'#C0392B'},label:{show:true,position:'bottom',formatter:function(p){return p.value.toFixed(3)},fontSize:12,fontWeight:700,color:'#C0392B'},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(192,57,43,0.2)'},{offset:1,color:'rgba(192,57,43,0.02)'}]}}}],
+  graphic:[{type:'text',right:24,top:96,style:{text:'佣金调降幅度',fill:'#6C7A89',fontSize:10,fontWeight:500}},{type:'text',right:24,top:112,style:{text:'23% → 40%',fill:'#C0392B',fontSize:14,fontWeight:700}},{type:'text',left:'9%',bottom:50,style:{text:'23%',fill:'#C0392B',fontSize:10,fontStyle:'italic'}},{type:'text',right:'6%',bottom:50,style:{text:'40%',fill:'#C0392B',fontSize:10,fontStyle:'italic'}}]
+};
+
+function initChart(idx){
+  var el=document.getElementById('chart'+idx);
+  if(!el) return;
+  var chart=echarts.init(el);
+  chart.setOption(chartOptions[idx]);
+  chartInstances[idx]=chart;
+}
+
+function switchChart(idx){
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.querySelectorAll('.tab-btn[data-chart="'+idx+'"]').forEach(function(b){b.classList.add('active')});
+  document.querySelectorAll('[id^="insight"]').forEach(function(el){el.style.display='none'});
+  var ins=document.getElementById('insight'+idx);
+  if(ins)ins.style.display='block';
+  if(!chartInstances[idx]){initChart(idx)}
+  setTimeout(function(){if(chartInstances[idx])chartInstances[idx].resize()},100);
+  document.querySelectorAll('.chart-container').forEach(function(el,i){el.style.display=i==idx?'block':'none';if(i!=idx&&chartInstances[i])chartInstances[i].resize()});
+}
+
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){switchChart(parseInt(this.getAttribute('data-chart')))})
+});
+
+// 先显示图0，隐藏其他容器
+document.querySelectorAll('.chart-container').forEach(function(el,i){if(i>0)el.style.display='none'});
+initChart(0);
+window.addEventListener('resize',function(){chartInstances.forEach(function(c){if(c)c.resize()})});
+</script>
+</body>
+</html>

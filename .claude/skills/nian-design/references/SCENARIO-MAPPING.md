@@ -437,13 +437,13 @@ Hero (photographic) → Brand Card → Product Grid → Spec Table → Color Swa
 
 | 状态 | 正确用法 | 错误用法 |
 |------|---------|---------|
-| Warning | `accent-orange` + `surface-raised` 背景 | 红色背景 + 红色文字 |
-| Tip/Success | `primary-olive` + `surface-raised` 背景 | 绿色背景 + 绿色文字 |
+| Warning | `signal-warning` + `surface-alt` 背景 | 红色背景 + 红色文字 |
+| Tip/Success | `brand-primary` + `surface-alt` 背景 | 绿色背景 + 绿色文字 |
 | Error | `error`（仅用于真实错误状态） | 红色 Callout |
-| Info | `scene-glacier` + `surface-raised` 背景 | 蓝色背景 + 蓝色文字 |
+| Info | `brand-tertiary` + `surface-alt` 背景 | 蓝色背景 + 蓝色文字 |
 
 **Callout 样式：**
-- 背景：`var(--surface-raised)`（统一）
+- 背景：`var(--surface-alt)`（统一）
 - 边框：左侧 3px，使用品牌色
 - 文字：`var(--text-primary)`（统一）
 - 标题：JetBrains Mono，大写，品牌色

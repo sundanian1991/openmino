@@ -15,9 +15,9 @@
 
 ### 1.2 视觉语言
 
-- **自然即色板。** 低饱和 earth tone 承载品牌，高饱和 accent 承载功能。
+- **自然即色板。** 低饱和 Nature 色系承载品牌，高饱和信号色承载功能。
 - **结构即故事。** 三层金字塔既用于视觉层级，也用于文案。
-- **单一模式，无限场景。** 固定浅色模式（`#FAFAF8`）。无深浅切换。场景通过色板旋转实现。
+- **单一模式，无限场景。** 固定浅色模式（`#F5F3EF`）。无深浅切换。场景通过色板旋转实现。
 
 ### 1.3 核心张力
 
@@ -36,7 +36,7 @@
 
 | 层级 | 内容 | 实现 |
 |------|------|------|
-| **Answer** | 唯一结论。品牌宣言、核心指标。 | Georgia display。`--text-display`。Hero 用 96-120px。 |
+| **Answer** | 唯一结论。品牌宣言、核心指标。 | Playfair Display。`--text-display`。Hero 用 96-120px。 |
 | **Argument** | 支撑上下文。功能、规格、描述。 | Inter body。`--text-primary`。紧贴 Answer（8-16px）。 |
 | **Evidence** | 元数据、技术参数、材质规格。 | JetBrains Mono label。`--text-secondary` 以下。推到边缘。 |
 
@@ -55,7 +55,7 @@
 
 经验法则：想改字号？可能是间距问题。用距离代替。
 
-**LED Card 模式**：数据密集页用 JetBrains Mono 48-64px 替代 Georgia。超大数字 + 小标签 + 上下文行。
+**LED Card 模式**：数据密集页用 JetBrains Mono 48-64px 替代 Playfair Display。超大数字 + 小标签 + 上下文行。
 
 ---
 
@@ -75,8 +75,8 @@ Vast (64-96px)   = 新上下文（hero 到内容）
 ## 5. 容器策略
 
 1. 仅间距（邻近性分组）
-2. earth-tone 细分割线
-3. `--scene-rock` 边框
+2. Nature 色系细分割线
+3. `--brand-quaternary` 边框
 4. `--surface` 背景卡片
 
 每一步增加视觉权重。用最轻的工具。Answer 层永远不要框住。
@@ -88,23 +88,23 @@ Vast (64-96px)   = 新上下文（hero 到内容）
 **品牌层级（灰度——主要层级工具）：**
 
 ```
---text-display (#2C2C2C, 100%) → 品牌宣言。Hero。每节一个。
---text-primary (#1A1A1A, 90%)  → 正文，功能描述。
---text-secondary (#6B6B6B, 60%) → 标签，说明，规格。
---text-disabled (#A0A0A0, 40%) → 时间戳，次要元数据。
+--text-display (#2D2A26, 100%) → 品牌宣言。Hero。每节一个。
+--text-primary (#1A1816, 90%)  → 正文，功能描述。
+--text-secondary (#8A7D6E, 60%) → 标签，说明，规格。
+--text-disabled (#C4B8A8, 40%) → 时间戳，次要元数据。
 ```
 
-**场景色：** olive / earth / glacier 三选一，同页只用其一。通过 `--scene` 统一入口注入。
+**场景色：** Forest（默认）/ Slate（技术）/ Moss（轻品牌）三选一，同页只用其一。通过 `--scene` 统一入口注入。
 
-**accent-orange (#E55B2B)：** 仅用于功能警示。不做装饰。
+**signal-warning (#E87A3C)：** 仅用于功能警示。不做装饰。
 
-**accent-yellow (#FFD100)：** 稀有使用。一年用不了几次。
+**signal-caution (#E8B83C)：** 稀有使用。一年用不了几次。
 
 **数据可视化颜色顺序：**
 
 1. opacity（100%/60%/30%）——最轻的区分
-2. earth-tone 梯度（olive → earth → glacier）——同色系深浅
-3. 最后 accent 色——仅用于需要关注的数据点
+2. Nature 色梯度（Forest → Moss → Slate → Steel）——同色系深浅
+3. 最后信号色——仅用于需要关注的数据点
 
 永远不跳过前两步直接用 accent。
 

@@ -2,7 +2,7 @@
 
 > 精确值体系。所有组件、模板引用 token 名，不直接写色值。
 >
-> **品牌氛围：** Scandinavian workshop。自然光穿过窗户，工具整齐摆在木桌上。精确、温暖、不赶时间。`#FAFAF8` 不是无菌白——是原胚亚麻色。
+> `#FAFAF8` 不是无菌白——是原胚亚麻色。
 >
 > 品牌 DNA 完整描述见 `brand-dna.md`（技能根目录）。
 
@@ -10,30 +10,26 @@
 
 ## 1. TYPOGRAPHY
 
-### Font Stack
+Three typefaces — Display (Playfair Display) + Body (Inter) + Data (JetBrains Mono).
 
 | Role | Font | Source | Fallback |
 |------|------|--------|----------|
-| Display (Primary) | Georgia | System font | 'Times New Roman', serif |
-| Display (Dot-matrix) | Doto | Google Fonts | 'JetBrains Mono', monospace |
-| Body | Inter | Google Fonts | -apple-system, sans-serif |
+| Display | Playfair Display | Google Fonts | Georgia, 'Times New Roman', serif |
+| Body | Inter | Google Fonts | -apple-system, 'Helvetica Neue', Arial, sans-serif |
 | Data | JetBrains Mono | Google Fonts | 'Courier New', monospace |
+
+Optional: Doto (Google Fonts) for dot-matrix Hero decoration.
 
 **Google Fonts loading:**
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
 ```
 
-Georgia is a system font — no loading required.
+Playfair Display falls back to Georgia (system font, no loading cost).
 
-**Doto usage:** Doto is a variable dot-matrix font — each character is a grid of physical dots. Use it for:
-- Hero moments (`--display-2xl` / `--display-xl`) where dot-matrix texture is desired
-- Decorative numbers and single-character displays
-- NOT for body text, labels, or long strings
+**Doto usage:** Variable dot-matrix font. Hero moments and decorative numbers only. Not for body text, labels, or long strings.
 
-Georgia remains the primary display font for formal/brand contexts. Doto is the industrial/technical alternative. Choose based on context:
-
-**Why these fonts:** Georgia is a system font with centuries of heritage — no loading cost, immediate rendering. Its serif warmth balances Inter's industrial neutrality, creating the brand's core tension (Nature vs Tech). JetBrains Mono provides technical precision for data without competing with content. Three fonts, three roles, no overlap.
+**Why these fonts:** Playfair Display brings editorial warmth and heritage — the serif anchor for brand statements. Its dramatic weight contrast (300→700) balances Inter's industrial neutrality, creating the brand's core tension (Nature vs Tech). JetBrains Mono provides technical precision for data without competing with content. Three fonts, three roles, no overlap.
 
 ### Type Scale
 
@@ -54,7 +50,7 @@ Georgia remains the primary display font for formal/brand contexts. Doto is the 
 
 ### Typographic Rules
 
-- **Display (Georgia):** `--display-*` only. Weight 700. Brand statements, hero names, section titles.
+- **Display (Playfair Display):** `--display-*` only. Weight 300 for hero, 600-700 for emphasis. Brand statements, hero names, section titles.
 - **Body (Inter):** `--heading-*` through `--body-sm`. Weight 400 default, 500-600 for headings.
 - **Data (JetBrains Mono):** `--label` and data values. Weight 500. Technical specs, status labels.
 - **ALL CAPS labels** must use JetBrains Mono with 0.06em letter-spacing.
@@ -66,65 +62,53 @@ Georgia remains the primary display font for formal/brand contexts. Doto is the 
 
 ### Brand Palette
 
-| Token | Hex | RGB | HSL | Role |
-|-------|-----|-----|-----|------|
-| `--brand-olive` | `#4A5D3A` | 74,93,58 | 94°,23%,30% | Outdoor DNA, product primary |
-| `--brand-earth` | `#8B7355` | 139,115,85 | 33°,24%,44% | Material warmth, natural texture |
+| Token | Hex | Role |
+|-------|-----|------|
+| `--brand-primary` | `#4A6741` | Forest — brand anchor |
+| `--brand-secondary` | `#7A9B6D` | Moss — brand auxiliary |
+| `--brand-tertiary` | `#5B6B7A` | Slate — tech/industrial |
+| `--brand-quaternary` | `#7A8B9B` | Steel — light technical |
 
-> `--primary-darkgray`（#2C2C2C）已废弃。与 `--text-display` 同色值，统一使用 `--text-display`。
-
-### Accent Palette (functional signals)
-
-| Token | Hex | RGB | HSL | Role |
-|-------|-----|-----|-----|------|
-| `--accent-yellow` | `#FFD100` | 255,209,0 | 49°,100%,50% | CTA, safety identification |
-| `--accent-orange` | `#E55B2B` | 229,91,43 | 16°,79%,53% | Visual focus, highlights |
-
-### Scene Palette (atmosphere)
-
-| Token | Hex | RGB | HSL | Role |
-|-------|-----|-----|-----|------|
-| `--scene-glacier` | `#2A4A5A` | 42,74,90 | 200°,36%,26% | Winter/alpine mood |
-| `--scene-rock` | `#808080` | 128,128,128 | 0°,0%,50% | Neutral transitions |
-
-### Status Colors
+### Signal Palette (functional interrupts)
 
 | Token | Hex | Role |
 |-------|-----|------|
-| `--success` | `#2E7D32` | Available, in stock, confirmed |
-| `--warning` | `#F9A825` | Low stock, limited, caution |
-| `--error` | `#C62828` | Out of stock, error, unavailable |
+| `--signal-error` | `#E8453C` | Error, decline, critical |
+| `--signal-warning` | `#E87A3C` | Warning, attention needed |
+| `--signal-caution` | `#E8B83C` | Caution, low priority highlight |
+| `--signal-info` | `#3C7AE8` | Information, links, neutral signal |
 
 ### Color Ratio
 
 | Group | Colors | Share | Purpose |
 |-------|--------|:-----:|---------|
-| Brand primary | text-display + olive + earth | 80% | Brand identity |
-| Accent | yellow + orange | 5-10% | Functional signals only |
-| Scene | glacier + rock | 10-15% | Atmosphere, transitions |
+| Neutral | Off-White → Black | 75-80% | Hierarchy, structure |
+| Brand | Forest + Moss + Slate + Steel | 15-20% | Brand identity |
+| Signal | Red + Orange + Yellow + Blue | <5% | Functional interrupts |
 
-### Surface & Text Tokens (light mode only)
+### Surface & Text Tokens
 
 | Token | Hex | Role |
 |-------|-----|------|
-| `--bg` | `#FAFAF8` | Page background — warm off-white |
+| `--bg` | `#F5F3EF` | Page background — warm off-white |
 | `--surface` | `#FFFFFF` | Card/component background |
-| `--surface-raised` | `#F5F5F0` | Elevated surface, hover states |
-| `--border` | `#E5E5E0` | Default borders |
-| `--border-visible` | `#C0C0B8` | Emphasized borders |
-| `--text-display` | `#2C2C2C` | Hero text, brand statements |
-| `--text-primary` | `#1A1A1A` | Body text, primary content |
-| `--text-secondary` | `#6B6B6B` | Labels, captions, metadata |
-| `--text-disabled` | `#A0A0A0` | Disabled, timestamps, hints |
+| `--surface-alt` | `#E8E4DD` | Alternating surface (Cream) |
+| `--border` | `#C4B8A8` | Default borders (Sand) |
+| `--border-strong` | `#8A7D6E` | Emphasized borders (Stone) |
+| `--text-display` | `#2D2A26` | Hero text, brand statements |
+| `--text-primary` | `#1A1816` | Body text, primary content |
+| `--text-secondary` | `#8A7D6E` | Labels, captions, metadata |
+| `--text-disabled` | `#C4B8A8` | Disabled, timestamps, hints |
 
-**No dark mode.** Fixed light palette. Scene variation via color emphasis rotation, not surface inversion.
+**No dark mode.** Fixed light palette.
 
 **Color usage guardrails:**
-- **场景色三选一**: olive(常规户外/正面) / earth(工艺/材质/历史) / glacier(技术/冬季/高海拔)。同页面只用一个场景色
-- **accent-orange 仅用于功能信号**: 数据下跌、需关注状态、警告。—— 不做标题装饰、不做分割线、不做按钮背景
-- **accent-yellow 稀有使用**: 一年用不了几次的级别。只用于关键标记、限量标识
+- **灰度先于颜色**: 4 级灰度建立层级，颜色只标记需注意的信息
 - **颜色应用在值上**: 在数字/状态文本上着色，不在标签行或背景上着色
-- **数据颜色顺序**: opacity区分 → earth-tone梯度 → 最后accent色。永远不跳过前两步
+- **同页不超过 5 种色**: 不含中性灰阶
+- **深色底配浅色字**: Forest/Slate 做全底时，文字用 Off-White 或 White
+- **数据颜色顺序**: opacity区分 → Nature色梯度(Forest→Moss→Slate→Steel) → 最后信号色。永远不跳过前两步
+- **信号色合计 < 2%**: 仅中断时出现，不做装饰
 
 ---
 
@@ -168,8 +152,8 @@ Nian uses **border + surface color + opacity** instead of box-shadow. Four depth
 | Level | How | When |
 |-------|-----|------|
 | **Level 0** | `--surface` background, no border | Default cards, content areas |
-| **Level 1** | `--surface-raised` background, `1px solid --border` | Hover states, active elements, elevated cards |
-| **Level 2** | `--surface` background, `1px solid --border-visible` | Modals, dropdowns, focused panels |
+| **Level 1** | `--surface-alt` background, `1px solid --border` | Hover states, active elements, elevated cards |
+| **Level 2** | `--surface` background, `1px solid --border-strong` | Modals, dropdowns, focused panels |
 | **Level 3** | Full overlay `rgba(250,250,248,0.92)` backdrop + `--surface` panel | Detail panels, scrollable modals |
 
 **No shadows. No blur. No drop-shadow.** Elevation = border contrast + background shift. The hierarchy is visible through edge definition, not shadow casting.

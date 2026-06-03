@@ -18,31 +18,32 @@ Georgia is a system font — no loading required.
 ```css
 :root {
   /* Brand Palette */
-  --primary-darkgray: #2C2C2C;
-  --primary-olive: #4A5D3A;
-  --primary-earth: #8B7355;
-  --accent-yellow: #FFD100;
-  --accent-orange: #E55B2B;
-  --scene-glacier: #2A4A5A;
-  --scene-rock: #808080;
+  --brand-primary: #4A6741;
+  --brand-secondary: #7A9B6D;
+  --brand-tertiary: #5B6B7A;
+  --brand-quaternary: #8A7D6E;
+
+  /* Signal */
+  --signal-warning: #E87A3C;
+  --signal-caution: #E8B83C;
 
   /* Status */
-  --success: #2E7D32;
-  --warning: #F9A825;
-  --error: #C62828;
+  --success: #4A6741;
+  --warning: #E87A3C;
+  --error: #E8453C;
 
   /* Surfaces */
-  --bg: #FAFAF8;
+  --bg: #F5F3EF;
   --surface: #FFFFFF;
-  --surface-raised: #F5F5F0;
-  --border: #E5E5E0;
-  --border-visible: #C0C0B8;
+  --surface-alt: #F5F3EF;
+  --border: #C4B8A8;
+  --border-strong: #8A7D6E;
 
   /* Text */
-  --text-display: #2C2C2C;
-  --text-primary: #1A1A1A;
-  --text-secondary: #6B6B6B;
-  --text-disabled: #A0A0A0;
+  --text-display: #2D2A26;
+  --text-primary: #1A1816;
+  --text-secondary: #8A7D6E;
+  --text-disabled: #C4B8A8;
 
   /* Type Scale */
   --display-xl: 72px;
@@ -81,22 +82,22 @@ import SwiftUI
 
 extension Color {
     // Brand
-    static let hdfDarkgray = Color(red: 44/255, green: 44/255, blue: 44/255)
-    static let hdfOlive = Color(red: 74/255, green: 93/255, blue: 58/255)
-    static let hdfEarth = Color(red: 139/255, green: 115/255, blue: 85/255)
+    static let hdfDisplay = Color(red: 45/255, green: 42/255, blue: 38/255)
+    static let hdfPrimary = Color(red: 74/255, green: 103/255, blue: 65/255)
+    static let hdfSecondary = Color(red: 122/255, green: 155/255, blue: 109/255)
 
-    // Accent
-    static let hdfYellow = Color(red: 255/255, green: 209/255, blue: 0/255)
-    static let hdfOrange = Color(red: 229/255, green: 91/255, blue: 43/255)
+    // Signal
+    static let hdfCaution = Color(red: 232/255, green: 184/255, blue: 60/255)
+    static let hdfWarning = Color(red: 232/255, green: 122/255, blue: 60/255)
 
-    // Scene
-    static let hdfGlacier = Color(red: 42/255, green: 74/255, blue: 90/255)
-    static let hdfRock = Color(red: 128/255, green: 128/255, blue: 128/255)
+    // Brand Tertiary
+    static let hdfTertiary = Color(red: 91/255, green: 107/255, blue: 122/255)
+    static let hdfQuaternary = Color(red: 138/255, green: 125/255, blue: 110/255)
 
     // Surfaces (light mode only)
-    static let hdfBg = Color(red: 250/255, green: 250/255, blue: 248/255)
+    static let hdfBg = Color(red: 245/255, green: 243/255, blue: 239/255)
     static let hdfSurface = Color(red: 255/255, green: 255/255, blue: 255/255)
-    static let hdfBorder = Color(red: 229/255, green: 229/255, blue: 224/255)
+    static let hdfBorder = Color(red: 196/255, green: 184/255, blue: 168/255)
 }
 ```
 
@@ -124,15 +125,15 @@ module.exports = {
     extend: {
       colors: {
         hdf: {
-          darkgray: '#2C2C2C',
-          olive: '#4A5D3A',
-          earth: '#8B7355',
-          yellow: '#FFD100',
-          orange: '#E55B2B',
-          glacier: '#2A4A5A',
-          rock: '#808080',
+          display: '#2D2A26',
+          primary: '#4A6741',
+          secondary: '#7A9B6D',
+          tertiary: '#5B6B7A',
+          quaternary: '#8A7D6E',
+          caution: '#E8B83C',
+          warning: '#E87A3C',
           surface: 'var(--surface)',
-          'surface-raised': 'var(--surface-raised)',
+          'surface-alt': 'var(--surface-alt)',
         },
       },
       fontFamily: {
@@ -166,6 +167,6 @@ For Figma, Sketch, or print design — use direct HEX values from `tokens.md`. N
 
 **Print notes:**
 - Convert to CMYK before sending to print
-- `--accent-yellow` (#FFD100) may need special attention for CMYK conversion
+- `--signal-caution` (#E8B83C) may need special attention for CMYK conversion
 - Dot-matrix motif: use 300dpi minimum for print
 - Minimum font size for print: Georgia 10pt, Inter 8pt, JetBrains Mono 7pt

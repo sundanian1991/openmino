@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 自主工作系统 — 仪表体</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FAFAF8; --surface: #FFFFFF; --surface-raised: #F5F5F0;
+  --border: #E5E5E0; --border-visible: #C0C0B8;
+  --text-display: #2C2C2C; --text-primary: #1A1A1A; --text-secondary: #6B6B6B; --text-disabled: #A0A0A0;
+  --brand-olive: #4A5D3A; --brand-earth: #8B7355; --accent-orange: #E55B2B; --accent-yellow: #FFD100;
+  --scene-glacier: #2A4A5A; --success: #2E7D32; --warning: #F9A825; --error: #C62828;
+  --container-max: 1120px; --container-padding: 32px;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px; --space-4xl: 96px;
+  --radius-sm: 4px; --radius-md: 8px; --radius-full: 999px;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.container { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--container-padding); }
+
+/* Navigation */
+.nav { display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg) 0; }
+.nav__brand { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--text-display); letter-spacing: 0.02em; }
+.nav__tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--text-disabled); text-transform: uppercase; }
+.nav__right { display: flex; align-items: center; gap: var(--space-md); }
+.nav__date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-disabled); }
+
+/* Hero */
+.hero { position: relative; padding: var(--space-3xl) 0 var(--space-2xl); }
+.deco-bg { position: absolute; top: -20px; right: -10px; font-family: Georgia, serif; font-size: 120px; font-weight: 700; color: var(--text-display); opacity: 0.05; line-height: 1; pointer-events: none; user-select: none; }
+.hero__label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: var(--brand-olive); text-transform: uppercase; margin-bottom: var(--space-sm); }
+.hero__title { font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 600; color: var(--text-display); line-height: 1.1; letter-spacing: -0.02em; max-width: 680px; }
+.hero__subtitle { font-size: 15px; color: var(--text-secondary); margin-top: var(--space-md); max-width: 520px; line-height: 1.6; }
+
+/* Data Panel */
+.panel { padding: var(--space-2xl) 0; }
+.panel__group { margin-bottom: var(--space-2xl); }
+.panel__group-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: var(--brand-olive); text-transform: uppercase; margin-bottom: var(--space-lg); }
+.panel__items { display: flex; flex-direction: column; gap: var(--space-lg); }
+
+/* Segmented Block Bar */
+.block-bar__header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.block-bar__name { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.block-bar__score { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-disabled); }
+.block-bar__track { display: flex; gap: 2px; }
+.block-bar__block { flex: 1; min-width: 6px; height: 12px; border-radius: 0; }
+.block-bar__block--filled { background: var(--brand-olive); }
+.block-bar__block--empty { background: var(--border); }
+.block-bar__desc { font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+
+/* Gauge Arc */
+.gauge-section { display: flex; justify-content: center; gap: var(--space-4xl); padding: var(--space-3xl) 0; }
+.gauge-arc { text-align: center; }
+.gauge-arc__label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--text-disabled); text-transform: uppercase; margin-top: var(--space-sm); }
+.gauge-arc__value { font-family: 'JetBrains Mono', monospace; font-size: 36px; font-weight: 600; color: var(--text-display); margin-top: -16px; }
+
+/* Sparkline */
+.sparkline-section { display: flex; justify-content: center; gap: var(--space-2xl); padding: var(--space-2xl) 0; }
+.sparkline-item { display: flex; align-items: center; gap: var(--space-md); }
+.sparkline-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.08em; color: var(--text-disabled); text-transform: uppercase; }
+
+/* Footer */
+.footer { padding: var(--space-xl) 0; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-disabled); letter-spacing: 0.06em; text-align: center; }
+
+@media (max-width: 768px) {
+  .hero__title { font-size: 36px; } .deco-bg { font-size: 80px; } .container { padding: 0 20px; }
+  .gauge-section { flex-direction: column; align-items: center; gap: var(--space-2xl); }
+  .sparkline-section { flex-direction: column; align-items: center; gap: var(--space-lg); }
+  .block-bar__track { gap: 1px; } .block-bar__block { min-width: 4px; height: 10px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav container">
+  <div style="display:flex;align-items:center;gap:var(--space-md);">
+    <span class="nav__brand">Yang Zhiping</span>
+    <span class="nav__tag">Dashboard</span>
+  </div>
+  <div class="nav__right"><span class="nav__date">2026-06-02</span></div>
+</nav>
+
+<section class="hero container">
+  <span class="deco-bg">12</span>
+  <div class="hero__label">Autonomous AI System</div>
+  <h1 class="hero__title">AI 自主工作系统</h1>
+  <p class="hero__subtitle">让 AI 替你自主干活的 12 个技巧 -- 从任务编排到自动续航的完整体系</p>
+</section>
+
+<!-- Group 1 -->
+<section class="panel container">
+  <div class="panel__group">
+    <div class="panel__group-label">01 / Task Orchestration</div>
+    <div class="panel__items" id="group1"></div>
+  </div>
+</section>
+
+<!-- Group 2 -->
+<section class="panel container">
+  <div class="panel__group">
+    <div class="panel__group-label">02 / Getting to Work</div>
+    <div class="panel__items" id="group2"></div>
+  </div>
+</section>
+
+<!-- Gauge 1 -->
+<section class="gauge-section container">
+  <div class="gauge-arc">
+    <svg viewBox="0 0 200 120" width="200" height="120">
+      <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--brand-olive)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="70"/>
+    </svg>
+    <div class="gauge-arc__value">72</div>
+    <div class="gauge-arc__label">整体自动化成熟度 /100</div>
+  </div>
+</section>
+
+<!-- Group 3 -->
+<section class="panel container">
+  <div class="panel__group">
+    <div class="panel__group-label">03 / Review &amp; Self-Check</div>
+    <div class="panel__items" id="group3"></div>
+  </div>
+</section>
+
+<!-- Group 4 -->
+<section class="panel container">
+  <div class="panel__group">
+    <div class="panel__group-label">04 / Autonomous Endurance</div>
+    <div class="panel__items" id="group4"></div>
+  </div>
+</section>
+
+<!-- Gauge 2 -->
+<section class="gauge-section container">
+  <div class="gauge-arc">
+    <svg viewBox="0 0 200 120" width="200" height="120">
+      <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--brand-olive)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="38"/>
+    </svg>
+    <div class="gauge-arc__value">85</div>
+    <div class="gauge-arc__label">系统鲁棒性 /100</div>
+  </div>
+</section>
+
+<!-- Sparklines -->
+<section class="sparkline-section container">
+  <div class="sparkline-item">
+    <span class="sparkline-label">Task Efficiency</span>
+    <svg viewBox="0 0 160 32" width="160" height="32"><polyline points="0,24 20,20 40,22 60,16 80,18 100,12 120,14 140,8 160,6" fill="none" stroke="var(--text-display)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="160" cy="6" r="2.5" fill="var(--brand-olive)"/></svg>
+  </div>
+  <div class="sparkline-item">
+    <span class="sparkline-label">Error Rate</span>
+    <svg viewBox="0 0 160 32" width="160" height="32"><polyline points="0,8 20,10 40,12 60,9 80,14 100,16 120,18 140,22 160,24" fill="none" stroke="var(--text-display)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="160" cy="24" r="2.5" fill="var(--brand-olive)"/></svg>
+  </div>
+  <div class="sparkline-item">
+    <span class="sparkline-label">Throughput</span>
+    <svg viewBox="0 0 160 32" width="160" height="32"><polyline points="0,28 20,26 40,24 60,22 80,20 100,16 120,14 140,10 160,4" fill="none" stroke="var(--text-display)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="160" cy="4" r="2.5" fill="var(--brand-olive)"/></svg>
+  </div>
+</section>
+
+<footer class="footer container">Yang Zhiping &middot; 2026</footer>
+
+<script>
+const tips = [
+  { id:'group1', items: [
+    { name:'技巧1：合并同类项', score:17, desc:'把相似任务打包，减少 AI 上下文切换。同类请求放在一起处理，而不是频繁切换。' },
+    { name:'技巧2：确定性分流', score:15, desc:'能用规则解决的不要用 AI 判断。if/else 能搞定的走确定性路径，不确定的才交给 AI。' },
+    { name:'技巧3：先确认世界没变过', score:16, desc:'每次开工前检查前置条件。文件还在不在？依赖变了没？上次做到哪了？' }
+  ]},
+  { id:'group2', items: [
+    { name:'技巧4：干了再说', score:18, desc:'不要让 AI 一直规划不动手。先跑起来再迭代，比完美计划更有用。' },
+    { name:'技巧5：worktree 并行分身', score:14, desc:'用 git worktree 让 AI 同时处理多个分支。一个改前端，一个改后端，互不干扰。' },
+    { name:'技巧6：补齐测试', score:16, desc:'每完成一步就写测试。不要堆积到最后，那会变成技术债雪崩。' }
+  ]},
+  { id:'group3', items: [
+    { name:'技巧7：对抗性自检', score:13, desc:'让 AI 扮演反对者，找自己方案的漏洞。"如果你要攻击这个方案，你会从哪里下手？"' },
+    { name:'技巧8：换不同谱系模型评审', score:12, desc:'不同训练数据的模型看到不同盲区。Claude 和 GPT 的视角差异就是你的安全网。' },
+    { name:'技巧9：分级修复', score:14, desc:'不是所有 bug 都要立刻修。P0 阻塞流程的先修，P3 样式问题的攒着。' }
+  ]},
+  { id:'group4', items: [
+    { name:'技巧10：看门狗', score:15, desc:'设置监控，AI 偏离轨道时自动触发干预。超时、异常输出、循环行为都是触发信号。' },
+    { name:'技巧11：意外处理矩阵', score:13, desc:'预定义异常场景和对应策略。出了问题不用临时想，按表执行。' },
+    { name:'技巧12：状态持久化', score:17, desc:'每个阶段保存快照。出问题时回滚到最近的安全点，而不是从头开始。' }
+  ]}
+];
+
+const total = 20;
+tips.forEach(g => {
+  const el = document.getElementById(g.id);
+  g.items.forEach(t => {
+    let blocks = '';
+    for (let i = 0; i < total; i++) {
+      blocks += '<span class="block-bar__block block-bar__block--' + (i < t.score ? 'filled' : 'empty') + '"></span>';
+    }
+    el.innerHTML += '<div class="block-bar"><div class="block-bar__header"><span class="block-bar__name">' + t.name + '</span><span class="block-bar__score">' + t.score + '/' + total + '</span></div><div class="block-bar__track">' + blocks + '</div><p class="block-bar__desc">' + t.desc + '</p></div>';
+  });
+});
+</script>
+</body>
+</html>

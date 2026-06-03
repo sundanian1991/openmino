@@ -292,7 +292,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-raised);
+  background: var(--surface-alt);
   padding: var(--space-4xl) var(--container-padding);
 }
 .hero-stat__inner {
@@ -437,8 +437,8 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(44, 44, 44, 0.1) 0%,
-    rgba(44, 44, 44, 0.5) 100%
+    rgba(45, 42, 38, 0.1) 0%,
+    rgba(45, 42, 38, 0.5) 100%
   );
 }
 .hero-photo__content {
@@ -1014,7 +1014,7 @@
 ```css
 .seam-divider {
   height: 1px;
-  background: var(--border-visible);
+  background: var(--border-strong);
   mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
 }
@@ -1480,7 +1480,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--primary-olive);
+  background: var(--brand-primary);
   border: 2px solid var(--surface);
   flex-shrink: 0;
 }
@@ -1563,7 +1563,7 @@
 }
 .product-card__image {
   aspect-ratio: 4/3;
-  background: var(--surface-raised);
+  background: var(--surface-alt);
   overflow: hidden;
 }
 .product-card__image img { width: 100%; height: 100%; object-fit: cover; }
@@ -1684,13 +1684,13 @@
 
 ```css
 .tab-panel {
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
 .tab-bar {
   display: flex;
-  border-bottom: 1px solid var(--border-visible);
+  border-bottom: 1px solid var(--border-strong);
 }
 .tab-item {
   font-family: 'JetBrains Mono', monospace;
@@ -1763,10 +1763,10 @@
 
 ```css
 .accordion {
-  border-top: 1px solid var(--border-visible);
+  border-top: 1px solid var(--border-strong);
 }
 .accordion-item {
-  border-bottom: 1px solid var(--border-visible);
+  border-bottom: 1px solid var(--border-strong);
 }
 .accordion-toggle {
   width: 100%;
@@ -1854,15 +1854,15 @@
 .check-box {
   width: 16px;
   height: 16px;
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .check-box.checked {
-  background: var(--primary-olive);
-  border-color: var(--primary-olive);
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
 }
 .check-box.checked::after {
   content: '';
@@ -1923,7 +1923,7 @@
 }
 .product-card__image {
   aspect-ratio: 4/3;
-  background: var(--surface-raised);
+  background: var(--surface-alt);
   overflow: hidden;
 }
 .product-card__image img { width: 100%; height: 100%; object-fit: cover; }
@@ -2160,21 +2160,21 @@
 ```css
 .detail-overlay {
   position: fixed; inset: 0; z-index: 100;
-  background: rgba(250,250,248,0.92);
+  background: rgba(245,243,239,0.92);
   display: none; overflow-y: auto; padding: 5vh 2rem;
 }
 .detail-overlay.active { display: block; }
 .detail-close {
   position: fixed; top: 16px; right: 16px;
   width: 44px; height: 44px;
-  border: 1px solid var(--border-visible); border-radius: 0;
+  border: 1px solid var(--border-strong); border-radius: 0;
   background: var(--surface); color: var(--text-primary);
   font-size: 20px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; z-index: 101;
 }
 .detail-panel {
   max-width: 640px; margin: 0 auto;
-  border: 1px solid var(--border-visible); background: var(--surface);
+  border: 1px solid var(--border-strong); background: var(--surface);
 }
 .detail-header { padding: 32px 32px 24px; border-bottom: 1px solid var(--border); }
 .detail-label {
@@ -2282,7 +2282,7 @@
 ```css
 .seg-control {
   display: inline-flex;
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -2293,9 +2293,9 @@
   color: var(--text-secondary); cursor: pointer;
   transition: all 150ms ease-out;
 }
-.seg-item:hover { background: var(--surface-raised); }
+.seg-item:hover { background: var(--surface-alt); }
 .seg-item.active {
-  background: var(--primary-olive); color: #fff;
+  background: var(--brand-primary); color: #fff;
 }
 ```
 
@@ -2318,8 +2318,8 @@
 
 ```css
 .callout {
-  border-left: 2px solid var(--primary-olive);
-  background: var(--surface-raised);
+  border-left: 2px solid var(--brand-primary);
+  background: var(--surface-alt);
   padding: 16px 20px;
 }
 .callout__title {
@@ -2327,7 +2327,7 @@
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--primary-olive);
+  color: var(--brand-primary);
   margin-bottom: 6px;
 }
 .callout__body {
@@ -2337,7 +2337,7 @@
 }
 ```
 
-**Warning 变体**：`border-left-color: var(--accent-orange)`，标题用 accent-orange。
+**Warning 变体**：`border-left-color: var(--signal-warning)`，标题用 signal-warning。
 
 ---
 
@@ -2454,7 +2454,7 @@
   width: 100%; font-family: 'Inter', sans-serif;
   font-size: 14px; color: var(--text-primary);
   background: transparent; border: none;
-  border-bottom: 1px solid var(--border-visible);
+  border-bottom: 1px solid var(--border-strong);
   padding: 8px 0; outline: none;
   transition: border-color 150ms ease-out;
 }
@@ -2468,7 +2468,7 @@
 .input--error { border-color: var(--error); }
 ```
 
-**全边框变体**：`.input--border` 添加 `border: 1px solid var(--border-visible); border-radius: 4px; padding: 10px 12px;`
+**全边框变体**：`.input--border` 添加 `border: 1px solid var(--border-strong); border-radius: 4px; padding: 10px 12px;`
 
 **Textarea**：`.textarea` 继承 `.input` 样式，添加 `resize: vertical; min-height: 80px; line-height: 1.6;`
 
@@ -2504,7 +2504,7 @@
   position: absolute; top: 3px; left: 3px;
   transition: all 150ms ease-out;
 }
-.toggle__input:checked ~ .toggle__track { background: var(--primary-olive); }
+.toggle__input:checked ~ .toggle__track { background: var(--brand-primary); }
 .toggle__input:checked ~ .toggle__track .toggle__thumb { background: #fff; left: 23px; }
 .toggle__label {
   font-family: 'JetBrains Mono', monospace;
@@ -2603,18 +2603,18 @@
   font-size: 11px;
   letter-spacing: 0.06em;
   padding: 6px 14px;
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-full);
   color: var(--text-secondary);
   background: transparent;
 }
 .chip--olive {
-  border-color: var(--primary-olive);
-  color: var(--primary-olive);
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
 }
 .chip--orange {
-  border-color: var(--accent-orange);
-  color: var(--accent-orange);
+  border-color: var(--signal-warning);
+  color: var(--signal-warning);
 }
 ```
 
@@ -2977,8 +2977,8 @@
 ```
 
 **变体**：
-- `.tag--accent` → `border-color: var(--accent-orange)`, `color: var(--accent-orange)`（用于精选/限量项）
-- `.tag--scene` → `border-color: var(--scene-glacier)`, `color: var(--scene-glacier)`（用于季节标签）
+- `.tag--accent` → `border-color: var(--signal-warning)`, `color: var(--signal-warning)`（用于精选/限量项）
+- `.tag--scene` → `border-color: var(--brand-tertiary)`, `color: var(--brand-tertiary)`（用于季节标签）
 
 ---
 
@@ -2990,9 +2990,9 @@
 
 ```html
 <div class="progress-bar">
-  <div class="progress-bar__segment" style="width: 85%; background: var(--primary-olive);"></div>
-  <div class="progress-bar__segment" style="width: 10%; background: var(--primary-earth);"></div>
-  <div class="progress-bar__segment" style="width: 5%; background: var(--accent-yellow);"></div>
+  <div class="progress-bar__segment" style="width: 85%; background: var(--brand-primary);"></div>
+  <div class="progress-bar__segment" style="width: 10%; background: var(--brand-secondary);"></div>
+  <div class="progress-bar__segment" style="width: 5%; background: var(--signal-caution);"></div>
 </div>
 ```
 
@@ -3040,7 +3040,7 @@
 }
 .inline-bar__fill {
   height: 100%;
-  background: var(--primary-olive);
+  background: var(--brand-primary);
   border-radius: 2px;
 }
 ```
@@ -3084,9 +3084,9 @@
   height: 12px;
   border-radius: 0;
 }
-.block-bar__block--filled { background: var(--primary-olive); }
+.block-bar__block--filled { background: var(--brand-primary); }
 .block-bar__block--empty { background: var(--border); }
-.block-bar__block--accent { background: var(--accent-orange); }
+.block-bar__block--accent { background: var(--signal-warning); }
 .block-bar__block--good { background: var(--success); }
 .block-bar__block--warn { background: var(--warning); }
 ```
@@ -3107,7 +3107,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
 
 ### D12 · Metric Card LED-Style（实现 #17 · 基础组件）
 
-**含义**：仪表盘大数字卡。超大 JetBrains Mono 数字（48-96px）+ Inter 正文上下文 + 左上角标签。`--surface-raised` 背景提升层次。
+**含义**：仪表盘大数字卡。超大 JetBrains Mono 数字（48-96px）+ Inter 正文上下文 + 左上角标签。`--surface-alt` 背景提升层次。
 
 **HTML**:
 
@@ -3123,7 +3123,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
 
 ```css
 .metric-card {
-  background: var(--surface-raised);
+  background: var(--surface-alt);
   border: 1px solid var(--border);
   padding: var(--space-lg) var(--space-xl);
   position: relative;
@@ -3148,7 +3148,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
 }
 ```
 
-**Accent hero 变体**：`.metric-card__hero` 颜色设为 `var(--primary-olive)` 或 `var(--accent-orange)` 以强调。
+**Accent hero 变体**：`.metric-card__hero` 颜色设为 `var(--brand-primary)` 或 `var(--signal-warning)` 以强调。
 
 ---
 
@@ -3173,7 +3173,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   border-radius: 2px;
 }
 .nameplate__dot {
@@ -3192,7 +3192,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
 }
 ```
 
-**Accent dot 变体**：`.nameplate__dot` 背景设为 `var(--accent-orange)` 用于高亮项。
+**Accent dot 变体**：`.nameplate__dot` 背景设为 `var(--signal-warning)` 用于高亮项。
 
 ---
 
@@ -3206,7 +3206,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
 <div class="gauge-arc">
   <svg viewBox="0 0 200 120" width="200" height="120">
     <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/>
-    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--primary-olive)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="33" id="gauge-fill"/>
+    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--brand-primary)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="33" id="gauge-fill"/>
     <!-- Tick marks generated by JS -->
   </svg>
   <div class="gauge-arc__value" data-edit>87</div>
@@ -3244,7 +3244,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
     <polyline points="0,24 20,20 40,22 60,16 80,18 100,12 120,14 140,8 160,6"
       fill="none" stroke="var(--text-display)" stroke-width="1.5"
       stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="160" cy="6" r="2.5" fill="var(--primary-olive)"/>
+    <circle cx="160" cy="6" r="2.5" fill="var(--brand-primary)"/>
   </svg>
 </div>
 ```
@@ -3277,7 +3277,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
   position: absolute;
   top: -20px; bottom: 0;
   width: 1px;
-  background: var(--accent-orange);
+  background: var(--signal-warning);
   opacity: 0.5;
 }
 .ref-label {
@@ -3287,7 +3287,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   letter-spacing: 0.08em;
-  color: var(--accent-orange);
+  color: var(--signal-warning);
   white-space: nowrap;
 }
 ```
@@ -3382,9 +3382,9 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
   cursor: pointer; border: none;
   transition: all 150ms ease-out;
 }
-.btn--primary { background: var(--primary-olive); color: #fff; border-radius: 4px; }
+.btn--primary { background: var(--brand-primary); color: #fff; border-radius: 4px; }
 .btn--primary:hover { background: #3d4d2e; }
-.btn--secondary { background: transparent; border: 1px solid var(--border-visible); color: var(--text-primary); border-radius: 4px; }
+.btn--secondary { background: transparent; border: 1px solid var(--border-strong); color: var(--text-primary); border-radius: 4px; }
 .btn--secondary:hover { border-color: var(--text-primary); }
 .btn--ghost { background: transparent; color: var(--text-secondary); border-radius: 0; }
 .btn--ghost:hover { color: var(--text-primary); }
@@ -3690,7 +3690,7 @@ Fjallgatan 12
 SE-115 56 Stockholm, Sweden
 
 Fonts: Georgia (system), Inter, JetBrains Mono
-Colors: Olive #4A5D3A, Dark Gray #2C2C2C, Earth #8B7355
+Colors: Olive #4A6741, Dark Gray #2D2A26, Earth #7A9B6D
 
 &copy; 2026 Haglofs AB. All rights reserved.
 Design system v1.0 — Built with restraint.</pre>
@@ -3711,8 +3711,8 @@ Design system v1.0 — Built with restraint.</pre>
   margin: 0 auto;
 }
 .footer-dense__block {
-  background: var(--surface-raised);
-  border-left: 2px solid var(--primary-olive);
+  background: var(--surface-alt);
+  border-left: 2px solid var(--brand-primary);
   padding: var(--space-lg) var(--space-xl);
   margin: 0;
   overflow-x: auto;
@@ -3884,8 +3884,8 @@ WEIGHT: 485g (L)</code></pre>
 
 ```css
 .code-block {
-  background: var(--surface-raised);
-  border-left: 2px solid var(--primary-olive);
+  background: var(--surface-alt);
+  border-left: 2px solid var(--brand-primary);
   padding: 16px 20px; margin: 0; overflow-x: auto;
 }
 .code-block code {
@@ -3894,7 +3894,7 @@ WEIGHT: 485g (L)</code></pre>
 }
 ```
 
-**内联代码**：文本中的 `code` → `background: var(--surface-raised); padding: 2px 6px; border-radius: 2px;`
+**内联代码**：文本中的 `code` → `background: var(--surface-alt); padding: 2px 6px; border-radius: 2px;`
 
 ---
 
@@ -3987,7 +3987,7 @@ WEIGHT: 485g (L)</code></pre>
   align-items: center;
   gap: var(--space-lg);
   padding: var(--space-sm) var(--space-lg);
-  background: rgba(250, 250, 248, 0.88);
+  background: rgba(245, 243, 239, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
@@ -4018,7 +4018,7 @@ WEIGHT: 485g (L)</code></pre>
   font-size: 11px;
   letter-spacing: 0.06em;
   padding: var(--space-xs) var(--space-md);
-  background: var(--primary-olive);
+  background: var(--brand-primary);
   color: #fff;
   border-radius: var(--radius-full);
   white-space: nowrap;
@@ -4123,7 +4123,7 @@ WEIGHT: 485g (L)</code></pre>
 .cmdk-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(250, 250, 248, 0.92);
+  background: rgba(245, 243, 239, 0.92);
   display: flex;
   justify-content: center;
   padding-top: 20vh;
@@ -4132,7 +4132,7 @@ WEIGHT: 485g (L)</code></pre>
 .cmdk {
   width: 560px;
   background: var(--surface);
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
 }
 .cmdk__input {
   width: 100%;
@@ -4150,7 +4150,7 @@ WEIGHT: 485g (L)</code></pre>
   color: var(--text-primary);
   cursor: pointer;
 }
-.cmdk__item:hover { background: var(--surface-raised); }
+.cmdk__item:hover { background: var(--surface-alt); }
 ```
 
 ---
@@ -4360,7 +4360,7 @@ WEIGHT: 485g (L)</code></pre>
   color: var(--text-primary);
   text-decoration: none;
   padding: var(--space-xs) var(--space-md);
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   transition: border-color 150ms ease-out;
 }
@@ -4391,67 +4391,67 @@ WEIGHT: 485g (L)</code></pre>
   </div>
   <div class="swatch-grid__grid">
     <div class="swatch-card">
-      <div class="swatch-card__color" style="background: var(--primary-darkgray);">
+      <div class="swatch-card__color" style="background: var(--text-display);">
         <span class="swatch-card__token">darkgray</span>
       </div>
       <div class="swatch-card__info">
         <div class="swatch-card__name">Dark Gray</div>
         <div class="swatch-card__desc">Brand foundation, text, logos</div>
         <div class="swatch-card__values">
-          <span>#2C2C2C</span>
-          <span>44,44,44</span>
+          <span>#2D2A26</span>
+          <span>45,42,38</span>
         </div>
       </div>
     </div>
     <div class="swatch-card">
-      <div class="swatch-card__color" style="background: var(--primary-olive);">
+      <div class="swatch-card__color" style="background: var(--brand-primary);">
         <span class="swatch-card__token">olive</span>
       </div>
       <div class="swatch-card__info">
         <div class="swatch-card__name">Olive</div>
         <div class="swatch-card__desc">Outdoor DNA, product primary</div>
         <div class="swatch-card__values">
-          <span>#4A5D3A</span>
-          <span>74,93,58</span>
+          <span>#4A6741</span>
+          <span>74,103,65</span>
         </div>
       </div>
     </div>
     <div class="swatch-card">
-      <div class="swatch-card__color" style="background: var(--primary-earth);">
+      <div class="swatch-card__color" style="background: var(--brand-secondary);">
         <span class="swatch-card__token">earth</span>
       </div>
       <div class="swatch-card__info">
         <div class="swatch-card__name">Earth</div>
         <div class="swatch-card__desc">Material warmth, natural texture</div>
         <div class="swatch-card__values">
-          <span>#8B7355</span>
-          <span>139,115,85</span>
+          <span>#7A9B6D</span>
+          <span>122,155,109</span>
         </div>
       </div>
     </div>
     <div class="swatch-card">
-      <div class="swatch-card__color" style="background: var(--accent-yellow);">
+      <div class="swatch-card__color" style="background: var(--signal-caution);">
         <span class="swatch-card__token">yellow</span>
       </div>
       <div class="swatch-card__info">
         <div class="swatch-card__name">Yellow</div>
         <div class="swatch-card__desc">CTA, safety identification</div>
         <div class="swatch-card__values">
-          <span>#FFD100</span>
-          <span>255,209,0</span>
+          <span>#E8B83C</span>
+          <span>232,184,60</span>
         </div>
       </div>
     </div>
     <div class="swatch-card">
-      <div class="swatch-card__color" style="background: var(--accent-orange);">
+      <div class="swatch-card__color" style="background: var(--signal-warning);">
         <span class="swatch-card__token">orange</span>
       </div>
       <div class="swatch-card__info">
         <div class="swatch-card__name">Orange</div>
         <div class="swatch-card__desc">Visual focus, highlights</div>
         <div class="swatch-card__values">
-          <span>#E55B2B</span>
-          <span>229,91,43</span>
+          <span>#E87A3C</span>
+          <span>232,122,60</span>
         </div>
       </div>
     </div>
@@ -4737,13 +4737,13 @@ WEIGHT: 485g (L)</code></pre>
 .symbol-evo__arrow-line {
   width: 48px;
   height: 1px;
-  background: var(--border-visible);
+  background: var(--border-strong);
 }
 .symbol-evo__arrow-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent-orange);
+  background: var(--signal-warning);
 }
 .dm-logo {
   display: grid;
@@ -4973,7 +4973,7 @@ WEIGHT: 485g (L)</code></pre>
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.08em;
-  color: var(--accent-orange);
+  color: var(--signal-warning);
   font-weight: 600;
 }
 .tension-grid__desc {
@@ -4997,15 +4997,15 @@ WEIGHT: 485g (L)</code></pre>
 
 ```html
 <div class="swatch-card">
-  <div class="swatch-card__color" style="background: var(--primary-olive);">
+  <div class="swatch-card__color" style="background: var(--brand-primary);">
     <span class="swatch-card__token">olive</span>
   </div>
   <div class="swatch-card__info">
     <div class="swatch-card__name">军绿</div>
     <div class="swatch-card__desc">产品主色、户外属性传递</div>
     <div class="swatch-card__values">
-      <span>#4A5D3A</span>
-      <span>74,93,58</span>
+      <span>#4A6741</span>
+      <span>74,103,65</span>
     </div>
   </div>
 </div>
@@ -5150,7 +5150,7 @@ WEIGHT: 485g (L)</code></pre>
 .principle-card__vs {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  color: var(--accent-orange);
+  color: var(--signal-warning);
   font-weight: 600;
 }
 ```
@@ -5192,13 +5192,13 @@ WEIGHT: 485g (L)</code></pre>
 
 ```css
 .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.compare-col { border: 1px solid var(--border-visible); padding: 20px; }
+.compare-col { border: 1px solid var(--border-strong); padding: 20px; }
 .compare-header {
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 16px; padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
 }
-.compare-col--avoid .compare-marker { color: var(--accent-orange); }
+.compare-col--avoid .compare-marker { color: var(--signal-warning); }
 .compare-col--prefer .compare-marker { color: var(--text-display); }
 .compare-title {
   font-family: 'JetBrains Mono', monospace;
@@ -5207,7 +5207,7 @@ WEIGHT: 485g (L)</code></pre>
   color: var(--text-secondary);
 }
 .compare-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; }
-.compare-col--avoid .compare-icon { color: var(--accent-orange); }
+.compare-col--avoid .compare-icon { color: var(--signal-warning); }
 .compare-col--prefer .compare-icon { color: var(--text-display); }
 .compare-row span:last-child { font-size: 14px; color: var(--text-primary); line-height: 1.5; }
 ```

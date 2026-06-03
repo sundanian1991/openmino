@@ -12,7 +12,7 @@ function renderGauge(el){
   var val = parseFloat(el.getAttribute('data-val')) || 0;
   var w = parseInt(el.getAttribute('data-w')) || 140;
   var h = parseInt(el.getAttribute('data-h')) || 90;
-  var color = el.getAttribute('data-color') || '#E55B2B';
+  var color = el.getAttribute('data-color') || '#E87A3C';
   var cx = w/2, cy = type==='thermo'?h-20:h-10, r = Math.min(cx,cy)-10;
   var ns = 'http://www.w3.org/2000/svg';
   var svg = document.createElementNS(ns,'svg');
@@ -97,7 +97,7 @@ function renderGauge(el){
 function renderSparkline(el){
   var data = (el.getAttribute('data-values')||'').split(',').map(Number);
   var type = el.getAttribute('data-type')||'line';  // line|area|bar|step
-  var color = el.getAttribute('data-color')||'#E55B2B';
+  var color = el.getAttribute('data-color')||'#E87A3C';
   if(data.length<2){ el.textContent='[data]'; return; }
   var w = parseInt(el.getAttribute('data-w'))||160, h = parseInt(el.getAttribute('data-h'))||32;
   var ns = 'http://www.w3.org/2000/svg';
@@ -166,7 +166,7 @@ function renderSparkline(el){
   var chg = first===0 ? 0 : ((last-first)/first*100).toFixed(1);
   var st = document.createElement('div');
   st.style.cssText = 'font-family:JetBrains Mono,monospace;font-size:11px;margin-top:4px;text-align:center';
-  st.style.color = chg>0?'#4A5D3A':'#E55B2B';
+  st.style.color = chg>0?'#4A6741':'#E87A3C';
   st.textContent = last + (chg>0?' ▲':' ▼')+Math.abs(chg)+'%';
   el.appendChild(st);
 }

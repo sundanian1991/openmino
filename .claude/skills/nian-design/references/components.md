@@ -35,7 +35,7 @@ Product display card with image area, name, and spec summary.
 }
 .product-card__image {
   aspect-ratio: 4/3;
-  background: var(--surface-raised);
+  background: var(--surface-alt);
   overflow: hidden;
 }
 .product-card__image img { width: 100%; height: 100%; object-fit: cover; }
@@ -159,14 +159,14 @@ Token display card for design system pages.
 
 ```html
 <div class="swatch-card">
-  <div class="swatch-card__color" style="background: var(--primary-olive);">
+  <div class="swatch-card__color" style="background: var(--brand-primary);">
     <span class="swatch-card__token">olive</span>
   </div>
   <div class="swatch-card__info">
     <div class="swatch-card__name">军绿</div>
     <div class="swatch-card__desc">产品主色、户外属性传递</div>
     <div class="swatch-card__values">
-      <span>#4A5D3A</span>
+      <span>#4A6741</span>
       <span>74,93,58</span>
     </div>
   </div>
@@ -241,8 +241,8 @@ Category, material, or feature label.
 ```
 
 **Variants:**
-- `.tag--accent` → border-color: `var(--accent-orange)`, color: `var(--accent-orange)` (for featured/limited items)
-- `.tag--scene` → border-color: `var(--scene-glacier)`, color: `var(--scene-glacier)` (for seasonal tags)
+- `.tag--accent` → border-color: `var(--signal-warning)`, color: `var(--signal-warning)` (for featured/limited items)
+- `.tag--scene` → border-color: `var(--brand-tertiary)`, color: `var(--brand-tertiary)` (for seasonal tags)
 
 ---
 
@@ -416,9 +416,9 @@ Segmented bar for product ratings, sustainability scores, etc.
 
 ```html
 <div class="progress-bar">
-  <div class="progress-bar__segment" style="width: 85%; background: var(--primary-olive);"></div>
-  <div class="progress-bar__segment" style="width: 10%; background: var(--primary-earth);"></div>
-  <div class="progress-bar__segment" style="width: 5%; background: var(--accent-yellow);"></div>
+  <div class="progress-bar__segment" style="width: 85%; background: var(--brand-primary);"></div>
+  <div class="progress-bar__segment" style="width: 10%; background: var(--brand-secondary);"></div>
+  <div class="progress-bar__segment" style="width: 5%; background: var(--signal-caution);"></div>
 </div>
 ```
 
@@ -460,7 +460,7 @@ Compact inline bar for secondary metrics in product comparisons.
 }
 .inline-bar__fill {
   height: 100%;
-  background: var(--primary-olive);
+  background: var(--brand-primary);
   border-radius: 2px;
 }
 ```
@@ -592,7 +592,7 @@ Design principle display with comparison layout.
 .principle-card__vs {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  color: var(--accent-orange);
+  color: var(--signal-warning);
   font-weight: 600;
 }
 ```
@@ -634,9 +634,9 @@ Design principle display with comparison layout.
   height: 12px;
   border-radius: 0;
 }
-.block-bar__block--filled { background: var(--primary-olive); }
+.block-bar__block--filled { background: var(--brand-primary); }
 .block-bar__block--empty { background: var(--border); }
-.block-bar__block--accent { background: var(--accent-orange); }
+.block-bar__block--accent { background: var(--signal-warning); }
 .block-bar__block--good { background: var(--success); }
 .block-bar__block--warn { background: var(--warning); }
 ```
@@ -659,7 +659,7 @@ track.innerHTML = Array.from({length: total}, (_, i) =>
 
 Dashboard metric card with oversized number. Industrial instrument feel.
 
-**Anatomy:** JetBrains Mono hero number (48-96px) + Inter body context + label in top-left. `--surface-raised` background for elevation.
+**Anatomy:** JetBrains Mono hero number (48-96px) + Inter body context + label in top-left. `--surface-alt` background for elevation.
 
 ```html
 <div class="metric-card">
@@ -671,7 +671,7 @@ Dashboard metric card with oversized number. Industrial instrument feel.
 
 ```css
 .metric-card {
-  background: var(--surface-raised);
+  background: var(--surface-alt);
   border: 1px solid var(--border);
   padding: var(--space-lg) var(--space-xl);
   position: relative;
@@ -696,7 +696,7 @@ Dashboard metric card with oversized number. Industrial instrument feel.
 }
 ```
 
-**Variant — Accent hero:** `.metric-card__hero` color set to `var(--primary-olive)` or `var(--accent-orange)` for emphasis.
+**Variant — Accent hero:** `.metric-card__hero` color set to `var(--brand-primary)` or `var(--signal-warning)` for emphasis.
 
 ---
 
@@ -719,7 +719,7 @@ Technical label with dot prefix and thin border. Industrial tag for categorizati
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   border-radius: 2px;
 }
 .nameplate__dot {
@@ -738,7 +738,7 @@ Technical label with dot prefix and thin border. Industrial tag for categorizati
 }
 ```
 
-**Variant — Accent dot:** `.nameplate__dot` background set to `var(--accent-orange)` for highlighted items.
+**Variant — Accent dot:** `.nameplate__dot` background set to `var(--signal-warning)` for highlighted items.
 
 ---
 
@@ -755,7 +755,7 @@ Gradient fade-in-out divider line. Replaces harsh borders with subtle visual sep
 ```css
 .seam-divider {
   height: 1px;
-  background: var(--border-visible);
+  background: var(--border-strong);
   mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
 }
@@ -820,7 +820,7 @@ SVG arc gauge with tick marks and needle. For single-metric display (sustainabil
 <div class="gauge-arc">
   <svg viewBox="0 0 200 120" width="200" height="120">
     <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/>
-    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--primary-olive)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="33" id="gauge-fill"/>
+    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--brand-primary)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="33" id="gauge-fill"/>
     <!-- Tick marks generated by JS -->
   </svg>
   <div class="gauge-arc__value" data-edit>87</div>
@@ -899,7 +899,7 @@ Linear process/pipeline display. For supplier lifecycle, workflow stages, produc
 
 Binary rule comparison. For policy display, brand guidelines, compliance rules.
 
-**Anatomy:** Two-column grid. Left = AVOID (× marker, `--accent-orange`). Right = PREFER (· marker, `--text-display`).
+**Anatomy:** Two-column grid. Left = AVOID (× marker, `--signal-warning`). Right = PREFER (· marker, `--text-display`).
 
 ```html
 <div class="compare-grid">
@@ -928,13 +928,13 @@ Binary rule comparison. For policy display, brand guidelines, compliance rules.
 
 ```css
 .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.compare-col { border: 1px solid var(--border-visible); padding: 20px; }
+.compare-col { border: 1px solid var(--border-strong); padding: 20px; }
 .compare-header {
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 16px; padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
 }
-.compare-col--avoid .compare-marker { color: var(--accent-orange); }
+.compare-col--avoid .compare-marker { color: var(--signal-warning); }
 .compare-col--prefer .compare-marker { color: var(--text-display); }
 .compare-title {
   font-family: 'JetBrains Mono', monospace;
@@ -943,7 +943,7 @@ Binary rule comparison. For policy display, brand guidelines, compliance rules.
   color: var(--text-secondary);
 }
 .compare-row { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; }
-.compare-col--avoid .compare-icon { color: var(--accent-orange); }
+.compare-col--avoid .compare-icon { color: var(--signal-warning); }
 .compare-col--prefer .compare-icon { color: var(--text-display); }
 .compare-row span:last-child { font-size: 14px; color: var(--text-primary); line-height: 1.5; }
 ```
@@ -970,8 +970,8 @@ Content switching panel. For multi-dimensional product data, seasonal collection
 ```
 
 ```css
-.tab-panel { border: 1px solid var(--border-visible); }
-.tab-bar { display: flex; border-bottom: 1px solid var(--border-visible); }
+.tab-panel { border: 1px solid var(--border-strong); }
+.tab-bar { display: flex; border-bottom: 1px solid var(--border-strong); }
 .tab-item {
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px; letter-spacing: 0.08em;
@@ -1010,8 +1010,8 @@ Collapsible sections. For product details, material specs, FAQ.
 ```
 
 ```css
-.accordion { border-top: 1px solid var(--border-visible); }
-.accordion-item { border-bottom: 1px solid var(--border-visible); }
+.accordion { border-top: 1px solid var(--border-strong); }
+.accordion-item { border-bottom: 1px solid var(--border-strong); }
 .accordion-toggle {
   width: 100%; display: flex; justify-content: space-between;
   align-items: center; padding: 16px 0;
@@ -1035,7 +1035,7 @@ Collapsible sections. For product details, material specs, FAQ.
 
 Interactive task/rule checklist. For compliance checks, packing lists, product features.
 
-**Anatomy:** Stack of rows. Checked: square filled `--primary-olive`. Unchecked: 1px `--border-visible` outline.
+**Anatomy:** Stack of rows. Checked: square filled `--brand-primary`. Unchecked: 1px `--border-strong` outline.
 
 ```html
 <div class="checklist">
@@ -1057,10 +1057,10 @@ Interactive task/rule checklist. For compliance checks, packing lists, product f
 .checklist-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .checklist-item:last-child { border-bottom: none; }
 .check-box {
-  width: 16px; height: 16px; border: 1px solid var(--border-visible);
+  width: 16px; height: 16px; border: 1px solid var(--border-strong);
   flex-shrink: 0; display: flex; align-items: center; justify-content: center;
 }
-.check-box.checked { background: var(--primary-olive); border-color: var(--primary-olive); }
+.check-box.checked { background: var(--brand-primary); border-color: var(--brand-primary); }
 .check-box.checked::after { content: ''; width: 6px; height: 2px; background: #fff; margin-top: -1px; }
 .check-label { flex: 1; font-size: 14px; color: var(--text-primary); line-height: 1.4; }
 .check-status {
@@ -1076,7 +1076,7 @@ Interactive task/rule checklist. For compliance checks, packing lists, product f
 
 Fixed-position detail view for long-form content. Supplier profiles, product details, full spec sheets.
 
-**Anatomy:** Full-screen overlay (`--bg` at 0.92 opacity). Panel: `--surface` bg, `1px --border-visible`, centered max-width 640px. Close: `×` top-right.
+**Anatomy:** Full-screen overlay (`--bg` at 0.92 opacity). Panel: `--surface` bg, `1px --border-strong`, centered max-width 640px. Close: `×` top-right.
 
 ```html
 <div class="detail-overlay" id="detail-panel">
@@ -1094,21 +1094,21 @@ Fixed-position detail view for long-form content. Supplier profiles, product det
 ```css
 .detail-overlay {
   position: fixed; inset: 0; z-index: 100;
-  background: rgba(250,250,248,0.92);
+  background: rgba(245,243,239,0.92);
   display: none; overflow-y: auto; padding: 5vh 2rem;
 }
 .detail-overlay.active { display: block; }
 .detail-close {
   position: fixed; top: 16px; right: 16px;
   width: 44px; height: 44px;
-  border: 1px solid var(--border-visible); border-radius: 0;
+  border: 1px solid var(--border-strong); border-radius: 0;
   background: var(--surface); color: var(--text-primary);
   font-size: 20px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; z-index: 101;
 }
 .detail-panel {
   max-width: 640px; margin: 0 auto;
-  border: 1px solid var(--border-visible); background: var(--surface);
+  border: 1px solid var(--border-strong); background: var(--surface);
 }
 .detail-header { padding: 32px 32px 24px; border-bottom: 1px solid var(--border); }
 .detail-label {
@@ -1198,7 +1198,7 @@ Two-subject comparison with asymmetric grid. Left = sticky context label, right 
 
 Mutually exclusive option selector. For scene palette selection, product filtering.
 
-**Anatomy:** Container `1px --border-visible`, 4px radius. Active: `--primary-olive` bg, white text. Inactive: transparent, `--text-secondary`.
+**Anatomy:** Container `1px --border-strong`, 4px radius. Active: `--brand-primary` bg, white text. Inactive: transparent, `--text-secondary`.
 
 ```html
 <div class="seg-control">
@@ -1212,7 +1212,7 @@ Mutually exclusive option selector. For scene palette selection, product filteri
 ```css
 .seg-control {
   display: inline-flex;
-  border: 1px solid var(--border-visible);
+  border: 1px solid var(--border-strong);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -1223,9 +1223,9 @@ Mutually exclusive option selector. For scene palette selection, product filteri
   color: var(--text-secondary); cursor: pointer;
   transition: all 150ms ease-out;
 }
-.seg-item:hover { background: var(--surface-raised); }
+.seg-item:hover { background: var(--surface-alt); }
 .seg-item.active {
-  background: var(--primary-olive); color: #fff;
+  background: var(--brand-primary); color: #fff;
 }
 ```
 
@@ -1316,7 +1316,7 @@ Inline trend line for compact data visualization. No axes, no labels, no gridlin
     <polyline points="0,24 20,20 40,22 60,16 80,18 100,12 120,14 140,8 160,6"
       fill="none" stroke="var(--text-display)" stroke-width="1.5"
       stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="160" cy="6" r="2.5" fill="var(--primary-olive)"/>
+    <circle cx="160" cy="6" r="2.5" fill="var(--brand-primary)"/>
   </svg>
 </div>
 ```
@@ -1347,7 +1347,7 @@ Threshold indicator overlaid on segmented block bars. Shows target/benchmark as 
   position: absolute;
   top: -20px; bottom: 0;
   width: 1px;
-  background: var(--accent-orange);
+  background: var(--signal-warning);
   opacity: 0.5;
 }
 .ref-label {
@@ -1357,7 +1357,7 @@ Threshold indicator overlaid on segmented block bars. Shows target/benchmark as 
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   letter-spacing: 0.08em;
-  color: var(--accent-orange);
+  color: var(--signal-warning);
   white-space: nowrap;
 }
 ```
@@ -1405,8 +1405,8 @@ Lightweight marginal annotation for rules, methodology explanations, or contextu
 
 ```css
 .callout {
-  border-left: 2px solid var(--primary-olive);
-  background: var(--surface-raised);
+  border-left: 2px solid var(--brand-primary);
+  background: var(--surface-alt);
   padding: 16px 20px;
 }
 .callout__title {
@@ -1414,7 +1414,7 @@ Lightweight marginal annotation for rules, methodology explanations, or contextu
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--primary-olive);
+  color: var(--brand-primary);
   margin-bottom: 6px;
 }
 .callout__body {
@@ -1424,7 +1424,7 @@ Lightweight marginal annotation for rules, methodology explanations, or contextu
 }
 ```
 
-**Variant — Warning callout:** `border-left-color: var(--accent-orange)`, title in accent-orange.
+**Variant — Warning callout:** `border-left-color: var(--signal-warning)`, title in signal-warning.
 
 ---
 
@@ -1540,9 +1540,9 @@ All buttons: JetBrains Mono, 13px, ALL CAPS, letter-spacing 0.06em, min height 4
   cursor: pointer; border: none;
   transition: all 150ms ease-out;
 }
-.btn--primary { background: var(--primary-olive); color: #fff; border-radius: 4px; }
+.btn--primary { background: var(--brand-primary); color: #fff; border-radius: 4px; }
 .btn--primary:hover { background: #3d4d2e; }
-.btn--secondary { background: transparent; border: 1px solid var(--border-visible); color: var(--text-primary); border-radius: 4px; }
+.btn--secondary { background: transparent; border: 1px solid var(--border-strong); color: var(--text-primary); border-radius: 4px; }
 .btn--secondary:hover { border-color: var(--text-primary); }
 .btn--ghost { background: transparent; color: var(--text-secondary); border-radius: 0; }
 .btn--ghost:hover { color: var(--text-primary); }
@@ -1576,7 +1576,7 @@ Underline preferred. Label above (JetBrains Mono ALL CAPS), input below.
   width: 100%; font-family: 'Inter', sans-serif;
   font-size: 14px; color: var(--text-primary);
   background: transparent; border: none;
-  border-bottom: 1px solid var(--border-visible);
+  border-bottom: 1px solid var(--border-strong);
   padding: 8px 0; outline: none;
   transition: border-color 150ms ease-out;
 }
@@ -1590,7 +1590,7 @@ Underline preferred. Label above (JetBrains Mono ALL CAPS), input below.
 .input--error { border-color: var(--error); }
 ```
 
-**Full-border variant:** `.input--border` adds `border: 1px solid var(--border-visible); border-radius: 4px; padding: 10px 12px;`
+**Full-border variant:** `.input--border` adds `border: 1px solid var(--border-strong); border-radius: 4px; padding: 10px 12px;`
 
 **Textarea:** `.textarea` inherits `.input` styles, adds `resize: vertical; min-height: 80px; line-height: 1.6;`
 
@@ -1622,7 +1622,7 @@ Pill track + circle thumb. Mechanical snap.
   position: absolute; top: 3px; left: 3px;
   transition: all 150ms ease-out;
 }
-.toggle__input:checked ~ .toggle__track { background: var(--primary-olive); }
+.toggle__input:checked ~ .toggle__track { background: var(--brand-primary); }
 .toggle__input:checked ~ .toggle__track .toggle__thumb { background: #fff; left: 23px; }
 .toggle__label {
   font-family: 'JetBrains Mono', monospace;
@@ -1677,8 +1677,8 @@ WEIGHT: 485g (L)</code></pre>
 
 ```css
 .code-block {
-  background: var(--surface-raised);
-  border-left: 2px solid var(--primary-olive);
+  background: var(--surface-alt);
+  border-left: 2px solid var(--brand-primary);
   padding: 16px 20px; margin: 0; overflow-x: auto;
 }
 .code-block code {
@@ -1687,7 +1687,7 @@ WEIGHT: 485g (L)</code></pre>
 }
 ```
 
-**Inline code:** `code` inside text → `background: var(--surface-raised); padding: 2px 6px; border-radius: 2px;`
+**Inline code:** `code` inside text → `background: var(--surface-alt); padding: 2px 6px; border-radius: 2px;`
 
 ---
 
@@ -1711,4 +1711,460 @@ Bracket-prefix text alerts. No icons, no illustrations.
 .alert--warning { color: var(--warning); border-color: var(--warning); }
 .alert--error { color: var(--error); border-color: var(--error); }
 ```
+
+---
+
+## 43. BULLET BAR WITH TARGET ⭐ 高优先级
+
+Baseline + target reference line. For achievement rates, KPI benchmarking.
+
+**Anatomy:** Label + value header → track background → fill bar (brand-primary) → vertical target line (signal-warning) with floating label above.
+
+```html
+<div class="bullet-bar">
+  <div class="bullet-bar__header">
+    <span class="bullet-bar__label">ACHIEVEMENT</span>
+    <span class="bullet-bar__value">82 / 100</span>
+  </div>
+  <div class="bullet-bar__track">
+    <div class="bullet-bar__fill" style="width: 82%;"></div>
+    <div class="bullet-bar__target" style="left: 100%;">
+      <span class="bullet-bar__target-label">GOAL</span>
+    </div>
+  </div>
+</div>
 ```
+
+```css
+.bullet-bar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-sm);
+}
+.bullet-bar__label {
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.bullet-bar__value {
+  font-family: var(--fb);
+  font-size: var(--body-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.bullet-bar__track {
+  position: relative;
+  height: 24px;
+  background: var(--border);
+  margin: 16px 0;
+}
+.bullet-bar__fill {
+  height: 100%;
+  background: var(--brand-primary);
+  transition: width 250ms var(--ease-out);
+}
+.bullet-bar__target {
+  position: absolute;
+  top: -12px;
+  width: 2px;
+  height: calc(100% + 24px);
+  background: var(--signal-warning);
+  z-index: 1;
+}
+.bullet-bar__target-label {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--signal-warning);
+  white-space: nowrap;
+}
+```
+
+**Sizes:** Standard 24px track height. Compact 16px (reduce to `--space-sm` margins). The target label disappears on compact variant.
+
+---
+
+## 44. ZERO-CENTERED BAR ⭐ 高优先级
+
+Symmetric bar with zero center point, positive/negative values on each side. For deltas, variance, change analysis.
+
+**Anatomy:** Header → track with center zero line + left negative fill (signal-warning) + right positive fill (brand-primary) → label row showing values.
+
+```html
+<div class="zero-bar" style="--pos: 55; --neg: 25;">
+  <div class="zero-bar__header">
+    <span class="zero-bar__label">VARIANCE</span>
+  </div>
+  <div class="zero-bar__track">
+    <div class="zero-bar__zero"></div>
+    <div class="zero-bar__fill zero-bar__fill--pos" style="width: calc(var(--pos) * 0.5%);"></div>
+    <div class="zero-bar__fill zero-bar__fill--neg" style="width: calc(var(--neg) * 0.5%);"></div>
+  </div>
+  <div class="zero-bar__labels">
+    <span class="zero-bar__label-value zero-bar__label-value--neg">-25%</span>
+    <span class="zero-bar__label-value zero-bar__label-value--zero">0</span>
+    <span class="zero-bar__label-value zero-bar__label-value--pos">+55%</span>
+  </div>
+</div>
+```
+
+```css
+.zero-bar__header {
+  margin-bottom: var(--space-sm);
+}
+.zero-bar__label {
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.zero-bar__track {
+  position: relative;
+  height: 12px;
+  background: var(--border);
+  overflow: hidden;
+}
+.zero-bar__zero {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--text-display);
+  z-index: 1;
+}
+.zero-bar__fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: width 250ms var(--ease-out);
+}
+.zero-bar__fill--pos {
+  left: 50%;
+  background: var(--brand-primary);
+}
+.zero-bar__fill--neg {
+  right: 50%;
+  background: var(--signal-warning);
+}
+.zero-bar__labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xs);
+}
+.zero-bar__label-value {
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-disabled);
+}
+.zero-bar__label-value--pos { color: var(--brand-primary); }
+.zero-bar__label-value--neg { color: var(--signal-warning); }
+.zero-bar__label-value--zero { color: var(--text-secondary); }
+```
+
+**Usage:** `--pos` and `--neg` CSS custom properties control the fill widths. `--pos` = percentage of right half filled, `--neg` = percentage of left half filled.
+
+---
+
+## 45. WAFFLE GRID ⭐ 高优先级
+
+10x10 grid for percentage display, density visualization. One cell = one unit.
+
+**Anatomy:** 10x10 CSS grid of square cells → filled (brand-primary) + empty (border) → percentage value below.
+
+```html
+<div class="waffle-grid">
+  <div class="waffle-grid__grid" id="waffle-demo"></div>
+  <span class="waffle-grid__value">74%</span>
+</div>
+```
+
+```css
+.waffle-grid {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.waffle-grid__grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  width: 160px;
+}
+.waffle-grid__cell {
+  aspect-ratio: 1;
+  transition: background 150ms var(--ease-out);
+}
+.waffle-grid__cell--filled { background: var(--brand-primary); }
+.waffle-grid__cell--empty { background: var(--border); }
+.waffle-grid__value {
+  font-family: var(--fm);
+  font-size: var(--heading-md);
+  font-weight: 600;
+  color: var(--text-display);
+}
+```
+
+**JS generation:**
+```js
+const el = document.getElementById('waffle-demo');
+const val = 74; // percentage
+for (let i = 0; i < 100; i++) {
+  const c = document.createElement('div');
+  c.className = 'waffle-grid__cell ' + (i < val ? 'waffle-grid__cell--filled' : 'waffle-grid__cell--empty');
+  el.appendChild(c);
+}
+```
+
+**Sizes:** Standard 160px grid width (each cell ~14px). Compact 100px (10px gap 1px). The grid width controls the cell size via `grid-template-columns: repeat(10, 1fr)`.
+
+---
+
+## 46. COMPARISON PAIR ⭐ 高优先级
+
+Two-value side-by-side comparison bars. For A/B comparison, before/after, competitor benchmarks.
+
+**Anatomy:** Two stacked rows → mono label → filled track → numeric value. Row A: brand-primary fill. Row B: signal-warning fill.
+
+```html
+<div class="comp-pair">
+  <div class="comp-pair__row">
+    <span class="comp-pair__label">A</span>
+    <div class="comp-pair__track">
+      <div class="comp-pair__fill comp-pair__fill--a" style="width: 78%;"></div>
+    </div>
+    <span class="comp-pair__value">78%</span>
+  </div>
+  <div class="comp-pair__row">
+    <span class="comp-pair__label">B</span>
+    <div class="comp-pair__track">
+      <div class="comp-pair__fill comp-pair__fill--b" style="width: 92%;"></div>
+    </div>
+    <span class="comp-pair__value">92%</span>
+  </div>
+</div>
+```
+
+```css
+.comp-pair {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+.comp-pair__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.comp-pair__label {
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  min-width: 20px;
+}
+.comp-pair__track {
+  flex: 1;
+  height: 12px;
+  background: var(--border);
+  overflow: hidden;
+}
+.comp-pair__fill {
+  height: 100%;
+  transition: width 250ms var(--ease-out);
+}
+.comp-pair__fill--a { background: var(--brand-primary); }
+.comp-pair__fill--b { background: var(--signal-warning); }
+.comp-pair__value {
+  font-family: var(--fb);
+  font-size: var(--body-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  min-width: 40px;
+  text-align: right;
+}
+```
+
+**Variant — Header row:** Add a header above the pair with `.comp-pair__header` class for labeled comparison categories.
+
+---
+
+## 47. DONUT BLOCKS ⭐ 高优先级
+
+24-segment ring chart. Full segments = filled, empty segments = border. For circular percentage display.
+
+**Anatomy:** SVG ring of 24 circle-segments → filled (brand-primary) / empty (border) → percentage value centered below.
+
+```html
+<div class="donut-blocks">
+  <svg class="donut-blocks__svg" viewBox="0 0 120 120" width="120" height="120">
+    <!-- JS-generated: 24 circle segments -->
+  </svg>
+  <span class="donut-blocks__value">85%</span>
+</div>
+```
+
+```css
+.donut-blocks {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.donut-blocks__svg { display: block; }
+.donut-blocks__value {
+  font-family: var(--fm);
+  font-size: var(--heading-md);
+  font-weight: 600;
+  color: var(--text-display);
+}
+```
+
+**JS generation:**
+```js
+const svg = document.querySelector('.donut-blocks__svg');
+const val = 85; // percentage
+const cx = 60, cy = 60, r = 40;
+const circ = 2 * Math.PI * r;
+const segs = 24;
+const segLen = circ / segs - 1;
+for (let i = 0; i < segs; i++) {
+  const seg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+  seg.setAttribute('cx', cx);
+  seg.setAttribute('cy', cy);
+  seg.setAttribute('r', r - 2);
+  seg.setAttribute('fill', 'none');
+  seg.setAttribute('stroke', (i / segs * 100 < val) ? 'var(--brand-primary)' : 'var(--border)');
+  seg.setAttribute('stroke-width', '8');
+  seg.setAttribute('stroke-dasharray', segLen + ',' + circ / segs);
+  seg.setAttribute('stroke-dashoffset', -(circ * i / segs));
+  svg.appendChild(seg);
+}
+```
+
+**Sizes:** Standard 120px. Compact 80px (reduce stroke-width to 5, radius to 28). Ensure viewBox scales correctly.
+
+---
+
+## 48. THERMOMETER GAUGE
+
+Vertical thermometer gauge. For single-metric vertical display, temperature, progress.
+
+**Anatomy:** SVG → rounded rect track (border stroke) → colored fill (signal-warning) → circular bulb at bottom → value below.
+
+```html
+<div class="thermo-gauge">
+  <svg class="thermo-gauge__svg" viewBox="0 0 80 160" width="80" height="160">
+    <rect class="thermo-gauge__track" x="32" y="20" width="16" height="110" rx="8" fill="none" stroke="var(--border)" stroke-width="4"/>
+    <rect class="thermo-gauge__fill" x="34" y="20" width="12" height="0" rx="6" fill="var(--signal-warning)" id="thermo-fill"/>
+    <circle class="thermo-gauge__bulb" cx="40" cy="136" r="10" fill="var(--signal-warning)"/>
+  </svg>
+  <span class="thermo-gauge__value">72%</span>
+  <span class="thermo-gauge__label">SCORE</span>
+</div>
+```
+
+```css
+.thermo-gauge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.thermo-gauge__svg { display: block; }
+.thermo-gauge__value {
+  font-family: var(--fm);
+  font-size: var(--heading-lg);
+  font-weight: 600;
+  color: var(--text-display);
+  margin-top: var(--space-xs);
+}
+.thermo-gauge__label {
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+```
+
+**JS positioning:**
+```js
+const fill = document.getElementById('thermo-fill');
+const val = 72; // percentage
+const maxH = 110;
+fill.setAttribute('height', val / 100 * maxH);
+fill.setAttribute('y', 20 + maxH - val / 100 * maxH);
+```
+
+**Sizes:** Standard 160px height. Compact 100px (adjust viewBox and maxH accordingly). Use `--signal-warning` as default fill; can be overridden to `--brand-primary` for positive metrics.
+
+---
+
+## 49. BULLSEYE GAUGE ⭐ 高优先级
+
+Concentric target gauge. For precision, targeting, alignment metrics.
+
+**Anatomy:** SVG → 4 concentric circles (3 thin border + 1 thick signal-warning inner) → offset hit dot → value below.
+
+```html
+<div class="bullseye-gauge">
+  <svg class="bullseye-gauge__svg" viewBox="0 0 160 160" width="160" height="160">
+    <!-- Outer rings -->
+    <circle cx="80" cy="80" r="60" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+    <circle cx="80" cy="80" r="45" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+    <circle cx="80" cy="80" r="30" fill="none" stroke="var(--border)" stroke-width="1.5"/>
+    <!-- Inner ring -->
+    <circle cx="80" cy="80" r="15" fill="none" stroke="var(--signal-warning)" stroke-width="4"/>
+    <!-- Hit dot -->
+    <circle class="bullseye-gauge__dot" cx="95" cy="70" r="5" fill="var(--signal-warning)"/>
+  </svg>
+  <span class="bullseye-gauge__value">88%</span>
+  <span class="bullseye-gauge__label">ACCURACY</span>
+</div>
+```
+
+```css
+.bullseye-gauge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.bullseye-gauge__svg { display: block; }
+.bullseye-gauge__dot {
+  transition: cx 400ms var(--ease-out), cy 400ms var(--ease-out);
+}
+.bullseye-gauge__value {
+  font-family: var(--fm);
+  font-size: var(--heading-lg);
+  font-weight: 600;
+  color: var(--text-display);
+  margin-top: var(--space-xs);
+}
+.bullseye-gauge__label {
+  font-family: var(--fm);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+```
+
+**Variant — Hit position as data:** The offset dot position (`cx`/`cy`) can be programmatically set to represent precision error. Inner ring represents maximum acceptable tolerance. Dots landing outside the inner ring indicate failure state (use `--signal-error` instead of `--signal-warning`).

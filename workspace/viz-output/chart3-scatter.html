@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>图3：供应商诊断矩阵</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+<body>
+<div id="chart" style="width:960px;height:540px;font-family:'Helvetica Neue',Inter,sans-serif;"></div>
+<script>
+var chart = echarts.init(document.getElementById('chart'));
+
+var suppliers = [
+  { name: '零犀伽玛', x: 59.8, y: 2191, size: 24 },
+  { name: '零犀毛毛虫', x: 62.2, y: 2581, size: 23 },
+  { name: '零犀赛维斯', x: 61.2, y: 2741, size: 18 },
+  { name: '零犀岐力', x: 52.6, y: 3241, size: 13 },
+  { name: '赛维斯', x: 59.3, y: 3868, size: 38 },
+  { name: '宿迁兆科', x: 48.7, y: 4449, size: 14 },
+  { name: '零犀毅航', x: 42.2, y: 6164, size: 43 },
+  { name: '零犀', x: 42.6, y: 8977, size: 80 }
+];
+
+var scatterData = suppliers.map(function(s) {
+  var color;
+  if (s.y >= 6000 && s.x <= 50) color = '#3A8F6E';
+  else if (s.y < 3000 && s.x > 50) color = '#C0392B';
+  else if (s.y < 6000 && s.x > 50) color = '#C0392B';
+  else if (s.y < 6000) color = '#D4A843';
+  else color = '#F0A54A';
+  return { value: [s.x, s.y, s.size, s.name], itemStyle: { color: color } };
+});
+
+var option = {
+  backgroundColor: '#FFFFFF',
+  title: {
+    text: '7家供应商中5家精算低于6千——系统性问题',
+    subtext: '横轴：5月线路费% | 纵轴：5月精算人均 | 气泡大小=人力规模',
+    left: 24, top: 16,
+    textStyle: { fontSize: 18, fontWeight: 600, color: '#2D2D2D' },
+    subtextStyle: { fontSize: 12, color: '#6C7A89' }
+  },
+  tooltip: {
+    formatter: function(p) {
+      var d = suppliers[p.dataIndex];
+      return '<b>' + d.name + '</b><br/>精算人均: ' + d.y.toLocaleString() + ' 元<br/>线路费%: ' + d.x + '%<br/>人力: ' + d.size + ' 人';
+    },
+    backgroundColor: '#FFFFFF', borderColor: '#E0E0E0', borderWidth: 1
+  },
+  grid: { left: 70, right: 150, top: 100, bottom: 60 },
+  xAxis: {
+    name: '线路费 %',
+    min: 30, max: 70,
+    nameTextStyle: { fontSize: 12, color: '#6C7A89' },
+    axisLine: { lineStyle: { color: '#D5DDE5' } },
+    splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+    axisLabel: { fontSize: 11, color: '#6C7A89', formatter: '{value}%' }
+  },
+  yAxis: {
+    name: '精算人均（元）',
+    min: 0, max: 10000,
+    nameTextStyle: { fontSize: 12, color: '#6C7A89' },
+    splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+    axisLabel: { fontSize: 11, color: '#6C7A89', formatter: function(v) { return v/1000 + 'k'; } }
+  },
+  series: [{
+    type: 'scatter',
+    data: scatterData,
+    symbolSize: function(val) { return Math.sqrt(val[2]) * 5 + 8; },
+    label: {
+      show: true,
+      formatter: function(p) { return p.value[3]; },
+      position: 'right',
+      fontSize: 11,
+      fontWeight: 500,
+      color: '#2D2D2D',
+      offset: [5, 0]
+    },
+    emphasis: {
+      itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,0,0,0.3)' },
+      label: { fontSize: 13, fontWeight: 700 }
+    },
+    markLine: {
+      silent: true,
+      data: [
+        { xAxis: 50, lineStyle: { type: 'dashed', color: '#B0B0B0', width: 1 } },
+        { yAxis: 6000, lineStyle: { type: 'dashed', color: '#B0B0B0', width: 1 } }
+      ],
+      label: { show: false }
+    }
+  }],
+  // 象限标注
+  graphic: [
+    { type: 'text', left: '52%', top: 95, style: { text: '警戒线 6,000', fill: '#B0B0B0', fontSize: 10, fontStyle: 'italic' } },
+    { type: 'text', left: 70, top: 105, style: { text: '50%', fill: '#B0B0B0', fontSize: 10, fontStyle: 'italic' } },
+    // 右上：健康区
+    { type: 'rect', shape: { x: 720, y: 85, width: 100, height: 20 }, style: { fill: '#3A8F6E', opacity: 0.15 }, z: 0 },
+    { type: 'text', left: 725, top: 87, style: { text: '健康', fill: '#3A8F6E', fontSize: 10, fontWeight: 600 } },
+    // 左下：危险区
+    { type: 'rect', shape: { x: 62, y: 345, width: 80, height: 20 }, style: { fill: '#C0392B', opacity: 0.15 }, z: 0 },
+    { type: 'text', left: 68, top: 347, style: { text: '危险', fill: '#C0392B', fontSize: 10, fontWeight: 600 } },
+    // 左上：关注区
+    { type: 'rect', shape: { x: 62, y: 85, width: 80, height: 20 }, style: { fill: '#D4A843', opacity: 0.15 }, z: 0 },
+    { type: 'text', left: 68, top: 87, style: { text: '关注', fill: '#D4A843', fontSize: 10, fontWeight: 600 } }
+  ]
+};
+chart.setOption(option);
+window.addEventListener('resize', function() { chart.resize(); });
+</script>
+</body>
+</html>
