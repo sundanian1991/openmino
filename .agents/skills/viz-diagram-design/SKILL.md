@@ -3,14 +3,14 @@ name: viz-diagram-design
 description: 创建技术/产品图表 — 架构图、流程图、时序图、状态机、ER 模型、时间线、泳道图、象限图、树形图、维恩图、金字塔等，输出为含内联 SVG 的独立 HTML 文件。
 license: MIT
 metadata:
-  version: "2.0"
+  version: "2.1"
 ---
 
 # Diagram Design
 
 Create visual diagrams as self-contained HTML files with inline SVG and CSS, following an opinionated editorial design system.
 
-Thirteen diagram types. One shared design system, complexity budget, and taste gate. Type-specific conventions live in `references/` and are loaded only when you pick a type.
+Fourteen diagram types. One shared design system, complexity budget, and taste gate. Type-specific conventions live in `references/` and are loaded only when you pick a type.
 
 ---
 
@@ -95,6 +95,7 @@ Applied to diagrams:
 | Two-axis positioning / prioritization | Draw | **Quadrant** |
 | Hierarchy through containment / scope | Draw | **Nested** |
 | Parent → children relationships | Draw | **Tree** |
+| Human/agent/team ownership, reporting, routing, escalation | Draw | **Org chart** |
 | Stacked abstraction levels | Draw | **Layer stack** |
 | Overlap between sets | Draw | **Venn** |
 | Ranked hierarchy or conversion drop-off | Draw | **Pyramid / funnel** |
@@ -218,6 +219,8 @@ Quick check: if a coordinate ends in 1, 2, 3, 5, 6, 7, 9 — fix it.
 | Max entities (ER) | 8 |
 | Max nesting levels (nested) | 6 |
 | Max tree depth | 4 |
+| Max org chart depth | 4 |
+| Max org chart nodes | 12 |
 | Max layers (layer stack) | 6 |
 | Max circles (venn) | 3 |
 | Max layers (pyramid) | 6 |
@@ -359,6 +362,54 @@ Every diagram ships in three variants (see `assets/`):
 Always produce a single self-contained `.html` file:
 - Embedded CSS (no external except Google Fonts)
 - Inline SVG (no external images)
-- No JavaScript required
+- No JavaScript required (export toolbar uses opt-in CDN scripts)
 
 Renders correctly in any modern browser.
+
+---
+
+## 11. Python Renderer (Programmatic Generation)
+
+For data-heavy or repeatable diagrams, use `scripts/diagram_renderer.py` — a Python module that generates self-contained HTML files following the same design system.
+
+### When to use the renderer
+
+| Scenario | Hand-write SVG | Use renderer |
+|---|---|---|
+| One-off editorial diagram | ✅ Best | — |
+| Dashboard with dynamic data | — | ✅ Best |
+| Monthly recurring report | — | ✅ Best |
+| 10+ nodes with complex routing | — | ✅ Best |
+| Quick sketch / exploration | ✅ Best | — |
+
+### Quick start
+
+```python
+from diagram_renderer import Diagram, Node
+
+d = Diagram(title="My Diagram")
+d.add_node(Node("api", "API Gateway", "backend", tag="GW", row=0, col=0))
+d.add_node(Node("db",  "Database",    "store",   tag="DB", row=0, col=1))
+d.add_edge("api", "db", "WRITE")
+d.auto_layout()
+d.save("output.html")
+```
+
+### Renderer capabilities
+
+| Feature | Status |
+|---|---|
+| Grid auto-layout (row/col) | ✅ |
+| Orthogonal edge routing (no node crossing) | ✅ |
+| Google Fonts CDN (Instrument Serif + Geist + Geist Mono) | ✅ |
+| 7 node types (focal/backend/store/external/input/optional/security) | ✅ |
+| Type tag badges | ✅ |
+| Auto legend from used node types | ✅ |
+| PNG/PDF export (html2canvas + jsPDF) | ✅ |
+| Dark mode | ✅ |
+| SVG markers (default/accent/link arrows) | ✅ |
+| Color from style-guide.md tokens | ✅ |
+
+### Extending the renderer
+
+Add new node types by extending `NODE_TREATMENT` in `diagram_renderer.py`. Add new layout modes by extending the `auto_layout()` method. The renderer always outputs against the design system — style-guide.md is the single source of truth.
