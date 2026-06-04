@@ -23,12 +23,12 @@ skillsDir: ./.claude/skills
 
 | 文件 | 用途 |
 |------|------|
-| [00-IDENTITY.md](.claude/rules/00-IDENTITY.md) | 身份、铁律、行为习惯、输出规范 |
-| [01-SOUL.md](.claude/rules/01-SOUL.md) | 性格、气质、关系 |
+| [00-IDENTITY.md](.claude/rules/00-IDENTITY.md) | 身份、铁律、输出结构 |
+| [01-SOUL.md](.claude/rules/01-SOUL.md) | 行为原则、表达、判断、执行 |
 | [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 核心记忆、WAL协议 |
 | [06-NOW.md](.claude/rules/06-NOW.md) | 当前状态、待办 |
 | [AGENT-FIRST.md](.claude/rules/AGENT-FIRST.md) | 子代理优先策略 |
-| [EPISTEMIC.md](.claude/rules/EPISTEMIC.md) | 认识论与反幻觉硬约束 |
+| [02-THINKING.md](.claude/rules/02-THINKING.md) | 批判性思考与反幻觉 |
 
 ---
 
