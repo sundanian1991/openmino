@@ -26,7 +26,7 @@ pos: .claude/rules
 │   ├── 06-NOW.md       # 当前状态、最近讨论
 │   ├── MEMORY-L1.md    # 核心记忆、WAL协议
 │   ├── AGENT-FIRST.md  # 子代理优先策略（能并行就并行）
-│   ├── 02-THINKING.md  # 批判性思考与反幻觉
+│   ├── EPISTEMIC.md    # 认识论与反幻觉硬约束
 │   │   (UPDATE_MEMORY 已移至 commands/)  # 不再自动加载
 │   ├── skill-search.md # 技能搜索规范
 │   └── README.md       # 本文件
@@ -53,7 +53,7 @@ pos: .claude/rules
 - MEMORY-L1.md — 核心记忆、WAL协议
 - 06-NOW.md — 当前状态、最近讨论
 - AGENT-FIRST.md — 子代理优先策略（能并行就并行）
-- 02-THINKING.md — 批判性思考与反幻觉
+- EPISTEMIC.md — 认识论与反幻觉硬约束
 
 **扩展规则（按需 Read）**：
 - 位于 `../reference/` 目录，不自动加载
