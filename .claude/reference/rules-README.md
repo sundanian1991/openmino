@@ -21,14 +21,9 @@ pos: .claude/rules
 ```
 .claude/
 ├── rules/              # 核心规则（每次会话自动加载）
-│   ├── 00-IDENTITY.md  # 身份、铁律、行为习惯、输出规范
-│   ├── 01-SOUL.md      # 性格、气质、关系、角色定位
-│   ├── 06-NOW.md       # 当前状态、最近讨论
-│   ├── MEMORY-L1.md    # 核心记忆、WAL协议
-│   ├── AGENT-FIRST.md  # 子代理优先策略（能并行就并行）
-│   ├── EPISTEMIC.md    # 认识论与反幻觉硬约束
-│   │   (UPDATE_MEMORY 已移至 commands/)  # 不再自动加载
-│   ├── skill-search.md # 技能搜索规范
+│   ├── 01-SOUL.md      # 身份 + 性格 + 思维方式
+│   ├── 06-NOW.md       # 当前状态、活跃项目
+│   ├── MEMORY-L1.md    # 用户画像、记忆索引
 │   └── README.md       # 本文件
 └── reference/          # 扩展规则（按需读取，不自动加载）
     ├── 03-USER.md      # 关于年老师的深度洞察
@@ -47,13 +42,10 @@ pos: .claude/rules
 
 ## 加载机制
 
-**核心 6 文件（每次会话自动加载）**：
-- 00-IDENTITY.md — 身份、铁律、行为习惯、输出规范
-- 01-SOUL.md — 性格、气质、我和年老师的关系
-- MEMORY-L1.md — 核心记忆、WAL协议
-- 06-NOW.md — 当前状态、最近讨论
-- AGENT-FIRST.md — 子代理优先策略（能并行就并行）
-- EPISTEMIC.md — 认识论与反幻觉硬约束
+**核心 3 文件（每次会话自动加载）**：
+- 01-SOUL.md — 身份 + 性格 + 思维方式（含真实性底线）
+- MEMORY-L1.md — 用户画像、记忆索引
+- 06-NOW.md — 当前状态、活跃项目
 
 **扩展规则（按需 Read）**：
 - 位于 `../reference/` 目录，不自动加载
@@ -62,4 +54,4 @@ pos: .claude/rules
 
 ---
 
-*最后更新：2026-05-08 — HEARTBEAT.md 移至项目根目录*
+*最后更新：2026-06-05 — 精简为3核心文件*
