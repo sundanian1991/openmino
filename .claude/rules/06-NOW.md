@@ -26,6 +26,12 @@ pos: .claude/rules/06-NOW.md
 
 详见 `memory/events/` | 任务地图和定期提醒见 `memory/context/`
 
+**06-05 重要事件**：
+- Claude Code 2.1.160 Dynamic Workflow 可用性确认
+- dataAgent 数据平台探索（SSO Token 配置、DP 平台逆向失败）
+- AI 转型方案启动：电销 AI 转型供应商方案，3 天后给军哥汇报
+- 四阶段递进：能看见→能判断→能行动→自动化，6 月只做前三
+
 ---
 
-*最后更新：2026-06-05 — 规则体系精简*
+*最后更新：2026-06-08 — 每周记忆维护，更新 06-05 事件*
