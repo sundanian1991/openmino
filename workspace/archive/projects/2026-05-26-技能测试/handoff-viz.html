@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handoff — AI 会话接力</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  background:#F2F2F2;color:#1A1A1A;
+  padding:32px 0;min-height:100vh;
+}
+:root{
+  --bg:#F2F2F2;--surface:#FFFFFF;--surface-raised:#EBEBEB;
+  --border:#E0E0E0;--border-visible:#BBBBBB;
+  --text3:#999999;--text2:#666666;--text1:#1A1A1A;--text0:#000000;
+  --red:#D71921;--red-bg:rgba(215,25,33,0.08);
+  --green:#4A9E5C;--amber:#D4A843;
+  --s-xs:4px;--s-sm:8px;--s-md:16px;--s-lg:24px;--s-xl:32px;--s-xxl:48px;--s-xxxl:64px;
+}
+
+/* ===== LAYOUT ===== */
+.l{max-width:1120px;margin:0 auto;padding:0 var(--s-lg)}
+
+/* ===== DOT BG ===== */
+.dbg{
+  background-image:radial-gradient(circle,var(--border) 0.5px,transparent 0.5px);
+  background-size:14px 14px;
+}
+
+/* ===== HERO ===== */
+.hero{position:relative;padding:56px 0 var(--s-xxl);margin-bottom:var(--s-xxl);overflow:hidden}
+.hero-inner{display:flex;align-items:center;gap:var(--s-xxl)}
+.hero-text{flex:0 0 auto}
+.hero-badge{
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;
+  color:var(--red);display:inline-block;padding:3px 10px;
+  border:1px solid var(--red);margin-bottom:var(--s-md);
+}
+.hero h1{
+  font-family:'Doto',monospace;font-weight:900;
+  font-size:80px;line-height:0.9;letter-spacing:-0.04em;
+  color:var(--text0);margin-bottom:var(--s-sm);
+}
+.hero .tagline{
+  font-family:'Space Mono',monospace;font-size:12px;
+  letter-spacing:0.08em;color:var(--text2);margin-bottom:var(--s-md);
+}
+.hero .blurb{
+  font-size:15px;font-weight:300;color:var(--text2);
+  line-height:1.6;max-width:380px;
+}
+/* hero SVG diagram */
+.hero-svg{flex:1;min-width:0}
+@media(max-width:860px){
+  .hero-inner{flex-direction:column}
+  .hero-svg{width:100%}
+}
+
+/* ===== PIPELINE ===== */
+.s-label{
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;
+  color:var(--text3);margin-bottom:var(--s-sm);
+  display:flex;align-items:center;gap:var(--s-sm);
+}
+.s-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ===== 3-COL DASHBOARD ===== */
+.dash{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s-md);margin-bottom:var(--s-xxl)}
+.panel{background:var(--surface);border:1px solid var(--border);padding:var(--s-lg)}
+.panel-hdr{
+  font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.08em;
+  color:var(--text3);margin-bottom:var(--s-md);padding-bottom:var(--s-sm);
+  border-bottom:1px solid var(--border);
+}
+.panel-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;gap:var(--s-md)}
+.panel-item+.panel-item{border-top:1px solid var(--border)}
+.panel-l{font-size:13px;color:var(--text1);line-height:1.4}
+.panel-r{
+  font-family:'Space Mono',monospace;font-size:12px;
+  color:var(--text2);white-space:nowrap;flex-shrink:0;
+}
+
+/* ===== DOC ANATOMY ===== */
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-md);margin-bottom:var(--s-xxl)}
+.doc-left{}
+.doc-right{}
+.doc-card{
+  background:var(--surface);border:1px solid var(--border);padding:var(--s-lg);
+  margin-bottom:var(--s-md);
+}
+.doc-card:last-child{margin-bottom:0}
+.doc-card-hdr{
+  display:flex;align-items:center;gap:var(--s-sm);margin-bottom:var(--s-md);
+}
+.doc-card-num{
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  color:var(--red);letter-spacing:0.05em;
+  width:18px;height:18px;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--red);flex-shrink:0;
+}
+.doc-card-title{font-size:14px;font-weight:500;color:var(--text0)}
+.doc-card-body{font-size:13px;line-height:1.6;color:var(--text2)}
+.doc-card-body code{
+  font-family:'Space Mono',monospace;font-size:12px;
+  background:var(--surface-raised);padding:1px 4px;
+}
+.doc-card-body .hl{color:var(--text0);font-weight:500}
+.doc-tag{
+  display:inline-block;font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:0.06em;padding:2px 6px;
+  margin:2px 2px 2px 0;
+}
+.doc-tag.red{color:var(--red);border:1px solid var(--red);background:var(--red-bg)}
+.doc-tag.gray{color:var(--text3);border:1px solid var(--border)}
+
+/* right side: file preview */
+.file-preview{
+  background:var(--surface);border:1px solid var(--border);
+  font-family:'Space Mono',monospace;font-size:12px;line-height:1.7;
+  padding:var(--s-lg);overflow-x:auto;
+}
+.fp-hdr{padding-bottom:var(--s-sm);border-bottom:1px solid var(--border);margin-bottom:var(--s-md);color:var(--text3)}
+.fp-hdr em{font-style:normal;color:var(--red)}
+.fp-h1{color:var(--text0);font-weight:700;font-size:13px;margin:14px 0 4px}
+.fp-body{color:var(--text2)}
+.fp-indent{padding-left:12px}
+
+/* ===== STAT BAR ===== */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:var(--s-xxl)}
+.stat{background:var(--surface);border:1px solid var(--border);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.stat-l{font-size:12px;color:var(--text2);line-height:1.3}
+.stat-r{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--text0);flex-shrink:0}
+
+/* ===== FOOTER ===== */
+.footer{text-align:center;padding:var(--s-lg) 0;border-top:1px solid var(--border)}
+.footer p{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text3)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:800px){
+  .dash{grid-template-columns:1fr}
+  .doc-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .hero h1{font-size:48px}
+  .stats{grid-template-columns:1fr 1fr}
+  .l{padding:0 var(--s-md)}
+}
+</style>
+</head>
+<body>
+
+<div class="l">
+  <!-- ===== HERO ===== -->
+  <div class="hero dbg">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge" data-edit>SKILL  ·  HANDOFF</div>
+        <h1 data-edit>HANDOFF</h1>
+        <div class="tagline" data-edit>AI 会话即时接力</div>
+        <p class="blurb" data-edit>把一个 AI 对话的上下文打包成文档，交给另一个 AI 继续。无需重复解释，从停下的地方继续。</p>
+      </div>
+      <div class="hero-svg">
+        <svg viewBox="0 0 480 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Session A -->
+          <rect x="0" y="30" width="150" height="100" rx="4" stroke="#1A1A1A" stroke-width="1.5" fill="#FFFFFF"/>
+          <text x="16" y="60" font-family="Space Mono, monospace" font-size="10" fill="#666666" letter-spacing="0.08em">SESSION A</text>
+          <line x1="16" y1="68" x2="134" y2="68" stroke="#E0E0E0" stroke-width="1"/>
+          <circle cx="24" cy="84" r="3" fill="#D71921"/>
+          <text x="34" y="88" font-family="Space Mono, monospace" font-size="10" fill="#1A1A1A">上下文积累</text>
+          <circle cx="24" cy="100" r="3" fill="#D71921"/>
+          <text x="34" y="104" font-family="Space Mono, monospace" font-size="10" fill="#1A1A1A">已做决策</text>
+          <circle cx="24" cy="116" r="3" fill="#D71921"/>
+          <text x="34" y="120" font-family="Space Mono, monospace" font-size="10" fill="#1A1A1A">待办事项</text>
+
+          <!-- Arrow -->
+          <line x1="150" y1="80" x2="198" y2="80" stroke="#1A1A1A" stroke-width="1.2"/>
+          <polygon points="198,74 210,80 198,86" fill="#1A1A1A"/>
+          <text x="159" y="70" font-family="Space Mono, monospace" font-size="9" fill="#999999" letter-spacing="0.06em">handoff</text>
+
+          <!-- Document -->
+          <rect x="210" y="38" width="60" height="84" rx="2" stroke="#1A1A1A" stroke-width="1" fill="#F2F2F2"/>
+          <line x1="216" y1="48" x2="264" y2="48" stroke="#D71921" stroke-width="1.5"/>
+          <line x1="216" y1="56" x2="258" y2="56" stroke="#BBBBBB" stroke-width="1"/>
+          <line x1="216" y1="64" x2="252" y2="64" stroke="#BBBBBB" stroke-width="1"/>
+          <line x1="216" y1="72" x2="264" y2="72" stroke="#BBBBBB" stroke-width="1"/>
+          <line x1="216" y1="84" x2="258" y2="84" stroke="#BBBBBB" stroke-width="1"/>
+          <line x1="216" y1="92" x2="252" y2="92" stroke="#BBBBBB" stroke-width="1"/>
+          <line x1="216" y1="100" x2="264" y2="100" stroke="#BBBBBB" stroke-width="1"/>
+          <line x1="216" y1="108" x2="258" y2="108" stroke="#BBBBBB" stroke-width="1"/>
+          <text x="228" y="32" font-family="Space Mono, monospace" font-size="8" fill="#999999" letter-spacing="0.06em">.md</text>
+
+          <!-- Session B -->
+          <rect x="330" y="30" width="150" height="100" rx="4" stroke="#1A1A1A" stroke-width="1.5" fill="#FFFFFF"/>
+          <text x="346" y="60" font-family="Space Mono, monospace" font-size="10" fill="#666666" letter-spacing="0.08em">SESSION B</text>
+          <line x1="346" y1="68" x2="464" y2="68" stroke="#E0E0E0" stroke-width="1"/>
+          <circle cx="354" cy="84" r="3" fill="#4A9E5C"/>
+          <text x="364" y="88" font-family="Space Mono, monospace" font-size="10" fill="#1A1A1A">恢复上下文</text>
+          <circle cx="354" cy="100" r="3" fill="#4A9E5C"/>
+          <text x="364" y="104" font-family="Space Mono, monospace" font-size="10" fill="#1A1A1A">读取文档</text>
+          <circle cx="354" cy="116" r="3" fill="#4A9E5C"/>
+          <text x="364" y="120" font-family="Space Mono, monospace" font-size="10" fill="#1A1A1A">继续工作</text>
+
+          <!-- Arrow 2 -->
+          <line x1="270" y1="80" x2="316" y2="80" stroke="#1A1A1A" stroke-width="1.2"/>
+          <polygon points="316,74 328,80 316,86" fill="#1A1A1A"/>
+          <text x="279" y="70" font-family="Space Mono, monospace" font-size="9" fill="#999999" letter-spacing="0.06em">读取</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3-COL DASHBOARD ===== -->
+  <div class="s-label">信息面板</div>
+  <div class="dash">
+    <div class="panel">
+      <div class="panel-hdr">缺少 Handoff 的问题</div>
+      <div class="panel-item"><span class="panel-l" data-edit>新对话需要从头解释背景</span><span class="panel-r" data-edit>浪费时间</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>关键决策容易遗漏</span><span class="panel-r" data-edit>信息丢失</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>待办事项需手动传递</span><span class="panel-r" data-edit>易出错</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>敏感信息可能暴露</span><span class="panel-r" data-edit>安全隐患</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr">Handoff 怎么解决</div>
+      <div class="panel-item"><span class="panel-l" data-edit>自动压缩对话为文档</span><span class="panel-r" data-edit>一键生成</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>新 Agent 读取即恢复</span><span class="panel-r" data-edit>无缝续接</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>敏感信息自动脱敏</span><span class="panel-r" data-edit>安全传递</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>建议技能章节指导后续</span><span class="panel-r" data-edit>效率提升</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-hdr">输出文档结构</div>
+      <div class="panel-item"><span class="panel-l" data-edit>对话摘要</span><span class="panel-r" data-edit>核心内容</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>待办事项</span><span class="panel-r" data-edit>后续工作</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>关键决策</span><span class="panel-r" data-edit>已达成共识</span></div>
+      <div class="panel-item"><span class="panel-l" data-edit>建议技能 / 引用索引</span><span class="panel-r" data-edit>加速恢复</span></div>
+    </div>
+  </div>
+
+  <!-- ===== DOC ANATOMY ===== -->
+  <div class="s-label">接力文档实际内容</div>
+  <div class="doc-grid">
+    <div class="doc-left">
+      <div class="doc-card">
+        <div class="doc-card-hdr">
+          <div class="doc-card-num">01</div>
+          <div class="doc-card-title" data-edit>对话摘要</div>
+        </div>
+        <div class="doc-card-body" data-edit>
+          讨论了 <span class="hl">毅航供应商月度 KPI</span> 考核方案。考核维度从 5 项精简为 3 项（<span class="hl">质量/交付/配合度</span>），权重调整为 40/40/20。下周产出具体考核表。
+        </div>
+      </div>
+      <div class="doc-card">
+        <div class="doc-card-hdr">
+          <div class="doc-card-num">02</div>
+          <div class="doc-card-title" data-edit>待办事项</div>
+        </div>
+        <div class="doc-card-body" data-edit>
+          <span class="hl">产出 KPI 考核表</span>（责任人：年老师，DDL: 下周）<br>
+          <span class="hl">同步王易人</span> 确认权重方案
+        </div>
+      </div>
+    </div>
+    <div class="doc-right">
+      <div class="doc-card">
+        <div class="doc-card-hdr">
+          <div class="doc-card-num">03</div>
+          <div class="doc-card-title" data-edit>关键决策</div>
+        </div>
+        <div class="doc-card-body" data-edit>
+          维度权重：质量 40% / 交付 40% / 配合度 20%（原方案 5 项均分）<br>
+          考核频次：月度考核，季度汇总排名
+        </div>
+      </div>
+      <div class="doc-card">
+        <div class="doc-card-hdr">
+          <div class="doc-card-num">04</div>
+          <div class="doc-card-title" data-edit>建议技能 + 引用</div>
+        </div>
+        <div class="doc-card-body" data-edit>
+          <span class="doc-tag red">required</span> 供应商绩效报告<br>
+          <span class="doc-tag red">required</span> xlsx · role-supplier-mentor<br>
+          <span class="doc-tag gray">ref</span> docs/supplier-kpi-template.md<br>
+          <span class="doc-tag gray">ref</span> memory/供应商/毅航.md<br>
+          <span class="doc-tag gray">safe</span> 已脱敏：API key x1 / 密码 x2
+        </div>
+      </div>
+      <div class="file-preview">
+        <div class="fp-hdr"><em>#</em> handoff-毅航KPI-20260526.md</div>
+        <div class="fp-hdr" style="margin-top:-8px"><em>/tmp/</em>handoff-xxx.md</div>
+        <div class="fp-h1"><em>#</em>  对话摘要</div>
+        <div class="fp-body">讨论了毅航供应商月度KPI考核方案...<br>维度精简为3项，权重40/40/20。</div>
+        <div class="fp-h1"><em>##</em>  待办事项</div>
+        <div class="fp-body">- 产出KPI考核表（DDL: 下周）<br>- 同步王易人确认权重方案</div>
+        <div class="fp-h1"><em>##</em>  建议技能</div>
+        <div class="fp-body">- 供应商绩效报告<br>- xlsx · role-supplier-mentor</div>
+        <div class="fp-h1"><em>##</em>  引用</div>
+        <div class="fp-body">参考 docs/supplier-kpi-template.md</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STATS ===== -->
+  <div class="s-label">Handoff 关键数据</div>
+  <div class="stats">
+    <div class="stat"><span class="stat-l" data-edit>核心规则</span><span class="stat-r" data-edit>6</span></div>
+    <div class="stat"><span class="stat-l" data-edit>输出格式</span><span class="stat-r" data-edit>.md</span></div>
+    <div class="stat"><span class="stat-l" data-edit>保存位置</span><span class="stat-r" data-edit>/tmp/</span></div>
+    <div class="stat"><span class="stat-l" data-edit>参数定制</span><span class="stat-r" data-edit>可选</span></div>
+  </div>
+
+  <footer class="footer">
+    <p>Nothing Design  ·  Light Mode  ·  零 emoji  ·  信息密度优先</p>
+  </footer>
+</div>
+
+<!-- Nothing Editor 注入 -->
+<style id="ne-styles">
+#ne-toolbar{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:6px;z-index:9999;background:var(--surface);border:1px solid var(--border);padding:6px 4px}
+#ne-toolbar button{font-family:'Space Grotesk',sans-serif;font-size:12px;letter-spacing:0.04em;padding:6px 14px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all 0.15s}
+#ne-toolbar button:hover{border-color:var(--text2);color:var(--text1)}
+#ne-toolbar button.active{background:var(--red);border-color:var(--red);color:#fff}
+#ne-toolbar button:disabled{opacity:0.3;cursor:not-allowed}
+.ne-sep{width:1px;height:18px;background:var(--border)}
+.ne-mode-label{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--text3);z-index:9999;transition:color 0.15s}
+.ne-mode-label.editing{color:var(--red)}
+.ne-toast{position:fixed;bottom:48px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);padding:8px 20px;font-family:'Space Mono',monospace;font-size:11px;color:var(--text1);z-index:9999;opacity:0;transition:opacity 0.2s}
+.ne-toast.show{opacity:1}
+body.editing{outline:2px solid var(--red);outline-offset:-2px}
+[data-edit]{transition:outline 0.15s;border-radius:2px;outline:2px solid transparent;cursor:pointer}
+[data-edit]:hover{outline-color:rgba(0,0,0,0.1)}
+[data-edit]:focus{outline-color:var(--red);outline-style:dashed}
+</style>
+<div id="ne-toolbar">
+  <button id="ne-toggle" class="active">编辑</button>
+  <span class="ne-sep"></span>
+  <button id="ne-undo" disabled>撤销</button>
+  <button id="ne-redo" disabled>重做</button>
+  <span class="ne-sep"></span>
+  <button id="ne-export">导出</button>
+</div>
+<div class="ne-mode-label" id="ne-mode">浏览</div>
+<div class="ne-toast" id="ne-toast"></div>
+<script>
+(function(){
+  const toggle=document.getElementById('ne-toggle');
+  const undoBtn=document.getElementById('ne-undo');
+  const redoBtn=document.getElementById('ne-redo');
+  const exportBtn=document.getElementById('ne-export');
+  const modeLabel=document.getElementById('ne-mode');
+  const toast=document.getElementById('ne-toast');
+  let editing=false;let undoStack=[];let redoStack=[];let observer=null;
+  function show(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1200)}
+  function snap(){const h=document.body.innerHTML;undoStack.push(h);if(undoStack.length>50)undoStack.shift();redoStack=[];undoBtn.disabled=false;redoBtn.disabled=true}
+  function toggleEdit(){
+    editing=!editing;document.body.classList.toggle('editing',editing);
+    toggle.textContent=editing?'编辑中':'编辑';toggle.classList.toggle('active',editing);
+    modeLabel.textContent=editing?'编辑模式':'浏览';modeLabel.classList.toggle('editing',editing);
+    document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable=editing?'true':'false');
+    if(editing){snap();observer=new MutationObserver(()=>{if(observer._timeout)clearTimeout(observer._timeout);observer._timeout=setTimeout(()=>{snap();show('[已保存]')},500)});observer.observe(document.body,{childList:true,subtree:true,characterData:true})}
+    else{if(observer){observer.disconnect();observer=null}}
+  }
+  toggle.addEventListener('click',toggleEdit);
+  undoBtn.addEventListener('click',()=>{if(undoStack.length<2)return;const c=document.body.innerHTML;redoStack.push(c);const p=undoStack.pop();document.body.innerHTML=p;undoBtn.disabled=undoStack.length<2;redoBtn.disabled=false;show('[已撤销]');if(editing)document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable='true')});
+  redoBtn.addEventListener('click',()=>{if(redoStack.length===0)return;const c=document.body.innerHTML;undoStack.push(c);const n=redoStack.pop();document.body.innerHTML=n;redoBtn.disabled=redoStack.length===0;undoBtn.disabled=false;show('[已重做]');if(editing)document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable='true')});
+  exportBtn.addEventListener('click',()=>{const c=document.cloneNode(true);['ne-styles','ne-toolbar','ne-mode','ne-toast'].forEach(id=>{const e=c.getElementById(id);if(e)e.remove()});c.querySelectorAll('[data-edit]').forEach(el=>{el.removeAttribute('contenteditable');el.removeAttribute('data-edit')});c.querySelectorAll('.ne-mode-label').forEach(el=>el.remove());const s=c.createElement('style');s.textContent='body.editing{outline:none}';c.head.appendChild(s);const h='<!DOCTYPE html>\n'+c.documentElement.outerHTML;const b=new Blob([h],{type:'text/html'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='handoff-viz.html';a.click();URL.revokeObjectURL(u);show('[已导出]')});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&editing){document.activeElement?.blur();toggleEdit()}});
+})();
+</script>
+<!-- Nothing Editor 注入结束 -->
+
+</body>
+</html>

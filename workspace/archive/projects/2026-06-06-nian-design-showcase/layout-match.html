@@ -1,0 +1,751 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nian-design · 布局+组件匹配</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet"><style>
+:root{--bg:#F2F0EC;--surface:#FFF;--surface-alt:#E3DFD8;--border:#C4B8A8;--nature-forest:#3D5A35;--nature-moss:#6B8B5E;--nature-slate:#4E627C;--nature-steel:#7A8B9B;--signal-gold:#BF9B5A;--text-primary:#1A1816;--text-secondary:#8A7D6E;--text-display:#2D2A26;--text-disabled:#C4B8A8;--container-max:1200px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;--space-4xl:96px;--radius-sm:4px;--radius-md:8px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;font-size:16px;line-height:1.6;color:var(--text-primary);background:var(--bg)}
+.page{max-width:var(--container-max);margin:0 auto;padding:var(--space-3xl) var(--space-lg)}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:64px;font-weight:300;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.05}
+h1 strong{font-weight:700}
+.sub{font-size:18px;color:var(--text-secondary);max-width:640px;margin-bottom:var(--space-3xl);line-height:1.6}
+h2{font-family:'Playfair Display',Georgia,serif;font-size:36px;font-weight:600;color:var(--text-display);margin:var(--space-3xl) 0 var(--space-lg);padding-bottom:var(--space-md);border-bottom:1px solid var(--border)}
+h3{font-size:22px;font-weight:600;color:var(--text-display);margin:var(--space-xl) 0 var(--space-md)}
+.layout-group{display:grid;grid-template-columns:1fr;gap:var(--space-lg);margin-bottom:var(--space-2xl)}
+.layout-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--space-xl);display:grid;grid-template-columns:320px 1fr;gap:var(--space-xl);align-items:start}
+.layout-card:hover{border-color:var(--nature-forest)}
+.layout-info{}
+.layout-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--text-disabled);letter-spacing:.06em;display:block;margin-bottom:var(--space-xs)}
+.layout-name{font-size:22px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.layout-desc{font-size:14px;color:var(--text-secondary);margin-bottom:var(--space-md);line-height:1.5}
+.layout-code{background:var(--bg);border-radius:var(--radius-sm);padding:var(--space-md);font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;color:var(--text-secondary);overflow-x:auto;margin-bottom:var(--space-md)}
+.layout-meta{display:flex;flex-wrap:wrap;gap:var(--space-sm)}
+.fit-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.04em;padding:4px 8px;background:rgba(61,90,53,0.08);color:var(--nature-forest);border-radius:3px}
+.no-fit{background:rgba(217,67,58,0.06);color:var(--signal-red)}
+.layout-preview{height:220px;border-radius:var(--radius-sm);overflow:hidden;display:flex;position:relative;background:var(--surface-alt);border:1px solid var(--border)}
+.layout-preview .col{display:flex;flex-direction:column;justify-content:center;padding:10px;overflow:hidden;position:relative}
+.layout-preview .col.c1{background:var(--nature-forest)}
+.layout-preview .col.c2{background:var(--nature-moss)}
+.layout-preview .col.c3{background:var(--nature-slate)}
+.layout-preview .col.c4{background:var(--nature-steel)}
+.layout-preview .col.cw{background:var(--surface)}
+.layout-preview .col.cl{background:var(--surface-alt)}
+.layout-preview .col .label{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:.03em;text-align:center}
+.layout-preview .col.light .label{color:var(--text-disabled)}
+.match-table{width:100%;border-collapse:collapse;margin:var(--space-xl) 0 var(--space-3xl)}
+.match-table th,.match-table td{text-align:left;padding:var(--space-md);border-bottom:1px solid var(--border);font-size:14px;vertical-align:top}
+.match-table th{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}
+.match-table td:first-child{font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--text-display)}
+.match-table .good{color:var(--nature-forest);font-family:'JetBrains Mono',monospace;font-size:12px}
+.match-table .bad{color:var(--signal-red);font-family:'JetBrains Mono',monospace;font-size:12px}
+.demo-snippet{display:flex;height:32px;gap:4px;margin-top:var(--space-sm)}
+.demo-snippet .b{border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:8px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5)}
+.f1{background:var(--nature-forest)}.f2{background:var(--nature-moss)}.f3{background:var(--nature-slate)}.f4{background:var(--nature-steel)}.fe{background:var(--border)}
+@media(max-width:900px){.layout-card{grid-template-columns:1fr}.layout-preview{height:160px}}
+</style></head><body><div class="page"><h1>布局 <strong>+ 组件匹配手册</strong></h1><p class="sub">32 种布局 × 8 个结构特征族。每个布局展示骨架结构、HTML 代码、匹配的组件族。</p><h2>1. 双栏对照 · 5 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L01</span></div>
+<div class="col c2" style="flex:2"><span class="label">L01</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L01</span></div>
+<div class="col c2" style="flex:2"><span class="label">L01</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L01</span>
+                <div class="layout-name">Bilateral Mirror <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 对称双栏</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">双栏对照</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">锚点列表</span><span class="fit-tag no-fit">段状条</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L02</span></div>
+<div class="col c1" style="flex:1"><span class="label">L02</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L02</span></div>
+<div class="col c1" style="flex:1"><span class="label">L02</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L02</span>
+                <div class="layout-name">Clean 50/50 <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 等分 Hero 屏</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 1fr; min-height: 80vh</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">Hero</span><span class="fit-tag">双栏对照</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span><span class="fit-tag no-fit">链式节点</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c3" style="flex:3"><span class="label">L03</span></div>
+<div class="col c2" style="flex:2"><span class="label">L03</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c3" style="flex:3"><span class="label">L03</span></div>
+<div class="col c2" style="flex:2"><span class="label">L03</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L03</span>
+                <div class="layout-name">60/40 Editorial <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 六四编辑式</span></div>
+                <div class="layout-code">grid-template-columns: 3fr 2fr; gap: 3rem; align-items: start</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">双栏对照</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L04</span></div>
+<div class="col c1" style="flex:1"><span class="label">L04</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L04</span></div>
+<div class="col c1" style="flex:1"><span class="label">L04</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L04</span>
+                <div class="layout-name">Diagonal Split <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 对角交叠</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 1fr; .left{clip-path:polygon(0 0,100% 0,85% 100%,0 100%)}; .right{margin-left:-8%}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">双栏对照</span><span class="fit-tag">Hero</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">大数字</span><span class="fit-tag no-fit">段状条</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L05</span></div>
+<div class="col c2" style="flex:2"><span class="label">L05</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c2" style="flex:2"><span class="label">L05</span></div>
+<div class="col c1" style="flex:1"><span class="label">L05</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L05</span></div>
+<div class="col c2" style="flex:2"><span class="label">L05</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L05</span>
+                <div class="layout-name">Z-Split Alternating <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 之字交替</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 1fr; .row:nth-child(even)>:first-child{order:2}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">双栏对照</span><span class="fit-tag">链式节点</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>2. 方阵排列 · 4 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L06</span></div>
+<div class="col c1" style="flex:1"><span class="label">L06</span></div>
+<div class="col c1" style="flex:1"><span class="label">L06</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L06</span></div>
+<div class="col c1" style="flex:1"><span class="label">L06</span></div>
+<div class="col c1" style="flex:1"><span class="label">L06</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L06</span>
+                <div class="layout-name">Triptych <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 三联画</span></div>
+                <div class="layout-code">grid-template-columns: repeat(3, 1fr); gap: 2px</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">方阵排列</span><span class="fit-tag">大数字</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span><span class="fit-tag no-fit">锚点列表</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col" style="flex:1"></div>
+<div class="col c1" style="flex:1"><span class="label">L07</span></div>
+<div class="col" style="flex:1"></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L07</span></div>
+<div class="col c1" style="flex:1"><span class="label">L07</span></div>
+<div class="col c1" style="flex:1"><span class="label">L07</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col" style="flex:1"></div>
+<div class="col c1" style="flex:1"><span class="label">L07</span></div>
+<div class="col" style="flex:1"></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L07</span>
+                <div class="layout-name">Radial Burst <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 放射围绕</span></div>
+                <div class="layout-code">3×3 grid, 中心位于 2/2, 其余围绕</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">方阵排列</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">链式节点</span><span class="fit-tag no-fit">紧凑数据</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L08</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L08</span></div>
+<div class="col c1" style="flex:1"><span class="label">L08</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L08</span></div>
+<div class="col c1" style="flex:1"><span class="label">L08</span></div>
+<div class="col c1" style="flex:1"><span class="label">L08</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L08</span>
+                <div class="layout-name">Pyramid Hierarchy <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 1→2→3 递进</span></div>
+                <div class="layout-code">grid, :nth-child(1)full → 2col → 3col</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">方阵排列</span><span class="fit-tag">链式节点</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L09</span></div>
+<div class="col c1" style="flex:1"><span class="label">L09</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L09</span></div>
+<div class="col c1" style="flex:1"><span class="label">L09</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L09</span>
+                <div class="layout-name">Corner Split <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 四象限仪表盘</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; min-height: 100vh</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">方阵排列</span><span class="fit-tag">紧凑数据</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">锚点列表</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>3. 不等分网格 · 7 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c2" style="flex:2"><span class="label">L10</span></div>
+<div class="col c1" style="flex:1"><span class="label">L10</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c2" style="flex:2"><span class="label">L10</span></div>
+<div class="col c1" style="flex:1"><span class="label">L10</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L10</span>
+                <div class="layout-name">Rule of Thirds L <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 2fr 1fr 左重</span></div>
+                <div class="layout-code">grid-template-columns: 2fr 1fr; gap: 4rem; align-items: center</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">不等分网格</span><span class="fit-tag">双栏对照</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L11</span></div>
+<div class="col c2" style="flex:2"><span class="label">L11</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L11</span></div>
+<div class="col c2" style="flex:2"><span class="label">L11</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L11</span>
+                <div class="layout-name">Rule of Thirds R <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 1fr 2fr 右重</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 2fr; align-items: center</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">不等分网格</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col cw" style="flex:5"><span class="label">L12</span></div>
+<div class="col c3" style="flex:3"><span class="label">L12</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col cw" style="flex:5"><span class="label">L12</span></div>
+<div class="col c3" style="flex:3"><span class="label">L12</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L12</span>
+                <div class="layout-name">Golden Ratio <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 黄金比例</span></div>
+                <div class="layout-code">grid-template-columns: 1.618fr 1fr; gap: 3rem</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">不等分网格</span><span class="fit-tag">紧凑数据</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">链式节点</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c3" style="flex:3"><span class="label">L13</span></div>
+<div class="col c2" style="flex:2"><span class="label">L13</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c3" style="flex:3"><span class="label">L13</span></div>
+<div class="col c2" style="flex:2"><span class="label">L13</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L13</span>
+                <div class="layout-name">Weighted Left <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 55% 左重锚定</span></div>
+                <div class="layout-code">grid-template-columns: 55% 1fr; gap: 2rem; .left{aspect-ratio:4/3}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">不等分网格</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L14</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L14</span></div>
+<div class="col c2" style="flex:2"><span class="label">L14</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L14</span>
+                <div class="layout-name">L-Shape <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 全宽 Hero + 缩进</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 2fr; grid-template-rows: auto auto; .first{grid-column:1/-1}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">不等分网格</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L15</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L15</span></div>
+<div class="col c2" style="flex:2"><span class="label">L15</span></div>
+<div class="col c1" style="flex:1"><span class="label">L15</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L15</span>
+                <div class="layout-name">T-Shape <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 全宽 + 窄栏</span></div>
+                <div class="layout-code">grid-template-columns: 1fr minmax(auto,640px) 1fr; .first{grid-column:1/-1}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">锚点列表</span><span class="fit-tag">不等分网格</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L16</span></div>
+<div class="col c2" style="flex:2"><span class="label">L16</span></div>
+<div class="col c1" style="flex:1"><span class="label">L16</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L16</span></div>
+<div class="col c2" style="flex:2"><span class="label">L16</span></div>
+<div class="col c1" style="flex:1"><span class="label">L16</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L16</span>
+                <div class="layout-name">Uneven Triple <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 1:2:1 不等三栏</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 2fr 1fr; gap: 1.5rem; align-items: start</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">不等分网格</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>4. 锚点+列表 · 3 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L17</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L17</span>
+                <div class="layout-name">Narrow Column <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 65ch 阅读宽度</span></div>
+                <div class="layout-code">max-width: 65ch; margin: 0 auto; padding: 0 1.5rem</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">锚点列表</span><span class="fit-tag">链式节点</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L18</span></div>
+<div class="col c3" style="flex:3"><span class="label">L18</span></div>
+<div class="col c1" style="flex:1"><span class="label">L18</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L18</span></div>
+<div class="col c3" style="flex:3"><span class="label">L18</span></div>
+<div class="col c1" style="flex:1"><span class="label">L18</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L18</span>
+                <div class="layout-name">Inset Margin <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 2:5:2 旁注</span></div>
+                <div class="layout-code">grid-template-columns: 2fr 5fr 2fr; >:only-child{grid-column:2}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span><span class="fit-tag no-fit">段状条</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c4" style="flex:4"><span class="label">L19</span></div>
+<div class="col c3" style="flex:3"><span class="label">L19</span></div>
+<div class="col c2" style="flex:2"><span class="label">L19</span></div>
+<div class="col c1" style="flex:1"><span class="label">L19</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L19</span>
+                <div class="layout-name">Progressive Narrow <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 100%→55% 漏斗</span></div>
+                <div class="layout-code">flex-direction:column; align-items:center; >*:nth-child(n){width: 100-15n%}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">锚点列表</span><span class="fit-tag">链式节点</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>5. 链式节点 · 3 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L20</span></div>
+<div class="col c2" style="flex:2"><span class="label">L20</span></div>
+<div class="col c1" style="flex:1"><span class="label">L20</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L20</span>
+                <div class="layout-name">Horizontal Timeline <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 水平时间线</span></div>
+                <div class="layout-code">display: flex; overflow-x: auto; >*{flex:0 0 250px; position:relative}; >*::after{content:''...height:2px}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">链式节点</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span><span class="fit-tag no-fit">段状条</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L21</span></div>
+<div class="col c2" style="flex:2"><span class="label">L21</span></div>
+<div class="col c1" style="flex:1"><span class="label">L21</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L21</span>
+                <div class="layout-name">Diagonal ↘ <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 12col 对角渐进</span></div>
+                <div class="layout-code">grid-template-columns: repeat(12,1fr); :nth-child(1){grid:1/7}; :nth-child(2){grid:4/10;mt:2rem}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">链式节点</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L22</span></div>
+<div class="col c2" style="flex:2"><span class="label">L22</span></div>
+<div class="col c1" style="flex:1"><span class="label">L22</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L22</span>
+                <div class="layout-name">Diagonal ↗ <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 上升对角</span></div>
+                <div class="layout-code">grid-template-columns: repeat(12,1fr); :nth-child(1){grid:1/7;mt:4rem}; :nth-child(2){grid:4/10;mt:2rem}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">链式节点</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>6. 段状条 · 2 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L23</span></div>
+<div class="col c2" style="flex:2"><span class="label">L23</span></div>
+<div class="col c3" style="flex:3"><span class="label">L23</span></div>
+<div class="col c1" style="flex:1"><span class="label">L23</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L23</span>
+                <div class="layout-name">Segmented Row <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 水平段状条</span></div>
+                <div class="layout-code">display: flex; gap: 2px; >*{flex:1; height: 12px}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">段状条</span><span class="fit-tag">紧凑数据</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">锚点列表</span><span class="fit-tag no-fit">链式节点</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c3" style="flex:3"><span class="label">L24</span></div>
+<div class="col c1" style="flex:1"><span class="label">L24</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c2" style="flex:2"><span class="label">L24</span></div>
+<div class="col c2" style="flex:2"><span class="label">L24</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L24</span>
+                <div class="layout-name">Stacked Bar Group <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 堆叠段状组</span></div>
+                <div class="layout-code">display: flex; flex-direction: column; gap: 4px; .row{display:flex;gap:2px}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">段状条</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>7. 大数字+小标签 · 2 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L25</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L25</span>
+                <div class="layout-name">Boxed Island <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 居中孤岛</span></div>
+                <div class="layout-code">min-height: 60vh; display: grid; place-items: center; .island{max-width:400px;text-align:center}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">大数字</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span><span class="fit-tag no-fit">链式节点</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L26</span></div>
+<div class="col c1" style="flex:1"><span class="label">L26</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L26</span>
+                <div class="layout-name">Giant Letter BG <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 巨型字母</span></div>
+                <div class="layout-code">position: relative; .letter{font-size:clamp(20rem,40vw,50rem);opacity:0.04;position:absolute}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">大数字</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>8. 紧凑数据行 · 3 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L27</span></div>
+<div class="col c3" style="flex:3"><span class="label">L27</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L27</span></div>
+<div class="col c3" style="flex:3"><span class="label">L27</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L27</span>
+                <div class="layout-name">Sidebar + Main <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 240px + 65ch</span></div>
+                <div class="layout-code">grid-template-columns: 240px minmax(0,65ch); gap: 3rem; max-width: 1000px</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">紧凑数据</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span><span class="fit-tag no-fit">段状条</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L28</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L28</span>
+                <div class="layout-name">Mixed-Weight Text <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 字重对比</span></div>
+                <div class="layout-code">>p{font-size:clamp(1.5rem,3vw,2.5rem)} >p strong{font-weight:900;font-size:1.3em}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">紧凑数据</span><span class="fit-tag">大数字</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">双栏对照</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L29</span></div>
+<div class="col c2" style="flex:2"><span class="label">L29</span></div>
+<div class="col c1" style="flex:1"><span class="label">L29</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L29</span>
+                <div class="layout-name">Quote-Pull <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 引言拉取</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 2fr 1fr; .quote{grid-column:2;...border-top:2px solid;border-bottom:2px solid}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">紧凑数据</span><span class="fit-tag">锚点列表</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">方阵排列</span>
+                </div>
+            </div>
+        </div>
+</div>
+<h2>9. 全出血/粘性 · 3 种</h2><div class="layout-group">
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L30</span></div>
+<div class="col c1" style="flex:1"><span class="label">L30</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L30</span>
+                <div class="layout-name">Edge-to-Edge <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 100vw 全宽</span></div>
+                <div class="layout-code">width: 100vw; margin-left: calc(-50vw + 50%); padding: 0</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">Hero</span><span class="fit-tag">双栏对照</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">锚点列表</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div class="col c1" style="flex:1"><span class="label">L31</span></div>
+<div class="col c2" style="flex:2"><span class="label">L31</span></div>
+<div class="col c1" style="flex:1"><span class="label">L31</span></div>
+<div class="col c2" style="flex:2"><span class="label">L31</span></div>
+<div class="col c1" style="flex:1"><span class="label">L31</span></div>
+<div class="col c2" style="flex:2"><span class="label">L31</span></div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L31</span>
+                <div class="layout-name">Sticky Image+Scroll <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 粘性图+滚动文</span></div>
+                <div class="layout-code">grid-template-columns: 1fr 1fr; .media{position:sticky;top:2rem}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">链式节点</span><span class="fit-tag">不等分网格</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">段状条</span>
+                </div>
+            </div>
+        </div>
+<div class="layout-card">
+            <div class="layout-preview"><div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L32</span></div>
+<div class="col c1" style="flex:1"><span class="label">L32</span></div>
+<div class="col c1" style="flex:1"><span class="label">L32</span></div>
+</div>
+<div style="display:flex;flex:1">
+<div class="col c1" style="flex:1"><span class="label">L32</span></div>
+<div class="col c1" style="flex:1"><span class="label">L32</span></div>
+<div class="col c1" style="flex:1"><span class="label">L32</span></div>
+</div>
+</div>
+            <div class="layout-info">
+                <span class="layout-num">L32</span>
+                <div class="layout-name">Exploded Grid <span style="font-size:14px;font-weight:400;color:var(--text-secondary)">· 3×2 偏移网格</span></div>
+                <div class="layout-code">grid-template-columns: repeat(3,1fr); >:nth-child(1){transform:translate(-10%,-10%)}</div>
+                <div class="layout-meta">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">适合:</span><span class="fit-tag">方阵排列</span><span class="fit-tag">不等分网格</span>
+                </div>
+                <div class="layout-meta" style="margin-top:4px">
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-disabled);margin-right:4px">避免:</span><span class="fit-tag no-fit">锚点列表</span>
+                </div>
+            </div>
+        </div>
+</div>
+
+<h2>结构特征族 → 推荐布局速查</h2>
+<table class="match-table">
+<tr><th>结构特征族</th><th>推荐布局</th><th>不兼容布局</th><th>核心原因</th></tr>
+<tr><td>双栏对照</td><td class="good">L01-L05</td><td class="bad">L17, L25</td><td>双栏需要两个容器，单栏/孤岛装不下</td></tr>
+<tr><td>方阵排列</td><td class="good">L06-L09</td><td class="bad">L02, L17</td><td>方阵需要 ≥3 个等大单元</td></tr>
+<tr><td>不等分网格</td><td class="good">L10-L16</td><td class="bad">L06</td><td>需要非均匀列宽，三等分是均匀的</td></tr>
+<tr><td>锚点+列表</td><td class="good">L17-L19</td><td class="bad">L04, L09</td><td>列表需要线性阅读，切割/象限会打断</td></tr>
+<tr><td>链式节点</td><td class="good">L20-L22, L31</td><td class="bad">L25, L30</td><td>时间线需要流向空间</td></tr>
+<tr><td>段状条</td><td class="good">L23-L24</td><td class="bad">L17, L18</td><td>段状条需要宽幅展示比例</td></tr>
+<tr><td>大数字+小标签</td><td class="good">L25-L26, L28</td><td class="bad">L04, L09</td><td>大数字需要居中聚焦</td></tr>
+<tr><td>紧凑数据行</td><td class="good">L27-L29</td><td class="bad">L06, L09</td><td>数据行需要列式关联</td></tr>
+</table>
+
+<h2>节奏表格式（含布局编号）</h2>
+<table class="match-table">
+<tr><th>Section</th><th>锚点</th><th>结构特征族</th><th>组件</th><th>布局</th></tr>
+<tr><td>Hero</td><td>品牌声明</td><td>—</td><td>A1 Marquee</td><td class="good">L02</td></tr>
+<tr><td>概览</td><td>核心指标</td><td>大数字+小标签</td><td>D12 Metric Card</td><td class="good">L25</td></tr>
+<tr><td>对比</td><td>方案 vs 方案</td><td>双栏对照</td><td>C1 Bento Grid</td><td class="good">L04</td></tr>
+<tr><td>流程</td><td>执行步骤</td><td>链式节点</td><td>C4 Step Sequence</td><td class="good">L20</td></tr>
+<tr><td>数据</td><td>排名明细</td><td>紧凑数据行</td><td>D11 Seg Block</td><td class="good">L27</td></tr>
+</table>
+
+<p class="sub" style="margin-top:var(--space-3xl);font-size:15px;max-width:none">
+<b>结论：</b>布局和组件是正交关系 — 布局定骨架，组件定内容。同一组件族可适配多种布局（比如"双栏对照"族既能用 L01 对称、也能用 L04 对角、L05 之字交替），同一布局也可容纳不同组件族。<br><br>
+<b>唯一硬约束：</b>2D 布局（网格/象限/放射）不适合 1D 内容（列表/流程/时间线），反之亦然。这是由视觉流向决定的，不是偏好。
+</p>
+</div></body></html>

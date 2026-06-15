@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anthropic 自服务数据分析架构</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===== NIAN DESIGN TOKENS ===== */
+:root {
+  /* Neutral 6 阶 */
+  --neutral-100: #F2F0EC;
+  --neutral-200: #E3DFD8;
+  --neutral-300: #C4B8A8;
+  --neutral-400: #8A7D6E;
+  --neutral-500: #2D2A26;
+  --neutral-600: #1A1816;
+
+  /* Nature 色 */
+  --nature-forest: #3D5A35;
+  --nature-moss: #6B8B5E;
+  --nature-slate: #4E627C;
+  --nature-steel: #7A8B9B;
+
+  /* Signal 色 — Slate → Sky 配对 */
+  --signal-sky: #4A80C0;
+
+  /* Surface & Text */
+  --bg: var(--neutral-100);
+  --surface: #FFFFFF;
+  --surface-alt: var(--neutral-200);
+  --border: var(--neutral-300);
+  --border-strong: var(--neutral-400);
+  --text-display: var(--neutral-500);
+  --text-primary: var(--neutral-600);
+  --text-secondary: var(--neutral-400);
+  --text-disabled: var(--neutral-300);
+
+  /* Typography */
+  --display-2xl: 120px;
+  --display-xl: 96px;
+  --display-lg: 48px;
+  --display-md: 36px;
+  --heading-lg: 24px;
+  --heading-md: 20px;
+  --body-lg: 18px;
+  --body: 16px;
+  --body-sm: 14px;
+  --label: 12px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Container */
+  --container-max: 1120px;
+  --container-padding: 32px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+/* ===== BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: var(--body);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+.sl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.sv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--body-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* ===== NAV ===== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--container-padding);
+  background: var(--nature-slate);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.nav__logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+}
+.nav__links {
+  display: flex;
+  gap: var(--space-lg);
+  list-style: none;
+}
+.nav__link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  transition: color 150ms ease-out;
+}
+.nav__link:hover { color: rgba(255,255,255,0.9); }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--nature-slate);
+  padding: var(--space-4xl) var(--container-padding);
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero__inner {
+  text-align: center;
+  max-width: 800px;
+  position: relative;
+  z-index: 1;
+}
+.hero__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--signal-sky);
+  display: block;
+  margin-bottom: var(--space-lg);
+}
+.hero__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: var(--display-2xl);
+  font-weight: 300;
+  color: #FFFFFF;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-lg);
+}
+.hero__sub {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body-lg);
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto var(--space-2xl);
+}
+.hero__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xl);
+  max-width: 640px;
+  margin: 0 auto;
+  padding-top: var(--space-xl);
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+.hero__stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--display-md);
+  font-weight: 500;
+  color: #FFFFFF;
+  line-height: 1;
+  display: block;
+}
+.hero__stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-top: var(--space-sm);
+  display: block;
+}
+
+.hero__ghost {
+  position: absolute;
+  bottom: 40px;
+  right: 60px;
+  font-family: 'Doto', system-ui;
+  font-size: 140px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.04);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ===== SECTION BASE ===== */
+section {
+  padding: var(--space-4xl) var(--container-padding);
+}
+section.bg { background: var(--bg); }
+section.sf { background: var(--surface-alt); }
+section.slate { background: var(--nature-slate); }
+
+.section__label {
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+.section__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: var(--display-md);
+  font-weight: 400;
+  color: var(--text-display);
+  line-height: 1.2;
+  margin-bottom: var(--space-md);
+}
+.section__desc {
+  font-size: var(--body);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 640px;
+}
+
+/* ===== CALLOUT ===== */
+.callout-grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+.callout-grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+.callout-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.callout {
+  border-left: 2px solid var(--nature-slate);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--nature-slate);
+  padding: var(--space-lg) var(--space-xl);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.callout--sky {
+  border-left-color: var(--signal-sky);
+}
+.callout__title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--nature-slate);
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+.callout--sky .callout__title {
+  color: var(--signal-sky);
+}
+.callout__body {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.callout__body strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ===== CARD TRIAD ===== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.card__num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text-disabled);
+}
+.card__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: var(--heading-md);
+  font-weight: 600;
+  color: var(--text-display);
+  line-height: 1.3;
+}
+.card__body {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== FLOW PIPELINE ===== */
+.pipeline-wrap {
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+.pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: var(--space-xl) 0;
+}
+.pipeline__stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-md);
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.pipeline__stage + .pipeline__stage {
+  border-left: none;
+}
+.pipeline__stage::after {
+  content: '›';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: var(--text-disabled);
+  line-height: 1;
+  z-index: 2;
+}
+.pipeline__stage:last-child::after {
+  display: none;
+}
+.pipeline__num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+}
+.pipeline__name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: var(--heading-md);
+  font-weight: 600;
+  color: var(--text-display);
+  line-height: 1.3;
+}
+.pipeline__desc {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== BENTO GRID ===== */
+.bento {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+.bento__card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.bento__card--large {
+  grid-column: span 2;
+}
+.bento__tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--signal-sky);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+.bento__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: var(--heading-lg);
+  font-weight: 600;
+  color: var(--text-display);
+  line-height: 1.3;
+}
+.bento__body {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.bento__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+.bento__list li {
+  font-size: var(--body-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+  padding-left: var(--space-md);
+  position: relative;
+}
+.bento__list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--nature-slate);
+}
+
+/* ===== ACTION LIST ===== */
+.action-list {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.action-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--display-md);
+  font-weight: 500;
+  color: var(--nature-slate);
+  opacity: 0.15;
+  line-height: 1;
+  min-width: 48px;
+}
+.action-text {
+  flex: 1;
+}
+.action-text__title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: var(--heading-md);
+  font-weight: 600;
+  color: var(--text-display);
+  display: block;
+  margin-bottom: var(--space-xs);
+}
+.action-text__desc {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  padding: var(--space-2xl) var(--container-padding);
+  border-top: 1px solid var(--border);
+}
+.footer__inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer__source {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+}
+.footer__link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2px;
+  transition: border-color 150ms ease-out;
+}
+.footer__link:hover {
+  border-color: var(--text-primary);
+}
+
+/* ===== HIGHLIGHT NUMBER ===== */
+.num-highlight {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  color: var(--signal-sky);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1119px) {
+  .hero__stats { grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+  .callout-grid--2 { grid-template-columns: 1fr; }
+  .card-grid { grid-template-columns: repeat(2, 1fr); }
+  .bento { grid-template-columns: 1fr; }
+  .bento__card--large { grid-column: span 1; }
+}
+
+@media (max-width: 767px) {
+  .hero__title { font-size: 48px; }
+  .hero__stats { grid-template-columns: 1fr; gap: var(--space-md); text-align: center; }
+  .hero__stat-value { font-size: var(--display-lg); }
+  .card-grid { grid-template-columns: 1fr; }
+  .pipeline { flex-direction: column; }
+  .pipeline__stage::after { display: none; }
+  .pipeline__stage + .pipeline__stage { border-left: none; border-top: 1px solid var(--border); }
+  .action-item { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+  .footer__inner { flex-direction: column; gap: var(--space-md); align-items: flex-start; }
+  section { padding: var(--space-2xl) var(--container-padding); }
+  .hero { clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%); min-height: 70vh; }
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+  <span class="nav__logo">Anthropic · Data</span>
+  <ul class="nav__links">
+    <li><a href="#problem" class="nav__link">问题</a></li>
+    <li><a href="#failures" class="nav__link">失败模式</a></li>
+    <li><a href="#stack" class="nav__link">架构</a></li>
+    <li><a href="#skills" class="nav__link">Skills</a></li>
+    <li><a href="#validation" class="nav__link">验证</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero__inner">
+    <span class="hero__label">Architecture · Data Science</span>
+    <h1 class="hero__title">How Anthropic Enables<br>Self-Service Data Analytics</h1>
+    <p class="hero__sub">用 Claude 实现企业级自服务数据分析 - 架构、方法论与最佳实践</p>
+    <div class="hero__stats">
+      <div>
+        <span class="hero__stat-value">95%</span>
+        <span class="hero__stat-label">查询自动化率</span>
+      </div>
+      <div>
+        <span class="hero__stat-value">~95%</span>
+        <span class="hero__stat-label">聚合准确率</span>
+      </div>
+      <div>
+        <span class="hero__stat-value">~65%</span>
+        <span class="hero__stat-label">1月后漂移值</span>
+      </div>
+    </div>
+  </div>
+  <span class="hero__ghost">DATA</span>
+</section>
+
+<!-- Problem: Data is not software -->
+<section id="problem" class="bg">
+  <div class="container">
+    <span class="sl section__label">The Core Challenge</span>
+    <h2 class="section__title">Data Is Not Software</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-2xl);">
+      LLM 的分析能力是一把双刃剑：能创造性解决问题，也能虚构错误答案。代码有测试作为防护栏，而数据分析往往只有一个正确答案、一个正确来源，却没有确定性的方法证明其正确性。
+    </p>
+    <div class="callout-grid callout-grid--2">
+      <div class="callout">
+        <span class="callout__title">Generative Coding</span>
+        <div class="callout__body">
+          <strong>开放性解决空间</strong> - 模型的创造力是优势。文档和测试提供自然的防幻觉护栏。编译时报错、测试失败给出了明确的反馈信号。
+        </div>
+      </div>
+      <div class="callout callout--sky">
+        <span class="callout__title">Analytics Querying</span>
+        <div class="callout__body">
+          <strong>单一正确空间</strong> - 往往只有一个正确答案和一个正确来源。没有编译时验证。用户不具备验证底层正确性的能力。幻觉无声无息。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Three Failure Modes -->
+<section id="failures" class="sf">
+  <div class="container">
+    <span class="sl section__label">The Three Failure Modes</span>
+    <h2 class="section__title">为什么数据分析代理会出错</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-2xl);">
+      Anthropic 将绝大多数不准确响应追溯为三类模式 - 每一类指向数据基础设施中的一个具体缺口。
+    </p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card__num">01 · Ambiguity</span>
+        <h3 class="card__title">同名不同物</h3>
+        <p class="card__body">同一个术语在不同上下文中含义不同。"收入"可能指营收、毛利、净收入或合同金额 - 如果底层数据模型没有统一口径，代理永远选不对。</p>
+      </div>
+      <div class="card">
+        <span class="card__num">02 · Search</span>
+        <h3 class="card__title">同物不同名</h3>
+        <p class="card__body">同一个实体在不同系统、不同表中叫法不同。"用户"在 user 表中叫 customer_id，在 order 表中叫 buyer_id - 代理找不到正确的字段。</p>
+      </div>
+      <div class="card">
+        <span class="card__num">03 · Drift</span>
+        <h3 class="card__title">概念过时</h3>
+        <p class="card__body">数据模型在变，但描述数据模型的文档没有跟着变。字段改名、口径调整、表废弃 - 等文档更新时，代理已经在用过时的定义回答问题。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Four Layer Stack -->
+<section id="stack" class="bg">
+  <div class="container">
+    <span class="sl section__label">The Solution Stack</span>
+    <h2 class="section__title">四层治理架构</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-xl);">
+      Anthropic 的核心应对 - 每一层针对一类失败模式。越底层越靠近基础设施，越上层越靠近最终用户。
+    </p>
+    <div class="pipeline-wrap">
+      <div class="pipeline">
+        <div class="pipeline__stage">
+          <span class="pipeline__num">Layer 1</span>
+          <span class="pipeline__name">Data Foundations</span>
+          <span class="pipeline__desc">数据模型、转换、测试。用维度建模和 shift-left 测试消除口径歧义。</span>
+        </div>
+        <div class="pipeline__stage">
+          <span class="pipeline__num">Layer 2</span>
+          <span class="pipeline__name">Sources of Truth</span>
+          <span class="pipeline__desc">语义层、指标文档、表文档。代理查这些，不直接查原始数据仓库。</span>
+        </div>
+        <div class="pipeline__stage">
+          <span class="pipeline__num">Layer 3</span>
+          <span class="pipeline__name">Skills</span>
+          <span class="pipeline__desc">过程知识编码。告诉代理"先做什么、再做什么、注意什么"。</span>
+        </div>
+        <div class="pipeline__stage">
+          <span class="pipeline__num">Layer 4</span>
+          <span class="pipeline__name">Validation</span>
+          <span class="pipeline__desc">离线评测 / 消融实验 / 在线验证。持续量化代理准确性。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pairwise Skills -->
+<section id="skills" class="sf">
+  <div class="container">
+    <span class="sl section__label">The Key Innovation</span>
+    <h2 class="section__title">Pairwise Skills</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-2xl);">
+      没有 Skills 时，Claude 回答分析问题的准确率不超过 <span class="num-highlight">21%</span>。加入 Skills 后，聚合准确率超过 <span class="num-highlight">95%</span>，某些领域达到 <span class="num-highlight">~99%</span>。关键是拆为一对。
+    </p>
+    <div class="bento">
+      <div class="bento__card">
+        <span class="bento__tag">Skill 1 · Router</span>
+        <h3 class="bento__title">Knowledge Skill</h3>
+        <div class="bento__body">
+          轻量顶级路由器。先试语义层（受控路径），语义层覆盖不了才走 ~30 个参考文件（长尾路径）。在代理搜索百万字段的数据仓库之前，先缩小搜索空间。
+        </div>
+        <ul class="bento__list">
+          <li>优先走语义层 - 口径固化，数字与 BI 工具一致</li>
+          <li>参考文件描述表结构、粒度、排除条件、陷阱</li>
+          <li>每个领域 ~30 份 Markdown 文件，人工精选</li>
+        </ul>
+      </div>
+      <div class="bento__card">
+        <span class="bento__tag">Skill 2 · Executor</span>
+        <h3 class="bento__title">Unbook Skill</h3>
+        <div class="bento__body">
+          将高级分析师的工作流程编码为可执行的步骤序列。问什么、去查哪、怎么查、结果怎么审 - 每一步都有明确规则。
+        </div>
+        <ul class="bento__list">
+          <li>澄清问题→找源→跑查询→对抗式审查</li>
+          <li>内建十几套可复用分析模式（留存曲线、率分解、漏斗）</li>
+          <li>每个答案附带 provenance footer（来源 / 置信度 / 新鲜度）</li>
+        </ul>
+      </div>
+      <div class="bento__card bento__card--large" style="background:var(--surface-alt);border-color:var(--border);">
+        <span class="bento__tag">Warning · Skill Decay</span>
+        <h3 class="bento__title">从 95% 到 65%，只需一个月</h3>
+        <div class="bento__body">
+          如果没有主动维护，Skill 准确率会在数周内大幅衰减。Anthropic 的应对：将 Skill Markdown 文件与数据模型<strong>放在同一个代码仓库</strong>，任何改变模型的 PR 都必须同步修改 Skill 文件。Code Review Hook 自动检查 - 如果 reporting-model 变更没有触及 Skill 文件，直接 Flag。大约 <span class="num-highlight">90%</span> 的数据模型 PR 都包含配套的 Skill 修改。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Maintenance Mechanisms -->
+<section id="maintenance" class="bg">
+  <div class="container">
+    <span class="sl section__label">Maintenance as Infrastructure</span>
+    <h2 class="section__title">维护即基础设施</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-2xl);">
+      三条机制确保文档不会变成"一写就丢"的静态资产。
+    </p>
+    <div class="callout-grid callout-grid--3">
+      <div class="callout">
+        <span class="callout__title">01 · 同仓共存</span>
+        <div class="callout__body">Skill 文档与 dbt 转换模型在同一个 repo 里。改模型的 PR 就是改文档的 PR，两者永远同时变更。</div>
+      </div>
+      <div class="callout">
+        <span class="callout__title">02 · 自动同步</span>
+        <div class="callout__body">Merge 后自动同步到三条路径：Plugin Marketplace（IDE）、Cloud Storage（托管App）、MCP（Agent 运行时）。</div>
+      </div>
+      <div class="callout">
+        <span class="callout__title">03 · 定期修剪</span>
+        <div class="callout__body">数据模型改进后，之前依赖这些模型的 Skill Scaffolding 不再需要 - 定期清理，不积累技术债。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Validation -->
+<section id="validation" class="sf">
+  <div class="container">
+    <span class="sl section__label">Quality Assurance</span>
+    <h2 class="section__title">三层验证体系</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-2xl);">
+      没有评测就没有改进。Anthropic 部署了三层验证，分别覆盖"知道有没有问题"、"找到问题在哪"、"上线后不出问题"。
+    </p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card__num">01 · Offline Evals</span>
+        <h3 class="card__title">离线评测</h3>
+        <p class="card__body">两套 QA 数据集：<strong>Dashboard-based</strong> 覆盖最常见问题，由 Claude 生成、人工验证；<strong>Long-tail</strong> 覆盖领域边缘场景。每次结构变更后重跑，比较 pass rate。</p>
+      </div>
+      <div class="card">
+        <span class="card__num">02 · Ablation</span>
+        <h3 class="card__title">消融实验</h3>
+        <p class="card__body">每次改一个组件（加一个表、拆分一个 Skill、调整子 agent 调度），保持 QA 集不变，看 pass rate 变化。一次只变一个变量，每次跑一个小时。</p>
+      </div>
+      <div class="card">
+        <span class="card__num">03 · Online</span>
+        <h3 class="card__title">在线验证</h3>
+        <p class="card__body">Provenance Footer（每个答案附带来源/置信度/新鲜度）、领导层报告需要人工签收、每个领域核心 KPI 每天与官方面板核对。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Getting Started -->
+<section class="bg">
+  <div class="container">
+    <span class="sl section__label">Getting Started</span>
+    <h2 class="section__title">从零开始</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-2xl);">
+      如果从零开始，几个规范数据集 + 几十条离线评测 + 一个薄薄的 Knowledge Skill，就能覆盖绝大部分收益。文章中其他所有内容都是在这套基础上逐步追加的。
+    </p>
+    <div class="action-list">
+      <div class="action-item">
+        <span class="action-num">01</span>
+        <div class="action-text">
+          <span class="action-text__title">确立数据基础</span>
+          <span class="action-text__desc">选 3-5 个最核心的数据集，做维度建模、shift-left 测试、新鲜度监控。在一个受控空间中把口径彻底定死。</span>
+        </div>
+      </div>
+      <div class="action-item">
+        <span class="action-num">02</span>
+        <div class="action-text">
+          <span class="action-text__title">建立参考文档</span>
+          <span class="action-text__desc">为每个数据集写 Grain / Scope / Exclusions / Gotchas  -  用 Markdown，面向 LLM 阅读优化。几十条参考文件足够覆盖 80% 的问题。</span>
+        </div>
+      </div>
+      <div class="action-item">
+        <span class="action-num">03</span>
+        <div class="action-text">
+          <span class="action-text__title">创建离线评测</span>
+          <span class="action-text__desc">Claude 自动生成最常见的问题+答案对，人工验证后作为 fixed eval set。每次改结构后重跑，对比 pass rate。</span>
+        </div>
+      </div>
+      <div class="action-item">
+        <span class="action-num">04</span>
+        <div class="action-text">
+          <span class="action-text__title">迭代，不完美</span>
+          <span class="action-text__desc">从 95% 到 65% 是正常衰减。把文档维护当工程问题处理 - 放到工作流里、写成 CI 规则。然后重复。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer__inner">
+    <span class="footer__source">基于 · claude.com/blog · June 2026</span>
+    <a href="https://claude.com/blog/how-anthropic-enables-self-service-data-analytics-with-claude" class="footer__link" target="_blank">Read Original &rarr;</a>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Viz Deep · Part 2 · Apple + Spotify + Strava</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --olive:#4A5D3A; --moss:#7A9B6D; --glacier:#2A4A5A; --rock:#808080; --clay:#C66B4B;
+  --org:#E55B2B;
+}
+[data-theme="light"]{--bg:#FAFAF8;--surface:#FFFFFF;--surface2:#F5F5F0;--border:#E5E5E0;--tp:#1A1A1A;--ts:#6B6B6B;--td:#A0A0A0}
+[data-theme="dark"]{--bg:#1A1A1A;--surface:#2A2A28;--surface2:#333330;--border:#3A3A38;--tp:#F0F0F0;--ts:#909090;--td:#606060}
+
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--tp);line-height:1.5;-webkit-font-smoothing:antialiased;transition:all .3s}
+::selection{background:rgba(198,107,75,.12)}
+
+.sl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--td);margin-bottom:24px;font-family:'JetBrains Mono',monospace}
+.sl .c{font-weight:600}
+
+.sec{padding:80px 32px}
+.sec--w{max-width:960px;margin:0 auto}
+.sec--n{max-width:720px;margin:0 auto}
+
+.fh{font-size:28px;font-weight:400;margin-bottom:48px;letter-spacing:-.5px;font-family:'Playfair Display',Georgia,serif}
+.fh strong{font-weight:700}
+
+.lv{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--td);border:1px solid var(--border);padding:2px 8px;display:inline-block;margin-bottom:16px}
+
+.br-hd{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.04em;padding:4px 0;border-bottom:2px solid;margin-bottom:24px;display:inline-block}
+
+/* Theme Toggle */
+.tg{position:fixed;top:16px;right:16px;z-index:100;display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px;font-family:'JetBrains Mono',monospace;font-size:10px}
+.tg button{padding:4px 12px;border:none;border-radius:4px;cursor:pointer;background:transparent;color:var(--ts);font-family:inherit;font-size:inherit;display:flex;align-items:center;gap:4px}
+.tg .a{background:var(--clay);color:#fff}
+.tg svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* AP: Heart Rate */
+.ap-hr{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:24px}
+.ap-hr__svg{width:100%;height:120px}
+.ap-hr__svg path{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ap-hr__r{padding:24px;background:var(--surface2);border-radius:8px}
+.ap-hr__t{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--td);margin-bottom:12px}
+.ap-hr__i{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.ap-hr__i:last-child{border-bottom:none}
+
+/* AP: Sleep */
+.ap-sl{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.ap-sl__i{padding:24px;background:var(--surface2);border-radius:8px;text-align:center}
+.ap-sl__l{font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--td);margin-bottom:8px}
+.ap-sl__v{font-size:36px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:-1px}
+.ap-sl__d{font-size:11px;color:var(--ts);margin-top:4px}
+.ap-sl__b{height:4px;margin:8px auto 0;border-radius:2px;overflow:hidden;max-width:120px}
+.ap-sl__f{height:100%}
+
+/* AP: Workout */
+.ap-wo{display:flex;flex-direction:column;gap:6px;margin-top:24px}
+.ap-wo__r{display:grid;grid-template-columns:1fr 60px 60px;gap:16px;align-items:center;padding:12px 16px;background:var(--surface2);border-radius:6px;font-size:13px;transition:background .2s}
+.ap-wo__r:hover{background:var(--border)}
+.ap-wo__n{font-weight:500}
+.ap-wo__v{font-family:'JetBrains Mono',monospace;text-align:right}
+.ap-wo__l{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--td);text-align:right}
+
+/* SP: Audio Radar */
+.sp-radar{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-top:24px}
+.sp-radar__g{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-width:200px;margin:0 auto}
+.sp-radar__l{text-align:center;padding:12px;font-family:'JetBrains Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:1px;border-radius:4px;color:#fff}
+.sp-radar__r{padding:20px;background:var(--surface2);border-radius:8px}
+.sp-radar__t{font-family:'JetBrains Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--td);margin-bottom:8px}
+.sp-radar__i{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border)}
+
+/* SP: Decade Trend */
+.sp-dec{display:flex;gap:2px;align-items:flex-end;height:120px;margin-top:24px;padding:0 16px}
+.sp-dec div{flex:1;border-radius:2px 2px 0 0;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.sp-dec__v{position:absolute;top:-18px;font-family:'JetBrains Mono',monospace;font-size:9px}
+.sp-dec__lbl{position:absolute;bottom:-18px;font-family:'JetBrains Mono',monospace;font-size:8px;text-transform:uppercase;letter-spacing:.5px}
+
+/* SP: Collab */
+.sp-collab{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px}
+.sp-collab__i{padding:16px;background:var(--surface2);border-radius:6px;display:flex;align-items:center;gap:12px}
+.sp-collab__c{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:#fff;flex-shrink:0}
+
+/* ST: Training Log */
+.st-train{display:flex;flex-direction:column;gap:4px;margin-top:24px}
+.st-train__r{display:grid;grid-template-columns:1fr 60px 60px;gap:16px;align-items:center;padding:10px 16px;background:var(--surface2);border-radius:6px;font-size:12px;transition:background .2s}
+.st-train__r:hover{background:var(--border)}
+.st-train__d{font-weight:500}
+.st-train__k{font-family:'JetBrains Mono',monospace;text-align:right;color:var(--ts)}
+.st-train__t{font-family:'JetBrains Mono',monospace;text-align:right}
+
+/* ST: Friend Compare */
+.st-friend{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:24px}
+.st-friend__i{padding:24px;background:var(--surface);text-align:center}
+.st-friend__n{font-size:13px;font-weight:600;margin-bottom:8px}
+.st-friend__v{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;letter-spacing:-.5px}
+.st-friend__l{font-size:10px;color:var(--ts);margin-top:4px}
+.st-friend__b{height:2px;width:40px;margin:8px auto 0;border-radius:1px}
+
+.ft{padding:24px;text-align:center;border-top:1px solid var(--border)}
+.ft__l{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--td)}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .ap-hr,.sp-radar{grid-template-columns:1fr}
+  .ap-sl{grid-template-columns:1fr}
+  .sp-collab,.st-friend{grid-template-columns:1fr}
+  .ap-wo__r{grid-template-columns:1fr 50px;gap:8px}
+  .ap-wo__l{display:none}
+  .sp-dec{height:90px;padding:0 8px}
+}
+@media(max-width:768px){
+  .sec{padding:48px 16px}
+  .fh{font-size:22px;margin-bottom:32px}
+  .ap-sl__v{font-size:28px}
+  .sp-dec{height:72px}
+  .sp-dec__v{font-size:7px;top:-14px}
+  .sp-dec__lbl{font-size:7px;bottom:-14px}
+  .st-friend__v{font-size:22px}
+}
+@media(max-width:480px){
+  .sec{padding:32px 12px}
+  .fh{font-size:18px;margin-bottom:24px}
+  .ap-hr{gap:24px}
+  .sp-radar{gap:24px}
+  .ap-sl__i{padding:16px}
+  .sp-radar__g{max-width:160px}
+  .sp-dec{height:56px;gap:1px;padding:0 2px}
+  .sp-dec__v{display:none}
+  .sp-dec__lbl{font-size:6px;bottom:-12px}
+  .ap-wo__r{padding:8px 12px;font-size:12px}
+  .st-train__r{padding:8px 12px;font-size:11px}
+  .st-friend__i{padding:16px}
+  .tg{top:8px;right:8px;font-size:9px}
+  .tg button{padding:3px 8px}
+}
+</style>
+</head>
+<body>
+
+<div class="tg">
+  <button class="a" onclick="setTheme('light')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <span>LIGHT</span>
+  </button>
+  <button onclick="setTheme('dark')">
+    <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span>DARK</span>
+  </button>
+</div>
+
+<!-- ====== APPLE ====== -->
+<div class="sec">
+  <div class="sec--w">
+    <div class="br-hd" style="border-color:var(--clay);color:var(--clay)">Apple Activity · New Charts</div>
+
+    <div class="sl">AP · <span class="c">Heart Rate</span></div>
+    <div class="fh">Every <strong>beat</strong> tracked.</div>
+    <div class="lv">Section 级 · HR Trend</div>
+    <div class="ap-hr">
+      <svg class="ap-hr__svg" viewBox="0 0 400 120" preserveAspectRatio="none">
+        <path d="M0 80 Q20 78 40 72 T80 65 T120 58 T160 50 T200 45 T240 42 T280 55 T320 50 T360 38 T400 32" stroke="var(--clay)" stroke-width="2"/>
+        <path d="M0 80 Q20 78 40 72 T80 65 T120 58 T160 50 T200 45 T240 42 T280 55 T320 50 T360 38 T400 32" stroke="rgba(198,107,75,.08)" stroke-width="16" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="ap-hr__r">
+        <div class="ap-hr__t">Today's Readings</div>
+        <div class="ap-hr__i"><span>Resting</span><span style="font-weight:600">58 bpm</span></div>
+        <div class="ap-hr__i"><span>Walking</span><span style="font-weight:600">82 bpm</span></div>
+        <div class="ap-hr__i"><span>Workout</span><span style="font-weight:600;color:var(--clay)">138 bpm</span></div>
+        <div class="ap-hr__i"><span>Recovery</span><span style="font-weight:600">72 bpm</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" style="background:var(--surface2)">
+  <div class="sec--n">
+    <div class="sl">AP · <span class="c">Sleep & Workout</span></div>
+    <div class="fh">Rest. Train. <strong>Repeat.</strong></div>
+    <div class="lv">Section 级 · Sleep Analysis</div>
+    <div class="ap-sl">
+      <div class="ap-sl__i"><div class="ap-sl__l">Deep Sleep</div><div class="ap-sl__v" style="color:var(--glacier)">2h 12m</div><div class="ap-sl__d">18% of total</div><div class="ap-sl__b"><div class="ap-sl__f" style="width:18%;background:var(--glacier)"></div></div></div>
+      <div class="ap-sl__i"><div class="ap-sl__l">REM</div><div class="ap-sl__v" style="color:var(--rock)">1h 48m</div><div class="ap-sl__d">15% of total</div><div class="ap-sl__b"><div class="ap-sl__f" style="width:15%;background:var(--rock)"></div></div></div>
+      <div class="ap-sl__i"><div class="ap-sl__l">Light Sleep</div><div class="ap-sl__v" style="color:var(--olive)">8h 12m</div><div class="ap-sl__d">67% of total</div><div class="ap-sl__b"><div class="ap-sl__f" style="width:67%;background:var(--olive)"></div></div></div>
+    </div>
+
+    <div class="lv" style="margin-top:24px">Detail 级 · Training Log</div>
+    <div class="ap-wo">
+      <div class="ap-wo__r"><span class="ap-wo__n">Outdoor Run</span><span class="ap-wo__v">8.4 km</span><span class="ap-wo__l">42 min</span></div>
+      <div class="ap-wo__r"><span class="ap-wo__n">Cycling</span><span class="ap-wo__v">24.6 km</span><span class="ap-wo__l">68 min</span></div>
+      <div class="ap-wo__r"><span class="ap-wo__n">Strength</span><span class="ap-wo__v">45 min</span><span class="ap-wo__l">8 exercises</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SPOTIFY ====== -->
+<div class="sec">
+  <div class="sec--w">
+    <div class="br-hd" style="border-color:var(--olive);color:var(--olive)">Spotify · New Charts</div>
+
+    <div class="sl">SP · <span class="c">Audio Radar & Decade Trend</span></div>
+    <div class="fh">Your <strong>sound</strong> profile.</div>
+    <div class="lv">Section 级 · Audio Features</div>
+    <div class="sp-radar">
+      <div class="sp-radar__g">
+        <div class="sp-radar__l" style="background:var(--clay)">E · 78%</div>
+        <div class="sp-radar__l" style="background:var(--olive)">A · 65%</div>
+        <div class="sp-radar__l" style="background:var(--glacier)">H · 82%</div>
+        <div class="sp-radar__l" style="background:var(--rock)">T · 42%</div>
+        <div class="sp-radar__l" style="background:var(--moss)">V · 58%</div>
+        <div class="sp-radar__l" style="background:var(--olive)">D · 71%</div>
+      </div>
+      <div class="sp-radar__r">
+        <div class="sp-radar__t">Audio DNA Key</div>
+        <div class="sp-radar__i"><span>Energy</span><span>78%</span></div>
+        <div class="sp-radar__i"><span>Acoustic</span><span>65%</span></div>
+        <div class="sp-radar__i"><span>Happiness</span><span>82%</span></div>
+        <div class="sp-radar__i"><span>Tempo</span><span>42%</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" style="background:var(--surface2)">
+  <div class="sec--n">
+    <div class="sl">SP · <span class="c">Decade Trend & Collab</span></div>
+    <div class="fh">How your taste <strong>evolved.</strong></div>
+    <div class="lv">Hero 级 · 10-Year Trend</div>
+    <div class="sp-dec">
+      <div style="height:28%;background:var(--olive)"><span class="sp-dec__v" style="color:var(--olive)">28%</span><span class="sp-dec__lbl">2016</span></div>
+      <div style="height:45%;background:var(--olive)"><span class="sp-dec__v" style="color:var(--olive)">45%</span><span class="sp-dec__lbl">2018</span></div>
+      <div style="height:62%;background:var(--olive)"><span class="sp-dec__v" style="color:var(--olive)">62%</span><span class="sp-dec__lbl">2020</span></div>
+      <div style="height:78%;background:var(--olive)"><span class="sp-dec__v" style="color:var(--olive)">78%</span><span class="sp-dec__lbl">2022</span></div>
+      <div style="height:55%;background:var(--olive)"><span class="sp-dec__v" style="color:var(--olive)">55%</span><span class="sp-dec__lbl">2024</span></div>
+      <div style="height:82%;background:var(--olive)"><span class="sp-dec__v" style="color:var(--olive)">82%</span><span class="sp-dec__lbl">2026</span></div>
+    </div>
+    <div class="lv" style="margin-top:32px">Detail 级 · Collaborative Playlists</div>
+    <div class="sp-collab">
+      <div class="sp-collab__i"><div class="sp-collab__c" style="background:var(--olive)">M</div><div><div style="font-size:13px;font-weight:500">Morning Commute</div><div style="font-size:10px;color:var(--ts)">42 tracks · 2h 48m</div></div></div>
+      <div class="sp-collab__i"><div class="sp-collab__c" style="background:var(--clay)">F</div><div><div style="font-size:13px;font-weight:500">Friday Night</div><div style="font-size:10px;color:var(--ts)">28 tracks · 1h 52m</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== STRAVA ====== -->
+<div class="sec">
+  <div class="sec--w">
+    <div class="br-hd" style="border-color:var(--clay);color:var(--clay)">Strava · New Charts</div>
+
+    <div class="sl">ST · <span class="c">Training Log</span></div>
+    <div class="fh"><strong>Every</strong> workout counted.</div>
+    <div class="lv">Detail 级 · Training Log</div>
+    <div class="st-train">
+      <div class="st-train__r"><span class="st-train__d">Morning Run</span><span class="st-train__k">6.2 km</span><span class="st-train__t">32 min</span></div>
+      <div class="st-train__r"><span class="st-train__d">Interval Training</span><span class="st-train__k">4.8 km</span><span class="st-train__t">28 min</span></div>
+      <div class="st-train__r"><span class="st-train__d">Tempo Run</span><span class="st-train__k">10 km</span><span class="st-train__t">48 min</span></div>
+      <div class="st-train__r"><span class="st-train__d">Recovery</span><span class="st-train__k">3 km</span><span class="st-train__t">20 min</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" style="background:var(--surface2)">
+  <div class="sec--n">
+    <div class="sl">ST · <span class="c">Friend Compare</span></div>
+    <div class="fh">Friendly <strong>competition.</strong></div>
+    <div class="lv">Section 级 · Friend Comparison</div>
+    <div class="st-friend">
+      <div class="st-friend__i"><div class="st-friend__n">You</div><div class="st-friend__v" style="color:var(--clay)">42.6 km</div><div class="st-friend__l">This week</div><div class="st-friend__b" style="background:var(--clay)"></div></div>
+      <div class="st-friend__i"><div class="st-friend__n">Sarah</div><div class="st-friend__v" style="color:var(--olive)">38.2 km</div><div class="st-friend__l">This week</div><div class="st-friend__b" style="background:var(--olive)"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="ft"><span class="ft__l">Data Viz Deep · Part 2 · 9 new chart types</span></div>
+
+<script>
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('.tg button').forEach(function(b){b.classList.remove('a')});
+  event.target.closest('button').classList.add('a');
+}
+setTheme('light');
+</script>
+</body>
+</html>

@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>A-Hero 组件复审</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0ede6;--surface:#f8f8f8;--surface-alt:#e8e4dc;--border:#dbd6d2;--border-strong:#baaca8;--text-display:#383A3E;--text-primary:#1A1816;--text-secondary:#8A7D6E;--text-disabled:#c4b8a8;--forest:#3D5A35;--moss:#6B8B5E;--slate:#4E627C;--steel:#7A8B9B;--warm:#d47836;--sky-blue:#a0e3ee;--signal-red:#d86a48;--signal-clay:#C66B4B;--signal-gold:#BF9B5A;--signal-sky:#4A80C0;--font-ds:'Playfair Display',Georgia,serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;--font-dot:'Doto',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);padding:24px;max-width:1200px;margin:0 auto;padding-bottom:80px}
+h1{font-family:var(--font-ds);font-size:28px;font-weight:300;margin-bottom:8px}
+.sub{font-size:13px;color:var(--text-secondary);margin-bottom:24px}
+.review-item{border:1px solid var(--border);background:var(--surface);margin-bottom:20px;border-radius:6px;overflow:hidden}
+.review-header{display:flex;align-items:center;padding:12px 16px;background:var(--surface-alt);border-bottom:1px solid var(--border)}
+.review-id{font-family:var(--font-mono);font-size:12px;font-weight:600;color:#888;margin-right:12px}
+.review-name{font-size:14px;font-weight:600;flex:1}
+.review-name .tag-excluded{color:#C0392B;font-size:11px;font-weight:400;margin-left:6px}
+.review-select{padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:var(--font-body)}
+.review-meta{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid var(--border)}
+.meta-label{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#888;display:block;margin-bottom:2px}
+.meta-value{font-size:12px;color:#666;line-height:1.5}
+.toggle-bar{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.toggle-btn{padding:8px 16px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent}
+.toggle-btn.active{color:var(--text-display);border-bottom-color:var(--forest)}
+.preview-render{padding:16px;background:var(--bg);min-height:160px;position:relative;overflow:hidden}
+.preview-code{padding:16px;display:none;background:var(--bg)}
+.preview-code pre{background:var(--surface);border:1px solid var(--border);padding:12px;border-radius:4px;font-family:var(--font-mono);font-size:11px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;max-height:400px;overflow-y:auto}
+</style>
+</head>
+<body>
+<h1>A-Hero 组件复审</h1>
+<p class="sub">12 个组件 · 左侧下拉标记保留/删除 · 上方切换预览和代码</p>
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px;z-index:100">
+  <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)">标记完成后</span>
+  <button onclick="generateResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--warm);color:#fff;border:none;cursor:pointer">生成复审结果</button>
+  <button onclick="copyResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--forest);color:#fff;border:none;cursor:pointer">复制结果</button>
+</div>
+<div id="result-box" style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:24px;display:none">
+<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px">复审结果</div>
+<pre id="result-text" style="font-family:var(--font-mono);font-size:12px;line-height:1.8;white-space:pre-wrap;margin:0;padding:0;background:transparent;border:none;color:var(--text-display)"></pre>
+</div>
+
+<section class="review-item" data-id="A1">
+  <div class="review-header">
+    <div class="review-id">A1</div>
+    <div class="review-name">Marquee </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">活动首发、品牌宣言、大促开屏。</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.hero-marquee {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: var(--space-4xl) var(--container-padding);
+}
+.hero-marquee__inner {
+  max-width: var(--container-max);
+  text-align: center;
+}
+.hero-marquee__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+  display: block;
+}
+.hero-marquee__statement {
+  font-family: Georgia, serif;
+  font-size: var(--display-2xl);
+  font-weight: 700;
+  color: var(--text-display);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--space-lg) 0;
+}
+.hero-marquee__sub {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body-lg);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 520px;
+  margin: 0 auto;
+}</style><section class="hero-marquee">
+  <div class="hero-marquee__inner">
+    <span class="hero-marquee__label">EST. 1914 / STOCKHOLM</span>
+    <h1 class="hero-marquee__statement">Crafted for the Wild</h1>
+    <p class="hero-marquee__sub">111 年瑞典户外基因，为真正的荒野而造。</p>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="hero-marquee"&gt;
+  &lt;div class="hero-marquee__inner"&gt;
+    &lt;span class="hero-marquee__label"&gt;EST. 1914 / STOCKHOLM&lt;/span&gt;
+    &lt;h1 class="hero-marquee__statement"&gt;Crafted for the Wild&lt;/h1&gt;
+    &lt;p class="hero-marquee__sub"&gt;111 年瑞典户外基因，为真正的荒野而造。&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A2">
+  <div class="review-header">
+    <div class="review-id">A2</div>
+    <div class="review-name">Spinning Ring 旋转圆环 </div>
+    <select class="review-select"><option value="delete" selected>✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.sring { display: flex; align-items: center; justify-content: center; }
+.sring__ring {
+  width: clamp(200px, 28vw, 320px); height: clamp(200px, 28vw, 320px);
+  border-radius: 50%; border: 2px dashed var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; animation: sring-spin 30s linear infinite;
+}
+.sring__tag {
+  position: absolute; background: var(--surface); border-radius: 20px;
+  padding: 4px 14px; font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-secondary); white-space: nowrap;
+  transform: translateX(-50%);
+}
+.sring__center {
+  width: 80%; height: 80%; border-radius: 50%; background: var(--surface-alt);
+  display: flex; align-items: center; justify-content: center;
+}
+.sring__letter {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: var(--forest);
+}
+@keyframes sring-spin { to { transform: rotate(360deg); } }</style><div class="sring">
+  <div class="sring__ring">
+    <div class="sring__tag" style="top:-8px;left:50%">40+ Components</div>
+    <div class="sring__tag" style="bottom:12%;right:-8%">15 Layouts</div>
+    <div class="sring__tag" style="top:20%;left:-12%">4 Scenes</div>
+    <div class="sring__center">
+      <span class="sring__letter">N</span>
+    </div>
+  </div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="sring"&gt;
+  &lt;div class="sring__ring"&gt;
+    &lt;div class="sring__tag" style="top:-8px;left:50%"&gt;40+ Components&lt;/div&gt;
+    &lt;div class="sring__tag" style="bottom:12%;right:-8%"&gt;15 Layouts&lt;/div&gt;
+    &lt;div class="sring__tag" style="top:20%;left:-12%"&gt;4 Scenes&lt;/div&gt;
+    &lt;div class="sring__center"&gt;
+      &lt;span class="sring__letter"&gt;N&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A3">
+  <div class="review-header">
+    <div class="review-id">A3</div>
+    <div class="review-name">Product Hero 产品空瓶式 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>/* -- 空瓶模式 Hero (3 列布局: 文案 | 空瓶图形 | 年份) -- */
+.hero-bottle {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  position: relative;
+}
+
+/* 左: 品牌标签 + 标题 */
+.hero-bottle__left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 80px 60px 80px 120px;
+}
+
+.hero-bottle__tag {
+  font-family: var(--fm);
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--tda);
+  margin-bottom: 20px;
+}
+
+.hero-bottle__title {
+  font-family: var(--fd);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -2px;
+  font-weight: 300;
+  color: var(--td);
+  max-width: 400px;
+}
+
+.hero-bottle__title strong {
+  font-weight: 700;
+  color: var(--glacier);
+}
+
+/* 中: 瓶身轮廓 (空瓶图形) */
+.hero-bottle__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hero-bottle__outline {
+  width: 120px;
+  height: 280px;
+  border: 2px solid var(--bd);
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.hero-bottle__outline::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--bd);
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+}
+
+.hero-bottle__outline::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: var(--glacier);
+  opacity: 0.15;
+  border-radius: 50%;
+}
+
+.hero-bottle__label {
+  font-family: var(--fm);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ts);
+  text-align: center;
+}
+
+/* 右: 年份 + 来源 */
+.hero-bottle__right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 80px 120px 80px 60px;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.hero-bottle__since {
+  font-family: var(--fm);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--tda);
+  margin-bottom: 8px;
+}
+
+.hero-bottle__yr {
+  font-family: var(--fd);
+  font-size: 120px;
+  font-weight: 700;
+  line-height: 0.8;
+  color: var(--glacier);
+  opacity: 0.06;
+  letter-spacing: -4px;
+  user-select: none;
+}
+
+.hero-bottle__origin {
+  font-size: 13px;
+  color: var(--ts);
+  max-width: 240px;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .hero-bottle { grid-template-columns: 1fr 1fr; }
+  .hero-bottle__right { display: none; }
+}
+
+@media (max-width: 768px) {
+  .hero-bottle { grid-template-columns: 1fr; }
+  .hero-bottle__left { padding: 60px 24px; }
+  .hero-bottle__center { padding: 40px 24px; }
+  .hero-bottle__outline { width: 80px; height: 200px; }
+  .hero-bottle__yr { font-size: 80px; }
+}</style><section class="hero-bottle">
+  <div class="hero-bottle__left">
+    <div class="hero-bottle__tag">Brand · Tagline</div>
+    <h1 class="hero-bottle__title">
+      Pure <strong>accent</strong><br>since 1879.
+    </h1>
+  </div>
+  <div class="hero-bottle__center">
+    <div class="hero-bottle__outline"></div>
+    <div class="hero-bottle__label">The Bottle</div>
+  </div>
+  <div class="hero-bottle__right">
+    <div class="hero-bottle__since">Established</div>
+    <div class="hero-bottle__yr">1879</div>
+    <p class="hero-bottle__origin">Origin · Key fact about the brand.</p>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="hero-bottle"&gt;
+  &lt;div class="hero-bottle__left"&gt;
+    &lt;div class="hero-bottle__tag"&gt;Brand · Tagline&lt;/div&gt;
+    &lt;h1 class="hero-bottle__title"&gt;
+      Pure &lt;strong&gt;accent&lt;/strong&gt;&lt;br&gt;since 1879.
+    &lt;/h1&gt;
+  &lt;/div&gt;
+  &lt;div class="hero-bottle__center"&gt;
+    &lt;div class="hero-bottle__outline"&gt;&lt;/div&gt;
+    &lt;div class="hero-bottle__label"&gt;The Bottle&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="hero-bottle__right"&gt;
+    &lt;div class="hero-bottle__since"&gt;Established&lt;/div&gt;
+    &lt;div class="hero-bottle__yr"&gt;1879&lt;/div&gt;
+    &lt;p class="hero-bottle__origin"&gt;Origin · Key fact about the brand.&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A4">
+  <div class="review-header">
+    <div class="review-id">A4</div>
+    <div class="review-name">Ghost Watermark 幽灵水印变体库 </div>
+    <select class="review-select"><option value="delete" selected>✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.ghost {
+  position: absolute;
+  font-size: 22vw;                /* 视口等比缩放 */
+  font-weight: 200;               /* 极细字重 */
+  line-height: 0.85;
+  letter-spacing: -0.04em;        /* 轻微紧缩 */
+  opacity: 0.04;                  /* 极低透明度 — 核心水印特征 */
+  pointer-events: none;           /* 穿透点击 */
+  user-select: none;              /* 禁止选中 */
+  z-index: 1;                     /* 位于内容层(z-index:2)之下 */
+  color: var(--glacier);          /* 使用主题色 */
+}</style><div class="ghost rt">3239</div>
+<div class="ghost lb">SYSTEM</div>
+<div class="ghost ct">NETWORK</div></div>
+  <div class="preview-code"><pre>&lt;div class="ghost rt"&gt;3239&lt;/div&gt;
+&lt;div class="ghost lb"&gt;SYSTEM&lt;/div&gt;
+&lt;div class="ghost ct"&gt;NETWORK&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A5">
+  <div class="review-header">
+    <div class="review-id">A5</div>
+    <div class="review-name">Split Diptych </div>
+    <select class="review-select"><option value="delete" selected>✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.diptych {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  min-height: 600px;
+  background: var(--bg);
+}
+.diptych__left {
+  padding: var(--space-4xl) var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--border);
+}
+.diptych__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+.diptych__title {
+  font-family: Georgia, serif;
+  font-size: var(--display-lg);
+  font-weight: 700;
+  color: var(--text-display);
+  line-height: 1.15;
+  margin: 0 0 var(--space-md) 0;
+}
+.diptych__desc {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0 0 var(--space-xl) 0;
+}
+.diptych__specs {
+  display: flex;
+  flex-direction: column;
+}
+.diptych__right {
+  overflow: hidden;
+}
+.diptych__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}</style><section class="diptych">
+  <div class="diptych__left">
+    <span class="diptych__label">FW25 COLLECTION</span>
+    <h2 class="diptych__title">L.I.M Comp</h2>
+    <p class="diptych__desc">Gore-Tex Pro 80D 壳层冲锋衣。28,000mm 防水等级，485g 极致轻量。</p>
+    <div class="diptych__specs">
+      <div class="spec-row">
+        <span class="sl">WEIGHT</span><span class="sv">485g</span>
+      </div>
+      <div class="spec-row">
+        <span class="sl">WATERPROOF</span><span class="sv">28,000mm</span>
+      </div>
+      <div class="spec-row">
+        <span class="sl">MATERIAL</span><span class="sv">Gore-Tex Pro 80D</span>
+      </div>
+    </div>
+  </div>
+  <div class="diptych__right">
+    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&h=600&fit=crop" alt="Nordic mountain landscape" class="diptych__img">
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="diptych"&gt;
+  &lt;div class="diptych__left"&gt;
+    &lt;span class="diptych__label"&gt;FW25 COLLECTION&lt;/span&gt;
+    &lt;h2 class="diptych__title"&gt;L.I.M Comp&lt;/h2&gt;
+    &lt;p class="diptych__desc"&gt;Gore-Tex Pro 80D 壳层冲锋衣。28,000mm 防水等级，485g 极致轻量。&lt;/p&gt;
+    &lt;div class="diptych__specs"&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;WEIGHT&lt;/span&gt;&lt;span class="sv"&gt;485g&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;WATERPROOF&lt;/span&gt;&lt;span class="sv"&gt;28,000mm&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;MATERIAL&lt;/span&gt;&lt;span class="sv"&gt;Gore-Tex Pro 80D&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="diptych__right"&gt;
+    &lt;img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&amp;h=600&amp;fit=crop" alt="Nordic mountain landscape" class="diptych__img"&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A6">
+  <div class="review-header">
+    <div class="review-id">A6</div>
+    <div class="review-name">Quote Led </div>
+    <select class="review-select"><option value="delete" selected>✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.hero-quote {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: var(--space-4xl) var(--container-padding);
+}
+.hero-quote__inner {
+  max-width: 720px;
+  text-align: center;
+  position: relative;
+}
+.hero-quote__mark {
+  font-family: Georgia, serif;
+  font-size: 120px;
+  color: var(--text-display);
+  opacity: 0.06;
+  line-height: 0.6;
+  display: block;
+  margin-bottom: var(--space-lg);
+  user-select: none;
+}
+.hero-quote__text {
+  font-family: Georgia, serif;
+  font-size: var(--display-md);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-display);
+  line-height: 1.4;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.hero-quote__cite {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--space-xl);
+  font-style: normal;
+}
+.hero-quote__author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.hero-quote__year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+}</style><section class="hero-quote">
+  <div class="hero-quote__inner">
+    <span class="hero-quote__mark">&ldquo;</span>
+    <blockquote class="hero-quote__text">
+      Nature does not hurry, yet everything is accomplished. We build gear the same way.
+    </blockquote>
+    <cite class="hero-quote__cite">
+      <span class="hero-quote__author">ALFRED HAGLOFS</span>
+      <span class="hero-quote__year">FOUNDER, 1914</span>
+    </cite>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="hero-quote"&gt;
+  &lt;div class="hero-quote__inner"&gt;
+    &lt;span class="hero-quote__mark"&gt;&amp;ldquo;&lt;/span&gt;
+    &lt;blockquote class="hero-quote__text"&gt;
+      Nature does not hurry, yet everything is accomplished. We build gear the same way.
+    &lt;/blockquote&gt;
+    &lt;cite class="hero-quote__cite"&gt;
+      &lt;span class="hero-quote__author"&gt;ALFRED HAGLOFS&lt;/span&gt;
+      &lt;span class="hero-quote__year"&gt;FOUNDER, 1914&lt;/span&gt;
+    &lt;/cite&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A7">
+  <div class="review-header">
+    <div class="review-id">A7</div>
+    <div class="review-name">~~Stat Led~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="delete" selected>✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.hero-stat {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-alt);
+  padding: var(--space-4xl) var(--container-padding);
+}
+.hero-stat__inner {
+  text-align: center;
+}
+.hero-stat__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: var(--space-md);
+}
+.hero-stat__number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--display-2xl);
+  font-weight: 700;
+  color: var(--text-display);
+  line-height: 1;
+}
+.hero-stat__context {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body-lg);
+  color: var(--text-secondary);
+  margin-top: var(--space-lg);
+}</style><section class="hero-stat">
+  <div class="hero-stat__inner">
+    <span class="hero-stat__label">ACTIVE SUPPLIERS</span>
+    <div class="hero-stat__number">24</div>
+    <div class="hero-stat__context">覆盖 6 条产线，横跨 3 大洲</div>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="hero-stat"&gt;
+  &lt;div class="hero-stat__inner"&gt;
+    &lt;span class="hero-stat__label"&gt;ACTIVE SUPPLIERS&lt;/span&gt;
+    &lt;div class="hero-stat__number"&gt;24&lt;/div&gt;
+    &lt;div class="hero-stat__context"&gt;覆盖 6 条产线，横跨 3 大洲&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A8">
+  <div class="review-header">
+    <div class="review-id">A8</div>
+    <div class="review-name">~~Letter~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.hero-letter {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4xl) var(--container-padding);
+  background: var(--bg);
+}
+.hero-letter__paper {
+  max-width: 560px;
+  font-family: Georgia, serif;
+  font-size: var(--body-lg);
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+.hero-letter__date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+  margin-bottom: var(--space-xl);
+}
+.hero-letter__greeting {
+  font-size: var(--body-lg);
+  font-weight: 500;
+  margin-bottom: var(--space-md);
+}
+.hero-letter__body { margin: 0 0 var(--space-xl) 0; }
+.hero-letter__sign {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hero-letter__name { font-weight: 600; }
+.hero-letter__from {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+}</style><section class="hero-letter">
+  <div class="hero-letter__paper">
+    <div class="hero-letter__date">May 2026</div>
+    <div class="hero-letter__greeting">Dear Explorer,</div>
+    <p class="hero-letter__body">
+      This season, we return to the mountains that shaped us. The L.I.M collection represents
+      our relentless pursuit of lightweight durability — gear that disappears in your pack
+      but performs when the weather turns.
+    </p>
+    <div class="hero-letter__sign">
+      <span class="hero-letter__name">The Haglofs Team</span>
+      <span class="hero-letter__from">Stockholm, Sweden</span>
+    </div>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="hero-letter"&gt;
+  &lt;div class="hero-letter__paper"&gt;
+    &lt;div class="hero-letter__date"&gt;May 2026&lt;/div&gt;
+    &lt;div class="hero-letter__greeting"&gt;Dear Explorer,&lt;/div&gt;
+    &lt;p class="hero-letter__body"&gt;
+      This season, we return to the mountains that shaped us. The L.I.M collection represents
+      our relentless pursuit of lightweight durability — gear that disappears in your pack
+      but performs when the weather turns.
+    &lt;/p&gt;
+    &lt;div class="hero-letter__sign"&gt;
+      &lt;span class="hero-letter__name"&gt;The Haglofs Team&lt;/span&gt;
+      &lt;span class="hero-letter__from"&gt;Stockholm, Sweden&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A9">
+  <div class="review-header">
+    <div class="review-id">A9</div>
+    <div class="review-name">Photographic </div>
+    <select class="review-select"><option value="delete" selected>✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.hero-photo {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+.hero-photo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.hero-photo__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(45, 42, 38, 0.1) 0%,
+    rgba(45, 42, 38, 0.5) 100%
+  );
+}
+.hero-photo__content {
+  position: relative;
+  z-index: 1;
+  padding: var(--space-4xl) var(--container-padding);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100vh;
+  max-width: var(--container-max);
+  margin: 0 auto;
+}
+.hero-photo__tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: var(--space-md);
+}
+.hero-photo__title {
+  font-family: Georgia, serif;
+  font-size: var(--display-xl);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  margin: 0 0 var(--space-md) 0;
+  max-width: 600px;
+}
+.hero-photo__sub {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body);
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  max-width: 480px;
+  margin: 0;
+}
+.hero-photo__caption {
+  position: absolute;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  z-index: 1;
+}
+.hero-photo__credit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+}</style><section class="hero-photo">
+  <img class="hero-photo__img" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&h=800&fit=crop" alt="Swedish wilderness landscape">
+  <div class="hero-photo__overlay"></div>
+  <div class="hero-photo__content">
+    <span class="hero-photo__tag">FW25 COLLECTION</span>
+    <h1 class="hero-photo__title">Built for the Nordic Winter</h1>
+    <p class="hero-photo__sub">在零下 30 度的斯堪的纳维亚半岛，每一克重量都关乎生死。</p>
+  </div>
+  <div class="hero-photo__caption">
+    <span class="hero-photo__credit">Photo: Abisko National Park, Sweden</span>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="hero-photo"&gt;
+  &lt;img class="hero-photo__img" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&amp;h=800&amp;fit=crop" alt="Swedish wilderness landscape"&gt;
+  &lt;div class="hero-photo__overlay"&gt;&lt;/div&gt;
+  &lt;div class="hero-photo__content"&gt;
+    &lt;span class="hero-photo__tag"&gt;FW25 COLLECTION&lt;/span&gt;
+    &lt;h1 class="hero-photo__title"&gt;Built for the Nordic Winter&lt;/h1&gt;
+    &lt;p class="hero-photo__sub"&gt;在零下 30 度的斯堪的纳维亚半岛，每一克重量都关乎生死。&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="hero-photo__caption"&gt;
+    &lt;span class="hero-photo__credit"&gt;Photo: Abisko National Park, Sweden&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A10">
+  <div class="review-header">
+    <div class="review-id">A10</div>
+    <div class="review-name">Custom Illustration </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.hero-illustration {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: var(--space-4xl) var(--container-padding);
+}
+.hero-illustration__inner {
+  text-align: center;
+}
+.hero-illustration__glyph {
+  display: grid;
+  grid-template-columns: repeat(5, 16px);
+  grid-template-rows: repeat(7, 16px);
+  gap: 5px;
+  margin: 0 auto var(--space-xl);
+}
+.hero-illustration__glyph .cell {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+.hero-illustration__glyph .cell.on { background: var(--text-display); }
+.hero-illustration__glyph .cell.off { background: transparent; }
+.hero-illustration__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+.hero-illustration__desc {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body-sm);
+  color: var(--text-disabled);
+  max-width: 400px;
+  margin: 0 auto;
+}</style><section class="hero-illustration">
+  <div class="hero-illustration__inner">
+    <div class="hero-illustration__glyph" data-char="H">
+      <!-- Dot-matrix H: 5x7 grid -->
+      <div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell on"></div>
+      <div class="cell on"></div><div class="cell off"></div><div class="cell off"></div><div class="cell off"></div><div class="cell on"></div>
+      <div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell off"></div><div class="cell on"></div>
+      <div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell on"></div>
+      <div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell off"></div><div class="cell on"></div>
+      <div class="cell on"></div><div class="cell off"></div><div class="cell off"></div><div class="cell off"></div><div class="cell on"></div>
+      <div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell on"></div><div class="cell on"></div>
+    </div>
+    <div class="hero-illustration__label">HAGLOFS DOT-MATRIX</div>
+    <p class="hero-illustration__desc">每个字符由物理点阵构成。技术精度与手工温度的交汇。</p>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="hero-illustration"&gt;
+  &lt;div class="hero-illustration__inner"&gt;
+    &lt;div class="hero-illustration__glyph" data-char="H"&gt;
+      &lt;!-- Dot-matrix H: 5x7 grid --&gt;
+      &lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;
+      &lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;
+      &lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;
+      &lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;
+      &lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;
+      &lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell off"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;
+      &lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;&lt;div class="cell on"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="hero-illustration__label"&gt;HAGLOFS DOT-MATRIX&lt;/div&gt;
+    &lt;p class="hero-illustration__desc"&gt;每个字符由物理点阵构成。技术精度与手工温度的交汇。&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A11">
+  <div class="review-header">
+    <div class="review-id">A11</div>
+    <div class="review-name">Decorative Background Number </div>
+    <select class="review-select"><option value="delete" selected>✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.deco-bg {
+  position: absolute;
+  top: -20px; right: -10px;
+  font-family: Georgia, serif;
+  font-size: 120px;
+  font-weight: 700;
+  color: var(--text-display);
+  opacity: 0.05;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}</style><span class="deco-bg">01</span></div>
+  <div class="preview-code"><pre>&lt;span class="deco-bg"&gt;01&lt;/span&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="A12">
+  <div class="review-header">
+    <div class="review-id">A12</div>
+    <div class="review-name">Dot-Matrix Glyph </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.dm-glyph {
+  display: grid;
+  grid-template-columns: repeat(5, var(--dm-dot, 6px));
+  grid-template-rows: repeat(7, var(--dm-dot, 6px));
+  gap: var(--dm-gap, 3px);
+}
+.dm-glyph .cell {
+  width: var(--dm-dot, 6px);
+  height: var(--dm-dot, 6px);
+  border-radius: 50%;
+}
+.dm-glyph .cell.on { background: var(--text-display); }
+.dm-glyph .cell.off { background: transparent; }</style><div class="dm-glyph" data-char="H">
+  <!-- JS-generated: 5×7 grid of .cell.on/.cell.off -->
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="dm-glyph" data-char="H"&gt;
+  &lt;!-- JS-generated: 5×7 grid of .cell.on/.cell.off --&gt;
+&lt;/div&gt;</pre></div>
+</section>
+<script>
+function togglePreview(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='block';item.querySelector('.preview-code').style.display='none';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function toggleCode(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='none';item.querySelector('.preview-code').style.display='block';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function generateResult(){var items=document.querySelectorAll('.review-item');var result=document.title.split(' ')[0]+' 复审结果\n==================\n\n';var keep=[],del=[],unsure=[];items.forEach(function(item){var id=item.dataset.id;var name=item.querySelector('.review-name').textContent.trim();var sel=item.querySelector('.review-select').value;if(sel==='keep')keep.push(id+' '+name);else if(sel==='delete')del.push(id+' '+name);else unsure.push(id+' '+name)});result+='✅ 保留（'+keep.length+'个）：\n';keep.forEach(function(k){result+='  '+k+'\n'});result+='\n❌ 删除（'+del.length+'个）：\n';del.forEach(function(d){result+='  '+d+'\n'});if(unsure.length>0){result+='\n⚠️ 不确定（'+unsure.length+'个）：\n';unsure.forEach(function(u){result+='  '+u+'\n'})}document.getElementById('result-text').textContent=result;document.getElementById('result-box').style.display='block'}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result-text').textContent).then(function(){var btn=event.target;btn.textContent='已复制';setTimeout(function(){btn.textContent='复制结果'},1500)})}
+</script>
+</body>
+</html>

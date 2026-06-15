@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian 色彩实验室 · 交互调色</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══ Reset ═══ */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#F5F3EF;color:#1A1816;font-size:14px;line-height:1.6;overflow-x:hidden}
+
+/* ═══ Layout ═══ */
+.lab{display:grid;grid-template-columns:380px 1fr;min-height:100vh}
+@media(max-width:1100px){.lab{grid-template-columns:1fr}}
+
+/* ═══ Control Panel ═══ */
+.ctrl{background:#FFF;border-right:1px solid #DBD6D2;padding:24px;overflow-y:auto;max-height:100vh}
+.ctrl__title{font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:300;color:#2D2A26;margin-bottom:4px}
+.ctrl__sub{font-size:11px;color:#8A7D6E;margin-bottom:20px}
+
+.ctrl-group{border:1px solid #E5E5E0;padding:14px;margin-bottom:12px}
+.ctrl-group__label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8A7D6E;margin-bottom:10px}
+
+.scene-btn{display:inline-block;padding:5px 14px;font-size:11px;border:1px solid #DBD6D2;background:transparent;cursor:pointer;margin:2px;border-radius:4px;transition:all .15s}
+.scene-btn:hover{border-color:#8A7D6E}
+.scene-btn.active{background:#2D2A26;color:#fff;border-color:#2D2A26}
+
+.route-btn{display:inline-block;padding:5px 14px;font-size:11px;border:1px solid #DBD6D2;background:transparent;cursor:pointer;margin:2px;border-radius:4px;transition:all .15s}
+.route-btn:hover{border-color:#8A7D6E}
+.route-btn.active{background:#BF9B5A;color:#fff;border-color:#BF9B5A}
+
+.bv-slider{width:100%;margin:6px 0}
+.bv-label{font-size:10px;color:#8A7D6E}
+
+/* ═══ Color Swatch Editor ═══ */
+.color-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #F0EFEA}
+.color-row:last-child{border-bottom:none}
+.color-swatch{width:28px;height:28px;border-radius:4px;border:1px solid #DBD6D2;flex-shrink:0;cursor:pointer}
+.color-swatch input{opacity:0;width:0;height:0}
+.color-name{font-size:10px;width:50px;flex-shrink:0;font-weight:500}
+.color-hex{font-family:'JetBrains Mono',monospace;font-size:10px;width:60px;border:1px solid #E5E5E0;padding:2px 4px;background:#FAFAF8;border-radius:2px}
+.color-hex:focus{outline:none;border-color:#8A7D6E}
+.color-pct{font-family:'JetBrains Mono',monospace;font-size:9px;color:#8A7D6E;width:36px;text-align:right}
+.color-slider{flex:1;height:4px;appearance:none;background:#E5E5E0;border-radius:2px;outline:none}
+.color-slider::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #8A7D6E;cursor:pointer}
+.color-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #8A7D6E;cursor:pointer}
+.color-role{font-size:8px;color:#A0A0A0;width:40px;text-align:right;flex-shrink:0}
+
+/* ═══ Preview ═══ */
+.preview{padding:32px;overflow-y:auto;max-height:100vh}
+.preview__inner{max-width:780px;margin:0 auto}
+.preview__hdr{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#A0A0A0;margin-bottom:16px}
+
+/* ═══ Preview Hero ═══ */
+.p-hero{padding:48px 40px;position:relative;overflow:hidden;margin-bottom:20px}
+.p-hero__tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.p-hero__h{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.5rem,3vw,2.5rem);font-weight:300;line-height:1.05;letter-spacing:-1px;margin-bottom:8px;max-width:500px}
+.p-hero__h strong{font-weight:600}
+.p-hero__sub{font-size:13px;line-height:1.6;max-width:380px;margin-bottom:20px}
+.p-hero__data{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-top:16px;border-top:1px solid}
+.p-hero__data-n{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:300;line-height:1}
+.p-hero__data-l{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* ═══ Preview Cards ═══ */
+.p-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.p-card{padding:16px;border:1px solid;background:var(--preview-surface)}
+.p-card__l{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.p-card__v{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;margin-bottom:6px}
+.p-card__bar{height:4px;border-radius:2px;transition:background .3s}
+
+/* ═══ Preview Tags ═══ */
+.p-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.p-tag{padding:3px 10px;font-family:'JetBrains Mono',monospace;font-size:9px;border:1px solid;border-radius:3px}
+
+/* ═══ Percentage Bar ═══ */
+.pct-bar{display:flex;height:20px;border-radius:4px;overflow:hidden;margin:12px 0}
+.pct-seg{height:100%;transition:all .3s;position:relative}
+.pct-seg:hover{opacity:.8}
+.pct-seg__label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:7px;white-space:nowrap;color:#8A7D6E}
+
+.pct-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.pct-legend__item{display:flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono',monospace;color:#8A7D6E}
+.pct-legend__dot{width:8px;height:8px;border-radius:2px}
+
+/* ═══ Summary ═══ */
+.summary{padding:12px;background:#FAFAF8;border:1px solid #E5E5E0;margin-bottom:16px;font-size:11px;line-height:1.6}
+.summary strong{font-weight:500}
+</style>
+</head>
+<body>
+
+<div class="lab">
+
+<!-- ═══ Control Panel ═══ -->
+<div class="ctrl">
+  <div class="ctrl__title">色彩实验室</div>
+  <div class="ctrl__sub">调颜色 → 看效果 → 锁定方案</div>
+
+  <!-- Scene -->
+  <div class="ctrl-group">
+    <div class="ctrl-group__label">场景</div>
+    <div id="scene-group">
+      <button class="scene-btn" data-scene="感知">感知层</button>
+      <button class="scene-btn active" data-scene="决策">决策层</button>
+      <button class="scene-btn" data-scene="计划">计划层</button>
+      <button class="scene-btn" data-scene="执行">执行层</button>
+      <button class="scene-btn" data-scene="沉淀">沉淀层</button>
+      <button class="scene-btn" data-scene="对外">对外层</button>
+    </div>
+  </div>
+
+  <!-- Route -->
+  <div class="ctrl-group">
+    <div class="ctrl-group__label">配色路线</div>
+    <div id="route-group">
+      <button class="route-btn active" data-route="natural">🌿 自然（Forest）</button>
+      <button class="route-btn" data-route="arch">🏛 建筑（Slate+Warm）</button>
+      <button class="route-btn" data-route="sky">🌤 留白（SkyBlue）</button>
+    </div>
+  </div>
+
+  <!-- BV -->
+  <div class="ctrl-group">
+    <div class="ctrl-group__label">品牌可见度 BV</div>
+    <input type="range" class="bv-slider" id="bv-slider" min="1" max="5" value="3" step="1">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:#A0A0A0">
+      <span>1 纯内容</span><span>3 标准</span><span>5 品牌宣言</span>
+    </div>
+  </div>
+
+  <!-- Color Editor -->
+  <div class="ctrl-group">
+    <div class="ctrl-group__label">色板编辑 · 点击色块调色</div>
+    <div id="color-editor"></div>
+  </div>
+
+  <!-- Export -->
+  <div class="ctrl-group" style="border-color:#3D5A35">
+    <div class="ctrl-group__label" style="color:#3D5A35">导出方案</div>
+    <button onclick="exportScheme()" style="padding:6px 16px;background:#2D2A26;color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;font-family:JetBrains Mono;letter-spacing:1px">复制 CSS 变量</button>
+    <div id="export-box" style="margin-top:8px;padding:8px;background:#FAFAF8;font-family:JetBrains Mono;font-size:9px;line-height:1.5;max-height:120px;overflow-y:auto;display:none;white-space:pre-wrap"></div>
+  </div>
+</div>
+
+<!-- ═══ Preview ═══ -->
+<div class="preview" id="preview-pane">
+  <div class="preview__inner">
+
+    <div class="preview__hdr">PREVIEW · 实时预览</div>
+
+    <!-- Hero -->
+    <div class="p-hero" id="preview-hero">
+      <div class="p-hero__tag" id="preview-tag">Q2 SUPPLIER REPORT</div>
+      <h1 class="p-hero__h" id="preview-title">供应商绩效 <strong>全景分析</strong></h1>
+      <p class="p-hero__sub" id="preview-sub">覆盖 35 家供应商，6 条产线。环比增长 8.3%</p>
+      <div class="p-hero__data" id="preview-data">
+        <div><div class="p-hero__data-n">35<span>家</span></div><div class="p-hero__data-l">供应商</div></div>
+        <div><div class="p-hero__data-n">+8.3<span>%</span></div><div class="p-hero__data-l">环比</div></div>
+        <div><div class="p-hero__data-n">98.3<span>%</span></div><div class="p-hero__data-l">合规率</div></div>
+      </div>
+    </div>
+
+    <!-- Cards -->
+    <div class="p-cards">
+      <div class="p-card">
+        <div class="p-card__l">毅航</div>
+        <div class="p-card__v">92.5</div>
+        <div class="p-card__bar" style="width:92.5%" id="bar1"></div>
+      </div>
+      <div class="p-card">
+        <div class="p-card__l">毛毛虫</div>
+        <div class="p-card__v" id="card2v">87.3</div>
+        <div class="p-card__bar" style="width:87.3%" id="bar2"></div>
+      </div>
+      <div class="p-card">
+        <div class="p-card__l">伽玛</div>
+        <div class="p-card__v" id="card3v">85.1</div>
+        <div class="p-card__bar" style="width:85.1%" id="bar3"></div>
+      </div>
+      <div class="p-card">
+        <div class="p-card__l">岐力</div>
+        <div class="p-card__v" id="card4v">78.6</div>
+        <div class="p-card__bar" style="width:78.6%" id="bar4"></div>
+      </div>
+    </div>
+
+    <!-- Tags -->
+    <div class="p-tags" id="preview-tags">
+      <span class="p-tag" id="tag1">焦点 · TOP1</span>
+      <span class="p-tag" id="tag2">正常数据</span>
+      <span class="p-tag" id="tag3">次级指标</span>
+      <span class="p-tag" id="tag4">预警</span>
+    </div>
+
+    <!-- Percentage bar -->
+    <div style="margin-top:24px">
+      <div style="font-size:10px;color:#8A7D6E;margin-bottom:4px">颜色占比分布</div>
+      <div class="pct-bar" id="pct-bar"></div>
+      <div class="pct-legend" id="pct-legend"></div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary" id="summary-box">
+      默认方案加载中...
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// Color Engine
+// ════════════════════════════════════════════
+
+// Default palettes per route
+const ROUTES = {
+  natural: {
+    name:'自然路线', colors:[
+      {id:'bg',       name:'底色',     hex:'#f0ede6', pct:50, role:'Neutral'},
+      {id:'surface',  name:'表面',     hex:'#f8f8f8', pct:15, role:'Neutral'},
+      {id:'roof',     name:'深色区',   hex:'#3D5A35', pct:15, role:'Nature'},
+      {id:'forest',   name:'Forest',   hex:'#3D5A35', pct:8,  role:'Nature'},
+      {id:'moss',     name:'Moss',     hex:'#6B8B5E', pct:5,  role:'Nature'},
+      {id:'warm',     name:'暖橙',     hex:'#d47836', pct:3,  role:'Signal'},
+      {id:'gold',     name:'Gold',     hex:'#BF9B5A', pct:2,  role:'Signal'},
+      {id:'red',      name:'砖红',     hex:'#d86a48', pct:1,  role:'Signal'},
+      {id:'sky',      name:'Sky',      hex:'#a0e3ee', pct:1,  role:'Nature'},
+    ]
+  },
+  arch: {
+    name:'建筑路线', colors:[
+      {id:'bg',       name:'底色',     hex:'#f0ede6', pct:45, role:'Neutral'},
+      {id:'surface',  name:'表面',     hex:'#f8f8f8', pct:15, role:'Neutral'},
+      {id:'roof',     name:'深色区',   hex:'#2d3142', pct:15, role:'Nature'},
+      {id:'slate',    name:'Slate',    hex:'#4E627C', pct:8,  role:'Nature'},
+      {id:'warm',     name:'暖橙',     hex:'#d47836', pct:8,  role:'Nature'},
+      {id:'gold',     name:'Gold',     hex:'#BF9B5A', pct:3,  role:'Signal'},
+      {id:'red',      name:'砖红',     hex:'#d86a48', pct:2,  role:'Signal'},
+      {id:'sky',      name:'Sky',      hex:'#4A80C0', pct:2,  role:'Signal'},
+      {id:'green',    name:'青绿',     hex:'#5a9165', pct:2,  role:'Signal'},
+    ]
+  },
+  sky: {
+    name:'留白路线', colors:[
+      {id:'bg',       name:'底色',     hex:'#f0ede6', pct:50, role:'Neutral'},
+      {id:'surface',  name:'表面',     hex:'#f8f8f8', pct:20, role:'Neutral'},
+      {id:'sky',      name:'SkyBlue',  hex:'#a0e3ee', pct:10, role:'Nature'},
+      {id:'moss',     name:'Moss',     hex:'#6B8B5E', pct:6,  role:'Nature'},
+      {id:'warm',     name:'暖橙',     hex:'#d47836', pct:5,  role:'Signal'},
+      {id:'gold',     name:'Gold',     hex:'#BF9B5A', pct:3,  role:'Signal'},
+      {id:'clay',     name:'Clay',     hex:'#C66B4B', pct:3,  role:'Signal'},
+      {id:'slate',    name:'Slate',    hex:'#4E627C', pct:2,  role:'Nature'},
+      {id:'red',      name:'砖红',     hex:'#d86a48', pct:1,  role:'Signal'},
+    ]
+  }
+};
+
+let currentRoute = 'arch';
+let currentScene = '决策';
+let currentBV = 3;
+
+// ═══ Render ═══
+function render() {
+  const palette = ROUTES[currentRoute];
+  const colors = palette.colors;
+  
+  // Update preview with CSS variables
+  const preview = document.getElementById('preview-pane');
+  const hero = document.getElementById('preview-hero');
+  const tags = document.getElementById('preview-tags');
+  
+  // Build CSS vars
+  let vars = '';
+  colors.forEach(c => {
+    vars += `--p-${c.id}: ${c.hex};\n`;
+  });
+  
+  // Apply to preview elements
+  // Hero bg
+  const roof = colors.find(c => c.id === 'roof');
+  const bg = colors.find(c => c.id === 'bg');
+  const warm = colors.find(c => c.id === 'warm');
+  const gold = colors.find(c => c.id === 'gold');
+  const red = colors.find(c => c.id === 'red');
+  const sky = colors.find(c => c.id === 'sky');
+  const slate = colors.find(c => c.id === 'slate');
+  const moss = colors.find(c => c.id === 'moss');
+  const green = colors.find(c => c.id === 'green');
+  const clay = colors.find(c => c.id === 'clay');
+  
+  // Hero background
+  hero.style.background = roof ? roof.hex : '#2d3142';
+  hero.style.color = '#fff';
+  
+  // Hero tag
+  const tagEl = document.getElementById('preview-tag');
+  tagEl.style.color = warm ? warm.hex : '#d47836';
+  
+  // Hero title
+  const titleEl = document.getElementById('preview-title');
+  titleEl.style.color = '#fff';
+  
+  // Hero sub
+  const subEl = document.getElementById('preview-sub');
+  subEl.style.color = 'rgba(255,255,255,0.5)';
+  
+  // Hero data
+  const dataEl = document.getElementById('preview-data');
+  dataEl.style.borderTopColor = 'rgba(255,255,255,0.1)';
+  const dataNums = dataEl.querySelectorAll('.p-hero__data-n');
+  dataNums.forEach(el => el.style.color = '#fff');
+  const dataSpans = dataEl.querySelectorAll('.p-hero__data-n span');
+  dataSpans.forEach(el => el.style.color = warm ? warm.hex : '#d47836');
+  
+  // Cards
+  document.querySelectorAll('.p-card').forEach(el => {
+    el.style.background = '#fff';
+    el.style.borderColor = '#DBD6D2';
+  });
+  document.querySelectorAll('.p-card__l').forEach(el => el.style.color = '#8A7D6E');
+  document.querySelectorAll('.p-card__v').forEach(el => el.style.color = '#2D2A26');
+  
+  // Card bars
+  const bar1 = document.getElementById('bar1');
+  const bar2 = document.getElementById('bar2');
+  const bar3 = document.getElementById('bar3');
+  const bar4 = document.getElementById('bar4');
+  
+  if (warm) bar1.style.background = warm.hex;
+  if (slate || moss) {
+    bar2.style.background = (slate && slate.hex) || '#4E627C';
+    bar3.style.background = (moss && moss.hex) || '#6B8B5E';
+  }
+  if (green) bar4.style.background = green.hex;
+  
+  // Tags
+  const t1 = document.getElementById('tag1');
+  const t2 = document.getElementById('tag2');
+  const t3 = document.getElementById('tag3');
+  const t4 = document.getElementById('tag4');
+  
+  if (warm) { t1.style.borderColor = warm.hex; t1.style.color = warm.hex; }
+  if (gold) { t2.style.borderColor = gold.hex; t2.style.color = gold.hex; }
+  if (green) { t3.style.borderColor = green.hex; t3.style.color = green.hex; }
+  if (red) { t4.style.borderColor = red.hex; t4.style.color = red.hex; }
+  
+  // Body background
+  document.body.style.background = bg ? bg.hex : '#f0ede6';
+  
+  // Percentage bar
+  renderPctBar(colors);
+  
+  // Summary
+  updateSummary(colors);
+  
+  // Update color editor
+  renderColorEditor(colors);
+}
+
+// ═══ Percentage Bar ═══
+function renderPctBar(colors) {
+  const bar = document.getElementById('pct-bar');
+  const legend = document.getElementById('pct-legend');
+  
+  // Normalize pct to sum to 100
+  const total = colors.reduce((s,c) => s + c.pct, 0);
+  const scale = 100 / total;
+  
+  bar.innerHTML = '';
+  legend.innerHTML = '';
+  
+  // Group by role
+  const byRole = {};
+  colors.forEach(c => {
+    if (!byRole[c.role]) byRole[c.role] = [];
+    byRole[c.role].push(c);
+  });
+  
+  // Show all colors in bar
+  colors.forEach(c => {
+    const pct = Math.round(c.pct * scale);
+    const seg = document.createElement('div');
+    seg.className = 'pct-seg';
+    seg.style.width = pct + '%';
+    seg.style.background = c.hex;
+    seg.title = `${c.name}: ${pct}%`;
+    bar.appendChild(seg);
+  });
+  
+  // Legend
+  colors.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'pct-legend__item';
+    const dot = document.createElement('span');
+    dot.className = 'pct-legend__dot';
+    dot.style.background = c.hex;
+    item.appendChild(dot);
+    item.appendChild(document.createTextNode(`${c.name} ${Math.round(c.pct * scale)}%`));
+    legend.appendChild(item);
+  });
+}
+
+// ═══ Color Editor ═══
+function renderColorEditor(colors) {
+  const el = document.getElementById('color-editor');
+  el.innerHTML = '';
+  
+  colors.forEach((c, i) => {
+    const row = document.createElement('div');
+    row.className = 'color-row';
+    
+    // Swatch + hidden color input
+    const swatch = document.createElement('div');
+    swatch.className = 'color-swatch';
+    swatch.style.background = c.hex;
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.value = c.hex;
+    input.addEventListener('input', (e) => {
+      c.hex = e.target.value;
+      swatch.style.background = c.hex;
+      hexInput.value = c.hex;
+      render();
+    });
+    swatch.appendChild(input);
+    swatch.addEventListener('click', () => input.click());
+    
+    // Name
+    const name = document.createElement('span');
+    name.className = 'color-name';
+    name.textContent = c.name;
+    
+    // Hex input
+    const hexInput = document.createElement('input');
+    hexInput.className = 'color-hex';
+    hexInput.value = c.hex;
+    hexInput.addEventListener('change', () => {
+      if (/^#[0-9a-fA-F]{6}$/.test(hexInput.value)) {
+        c.hex = hexInput.value;
+        swatch.style.background = c.hex;
+        input.value = c.hex;
+        render();
+      }
+    });
+    
+    // Slider
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.className = 'color-slider';
+    slider.min = 0;
+    slider.max = 60;
+    slider.value = c.pct;
+    slider.addEventListener('input', () => {
+      c.pct = parseInt(slider.value);
+      pctLabel.textContent = slider.value + '%';
+      render();
+    });
+    
+    // Pct label
+    const pctLabel = document.createElement('span');
+    pctLabel.className = 'color-pct';
+    pctLabel.textContent = c.pct + '%';
+    
+    // Role
+    const role = document.createElement('span');
+    role.className = 'color-role';
+    role.textContent = c.role;
+    
+    row.appendChild(swatch);
+    row.appendChild(name);
+    row.appendChild(hexInput);
+    row.appendChild(slider);
+    row.appendChild(pctLabel);
+    row.appendChild(role);
+    el.appendChild(row);
+  });
+}
+
+// ═══ Summary ═══
+function updateSummary(colors) {
+  const box = document.getElementById('summary-box');
+  const route = ROUTES[currentRoute];
+  
+  const neutral = colors.filter(c => c.role === 'Neutral').reduce((s,c) => s + c.pct, 0);
+  const nature = colors.filter(c => c.role === 'Nature').reduce((s,c) => s + c.pct, 0);
+  const signal = colors.filter(c => c.role === 'Signal').reduce((s,c) => s + c.pct, 0);
+  const total = neutral + nature + signal;
+  const scale = 100 / total;
+  
+  const mainColor = colors.reduce((max, c) => c.pct > max.pct ? c : max, colors[0]);
+  
+  box.innerHTML = `
+    <strong>路线:</strong> ${route.name} ｜
+    <strong>场景:</strong> ${currentScene}层 ｜
+    <strong>BV:</strong> ${currentBV} ｜
+    <strong>主色:</strong> ${mainColor.name} ${mainColor.hex}<br>
+    Neutral ${Math.round(neutral * scale)}% ｜
+    Nature ${Math.round(nature * scale)}% ｜
+    Signal ${Math.round(signal * scale)}%
+  `;
+}
+
+// ═══ Export ═══
+function exportScheme() {
+  const colors = ROUTES[currentRoute].colors;
+  let css = '/* nian-color-v2 · ' + ROUTES[currentRoute].name + ' */\n';
+  css += '/* 场景: ' + currentScene + '层 · BV: ' + currentBV + ' */\n\n';
+  css += ':root {\n';
+  colors.forEach(c => {
+    css += `  --${c.id}: ${c.hex};  /* ${c.name} · ${c.role} · ${c.pct}% */\n`;
+  });
+  css += '}';
+  
+  const box = document.getElementById('export-box');
+  box.textContent = css;
+  box.style.display = 'block';
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(css).then(() => {
+    box.textContent = css + '\n\n✓ 已复制到剪贴板';
+  });
+}
+
+// ═══ Event Listeners ═══
+document.querySelectorAll('.scene-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentScene = btn.dataset.scene;
+    render();
+  });
+});
+
+document.querySelectorAll('.route-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.route-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRoute = btn.dataset.route;
+    render();
+  });
+});
+
+document.getElementById('bv-slider').addEventListener('input', (e) => {
+  currentBV = parseInt(e.target.value);
+  // BV affects warmth intensity - boost warm/or reduce
+  const colors = ROUTES[currentRoute].colors;
+  const warm = colors.find(c => c.id === 'warm');
+  if (warm) warm.pct = 2 + currentBV;
+  render();
+});
+
+// ═══ Init ═══
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SABC 标准化深度诊断报告 · MB Modular Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cols:12;
+  --rows:8;
+  --bl:8px;
+  --lh:24px;
+  --gutter:24px;
+  --margin:48px;
+  --pad:96px;
+  --maxw:1200px;
+  --module-h:96px;
+
+  --paper:#F5F5F5;
+  --ink:#1A1A1A;
+  --ink-soft:#666666;
+  --accent:#D71921;
+  --accent-subtle:rgba(215,25,33,0.08);
+  --success:#4A9E5C;
+  --warning:#D4A843;
+  --orange:#E8734A;
+
+  --g-col:rgba(215,25,33,.06);
+  --g-edge:rgba(215,25,33,.35);
+  --g-row:rgba(0,150,140,.08);
+  --g-row-edge:rgba(0,150,140,.25);
+
+  --surface:#FFFFFF;
+  --surface-raised:#F0F0F0;
+  --border:#E8E8E8;
+  --border-visible:#CCCCCC;
+  --text-disabled:#999999;
+  --text-secondary:#666666;
+  --text-primary:#1A1A1A;
+  --text-display:#000000;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  font-size:16px;
+  line-height:var(--lh);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---- MB Modular Grid ---- */
+.spread{position:relative;width:100%;}
+.wrap{position:relative;max-width:var(--maxw);margin:0 auto;padding:var(--pad) var(--margin);}
+
+/* 模块化网格：列 AND 行 */
+.modular{
+  display:grid;
+  grid-template-columns:repeat(var(--cols),1fr);
+  grid-template-rows:repeat(var(--rows),var(--module-h));
+  column-gap:var(--gutter);
+  row-gap:var(--lh);
+}
+
+/* 子网格带：跨所有列，重新暴露列 */
+.band{
+  grid-column:1 / -1;
+  display:grid;
+  grid-template-columns:subgrid;
+  column-gap:var(--gutter);
+  row-gap:var(--lh);
+  align-items:start;
+}
+@supports not (grid-template-columns:subgrid){
+  .band{grid-template-columns:repeat(var(--cols),1fr);}
+}
+
+/* 模块：占据指定的列和行 */
+.module{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+/* ---- Grid Overlay ---- */
+.guides{position:absolute;inset:0;pointer-events:none;z-index:60;opacity:0;transition:opacity .26s ease;}
+body.grid-on .guides{opacity:1;}
+
+.guides .cols{
+  position:absolute;top:0;bottom:0;left:var(--margin);right:var(--margin);
+  display:grid;grid-template-columns:repeat(var(--cols),1fr);column-gap:var(--gutter);
+}
+.guides .col{
+  background:var(--g-col);
+  box-shadow:inset 1px 0 0 var(--g-edge),inset -1px 0 0 var(--g-edge);
+  position:relative;
+}
+.guides .col span{
+  position:absolute;top:32px;left:0;right:0;text-align:center;
+  font-family:"Space Mono",monospace;font-size:10px;line-height:1;color:var(--accent);
+}
+
+.guides .rows{
+  position:absolute;left:var(--margin);right:var(--margin);top:var(--pad);bottom:0;
+  display:grid;grid-template-rows:repeat(var(--rows),var(--module-h));row-gap:var(--lh);
+}
+.guides .row{
+  background:var(--g-row);
+  border-bottom:1px solid var(--g-row-edge);
+}
+
+.guides .mline{position:absolute;top:0;bottom:0;width:1px;background:var(--g-edge);}
+.guides .mline.l{left:var(--margin);}.guides .mline.r{right:var(--margin);}
+
+/* ---- Toggle ---- */
+.toggle{position:fixed;top:18px;right:18px;z-index:200;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border:none;cursor:pointer;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:11px 14px;}
+.toggle .dot{width:9px;height:9px;border-radius:50%;background:#555;}
+body.grid-on .toggle{background:var(--accent);}body.grid-on .toggle .dot{background:#fff;}
+
+/* ---- Typography ---- */
+.masthead{font-family:'Doto','Space Mono',monospace;font-size:72px;font-weight:700;line-height:1;letter-spacing:-0.03em;color:var(--text-display);}
+.chapter-label{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px;}
+.chapter-title{font-size:28px;font-weight:500;color:var(--text-display);letter-spacing:-0.01em;margin-bottom:6px;}
+.chapter-subtitle{font-size:14px;color:var(--text-secondary);line-height:1.6;}
+
+/* ---- KPI ---- */
+.kpi-value{font-family:"Doto",monospace;font-size:48px;font-weight:700;line-height:1;color:var(--text-display);}
+.kpi-unit{font-family:"Space Mono",monospace;font-size:14px;color:var(--text-secondary);margin-left:2px;}
+.kpi-note{font-size:12px;color:var(--text-secondary);margin-top:8px;line-height:1.4;}
+
+/* ---- Status ---- */
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+.status-dot.red{background:var(--accent);}.status-dot.yellow{background:var(--warning);}.status-dot.green{background:var(--success);}
+
+/* ---- Card ---- */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;}
+.card-label{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:16px;}
+.card-caption{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:20px;}
+
+/* ---- Table ---- */
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table th{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);text-align:left;padding:10px 12px;border-bottom:1px solid var(--border-visible);font-weight:400;}
+.data-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text-primary);font-family:"Space Mono",monospace;font-size:12px;}
+.data-table .text-cell{font-family:'Inter',sans-serif;font-size:13px;}
+.data-table .highlight{color:var(--accent);font-weight:700;}
+.data-table .bold-val{font-weight:700;color:var(--text-display);}
+
+/* ---- Compare ---- */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.compare-col{padding:24px;}
+.compare-col+.compare-col{border-left:1px solid var(--border);}
+.compare-col-header{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:16px;}
+.compare-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.compare-row:last-child{border-bottom:none;}
+.compare-row-label{font-size:13px;color:var(--text-secondary);}
+.compare-row-value{font-family:"Space Mono",monospace;font-size:14px;font-weight:700;color:var(--text-display);}
+
+/* ---- Narration ---- */
+.narration{font-size:15px;color:var(--text-primary);line-height:1.7;padding:20px 24px;background:var(--surface);border-left:2px solid var(--text-display);border-radius:0 8px 8px 0;}
+.narration strong{color:var(--text-display);font-weight:500;}
+
+/* ---- Anomaly ---- */
+.anomaly-card{background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--accent);border-radius:8px;padding:16px 20px;}
+
+/* ---- Action ---- */
+.action-p0{border-left:3px solid var(--accent);}.action-p1{border-left:3px solid var(--warning);}.action-p2{border-left:3px solid var(--text-secondary);}
+
+/* ---- Priority ---- */
+.priority-tag{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:0.06em;padding:2px 8px;border-radius:4px;display:inline-block;}
+.priority-tag.p0{background:var(--accent-subtle);color:var(--accent);}
+.priority-tag.p1{background:rgba(212,168,67,0.12);color:var(--warning);}
+.priority-tag.p2{background:var(--surface-raised);color:var(--text-secondary);}
+
+/* ---- Chart ---- */
+.chart-container{width:100%;position:relative;}
+.chart-container svg{width:100%;height:auto;display:block;}
+.axis-text{font-family:"Space Mono",monospace;font-size:10px;fill:var(--text-secondary);}
+.heat-cell{font-family:"Space Mono",monospace;font-size:11px;text-anchor:middle;dominant-baseline:central;}
+
+/* ---- Footnote ---- */
+.footnote{font-family:"Space Mono",monospace;font-size:11px;color:var(--text-disabled);line-height:1.6;margin-top:12px;}
+
+/* ---- Responsive ---- */
+@media(max-width:768px){
+  .modular{grid-template-columns:repeat(4,1fr);grid-template-rows:auto;}
+  .module{grid-column:span 4!important;grid-row:span 1!important;}
+}
+</style>
+</head>
+<body>
+<button class="toggle" id="gridToggle" aria-pressed="false"><span class="dot"></span><span class="lbl">显示网格</span></button>
+
+<!-- ======== HERO · 4×2 模块化网格 ======== -->
+<section class="spread" style="background:var(--surface);border-bottom:1px solid var(--border);">
+<div class="wrap">
+<div class="modular" style="--rows:2;">
+  <!-- 模块 A1-A3：标题 -->
+  <div style="grid-column:1/7;grid-row:1/2;">
+    <div class="chapter-label" style="margin-bottom:24px;">SABC 标准化深度诊断报告</div>
+    <div class="masthead">伽玛</div>
+  </div>
+  <!-- 模块 B1-B3：副标题 -->
+  <div style="grid-column:7/13;grid-row:1/2;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:12px;">
+    <div style="font-size:18px;color:var(--text-primary);margin-bottom:4px;">金条业务 · 坐席级 CRM 数据诊断</div>
+    <div style="font-size:14px;color:var(--text-secondary);">数据周期：2026年5月 · 首贷/复贷全程分拆</div>
+  </div>
+  <!-- 模块 A2：总人数 -->
+  <div style="grid-column:1/4;grid-row:2/3;padding-top:24px;border-top:1px solid var(--border);">
+    <div class="chapter-label">总人数</div>
+    <div class="kpi-value" style="font-size:36px;">343</div>
+  </div>
+  <!-- 模块 B2：参评人数 -->
+  <div style="grid-column:4/7;grid-row:2/3;padding-top:24px;border-top:1px solid var(--border);">
+    <div class="chapter-label">参评人数</div>
+    <div class="kpi-value" style="font-size:36px;">149</div>
+  </div>
+  <!-- 模块 C2：总 GMV -->
+  <div style="grid-column:7/10;grid-row:2/3;padding-top:24px;border-top:1px solid var(--border);">
+    <div class="chapter-label">总 GMV</div>
+    <div class="kpi-value" style="font-size:36px;">9.06<span style="font-size:14px;color:var(--text-secondary);margin-left:2px;">亿</span></div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- ======== 第一章 · 4×3 + 6×4 模块化网格 ======== -->
+<section class="spread" id="ch1">
+<div class="wrap">
+<div class="modular" style="--rows:12;">
+  <!-- 章节标题：模块 A1 -->
+  <div style="grid-column:1/13;grid-row:1/2;">
+    <div class="chapter-label">第一章</div>
+    <div class="chapter-title">全景总览</div>
+    <div class="chapter-subtitle">一眼看清伽玛这个月什么状态——给决策者的仪表盘。</div>
+  </div>
+
+  <!-- KPI 标签：模块 A2 -->
+  <div style="grid-column:1/13;grid-row:2/3;">
+    <div class="card-label">核心 KPI 指标</div>
+  </div>
+
+  <!-- KPI 1：模块 A3 -->
+  <div style="grid-column:1/4;grid-row:3/4;">
+    <div class="module">
+      <div class="chapter-label"><span class="status-dot red"></span>参评率</div>
+      <div class="kpi-value">43.4<span class="kpi-unit">%</span></div>
+      <div class="kpi-note">149 / 343 人达标<br>低于 60% 门槛</div>
+    </div>
+  </div>
+
+  <!-- KPI 2：模块 B3 -->
+  <div style="grid-column:4/7;grid-row:3/4;">
+    <div class="module">
+      <div class="chapter-label"><span class="status-dot yellow"></span>C 级率</div>
+      <div class="kpi-value">39<span class="kpi-unit">%</span></div>
+      <div class="kpi-note">参评 56 首贷中 22 人 C 级<br>高于 25% 警戒线</div>
+    </div>
+  </div>
+
+  <!-- KPI 3：模块 C3 -->
+  <div style="grid-column:7/10;grid-row:3/4;">
+    <div class="module">
+      <div class="chapter-label"><span class="status-dot yellow"></span>S/C 转化倍差</div>
+      <div class="kpi-value">3.4<span class="kpi-unit">×</span></div>
+      <div class="kpi-note">S 级转化率 1.68%<br>C 级转化率 0.50%</div>
+    </div>
+  </div>
+
+  <!-- KPI 4：模块 D3 -->
+  <div style="grid-column:10/13;grid-row:3/4;">
+    <div class="module">
+      <div class="chapter-label"><span class="status-dot red"></span>GMV 集中度</div>
+      <div class="kpi-value">59.2<span class="kpi-unit">%</span></div>
+      <div class="kpi-note">Top 20% 坐席贡献<br>高于 50% 依赖阈值</div>
+    </div>
+  </div>
+
+  <!-- 图1 标签：模块 A4 -->
+  <div style="grid-column:1/13;grid-row:4/5;">
+    <div class="card-label">图 1 · 职场 S/A/B/C 构成</div>
+  </div>
+
+  <!-- 图1：模块 A5-A8（跨 4 行） -->
+  <div style="grid-column:1/13;grid-row:5/9;">
+    <div class="card">
+      <div class="card-caption">各职场的等级分布——问题最大的职场 C 级率最高，S 级集中在成熟职场。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg">
+          <text x="120" y="20" class="axis-text" text-anchor="start">S级</text>
+          <text x="260" y="20" class="axis-text" text-anchor="middle">A级</text>
+          <text x="420" y="20" class="axis-text" text-anchor="middle">B级</text>
+          <text x="580" y="20" class="axis-text" text-anchor="middle">C级</text>
+          <text x="110" y="60" class="axis-text" text-anchor="end">职场A</text>
+          <rect x="120" y="38" width="60" height="30" rx="2" fill="#E8734A"/>
+          <rect x="260" y="38" width="100" height="30" rx="2" fill="#5A6878"/>
+          <rect x="420" y="38" width="80" height="30" rx="2" fill="#8B99A8"/>
+          <rect x="580" y="38" width="120" height="30" rx="2" fill="#B8C4D0"/>
+          <text x="150" y="57" class="heat-cell" fill="#fff" font-size="10">3</text>
+          <text x="310" y="57" class="heat-cell" fill="#fff" font-size="10">8</text>
+          <text x="460" y="57" class="heat-cell" fill="#fff" font-size="10">6</text>
+          <text x="640" y="57" class="heat-cell" fill="#fff" font-size="10">12</text>
+          <text x="720" y="57" class="axis-text" fill="#D71921" font-weight="700">C级率 39%</text>
+          <text x="110" y="110" class="axis-text" text-anchor="end">职场B</text>
+          <rect x="120" y="88" width="80" height="30" rx="2" fill="#E8734A"/>
+          <rect x="260" y="88" width="90" height="30" rx="2" fill="#5A6878"/>
+          <rect x="420" y="88" width="60" height="30" rx="2" fill="#8B99A8"/>
+          <rect x="580" y="88" width="100" height="30" rx="2" fill="#B8C4D0"/>
+          <text x="160" y="107" class="heat-cell" fill="#fff" font-size="10">4</text>
+          <text x="305" y="107" class="heat-cell" fill="#fff" font-size="10">7</text>
+          <text x="450" y="107" class="heat-cell" fill="#fff" font-size="10">5</text>
+          <text x="630" y="107" class="heat-cell" fill="#fff" font-size="10">9</text>
+          <text x="720" y="107" class="axis-text" fill="#D4A843">C级率 36%</text>
+          <text x="110" y="160" class="axis-text" text-anchor="end">职场C</text>
+          <rect x="120" y="138" width="100" height="30" rx="2" fill="#E8734A"/>
+          <rect x="260" y="138" width="70" height="30" rx="2" fill="#5A6878"/>
+          <rect x="420" y="138" width="70" height="30" rx="2" fill="#8B99A8"/>
+          <rect x="580" y="138" width="80" height="30" rx="2" fill="#B8C4D0"/>
+          <text x="170" y="157" class="heat-cell" fill="#fff" font-size="10">5</text>
+          <text x="295" y="157" class="heat-cell" fill="#fff" font-size="10">6</text>
+          <text x="455" y="157" class="heat-cell" fill="#fff" font-size="10">5</text>
+          <text x="620" y="157" class="heat-cell" fill="#fff" font-size="10">7</text>
+          <text x="720" y="157" class="axis-text">C级率 30%</text>
+          <text x="110" y="210" class="axis-text" text-anchor="end">职场D</text>
+          <rect x="120" y="188" width="70" height="30" rx="2" fill="#E8734A"/>
+          <rect x="260" y="188" width="80" height="30" rx="2" fill="#5A6878"/>
+          <rect x="420" y="188" width="90" height="30" rx="2" fill="#8B99A8"/>
+          <rect x="580" y="188" width="60" height="30" rx="2" fill="#B8C4D0"/>
+          <text x="155" y="207" class="heat-cell" fill="#fff" font-size="10">3</text>
+          <text x="300" y="207" class="heat-cell" fill="#fff" font-size="10">7</text>
+          <text x="465" y="207" class="heat-cell" fill="#fff" font-size="10">6</text>
+          <text x="610" y="207" class="heat-cell" fill="#fff" font-size="10">5</text>
+          <text x="720" y="207" class="axis-text">C级率 24%</text>
+          <text x="110" y="260" class="axis-text" text-anchor="end">职场E</text>
+          <rect x="120" y="238" width="90" height="30" rx="2" fill="#E8734A"/>
+          <rect x="260" y="238" width="110" height="30" rx="2" fill="#5A6878"/>
+          <rect x="420" y="238" width="70" height="30" rx="2" fill="#8B99A8"/>
+          <rect x="580" y="238" width="50" height="30" rx="2" fill="#B8C4D0"/>
+          <text x="165" y="257" class="heat-cell" fill="#fff" font-size="10">5</text>
+          <text x="315" y="257" class="heat-cell" fill="#fff" font-size="10">9</text>
+          <text x="455" y="257" class="heat-cell" fill="#fff" font-size="10">5</text>
+          <text x="605" y="257" class="heat-cell" fill="#fff" font-size="10">4</text>
+          <text x="720" y="257" class="axis-text" fill="#4A9E5C">C级率 18%</text>
+          <rect x="120" y="310" width="12" height="12" rx="2" fill="#E8734A"/>
+          <text x="138" y="320" class="axis-text" fill="var(--text-secondary)">S级</text>
+          <rect x="190" y="310" width="12" height="12" rx="2" fill="#5A6878"/>
+          <text x="208" y="320" class="axis-text" fill="var(--text-secondary)">A级</text>
+          <rect x="260" y="310" width="12" height="12" rx="2" fill="#8B99A8"/>
+          <text x="278" y="320" class="axis-text" fill="var(--text-secondary)">B级</text>
+          <rect x="330" y="310" width="12" height="12" rx="2" fill="#B8C4D0"/>
+          <text x="348" y="320" class="axis-text" fill="var(--text-secondary)">C级</text>
+          <text x="580" y="320" class="axis-text" text-anchor="end">按 C 级率降序排列</text>
+        </svg>
+      </div>
+      <div class="narration" style="margin-top:16px;margin-bottom:0;">
+        <strong>职场A C 级率最高（39%）</strong>，S 级集中在职场E。首贷参评 56 人 + 复贷参评 93 人 = 合计参评 149 人。
+      </div>
+    </div>
+  </div>
+
+  <!-- 图2 标签：模块 A9 -->
+  <div style="grid-column:1/13;grid-row:9/10;">
+    <div class="card-label">图 2 · 首贷 × 复贷 双池对比</div>
+  </div>
+
+  <!-- 图2：模块 A10-A12（跨 3 行） -->
+  <div style="grid-column:1/13;grid-row:10/13;">
+    <div class="compare-grid">
+      <div class="compare-col">
+        <div class="compare-col-header">首贷（钓鱼逻辑）</div>
+        <div class="compare-row"><span class="compare-row-label">总人数</span><span class="compare-row-value">120</span></div>
+        <div class="compare-row"><span class="compare-row-label">参评人数</span><span class="compare-row-value">56</span></div>
+        <div class="compare-row"><span class="compare-row-label">参评率</span><span class="compare-row-value">46.7%</span></div>
+        <div class="compare-row"><span class="compare-row-label">总 GMV</span><span class="compare-row-value">9,040 <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">万</span></span></div>
+        <div class="compare-row"><span class="compare-row-label">有通话活动</span><span class="compare-row-value">69%</span></div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-header">复贷（收割逻辑）</div>
+        <div class="compare-row"><span class="compare-row-label">总人数</span><span class="compare-row-value">223</span></div>
+        <div class="compare-row"><span class="compare-row-label">参评人数</span><span class="compare-row-value">93</span></div>
+        <div class="compare-row"><span class="compare-row-label">参评率</span><span class="compare-row-value">41.7%</span></div>
+        <div class="compare-row"><span class="compare-row-label">总 GMV</span><span class="compare-row-value">8.16 <span style="font-size:11px;color:var(--text-secondary);font-weight:400;">亿</span></span></div>
+        <div class="compare-row"><span class="compare-row-label">有通话活动</span><span class="compare-row-value">99%</span></div>
+      </div>
+    </div>
+    <div class="narration" style="margin-top:var(--lh);">
+      复贷贡献 <strong>90%</strong> 总 GMV，但首贷的客户池积累价值不能只看 GMV。首贷通话活跃度偏低（69%），与 MOB1- 新人多有关。
+    </div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows" style="grid-template-rows:repeat(12,var(--module-h));"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- ======== 第二章 · 6×4 模块化网格 ======== -->
+<section class="spread" id="ch2" style="border-top:1px solid var(--border);">
+<div class="wrap">
+<div class="modular" style="--rows:16;">
+  <!-- 章节标题：模块 A1 -->
+  <div style="grid-column:1/13;grid-row:1/2;">
+    <div class="chapter-label">第二章</div>
+    <div class="chapter-title">趋势纵深</div>
+    <div class="chapter-subtitle">司龄全生命周期——团队是怎么走到今天这个状态的？数据随时间的演变路径。</div>
+  </div>
+
+  <!-- 图3 标签：模块 A2 -->
+  <div style="grid-column:1/13;grid-row:2/3;">
+    <div class="card-label">图 3 · 司龄 × 等级矩阵</div>
+  </div>
+
+  <!-- 图3：模块 A3-A6（跨 4 行） -->
+  <div style="grid-column:1/13;grid-row:3/7;">
+    <div class="card">
+      <div class="card-caption">S 级集中在 MOB12+ 老员工，C 级集中在 MOB1-3 新人。不同司龄段的产能断层有多大？</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg">
+          <text x="200" y="20" class="axis-text" text-anchor="middle">S级</text>
+          <text x="300" y="20" class="axis-text" text-anchor="middle">A级</text>
+          <text x="400" y="20" class="axis-text" text-anchor="middle">B级</text>
+          <text x="500" y="20" class="axis-text" text-anchor="middle">C级</text>
+          <text x="130" y="62" class="axis-text" text-anchor="end">MOB1-</text>
+          <text x="130" y="112" class="axis-text" text-anchor="end">MOB1-3</text>
+          <text x="130" y="162" class="axis-text" text-anchor="end">MOB3-6</text>
+          <text x="130" y="212" class="axis-text" text-anchor="end">MOB6-12</text>
+          <text x="130" y="262" class="axis-text" text-anchor="end">MOB12+</text>
+          <rect x="160" y="40" width="80" height="40" rx="4" fill="#FFF0EB" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="200" y="62" class="heat-cell" fill="#999">0</text>
+          <rect x="260" y="40" width="80" height="40" rx="4" fill="#FFF0EB" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="300" y="62" class="heat-cell" fill="#999">1</text>
+          <rect x="360" y="40" width="80" height="40" rx="4" fill="#FFE0D4" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="400" y="62" class="heat-cell" fill="#666">3</text>
+          <rect x="460" y="40" width="80" height="40" rx="4" fill="#C75A35" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="500" y="62" class="heat-cell" fill="#fff" font-weight="700">8</text>
+          <rect x="160" y="90" width="80" height="40" rx="4" fill="#FFF0EB" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="200" y="112" class="heat-cell" fill="#999">0</text>
+          <rect x="260" y="90" width="80" height="40" rx="4" fill="#FFE0D4" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="300" y="112" class="heat-cell" fill="#666">4</text>
+          <rect x="360" y="90" width="80" height="40" rx="4" fill="#FFD0BE" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="400" y="112" class="heat-cell" fill="#666">5</text>
+          <rect x="460" y="90" width="80" height="40" rx="4" fill="#E8734A" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="500" y="112" class="heat-cell" fill="#fff" font-weight="700">7</text>
+          <rect x="160" y="140" width="80" height="40" rx="4" fill="#FFE0D4" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="200" y="162" class="heat-cell" fill="#666">2</text>
+          <rect x="260" y="140" width="80" height="40" rx="4" fill="#FFD0BE" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="300" y="162" class="heat-cell" fill="#666">5</text>
+          <rect x="360" y="140" width="80" height="40" rx="4" fill="#FFE0D4" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="400" y="162" class="heat-cell" fill="#666">3</text>
+          <rect x="460" y="140" width="80" height="40" rx="4" fill="#FFD0BE" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="500" y="162" class="heat-cell" fill="#666">4</text>
+          <rect x="160" y="190" width="80" height="40" rx="4" fill="#FFD0BE" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="200" y="212" class="heat-cell" fill="#666">3</text>
+          <rect x="260" y="190" width="80" height="40" rx="4" fill="#E8734A" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="300" y="212" class="heat-cell" fill="#fff" font-weight="700">6</text>
+          <rect x="360" y="190" width="80" height="40" rx="4" fill="#FFE0D4" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="400" y="212" class="heat-cell" fill="#666">4</text>
+          <rect x="460" y="190" width="80" height="40" rx="4" fill="#FFF0EB" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="500" y="212" class="heat-cell" fill="#999">2</text>
+          <rect x="160" y="240" width="80" height="40" rx="4" fill="#C75A35" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="200" y="262" class="heat-cell" fill="#fff" font-weight="700">5</text>
+          <rect x="260" y="240" width="80" height="40" rx="4" fill="#E8734A" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="300" y="262" class="heat-cell" fill="#fff" font-weight="700">7</text>
+          <rect x="360" y="240" width="80" height="40" rx="4" fill="#FFE0D4" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="400" y="262" class="heat-cell" fill="#666">3</text>
+          <rect x="460" y="240" width="80" height="40" rx="4" fill="#FFF0EB" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="500" y="262" class="heat-cell" fill="#999">1</text>
+          <line x1="205" y1="275" x2="205" y2="295" stroke="#E8734A" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="205" y="308" class="axis-text" text-anchor="middle" fill="#E8734A" font-size="10">MOB12+ 占 S 级 62%</text>
+          <text x="500" y="308" class="axis-text" text-anchor="middle" fill="#D71921" font-size="10">MOB1-3 占 C 级 54%</text>
+        </svg>
+      </div>
+      <div class="footnote">颜色深度 = 人数密度。浅粉（#FFF0EB）→ 深橙（#C75A35）。新人育成是关键瓶颈。</div>
+    </div>
+  </div>
+
+  <!-- 图4 标签：模块 A7 -->
+  <div style="grid-column:1/13;grid-row:7/8;">
+    <div class="card-label">图 4 · 司龄段绩效走势 + 效率拐点</div>
+  </div>
+
+  <!-- 图4：模块 A8-A12（跨 5 行） -->
+  <div style="grid-column:1/13;grid-row:8/13;">
+    <div class="card">
+      <div class="card-caption">坐席的 GMV 和转化率随司龄的增长曲线。左轴：人均 GMV（万元），右轴：转化率（%）。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg">
+          <line x1="90" y1="260" x2="630" y2="260" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="90" y1="205" x2="630" y2="205" stroke="#E8E8E8" stroke-width="0.5" stroke-dasharray="3 3"/>
+          <line x1="90" y1="150" x2="630" y2="150" stroke="#E8E8E8" stroke-width="0.5" stroke-dasharray="3 3"/>
+          <line x1="90" y1="95" x2="630" y2="95" stroke="#E8E8E8" stroke-width="0.5" stroke-dasharray="3 3"/>
+          <line x1="90" y1="40" x2="630" y2="40" stroke="#E8E8E8" stroke-width="0.5" stroke-dasharray="3 3"/>
+          <line x1="90" y1="40" x2="90" y2="260" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="82" y="264" class="axis-text" text-anchor="end" fill="#E8734A">0</text>
+          <text x="82" y="209" class="axis-text" text-anchor="end" fill="#E8734A">100</text>
+          <text x="82" y="154" class="axis-text" text-anchor="end" fill="#E8734A">200</text>
+          <text x="82" y="99" class="axis-text" text-anchor="end" fill="#E8734A">300</text>
+          <text x="82" y="44" class="axis-text" text-anchor="end" fill="#E8734A">400</text>
+          <text x="30" y="150" class="axis-text" text-anchor="middle" fill="#E8734A" transform="rotate(-90,30,150)" font-size="10">人均 GMV（万元）</text>
+          <line x1="630" y1="40" x2="630" y2="260" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="638" y="264" class="axis-text" fill="#5A6878">0%</text>
+          <text x="638" y="154" class="axis-text" fill="#5A6878">0.8%</text>
+          <text x="638" y="99" class="axis-text" fill="#5A6878">1.2%</text>
+          <text x="638" y="44" class="axis-text" fill="#5A6878">2.0%</text>
+          <text x="700" y="150" class="axis-text" text-anchor="middle" fill="#5A6878" transform="rotate(90,700,150)" font-size="10">转化率（%）</text>
+          <text x="150" y="278" class="axis-text" text-anchor="middle">MOB1-</text>
+          <text x="270" y="278" class="axis-text" text-anchor="middle">MOB1-3</text>
+          <text x="390" y="278" class="axis-text" text-anchor="middle" font-weight="700" fill="#D71921">MOB3-6</text>
+          <text x="510" y="278" class="axis-text" text-anchor="middle">MOB6-12</text>
+          <text x="630" y="278" class="axis-text" text-anchor="middle">MOB12+</text>
+          <rect x="378" y="40" width="24" height="220" fill="rgba(215,25,33,0.04)" rx="2"/>
+          <line x1="390" y1="40" x2="390" y2="260" stroke="#D71921" stroke-width="0.5" stroke-dasharray="4 3" opacity="0.5"/>
+          <polyline points="150,248 270,229 390,213 510,120 630,53" fill="none" stroke="#E8734A" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="150" cy="248" r="5" fill="#E8734A"/>
+          <circle cx="270" cy="229" r="5" fill="#E8734A"/>
+          <circle cx="390" cy="213" r="7" fill="#E8734A" stroke="#fff" stroke-width="2"/>
+          <circle cx="510" cy="120" r="5" fill="#E8734A"/>
+          <circle cx="630" cy="53" r="5" fill="#E8734A"/>
+          <text x="150" y="240" class="axis-text" text-anchor="middle" fill="#E8734A" font-size="11">22</text>
+          <text x="270" y="221" class="axis-text" text-anchor="middle" fill="#E8734A" font-size="11">56</text>
+          <text x="390" y="201" class="axis-text" text-anchor="middle" fill="#E8734A" font-weight="700" font-size="12">85</text>
+          <text x="510" y="112" class="axis-text" text-anchor="middle" fill="#E8734A" font-size="11">255</text>
+          <text x="630" y="45" class="axis-text" text-anchor="middle" fill="#E8734A" font-size="11">376</text>
+          <polyline points="150,229 270,205 390,179 510,137 630,75" fill="none" stroke="#5A6878" stroke-width="1.5" stroke-dasharray="8 4" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="150" cy="229" r="4" fill="#5A6878"/>
+          <circle cx="270" cy="205" r="4" fill="#5A6878"/>
+          <circle cx="390" cy="179" r="4" fill="#5A6878"/>
+          <circle cx="510" cy="137" r="4" fill="#5A6878"/>
+          <circle cx="630" cy="75" r="4" fill="#5A6878"/>
+          <text x="150" y="244" class="axis-text" text-anchor="start" fill="#5A6878" font-size="9" dx="8">0.28%</text>
+          <text x="270" y="220" class="axis-text" text-anchor="start" fill="#5A6878" font-size="9" dx="8">0.50%</text>
+          <text x="390" y="172" class="axis-text" text-anchor="end" fill="#5A6878" font-size="9" dx="-8">0.74%</text>
+          <text x="510" y="130" class="axis-text" text-anchor="start" fill="#5A6878" font-size="9" dx="8">1.12%</text>
+          <text x="630" y="68" class="axis-text" text-anchor="end" fill="#5A6878" font-size="9" dx="-8">1.68%</text>
+          <line x1="110" y1="300" x2="140" y2="300" stroke="#E8734A" stroke-width="2.5"/>
+          <circle cx="125" cy="300" r="3" fill="#E8734A"/>
+          <text x="146" y="304" class="axis-text" fill="#E8734A" font-size="10">人均 GMV</text>
+          <line x1="230" y1="300" x2="260" y2="300" stroke="#5A6878" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <circle cx="245" cy="300" r="2.5" fill="#5A6878"/>
+          <text x="266" y="304" class="axis-text" fill="#5A6878" font-size="10">转化率</text>
+          <rect x="100" y="320" width="520" height="32" rx="6" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="0.5"/>
+          <text x="116" y="340" class="axis-text" fill="#D71921" font-size="11" font-weight="700">拐点</text>
+          <text x="146" y="340" class="axis-text" fill="#666" font-size="10">MOB1-3 → MOB3-6：单位效率提升</text>
+          <text x="370" y="340" style="font-family:'Doto',monospace;font-size:16px;font-weight:700;fill:#D71921;">2.5×</text>
+          <text x="410" y="340" class="axis-text" fill="#999" font-size="10">· MOB12+ 效率是新人</text>
+          <text x="540" y="340" style="font-family:'Doto',monospace;font-size:16px;font-weight:700;fill:#1A1A1A;">6.1×</text>
+        </svg>
+      </div>
+      <div style="margin-top:16px;overflow-x:auto;">
+        <table class="data-table" style="max-width:480px;">
+          <thead><tr><th>司龄段</th><th style="text-align:right;">单位通时效率（元/时）</th><th style="text-align:right;">vs MOB1-3</th></tr></thead>
+          <tbody>
+            <tr><td class="text-cell">MOB1-</td><td style="text-align:right;">5,570</td><td style="text-align:right;">0.6×</td></tr>
+            <tr><td class="text-cell">MOB1-3</td><td style="text-align:right;">8,898</td><td style="text-align:right;">1×</td></tr>
+            <tr><td class="text-cell" style="font-weight:500;">MOB3-6</td><td style="text-align:right;color:#E8734A;font-weight:700;">21,099</td><td style="text-align:right;color:#E8734A;font-weight:700;">2.4×</td></tr>
+            <tr><td class="text-cell">MOB6-12</td><td style="text-align:right;">28,207</td><td style="text-align:right;">3.2×</td></tr>
+            <tr><td class="text-cell">MOB12+</td><td style="text-align:right;">54,117</td><td style="text-align:right;font-weight:700;">6.1×</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图5 标签：模块 A13 -->
+  <div style="grid-column:1/13;grid-row:13/14;">
+    <div class="card-label">图 5 · 月度入职趋势</div>
+  </div>
+
+  <!-- 图5：模块 A14-A16（跨 3 行） -->
+  <div style="grid-column:1/13;grid-row:14/17;">
+    <div class="card">
+      <div class="card-caption">2026 年 3-4 月集中入职 150 人，是历史月均 5.6 人的 13-14 倍。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg">
+          <rect x="60" y="60" width="300" height="200" rx="4" fill="var(--surface-raised)" opacity="0.5"/>
+          <text x="70" y="55" class="axis-text" fill="#999" font-size="10">2025 · 历史月份</text>
+          <rect x="400" y="30" width="300" height="230" rx="4" fill="rgba(232,115,74,0.03)" stroke="#E8734A" stroke-width="0.5" stroke-dasharray="4 2"/>
+          <text x="410" y="25" class="axis-text" fill="#E8734A" font-size="10" font-weight="700">2026 · 集中入职期</text>
+          <line x1="60" y1="238" x2="360" y2="238" stroke="#999" stroke-width="0.8" stroke-dasharray="4 3"/>
+          <text x="365" y="241" class="axis-text" fill="#999" font-size="9">月均 5.6</text>
+          <line x1="60" y1="226" x2="360" y2="226" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="3 3"/>
+          <text x="365" y="229" class="axis-text" fill="#CCCCCC" font-size="9">峰值 19</text>
+          <rect x="72" y="216" width="22" height="24" rx="1" fill="#D1C9C0"/>
+          <text x="83" y="215" class="axis-text" text-anchor="middle" fill="#999" font-size="8">3</text>
+          <text x="83" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">1月</text>
+          <rect x="100" y="200" width="22" height="40" rx="1" fill="#D1C9C0"/>
+          <text x="111" y="199" class="axis-text" text-anchor="middle" fill="#999" font-size="8">5</text>
+          <text x="111" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">2月</text>
+          <rect x="128" y="176" width="22" height="64" rx="1" fill="#D1C9C0"/>
+          <text x="139" y="175" class="axis-text" text-anchor="middle" fill="#999" font-size="8">8</text>
+          <text x="139" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">3月</text>
+          <rect x="156" y="192" width="22" height="48" rx="1" fill="#D1C9C0"/>
+          <text x="167" y="191" class="axis-text" text-anchor="middle" fill="#999" font-size="8">6</text>
+          <text x="167" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">4月</text>
+          <rect x="184" y="208" width="22" height="32" rx="1" fill="#D1C9C0"/>
+          <text x="195" y="207" class="axis-text" text-anchor="middle" fill="#999" font-size="8">4</text>
+          <text x="195" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">5月</text>
+          <rect x="212" y="216" width="22" height="24" rx="1" fill="#D1C9C0"/>
+          <text x="223" y="215" class="axis-text" text-anchor="middle" fill="#999" font-size="8">3</text>
+          <text x="223" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">6月</text>
+          <rect x="240" y="184" width="22" height="56" rx="1" fill="#D1C9C0"/>
+          <text x="251" y="183" class="axis-text" text-anchor="middle" fill="#999" font-size="8">7</text>
+          <text x="251" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">7月</text>
+          <rect x="268" y="208" width="22" height="32" rx="1" fill="#D1C9C0"/>
+          <text x="279" y="207" class="axis-text" text-anchor="middle" fill="#999" font-size="8">4</text>
+          <text x="279" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">8月</text>
+          <rect x="296" y="200" width="22" height="40" rx="1" fill="#D1C9C0"/>
+          <text x="307" y="199" class="axis-text" text-anchor="middle" fill="#999" font-size="8">5</text>
+          <text x="307" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">9月</text>
+          <rect x="324" y="192" width="22" height="48" rx="1" fill="#D1C9C0"/>
+          <text x="335" y="191" class="axis-text" text-anchor="middle" fill="#999" font-size="8">6</text>
+          <text x="335" y="256" class="axis-text" text-anchor="middle" font-size="8" fill="#999">10月</text>
+          <text x="385" y="155" class="axis-text" text-anchor="middle" fill="#CCCCCC" font-size="18">//</text>
+          <rect x="415" y="255" width="30" height="5" rx="1" fill="#D1C9C0"/>
+          <text x="430" y="252" class="axis-text" text-anchor="middle" fill="#999" font-size="9">2</text>
+          <text x="430" y="276" class="axis-text" text-anchor="middle" font-size="9" fill="#666">1月</text>
+          <rect x="455" y="250" width="30" height="10" rx="1" fill="#D1C9C0"/>
+          <text x="470" y="247" class="axis-text" text-anchor="middle" fill="#999" font-size="9">4</text>
+          <text x="470" y="276" class="axis-text" text-anchor="middle" font-size="9" fill="#666">2月</text>
+          <rect x="495" y="75" width="36" height="185" rx="2" fill="#E8734A"/>
+          <text x="513" y="66" style="font-family:'Doto',monospace;font-size:20px;font-weight:700;fill:#E8734A;text-anchor:middle;">74</text>
+          <text x="513" y="66" style="font-family:'Space Mono',monospace;font-size:10px;fill:#E8734A;text-anchor:middle;" dy="14">人</text>
+          <text x="513" y="276" class="axis-text" text-anchor="middle" fill="#E8734A" font-weight="700" font-size="10">3月</text>
+          <rect x="545" y="70" width="36" height="190" rx="2" fill="#E8734A"/>
+          <text x="563" y="61" style="font-family:'Doto',monospace;font-size:20px;font-weight:700;fill:#E8734A;text-anchor:middle;">76</text>
+          <text x="563" y="61" style="font-family:'Space Mono',monospace;font-size:10px;fill:#E8734A;text-anchor:middle;" dy="14">人</text>
+          <text x="563" y="276" class="axis-text" text-anchor="middle" fill="#E8734A" font-weight="700" font-size="10">4月</text>
+          <rect x="595" y="240" width="28" height="20" rx="1" fill="#D1C9C0" opacity="0.5"/>
+          <text x="609" y="237" class="axis-text" text-anchor="middle" fill="#999" font-size="8">~</text>
+          <text x="609" y="276" class="axis-text" text-anchor="middle" font-size="9" fill="#999">5月*</text>
+          <rect x="420" y="300" width="270" height="32" rx="6" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="0.5"/>
+          <text x="436" y="320" class="axis-text" fill="#666" font-size="10">集中入职</text>
+          <text x="496" y="320" style="font-family:'Doto',monospace;font-size:18px;font-weight:700;fill:#E8734A;">150</text>
+          <text x="530" y="320" class="axis-text" fill="#666" font-size="10">人 = 历史月均的</text>
+          <text x="646" y="320" style="font-family:'Doto',monospace;font-size:18px;font-weight:700;fill:#1A1A1A;">13×</text>
+        </svg>
+      </div>
+      <div class="footnote">口径：金条业务首次外呼日期，非 HR 入职日期。5月*为截至 5 月 12 日部分数据。</div>
+    </div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows" style="grid-template-rows:repeat(16,var(--module-h));"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- ======== 第三章 · 8×6 模块化网格 ======== -->
+<section class="spread" id="ch3" style="border-top:1px solid var(--border);">
+<div class="wrap">
+<div class="modular" style="--rows:18;">
+  <!-- 章节标题：模块 A1 -->
+  <div style="grid-column:1/13;grid-row:1/2;">
+    <div class="chapter-label">第三章</div>
+    <div class="chapter-title">分群画像</div>
+    <div class="chapter-subtitle">谁在扛业绩、谁在拖后腿？S/A/B/C 四类坐席各自的核心画像。</div>
+  </div>
+
+  <!-- 图7 标签：模块 A2 -->
+  <div style="grid-column:1/13;grid-row:2/3;">
+    <div class="card-label">图 7 · SABC 四档画像明细</div>
+  </div>
+
+  <!-- 图7：模块 A3-A6（跨 4 行） -->
+  <div style="grid-column:1/13;grid-row:3/7;">
+    <div class="card" style="overflow-x:auto;">
+      <div class="card-caption">S 级和 C 级不是"好一点"的差别，是量级差。人均 GMV 差 6.7 倍，转化率差 3.4 倍。</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th style="text-align:right;">S 级（5人）</th>
+            <th style="text-align:right;">A 级（13人）</th>
+            <th style="text-align:right;">B 级（16人）</th>
+            <th style="text-align:right;">C 级（22人）</th>
+            <th style="text-align:right;">S/C 倍差</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-cell">人均 GMV（万）</td>
+            <td class="bold-val" style="text-align:right;">376</td>
+            <td style="text-align:right;">255</td>
+            <td style="text-align:right;">85</td>
+            <td style="text-align:right;">56</td>
+            <td class="highlight" style="text-align:right;">6.7×</td>
+          </tr>
+          <tr>
+            <td class="text-cell">平均转化率</td>
+            <td class="bold-val" style="text-align:right;">1.68%</td>
+            <td style="text-align:right;">1.12%</td>
+            <td style="text-align:right;">0.74%</td>
+            <td style="text-align:right;">0.50%</td>
+            <td class="highlight" style="text-align:right;">3.4×</td>
+          </tr>
+          <tr>
+            <td class="text-cell">日均通时（min）</td>
+            <td class="bold-val" style="text-align:right;">123</td>
+            <td style="text-align:right;">108</td>
+            <td style="text-align:right;">92</td>
+            <td style="text-align:right;">84</td>
+            <td style="text-align:right;">1.5×</td>
+          </tr>
+          <tr>
+            <td class="text-cell">ATT（秒）</td>
+            <td style="text-align:right;">101</td>
+            <td style="text-align:right;">97</td>
+            <td style="text-align:right;">88</td>
+            <td style="text-align:right;">78</td>
+            <td style="text-align:right;">1.3×</td>
+          </tr>
+          <tr>
+            <td class="text-cell">司龄主力</td>
+            <td style="text-align:right;">MOB12+</td>
+            <td style="text-align:right;">MOB6-12</td>
+            <td style="text-align:right;">MOB3-6</td>
+            <td style="text-align:right;">MOB1-3</td>
+            <td style="text-align:right;">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 图8 标签：模块 A7 -->
+  <div style="grid-column:1/13;grid-row:7/8;">
+    <div class="card-label">图 8 · 转化断层 — S/A/B/C 转化率对比</div>
+  </div>
+
+  <!-- 图8：模块 A8-A11（跨 4 行） -->
+  <div style="grid-column:1/13;grid-row:8/12;">
+    <div class="card">
+      <div class="card-caption">从 A 级到 B 级出现断崖（-67%），中间层培养机制可能缺失。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+          <line x1="60" y1="220" x2="640" y2="220" stroke="#E8E8E8" stroke-width="0.5"/>
+          <rect x="80" y="52" width="100" height="168" rx="2" fill="#E8734A"/>
+          <text x="130" y="42" style="font-family:'Doto',monospace;font-size:22px;font-weight:700;fill:#E8734A;text-anchor:middle;">1.68%</text>
+          <text x="130" y="248" class="axis-text" text-anchor="middle" fill="#1A1A1A" font-size="12">S 级</text>
+          <text x="130" y="262" class="axis-text" text-anchor="middle" fill="#999" font-size="9">5人</text>
+          <rect x="220" y="108" width="100" height="112" rx="2" fill="#5A6878"/>
+          <text x="270" y="100" style="font-family:'Doto',monospace;font-size:18px;font-weight:700;fill:#5A6878;text-anchor:middle;">1.12%</text>
+          <text x="270" y="248" class="axis-text" text-anchor="middle" fill="#1A1A1A" font-size="12">A 级</text>
+          <text x="270" y="262" class="axis-text" text-anchor="middle" fill="#999" font-size="9">13人</text>
+          <text x="195" y="85" class="axis-text" text-anchor="middle" fill="#999" font-size="9">-33%</text>
+          <rect x="360" y="146" width="100" height="74" rx="2" fill="#8B99A8"/>
+          <text x="410" y="138" style="font-family:'Doto',monospace;font-size:16px;font-weight:700;fill:#8B99A8;text-anchor:middle;">0.74%</text>
+          <text x="410" y="248" class="axis-text" text-anchor="middle" fill="#1A1A1A" font-size="12">B 级</text>
+          <text x="410" y="262" class="axis-text" text-anchor="middle" fill="#999" font-size="9">16人</text>
+          <rect x="500" y="170" width="100" height="50" rx="2" fill="#B8C4D0"/>
+          <text x="550" y="162" style="font-family:'Doto',monospace;font-size:16px;font-weight:700;fill:#999;text-anchor:middle;">0.50%</text>
+          <text x="550" y="248" class="axis-text" text-anchor="middle" fill="#1A1A1A" font-size="12">C 级</text>
+          <text x="550" y="262" class="axis-text" text-anchor="middle" fill="#999" font-size="9">22人</text>
+          <text x="475" y="168" class="axis-text" text-anchor="middle" fill="#999" font-size="9">-32%</text>
+          <rect x="322" y="108" width="36" height="112" rx="0" fill="rgba(215,25,33,0.06)"/>
+          <path d="M328,108 L340,118 L328,128 L340,138 L328,148 L340,158 L328,168 L340,178 L328,188 L340,198 L328,208 L340,220" fill="none" stroke="#D71921" stroke-width="1.5"/>
+          <rect x="290" y="270" width="100" height="24" rx="4" fill="#D71921"/>
+          <text x="340" y="287" class="axis-text" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">断崖 -67%</text>
+          <line x1="340" y1="220" x2="340" y2="270" stroke="#D71921" stroke-width="1" stroke-dasharray="3 2"/>
+          <rect x="80" y="275" width="120" height="20" rx="4" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="0.5"/>
+          <text x="88" y="290" class="axis-text" fill="#666" font-size="9">S/C 倍差</text>
+          <text x="150" y="290" style="font-family:'Doto',monospace;font-size:13px;font-weight:700;fill:#D71921;">3.4×</text>
+        </svg>
+      </div>
+      <div class="narration" style="margin-top:12px;margin-bottom:0;">
+        A→B 断崖降 67%，<strong>中间层培养机制未有效落地</strong>。不是"逐级递减"，是"到了 B 级突然垮掉"。S 级转化率是 C 级的 3.4 倍。
+      </div>
+    </div>
+  </div>
+
+  <!-- 图9a 标签：模块 A12 -->
+  <div style="grid-column:1/13;grid-row:12/13;">
+    <div class="card-label">图 9a · 非参评群体三分类</div>
+  </div>
+
+  <!-- 图9a：模块 A13-A14（跨 2 行） -->
+  <div style="grid-column:1/13;grid-row:13/15;">
+    <div class="card">
+      <div class="card-caption">194 人未参评——核心问题是"零通话"而非"整个非参评池"。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg">
+          <rect x="80" y="20" width="480" height="60" rx="4" fill="#B8C4D0"/>
+          <rect x="80" y="20" width="115" height="60" rx="4" fill="#D71921" opacity="0.9"/>
+          <text x="137" y="48" class="axis-text" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">47人</text>
+          <text x="137" y="62" class="axis-text" text-anchor="middle" fill="#fff" font-size="9">零通话 24%</text>
+          <rect x="199" y="20" width="204" height="60" fill="#C0A898"/>
+          <text x="301" y="48" class="axis-text" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">83人</text>
+          <text x="301" y="62" class="axis-text" text-anchor="middle" fill="#fff" font-size="9">低效 43%</text>
+          <rect x="407" y="20" width="153" height="60" fill="#8B99A8"/>
+          <text x="483" y="48" class="axis-text" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">64人</text>
+          <text x="483" y="62" class="axis-text" text-anchor="middle" fill="#fff" font-size="9">通话达标 33%</text>
+          <text x="80" y="105" class="axis-text" fill="#D71921" font-size="11">零通话：近30天无任何通话</text>
+          <text x="80" y="120" class="axis-text" fill="#666" font-size="11">低效：日均通时 30-90min，远低于核心 >120min</text>
+          <text x="80" y="135" class="axis-text" fill="#999" font-size="11">达标未参评：有产出但不满足外呼天数门槛</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图9b 标签：模块 A15 -->
+  <div style="grid-column:1/13;grid-row:15/16;">
+    <div class="card-label">图 9b · 非参评人群日均通时分布</div>
+  </div>
+
+  <!-- 图9b：模块 A16-A18（跨 3 行） -->
+  <div style="grid-column:1/13;grid-row:16/19;">
+    <div class="card">
+      <div class="card-caption">194 人的通话时长分布——零通话 47 人集中在左侧，尾部藏有 MOB12+ 老员工。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg">
+          <line x1="70" y1="180" x2="560" y2="180" stroke="#E8E8E8" stroke-width="0.5"/>
+          <line x1="70" y1="30" x2="70" y2="180" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="110" y="198" class="axis-text" text-anchor="middle">0min</text>
+          <text x="205" y="198" class="axis-text" text-anchor="middle">0-30</text>
+          <text x="300" y="198" class="axis-text" text-anchor="middle">30-60</text>
+          <text x="395" y="198" class="axis-text" text-anchor="middle">60-90</text>
+          <text x="490" y="198" class="axis-text" text-anchor="middle">90-120</text>
+          <text x="560" y="198" class="axis-text" text-anchor="middle">120+</text>
+          <text x="340" y="218" class="axis-text" text-anchor="middle" fill="#999">日均通时（分钟）</text>
+          <text x="65" y="184" class="axis-text" text-anchor="end">0</text>
+          <text x="65" y="130" class="axis-text" text-anchor="end">25</text>
+          <text x="65" y="80" class="axis-text" text-anchor="end">50</text>
+          <text x="65" y="30" class="axis-text" text-anchor="end">75</text>
+          <line x1="70" y1="130" x2="560" y2="130" stroke="#E8E8E8" stroke-width="0.3" stroke-dasharray="3 3"/>
+          <line x1="70" y1="80" x2="560" y2="80" stroke="#E8E8E8" stroke-width="0.3" stroke-dasharray="3 3"/>
+          <rect x="80" y="86" width="60" height="94" rx="1" fill="#D71921" opacity="0.8"/>
+          <text x="110" y="78" style="font-family:'Doto',monospace;font-size:14px;font-weight:700;fill:#D71921;text-anchor:middle;">47</text>
+          <rect x="175" y="124" width="60" height="56" rx="1" fill="#C0A898" opacity="0.8"/>
+          <text x="205" y="118" class="axis-text" text-anchor="middle" fill="#666" font-weight="700">28</text>
+          <rect x="270" y="110" width="60" height="70" rx="1" fill="#C0A898" opacity="0.7"/>
+          <text x="300" y="104" class="axis-text" text-anchor="middle" fill="#666" font-weight="700">35</text>
+          <rect x="365" y="140" width="60" height="40" rx="1" fill="#C0A898" opacity="0.6"/>
+          <text x="395" y="134" class="axis-text" text-anchor="middle" fill="#999" font-weight="700">20</text>
+          <rect x="460" y="104" width="60" height="76" rx="1" fill="#8B99A8" opacity="0.7"/>
+          <text x="490" y="98" class="axis-text" text-anchor="middle" fill="#5A6878" font-weight="700">38</text>
+          <rect x="535" y="128" width="50" height="52" rx="1" fill="#8B99A8" opacity="0.8"/>
+          <text x="560" y="122" class="axis-text" text-anchor="middle" fill="#5A6878" font-weight="700">26</text>
+          <text x="110" y="232" class="axis-text" text-anchor="middle" fill="#4A9E5C" font-size="9" font-weight="700">含15名 MOB12+</text>
+          <line x1="535" y1="30" x2="535" y2="180" stroke="#4A9E5C" stroke-width="1" stroke-dasharray="4 2"/>
+          <text x="540" y="28" class="axis-text" fill="#4A9E5C" font-size="9">SABC 核心</text>
+          <text x="540" y="38" class="axis-text" fill="#4A9E5C" font-size="9">>120min</text>
+        </svg>
+      </div>
+      <div class="footnote">0 通话 47 人中有 15 名 MOB12+ 老员工——需优先确认状态。</div>
+    </div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows" style="grid-template-rows:repeat(18,var(--module-h));"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- ======== 第四章 · 6×4 模块化网格 ======== -->
+<section class="spread" id="ch4" style="border-top:1px solid var(--border);">
+<div class="wrap">
+<div class="modular" style="--rows:12;">
+  <!-- 章节标题：模块 A1 -->
+  <div style="grid-column:1/13;grid-row:1/2;">
+    <div class="chapter-label">第四章</div>
+    <div class="chapter-title">关联归因</div>
+    <div class="chapter-subtitle">业绩到底由什么驱动？给管理动作提供数据依据。</div>
+  </div>
+
+  <!-- GMV 驱动因素标签：模块 A2 -->
+  <div style="grid-column:1/13;grid-row:2/3;">
+    <div class="card-label">GMV 驱动因素排序</div>
+  </div>
+
+  <!-- GMV 驱动因素：模块 A3-A6（跨 4 行） -->
+  <div style="grid-column:1/13;grid-row:3/7;">
+    <div class="card">
+      <div class="card-caption">有效通时是 GMV 的最核心驱动（r=0.69），ATT 最不重要（r=0.12）——不应将 ATT 作为管理重点。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg">
+          <line x1="150" y1="30" x2="150" y2="210" stroke="#E8E8E8" stroke-width="0.5"/>
+          <line x1="150" y1="218" x2="590" y2="218" stroke="#CCCCCC" stroke-width="0.5"/>
+          <text x="150" y="230" class="axis-text" text-anchor="middle" fill="#999">0</text>
+          <text x="238" y="230" class="axis-text" text-anchor="middle" fill="#999">0.2</text>
+          <text x="326" y="230" class="axis-text" text-anchor="middle" fill="#999">0.4</text>
+          <text x="414" y="230" class="axis-text" text-anchor="middle" fill="#999">0.6</text>
+          <text x="502" y="230" class="axis-text" text-anchor="middle" fill="#999">0.8</text>
+          <text x="590" y="230" class="axis-text" text-anchor="middle" fill="#999">1.0</text>
+          <line x1="150" y1="215" x2="150" y2="221" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="238" y1="215" x2="238" y2="221" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="326" y1="215" x2="326" y2="221" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="414" y1="215" x2="414" y2="221" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="502" y1="215" x2="502" y2="221" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="590" y1="215" x2="590" y2="221" stroke="#CCCCCC" stroke-width="0.5"/>
+          <text x="140" y="54" class="axis-text" text-anchor="end" fill="#1A1A1A" font-size="12">有效通时总量</text>
+          <line x1="150" y1="50" x2="454" y2="50" stroke="#E8734A" stroke-width="2"/>
+          <circle cx="454" cy="50" r="8" fill="#E8734A"/>
+          <text x="454" y="54" style="font-family:'Doto',monospace;font-size:11px;font-weight:700;fill:#fff;text-anchor:middle;">.69</text>
+          <text x="470" y="54" class="axis-text" fill="#E8734A" font-weight="700" font-size="11">r = 0.69</text>
+          <text x="560" y="54" class="axis-text" fill="#E8734A" font-size="9" font-weight="700">核心驱动</text>
+          <rect x="150" y="72" width="308" height="42" rx="3" fill="none" stroke="#5A6878" stroke-width="0.5" stroke-dasharray="3 2" opacity="0.4"/>
+          <text x="140" y="94" class="axis-text" text-anchor="end" fill="#5A6878" font-size="12">接通话单数</text>
+          <line x1="150" y1="90" x2="427" y2="90" stroke="#5A6878" stroke-width="1.5"/>
+          <circle cx="427" cy="90" r="6" fill="#5A6878"/>
+          <text x="441" y="94" class="axis-text" fill="#5A6878">r = 0.63</text>
+          <text x="140" y="134" class="axis-text" text-anchor="end" fill="#5A6878" font-size="12">外呼天数</text>
+          <line x1="150" y1="130" x2="418" y2="130" stroke="#5A6878" stroke-width="1.5"/>
+          <circle cx="418" cy="130" r="6" fill="#5A6878"/>
+          <text x="432" y="134" class="axis-text" fill="#5A6878">r = 0.61</text>
+          <text x="516" y="112" class="axis-text" fill="#999" font-size="8" text-anchor="middle">高度共线</text>
+          <text x="516" y="122" class="axis-text" fill="#999" font-size="8" text-anchor="middle">取其一即可</text>
+          <text x="140" y="174" class="axis-text" text-anchor="end" fill="#8B99A8" font-size="12">日均通时强度</text>
+          <line x1="150" y1="170" x2="357" y2="170" stroke="#8B99A8" stroke-width="1"/>
+          <circle cx="357" cy="170" r="5" fill="#8B99A8"/>
+          <text x="371" y="174" class="axis-text" fill="#8B99A8">r = 0.47</text>
+          <text x="140" y="204" class="axis-text" text-anchor="end" fill="#CCCCCC" font-size="12">ATT</text>
+          <line x1="150" y1="200" x2="203" y2="200" stroke="#CCCCCC" stroke-width="1"/>
+          <circle cx="203" cy="200" r="4" fill="#CCCCCC"/>
+          <text x="217" y="204" class="axis-text" fill="#CCCCCC">r = 0.12</text>
+          <text x="300" y="204" class="axis-text" fill="#D71921" font-size="9" font-weight="700">最不重要</text>
+          <rect x="150" y="248" width="440" height="24" rx="4" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="0.5"/>
+          <text x="164" y="265" class="axis-text" fill="#666" font-size="10">管理重点：</text>
+          <text x="230" y="265" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:500;fill:#E8734A;">通时总量</text>
+          <text x="288" y="265" class="axis-text" fill="#999" font-size="10">+</text>
+          <text x="300" y="265" style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:500;fill:#5A6878;">出勤天数</text>
+          <text x="360" y="265" class="axis-text" fill="#999" font-size="10">· 不需要关注</text>
+          <text x="440" y="265" style="font-family:'Space Grotesk',sans-serif;font-size:11px;color:#CCCCCC;text-decoration:line-through;">ATT</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图10 标签：模块 A7 -->
+  <div style="grid-column:1/13;grid-row:7/8;">
+    <div class="card-label">图 10 · 通时 × GMV 关联分析</div>
+  </div>
+
+  <!-- 图10：模块 A8-A10（跨 3 行） -->
+  <div style="grid-column:1/13;grid-row:8/11;">
+    <div class="card">
+      <div class="card-caption">复贷：通话量 ≈ 产出（r=0.83）；首贷：通话之外转化技巧更重要（r=0.47）。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">
+          <line x1="60" y1="280" x2="560" y2="280" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="60" y1="30" x2="60" y2="280" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="310" y="310" class="axis-text" text-anchor="middle">有效通时（小时）</text>
+          <text x="20" y="155" class="axis-text" text-anchor="middle" transform="rotate(-90, 20, 155)">GMV（万元）</text>
+          <text x="55" y="285" class="axis-text" text-anchor="end">0</text>
+          <text x="55" y="215" class="axis-text" text-anchor="end">500</text>
+          <text x="55" y="145" class="axis-text" text-anchor="end">1000</text>
+          <text x="55" y="75" class="axis-text" text-anchor="end">1500</text>
+          <circle cx="120" cy="268" r="3" fill="#E8734A" opacity="0.5"/>
+          <circle cx="140" cy="260" r="3" fill="#E8734A" opacity="0.5"/>
+          <circle cx="160" cy="250" r="3.5" fill="#E8734A" opacity="0.5"/>
+          <circle cx="190" cy="235" r="3.5" fill="#E8734A" opacity="0.5"/>
+          <circle cx="220" cy="220" r="4" fill="#E8734A" opacity="0.5"/>
+          <circle cx="250" cy="200" r="4" fill="#E8734A" opacity="0.5"/>
+          <circle cx="280" cy="180" r="4" fill="#E8734A" opacity="0.5"/>
+          <circle cx="310" cy="155" r="4.5" fill="#E8734A" opacity="0.5"/>
+          <circle cx="340" cy="135" r="4.5" fill="#E8734A" opacity="0.5"/>
+          <circle cx="380" cy="110" r="5" fill="#E8734A" opacity="0.5"/>
+          <circle cx="420" cy="85" r="5" fill="#E8734A" opacity="0.5"/>
+          <circle cx="460" cy="60" r="5" fill="#E8734A" opacity="0.5"/>
+          <line x1="100" y1="275" x2="480" y2="48" stroke="#E8734A" stroke-width="1.5" opacity="0.7"/>
+          <circle cx="100" cy="270" r="3" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="130" cy="258" r="3" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="150" cy="245" r="3" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="170" cy="255" r="3" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="200" cy="230" r="3" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="230" cy="210" r="3.5" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="260" cy="225" r="3.5" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="290" cy="195" r="3.5" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="320" cy="175" r="3.5" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="350" cy="165" r="4" fill="#B8C4D0" opacity="0.6"/>
+          <circle cx="370" cy="150" r="4" fill="#B8C4D0" opacity="0.6"/>
+          <line x1="90" y1="272" x2="390" y2="142" stroke="#B8C4D0" stroke-width="1" stroke-dasharray="5 3"/>
+          <circle cx="420" cy="280" r="4" fill="#E8734A"/>
+          <text x="430" y="284" class="axis-text" fill="#E8734A">复贷 r = 0.83</text>
+          <circle cx="420" cy="298" r="3" fill="#B8C4D0"/>
+          <text x="430" y="302" class="axis-text" fill="#8B99A8">首贷 r = 0.47</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图12 标签：模块 A11 -->
+  <div style="grid-column:1/13;grid-row:11/12;">
+    <div class="card-label">图 12 · 评分维度贡献权重</div>
+  </div>
+
+  <!-- 图12：模块 A12（跨 1 行） -->
+  <div style="grid-column:1/13;grid-row:12/13;">
+    <div class="card">
+      <div class="card-caption">转化率得分是综合评分的最大决定因素（beta=0.42），通时得分出现负权重。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+          <line x1="300" y1="20" x2="300" y2="180" stroke="#CCCCCC" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <text x="300" y="195" class="axis-text" text-anchor="middle" fill="#999">0</text>
+          <text x="290" y="45" class="axis-text" text-anchor="end">转化率得分</text>
+          <rect x="300" y="30" width="168" height="24" rx="3" fill="#E8734A" opacity="0.85"/>
+          <text x="475" y="47" class="axis-text" fill="#E8734A" font-weight="700">beta = 0.42</text>
+          <text x="290" y="85" class="axis-text" text-anchor="end">T0 首贷 GMV</text>
+          <rect x="300" y="70" width="72" height="24" rx="3" fill="#8B99A8" opacity="0.7"/>
+          <text x="380" y="87" class="axis-text" fill="#5A6878">beta = 0.18</text>
+          <text x="290" y="125" class="axis-text" text-anchor="end">GMV 得分</text>
+          <rect x="300" y="110" width="20" height="24" rx="3" fill="#B8C4D0" opacity="0.7"/>
+          <text x="328" y="127" class="axis-text" fill="#999">beta = 0.05</text>
+          <text x="290" y="165" class="axis-text" text-anchor="end">通时得分</text>
+          <rect x="216" y="150" width="84" height="24" rx="3" fill="#D71921" opacity="0.2"/>
+          <line x1="216" y1="162" x2="300" y2="162" stroke="#D71921" stroke-width="1.5"/>
+          <text x="160" y="167" class="axis-text" fill="#D71921" font-weight="700">beta = -0.21</text>
+        </svg>
+      </div>
+      <div class="footnote">R² = 0.27，说明还有 73% 的评分变异未被这四个维度解释。</div>
+    </div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows" style="grid-template-rows:repeat(12,var(--module-h));"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- ======== 第五章 · 4×3 + 6×4 模块化网格 ======== -->
+<section class="spread" id="ch5" style="border-top:1px solid var(--border);">
+<div class="wrap">
+<div class="modular" style="--rows:12;">
+  <!-- 章节标题：模块 A1 -->
+  <div style="grid-column:1/13;grid-row:1/2;">
+    <div class="chapter-label">第五章</div>
+    <div class="chapter-title">异常预警</div>
+    <div class="chapter-subtitle">哪些信号需要立即关注？给管理者的干预清单。</div>
+  </div>
+
+  <!-- 矛盾模式标签：模块 A2 -->
+  <div style="grid-column:1/13;grid-row:2/3;">
+    <div class="card-label">矛盾模式识别</div>
+  </div>
+
+  <!-- 矛盾模式卡片 1：模块 A3 -->
+  <div style="grid-column:1/7;grid-row:3/4;">
+    <div class="anomaly-card">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">高 GMV + 低综合得分</div>
+      <div style="font-size:15px;font-weight:500;color:var(--text-display);margin-bottom:6px;">刘颖 GMV=883万，得分=0.5</div>
+      <div style="font-size:13px;color:var(--text-secondary);">评分体系过度惩罚有效工时不足的坐席</div>
+    </div>
+  </div>
+
+  <!-- 矛盾模式卡片 2：模块 B3 -->
+  <div style="grid-column:7/13;grid-row:3/4;">
+    <div class="anomaly-card">
+      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">高通时 + 低 GMV</div>
+      <div style="font-size:15px;font-weight:500;color:var(--text-display);margin-bottom:6px;">日均通时 >120min 但 GMV <30万</div>
+      <div style="font-size:13px;color:var(--text-secondary);">纯通话量不转化为业绩：通话质量是关键差异</div>
+    </div>
+  </div>
+
+  <!-- 图15 标签：模块 A4 -->
+  <div style="grid-column:1/13;grid-row:4/5;">
+    <div class="card-label">图 15 · GMV 集中度 — 帕累托曲线</div>
+  </div>
+
+  <!-- 图15：模块 A5-A8（跨 4 行） -->
+  <div style="grid-column:1/13;grid-row:5/9;">
+    <div class="card">
+      <div class="card-caption">前 30% 坐席扛着 76% 的业绩——一旦核心人员流失，短期无法接替。</div>
+      <div class="chart-container">
+        <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+          <line x1="60" y1="230" x2="560" y2="230" stroke="#CCCCCC" stroke-width="0.5"/>
+          <line x1="60" y1="30" x2="60" y2="230" stroke="#E8E8E8" stroke-width="0.5"/>
+          <text x="55" y="234" class="axis-text" text-anchor="end">0%</text>
+          <text x="55" y="174" class="axis-text" text-anchor="end">25%</text>
+          <text x="55" y="114" class="axis-text" text-anchor="end">50%</text>
+          <text x="55" y="54" class="axis-text" text-anchor="end">75%</text>
+          <text x="55" y="34" class="axis-text" text-anchor="end">100%</text>
+          <text x="60" y="248" class="axis-text" text-anchor="middle">0%</text>
+          <text x="160" y="248" class="axis-text" text-anchor="middle">20%</text>
+          <text x="260" y="248" class="axis-text" text-anchor="middle">40%</text>
+          <text x="360" y="248" class="axis-text" text-anchor="middle">60%</text>
+          <text x="460" y="248" class="axis-text" text-anchor="middle">80%</text>
+          <text x="560" y="248" class="axis-text" text-anchor="middle">100%</text>
+          <text x="310" y="270" class="axis-text" text-anchor="middle">坐席百分比（按 GMV 降序）</text>
+          <line x1="60" y1="114" x2="560" y2="114" stroke="#D4A843" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <text x="565" y="118" class="axis-text" fill="#D4A843" font-size="9">50%</text>
+          <line x1="60" y1="54" x2="560" y2="54" stroke="#999999" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <text x="565" y="58" class="axis-text" fill="#999" font-size="9">80%</text>
+          <path d="M60,230 L60,228 L85,218 L110,200 L135,170 L160,130 L185,100 L210,80 L235,66 L260,58 L285,52 L310,48 L335,44 L360,40 L385,38 L410,36 L435,34 L460,33 L485,32 L510,31 L535,31 L560,30 L560,230 Z" fill="#E8734A" opacity="0.06"/>
+          <polyline points="60,228 85,218 110,200 135,170 160,130 185,100 210,80 235,66 260,58 285,52 310,48 335,44 360,40 385,38 410,36 435,34 460,33 485,32 510,31 535,31 560,30" fill="none" stroke="#E8734A" stroke-width="2"/>
+          <circle cx="85" cy="218" r="4" fill="#E8734A"/>
+          <text x="85" y="210" class="axis-text" text-anchor="middle" fill="#E8734A" font-size="10" font-weight="700">前5%=20.3%</text>
+          <circle cx="160" cy="130" r="4" fill="#E8734A"/>
+          <text x="160" y="122" class="axis-text" text-anchor="middle" fill="#E8734A" font-size="10" font-weight="700">前20%=59.2%</text>
+          <circle cx="210" cy="80" r="4" fill="#D71921"/>
+          <text x="210" y="72" class="axis-text" text-anchor="middle" fill="#D71921" font-size="10" font-weight="700">前30%=76.4%</text>
+          <text x="460" y="210" class="axis-text" text-anchor="middle" fill="#999" font-size="9">后50%坐席仅贡献4.3%GMV</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 异常标记统计标签：模块 A9 -->
+  <div style="grid-column:1/13;grid-row:9/10;">
+    <div class="card-label">异常标记统计</div>
+  </div>
+
+  <!-- 异常标记统计表：模块 A10-A12（跨 3 行） -->
+  <div style="grid-column:1/13;grid-row:10/13;">
+    <div class="card" style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr><th>标记类型</th><th style="text-align:right;">人数</th><th>特征</th><th>建议</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-cell"><span class="status-dot red"></span>超 7 天未上线</td>
+            <td style="text-align:right;color:#D71921;font-weight:700;">2</td>
+            <td class="text-cell">0 通话、0 GMV</td>
+            <td class="text-cell">确认是否已离职或长期病事假</td>
+          </tr>
+          <tr>
+            <td class="text-cell"><span class="status-dot yellow"></span>连续 3 天预警</td>
+            <td style="text-align:right;color:#D4A843;font-weight:700;">14</td>
+            <td class="text-cell">几乎全部为 MOB1- 新人</td>
+            <td class="text-cell">新人培训期出勤不稳定——可接受但需关注</td>
+          </tr>
+          <tr>
+            <td class="text-cell"><span class="status-dot yellow"></span>外呼天数不足 22 天</td>
+            <td style="text-align:right;">194</td>
+            <td class="text-cell">全部非参评</td>
+            <td class="text-cell">正常筛选机制，但 15 名 MOB12+ 老员工需关注</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows" style="grid-template-rows:repeat(12,var(--module-h));"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- ======== 第六章 · 4×3 + 8×6 模块化网格 ======== -->
+<section class="spread" id="ch6" style="border-top:1px solid var(--border);">
+<div class="wrap">
+<div class="modular" style="--rows:18;">
+  <!-- 章节标题：模块 A1 -->
+  <div style="grid-column:1/13;grid-row:1/2;">
+    <div class="chapter-label">第六章</div>
+    <div class="chapter-title">诊断结论与行动</div>
+    <div class="chapter-subtitle">交付给伽玛的整改清单。</div>
+  </div>
+
+  <!-- 核心问题标签：模块 A2 -->
+  <div style="grid-column:1/13;grid-row:2/3;">
+    <div class="card-label">核心问题清单</div>
+  </div>
+
+  <!-- 核心问题表：模块 A3-A6（跨 4 行） -->
+  <div style="grid-column:1/13;grid-row:3/7;">
+    <div class="card" style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>问题</th><th>数据定位</th><th>置信度</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:#D71921;font-weight:700;">1</td>
+            <td class="text-cell" style="font-weight:500;">C 级率 39% 偏高</td>
+            <td class="text-cell">参评 56 人中 22 人 C 级</td>
+            <td><span class="status-dot yellow"></span>中</td>
+          </tr>
+          <tr>
+            <td style="color:#D71921;font-weight:700;">2</td>
+            <td class="text-cell" style="font-weight:500;">A→B 断崖降 67%</td>
+            <td class="text-cell">人均 GMV：A 级 255 万→B 级 85 万</td>
+            <td><span class="status-dot green"></span>高</td>
+          </tr>
+          <tr>
+            <td style="color:#D71921;font-weight:700;">3</td>
+            <td class="text-cell" style="font-weight:500;">53% 坐席未参评</td>
+            <td class="text-cell">120 人中 64 人未达 22 天标准</td>
+            <td><span class="status-dot yellow"></span>中</td>
+          </tr>
+          <tr>
+            <td style="color:#D71921;font-weight:700;">4</td>
+            <td class="text-cell" style="font-weight:500;">GMV 过度集中</td>
+            <td class="text-cell">Top 30% 贡献 76%</td>
+            <td><span class="status-dot green"></span>高</td>
+          </tr>
+          <tr>
+            <td style="color:#D71921;font-weight:700;">5</td>
+            <td class="text-cell" style="font-weight:500;">零通话 47 人</td>
+            <td class="text-cell">近 30 天无任何通话活动</td>
+            <td><span class="status-dot yellow"></span>需确认</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 分层改善策略标签：模块 A7 -->
+  <div style="grid-column:1/13;grid-row:7/8;">
+    <div class="card-label">分层改善策略</div>
+  </div>
+
+  <!-- 分层改善策略：模块 A8-A12（跨 5 行） -->
+  <div style="grid-column:1/13;grid-row:8/13;">
+    <div style="display:grid;gap:12px;">
+      <div class="card action-p0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-weight:500;color:var(--text-display);">止血 — C 级 22 人</div>
+          <span class="priority-tag p0">P0</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-secondary);">核查 14 天改善期实际执行率 + 结果追踪</div>
+      </div>
+      <div class="card action-p0">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-weight:500;color:var(--text-display);">清理 — 零通话 47 人</div>
+          <span class="priority-tag p0">P0</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-secondary);">7 天内确认状态：离岗 / 转岗 / 淘汰</div>
+      </div>
+      <div class="card action-p1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-weight:500;color:var(--text-display);">提效 — 低效 83 人</div>
+          <span class="priority-tag p1">P1</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-secondary);">分析根因：技能差距 / 名单质量 / 管理缺位。提升人均通时 +30min</div>
+      </div>
+      <div class="card action-p1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-weight:500;color:var(--text-display);">育成 — 新人 165 人</div>
+          <span class="priority-tag p1">P1</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-secondary);">标准化新人带教 SOP + 首月外呼达标率监控。缩短育成周期 2-4 周</div>
+      </div>
+      <div class="card action-p2">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-weight:500;color:var(--text-display);">防守 — SABC 核心 93 人</div>
+          <span class="priority-tag p2">P2</span>
+        </div>
+        <div style="font-size:13px;color:var(--text-secondary);">扛 9 成业绩，无冗余。流失预警 + 激励锁定。月流失率 < 3%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 下月复查标签：模块 A13 -->
+  <div style="grid-column:1/13;grid-row:13/14;">
+    <div class="card-label">下月复查重点关注</div>
+  </div>
+
+  <!-- 下月复查表：模块 A14-A18（跨 5 行） -->
+  <div style="grid-column:1/13;grid-row:14/19;">
+    <div class="card" style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr><th>追踪指标</th><th style="text-align:right;">当前值</th><th style="text-align:right;">目标值</th><th>复查方法</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-cell" style="font-weight:500;">C 级率</td>
+            <td style="text-align:right;color:#D71921;font-weight:700;">39%</td>
+            <td style="text-align:right;">&lt; 25%</td>
+            <td class="text-cell">下期 SABC 评级</td>
+          </tr>
+          <tr>
+            <td class="text-cell" style="font-weight:500;">参评率</td>
+            <td style="text-align:right;color:#D4A843;font-weight:700;">46.7%</td>
+            <td style="text-align:right;">&gt; 60%</td>
+            <td class="text-cell">下期参评判定</td>
+          </tr>
+          <tr>
+            <td class="text-cell" style="font-weight:500;">Top20% GMV 集中度</td>
+            <td style="text-align:right;font-weight:700;">59.2%</td>
+            <td style="text-align:right;">&lt; 50%</td>
+            <td class="text-cell">下期帕累托曲线</td>
+          </tr>
+          <tr>
+            <td class="text-cell" style="font-weight:500;">零通话人数</td>
+            <td style="text-align:right;color:#D71921;font-weight:700;">47 人</td>
+            <td style="text-align:right;">&lt; 10 人</td>
+            <td class="text-cell">通话活跃度监控</td>
+          </tr>
+          <tr>
+            <td class="text-cell" style="font-weight:500;">MOB12+ 外呼天数不足</td>
+            <td style="text-align:right;font-weight:700;">15 人</td>
+            <td style="text-align:right;">&lt; 5 人</td>
+            <td class="text-cell">出勤追踪</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows" style="grid-template-rows:repeat(18,var(--module-h));"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- ======== Footer ======== -->
+<section class="spread" style="border-top:1px solid var(--border);">
+<div class="wrap">
+<div class="modular" style="--rows:1;">
+  <div style="grid-column:1/7;grid-row:1/2;">
+    <div class="chapter-label">SABC 标准化深度诊断框架 · MB Modular Grid 版</div>
+    <div class="footnote" style="margin-top:4px;">数据来源：坐席级 CRM Excel 底表 · 首贷/复贷全程分拆</div>
+  </div>
+  <div style="grid-column:10/13;grid-row:1/2;text-align:right;">
+    <div class="chapter-label">2026-05</div>
+  </div>
+</div>
+<div class="guides" aria-hidden="true">
+  <div class="cols"></div>
+  <div class="rows" style="grid-template-rows:repeat(1,var(--module-h));"></div>
+  <div class="mline l"></div>
+  <div class="mline r"></div>
+</div>
+</div>
+</section>
+
+<!-- Grid Overlay Script -->
+<script>
+var btn=document.getElementById('gridToggle');
+function setGrid(on){document.body.classList.toggle('grid-on',on);
+  if(btn){btn.setAttribute('aria-pressed',on?'true':'false');
+    var l=btn.querySelector('.lbl'); if(l) l.textContent=on?'隐藏网格':'显示网格';}}
+if(btn) btn.addEventListener('click',function(){setGrid(!document.body.classList.contains('grid-on'));});
+document.addEventListener('keydown',function(e){
+  if((e.key==='g'||e.key==='G')&&!e.metaKey&&!e.ctrlKey&&!e.altKey){
+    setGrid(!document.body.classList.contains('grid-on'));}});
+
+document.querySelectorAll('.guides .cols').forEach(function(h){
+  var n=getComputedStyle(document.documentElement).getPropertyValue('--cols').trim()||'12';
+  for(var i=1;i<=parseInt(n,10);i++){var c=document.createElement('div');c.className='col';
+    var s=document.createElement('span');s.textContent=i;c.appendChild(s);h.appendChild(c);}});
+
+(function(){
+  var cvs=document.createElement('canvas'),ctx=cvs.getContext('2d');
+  var sel='.masthead, .kpi-value';
+  function align(){
+    document.querySelectorAll(sel).forEach(function(el){
+      el.style.marginLeft='0px';
+      var cs=getComputedStyle(el),ch=(el.textContent||'').trim().charAt(0); if(!ch) return;
+      if(cs.textTransform==='uppercase') ch=ch.toUpperCase();
+      ctx.font=cs.fontStyle+' '+cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily;
+      ctx.textAlign='left';
+      var abl=ctx.measureText(ch).actualBoundingBoxLeft;
+      if(isFinite(abl)) el.style.marginLeft=abl.toFixed(2)+'px';
+    });
+  }
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(align);}
+  align();
+  var t;window.addEventListener('resize',function(){clearTimeout(t);t=setTimeout(align,120);});
+})();
+</script>
+</body>
+</html>

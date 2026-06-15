@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian 组件库架构 · 三层展示</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#f0ede6;color:#222;font-size:14px;-webkit-font-smoothing:antialiased}
+.page{max-width:1100px;margin:0 auto;padding:24px}
+
+/* Header */
+.hdr{text-align:center;padding:40px 0 24px}
+.hdr h1{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:300;color:#2d3142}
+.hdr h1 strong{font-weight:600}
+.hdr p{font-size:11px;color:#8A7D6E;margin-top:4px}
+.hdr .stats{display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.hdr .stat{padding:4px 12px;background:#fff;border:1px solid #ddd8d2;border-radius:4px;font-size:11px;font-family:JetBrains Mono}
+
+/* Layer Tabs */
+.ltabs{display:flex;gap:4px;margin-bottom:20px;justify-content:center}
+.ltab{padding:6px 24px;font-size:11px;border:1px solid #ddd8d2;background:#f8f8f8;cursor:pointer;border-radius:4px;font-family:JetBrains Mono;letter-spacing:1px;transition:all .15s}
+.ltab:hover{border-color:#8A7D6E}
+.ltab.active{background:#2d3142;color:#fff;border-color:#2d3142}
+
+/* Operation nav (for content layer) */
+.onav{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;justify-content:center}
+.onav__btn{padding:3px 12px;font-size:10px;border:1px solid #ddd8d2;background:#fff;cursor:pointer;border-radius:3px;font-family:JetBrains Mono;letter-spacing:1px;transition:all .15s}
+.onav__btn:hover{border-color:#8A7D6E}
+.onav__btn.active{background:#c4966e;color:#fff;border-color:#c4966e}
+
+/* Component grid */
+.cgrid{display:none;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.cgrid.active{display:grid}
+
+.card{border:1px solid #ddd8d2;background:#f8f8f8;overflow:hidden;cursor:pointer;transition:border-color .2s}
+.card:hover{border-color:#c8c2ba}
+.card__hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid #ddd8d2;background:#fff}
+.card__name{font-size:13px;font-weight:500;color:#2d3142}
+.card__prio{font-family:JetBrains Mono;font-size:7px;letter-spacing:1px;padding:2px 6px;border-radius:2px}
+.card__prio.p1{background:#2d3142;color:#fff}
+.card__prio.p2{background:#c4966e;color:#fff}
+.card__prio.p3{background:#ddd8d2;color:#666}
+.card__prio.spare{background:#f0ede6;color:#8A7D6E;border:1px solid #ddd8d2}
+.card__body{padding:12px 14px;display:none}
+.card__body.open{display:block}
+.card__motto{font-family:'Playfair Display',Georgia,serif;font-size:14px;font-style:italic;color:#c4966e;margin-bottom:8px;line-height:1.4}
+.card__detail{font-size:11px;color:#555;line-height:1.6}
+.card__detail strong{color:#2d3142;font-weight:500}
+.card__scene{display:flex;gap:3px;flex-wrap:wrap;margin-top:8px}
+.card__scene span{padding:1px 6px;font-family:JetBrains Mono;font-size:7px;border:1px solid #ddd8d2;border-radius:2px;color:#666}
+
+/* For interactive layer */
+.igrid{display:none;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.igrid.active{display:grid}
+
+/* Extension list */
+.ext{display:none}
+.ext.active{display:block}
+.ext__g{padding:8px 14px;margin-bottom:6px;background:#fff;border:1px solid #ddd8d2;font-size:12px;line-height:1.5}
+.ext__g strong{font-weight:500}
+.ext__g .ext-note{font-size:10px;color:#8A7D6E;display:block;margin-top:2px}
+
+.section-title{font-size:16px;font-weight:500;color:#2d3142;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #ddd8d2}
+.section-sub{font-size:11px;color:#8A7D6E;margin:-8px 0 16px}
+
+.footer{text-align:center;padding:32px;font-family:JetBrains Mono;font-size:8px;color:#b0a898}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <h1>nian 组件库 <strong>三层架构</strong></h1>
+  <p>A 内容表达层 55 · B 操作交互层 8 · C 扩展库 ~45 · 总计 ~108</p>
+  <div class="stats">
+    <span class="stat">感6</span>
+    <span class="stat">扫5</span>
+    <span class="stat">读6</span>
+    <span class="stat">解8</span>
+    <span class="stat">比5</span>
+    <span class="stat">排6</span>
+    <span class="stat">量10</span>
+    <span class="stat">信5</span>
+    <span class="stat">展4</span>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="ltabs">
+  <button class="ltab active" data-layer="content">A 内容表达层 · 55</button>
+  <button class="ltab" data-layer="interact">B 操作交互层 · 8</button>
+  <button class="ltab" data-layer="ext">C 扩展库 · ~45</button>
+</div>
+
+<!-- ═══ A 内容表达层 ═══ -->
+<div id="layer-content">
+  <div class="onav" id="onav">
+    <button class="onav__btn active" data-op="感">感·氛围</button>
+    <button class="onav__btn" data-op="扫">扫·概览</button>
+    <button class="onav__btn" data-op="读">读·流程</button>
+    <button class="onav__btn" data-op="解">解·解读</button>
+    <button class="onav__btn" data-op="比">比·对比</button>
+    <button class="onav__btn" data-op="排">排·排序</button>
+    <button class="onav__btn" data-op="量">量·度量</button>
+    <button class="onav__btn" data-op="信">信·背书</button>
+    <button class="onav__btn" data-op="展">展·深入</button>
+  </div>
+
+  <div class="cgrid active" data-op="感">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">A1 Marquee 品牌宣言</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">一句定调，品牌的第一句话</div><div class="card__detail"><strong>表达</strong>：品牌态度宣言，全屏大字号<br><strong>场景</strong>：对外层<br><strong>不可替代性</strong>：只有它做全屏品牌宣言</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">A2 Split Diptych 双屏</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">左产品右风景，品牌的叙事</div><div class="card__detail"><strong>表达</strong>：产品与品牌并置<br><strong>场景</strong>：对外层<br><strong>优先级</strong>：Marquee 不够时才用</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">A6 Photographic 全屏影像</span><span class="card__prio p3">第3优先</span></div>
+      <div class="card__body"><div class="card__motto">自然即品牌，全屏风光</div><div class="card__detail"><strong>场景</strong>：对外层<br><strong>优先级</strong>：前两者不足时才用</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">A7 点阵插画</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">手工感与精度并存</div><div class="card__detail"><strong>场景</strong>：品牌系统页<br><strong>触发条件</strong>：年老师指定</div><div class="card__scene"><span>品牌系统</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D20 Flip Card 翻转</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">正面概览，反面详情</div><div class="card__detail"><strong>场景</strong>：沉淀层<br><strong>触发条件</strong>：需要正反展示时</div><div class="card__scene"><span>沉淀层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C29 Arrow Carousel 轮播</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">滑动叙述，逐个展示</div><div class="card__detail"><strong>场景</strong>：对外展示<br><strong>触发条件</strong>：多个展示项需逐个看</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="扫">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D12 Metric Card 指标卡</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">大数字+进度，一眼知道做了多少</div><div class="card__detail"><strong>表达</strong>：综合指标+进度+变化方向<br><strong>场景</strong>：执行层周报<br><strong>不可替代性</strong>：比 stat-block 多一层进度</div><div class="card__scene"><span>执行层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C1 Bento Grid 不规则网格</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">有主有次的卡片墙，扫出层次</div><div class="card__detail"><strong>表达</strong>：不同权重的并列内容<br><strong>场景</strong>：感知层数据面板<br><strong>不可替代性</strong>：只有它能做不规则布局</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Stat Block 大数字卡</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">数字+标签，最轻量的概览</div><div class="card__detail"><strong>表达</strong>：孤立指标快速扫<br><strong>场景</strong>：感知/执行层<br><strong>优先级</strong>：不涉及进度时优于 Metric Card</div><div class="card__scene"><span>感知层</span><span>执行层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">E4 Dense Typographic 文字密度</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">纯文字，高密度</div><div class="card__detail"><strong>场景</strong>：计划层文档<br><strong>触发条件</strong>：文本内容为主</div><div class="card__scene"><span>计划层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C2 Sticky-scroll Stack 粘性滚动</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">滚动揭示，层层深入</div><div class="card__detail"><strong>场景</strong>：对外层<br><strong>触发条件</strong>：需要叙事滚动</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="读">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C15 Flow Pipeline 流程线</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">步骤+三态，流程推进一目了然</div><div class="card__detail"><strong>表达</strong>：线性流程+done/active/pending<br><strong>场景</strong>：计划层 SOP<br><strong>不可替代性</strong>：只有它做三态流程</div><div class="card__scene"><span>计划层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C21 Timeline 时间轴</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">时间轴+节点，大事记</div><div class="card__detail"><strong>表达</strong>：时间上的先后关系<br><strong>场景</strong>：对外层品牌传承<br><strong>优先级</strong>：时间线场景优于Flow Pipeline</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C4 Step Sequence 步骤序列</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">编号步骤，怎么做 SOP</div><div class="card__detail"><strong>表达</strong>：操作步骤，非状态推进<br><strong>场景</strong>：计划层<br><strong>优先级</strong>：需要操作说明时优于Flow Pipeline</div><div class="card__scene"><span>计划层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">B2 Hanging 悬挂标题</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">章节过渡，呼吸点</div><div class="card__detail"><strong>场景</strong>：沉淀层<br><strong>触发条件</strong>：需要视觉停顿</div><div class="card__scene"><span>沉淀层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">B5 Bottom-anchored 底部锚定</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">章节收尾，底线锚定</div><div class="card__detail"><strong>场景</strong>：沉淀层<br><strong>触发条件</strong>：需要明确收尾信号</div><div class="card__scene"><span>沉淀层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">B7 Seam Divider 分隔线</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">渐变分隔，重置节奏</div><div class="card__detail"><strong>场景</strong>：感知/沉淀<br><strong>触发条件</strong>：需要软分隔</div><div class="card__scene"><span>感知层</span><span>沉淀层</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="解">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C20 Callout 边注</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">左边框+标题，默认的解读方式</div><div class="card__detail"><strong>表达</strong>：标注重点、提示注意、方法论说明<br><strong>场景</strong>：全部<br><strong>不可替代性</strong>：最通用的解读组件，90% 场景用这个就够</div><div class="card__scene"><span>全部</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D4 Pull-quote 引用块</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">大字号引用，聚焦一句话</div><div class="card__detail"><strong>表达</strong>：需要强调的一句话，占据视觉焦点<br><strong>场景</strong>：感知/沉淀层<br><strong>优先级</strong>：有引用原文需要突出时 > Callout</div><div class="card__scene"><span>感知层</span><span>沉淀层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C5 Annotated Screenshot 图内标注</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">图片里划重点，比文字更直接</div><div class="card__detail"><strong>表达</strong>：在图片/图表上标注重点<br><strong>场景</strong>：计划层操作手册<br><strong>不可替代性</strong>：只有它在图片上做标注</div><div class="card__scene"><span>计划层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">E6 Statement 品牌声明卡</span><span class="card__prio p3">第3优先</span></div>
+      <div class="card__body"><div class="card__motto">全宽品牌宣言，站队</div><div class="card__detail"><strong>表达</strong>：品牌立场声明<br><strong>场景</strong>：对外层<br><strong>优先级</strong>：需要品牌声明时 > Callout</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">G5 Tension Grid 张力网格</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">对立统一，哲学感</div><div class="card__detail"><strong>场景</strong>：对外层品牌展示<br><strong>触发条件</strong>：年老师指定</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C17 Detail Panel 详情面板</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">全屏详情，完整信息</div><div class="card__detail"><strong>场景</strong>：全部<br><strong>触发条件</strong>：需要从概览进入详情</div><div class="card__scene"><span>全部</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D1 Typographic Link 排印链接</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">安静跳转，不打扰</div><div class="card__detail"><strong>场景</strong>：全部<br><strong>触发条件</strong>：需要链接跳转</div><div class="card__scene"><span>全部</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">F6 Newspaper Masthead 报头</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">编辑感，报头气质</div><div class="card__detail"><strong>场景</strong>：对外层<br><strong>触发条件</strong>：需要编辑感</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="比">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C18 Asymmetric Comparison 对比表</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">左粘性标签+右配对数据，比得最清楚</div><div class="card__detail"><strong>表达</strong>：多维度双方案对比<br><strong>场景</strong>：决策层方案选型<br><strong>不可替代性</strong>：只有它做非对称对比</div><div class="card__scene"><span>决策层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C3 Tabular Spec Sheet 参数表</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">技术参数逐项比，精确</div><div class="card__detail"><strong>表达</strong>：精确的技术规格对比<br><strong>场景</strong>：决策/计划层<br><strong>优先级</strong>：需要精确数值时 > Comparison</div><div class="card__scene"><span>决策层</span><span>计划层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C8 Tab Panel 选项卡</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">同一空间，切换比</div><div class="card__detail"><strong>场景</strong>：感知/决策<br><strong>触发条件</strong>：多个数据视图需切换</div><div class="card__scene"><span>感知层</span><span>决策层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C9 Accordion 折叠</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">折叠逐项比，省空间</div><div class="card__detail"><strong>场景</strong>：沉淀/计划<br><strong>触发条件</strong>：对比项较多时</div><div class="card__scene"><span>沉淀层</span><span>计划层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">E2 Inline Rule 内联分隔</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">轻重对比，内联分隔</div><div class="card__detail"><strong>场景</strong>：全部<br><strong>触发条件</strong>：需线性展示对比项</div><div class="card__scene"><span>全部</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="排">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV8 Rank Bar 排名条</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">谁前谁后，差多少</div><div class="card__detail"><strong>表达</strong>：排名+数值+差距<br><strong>场景</strong>：感知层<br><strong>不可替代性</strong>：只有它同时展示序号+条形+数值</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D11 Segmented Block Bar 分段条</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">各部分占多少，比例关系</div><div class="card__detail"><strong>表达</strong>：比例/配额/构成<br><strong>场景</strong>：感知层<br><strong>优先级</strong>：有比例无排名时 > Rank Bar</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Weight Bar 权重条</span><span class="card__prio p3">第3优先</span></div>
+      <div class="card__body"><div class="card__motto">哪个更重要，相对大小</div><div class="card__detail"><strong>表达</strong>：相对重要性<br><strong>场景</strong>：感知层<br><strong>优先级</strong>：不需要排名和精确比例时</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">B1 Left-margin Numbered 编号标题</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">左编号+正文，章节序号</div><div class="card__detail"><strong>表达</strong>：章节的顺序关系<br><strong>场景</strong>：计划/沉淀层<br><strong>不可替代性</strong>：只有它做装饰性编号</div><div class="card__scene"><span>计划层</span><span>沉淀层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">C10 Checklist 清单</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">勾选，排的是任务状态</div><div class="card__detail"><strong>表达</strong>：任务完成状态<br><strong>场景</strong>：计划层<br><strong>不可替代性</strong>：只有它做勾选状态</div><div class="card__scene"><span>计划层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D8 Tag 标签</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">分类归属，标签即排序</div><div class="card__detail"><strong>场景</strong>：全部<br><strong>触发条件</strong>：内容需打标签分类</div><div class="card__scene"><span>全部</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="量">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D14 Gauge Arc 弧形仪表</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">单个指标，视觉冲击最强</div><div class="card__detail"><strong>表达</strong>：单个 KPI 的好坏<br><strong>场景</strong>：执行层<br><strong>不可替代性</strong>：只有它做弧形仪表</div><div class="card__scene"><span>执行层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV7 Stacked Bar 堆叠条</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">多层构成，叠出总量</div><div class="card__detail"><strong>表达</strong>：总量=各层之和<br><strong>场景</strong>：感知层<br><strong>不可替代性</strong>：只有它做堆叠</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV22 Line Chart 折线图</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">趋势，上升还是下降</div><div class="card__detail"><strong>表达</strong>：时间序列的变化<br><strong>场景</strong>：感知层<br><strong>不可替代性</strong>：只有它做趋势线</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D15 SVG Sparkline 迷你趋势</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">嵌入文字的趋势线</div><div class="card__detail"><strong>表达</strong>：轻量趋势，不占空间<br><strong>场景</strong>：感知/决策层<br><strong>优先级</strong>：空间有限时优于 Line Chart</div><div class="card__scene"><span>感知层</span><span>决策层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV13 Scatter Plot 散点图</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">相关性，分布即关系</div><div class="card__detail"><strong>表达</strong>：两个维度的相关关系<br><strong>场景</strong>：感知层<br><strong>不可替代性</strong>：只有它做散点相关</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV14 Heatmap 热力图</span><span class="card__prio p3">第3优先</span></div>
+      <div class="card__body"><div class="card__motto">密度分布，颜色即浓度</div><div class="card__detail"><strong>表达</strong>：二维网格的密度<br><strong>场景</strong>：感知层<br><strong>优先级</strong>：数据量较大时才用</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV15 Radar Chart 雷达图</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">多维度评分，优劣一目了然</div><div class="card__detail"><strong>表达</strong>：多维度综合评分<br><strong>场景</strong>：决策层<br><strong>不可替代性</strong>：只有它做雷达图</div><div class="card__scene"><span>决策层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV16 Funnel Chart 漏斗图</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">转化率，逐层流失</div><div class="card__detail"><strong>表达</strong>：各阶段转化<br><strong>场景</strong>：感知层<br><strong>不可替代性</strong>：只有它做漏斗</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV4 KPI Card KPI卡</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">综合度量，超越单一数字</div><div class="card__detail"><strong>表达</strong>：综合多个维度的 KPI<br><strong>场景</strong>：执行层<br><strong>优先级</strong>：需综合展示时 > Gauge Arc</div><div class="card__scene"><span>执行层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV6 Bullet Chart 子弹图</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">实际 vs 目标，差距即度量</div><div class="card__detail"><strong>场景</strong>：感知/执行层<br><strong>触发条件</strong>：需要对比基准目标</div><div class="card__scene"><span>感知层</span><span>执行层</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="信">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D5 Logo Wall Logo墙</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">一堆logo比一段文字更可信</div><div class="card__detail"><strong>表达</strong>：合作方/客户/品牌背书<br><strong>场景</strong>：对外层<br><strong>不可替代性</strong>：只有它做 logo 阵列</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">D6 Single Huge Quote 创始人引言</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">品牌创始人的话，比广告更可信</div><div class="card__detail"><strong>表达</strong>：品牌创始人的背书<br><strong>场景</strong>：对外层<br><strong>不可替代性</strong>：只有它做创始人引言</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">E1 Mast-headed 报头</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">报头，品牌的权威感</div><div class="card__detail"><strong>场景</strong>：对外层<br><strong>优先级</strong>：需要权威感时</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">F2 Floating Pill 浮动药丸</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">技术感，悬浮导航</div><div class="card__detail"><strong>场景</strong>：感知层数据面板<br><strong>触发条件</strong>：年老师指定</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">F7 Edge-aligned 边对齐导航</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">极简，自信</div><div class="card__detail"><strong>场景</strong>：对外层<br><strong>触发条件</strong>：年老师指定</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+  </div>
+
+  <div class="cgrid" data-op="展">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV18 Small Multiples 小多组图</span><span class="card__prio p1">第1优先</span></div>
+      <div class="card__body"><div class="card__motto">批量看趋势，同一维度多次对比</div><div class="card__detail"><strong>表达</strong>：多个同类图表的并列深入<br><strong>场景</strong>：感知层<br><strong>不可替代性</strong>：只有它做批量切片</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV20 Treemap 树图</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">层级结构，面积即大小</div><div class="card__detail"><strong>表达</strong>：层次数据的大小关系<br><strong>场景</strong>：感知/决策层<br><strong>不可替代性</strong>：只有它做矩形嵌套</div><div class="card__scene"><span>感知层</span><span>决策层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">DV17 Box Plot 箱线图</span><span class="card__prio p2">第2优先</span></div>
+      <div class="card__body"><div class="card__motto">分布细节，五数概括</div><div class="card__detail"><strong>表达</strong>：数据分布的统计细节<br><strong>场景</strong>：感知层<br><strong>不可替代性</strong>：只有它做箱线分布</div><div class="card__scene"><span>感知层</span></div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">G1 Color Swatch Grid 色板</span><span class="card__prio spare">备用</span></div>
+      <div class="card__body"><div class="card__motto">颜色本身即是内容</div><div class="card__detail"><strong>场景</strong>：对外层<br><strong>触发条件</strong>：需要展示色板</div><div class="card__scene"><span>对外层</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ B 操作交互层 ═══ -->
+<div id="layer-interact" style="display:none">
+  <div style="font-size:12px;color:#8A7D6E;margin-bottom:16px">不走认知操作判断，走「用户需要做什么操作」</div>
+  <div class="igrid active">
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Inputs 输入框</span><span class="card__prio p1">常用</span></div>
+      <div class="card__body"><div class="card__motto">用户填写信息</div><div class="card__detail"><strong>何时用</strong>：页面需要用户输入文字/数据<br><strong>适用场景</strong>：工具型页面、后台表单</div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Toggle / Switch 开关</span><span class="card__prio p1">常用</span></div>
+      <div class="card__body"><div class="card__motto">用户切换模式</div><div class="card__detail"><strong>何时用</strong>：页面需要用户切换开/关状态</div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Segmented Control 选择器</span><span class="card__prio p1">常用</span></div>
+      <div class="card__body"><div class="card__motto">有限选项中选择</div><div class="card__detail"><strong>何时用</strong>：页面需要切换数据视图/分类</div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Buttons 按钮</span><span class="card__prio p1">常用</span></div>
+      <div class="card__body"><div class="card__motto">用户执行动作</div><div class="card__detail"><strong>何时用</strong>：页面需要提交/保存/跳转</div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Quick Edit 快速编辑</span><span class="card__prio p2">偶尔</span></div>
+      <div class="card__body"><div class="card__motto">直接在页面上改</div><div class="card__detail"><strong>何时用</strong>：交付前微调、内容编辑</div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Slider 滑块</span><span class="card__prio p2">偶尔</span></div>
+      <div class="card__body"><div class="card__motto">范围调整</div><div class="card__detail"><strong>何时用</strong>：数据过滤、参数调节</div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Date Navigation 日期选择</span><span class="card__prio p2">偶尔</span></div>
+      <div class="card__body"><div class="card__motto">切换时间周期</div><div class="card__detail"><strong>何时用</strong>：数据报表需要切换日期</div></div>
+    </div>
+    <div class="card" onclick="this.querySelector('.card__body').classList.toggle('open')">
+      <div class="card__hdr"><span class="card__name">Tag (交互态) 交互标签</span><span class="card__prio p2">偶尔</span></div>
+      <div class="card__body"><div class="card__motto">筛选/标记</div><div class="card__detail"><strong>何时用</strong>：内容列表需要筛选分类</div></div>
+    </div>
+  </div>
+  <div style="margin-top:12px;padding:12px;background:#fff;border:1px solid #ddd8d2;font-size:12px;line-height:1.7">
+    <strong>选型规则</strong>：80% 的内容页面（报告/SOP/笔记）不需要交互组件。只在工具型页面或年老师明确要求时才从操作层选。<br>
+    <strong>排列</strong>：不按认知操作，按用户操作频率（常用/偶尔）排列。
+  </div>
+</div>
+
+<!-- ═══ C 扩展库 ═══ -->
+<div id="layer-ext" style="display:none">
+  <div style="font-size:12px;color:#8A7D6E;margin-bottom:16px">不进入主决策流程。AI 只有在核心 55 个无法满足或年老师明确指定时才查。</div>
+  
+  <div class="section-title">装饰类 · 约 8 个</div>
+  <div class="ext__g"><strong>C16 Dot Pattern</strong> 点阵背景 <span class="ext-note">装饰纹理，不是内容表达</span></div>
+  <div class="ext__g"><strong>Ghost Text</strong> 幽灵文字 <span class="ext-note">装饰性水印，不承载信息</span></div>
+  <div class="ext__g"><strong>Seal</strong> 印章 <span class="ext-note">品牌仪式感装饰</span></div>
+  <div class="ext__g"><strong>DV1-DV3</strong> 纯装饰 SVG <span class="ext-note">装饰性图形</span></div>
+
+  <div class="section-title" style="margin-top:20px">被核心覆盖的变体 · 约 15 个</div>
+  <div class="ext__g"><strong>C7 Three-Column Grid</strong> → 被 C1 Bento Grid 覆盖 <span class="ext-note">标准三列网格 vs 不规则网格，选 C1</span></div>
+  <div class="ext__g"><strong>C12 Brand Statement Card</strong> → 被 E6 Statement 覆盖</div>
+  <div class="ext__g"><strong>C13 State Patterns</strong> → 加载/空/错误/成功，页面级状态，非内容组件</div>
+  <div class="ext__g"><strong>C14 Application Card</strong> → 被 C1 Bento Grid 覆盖</div>
+  <div class="ext__g"><strong>C22 Alert/Inline Status</strong> → 被 C20 Callout 覆盖 <span class="ext-note">状态提示与边注提示本质相同</span></div>
+  <div class="ext__g"><strong>C23 Inputs</strong>（内容版）→ 见交互操作层</div>
+
+  <div class="section-title" style="margin-top:20px">未清理 · 约 22 个</div>
+  <div class="ext__g"><strong>H 系列宏结构</strong> 15 个 <span class="ext-note">页面级结构，不进入组件选型</span></div>
+  <div class="ext__g"><strong>其他低频组件</strong> 约 7 个 <span class="ext-note">使用率极低，保留但不维护</span></div>
+
+  <div style="margin-top:16px;padding:12px;background:#fff;border:1px solid #ddd8d2;font-size:12px;line-height:1.7">
+    <strong>扩展库不删也不改</strong>。只是从 AI 的默认路径中移除。年老师随时可以指定用扩展库里的组件。
+  </div>
+</div>
+
+<div class="footer">nian-design · 组件库三层架构 · 2026-06-07</div>
+
+</div>
+
+<script>
+// Layer tabs
+document.querySelectorAll('.ltab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ltab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#layer-content,#layer-interact,#layer-ext').forEach(el => el.style.display = 'none');
+    document.getElementById('layer-' + btn.dataset.layer).style.display = 'block';
+  });
+});
+
+// Operation nav (for content layer)
+document.querySelectorAll('.onav__btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.onav__btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.cgrid').forEach(g => g.classList.remove('active'));
+    document.querySelector('.cgrid[data-op="' + btn.dataset.op + '"]').classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

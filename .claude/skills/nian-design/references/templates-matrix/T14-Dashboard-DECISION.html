@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商决策分析看板 · 2026年6月</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --darkgray:#2C2C2C;
+  --olive:#4A5D3A;
+  --earth:#8B7355;
+  --yellow:#FFD100;
+  --orange:#E55B2B;
+  --glacier:#2A4A5A;
+  --rock:#808080;
+  --bg:#FAFAF8;
+  --surface:#FFFFFF;
+  --surface-raised:#F5F5F0;
+  --border:#E5E5E0;
+  --text-display:#2C2C2C;
+  --text-primary:#1A1A1A;
+  --text-secondary:#6B6B6B;
+  --text-disabled:#A0A0A0;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text-primary);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  margin-left:64px;
+}
+::selection{background:var(--olive);color:#fff}
+
+/* Ghost 水印 */
+.ghost{
+  position:absolute;
+  font-family:var(--font-display);
+  font-size:clamp(60px,10vw,160px);
+  font-weight:300;
+  line-height:1;
+  color:var(--text-display);
+  opacity:0.04;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* BK 侧栏导航 */
+.bk-sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:64px;
+  height:100vh;
+  background:var(--text-display);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:24px 0;
+  z-index:100;
+}
+.bk-sidebar a{
+  writing-mode:vertical-rl;
+  font-family:var(--font-mono);
+  font-size:9px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+  text-decoration:none;
+  margin:12px 0;
+  transition:color .2s;
+}
+.bk-sidebar a:hover{color:rgba(255,255,255,.8)}
+
+/* 区域标签 */
+.region-label{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-bottom:24px;
+}
+
+/* Section 标题 */
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(28px,3.5vw,48px);
+  font-weight:300;
+  line-height:1.15;
+  letter-spacing:-1px;
+  color:var(--text-primary);
+  max-width:700px;
+  margin-bottom:24px;
+}
+
+/* 装饰分割线 */
+.deco-line{
+  width:60px;
+  height:2px;
+  background:var(--olive);
+  margin-bottom:24px;
+}
+
+/* Dashboard 指标卡 */
+.dash-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:28px 24px;
+}
+.dash-card__label{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-bottom:12px;
+}
+.dash-card__value{
+  font-family:var(--font-mono);
+  font-size:clamp(28px,3.5vw,44px);
+  font-weight:400;
+  line-height:1;
+  margin-bottom:8px;
+}
+.dash-card__delta{
+  font-family:var(--font-body);
+  font-size:13px;
+}
+
+/* Comparison 双栏 */
+.comparison{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:2px;
+  background:var(--border);
+}
+.comparison__side{
+  background:var(--surface);
+  padding:32px 28px;
+}
+.comparison__header{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-bottom:16px;
+}
+
+/* Tab Panel */
+.tab-bar{
+  display:flex;
+  border-bottom:1px solid var(--border);
+  margin-bottom:32px;
+}
+.tab-bar button{
+  padding:12px 24px;
+  background:none;
+  border:none;
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--text-disabled);
+  cursor:pointer;
+  transition:all .2s;
+  border-bottom:2px solid transparent;
+}
+.tab-bar button.active{
+  color:var(--text-primary);
+  border-bottom-color:var(--olive);
+}
+
+/* Asym Table */
+.asym-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.asym-table th{
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--text-disabled);
+  text-align:left;
+  padding:12px 16px;
+  border-bottom:2px solid var(--text-primary);
+  font-weight:500;
+}
+.asym-table td{
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+}
+.asym-table .wide{width:40%}
+.asym-table .narrow{text-align:center}
+
+/* Wiki 引用块 */
+.wiki-ref{
+  padding:24px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--glacier);
+}
+.wiki-ref__title{
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--glacier);
+  margin-bottom:12px;
+}
+
+/* 金句 */
+.quote-mark{
+  font-family:var(--font-display);
+  font-size:80px;
+  color:var(--border);
+  line-height:1;
+  margin-bottom:-24px;
+  position:relative;
+  z-index:1;
+}
+
+/* Closing */
+.closing{
+  background:var(--text-display);
+  color:var(--bg);
+  min-height:60vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:96px 120px;
+}
+.closing__action{
+  display:flex;
+  gap:16px;
+  align-items:start;
+}
+.closing__num{
+  width:28px;
+  height:28px;
+  border:1px solid rgba(255,255,255,.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:rgba(255,255,255,.6);
+  flex-shrink:0;
+}
+
+/* Footer */
+.page-footer{
+  padding:48px 120px;
+  background:var(--text-display);
+  color:rgba(255,255,255,.35);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:0.06em;
+}
+
+/* 响应式 */
+@media(max-width:1024px){
+  .bk-sidebar{display:none}
+  body{margin-left:0}
+}
+@media(max-width:768px){
+  section{padding-left:24px!important;padding-right:24px!important}
+  .comparison{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== BK 侧栏导航 ===== -->
+<nav class="bk-sidebar">
+  <a href="#" style="font-size:11px;color:rgba(255,255,255,.7);margin-bottom:24px">NIAN</a>
+  <a href="#overview">总览</a>
+  <a href="#pending">待决策</a>
+  <a href="#evaluate">评估</a>
+  <a href="#compare">对比</a>
+  <a href="#arch">架构</a>
+  <a href="#why">时机</a>
+  <a href="#action">行动</a>
+</nav>
+
+<!-- ============================================================
+     Section 1: Hero — Dashboard 浅底+4指标卡
+     data-stream="dashboard"
+     ============================================================ -->
+<section data-stream="dashboard" id="overview" style="min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 120px;background:var(--bg);position:relative;overflow:hidden">
+  <!-- Ghost 水印 -->
+  <div class="ghost" style="right:80px;bottom:80px" aria-hidden="true">14</div>
+  <!-- 大字装饰 -->
+  <div style="position:absolute;right:120px;top:50%;transform:translateY(-50%);font-family:var(--font-display);font-size:clamp(120px,15vw,240px);font-weight:300;line-height:1;color:var(--text-display);opacity:0.03;pointer-events:none;user-select:none;white-space:nowrap" aria-hidden="true">DECISION</div>
+  <!-- 来源标签 -->
+  <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:32px">决策分析 · 2026年6月</div>
+  <!-- 主标题 -->
+  <h1 style="font-family:var(--font-display);font-size:clamp(48px,6vw,80px);font-weight:300;line-height:1.05;letter-spacing:-2px;color:var(--text-primary);max-width:700px;margin-bottom:48px">3项待决策，<br>2项紧急。</h1>
+  <!-- 4 指标卡 -->
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px">
+    <div class="dash-card">
+      <div class="dash-card__label">待决策事项</div>
+      <div class="dash-card__value" style="color:var(--orange)">3</div>
+      <div class="dash-card__delta" style="color:var(--orange)">2项紧急</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card__label">预警供应商</div>
+      <div class="dash-card__value" style="color:var(--orange)">2</div>
+      <div class="dash-card__delta" style="color:var(--orange)">毅航+毛毛虫</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card__label">决策影响范围</div>
+      <div class="dash-card__value" style="color:var(--olive)">4家</div>
+      <div class="dash-card__delta" style="color:var(--text-secondary)">占活跃33%</div>
+    </div>
+    <div class="dash-card">
+      <div class="dash-card__label">决策截止</div>
+      <div class="dash-card__value" style="color:var(--text-primary)">6/20</div>
+      <div class="dash-card__delta" style="color:var(--text-secondary)">距截止7天</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 2: 待决策事项 — comparison 双栏
+     data-component="comparison"
+     ============================================================ -->
+<section data-component="comparison" id="pending" style="padding:96px 120px;background:var(--bg)">
+  <!-- 区域标签 -->
+  <div class="region-label">PENDING DECISIONS</div>
+  <!-- 标题 -->
+  <h2 class="section-title">待决策事项</h2>
+  <!-- 装饰分割线 -->
+  <div class="deco-line"></div>
+  <!-- 双栏对比 -->
+  <div class="comparison" style="margin-bottom:32px">
+    <!-- 左栏: 紧急决策 -->
+    <div class="comparison__side">
+      <div class="comparison__header" style="color:var(--orange)">紧急决策</div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div style="border-left:3px solid var(--orange);padding-left:16px">
+          <div style="font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">毅航整改期限</div>
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.6">连续2个月合格率&lt;90%，交付率78.9%触发双预警。整改期限是否从30天缩短至14天？</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--orange);margin-top:8px">截止: 6月15日</div>
+        </div>
+        <div style="border-left:3px solid var(--orange);padding-left:16px">
+          <div style="font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">毛毛虫工单暂停</div>
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.6">同一坐席连续3起投诉未上报，是否暂停该坐席工单分配并要求毛毛虫提交整改报告？</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--orange);margin-top:8px">截止: 6月16日</div>
+        </div>
+      </div>
+    </div>
+    <!-- 右栏: 常规决策 -->
+    <div class="comparison__side">
+      <div class="comparison__header" style="color:var(--olive)">常规决策</div>
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div style="border-left:3px solid var(--olive);padding-left:16px">
+          <div style="font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">伽玛排名约谈</div>
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.6">连续3个月排名下滑（第1→第3），是否安排一对一沟通了解原因？</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--olive);margin-top:8px">截止: 6月20日</div>
+        </div>
+        <div style="border-left:3px solid var(--glacier);padding-left:16px">
+          <div style="font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">金条产线分工调整</div>
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.6">毅航和赛维斯同在金条产线，业绩差距54分。是否评估重新分工？</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--glacier);margin-top:8px">截止: 6月25日</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 决策影响说明 -->
+  <div style="max-width:640px;padding-top:24px;border-top:1px solid var(--border)">
+    <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">
+      紧急决策影响毅航和毛毛虫两家预警供应商，涉及金条和企金两条产线。常规决策影响伽玛和金条产线分工。所有决策需在6月20日前完成，以便纳入Q2季度总结。
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 3: Tab Panel — 多维度评估
+     data-component="tab_panel"
+     ============================================================ -->
+<section data-component="tab_panel" id="evaluate" style="padding:96px 120px;background:var(--bg)">
+  <!-- 区域标签 -->
+  <div class="region-label">MULTI-DIMENSION</div>
+  <!-- 标题 -->
+  <h2 class="section-title">多维度评估</h2>
+  <!-- 装饰分割线 -->
+  <div class="deco-line"></div>
+  <!-- Tab 切换 -->
+  <div class="tab-bar">
+    <button class="active">质量维度</button>
+    <button>交付维度</button>
+    <button>服务维度</button>
+    <button>成本维度</button>
+  </div>
+  <!-- 质量维度内容 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:40px">
+    <!-- 左侧: 评估数据 -->
+    <div>
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:16px">质量评估</div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-primary)">赛维斯</div>
+          <div style="font-family:var(--font-mono);font-size:14px;color:var(--olive)">97.2%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-primary)">翰锐</div>
+          <div style="font-family:var(--font-mono);font-size:14px;color:var(--olive)">95.4%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-primary)">伽玛科技</div>
+          <div style="font-family:var(--font-mono);font-size:14px;color:var(--yellow)">93.8%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-primary)">岐力</div>
+          <div style="font-family:var(--font-mono);font-size:14px;color:var(--yellow)">91.6%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-primary)">毅航</div>
+          <div style="font-family:var(--font-mono);font-size:14px;color:var(--orange)">86.3%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0">
+          <div style="font-family:var(--font-body);font-size:14px;color:var(--text-primary)">毛毛虫</div>
+          <div style="font-family:var(--font-mono);font-size:14px;color:var(--orange)">82.1%</div>
+        </div>
+      </div>
+    </div>
+    <!-- 右侧: 评估结论 -->
+    <div style="background:var(--surface);border:1px solid var(--border);padding:28px 24px">
+      <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:16px">评估结论</div>
+      <div style="font-family:var(--font-body);font-size:15px;font-weight:500;color:var(--text-primary);margin-bottom:12px">质量维度: 2家触发预警</div>
+      <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:16px">
+        毅航（86.3%）和毛毛虫（82.1%）均低于90%预警阈值。毅航连续2个月低于阈值，毛毛虫为首次触发。赛维斯（97.2%）保持行业领先，可作为标杆。
+      </p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span style="padding:4px 12px;background:var(--orange);color:#fff;font-size:11px;border-radius:999px;font-family:var(--font-mono)">毅航: 需整改</span>
+        <span style="padding:4px 12px;background:var(--orange);color:#fff;font-size:11px;border-radius:999px;font-family:var(--font-mono)">毛毛虫: 需核查</span>
+      </div>
+    </div>
+  </div>
+  <!-- 维度说明 -->
+  <div style="max-width:640px;padding-top:24px;border-top:1px solid var(--border)">
+    <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">
+      质量维度权重40%，是综合评分中占比最高的维度。合格率低于90%触发红色预警，低于85%触发清退评估。当前毅航和毛毛虫均在整改区间，未达清退标准。
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 4: 非对称对比表 — asym_table
+     data-component="asym_table"
+     ============================================================ -->
+<section data-component="asym_table" id="compare" style="padding:96px 120px;background:var(--bg)">
+  <!-- 区域标签 -->
+  <div class="region-label">COMPARISON</div>
+  <!-- 标题 -->
+  <h2 class="section-title">毅航 vs 赛维斯对比</h2>
+  <!-- 装饰分割线 -->
+  <div class="deco-line"></div>
+  <!-- 非对称表格 -->
+  <table class="asym-table" style="margin-bottom:32px">
+    <thead>
+      <tr>
+        <th class="wide">对比维度</th>
+        <th class="narrow">毅航</th>
+        <th class="narrow">赛维斯</th>
+        <th class="narrow">差距</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:500">质量合格率</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">86.3%</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--olive)">97.2%</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">-10.9%</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">准时交付率</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">78.9%</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--olive)">95.1%</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">-16.2%</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">投诉工单</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">3件</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--olive)">0件</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">+3件</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">综合评分</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">58</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--olive)">96</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--orange)">-38分</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">连续优秀月数</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--text-secondary)">0</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--olive)">6</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--text-disabled)">-</td>
+      </tr>
+      <tr>
+        <td style="font-weight:500">产线</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--text-secondary)">金条</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--text-secondary)">金条</td>
+        <td class="narrow" style="font-family:var(--font-mono);color:var(--text-disabled)">同产线</td>
+      </tr>
+    </tbody>
+  </table>
+  <!-- 对比结论 -->
+  <div style="max-width:640px;padding:24px;background:var(--surface);border:1px solid var(--border)">
+    <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:12px">对比结论</div>
+    <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">
+      毅航和赛维斯同在金条产线，但业绩差距悬殊（38分）。赛维斯连续6个月优秀，毅航连续2个月预警。金条产线占整体业务量38%，毅航的下滑直接影响产线整体指标。建议评估是否需要调整金条产线供应商分工。
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 5: 5层架构 — wiki 引用
+     wiki: 供应商管理体系
+     ============================================================ -->
+<section data-component="wiki" id="arch" style="padding:96px 120px;background:var(--bg)">
+  <!-- 区域标签 -->
+  <div class="region-label">ARCHITECTURE</div>
+  <!-- 标题 -->
+  <h2 class="section-title">供应商管理5层架构</h2>
+  <!-- 装饰分割线 -->
+  <div class="deco-line"></div>
+  <!-- Wiki 引用块 -->
+  <div class="wiki-ref" style="margin-bottom:32px">
+    <div class="wiki-ref__title">Wiki · 供应商管理体系</div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;gap:16px;align-items:start">
+        <div style="width:32px;height:32px;background:var(--glacier);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;flex-shrink:0">L1</div>
+        <div>
+          <div style="font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">战略层</div>
+          <div style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary)">供应商准入标准、退出机制、产线分工策略。决定"谁能进来、谁该出去、谁做什么"。</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:start">
+        <div style="width:32px;height:32px;background:var(--glacier);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;flex-shrink:0">L2</div>
+        <div>
+          <div style="font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">评估层</div>
+          <div style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary)">月度评分体系、多维度考核、排名机制。用数据量化每家供应商的表现。</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:start">
+        <div style="width:32px;height:32px;background:var(--olive);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;flex-shrink:0">L3</div>
+        <div>
+          <div style="font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">监控层</div>
+          <div style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary)">实时预警、异常检测、趋势分析。问题发生前发现苗头，问题发生后快速响应。</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:start">
+        <div style="width:32px;height:32px;background:var(--olive);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;flex-shrink:0">L4</div>
+        <div>
+          <div style="font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">干预层</div>
+          <div style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary)">约谈机制、整改方案、暂停工单、资源调配。问题供应商的处理流程。</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:start">
+        <div style="width:32px;height:32px;background:var(--earth);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;flex-shrink:0">L5</div>
+        <div>
+          <div style="font-family:var(--font-body);font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px">优化层</div>
+          <div style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary)">最佳实践提炼、标杆推广、体系迭代。让每家供应商的进步成为整体的提升。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 架构说明 -->
+  <div style="max-width:640px;padding-top:24px;border-top:1px solid var(--border)">
+    <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">
+      5层架构是供应商管理的完整闭环。当前决策主要涉及L3监控层（预警触发）和L4干预层（整改措施）。L5优化层的工作——赛维斯最佳实践提炼——应在本月完成。
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 6: 三论点递进 — why_now
+     data-component="why_now"
+     ============================================================ -->
+<section data-component="why_now" id="why" style="padding:96px 120px;background:var(--bg)">
+  <!-- 区域标签 -->
+  <div class="region-label">WHY NOW</div>
+  <!-- 标题 -->
+  <h2 class="section-title">为什么现在必须决策</h2>
+  <!-- 装饰分割线 -->
+  <div class="deco-line"></div>
+  <!-- 三论点递进 -->
+  <div style="display:flex;flex-direction:column;gap:32px;max-width:720px;margin-bottom:40px">
+    <!-- 论点1: 窗口期 -->
+    <div style="display:flex;gap:24px">
+      <div style="width:48px;height:48px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;color:var(--olive);flex-shrink:0">1</div>
+      <div>
+        <div style="font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px">Q2窗口期正在关闭</div>
+        <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">距Q2季度结束还有18天。整改措施如果现在启动，供应商还有时间在季度内改善。拖到7月，问题会被带入Q3，影响全年评估。</p>
+      </div>
+    </div>
+    <!-- 论点2: 问题集中 -->
+    <div style="display:flex;gap:24px">
+      <div style="width:48px;height:48px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;color:var(--orange);flex-shrink:0">2</div>
+      <div>
+        <div style="font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px">问题正在向少数供应商集中</div>
+        <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">7件投诉中，毅航3件、毛毛虫2件，占71%。合格率下滑也集中在同两家。如果不干预，问题会进一步恶化，可能触发清退评估。</p>
+      </div>
+    </div>
+    <!-- 论点3: 标杆可复制 -->
+    <div style="display:flex;gap:24px">
+      <div style="width:48px;height:48px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:20px;color:var(--glacier);flex-shrink:0">3</div>
+      <div>
+        <div style="font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px">标杆实践已经成熟</div>
+        <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">赛维斯连续6个月优秀，晨会制度+质量前移+人才梯队已验证有效。现在决策不是"要不要做"，而是"怎么把好经验推广出去"。</p>
+      </div>
+    </div>
+  </div>
+  <!-- 递进总结 -->
+  <div style="max-width:640px;padding:24px;background:var(--surface-raised);border-left:3px solid var(--olive)">
+    <p style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);line-height:1.7">
+      <strong style="color:var(--text-primary)">递进逻辑</strong>：窗口期紧迫（时间）→ 问题集中（风险）→ 标杆成熟（机会）。三个因素叠加，现在是最佳决策时机。延迟决策的代价：问题扩大、窗口关闭、标杆经验流失。
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     Section 7: 金句
+     data-layout="S15"
+     ============================================================ -->
+<section data-layout="S15" style="min-height:60vh;display:flex;flex-direction:column;justify-content:center;padding:96px 120px;background:var(--surface-raised);position:relative">
+  <!-- 装饰引号 -->
+  <div class="quote-mark">&ldquo;</div>
+  <!-- 金句内容 -->
+  <blockquote style="font-family:var(--font-display);font-size:clamp(24px,3.5vw,48px);font-weight:300;line-height:1.25;letter-spacing:-1px;color:var(--text-primary);max-width:640px;margin-bottom:24px;position:relative;z-index:1">决策的价值不在于做了什么，在于及时做了什么。</blockquote>
+  <!-- 来源 -->
+  <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);position:relative;z-index:1">-- 决策原则 · 2026</div>
+</section>
+
+<!-- ============================================================
+     Section 8: Closing — 行动建议
+     data-layout="S18"
+     ============================================================ -->
+<section class="closing" id="action">
+  <!-- 区域标签 -->
+  <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:32px">DECISION ACTION</div>
+  <!-- 主标题 -->
+  <h1 style="font-family:var(--font-display);font-size:clamp(36px,5vw,72px);font-weight:300;line-height:1.1;letter-spacing:-1.5px;color:#fff;max-width:700px;margin-bottom:48px">本月行动建议</h1>
+  <!-- 行动列表 -->
+  <div style="display:flex;flex-direction:column;gap:24px;max-width:560px">
+    <div class="closing__action">
+      <div class="closing__num">01</div>
+      <div>
+        <p style="font-family:var(--font-body);font-size:15px;line-height:1.6;color:rgba(255,255,255,.75);margin-bottom:4px">毅航整改期限缩短至14天（6月27日前）</p>
+        <p style="font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,.45)">要求提交书面整改方案，包括坐席培训计划、质检流程优化、7日复检安排。14天后验收，不达标则启动清退评估。</p>
+      </div>
+    </div>
+    <div class="closing__action">
+      <div class="closing__num">02</div>
+      <div>
+        <p style="font-family:var(--font-body);font-size:15px;line-height:1.6;color:rgba(255,255,255,.75);margin-bottom:4px">毛毛虫工单暂停+整改报告（48小时）</p>
+        <p style="font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,.45)">暂停问题坐席工单分配，要求毛毛虫48小时内提交整改报告，包括坐席处理、内部追责、复检机制。</p>
+      </div>
+    </div>
+    <div class="closing__action">
+      <div class="closing__num">03</div>
+      <div>
+        <p style="font-family:var(--font-body);font-size:15px;line-height:1.6;color:rgba(255,255,255,.75);margin-bottom:4px">伽玛一对一沟通+金条分工评估</p>
+        <p style="font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,.45)">本周安排伽玛沟通，了解排名下滑原因。同步启动金条产线分工评估，输出调整方案供决策。</p>
+      </div>
+    </div>
+  </div>
+  <!-- 决策提示 -->
+  <div style="margin-top:48px;padding:20px 24px;border-left:2px solid rgba(255,255,255,.3);max-width:560px">
+    <p style="font-family:var(--font-body);font-size:13px;color:rgba(255,255,255,.5);line-height:1.65">
+      <strong style="color:rgba(255,255,255,.7)">需确认</strong>：毅航整改期限是否缩短至14天？毛毛虫工单是否立即暂停？请确认后执行。
+    </p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="page-footer">
+  <div>NIAN · 2026</div>
+  <div>T14-Dashboard-DECISION</div>
+</footer>
+
+</body>
+</html>

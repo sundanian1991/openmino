@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金条业务 · 区位矩阵</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F2F0EC; --sf:#FFFFFF; --sf-alt:#E3DFD8; --bd:#C4B8A8; --bd-s:#8A7D6E;
+  --td:#2D2A26; --tp:#1A1816; --ts:#8A7D6E; --tda:#C4B8A8;
+  --forest:#3D5A35; --moss:#6B8B5E; --slate:#4E627C; --steel:#7A8B9B;
+  --gold:#BF9B5A; --clay:#C66B4B; --sky:#4A80C0; --red:#D9433A;
+  --font-d:'Playfair Display',Georgia,serif;
+  --font-b:'Inter',-apple-system,sans-serif;
+  --font-m:'JetBrains Mono',monospace;
+  --font-o:'Doto',monospace;
+  --s-xs:4px; --s-sm:8px; --s-md:16px; --s-lg:24px; --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px;
+  --r-sm:4px; --r-md:8px;
+  --c-max:1120px; --pad:32px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-b);background:var(--bg);color:var(--tp);-webkit-font-smoothing:antialiased;line-height:1.6}
+.c{max-width:var(--c-max);margin:0 auto;padding:0 var(--pad);width:100%}
+.section{padding:var(--s-4xl) var(--pad)}
+.sl{font-family:var(--font-m);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ts);margin-bottom:var(--s-lg)}
+.st{font-family:var(--font-d);font-size:clamp(28px,4vw,40px);font-weight:300;color:var(--td);line-height:1.15;letter-spacing:-0.02em;margin-bottom:var(--s-lg)}
+.st strong{font-weight:600}
+
+/* ═══ V3 Hero: 上下劈开 ═══ */
+.hero-v3{display:grid;grid-template-rows:1fr 1fr;min-height:80vh}
+.hero-v3__top{display:flex;align-items:center;padding:var(--s-4xl) var(--pad);position:relative;overflow:hidden;background:var(--bg)}
+.hero-v3__bot{display:flex;align-items:center;padding:var(--s-3xl) var(--pad);background:#2D2A26;color:var(--bg);position:relative}
+.hero-v3__ghost{position:absolute;right:-0.02em;top:0.1em;font-family:var(--font-o);font-size:clamp(12rem,28vw,32rem);font-weight:700;color:var(--slate);opacity:0.04;line-height:0.8;pointer-events:none;user-select:none;letter-spacing:-0.06em}
+.hero-v3__label{font-family:var(--font-m);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--slate);margin-bottom:var(--s-lg);position:relative;z-index:2}
+.hero-v3__h{font-family:var(--font-d);font-size:clamp(48px,7vw,88px);font-weight:300;line-height:1.05;letter-spacing:-0.03em;color:var(--td);max-width:14ch;position:relative;z-index:2}
+.hero-v3__sub{font-size:17px;font-weight:300;color:var(--ts);max-width:520px;margin-top:var(--s-lg);line-height:1.7;position:relative;z-index:2}
+.hero-v3__sig{position:absolute;left:var(--pad);bottom:auto;top:24px;font-family:var(--font-o);font-size:16px;letter-spacing:0.12em;color:var(--slate);opacity:0.05;writing-mode:vertical-rl;pointer-events:none}
+.hero-v3__bot-inner{width:100%;max-width:var(--c-max);margin:0 auto;position:relative;z-index:2}
+.hero-v3__metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-xl)}
+.hero-v3__m-label{font-family:var(--font-m);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:var(--s-sm)}
+.hero-v3__m-val{font-family:var(--font-d);font-size:clamp(28px,3vw,44px);font-weight:400;color:#fff;line-height:1}
+.hero-v3__m-note{font-size:12px;color:rgba(255,255,255,0.3);margin-top:var(--s-xs)}
+
+/* ═══ Matrix: 区位表 ═══ */
+.matrix-wrap{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r-md);overflow-x:auto}
+.matrix{width:100%;min-width:700px;border-collapse:collapse}
+.matrix th{font-family:var(--font-m);font-size:9px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--ts);padding:var(--s-md) var(--s-sm);border-bottom:2px solid var(--bd);text-align:center;background:var(--sf-alt)}
+.matrix th:first-child{text-align:left;padding-left:var(--s-md);width:100px}
+.matrix td{padding:0;border-bottom:1px solid var(--bd)}
+.matrix tbody tr:last-child td{border-bottom:none}
+.matrix .rl{padding:var(--s-md);font-size:13px;font-weight:500;color:var(--tp);border-right:1px solid var(--bd);background:var(--sf-alt);white-space:nowrap}
+.mx{text-align:center;padding:var(--s-sm);transition:background 200ms ease}
+.mx__v{font-family:var(--font-m);font-size:14px;font-weight:500;color:var(--td);display:block;line-height:1.3}
+.mx__s{font-family:var(--font-m);font-size:9px;color:var(--tda)}
+.mx__b{height:3px;border-radius:2px;margin:var(--s-xs) auto 0;max-width:48px;background:var(--bd)}
+.mx.hot{background:rgba(45,42,38,0.05)}
+.mx__v.g{color:var(--forest)}.mx__b.g{background:var(--forest)}
+.mx__v.c{color:var(--clay)}.mx__b.c{background:var(--clay)}
+.mx__v.r{color:var(--red)}.mx__b.r{background:var(--red)}
+
+/* ═══ Rank-list (从 R1 直接引用) ═══ */
+.rank-list{display:flex;flex-direction:column;gap:var(--s-sm)}
+.rank-item{display:grid;grid-template-columns:28px 1fr 60px;gap:var(--s-md);align-items:center;padding:var(--s-sm) 0;border-bottom:1px solid var(--sf-alt)}
+.rank-item:last-child{border-bottom:none}
+.rank-num{font-family:var(--font-m);font-size:11px;color:var(--tda);text-align:right}
+.rank-num.top3{color:var(--gold);font-weight:600}
+.rank-name{font-size:13px;color:var(--tp)}
+.rank-bar-wrap{height:6px;background:var(--sf-alt);border-radius:var(--r-sm);overflow:hidden}
+.rank-bar-fill{height:100%;border-radius:var(--r-sm);background:var(--slate);transition:width 600ms ease-out}
+.rank-bar-fill.top{background:var(--forest)}
+.rank-bar-fill.gold{background:var(--gold)}
+.rank-val{font-family:var(--font-m);font-size:11px;color:var(--ts);text-align:right}
+
+/* ═══ Layout: 60/40 非对称 ═══ */
+.ml{display:grid;grid-template-columns:1.6fr 1fr;gap:var(--s-xl);align-items:start}
+
+/* ═══ Callout (从 R1 直接引用) ═══ */
+.callouts{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-lg);margin-top:var(--s-2xl)}
+.callout-card{border-left:2px solid var(--clay);background:var(--sf);padding:var(--s-lg) var(--s-xl);border-radius:var(--r-md)}
+.callout-card.g{border-left-color:var(--forest)}
+.callout-card.r{border-left-color:var(--red)}
+.callout-title{font-family:var(--font-m);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--clay);margin-bottom:var(--s-sm)}
+.callout-card.g .callout-title{color:var(--forest)}
+.callout-card.r .callout-title{color:var(--red)}
+.callout-body{font-size:13px;color:var(--ts);line-height:1.6}
+.callout-body strong{color:var(--tp)}
+
+/* ═══ Closing ═══ */
+.closing{background:#2D2A26;color:var(--bg);text-align:center;padding:var(--s-3xl) var(--pad)}
+.closing-inner{max-width:600px;margin:0 auto}
+.closing-text{font-family:var(--font-d);font-size:clamp(20px,2.5vw,30px);font-weight:300;line-height:1.3;letter-spacing:-0.02em}
+.closing-text strong{font-weight:600;color:var(--gold)}
+.closing-src{font-family:var(--font-m);font-size:9px;color:rgba(255,255,255,0.2);margin-top:var(--s-xl);letter-spacing:0.04em}
+.closing-src span{margin:0 var(--s-sm)}
+
+/* Rank panel container */
+.rank-panel{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r-md);padding:var(--s-lg)}
+.rank-panel__sl{font-family:var(--font-m);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--tda);margin-bottom:var(--s-md);padding-bottom:var(--s-sm);border-bottom:1px solid var(--bd)}
+
+/* ═══ Responsive ═══ */
+@media(max-width:900px){
+  .ml{grid-template-columns:1fr}
+  .hero-v3__metrics{grid-template-columns:repeat(2,1fr);gap:var(--s-lg)}
+  .callouts{grid-template-columns:1fr}
+  .hero-v3__h{font-size:clamp(36px,6vw,56px)}
+}
+</style>
+</head>
+<body>
+
+<!-- Hero V3: 上下劈开（从 R1 直接引用组件结构） -->
+<section class="hero-v3">
+  <div class="hero-v3__top">
+    <div class="hero-v3__ghost">MATRIX</div>
+    <div class="hero-v3__sig">················</div>
+    <div style="position:relative;z-index:2;width:100%;max-width:var(--c-max);margin:0 auto;padding:0 var(--pad)">
+      <div class="hero-v3__label">Location Matrix · 2026 Q1</div>
+      <h1 class="hero-v3__h">金条业务<br>全国区位</h1>
+      <p class="hero-v3__sub">8 个职场 × 4 项指标。横看放款量、达成率、人力与人效的交叉分布，纵览各城市在业务版图中的定位。</p>
+    </div>
+  </div>
+  <div class="hero-v3__bot">
+    <div class="hero-v3__bot-inner">
+      <div class="hero-v3__metrics">
+        <div class="hero-v3__metric">
+          <div class="hero-v3__m-label">总放款量</div>
+          <div class="hero-v3__m-val">¥312M</div>
+          <div class="hero-v3__m-note">8 职场合计</div>
+        </div>
+        <div class="hero-v3__metric">
+          <div class="hero-v3__m-label">平均达成率</div>
+          <div class="hero-v3__m-val">92.4%</div>
+          <div class="hero-v3__m-note">最高 112% · 最低 68%</div>
+        </div>
+        <div class="hero-v3__metric">
+          <div class="hero-v3__m-label">在岗人力</div>
+          <div class="hero-v3__m-val">884</div>
+          <div class="hero-v3__m-note">合肥占 36%</div>
+        </div>
+        <div class="hero-v3__metric">
+          <div class="hero-v3__m-label">平均人效</div>
+          <div class="hero-v3__m-val">¥329K</div>
+          <div class="hero-v3__m-note">/人/月</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Matrix Section: 60/40 非对称布局 -->
+<section class="section">
+  <div class="c">
+    <div class="sl">区位矩阵</div>
+    <h2 class="st">8 职场 × 4 指标</h2>
+
+    <div class="ml">
+      <!-- 主区位表 -->
+      <div class="matrix-wrap">
+        <table class="matrix">
+          <thead>
+            <tr><th>指标</th><th>合肥</th><th>武汉</th><th>成都</th><th>西安</th><th>郑州</th><th>长沙</th><th>重庆</th><th>昆明</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="rl">放款量</td>
+              <td class="mx hot"><span class="mx__v">¥134M</span><span class="mx__s">43%</span><div class="mx__b" style="width:43%"></div></td>
+              <td class="mx"><span class="mx__v">¥56M</span><span class="mx__s">18%</span><div class="mx__b" style="width:18%"></div></td>
+              <td class="mx"><span class="mx__v">¥37M</span><span class="mx__s">12%</span><div class="mx__b" style="width:12%"></div></td>
+              <td class="mx"><span class="mx__v">¥28M</span><span class="mx__s">9%</span><div class="mx__b" style="width:9%"></div></td>
+              <td class="mx"><span class="mx__v">¥22M</span><span class="mx__s">7%</span><div class="mx__b" style="width:7%"></div></td>
+              <td class="mx"><span class="mx__v">¥16M</span><span class="mx__s">5%</span><div class="mx__b" style="width:5%"></div></td>
+              <td class="mx"><span class="mx__v">¥12M</span><span class="mx__s">4%</span><div class="mx__b" style="width:4%"></div></td>
+              <td class="mx"><span class="mx__v">¥7M</span><span class="mx__s">2%</span><div class="mx__b" style="width:2%"></div></td>
+            </tr>
+            <tr>
+              <td class="rl">达成率</td>
+              <td class="mx"><span class="mx__v g">101%</span><span class="mx__s">达标</span><div class="mx__b g" style="width:76%"></div></td>
+              <td class="mx"><span class="mx__v">98%</span><span class="mx__s">接近</span><div class="mx__b" style="width:74%"></div></td>
+              <td class="mx"><span class="mx__v g">105%</span><span class="mx__s">最高</span><div class="mx__b g" style="width:79%"></div></td>
+              <td class="mx"><span class="mx__v">87%</span><span class="mx__s">偏低</span><div class="mx__b" style="width:65%"></div></td>
+              <td class="mx"><span class="mx__v">92%</span><span class="mx__s">接近</span><div class="mx__b" style="width:69%"></div></td>
+              <td class="mx"><span class="mx__v c">76%</span><span class="mx__s">预警</span><div class="mx__b c" style="width:57%"></div></td>
+              <td class="mx"><span class="mx__v g">112%</span><span class="mx__s">最高</span><div class="mx__b g" style="width:84%"></div></td>
+              <td class="mx"><span class="mx__v r">68%</span><span class="mx__s">最低</span><div class="mx__b r" style="width:51%"></div></td>
+            </tr>
+            <tr>
+              <td class="rl">在岗人力</td>
+              <td class="mx hot"><span class="mx__v">320</span><span class="mx__s">最多</span><div class="mx__b" style="width:80%"></div></td>
+              <td class="mx"><span class="mx__v">180</span><span class="mx__s"></span><div class="mx__b" style="width:45%"></div></td>
+              <td class="mx"><span class="mx__v">110</span><span class="mx__s"></span><div class="mx__b" style="width:28%"></div></td>
+              <td class="mx"><span class="mx__v">85</span><span class="mx__s"></span><div class="mx__b" style="width:21%"></div></td>
+              <td class="mx"><span class="mx__v">72</span><span class="mx__s"></span><div class="mx__b" style="width:18%"></div></td>
+              <td class="mx"><span class="mx__v">55</span><span class="mx__s"></span><div class="mx__b" style="width:14%"></div></td>
+              <td class="mx"><span class="mx__v">40</span><span class="mx__s"></span><div class="mx__b" style="width:10%"></div></td>
+              <td class="mx"><span class="mx__v">22</span><span class="mx__s">最少</span><div class="mx__b" style="width:6%"></div></td>
+            </tr>
+            <tr>
+              <td class="rl">人效</td>
+              <td class="mx"><span class="mx__v">¥419K</span><span class="mx__s">/人/月</span><div class="mx__b" style="width:60%"></div></td>
+              <td class="mx"><span class="mx__v g">¥311K</span><span class="mx__s">/人/月</span><div class="mx__b g" style="width:45%"></div></td>
+              <td class="mx"><span class="mx__v">¥336K</span><span class="mx__s">/人/月</span><div class="mx__b" style="width:48%"></div></td>
+              <td class="mx"><span class="mx__v">¥329K</span><span class="mx__s">/人/月</span><div class="mx__b" style="width:47%"></div></td>
+              <td class="mx"><span class="mx__v">¥306K</span><span class="mx__s">/人/月</span><div class="mx__b" style="width:44%"></div></td>
+              <td class="mx"><span class="mx__v c">¥291K</span><span class="mx__s">/人/月</span><div class="mx__b c" style="width:42%"></div></td>
+              <td class="mx"><span class="mx__v g">¥300K</span><span class="mx__s">/人/月</span><div class="mx__b g" style="width:43%"></div></td>
+              <td class="mx"><span class="mx__v r">¥318K</span><span class="mx__s">/人/月</span><div class="mx__b r" style="width:46%"></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 右排名面板 -->
+      <div class="rank-panel">
+        <div class="rank-panel__sl">放款量排名</div>
+        <div class="rank-list">
+          <div class="rank-item"><span class="rank-num top3">01</span><span class="rank-name">合肥</span><div class="rank-bar-wrap"><div class="rank-bar-fill top" style="width:100%"></div></div><span class="rank-val">¥134M</span></div>
+          <div class="rank-item"><span class="rank-num top3">02</span><span class="rank-name">武汉</span><div class="rank-bar-wrap"><div class="rank-bar-fill gold" style="width:42%"></div></div><span class="rank-val">¥56M</span></div>
+          <div class="rank-item"><span class="rank-num top3">03</span><span class="rank-name">成都</span><div class="rank-bar-wrap"><div class="rank-bar-fill gold" style="width:28%"></div></div><span class="rank-val">¥37M</span></div>
+          <div class="rank-item"><span class="rank-num">04</span><span class="rank-name">西安</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:21%"></div></div><span class="rank-val">¥28M</span></div>
+          <div class="rank-item"><span class="rank-num">05</span><span class="rank-name">郑州</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:16%"></div></div><span class="rank-val">¥22M</span></div>
+          <div class="rank-item"><span class="rank-num">06</span><span class="rank-name">长沙</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:12%"></div></div><span class="rank-val">¥16M</span></div>
+          <div class="rank-item"><span class="rank-num">07</span><span class="rank-name">重庆</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:9%"></div></div><span class="rank-val">¥12M</span></div>
+          <div class="rank-item"><span class="rank-num">08</span><span class="rank-name">昆明</span><div class="rank-bar-wrap"><div class="rank-bar-fill" style="width:5%"></div></div><span class="rank-val">¥7M</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Callout（从 R1 直接引用） -->
+    <div class="callouts">
+      <div class="callout-card">
+        <div class="callout-title">头部集中</div>
+        <div class="callout-body">合肥占全量 <strong>43%</strong>，TOP3 职场（合肥+武汉+成都）合计占 <strong>73%</strong>。头部效应显著，腰部城市增长空间大。</div>
+      </div>
+      <div class="callout-card g">
+        <div class="callout-title">双高城市</div>
+        <div class="callout-body">成都达成率 <strong>105%</strong> 且人效 ¥336K，是唯一"达成+人效"双高城市。重庆达成率 <strong>112%</strong> 最高。</div>
+      </div>
+      <div class="callout-card r">
+        <div class="callout-title">关注信号</div>
+        <div class="callout-body">长沙达成率 <strong>76%</strong>、人效 ¥291K 双低。昆明达成率 <strong>68%</strong> 全队最低，人效 ¥318K 反而不低。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Closing（从 R1 直接引用） -->
+<section class="closing">
+  <div class="closing-inner">
+    <div class="closing-text">8 个职场，4 项指标。<br>区位矩阵告诉你 <strong>差距在哪、机会在哪</strong>。</div>
+    <div class="closing-src">金条 B 端企业主贷 <span>·</span> 2026 Q1 <span>·</span> Green = 领先 · Red = 关注</div>
+  </div>
+</section>
+
+</body>
+</html>

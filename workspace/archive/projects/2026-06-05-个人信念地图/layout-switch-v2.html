@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian-design 布局模式切换 · Ant Design</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{background:#F2F0EC;padding:24px;font-family:'Inter',-apple-system,sans-serif;color:#1A1816}
+.app{max-width:1200px;margin:0 auto}
+h1{font-size:22px;font-weight:600;margin-bottom:2px}
+.sub{font-size:13px;color:#8A7D6E;margin-bottom:20px}
+.preview{border:1px solid #C4B8A8;border-radius:8px;overflow:hidden;background:#fff;margin-top:16px;transition:all .3s}
+
+/* Hero */
+.hero{position:relative;overflow:hidden;padding:64px 48px;background:#F2F0EC;border-bottom:1px solid #C4B8A8}
+.hero.full{min-height:70vh;display:flex;align-items:center}
+.hero.narrow{padding:48px 48px 32px;min-height:auto}
+.hero.split{display:grid;grid-template-columns:1.2fr 0.8fr;gap:48px;min-height:60vh;align-items:center}
+.hero.compact{min-height:40vh;display:flex;align-items:center;padding:48px 48px 24px}
+.hero-inner{width:100%;max-width:1120px;margin:0 auto}
+.hero-inner.narrow{max-width:720px}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B8B5E;margin-bottom:12px}
+.hero-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(36px,5vw,64px);font-weight:300;line-height:1.05;letter-spacing:-0.03em;color:#2D2A26;max-width:14ch;margin-bottom:12px}
+.hero-sub{font-size:14px;color:#8A7D6E;max-width:440px;line-height:1.6}
+.hero-meta{display:flex;gap:32px;margin-top:24px;padding-top:20px;border-top:1px solid rgba(196,184,168,0.3)}
+.stat-num{font-family:'Playfair Display',Georgia,serif;font-size:36px;font-weight:400;line-height:1;color:#2D2A26}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:#8A7D6E}
+.hero-right{display:flex;justify-content:center;align-items:center}
+
+/* Content */
+.content{padding:40px 48px;background:#fff}
+.content-inner{max-width:1120px;margin:0 auto}
+.content-inner.narrow{max-width:720px}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#8A7D6E;margin-bottom:12px}
+.sec-title{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:300;color:#2D2A26;margin-bottom:16px}
+
+.card-grid{display:grid;gap:12px}
+.card-grid.c3{grid-template-columns:repeat(3,1fr)}
+.card-grid.c2{grid-template-columns:repeat(2,1fr)}
+.card-grid.c4{grid-template-columns:repeat(4,1fr)}
+.card-grid.c1{grid-template-columns:1fr}
+.card{background:#F5F5F0;border:1px solid #E5E5E0;border-radius:6px;padding:16px 20px}
+.card h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.card p{font-size:11px;color:#8A7D6E;line-height:1.5}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+.data-rows{display:flex;flex-direction:column}
+.data-row{display:grid;grid-template-columns:160px 1fr 60px;gap:12px;padding:8px 0;border-bottom:1px solid #E5E5E0;font-size:12px;align-items:center}
+.data-row:last-child{border-bottom:none}
+
+.impact-box{background:#fff;border:1px solid #C4B8A8;border-radius:8px;padding:16px 20px;margin-top:12px;font-size:12px;color:#8A7D6E;line-height:1.7}
+.impact-box strong{color:#1A1816}
+
+@media(max-width:900px){
+  .card-grid.c3,.card-grid.c2,.card-grid.c4{grid-template-columns:1fr}
+  .hero.split,.two-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>布局模式·交互对比</h1>
+  <p class="sub">6 种布局模式下同一内容的视觉表现</p>
+
+  <div id="controls-root" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:#fff;border:1px solid #C4B8A8;border-radius:8px;padding:14px 20px">
+    <div id="layout-radio"></div>
+    <div style="font-size:11px;color:#8A7D6E" id="layout-desc"></div>
+  </div>
+
+  <div class="preview" id="preview-root">
+    <div id="preview-content"></div>
+  </div>
+
+  <div class="impact-box" id="impact-box"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<script>
+const { Radio, Tag } = antd;
+
+const LAYOUTS = [
+  { id:'statement', name:'展示型 Statement', tag:'占比33%', hero:'narrow', cols:1, impact:'默认单栏窄列(720px)。深度阅读首选，内容垂直排列，阅读专注度高。但占比33%说明这是最常用的默认模式——页面积累多了容易视觉重复。建议：对数据展示类内容主动切换到其他布局。' },
+  { id:'full', name:'全幅型 Full-width', tag:'推荐感知层', hero:'full', cols:3, impact:'Hero全屏+宽列(1120px)。Hero嵌入数据行(3-4个关键指标)，首屏即可展示核心信息。适合行业全景和数据报告。但宽列长行降低阅读速度——文案需简洁。' },
+  { id:'split', name:'分屏型 Split', tag:'推荐决策层', hero:'split', cols:2, impact:'Hero双栏布局(文字+视觉对比)，内容双栏交替。视觉节奏丰富，天生适合对比叙事——方案选型、品牌展示。移动端需注意左右堆叠顺序。' },
+  { id:'grid', name:'网格型 Grid', tag:'信息密度最高', hero:'full', cols:4, impact:'Hero窄幅，内容多列网格(3-4列)。信息密度最高，一眼览多。适合仪表盘、数据目录。缺点是容易视觉拥挤——网格间距必须≥16px，卡片内留白≥20px。' },
+  { id:'aside', name:'侧栏型 Aside', tag:'参考性优先', hero:'narrow', cols:2, impact:'Hero窄幅+内容主区+侧边栏。同一视口可同时查看导航和内容。适合知识管理和操作手册。侧栏占用水平空间——窄屏需折叠。' },
+  { id:'compact', name:'紧凑型 Compact', tag:'效率优先', hero:'compact', cols:1, impact:'Hero精简(40vh)+密集数据行。效率优先，快速扫描。适合周报和进度同步。视觉冲击力不足——不适合品牌展示和对外层。' },
+];
+
+function renderPreview(id) {
+  const l = LAYOUTS.find(x=>x.id===id);
+  const isNarrow = l.hero==='narrow'||l.hero==='compact';
+  const hc = l.hero==='full'?'hero full':l.hero==='split'?'hero split':l.hero==='compact'?'hero compact':'hero';
+  const ci = isNarrow?'content-inner narrow':'content-inner';
+  const cg = `card-grid c${l.cols===4?'4':l.cols===3?'3':l.cols===2?'2':'1'}`;
+  
+  let html = '';
+  
+  // Hero
+  let meta = '<div class="hero-meta">'+
+    ['7/8','3','5'].map((n,i)=>'<div><div class="stat-num">'+n+'</div><div class="stat-lbl">'+['完成项目','关键卡点','改进项'][i]+'</div></div>').join('')+
+    '</div>';
+  
+  if(l.hero==='split'){
+    html='<div class="hero split"><div class="hero-inner"><div class="hero-label">Retrospective · Q2</div>'+
+      '<h1 class="hero-title">供应商体系优化<br>季度复盘</h1><p class="hero-sub">Q2关键事件还原，可复用的改进项归纳</p>'+meta+
+      '</div><div class="hero-right"><div style="display:grid;grid-template-columns:repeat(5,12px);gap:3px;opacity:0.1">'+
+      Array(25).fill(0).map(()=>'<div style="width:12px;height:12px;border-radius:2px;background:#6B8B5E"></div>').join('')+
+      '</div></div></div>';
+  } else {
+    html='<div class="'+hc+'"><div class="hero-inner'+ (isNarrow?' narrow':'') +'"><div class="hero-label">Retrospective · Q2</div>'+
+      '<h1 class="hero-title">供应商体系优化<br>季度复盘</h1><p class="hero-sub">Q2关键事件还原，可复用的改进项归纳</p>'+meta+
+      '</div></div>';
+  }
+  
+  // Content
+  html+='<div class="content"><div class="'+ci+'">';
+  html+='<div class="sec-label">Timeline</div><div class="sec-title">Q2 关键事件</div>';
+  
+  const items = ['4月初 · 自建标杆启动 — 成绩单被认定为可复用的标杆模式','4月中旬 · 分级框架确定 — ABC 三级方案通过评审','5月初 · 岐力续约分歧 — 谈判陷入僵局触发备选','5月底 · 系统选型完成 — 云枢Pro版确定为推荐方案'];
+  
+  if(id==='split'||id==='aside'){
+    html+='<div class="two-col">'+items.map(i=>{const[h,...r]=i.split(' — ');return'<div class="card"><h4>'+h+'</h4><p>'+r.join(' — ')+'</p></div>';}).join('')+'</div>';
+  } else if(id==='compact'){
+    html+='<div class="data-rows">'+items.map(i=>{const[h,...r]=i.split(' — ');return'<div class="data-row"><span class="lbl" style="color:#8A7D6E">'+h+'</span><div style="height:6px;background:#E3DFD8;border-radius:3px;overflow:hidden"><div style="height:100%;background:#6B8B5E;border-radius:3px;width:'+(Math.random()*40+40)+'%"></div></div><span style="font-family:JetBrains Mono,monospace;font-size:11px;text-align:right">'+r.join('')+'</span></div>';}).join('')+'</div>';
+  } else {
+    html+='<div class="'+cg+'">'+items.map(i=>{const[h,...r]=i.split(' — ');return'<div class="card"><h4>'+h+'</h4><p>'+r.join(' — ')+'</p></div>';}).join('')+'</div>';
+  }
+  
+  html+='</div></div>';
+  
+  document.getElementById('preview-content').innerHTML = html;
+  document.getElementById('layout-desc').textContent = l.name+' · '+l.tag+' · Hero '+l.hero+' · 卡片'+l.cols+'列';
+  document.getElementById('impact-box').innerHTML = '<strong>'+l.name+'</strong><br>'+l.impact;
+}
+
+function init() {
+  const root = document.getElementById('layout-radio');
+  
+  function RadioGroup() {
+    const [val, setVal] = React.useState('statement');
+    const [mounted, setMounted] = React.useState(false);
+    
+    React.useEffect(() => {
+      if (!mounted) { setMounted(true); return; }
+      renderPreview(val);
+    }, [val, mounted]);
+
+    // Initial render
+    if (!mounted && typeof renderPreview === 'function') {
+      setTimeout(() => renderPreview('statement'), 100);
+    }
+    
+    return React.createElement(Radio.Group, {
+      value: val,
+      onChange: e => setVal(e.target.value),
+      optionType: 'button',
+      buttonStyle: 'solid',
+      size: 'small',
+      style: { display:'flex', flexWrap:'wrap', gap:0 },
+    }, LAYOUTS.map(l => 
+      React.createElement(Radio.Button, { key: l.id, value: l.id, style: { fontSize:12, margin:0 } }, l.name)
+    ));
+  }
+  
+  const el = React.createElement(RadioGroup);
+  ReactDOM.createRoot(root).render(el);
+  
+  // Fallback initial render
+  setTimeout(() => renderPreview('statement'), 200);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

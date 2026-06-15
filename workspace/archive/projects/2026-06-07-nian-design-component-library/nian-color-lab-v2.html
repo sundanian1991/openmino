@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian 色彩实验室 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden}
+.lab{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
+@media(max-width:1100px){.lab{grid-template-columns:1fr}}
+
+/* ═══ Panel ═══ */
+.panel{background:#fff;border-right:1px solid #dbd6d2;padding:20px;overflow-y:auto;max-height:100vh}
+.panel h2{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:300;color:#2D2A26;margin-bottom:2px}
+.panel .sub{font-size:10px;color:#8A7D6E;margin-bottom:16px}
+.grp{border:1px solid #E5E5E0;padding:12px;margin-bottom:10px}
+.grp-l{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#8A7D6E;margin-bottom:8px}
+.btn{display:inline-block;padding:4px 12px;font-size:10px;border:1px solid #dbd6d2;background:transparent;cursor:pointer;margin:2px;border-radius:3px;transition:all .15s}
+.btn:hover{border-color:#8A7D6E}
+.btn.active{background:#2D2A26;color:#fff;border-color:#2D2A26}
+.btn-r{display:inline-block;padding:4px 12px;font-size:10px;border:1px solid #dbd6d2;background:transparent;cursor:pointer;margin:2px;border-radius:3px}
+.btn-r.active{color:#fff}
+.btn-r[data-route="natural"].active{background:#3D5A35;border-color:#3D5A35}
+.btn-r[data-route="arch"].active{background:#2d3142;border-color:#2d3142}
+.btn-r[data-route="sky"].active{background:#6B8B5E;border-color:#6B8B5E}
+
+.bv-s{width:100%;margin:4px 0}
+.cr{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0efea}
+.cr:last-child{border-bottom:none}
+.cr-s{width:22px;height:22px;border-radius:3px;border:1px solid #dbd6d2;cursor:pointer;flex-shrink:0;position:relative}
+.cr-s input{opacity:0;width:0;height:0;position:absolute}
+.cr-n{font-size:9px;width:44px;flex-shrink:0}
+.cr-h{font-family:'JetBrains Mono',monospace;font-size:8px;width:52px;border:1px solid #e5e5e0;padding:1px 3px;background:#fafaf8;border-radius:2px}
+.cr-h:focus{outline:none;border-color:#8A7D6E}
+.cr-sl{flex:1;height:3px;appearance:none;background:#e5e5e0;border-radius:2px;outline:none}
+.cr-sl::-webkit-slider-thumb{appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #8A7D6E;cursor:pointer}
+.cr-p{font-family:'JetBrains Mono',monospace;font-size:8px;color:#8A7D6E;width:28px;text-align:right}
+.cr-r{font-size:7px;color:#a0a0a0;width:36px;text-align:right}
+.export-btn{padding:5px 14px;background:#2D2A26;color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;letter-spacing:1px}
+
+/* ═══ Preview ═══ */
+.preview{padding:24px;overflow-y:auto;max-height:100vh}
+.preview__inner{max-width:720px;margin:0 auto}
+.p-hdr{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#a0a0a0;margin-bottom:12px}
+.scene-label{font-size:10px;color:#8A7D6E;margin-bottom:12px;padding:6px 10px;background:#fff;border:1px solid #e5e5e0;display:inline-block}
+.scene-label strong{font-weight:500}
+
+/* ═══ Preview: Hero ═══ */
+.ph{padding:40px 36px;position:relative;overflow:hidden;margin-bottom:16px;transition:background .3s}
+.ph-t{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.ph1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(1.3rem,2.8vw,2.2rem);font-weight:300;line-height:1.05;letter-spacing:-1px;margin-bottom:6px;max-width:480px}
+.ph1 strong{font-weight:600}
+.ph-sub{font-size:12px;line-height:1.6;max-width:360px;margin-bottom:16px}
+.ph-d{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-top:14px;border-top:1px solid}
+.ph-dn{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:300;line-height:1}
+.ph-dl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.ph-ds{font-weight:500}
+
+/* ═══ Preview: Content blocks ═══ */
+.pb{padding:16px;border:1px solid;margin-bottom:12px;transition:all .3s}
+.pb2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.pb-card{padding:14px;border:1px solid;transition:all .3s}
+.pb-cl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.pb-cv{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;margin-bottom:4px}
+.pb-bar{height:3px;border-radius:2px;transition:background .3s}
+.pb-steps{display:flex;gap:0;padding:8px 0}
+.pb-step{display:flex;flex-direction:column;gap:2px;padding:6px 12px;flex:1}
+.pb-sl{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase}
+.pb-sv{font-size:12px}
+.pb-arw{font-size:14px;color:#a0a0a0;padding:6px 0;line-height:1}
+.pb-insight{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px solid}
+.pb-insight:last-child{border-bottom:none}
+.pb-in{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:300;line-height:1;opacity:.25}
+.pb-it{font-size:12px;font-weight:500}
+.pb-id{font-size:11px;color:#8A7D6E;line-height:1.5;margin-top:2px}
+.pb-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:12px}
+.pb-tag{padding:2px 8px;font-family:'JetBrains Mono',monospace;font-size:8px;border:1px solid;border-radius:2px}
+
+/* ═══ Pct Bar ═══ */
+.pct-b{display:flex;height:16px;border-radius:3px;overflow:hidden;margin:10px 0}
+.pct-s{height:100%;transition:all .3s;position:relative}
+.pct-l{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.pct-li{display:flex;align-items:center;gap:3px;font-size:8px;font-family:'JetBrains Mono',monospace;color:#8A7D6E}
+.pct-d{width:7px;height:7px;border-radius:2px}
+.sum{font-size:10px;color:#8A7D6E;line-height:1.6;padding:10px;background:#FAFAF8;border:1px solid #E5E5E0;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="lab">
+
+<!-- Panel -->
+<div class="panel" id="panel">
+  <h2>色彩实验室</h2>
+  <div class="sub">场景不同 → 内容布局不同 → 颜色跟着路线走</div>
+
+  <div class="grp">
+    <div class="grp-l">场景</div>
+    <div id="scene-group">
+      <button class="btn active" data-scene="感知">感知</button>
+      <button class="btn" data-scene="决策">决策</button>
+      <button class="btn" data-scene="计划">计划</button>
+      <button class="btn" data-scene="执行">执行</button>
+      <button class="btn" data-scene="沉淀">沉淀</button>
+      <button class="btn" data-scene="对外">对外</button>
+    </div>
+  </div>
+
+  <div class="grp">
+    <div class="grp-l">配色路线</div>
+    <div id="route-group">
+      <button class="btn-r active" data-route="natural">🌿 自然</button>
+      <button class="btn-r" data-route="arch">🏛 建筑</button>
+      <button class="btn-r" data-route="sky">🌤 留白</button>
+    </div>
+  </div>
+
+  <div class="grp">
+    <div class="grp-l">品牌可见度 BV</div>
+    <input type="range" class="bv-s" id="bv" min="1" max="5" value="3" step="1">
+    <div style="display:flex;justify-content:space-between;font-size:8px;color:#a0a0a0"><span>1 纯内容</span><span>5 强品牌</span></div>
+  </div>
+
+  <div class="grp">
+    <div class="grp-l">色板编辑 · 点击切换色</div>
+    <div id="color-list"></div>
+  </div>
+
+  <div class="grp" style="border-color:#3D5A35">
+    <button class="export-btn" onclick="doExport()">导出 CSS 变量</button>
+    <div id="export" style="margin-top:6px;padding:6px;background:#FAFAF8;font-family:JetBrains Mono;font-size:8px;line-height:1.4;max-height:100px;overflow-y:auto;display:none;white-space:pre-wrap"></div>
+  </div>
+</div>
+
+<!-- Preview -->
+<div class="preview" id="pv">
+  <div class="preview__inner">
+    <div class="p-hdr">PREVIEW · 场景 + 路线 + 颜色 联动</div>
+    <div id="pv-content"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ════════════════════════════════════
+// Palettes
+// ════════════════════════════════════
+const PAL = {
+  natural: [
+    {id:'bg',n:'底色',h:'#f0ede6',p:48,r:'Neutral'},
+    {id:'sf',n:'表面',h:'#f8f8f8',p:16,r:'Neutral'},
+    {id:'dk',n:'深色区',h:'#3D5A35',p:14,r:'Nature'},
+    {id:'f1',n:'Forest',h:'#3D5A35',p:8,r:'Nature'},
+    {id:'m1',n:'Moss',h:'#6B8B5E',p:5,r:'Nature'},
+    {id:'go',n:'Gold',h:'#BF9B5A',p:3,r:'Signal'},
+    {id:'wm',n:'暖橙',h:'#d47836',p:3,r:'Signal'},
+    {id:'rd',n:'砖红',h:'#d86a48',p:1,r:'Signal'},
+    {id:'sk',n:'Sky',h:'#a0e3ee',p:2,r:'Nature'},
+  ],
+  arch: [
+    {id:'bg',n:'底色',h:'#f0ede6',p:44,r:'Neutral'},
+    {id:'sf',n:'表面',h:'#f8f8f8',p:16,r:'Neutral'},
+    {id:'dk',n:'深色区',h:'#2d3142',p:14,r:'Nature'},
+    {id:'sl',n:'Slate',h:'#4E627C',p:8,r:'Nature'},
+    {id:'wm',n:'暖橙',h:'#d47836',p:8,r:'Nature'},
+    {id:'go',n:'Gold',h:'#BF9B5A',p:3,r:'Signal'},
+    {id:'rd',n:'砖红',h:'#d86a48',p:2,r:'Signal'},
+    {id:'sk',n:'Sky',h:'#4A80C0',p:3,r:'Signal'},
+    {id:'gn',n:'青绿',h:'#5a9165',p:2,r:'Signal'},
+  ],
+  sky: [
+    {id:'bg',n:'底色',h:'#f0ede6',p:48,r:'Neutral'},
+    {id:'sf',n:'表面',h:'#f8f8f8',p:18,r:'Neutral'},
+    {id:'sk',n:'SkyBlue',h:'#a0e3ee',p:10,r:'Nature'},
+    {id:'m1',n:'Moss',h:'#6B8B5E',p:6,r:'Nature'},
+    {id:'wm',n:'暖橙',h:'#d47836',p:5,r:'Signal'},
+    {id:'go',n:'Gold',h:'#BF9B5A',p:4,r:'Signal'},
+    {id:'cl',n:'Clay',h:'#C66B4B',p:4,r:'Signal'},
+    {id:'sl',n:'Slate',h:'#4E627C',p:3,r:'Nature'},
+    {id:'rd',n:'砖红',h:'#d86a48',p:2,r:'Signal'},
+  ]
+};
+
+// ════════════════════════════════════
+// Scene templates
+// ════════════════════════════════════
+const SCENES = {
+  // ─── 感知: 数据看板 ───
+  感知: {
+    name:'感知层 · 数据报告',
+    hero:{tag:'DATA REPORT',title:'Q2 供应商<strong>全景分析</strong>',sub:'覆盖35家供应商6条产线，环比增长8.3%',
+      data:[{n:'35',u:'家',l:'供应商'},{n:'+8.3',u:'%',l:'环比'},{n:'98.3',u:'%',l:'合规率'}]},
+    body:`
+      <div class="pb2">
+        <div class="pb-card" data-card><div class="pb-cl" data-cl>毅航</div><div class="pb-cv" data-cv>92.5</div><div class="pb-bar" style="width:92.5%" data-bar="wm"></div></div>
+        <div class="pb-card" data-card><div class="pb-cl" data-cl>毛毛虫</div><div class="pb-cv" data-cv>87.3</div><div class="pb-bar" style="width:87.3%" data-bar="f1"></div></div>
+        <div class="pb-card" data-card><div class="pb-cl" data-cl>伽玛</div><div class="pb-cv" data-cv>85.1</div><div class="pb-bar" style="width:85.1%" data-bar="sl"></div></div>
+        <div class="pb-card" data-card><div class="pb-cl" data-cl>岐力</div><div class="pb-cv" data-cv>78.6</div><div class="pb-bar" style="width:78.6%" data-bar="gn"></div></div>
+      </div>
+      <div class="pb-tags">
+        <span class="pb-tag" data-tag="wm">焦点 · TOP1</span>
+        <span class="pb-tag" data-tag="f1">正常数据</span>
+        <span class="pb-tag" data-tag="gn">次级指标</span>
+        <span class="pb-tag" data-tag="rd">预警</span>
+      </div>`
+  },
+  // ─── 决策: 方案对比 ───
+  决策: {
+    name:'决策层 · 方案对比',
+    hero:{tag:'DECISION',title:'供应商管理<strong>方案选型</strong>',sub:'自研 vs 采购 vs 混合，多维度评估',
+      data:[{n:'3',u:'个',l:'方案'},{n:'6',u:'维',l:'评分'},{n:'￥',u:'2.4M',l:'预算'}]},
+    body:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="pb-card" data-card style="border-left:3px solid"><div style="font-size:11px;font-weight:500" data-hero-color>方案A · 自研</div><div style="font-size:11px;color:#8A7D6E;margin-top:4px">控制力强，周期12个月</div></div>
+        <div class="pb-card" data-card style="border-left:3px solid"><div style="font-size:11px;font-weight:500" data-hero-color>方案B · 采购</div><div style="font-size:11px;color:#8A7D6E;margin-top:4px">上线快，年费80万</div></div>
+      </div>
+      <div class="pb" data-card>
+        <div style="display:flex;gap:24px">
+          <div><span class="pb-cl">维度</span></div><div style="flex:1"></div><div><span class="pb-cl" style="text-align:center;width:40px">A</span></div><div><span class="pb-cl" style="text-align:center;width:40px">B</span></div>
+        </div>
+        ${['功能完整','成本','周期','风险'].map((d,i)=>{
+          const va=85-i*10, vb=65+i*8;
+          return `<div style="display:flex;gap:24px;padding:6px 0;border-top:1px solid #dbd6d2;font-size:11px">
+            <div style="width:60px;color:#8A7D6E">${d}</div>
+            <div style="flex:1;height:6px;background:#e5e5e0;border-radius:3px;align-self:center">
+              <div style="height:100%;border-radius:3px;width:${va}%" data-bar="dk"></div>
+            </div>
+            <div style="width:40px;text-align:center;font-family:JetBrains Mono;font-size:10px">${va}</div>
+            <div style="flex:1;height:6px;background:#e5e5e0;border-radius:3px;align-self:center">
+              <div style="height:100%;border-radius:3px;width:${vb}%" data-bar="sl"></div>
+            </div>
+            <div style="width:40px;text-align:center;font-family:JetBrains Mono;font-size:10px">${vb}</div>
+          </div>`;
+        }).join('')}
+      </div>`
+  },
+  // ─── 计划: 流程步骤 ───
+  计划: {
+    name:'计划层 · SOP 流程',
+    hero:{tag:'PROCEDURE',title:'供应商准入<strong>标准流程</strong>',sub:'4 阶段，12 个节点，平均周期 45 天',
+      data:[{n:'4',u:'步',l:'阶段'},{n:'12',u:'个',l:'节点'},{n:'45',u:'天',l:'周期'}]},
+    body:`
+      <div class="pb" data-card>
+        <div class="pb-steps">
+          ${['准入','分工','运营','清退'].map((s,i)=>`
+            <div class="pb-step ${i===1?'':'pb-step'}">
+              <span class="pb-sl">STEP 0${i+1}</span>
+              <span class="pb-sv">${s}</span>
+            </div>
+            ${i<3?'<span class="pb-arw">›</span>':''}
+          `).join('')}
+        </div>
+      </div>
+      <div class="pb" data-card style="font-size:11px;line-height:1.7">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="font-family:JetBrains Mono;font-size:24px;font-weight:300;opacity:.2" data-hero-color>01</div>
+          <div><strong>资质审核</strong> — 营业执照、行业许可证、社保缴纳记录</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;margin-top:8px">
+          <div style="font-family:JetBrains Mono;font-size:24px;font-weight:300;opacity:.2" data-hero-color>02</div>
+          <div><strong>现场考察</strong> — 职场环境、设备配置、管理团队面谈</div>
+        </div>
+      </div>`
+  },
+  // ─── 执行: 周报 ───
+  执行: {
+    name:'执行层 · 周报同步',
+    hero:{tag:'WEEKLY REPORT',title:'第 24 周<strong>工作简报</strong>',sub:'进度正常，2 个阻塞项需协调',
+      data:[{n:'87',u:'%',l:'整体进度'},{n:'6',u:'项',l:'本周完成'},{n:'2',u:'项',l:'阻塞'}]},
+    body:`
+      <div class="pb" data-card>
+        <div class="pb-cl">进度追踪</div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <span style="font-family:JetBrains Mono;font-size:9px;width:70px">准入</span>
+          <div style="flex:1;height:6px;background:#e5e5e0;border-radius:3px"><div style="width:100%;height:100%;border-radius:3px" data-bar="dk"></div></div>
+          <span style="font-family:JetBrains Mono;font-size:9px">100%</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:6px">
+          <span style="font-family:JetBrains Mono;font-size:9px;width:70px">分工</span>
+          <div style="flex:1;height:6px;background:#e5e5e0;border-radius:3px"><div style="width:75%;height:100%;border-radius:3px" data-bar="wm"></div></div>
+          <span style="font-family:JetBrains Mono;font-size:9px">75%</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;margin-top:6px">
+          <span style="font-family:JetBrains Mono;font-size:9px;width:70px">运营</span>
+          <div style="flex:1;height:6px;background:#e5e5e0;border-radius:3px"><div style="width:45%;height:100%;border-radius:3px" data-bar="sl"></div></div>
+          <span style="font-family:JetBrains Mono;font-size:9px">45%</span>
+        </div>
+      </div>
+      <div class="pb-tags">
+        <span class="pb-tag" data-tag="wm">需关注 · 分工</span>
+        <span class="pb-tag" data-tag="rd">已阻塞 · 运营</span>
+      </div>`
+  },
+  // ─── 沉淀: 阅读笔记 ───
+  沉淀: {
+    name:'沉淀层 · 阅读笔记',
+    hero:{tag:'READING NOTE',title:'系统思考<strong>读书笔记</strong>',sub:'如何识别和打破组织中隐藏的动态系统',
+      data:[{n:'12',u:'章',l:'精读'},{n:'45',u:'条',l:'标注'},{n:'3',u:'个',l:'模型'}]},
+    body:`
+      <div class="pb-insight" data-card>
+        <div class="pb-in" data-hero-color>01</div>
+        <div><div class="pb-it">增长上限模型</div><div class="pb-id">当系统快速增长时，会触及限制因素导致增速放缓甚至下降。关键是识别限制因素而非继续加速。</div></div>
+      </div>
+      <div class="pb-insight" data-card>
+        <div class="pb-in" data-hero-color>02</div>
+        <div><div class="pb-it">舍本逐末模型</div><div class="pb-id">短期症状缓解会削弱解决根本问题的动力。越多使用「速效方案」，「根本方案」被实施的可能性越低。</div></div>
+      </div>
+      <div class="pb" data-card style="font-size:11px;line-height:1.7;border-left:3px solid" data-hero-color>
+        <span style="font-family:JetBrains Mono;font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#8A7D6E">摘录</span><br>
+        「系统思考最关键的能力不是预见未来，而是理解当下——识别出那些主导行为的结构。」
+      </div>`
+  },
+  // ─── 对外: 品牌展示 ───
+  对外: {
+    name:'对外层 · 品牌展示',
+    hero:{tag:'BRAND IDENTITY',title:'<strong>Landscape</strong> and Signal',sub:'Three typefaces, one voice. 自然淬炼的设计语言。',
+      data:[{n:'6',u:'种',l:'Nature色'},{n:'4',u:'工',l:'字体'},{n:'160',u:'+',l:'组件'}]},
+    body:`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="pb-card" data-card>
+          <div class="pb-cl">品牌色板</div>
+          <div style="display:flex;gap:3px;margin-top:6px">
+            <div style="flex:1;height:24px;border-radius:3px" data-bar="dk"></div>
+            <div style="flex:1;height:24px;border-radius:3px;background:#6B8B5E"></div>
+            <div style="flex:1;height:24px;border-radius:3px;background:#4E627C"></div>
+            <div style="flex:1;height:24px;border-radius:3px" data-bar="wm"></div>
+          </div>
+        </div>
+        <div class="pb-card" data-card>
+          <div class="pb-cl">字体工</div>
+          <div style="font-family:'Playfair Display',serif;font-size:16px;margin-top:4px">Playfair Display</div>
+          <div style="font-family:Inter,sans-serif;font-size:13px;margin-top:2px">Inter</div>
+          <div style="font-family:JetBrains Mono,monospace;font-size:11px;margin-top:2px">JetBrains Mono</div>
+        </div>
+      </div>
+      <div class="pb" data-card style="text-align:center;padding:24px">
+        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:300">与自然共生，<strong>而非征服</strong></div>
+        <div style="font-size:11px;color:#8A7D6E;margin-top:6px">111 年瑞典户外基因，为真正的荒野而造。</div>
+      </div>`
+  }
+};
+
+// ════════════════════════════════════
+// State
+// ════════════════════════════════════
+let curScene = '感知', curRoute = 'natural', curBV = 3;
+
+function getColors() {
+  const cs = PAL[curRoute].map(c => ({...c}));
+  const warm = cs.find(c => c.id === 'wm');
+  if (warm) warm.p = 2 + curBV;
+  return cs;
+}
+
+function byId(colors, id) {
+  return colors.find(c => c.id === id);
+}
+
+// ════════════════════════════════════
+// Render
+// ════════════════════════════════════
+function render() {
+  const colors = getColors();
+  const scene = SCENES[curScene];
+  const pv = document.getElementById('pv-content');
+  
+  // Body bg
+  const bg = byId(colors,'bg');
+  document.body.style.background = bg ? bg.h : '#f0ede6';
+  document.getElementById('pv').style.background = bg ? bg.h : '#f0ede6';
+  
+  // Build HTML
+  let html = `<div class="scene-label"><strong>${scene.name}</strong> ｜ ${PAL[curRoute].name}路线 ｜ BV=${curBV}</div>`;
+  
+  // Hero
+  const dk = byId(colors,'dk');
+  const wm = byId(colors,'wm');
+  const h = scene.hero;
+  html += `<div class="ph" style="background:${dk?dk.h:'#2d3142'};color:#fff">`;
+  html += `<div class="ph-t" style="color:${wm?wm.h:'#d47836'}">${h.tag}</div>`;
+  html += `<div class="ph1">${h.title}</div>`;
+  html += `<div class="ph-sub" style="color:rgba(255,255,255,.5)">${h.sub}</div>`;
+  html += `<div class="ph-d" style="border-top-color:rgba(255,255,255,.1)">`;
+  h.data.forEach(d => {
+    html += `<div><div class="ph-dn">${d.n}<span class="ph-ds" style="color:${wm?wm.h:'#d47836'}">${d.u}</span></div><div class="ph-dl" style="color:rgba(255,255,255,.3)">${d.l}</div></div>`;
+  });
+  html += `</div></div>`;
+  
+  // Body
+  html += scene.body;
+  
+  // Pct bar
+  html += `<div style="margin-top:20px"><div style="font-size:9px;color:#8A7D6E;margin-bottom:4px">颜色占比分布</div><div class="pct-b">`;
+  const total = colors.reduce((s,c) => s + c.p, 0);
+  colors.forEach(c => {
+    html += `<div class="pct-s" style="width:${Math.round(c.p/total*100)}%;background:${c.h}" title="${c.n} ${Math.round(c.p/total*100)}%"></div>`;
+  });
+  html += `</div><div class="pct-l">`;
+  colors.forEach(c => {
+    html += `<div class="pct-li"><div class="pct-d" style="background:${c.h}"></div>${c.n} ${Math.round(c.p/total*100)}%</div>`;
+  });
+  html += `</div></div>`;
+  
+  // Summary
+  const neut = colors.filter(c=>c.r==='Neutral').reduce((s,c)=>s+c.p,0);
+  const nat = colors.filter(c=>c.r==='Nature').reduce((s,c)=>s+c.p,0);
+  const sig = colors.filter(c=>c.r==='Signal').reduce((s,c)=>s+c.p,0);
+  html += `<div class="sum">Neutral ${Math.round(neut/total*100)}% ｜ Nature ${Math.round(nat/total*100)}% ｜ Signal ${Math.round(sig/total*100)}% ｜ 主色: ${colors.reduce((a,b)=>a.p>b.p?a:b).n} ${colors.reduce((a,b)=>a.p>b.p?a:b).h}</div>`;
+  
+  pv.innerHTML = html;
+  
+  // Apply dynamic colors to preview elements
+  // Data bars
+  document.querySelectorAll('[data-bar]').forEach(el => {
+    const color = byId(colors, el.dataset.bar);
+    if (color) el.style.background = color.h;
+  });
+  // Tags
+  document.querySelectorAll('[data-tag]').forEach(el => {
+    const color = byId(colors, el.dataset.tag);
+    if (color) { el.style.borderColor = color.h; el.style.color = color.h; }
+  });
+  // Hero-colored elements (left border etc)
+  document.querySelectorAll('[data-hero-color]').forEach(el => {
+    const c = wm || byId(colors,'dk');
+    if (c) el.style.color = c.h;
+    if (el.tagName === 'DIV' && el.style.borderLeft) el.style.borderLeftColor = c ? c.h : '#d47836';
+  });
+  // Card borders
+  document.querySelectorAll('[data-card]').forEach(el => {
+    const sf = byId(colors,'sf');
+    el.style.background = sf ? sf.h : '#fff';
+    el.style.borderColor = '#DBD6D2';
+  });
+  // Card label colors
+  document.querySelectorAll('[data-cl]').forEach(el => el.style.color = '#8A7D6E');
+  document.querySelectorAll('[data-cv]').forEach(el => el.style.color = '#2D2A26');
+  
+  // Render color editor
+  renderEditor(colors);
+}
+
+// ═══ Color Editor ═══
+function renderEditor(colors) {
+  const el = document.getElementById('color-list');
+  el.innerHTML = '';
+  colors.forEach((c,i) => {
+    const row = document.createElement('div');
+    row.className = 'cr';
+    const sw = document.createElement('div');
+    sw.className = 'cr-s'; sw.style.background = c.h;
+    const ip = document.createElement('input');
+    ip.type = 'color'; ip.value = c.h;
+    sw.appendChild(ip);
+    sw.onclick = () => ip.click();
+    ip.oninput = () => { c.h = ip.value; sw.style.background = c.h; hex.value = c.h; render(); };
+    
+    const nm = document.createElement('span'); nm.className = 'cr-n'; nm.textContent = c.n;
+    const hex = document.createElement('input'); hex.className = 'cr-h'; hex.value = c.h;
+    hex.onchange = () => { if(/^#[0-9a-fA-F]{6}$/.test(hex.value)){c.h=hex.value;sw.style.background=c.h;ip.value=c.h;render()} };
+    
+    const sl = document.createElement('input'); sl.type='range'; sl.className='cr-sl';
+    sl.min=0; sl.max=60; sl.value=c.p;
+    sl.oninput = () => { c.p=parseInt(sl.value); pct.textContent=sl.value+'%'; render(); };
+    
+    const pct = document.createElement('span'); pct.className='cr-p'; pct.textContent=c.p+'%';
+    const rl = document.createElement('span'); rl.className='cr-r'; rl.textContent=c.r;
+    
+    row.append(sw, nm, hex, sl, pct, rl);
+    el.appendChild(row);
+  });
+}
+
+// ═══ Export ═══
+function doExport() {
+  const cs = getColors();
+  let css = `/* nian-color-v2 · ${PAL[curRoute].name} · ${curScene}层 */\n:root {\n`;
+  cs.forEach(c => { css += `  --${c.id}: ${c.h};  /* ${c.n} · ${c.r} · ${c.p}% */\n`; });
+  css += '}';
+  const box = document.getElementById('export');
+  box.textContent = css; box.style.display = 'block';
+  navigator.clipboard.writeText(css);
+}
+
+// ═══ Events ═══
+document.querySelectorAll('#scene-group .btn').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#scene-group .btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); curScene = b.dataset.scene; render();
+  };
+});
+document.querySelectorAll('#route-group .btn-r').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('#route-group .btn-r').forEach(x => x.classList.remove('active'));
+    b.classList.add('active'); curRoute = b.dataset.route; render();
+  };
+});
+document.getElementById('bv').oninput = function() { curBV = parseInt(this.value); render(); };
+
+render();
+</script>
+</body>
+</html>

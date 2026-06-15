@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian · Skin 4 执行层 — 状态仪表盘</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAF9F6;--sf:#FFFFFF;--ink:#3D3520;--text:#6B6350;--muted:#9B9483;--main:#8B6914;--done:#2D6A4F;--done-bg:#E8F5EE;--prog:#D4880F;--prog-bg:#FFF8E1;--block:#B5342A;--block-bg:#FDEAEA;--pend:#8B8573;--pend-bg:#F0EFE9;--bd:#E2DED5}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter','Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.g12{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+/* 状态 pill */
+.pill{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;display:inline-flex;align-items:center;gap:4px}
+.pill-done{color:var(--done);background:var(--done-bg)}
+.pill-prog{color:var(--prog);background:var(--prog-bg)}
+.pill-block{color:var(--block);background:var(--block-bg)}
+.pill-pend{color:var(--pend);background:var(--pend-bg)}
+/* 卡片 — 左色条 + 右 pill */
+.card{background:var(--sf);padding:14px 14px 14px 17px;border-left:3px solid var(--main);position:relative;display:flex;justify-content:space-between;align-items:start;gap:12px}
+.card-done{border-left-color:var(--done)}
+.card-prog{border-left-color:var(--prog)}
+.card-block{border-left-color:var(--block)}
+.card-pend{border-left-color:var(--pend)}
+/* 时间线 — 进度条式 */
+.tl-item{display:grid;grid-template-columns:120px 1fr auto;gap:16px;padding:14px 0;border-bottom:1px solid var(--bd);align-items:center}
+/* 流程步骤 — 状态驱动 */
+.step{display:grid;grid-template-columns:auto 1fr auto;gap:16px;padding:14px 16px;background:var(--sf);border-left:3px solid var(--bd);align-items:center}
+.step-done{border-left-color:var(--done)}
+.step-prog{border-left-color:var(--prog)}
+.step-block{border-left-color:var(--block)}
+.step-pend{border-left-color:var(--pend)}
+/* 样式 */
+.sh{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.st{font-weight:300;font-size:clamp(28px,4vw,52px);line-height:1.05;letter-spacing:-.03em;color:var(--ink)}
+.su{font-weight:400;font-size:14px;line-height:1.6;color:var(--text)}
+.bd{font-weight:400;font-size:13px;line-height:1.6;color:var(--text)}
+.mt{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--muted)}
+.nm{font-family:'JetBrains Mono',monospace;font-weight:700}
+.section{padding:64px 80px}
+.section-alt{padding:64px 80px;background:var(--sf)}
+</style>
+</head>
+<body>
+<nav style="position:fixed;top:0;left:0;right:0;z-index:200;background:var(--ink);padding:6px 24px;display:flex;gap:10px;flex-wrap:wrap">
+<span style="color:rgba(255,255,255,.8);font-family:'JetBrains Mono',monospace;font-size:9px">Skin 4 · 执行层</span>
+<span style="color:rgba(255,255,255,.15)">|</span>
+<a href="#s01" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S01</a>
+<a href="#s02" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S02</a>
+<a href="#s03" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S03</a>
+<a href="#s05" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S05</a>
+<a href="#s09" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S09</a>
+<a href="#s10" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S10</a>
+<a href="#s11" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S11</a>
+<a href="#s13" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S13</a>
+<a href="#s17" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S17</a>
+<a href="#s18" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S18</a>
+<a href="#s19" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S19</a>
+<a href="#s20" style="color:rgba(255,255,255,.35);font-family:'JetBrains Mono',monospace;font-size:8px;text-decoration:none">S20</a>
+</nav>
+
+<!-- S01 封面 — 金棕满屏 + 状态概览 -->
+<section id="s01" data-layout="S01" style="min-height:100vh;background:var(--ink);color:#fff;display:flex;flex-direction:column">
+<div style="padding:16px 80px;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)"><span class="sh" style="color:rgba(255,255,255,.35)">EXECUTE · 2026</span><span class="sh" style="color:rgba(255,255,255,.2)">01 / 12</span></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 80px">
+  <h1 class="st" style="color:#fff;margin-bottom:20px">[必填] 执行标题</h1>
+  <p class="su" style="color:rgba(255,255,255,.5);max-width:44ch;margin-bottom:40px">[必填] 执行概述。</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap">
+    <span class="pill pill-done">&#10003; 4 完成</span>
+    <span class="pill pill-prog">&#9679; 2 进行中</span>
+    <span class="pill pill-block">&#10007; 1 阻塞</span>
+    <span class="pill pill-pend">&#9675; 3 待办</span>
+  </div>
+</div>
+<div style="padding:16px 80px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between"><span class="mt" style="color:rgba(255,255,255,.25)">[必填] 作者</span><span class="mt" style="color:rgba(255,255,255,.25)">[必填] 日期</span></div>
+</section>
+
+<!-- S02 指标 — 状态驱动 -->
+<section id="s02" data-layout="S02" class="section" style="background:var(--bg)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">STATUS METRICS</span><span class="sh">02</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:40px">[必填] 状态指标</h2>
+<div class="g12" style="gap:10px;margin-bottom:24px">
+  <div class="card card-done" style="grid-column:span 3"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(22px,2.5vw,36px);line-height:1">[必填] 128</div></div><span class="pill pill-done">&#10003; 完成</span></div>
+  <div class="card card-prog" style="grid-column:span 3"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(22px,2.5vw,36px);line-height:1">[必填] 96</div></div><span class="pill pill-prog">&#9679; 进行</span></div>
+  <div class="card card-block" style="grid-column:span 3"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(22px,2.5vw,36px);line-height:1">[必填] 12</div></div><span class="pill pill-block">&#10007; 阻塞</span></div>
+  <div class="card card-pend" style="grid-column:span 3"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(22px,2.5vw,36px);line-height:1">[必填] 47</div></div><span class="pill pill-pend">&#9675; 待办</span></div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd)"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<!-- S03 章节幕封 -->
+<section id="s03" data-layout="S03" style="min-height:40vh;display:grid;grid-template-columns:1fr 1fr">
+<div style="background:var(--ink);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:0 48px 0 80px">
+  <div class="sh" style="color:rgba(255,255,255,.35);margin-bottom:16px">PHASE I</div>
+  <h1 class="st" style="color:#fff">[必填] 章节标题</h1>
+</div>
+<div style="background:var(--sf);display:flex;flex-direction:column;justify-content:center;padding:0 80px 0 48px">
+  <div style="display:flex;gap:8px;margin-bottom:16px"><span class="pill pill-done">&#10003; 完成</span><span class="pill pill-prog">&#9679; 进行中</span></div>
+  <p class="su" style="max-width:32ch">[必填] 引语。执行状态概览。</p>
+</div>
+</section>
+
+<!-- S05 KPI — 状态 pill 标记 -->
+<section id="s05" data-layout="S05" class="section-alt">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">KPI STATUS</span><span class="sh">04</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:8px">[必填] KPI</h2>
+<p class="su" style="max-width:44ch;margin-bottom:32px">[选填] 说明。</p>
+<div class="g12" style="gap:10px;margin-bottom:24px">
+  <div class="card card-done" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(20px,2.5vw,32px);line-height:1;margin-bottom:4px">[必填] 1,284</div><div style="font-size:11px;color:var(--done)">+12.3%</div></div><span class="pill pill-done">&#10003;</span></div>
+  <div class="card card-prog" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(20px,2.5vw,32px);line-height:1;margin-bottom:4px">[必填] 96.4%</div><div style="font-size:11px;color:var(--prog)">+2.1%</div></div><span class="pill pill-prog">&#9679;</span></div>
+  <div class="card card-block" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(20px,2.5vw,32px);line-height:1;margin-bottom:4px">[必填] ¥3.2M</div><div style="font-size:11px;color:var(--block)">-5.2%</div></div><span class="pill pill-block">&#10007;</span></div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd)"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<!-- S09 流程步骤 — 状态驱动 -->
+<section id="s09" data-layout="S09" class="section" style="background:var(--bg)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">WORKFLOW STATUS</span><span class="sh">05</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:32px">[必填] 执行流程</h2>
+<div style="display:flex;flex-direction:column;gap:0">
+  <div class="step step-done"><span class="nm" style="color:var(--done);font-size:16px;min-width:32px">01</span><div><div style="font-weight:500;font-size:14px">[必填] 步骤一</div><div class="bd">[必填] 描述</div></div><span class="pill pill-done">&#10003; 完成</span></div>
+  <div class="step step-done"><span class="nm" style="color:var(--done);font-size:16px;min-width:32px">02</span><div><div style="font-weight:500;font-size:14px">[必填] 步骤二</div><div class="bd">[必填] 描述</div></div><span class="pill pill-done">&#10003; 完成</span></div>
+  <div class="step step-prog"><span class="nm" style="color:var(--prog);font-size:16px;min-width:32px">03</span><div><div style="font-weight:500;font-size:14px">[必填] 步骤三</div><div class="bd">[必填] 描述。进行中。</div></div><span class="pill pill-prog">&#9679; 进行中</span></div>
+  <div class="step step-block"><span class="nm" style="color:var(--block);font-size:16px;min-width:32px">04</span><div><div style="font-weight:500;font-size:14px">[必填] 步骤四</div><div class="bd">[必填] 描述。被阻塞。</div></div><span class="pill pill-block">&#10007; 阻塞</span></div>
+  <div class="step step-pend"><span class="nm" style="color:var(--pend);font-size:16px;min-width:32px">05</span><div><div style="font-weight:500;font-size:14px">[必填] 步骤五</div><div class="bd">[必填] 描述。等待。</div></div><span class="pill pill-pend">&#9675; 待办</span></div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd);margin-top:20px"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<!-- S10 时间线 — 进度条 -->
+<section id="s10" data-layout="S10" class="section" style="background:var(--sf)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">TIMELINE</span><span class="sh">06</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:32px">[必填] 时间线</h2>
+<div style="display:flex;flex-direction:column;gap:0">
+  <div class="tl-item">
+    <div class="nm" style="font-size:13px;color:var(--main)">[必填] 2024-Q1</div>
+    <div><div style="font-weight:500;font-size:14px;margin-bottom:4px">[必填] 事件</div><div class="bd">[必填] 描述</div></div>
+    <span class="pill pill-done">&#10003; 完成</span>
+  </div>
+  <div class="tl-item">
+    <div class="nm" style="font-size:13px;color:var(--main)">[必填] 2024-Q2</div>
+    <div><div style="font-weight:500;font-size:14px;margin-bottom:4px">[必填] 事件</div><div class="bd">[必填] 描述</div></div>
+    <span class="pill pill-done">&#10003; 完成</span>
+  </div>
+  <div class="tl-item">
+    <div class="nm" style="font-size:13px;color:var(--main)">[必填] 2024-Q3</div>
+    <div><div style="font-weight:500;font-size:14px;margin-bottom:4px">[必填] 事件</div><div class="bd">[必填] 描述</div></div>
+    <span class="pill pill-prog">&#9679; 进行中</span>
+  </div>
+  <div class="tl-item" style="border-bottom:none">
+    <div class="nm" style="font-size:13px;color:var(--main)">[必填] 2024-Q4</div>
+    <div><div style="font-weight:500;font-size:14px;margin-bottom:4px">[必填] 事件</div><div class="bd">[必填] 描述</div></div>
+    <span class="pill pill-pend">&#9675; 待办</span>
+  </div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd)"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<!-- S11 检查清单 — 状态版 -->
+<section id="s11" data-layout="S11" class="section" style="background:var(--bg)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">CHECKLIST STATUS</span><span class="sh">07</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:32px">[必填] 检查清单</h2>
+<div style="display:flex;flex-direction:column;gap:0;margin-bottom:24px">
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:12px 16px;background:var(--sf);border-left:3px solid var(--done);align-items:center"><div style="font-weight:500;font-size:14px">[必填] 检查项</div><span class="pill pill-done">&#10003; 通过</span></div>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:12px 16px;background:var(--sf);border-left:3px solid var(--done);align-items:center"><div style="font-weight:500;font-size:14px">[必填] 检查项</div><span class="pill pill-done">&#10003; 通过</span></div>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:12px 16px;background:var(--sf);border-left:3px solid var(--prog);align-items:center"><div style="font-weight:500;font-size:14px">[必填] 检查项</div><span class="pill pill-prog">&#9679; 进行中</span></div>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:12px 16px;background:var(--sf);border-left:3px solid var(--block);align-items:center"><div style="font-weight:500;font-size:14px">[必填] 检查项</div><span class="pill pill-block">&#10007; 阻塞</span></div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd)"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<!-- S13 格子卡 — 状态 -->
+<section id="s13" data-layout="S13" class="section-alt">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">ITEMS STATUS</span><span class="sh">08</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:32px">[必填] 格子卡</h2>
+<div class="g12" style="gap:10px;margin-bottom:24px">
+  <div class="card card-done" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div style="font-weight:500;font-size:14px;margin-bottom:2px">[必填] 标题</div><div class="bd">[必填] 描述</div></div><span class="pill pill-done">&#10003;</span></div>
+  <div class="card card-prog" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div style="font-weight:500;font-size:14px;margin-bottom:2px">[必填] 标题</div><div class="bd">[必填] 描述</div></div><span class="pill pill-prog">&#9679;</span></div>
+  <div class="card card-pend" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div style="font-weight:500;font-size:14px;margin-bottom:2px">[必填] 标题</div><div class="bd">[必填] 描述</div></div><span class="pill pill-pend">&#9675;</span></div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd)"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<!-- S17 金句 -->
+<section id="s17" data-layout="S17" style="min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 80px;background:var(--sf);position:relative">
+<div style="position:absolute;right:32px;bottom:32px;font-family:'JetBrains Mono',monospace;font-size:100px;font-weight:700;color:var(--bd);opacity:.15;line-height:1;pointer-events:none">"</div>
+<p class="st" style="font-size:clamp(22px,3vw,40px);line-height:1.3;text-align:center;max-width:600px;position:relative;z-index:1">[必填] 金句。</p>
+<div class="mt" style="margin-top:24px;position:relative;z-index:1">— [必填] 来源 —</div>
+</section>
+
+<!-- S18 收束 -->
+<section id="s18" data-layout="S18" style="min-height:60vh;display:flex;flex-direction:column;background:var(--ink);color:#fff">
+<div style="padding:16px 80px;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.08)"><span class="sh" style="color:rgba(255,255,255,.35)">CONCLUSION</span><span class="sh" style="color:rgba(255,255,255,.2)">09</span></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 80px">
+  <h1 class="st" style="color:#fff;max-width:500px;margin-bottom:20px">[必填] 结论。</h1>
+  <p class="su" style="color:rgba(255,255,255,.55);max-width:44ch;margin-bottom:24px">[必填] 执行总结。</p>
+  <div style="display:flex;gap:8px"><span class="pill pill-done">&#10003; 4 完成</span><span class="pill pill-prog">&#9679; 2 进行中</span><span class="pill pill-block">&#10007; 1 阻塞</span></div>
+</div>
+</section>
+
+<!-- S19 行动项 — 状态 -->
+<section id="s19" data-layout="S19" class="section" style="background:var(--bg)">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">ACTION ITEMS</span><span class="sh">10</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:32px">[必填] 行动项</h2>
+<div style="display:flex;flex-direction:column;gap:0;margin-bottom:24px">
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:14px 0;border-bottom:1px solid var(--bd);align-items:center"><div><div style="font-weight:500;font-size:14px;margin-bottom:2px">[必填] 行动项</div><div class="bd">[必填] 负责人 · 截止时间</div></div><span class="pill pill-done">&#10003; 完成</span></div>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:14px 0;border-bottom:1px solid var(--bd);align-items:center"><div><div style="font-weight:500;font-size:14px;margin-bottom:2px">[必填] 行动项</div><div class="bd">[必填] 负责人 · 截止时间</div></div><span class="pill pill-prog">&#9679; 进行中</span></div>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:14px 0;border-bottom:1px solid var(--bd);align-items:center"><div><div style="font-weight:500;font-size:14px;margin-bottom:2px">[必填] 行动项</div><div class="bd">[必填] 负责人 · 截止时间</div></div><span class="pill pill-block">&#10007; 阻塞</span></div>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;padding:14px 0;align-items:center"><div><div style="font-weight:500;font-size:14px;margin-bottom:2px">[必填] 行动项</div><div class="bd">[必填] 负责人 · 截止时间</div></div><span class="pill pill-pend">&#9675; 待办</span></div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd)"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<!-- S20 指标+趋势 -->
+<section id="s20" data-layout="S20" class="section-alt">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span class="sh">TRENDS</span><span class="sh">11</span></div>
+<h2 class="st" style="max-width:500px;margin-bottom:32px">[必填] 指标趋势</h2>
+<div class="g12" style="gap:10px">
+  <div class="card card-done" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(20px,2.5vw,32px);line-height:1;margin-bottom:4px">[必填] 1,284</div><div style="font-size:11px;color:var(--done);margin-bottom:8px">+12.3%</div><div style="height:24px;background:var(--bg);display:flex;align-items:flex-end;padding:2px"><div style="width:20%;height:50%;background:var(--done);opacity:.3"></div><div style="width:20%;height:70%;background:var(--done);opacity:.5;margin-left:1px"></div><div style="width:20%;height:40%;background:var(--done);opacity:.4;margin-left:1px"></div><div style="width:20%;height:60%;background:var(--done);opacity:.6;margin-left:1px"></div><div style="width:20%;height:85%;background:var(--done);opacity:.8;margin-left:1px"></div></div></div><span class="pill pill-done">&#10003;</span></div>
+  <div class="card card-prog" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(20px,2.5vw,32px);line-height:1;margin-bottom:4px">[必填] 96.4%</div><div style="font-size:11px;color:var(--prog);margin-bottom:8px">+2.1%</div><div style="height:24px;background:var(--bg);display:flex;align-items:flex-end;padding:2px"><div style="width:20%;height:60%;background:var(--prog);opacity:.3"></div><div style="width:20%;height:65%;background:var(--prog);opacity:.5;margin-left:1px"></div><div style="width:20%;height:70%;background:var(--prog);opacity:.4;margin-left:1px"></div><div style="width:20%;height:75%;background:var(--prog);opacity:.6;margin-left:1px"></div><div style="width:20%;height:80%;background:var(--prog);opacity:.8;margin-left:1px"></div></div></div><span class="pill pill-prog">&#9679;</span></div>
+  <div class="card card-block" style="grid-column:span 4"><div style="flex:1"><div class="sh" style="margin-bottom:4px">[必填] LABEL</div><div class="nm" style="font-size:clamp(20px,2.5vw,32px);line-height:1;margin-bottom:4px">[必填] ¥3.2M</div><div style="font-size:11px;color:var(--block);margin-bottom:8px">-5.2%</div><div style="height:24px;background:var(--bg);display:flex;align-items:flex-end;padding:2px"><div style="width:20%;height:80%;background:var(--block);opacity:.3"></div><div style="width:20%;height:75%;background:var(--block);opacity:.5;margin-left:1px"></div><div style="width:20%;height:60%;background:var(--block);opacity:.4;margin-left:1px"></div><div style="width:20%;height:50%;background:var(--block);opacity:.6;margin-left:1px"></div><div style="width:20%;height:40%;background:var(--block);opacity:.8;margin-left:1px"></div></div></div><span class="pill pill-block">&#10007;</span></div>
+</div>
+<div class="mt" style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--bd);margin-top:20px"><span>[选填] 来源</span><span>[选填] 时间</span></div>
+</section>
+
+<footer style="padding:24px 80px;background:var(--ink);color:rgba(255,255,255,.25);display:flex;justify-content:space-between"><span class="mt" style="color:rgba(255,255,255,.25)">nian · Skin 4 执行层 — 状态仪表盘</span><span class="mt" style="color:rgba(255,255,255,.25)">Track everything.</span></footer>
+</body>
+</html>

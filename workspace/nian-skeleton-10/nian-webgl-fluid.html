@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian · WebGL 流体效果（Fragment Shader）</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--off-white:#F6F6F0;--ink:#1A1816;--forest:#3D5A35;--moss:#6B8B5E;--slate:#4E627C;--steel:#7A8B9B;--gold:#BF9B5A}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;background:var(--off-white);color:var(--ink);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- 效果 1：Forest 流体 -->
+<section style="min-height:100vh;background:var(--forest);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="fluid-forest" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:crosshair"></canvas>
+  <div style="position:relative;z-index:1;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:32px">FLUID · FOREST</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:#fff;margin-bottom:24px">液体流动感</h1>
+    <p style="font-size:17px;color:rgba(255,255,255,.65);max-width:500px">Fragment Shader 实现。鼠标划过产生波纹扰动。</p>
+  </div>
+</section>
+
+<!-- 效果 2：Ink 流体 -->
+<section style="min-height:100vh;background:var(--ink);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="fluid-ink" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:crosshair"></canvas>
+  <!-- 暗色蒙版：压低流体亮度 -->
+  <div style="position:absolute;inset:0;background:rgba(26,24,22,.15);z-index:1;pointer-events:none"></div>
+  <div style="position:relative;z-index:2;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:32px">FLUID · INK</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:#fff;margin-bottom:24px">星空流体</h1>
+    <p style="font-size:17px;color:rgba(255,255,255,.55);max-width:500px">黑白流体，鼠标扰动产生星云般的波纹。</p>
+  </div>
+</section>
+
+<!-- 效果 3：Gold 流体 -->
+<section style="min-height:100vh;background:#2A2520;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="fluid-gold" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:crosshair"></canvas>
+  <div style="position:relative;z-index:1;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(191,155,90,.5);margin-bottom:32px">FLUID · GOLD</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:var(--gold);margin-bottom:24px">暖色流体</h1>
+    <p style="font-size:17px;color:rgba(191,155,90,.6);max-width:500px">金色流体在深棕底上，适合品牌展示。</p>
+  </div>
+</section>
+
+<!-- 效果 4：Slate 流体 -->
+<section style="min-height:100vh;background:#1A2530;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="fluid-slate" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:crosshair"></canvas>
+  <div style="position:relative;z-index:1;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(122,139,155,.5);margin-bottom:32px">FLUID · SLATE</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:var(--steel);margin-bottom:24px">冷色流体</h1>
+    <p style="font-size:17px;color:rgba(122,139,155,.6);max-width:500px">蓝灰流体，适合技术文档。</p>
+  </div>
+</section>
+
+<footer style="padding:32px 96px;background:var(--ink);color:rgba(255,255,255,.3);font-family:'JetBrains Mono',monospace;font-size:10px;display:flex;justify-content:space-between">
+  <span>nian · WebGL 流体效果（Fragment Shader）</span>
+  <span>鼠标扰动 + 多层噪声 + 余弦调色板</span>
+</footer>
+
+<script>
+// ===== 顶点着色器（所有效果共用） =====
+const VS = `
+attribute vec2 position;
+void main(){gl_Position=vec4(position,0.0,1.0);}
+`;
+
+// ===== 片元着色器：Forest 流体 =====
+const FS_FOREST = `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec2 u_mouse;
+
+vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d){
+  return a + b * cos(6.28318 * (c * t + d));
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  vec2 p = uv * 2.0 - 1.0;
+  p.x *= u_resolution.x / u_resolution.y;
+
+  // 鼠标扰动场
+  vec2 m = u_mouse * 2.0 - 1.0;
+  m.x *= u_resolution.x / u_resolution.y;
+  float md = length(p - m);
+  float mr = sin(md * 12.0 - u_time * 3.0) * exp(-md * 2.5);
+  p += mr * 0.1;
+
+  vec2 p0 = p;
+
+  // 多层噪声叠加（流体核心）
+  for(float i = 1.0; i < 5.0; i++){
+    p.x += 0.08 / i * sin(i * 2.5 * p.y + u_time * 0.35 + i * 0.7);
+    p.y += 0.08 / i * cos(i * 2.0 * p.x + u_time * 0.25 - i * 0.5);
+  }
+
+  float r = length(p);
+  float ang = atan(p.y, p.x);
+
+  // Forest 调色板：深绿 → 浅绿 → 白
+  vec3 a = vec3(0.15, 0.22, 0.13);
+  vec3 b = vec3(0.10, 0.15, 0.08);
+  vec3 c = vec3(1.0, 1.0, 0.8);
+  vec3 d = vec3(0.0, 0.15, 0.2);
+
+  vec3 col = palette(r * 1.2 + p0.x * 0.4 + u_time * 0.08, a, b, c, d);
+
+  // 纹理细节
+  float disp = sin(r * 20.0 - u_time * 1.2 + ang * 1.5) * 0.5 + 0.5;
+  col += vec3(disp * 0.02, disp * 0.03, disp * 0.015);
+
+  // 高光
+  float hi = pow(sin(p.x * 3.0 + p.y * 2.5 + u_time * 0.8) * 0.5 + 0.5, 6.0);
+  col += hi * 0.06;
+
+  // 混合底色
+  vec3 base = vec3(0.12, 0.18, 0.10);
+  col = mix(base, col, 0.85);
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+// ===== 片元着色器：Ink 流体 =====
+const FS_INK = `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec2 u_mouse;
+
+vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d){
+  return a + b * cos(6.28318 * (c * t + d));
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  vec2 p = uv * 2.0 - 1.0;
+  p.x *= u_resolution.x / u_resolution.y;
+
+  // 鼠标扰动（增强版）
+  vec2 m = u_mouse * 2.0 - 1.0;
+  m.x *= u_resolution.x / u_resolution.y;
+  float md = length(p - m);
+  float mr = sin(md * 12.0 - u_time * 5.0) * exp(-md * 2.0);
+  p += mr * 0.2;  // 推动力从 0.08 提到 0.2
+
+  vec2 p0 = p;
+
+  // 多层噪声
+  for(float i = 1.0; i < 4.0; i++){
+    p.x += 0.1 / i * sin(i * 3.0 * p.y + u_time * 0.4) + 0.05;
+    p.y += 0.1 / i * cos(i * 2.0 * p.x + u_time * 0.3) - 0.05;
+  }
+
+  float r = length(p);
+  float ang = atan(p.y, p.x);
+
+  // Ink 调色板：深灰 → 蓝灰 → 白
+  vec3 a = vec3(0.10, 0.10, 0.11);
+  vec3 b = vec3(0.03, 0.04, 0.05);
+  vec3 c = vec3(1.0, 1.0, 1.0);
+  vec3 d = vec3(0.1, 0.2, 0.4);
+
+  vec3 col = palette(r * 1.5 + p0.x * 0.5 + u_time * 0.1, a, b, c, d);
+
+  // 纹理
+  float disp = sin(r * 25.0 - u_time * 1.5 + ang * 2.0) * 0.5 + 0.5;
+  col += vec3(disp * 0.012, disp * 0.008, disp * 0.015);
+
+  // 高光
+  float hi = pow(sin(p.x * 4.0 + p.y * 3.0 + u_time) * 0.5 + 0.5, 8.0);
+  col += hi * 0.06;
+
+  vec3 base = vec3(0.04, 0.04, 0.05);
+  col = mix(base, col, 0.8);
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+// ===== 片元着色器：Gold 流体 =====
+const FS_GOLD = `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec2 u_mouse;
+
+vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d){
+  return a + b * cos(6.28318 * (c * t + d));
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  vec2 p = uv * 2.0 - 1.0;
+  p.x *= u_resolution.x / u_resolution.y;
+
+  vec2 m = u_mouse * 2.0 - 1.0;
+  m.x *= u_resolution.x / u_resolution.y;
+  float md = length(p - m);
+  float mr = sin(md * 10.0 - u_time * 2.5) * exp(-md * 2.0);
+  p += mr * 0.12;
+
+  vec2 p0 = p;
+
+  for(float i = 1.0; i < 5.0; i++){
+    p.x += 0.07 / i * sin(i * 2.0 * p.y + u_time * 0.3 + i);
+    p.y += 0.07 / i * cos(i * 1.8 * p.x + u_time * 0.2 - i);
+  }
+
+  float r = length(p);
+  float ang = atan(p.y, p.x);
+
+  // Gold 调色板：深棕 → 金 → 暖白
+  vec3 a = vec3(0.18, 0.14, 0.08);
+  vec3 b = vec3(0.12, 0.10, 0.06);
+  vec3 c = vec3(1.0, 0.9, 0.7);
+  vec3 d = vec3(0.0, 0.1, 0.3);
+
+  vec3 col = palette(r * 1.0 + p0.x * 0.3 + u_time * 0.06, a, b, c, d);
+
+  float disp = sin(r * 18.0 - u_time * 1.0 + ang * 1.2) * 0.5 + 0.5;
+  col += vec3(disp * 0.025, disp * 0.02, disp * 0.01);
+
+  float hi = pow(sin(p.x * 2.5 + p.y * 2.0 + u_time * 0.7) * 0.5 + 0.5, 6.0);
+  col += hi * 0.05;
+
+  vec3 base = vec3(0.10, 0.08, 0.05);
+  col = mix(base, col, 0.85);
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+// ===== 片元着色器：Slate 流体 =====
+const FS_SLATE = `
+precision highp float;
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec2 u_mouse;
+
+vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d){
+  return a + b * cos(6.28318 * (c * t + d));
+}
+
+void main(){
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  vec2 p = uv * 2.0 - 1.0;
+  p.x *= u_resolution.x / u_resolution.y;
+
+  vec2 m = u_mouse * 2.0 - 1.0;
+  m.x *= u_resolution.x / u_resolution.y;
+  float md = length(p - m);
+  float mr = sin(md * 8.0 - u_time * 2.0) * exp(-md * 1.8);
+  p += mr * 0.15;
+
+  vec2 p0 = p;
+
+  for(float i = 1.0; i < 6.0; i++){
+    p.x += 0.06 / i * sin(i * 1.8 * p.y + u_time * 0.25 + i * 0.5);
+    p.y += 0.06 / i * cos(i * 1.5 * p.x + u_time * 0.2 - i * 0.3);
+  }
+
+  float r = length(p);
+  float ang = atan(p.y, p.x);
+
+  // Slate 调色板：深蓝 → 蓝灰 → 浅蓝
+  vec3 a = vec3(0.12, 0.16, 0.22);
+  vec3 b = vec3(0.08, 0.10, 0.15);
+  vec3 c = vec3(0.9, 1.0, 1.1);
+  vec3 d = vec3(0.15, 0.25, 0.35);
+
+  vec3 col = palette(r * 0.9 + p0.x * 0.35 + u_time * 0.05, a, b, c, d);
+
+  float disp = sin(r * 15.0 - u_time * 0.8 + ang) * 0.5 + 0.5;
+  col += vec3(disp * 0.01, disp * 0.015, disp * 0.025);
+
+  float hi = pow(sin(p.x * 2.0 + p.y * 1.8 + u_time * 0.6) * 0.5 + 0.5, 6.0);
+  col += hi * 0.04;
+
+  vec3 base = vec3(0.06, 0.08, 0.12);
+  col = mix(base, col, 0.85);
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+// ===== WebGL 初始化函数 =====
+function bootGL(canvasId, fsSrc){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return null;
+  const gl = canvas.getContext('webgl', {alpha:false, antialias:true});
+  if(!gl) return null;
+
+  function mk(type, src){
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    return sh;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, mk(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, mk(gl.FRAGMENT_SHADER, fsSrc));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+  const lRes = gl.getUniformLocation(prog, 'u_resolution');
+  const lT = gl.getUniformLocation(prog, 'u_time');
+  const lM = gl.getUniformLocation(prog, 'u_mouse');
+
+  const resize = () => {
+    const d = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = innerWidth * d;
+    canvas.height = innerHeight * d;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  };
+  addEventListener('resize', resize);
+  resize();
+
+  return (tSec) => {
+    gl.uniform2f(lRes, canvas.width, canvas.height);
+    gl.uniform1f(lT, tSec);
+    gl.uniform2f(lM, mouse.x, 1 - mouse.y);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    return true;
+  };
+}
+
+// ===== 鼠标跟踪 =====
+const mouse = {x: 0.5, y: 0.5};
+addEventListener('mousemove', e => {
+  mouse.x = e.clientX / innerWidth;
+  mouse.y = e.clientY / innerHeight;
+});
+
+// ===== 启动 4 个流体效果 =====
+let drawForest = null, drawInk = null, drawGold = null, drawSlate = null;
+let raf = 0, t0 = Date.now();
+
+function start(){
+  if(raf) return;
+  if(!drawForest) drawForest = bootGL('fluid-forest', FS_FOREST);
+  if(!drawInk) drawInk = bootGL('fluid-ink', FS_INK);
+  if(!drawGold) drawGold = bootGL('fluid-gold', FS_GOLD);
+  if(!drawSlate) drawSlate = bootGL('fluid-slate', FS_SLATE);
+  t0 = Date.now();
+  function loop(){
+    const t = (Date.now() - t0) / 1000;
+    if(drawForest) drawForest(t);
+    if(drawInk) drawInk(t);
+    if(drawGold) drawGold(t);
+    if(drawSlate) drawSlate(t);
+    raf = requestAnimationFrame(loop);
+  }
+  raf = requestAnimationFrame(loop);
+}
+
+start();
+</script>
+
+</body>
+</html>

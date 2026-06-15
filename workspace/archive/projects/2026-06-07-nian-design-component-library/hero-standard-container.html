@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>页面容器标准化 · 方案演示</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F0EC;--surface:#FFF;--surface-alt:#E3DFD8;
+  --border:#C4B8A8;--border-strong:#8A7D6E;
+  --text-display:#2D2A26;--text-primary:#1A1816;--text-secondary:#8A7D6E;--text-disabled:#C4B8A8;
+  --forest:#3D5A35;--moss:#6B8B5E;--slate:#4E627C;--steel:#7A8B9B;
+  --sky:#4A80C0;--clay:#C66B4B;--gold:#BF9B5A;
+  --sp-sm:8px;--sp-md:16px;--sp-lg:24px;--sp-xl:32px;--sp-2xl:48px;--sp-3xl:64px;--sp-4xl:96px;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);-webkit-font-smoothing:antialiased;line-height:1.6}
+
+/* ══════════════════════════════════════════════
+   标准化容器
+   所有 slide 统一 min-height: 100vh
+   ══════════════════════════════════════════════ */
+.slide{
+  min-height:100vh;
+  padding:var(--sp-4xl) var(--sp-4xl);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+.slide-content{
+  max-width:1120px;
+  margin:0 auto;
+  width:100%;
+  position:relative;z-index:2;
+}
+.slide.light{background:var(--bg);color:var(--text-primary);}
+.slide.dark{background:#1A1816;color:rgba(255,255,255,0.9);}
+.slide.alt{background:var(--surface-alt);color:var(--text-primary);}
+.slide.forest{background:var(--forest);color:rgba(255,255,255,0.9);}
+.slide.slate{background:var(--slate);color:rgba(255,255,255,0.9);}
+
+.ghost{
+  position:absolute;pointer-events:none;z-index:1;
+  font-family:var(--font-display);
+  font-size:28vw;font-weight:200;line-height:0.85;letter-spacing:-0.05em;
+  user-select:none;
+}
+.ghost.rt{right:-4vw;top:-8vh;}
+.ghost.lb{left:-6vw;bottom:-12vh;}
+.ghost.cc{left:50%;top:50%;transform:translate(-50%,-50%);}
+.slide.light .ghost,.slide.alt .ghost{color:var(--slate);opacity:0.04;}
+.slide.dark .ghost,.slide.forest .ghost,.slide.slate .ghost{color:rgba(255,255,255,0.08);}
+
+.tag{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--sp-xl);display:block;}
+.tag--light{color:rgba(255,255,255,0.5);}
+.title{font-family:var(--font-display);font-size:64px;font-weight:300;line-height:1.05;letter-spacing:-2px;margin-bottom:var(--sp-lg);color:var(--text-display);}
+.title strong{font-weight:600;}
+.title--light{color:rgba(255,255,255,0.95);}
+.desc{font-size:18px;color:var(--text-secondary);line-height:1.7;max-width:520px;margin-bottom:var(--sp-2xl);}
+.desc--light{color:rgba(255,255,255,0.6);}
+
+.slide-footer{
+  position:absolute;bottom:var(--sp-xl);right:var(--sp-4xl);
+  font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--text-disabled);z-index:3;
+}
+.slide.dark .slide-footer,.slide.forest .slide-footer,.slide.slate .slide-footer{color:rgba(255,255,255,0.25);}
+
+/* 翻转卡片 */
+.flip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-lg);margin-top:var(--sp-xl);}
+.flip-card{perspective:1200px;height:320px;cursor:pointer;}
+.flip-card__inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);}
+.flip-card:hover .flip-card__inner{transform:rotateY(180deg);}
+.flip-card__front,.flip-card__back{
+  position:absolute;inset:0;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden;
+  border-radius:var(--sp-sm);padding:var(--sp-2xl);
+  display:flex;flex-direction:column;justify-content:center;
+  border:1px solid var(--border);
+}
+.flip-card__front{background:var(--surface);}
+.flip-card__back{background:var(--forest);color:rgba(255,255,255,0.9);transform:rotateY(180deg);border-color:var(--forest);}
+.flip-card__label{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--sp-sm);}
+.flip-card__title{font-family:var(--font-display);font-size:22px;font-weight:600;line-height:1.25;margin-bottom:var(--sp-sm);}
+.flip-card__desc{font-size:14px;line-height:1.7;color:var(--text-secondary);}
+.flip-card__back .flip-card__desc{color:rgba(255,255,255,0.7);}
+
+/* 代码面板 */
+.code-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-lg);margin-top:var(--sp-xl);}
+.code-panel{border:1px solid var(--border);overflow:hidden;}
+.code-panel__header{display:flex;align-items:center;gap:var(--sp-sm);padding:var(--sp-sm) var(--sp-md);background:var(--surface-alt);border-bottom:1px solid var(--border);}
+.code-panel__dots{display:flex;gap:5px;}
+.code-panel__dot{width:8px;height:8px;border-radius:50%;}
+.code-panel__dot.r{background:#ff5f56;}
+.code-panel__dot.y{background:#ffbd2e;}
+.code-panel__dot.g{background:#27c93f;}
+.code-panel__title{font-family:var(--font-mono);font-size:9px;color:var(--text-disabled);flex:1;text-align:center;}
+.code-panel__body{padding:var(--sp-lg);font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--text-primary);background:var(--surface);overflow-x:auto;}
+.code-panel__body .kw{color:#7c3aed;}
+.code-panel__body .str{color:#D9433A;}
+.code-panel__body .cm{color:var(--text-disabled);font-style:italic;}
+.code-panel__body .fn{color:var(--sky);}
+.code-panel--notebook{border-color:#D1CFC5;background:#FFFEF8;position:relative;}
+.code-panel--notebook .code-panel__body{background:transparent;padding-left:var(--sp-3xl);background-image:repeating-linear-gradient(transparent,transparent 31px,rgba(74,128,192,0.04) 31px,rgba(74,128,192,0.04) 32px);}
+.code-panel--notebook::before{content:'';position:absolute;left:28px;top:0;bottom:0;width:1px;background:rgba(217,67,58,0.12);}
+.code-panel--notebook .code-panel__header{background:var(--surface);border-bottom-color:var(--border);}
+
+/* 虚线框 */
+.dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--sp-lg);margin-top:var(--sp-xl);}
+.dash-box{position:relative;border:2px dashed var(--border-strong);padding:var(--sp-2xl) var(--sp-xl);}
+.dash-box__label{position:absolute;top:-10px;left:var(--sp-lg);font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--sky);background:var(--bg);padding:0 var(--sp-sm);}
+.dash-box__title{font-family:var(--font-display);font-size:20px;font-weight:600;margin-bottom:var(--sp-sm);}
+.dash-box__body{font-size:14px;color:var(--text-secondary);line-height:1.7;}
+
+.nav-bar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sp-md) var(--sp-4xl);
+  background:rgba(242,240,236,0.92);border-bottom:1px solid var(--border);
+}
+.nav-bar__title{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--text-secondary);}
+.nav-bar__count{font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);}
+</style>
+</head>
+<body>
+
+<nav class="nav-bar">
+  <span class="nav-bar__title">标准化容器 · 方案演示</span>
+  <span class="nav-bar__count">每页固定 100vh · 深浅交替</span>
+</nav>
+
+<!-- Slide 1 -->
+<section class="slide slate">
+  <div class="ghost rt">STANDARD</div>
+  <div class="slide-content">
+    <span class="tag tag--light">PAGE CONTAINER · V1.0</span>
+    <h1 class="title title--light" style="font-size:80px">标准化页面容器</h1>
+    <p class="desc desc--light">参考 Nordic Template——每页固定 min-height: 100vh。无论内容多少，尺寸不变。深浅色交替做页间区隔。</p>
+    <div style="display:flex;gap:var(--sp-2xl);margin-top:var(--sp-xl);padding-top:var(--sp-xl);border-top:1px solid rgba(255,255,255,0.12);">
+      <div><div style="font-family:var(--font-mono);font-size:36px;font-weight:300;line-height:1;color:rgba(255,255,255,0.95)">100vh</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:4px">固定高度</div></div>
+      <div><div style="font-family:var(--font-mono);font-size:36px;font-weight:300;line-height:1;color:rgba(255,255,255,0.95)">5</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:4px">底色变体</div></div>
+      <div><div style="font-family:var(--font-mono);font-size:36px;font-weight:300;line-height:1;color:rgba(255,255,255,0.95)">∞</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:4px">内容自由</div></div>
+    </div>
+  </div>
+  <span class="slide-footer">01 / 06</span>
+</section>
+
+<!-- Slide 2: 翻转卡片 -->
+<section class="slide light">
+  <div class="ghost lb">FLIP</div>
+  <div class="slide-content">
+    <span class="tag">MINO · COMPONENT</span>
+    <h1 class="title">翻转卡片</h1>
+    <p class="desc">从 MINO Design System 吸收。用 nian 的视觉语言重写——去阴影、8px 圆角、nian 色系。</p>
+    <div class="flip-grid">
+      <div class="flip-card"><div class="flip-card__inner">
+        <div class="flip-card__front">
+          <span class="flip-card__label">Card 01</span>
+          <div class="flip-card__title">品牌设计</div>
+          <p class="flip-card__desc">hover 翻转查看背后的设计原则。</p>
+        </div>
+        <div class="flip-card__back">
+          <span class="flip-card__label" style="color:rgba(255,255,255,0.4)">→ 翻转</span>
+          <div class="flip-card__title" style="color:#fff">自然色系 · 三层金字塔</div>
+          <p class="flip-card__desc">Answer / Argument / Evidence。16:4:1 颜色比例。</p>
+        </div>
+      </div></div>
+      <div class="flip-card"><div class="flip-card__inner">
+        <div class="flip-card__front">
+          <span class="flip-card__label">Card 02</span>
+          <div class="flip-card__title">组件体系</div>
+          <p class="flip-card__desc">82 个组件，7 个分类。</p>
+        </div>
+        <div class="flip-card__back">
+          <span class="flip-card__label" style="color:rgba(255,255,255,0.4)">→ 翻转</span>
+          <div class="flip-card__title" style="color:#fff">A-G 分类</div>
+          <p class="flip-card__desc">Hero / Section / Feature / CTA / Footer / Navigation / Brand</p>
+        </div>
+      </div></div>
+      <div class="flip-card"><div class="flip-card__inner">
+        <div class="flip-card__front">
+          <span class="flip-card__label">Card 03</span>
+          <div class="flip-card__title">设计原则</div>
+          <p class="flip-card__desc">不对称 > 对称。8:1 冲击力。</p>
+        </div>
+        <div class="flip-card__back">
+          <span class="flip-card__label" style="color:rgba(255,255,255,0.4)">→ 翻转</span>
+          <div class="flip-card__title" style="color:#fff">Craft Rules</div>
+          <p class="flip-card__desc">不假设。不隐藏困惑。暴露权衡。</p>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <span class="slide-footer">02 / 06</span>
+</section>
+
+<!-- Slide 3: 代码面板 -->
+<section class="slide alt">
+  <div class="ghost lb">CODE</div>
+  <div class="slide-content">
+    <span class="tag">MINO · COMPONENT</span>
+    <h1 class="title">代码面板</h1>
+    <p class="desc">从 MINO 吸收。去阴影、改用边框。四种变体适配不同上下文。</p>
+    <div class="code-grid">
+      <div class="code-panel">
+        <div class="code-panel__header">
+          <div class="code-panel__dots"><span class="code-panel__dot r"></span><span class="code-panel__dot y"></span><span class="code-panel__dot g"></span></div>
+          <span class="code-panel__title">component.ts</span>
+        </div>
+        <div class="code-panel__body">
+<span class="cm">// macOS 窗口风格</span>
+<span class="kw">export</span> <span class="kw">const</span> Container = {<br>
+&nbsp;&nbsp;<span class="str">"name"</span>: <span class="str">"Slide"</span>,<br>
+&nbsp;&nbsp;<span class="str">"variant"</span>: <span class="str">"standard"</span>,<br>
+&nbsp;&nbsp;<span class="str">"height"</span>: <span class="str">"100vh"</span><br>
+};
+        </div>
+      </div>
+      <div class="code-panel code-panel--notebook">
+        <div class="code-panel__header">
+          <span style="font-family:var(--font-display);font-size:12px;color:var(--sky);font-weight:600">笔记纸</span>
+        </div>
+        <div class="code-panel__body">
+<span class="cm"># 构建输出</span>
+$ nian build --watch<br>
+<span class="fn">[build]</span> Components compiled (82)<br>
+<span class="fn">[build]</span> Tokens optimized<br>
+<span style="color:var(--forest);font-weight:600">[done]</span> Ready in 340ms
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-footer">03 / 06</span>
+</section>
+
+<!-- Slide 4: 虚线框 -->
+<section class="slide light">
+  <div class="ghost rt">DASH</div>
+  <div class="slide-content">
+    <span class="tag">MINO · COMPONENT</span>
+    <h1 class="title">虚线框 + 浮动标签</h1>
+    <p class="desc">提示、注意事项、笔记感内容。标签可置顶漂浮，三种信号色可选。</p>
+    <div class="dash-grid">
+      <div class="dash-box">
+        <span class="dash-box__label">KEY INSIGHT</span>
+        <div class="dash-box__title">设计是减法</div>
+        <p class="dash-box__body">功能少一行是一行，代码少一段是一段。不写未来可能需要的代码。</p>
+      </div>
+      <div class="dash-box">
+        <span class="dash-box__label" style="color:var(--clay)">NOTE</span>
+        <div class="dash-box__title">容器标准化</div>
+        <p class="dash-box__body">每页固定 100vh，深浅色交替。不因内容多少压缩 Hero 区。</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-footer">04 / 06</span>
+</section>
+
+<!-- Slide 5: 组合 -->
+<section class="slide forest">
+  <div class="ghost rt">COMBO</div>
+  <div class="slide-content">
+    <span class="tag tag--light">COMPOSITION</span>
+    <h1 class="title title--light">组合使用</h1>
+    <p class="desc desc--light">三个吸收的组件可自由组合。虚线框做提示，翻转卡片做深入展示，代码面板做技术引用。</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-lg);margin-top:var(--sp-2xl)">
+      <div class="dash-box" style="border-color:rgba(255,255,255,0.2)">
+        <span class="dash-box__label" style="background:var(--forest);color:var(--gold)">TIP</span>
+        <div class="dash-box__title" style="color:rgba(255,255,255,0.95)">hover 翻转</div>
+        <p class="dash-box__body" style="color:rgba(255,255,255,0.6)">翻转卡片在桌面端用 hover 触发，移动端用 click。纯 CSS 实现。</p>
+      </div>
+      <div class="dash-box" style="border-color:rgba(255,255,255,0.2)">
+        <span class="dash-box__label" style="background:var(--forest);color:var(--gold)">NOTE</span>
+        <div class="dash-box__title" style="color:rgba(255,255,255,0.95)">代码面板</div>
+        <p class="dash-box__body" style="color:rgba(255,255,255,0.6)">四种变体：macOS 窗口、笔记纸、打字机、极简白。按上下文选用。</p>
+      </div>
+    </div>
+  </div>
+  <span class="slide-footer">05 / 06</span>
+</section>
+
+<!-- Slide 6: 效果对比 -->
+<section class="slide dark">
+  <div class="ghost cc">DONE</div>
+  <div class="slide-content" style="text-align:center">
+    <span class="tag tag--light">SUMMARY</span>
+    <h1 class="title title--light" style="font-size:80px">效果对比</h1>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2xl);margin-top:var(--sp-2xl);text-align:left;max-width:800px;margin-left:auto;margin-right:auto">
+      <div style="padding:var(--sp-xl);border:1px solid rgba(255,255,255,0.12)">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:var(--sp-md)">改造前</div>
+        <ul style="list-style:none;font-size:14px;color:rgba(255,255,255,0.5);line-height:2.2">
+          <li>✕ Hero 忽大忽小（200px ~ 100vh）</li>
+          <li>✕ 内容少时页面压缩</li>
+          <li>✕ 同类用不同 padding/spacing</li>
+          <li>✕ 首页和内容页尺寸不一致</li>
+        </ul>
+      </div>
+      <div style="padding:var(--sp-xl);border:1px solid var(--gold)">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:var(--sp-md)">标准化后</div>
+        <ul style="list-style:none;font-size:14px;color:rgba(255,255,255,0.7);line-height:2.2">
+          <li>✓ 每页固定 100vh</li>
+          <li>✓ 内容多少不影响页面尺寸</li>
+          <li>✓ 深浅色交替做区隔</li>
+          <li>✓ Ghost 水印统一大号</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <span class="slide-footer">06 / 06</span>
+</section>
+
+</body>
+</html>

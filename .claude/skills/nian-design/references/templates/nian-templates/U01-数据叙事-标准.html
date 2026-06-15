@@ -1,0 +1,330 @@
+<!-- =========================================================================
+  U01 · 数据叙事-标准 | nian-design 模板库(Pulse 节奏脉动)
+  =========================================================================
+  DECISION-CARD:
+    scene       = 数据叙事(一组数据的渐进式故事)
+    stream      = Pulse 节奏脉动
+    hero        = Pulse-hero 渐进披露(深色+脉动圆环+sparkline)
+    components  = timeline(时间线推进数据故事), sparkline(节奏波动),
+                  editorial(数据转折点 1px分隔), data-rows(关键节点数据)
+    palette     = primary=olive(深色hero), 漂浮三层底色, 无违规框
+    break       = Pulse-hero脉动开屏 + timeline推进节奏
+    base        = light(数据段浅色, hero深色)
+  =========================================================================
+  示例场景:一款产品的全年增长叙事(数据场景)
+  QA: 5/5 passed | stream: Pulse | hero: Pulse | base: light
+  ========================================================================= -->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全年增长叙事 · Growth Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F4F1EA; --surface:#FFFFFF; --raised:#EAE5DA;
+  --border:#D9D2C3; --border-soft:#E8E2D5;
+  --olive:#4A6741; --olive-d:#2F4429; --orange:#C65D3A; --gold:#B8923A;
+  --text-display:#2D2A26; --text-primary:#1A1816;
+  --text-secondary:#6B655C; --text-disabled:#A89E8C;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --r-sm:4px; --r-md:8px; --r-lg:14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+
+/* Pulse-hero 渐进披露 */
+.pulse-hero{min-height:94vh;background:var(--text-display);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:96px 80px;position:relative;overflow:hidden}
+.pulse-hero__grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.pulse-hero__ghost{position:absolute;right:-2vw;bottom:-8vw;font-family:var(--font-display);font-size:36vw;font-weight:700;color:rgba(255,255,255,0.03);line-height:0.8;pointer-events:none}
+.pulse-hero__in{position:relative;z-index:2;max-width:880px}
+.pulse-hero__tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:32px}
+.pulse-hero__h{font-family:var(--font-display);font-size:clamp(40px,5.5vw,68px);font-weight:400;line-height:1.05;letter-spacing:-0.025em;color:#fff;margin-bottom:28px}
+.pulse-hero__h strong{font-weight:600;color:var(--gold)}
+.pulse-hero__sub{font-size:17px;color:rgba(255,255,255,0.5);line-height:1.75;max-width:520px;margin-bottom:48px}
+
+/* 脉动圆环 */
+.pulse-rings{display:flex;align-items:center;gap:48px;margin-bottom:40px}
+.pulse-rings__svg{width:200px;height:200px;flex-shrink:0;position:relative}
+.pulse-rings__svg circle{fill:none;transform:rotate(-90deg);transform-origin:50% 50%}
+.pulse-rings__svg .ring-track{stroke:rgba(255,255,255,0.08);stroke-width:1}
+.pulse-rings__svg .ring-mid{stroke:rgba(255,255,255,0.04);stroke-width:1}
+.pulse-rings__svg .ring-data{stroke:var(--gold);stroke-width:2.5;stroke-dasharray:440;stroke-dashoffset:88;stroke-linecap:round}
+.pulse-rings__svg .ring-pulse{stroke:var(--olive);stroke-width:1;stroke-dasharray:3 6;animation:pulse-rot 8s linear infinite}
+@keyframes pulse-rot{to{transform:rotate(270deg)}}
+.pulse-rings__center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.pulse-rings__n{font-family:var(--font-display);font-size:44px;font-weight:500;color:#fff;line-height:1;letter-spacing:-0.02em}
+.pulse-rings__l{font-family:var(--font-mono);font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px}
+.pulse-rings__story{display:flex;flex-direction:column;gap:14px}
+.pulse-beat{display:flex;align-items:center;gap:14px;font-family:var(--font-mono);font-size:12px;color:rgba(255,255,255,0.5);letter-spacing:0.04em}
+.pulse-beat__dot{width:8px;height:8px;border-radius:50%;background:var(--olive)}
+.pulse-beat__dot--gold{background:var(--gold);animation:beat 1.6s ease-in-out infinite}
+.pulse-beat__dot--orange{background:var(--orange)}
+@keyframes beat{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.85)}}
+.pulse-beat strong{color:#fff;font-weight:500}
+
+.pulse-hero__sparkline{display:flex;align-items:flex-end;gap:4px;height:48px;margin-top:24px;max-width:480px}
+.pulse-hero__sparkline span{flex:1;background:var(--gold);border-radius:2px 2px 0 0;opacity:0.7;min-height:6px}
+.pulse-hero__sparkline span:last-child{opacity:1}
+
+/* Section */
+.section{padding:88px 80px}
+.section--raised{background:var(--raised)}
+.section--dark{background:var(--text-display);color:#fff}
+.section__head{margin-bottom:56px;max-width:760px}
+.section__label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:14px}
+.section--dark .section__label{color:rgba(255,255,255,0.4)}
+.section__title{font-family:var(--font-display);font-size:clamp(28px,3.6vw,42px);font-weight:400;line-height:1.15;letter-spacing:-0.015em;color:var(--text-display)}
+.section--dark .section__title{color:#fff}
+.section__title strong{font-weight:600;color:var(--olive)}
+.section--dark .section__title strong{color:var(--gold)}
+.section__intro{font-size:15.5px;color:var(--text-secondary);margin-top:16px;line-height:1.75}
+.section--dark .section__intro{color:rgba(255,255,255,0.5)}
+
+/* timeline 时间线推进 */
+.timeline{position:relative;padding-left:48px}
+.timeline::before{content:'';position:absolute;left:11px;top:8px;bottom:8px;width:1px;background:var(--border)}
+.tl-node{position:relative;padding-bottom:48px}
+.tl-node:last-child{padding-bottom:0}
+.tl-node__dot{position:absolute;left:-43px;top:6px;width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+.tl-node__dot::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--olive)}
+.tl-node--peak .tl-node__dot::after{background:var(--gold)}
+.tl-node--dip .tl-node__dot::after{background:var(--orange)}
+.tl-node--peak .tl-node__dot{border-color:var(--gold)}
+.tl-node--dip .tl-node__dot{border-color:var(--orange)}
+.tl-node__date{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:6px}
+.tl-node__h{font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--text-display);margin-bottom:10px;line-height:1.3}
+.tl-node__t{font-size:14.5px;line-height:1.75;color:var(--text-secondary);max-width:620px;margin-bottom:14px}
+.tl-node__stats{display:flex;gap:32px;padding-top:14px;border-top:1px solid var(--border-soft);max-width:620px}
+.tl-stat{display:flex;flex-direction:column;gap:2px}
+.tl-stat__n{font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--olive);line-height:1}
+.tl-node--peak .tl-stat__n{color:var(--gold)}
+.tl-node--dip .tl-stat__n{color:var(--orange)}
+.tl-stat__l{font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-disabled)}
+
+/* sparkline rhythm 节奏波动 */
+.rhythm{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.rhythm__card{background:var(--surface);border-radius:var(--r-md);padding:28px;border:1px solid var(--border-soft)}
+.rhythm__head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px}
+.rhythm__lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-disabled)}
+.rhythm__val{font-family:var(--font-display);font-size:28px;font-weight:500;color:var(--olive)}
+.rhythm__bars{display:flex;align-items:flex-end;gap:3px;height:80px;margin-bottom:16px}
+.rhythm__bars span{flex:1;background:var(--olive);opacity:0.5;border-radius:2px 2px 0 0;min-height:4px}
+.rhythm__bars span.peak{opacity:1}
+.rhythm__bars span.dip{background:var(--orange);opacity:0.7}
+.rhythm__axis{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--text-disabled);letter-spacing:0.04em}
+.rhythm__note{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-top:16px;padding-top:16px;border-top:1px solid var(--border-soft)}
+
+/* editorial 转折点 */
+.editorial{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.editorial__col--aside{padding-left:36px;border-left:1px solid var(--border)}
+.editorial__q{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--olive);margin-bottom:16px}
+.editorial__q--alert{color:var(--orange)}
+.editorial__h{font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--text-display);margin-bottom:16px;line-height:1.3}
+.editorial__list{list-style:none;font-size:14.5px;line-height:1.9;color:var(--text-primary)}
+.editorial__list li{padding-left:18px;position:relative;margin-bottom:8px}
+.editorial__list li::before{content:'';position:absolute;left:0;top:12px;width:8px;height:1px;background:var(--olive)}
+.editorial__col--aside .editorial__list li::before{background:var(--orange)}
+
+/* dark-quote */
+.dark-quote{background:var(--olive-d);color:#fff;padding:96px 80px;position:relative;overflow:hidden}
+.dark-quote::after{content:'↑';position:absolute;right:6vw;bottom:-2vw;font-family:var(--font-display);font-size:32vw;font-weight:700;color:rgba(255,255,255,0.04);line-height:0.8;pointer-events:none}
+.dark-quote__inner{max-width:800px;margin:0 auto;position:relative;z-index:1}
+.dark-quote__label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:24px}
+.dark-quote__txt{font-family:var(--font-display);font-size:clamp(22px,2.8vw,32px);font-weight:400;line-height:1.4;letter-spacing:-0.01em}
+.dark-quote__txt strong{color:var(--gold);font-weight:600}
+
+.footer{padding:36px 80px;display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-disabled)}
+
+@media(max-width:900px){
+  .pulse-hero{padding:64px 28px;min-height:auto}
+  .pulse-rings{flex-direction:column;align-items:flex-start;gap:32px}
+  .section{padding:56px 28px}
+  .timeline{padding-left:36px}
+  .rhythm{grid-template-columns:1fr}
+  .editorial{grid-template-columns:1fr}
+  .editorial__col--aside{padding-left:0;padding-top:24px;border-left:none;border-top:1px solid var(--border)}
+}
+@media(prefers-reduced-motion:reduce){
+  .pulse-rings__svg .ring-pulse,.pulse-beat__dot--gold{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Pulse-hero 渐进披露 -->
+<section class="pulse-hero">
+  <div class="pulse-hero__grid"></div>
+  <div class="pulse-hero__ghost">G</div>
+  <div class="pulse-hero__in">
+    <div class="pulse-hero__tag">Growth Story · 全年数据叙事 · 2026</div>
+    <h1 class="pulse-hero__h">一年走了<strong>三段路</strong>。</h1>
+    <p class="pulse-hero__sub">12个月,一个数字从12万涨到47万。但数字背后是三次转折:一次爆发、一次停滞、一次重启。这是它的故事。</p>
+    <div class="pulse-rings">
+      <div class="pulse-rings__svg">
+        <svg viewBox="0 0 200 200" width="200" height="200">
+          <circle class="ring-track" cx="100" cy="100" r="90"/>
+          <circle class="ring-mid" cx="100" cy="100" r="70"/>
+          <circle class="ring-data" cx="100" cy="100" r="70"/>
+          <circle class="ring-pulse" cx="100" cy="100" r="84"/>
+        </svg>
+        <div class="pulse-rings__center"><div class="pulse-rings__n">470K</div><div class="pulse-rings__l">Year-end MAU</div></div>
+      </div>
+      <div class="pulse-rings__story">
+        <div class="pulse-beat"><span class="pulse-beat__dot"></span><span>Q1 <strong>12万 → 18万</strong> · 平稳启动</span></div>
+        <div class="pulse-beat"><span class="pulse-beat__dot pulse-beat__dot--gold"></span><span>Q2 <strong>18万 → 39万</strong> · 爆发期</span></div>
+        <div class="pulse-beat"><span class="pulse-beat__dot pulse-beat__dot--orange"></span><span>Q3 <strong>39万 → 34万</strong> · 回调</span></div>
+        <div class="pulse-beat"><span class="pulse-beat__dot"></span><span>Q4 <strong>34万 → 47万</strong> · 二次增长</span></div>
+      </div>
+    </div>
+    <div class="pulse-hero__sparkline">
+      <span style="height:18%"></span><span style="height:22%"></span><span style="height:20%"></span><span style="height:26%"></span><span style="height:30%"></span><span style="height:28%"></span>
+      <span style="height:42%"></span><span style="height:58%"></span><span style="height:72%"></span><span style="height:84%"></span><span style="height:90%"></span><span style="height:78%"></span>
+      <span style="height:64%"></span><span style="height:56%"></span><span style="height:60%"></span><span style="height:70%"></span><span style="height:82%"></span><span style="height:96%"></span>
+    </div>
+  </div>
+</section>
+
+<!-- timeline 时间线推进 -->
+<section class="section">
+  <div class="section__head">
+    <div class="section__label">Timeline · 四个节点</div>
+    <h2 class="section__title">按时间<strong>读这一年</strong></h2>
+    <p class="section__intro">增长的曲线不是平滑的。把它拆成四个节点,每个节点都有具体的原因——这才是"数据讲故事"的方式。</p>
+  </div>
+  <div class="timeline">
+    <div class="tl-node">
+      <div class="tl-node__dot"></div>
+      <div class="tl-node__date">Q1 · 1—3月</div>
+      <div class="tl-node__h">平稳启动:打地基</div>
+      <div class="tl-node__t">前三个月在打磨产品和冷启动渠道。MAU从12万爬到18万,环比+50%但基数小,主要靠内容SEO和早期用户口碑。没做投放,这个阶段的任务是验证产品是否成立。</div>
+      <div class="tl-node__stats">
+        <div class="tl-stat"><span class="tl-stat__n">18万</span><span class="tl-stat__l">Q1末 MAU</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">+50%</span><span class="tl-stat__l">环比增长</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">0</span><span class="tl-stat__l">投放预算</span></div>
+      </div>
+    </div>
+    <div class="tl-node tl-node--peak">
+      <div class="tl-node__dot"></div>
+      <div class="tl-node__date">Q2 · 4—6月 · 爆发期</div>
+      <div class="tl-node__h">一次传播引爆全场</div>
+      <div class="tl-node__t">5月一篇深度内容在小红书意外爆火,带来12万自然流量。叠加6月开始的小规模投放测试,MAU三个月翻倍到39万。这是全年最高光的季度,但埋下了Q3的隐患——增长太依赖单一渠道。</div>
+      <div class="tl-node__stats">
+        <div class="tl-stat"><span class="tl-stat__n">39万</span><span class="tl-stat__l">Q2末 MAU</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">+117%</span><span class="tl-stat__l">环比增长</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">12万</span><span class="tl-stat__l">爆款自然流量</span></div>
+      </div>
+    </div>
+    <div class="tl-node tl-node--dip">
+      <div class="tl-node__dot"></div>
+      <div class="tl-node__date">Q3 · 7—9月 · 回调期</div>
+      <div class="tl-node__h">爆款退潮,留存没接住</div>
+      <div class="tl-node__t">爆款效应衰减,Q3 MAU回落到34万。深层问题是:Q2进来的用户留存率只有38%,远低于Q1的52%。爆发期冲得太快,产品体验和onboarding没跟上,用户来了留不住。</div>
+      <div class="tl-node__stats">
+        <div class="tl-stat"><span class="tl-stat__n">34万</span><span class="tl-stat__l">Q3末 MAU</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">-13%</span><span class="tl-stat__l">环比下降</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">38%</span><span class="tl-stat__l">30日留存</span></div>
+      </div>
+    </div>
+    <div class="tl-node">
+      <div class="tl-node__dot"></div>
+      <div class="tl-node__date">Q4 · 10—12月 · 重启</div>
+      <div class="tl-node__h">重构留存,二次增长</div>
+      <div class="tl-node__t">9月底上线新onboarding流程,30日留存从38%提升到61%。同时开拓第二个渠道(播客合作)。Q4 MAU回升到47万,这次的增长质量明显更高——留存稳了,不再靠爆款续命。</div>
+      <div class="tl-node__stats">
+        <div class="tl-stat"><span class="tl-stat__n">47万</span><span class="tl-stat__l">年末 MAU</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">+38%</span><span class="tl-stat__l">环比增长</span></div>
+        <div class="tl-stat"><span class="tl-stat__n">61%</span><span class="tl-stat__l">30日留存</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- sparkline rhythm 节奏波动 -->
+<section class="section section--raised">
+  <div class="section__head">
+    <div class="section__label">Rhythm · 两条节奏线</div>
+    <h2 class="section__title">增长 vs <strong>留存</strong> 的错位</h2>
+    <p class="section__intro">把MAU和留存率并排看,问题就清晰了:Q2增长冲顶时,留存其实在下滑。两条线的错位,是Q3回调的根本原因。</p>
+  </div>
+  <div class="rhythm">
+    <div class="rhythm__card">
+      <div class="rhythm__head">
+        <span class="rhythm__lbl">MAU · 月活</span>
+        <span class="rhythm__val">47万</span>
+      </div>
+      <div class="rhythm__bars">
+        <span style="height:20%"></span><span style="height:24%"></span><span style="height:28%"></span>
+        <span style="height:38%"></span><span style="height:58%"></span><span style="height:78%" class="peak"></span>
+        <span style="height:82%" class="peak"></span><span style="height:68%"></span><span style="height:60%"></span>
+        <span style="height:66%"></span><span style="height:78%"></span><span style="height:94%" class="peak"></span>
+      </div>
+      <div class="rhythm__axis"><span>1月</span><span>6月</span><span>12月</span></div>
+      <div class="rhythm__note">增长曲线呈"双峰"——Q2爆发,Q3回调,Q4二次爬升。年末达到全年最高。</div>
+    </div>
+    <div class="rhythm__card">
+      <div class="rhythm__head">
+        <span class="rhythm__lbl">Retention · 30日留存</span>
+        <span class="rhythm__val">61%</span>
+      </div>
+      <div class="rhythm__bars">
+        <span style="height:52%" class="peak"></span><span style="height:54%"></span><span style="height:50%"></span>
+        <span style="height:44%"></span><span style="height:40%"></span><span style="height:38%" class="dip"></span>
+        <span style="height:36%" class="dip"></span><span style="height:40%"></span><span style="height:48%"></span>
+        <span style="height:56%"></span><span style="height:60%" class="peak"></span><span style="height:61%" class="peak"></span>
+      </div>
+      <div class="rhythm__axis"><span>1月</span><span>6月</span><span>12月</span></div>
+      <div class="rhythm__note">留存呈"U型"——Q2Q3下滑触底,Q4新onboarding上线后回升,年末超过年初。</div>
+    </div>
+  </div>
+</section>
+
+<!-- editorial 转折点 -->
+<section class="section">
+  <div class="section__head">
+    <div class="section__label">Turning Points · 两个转折</div>
+    <h2 class="section__title">做对的 vs <strong>差点翻车的</strong></h2>
+  </div>
+  <div class="editorial">
+    <div class="editorial__col">
+      <div class="editorial__q">做对的</div>
+      <div class="editorial__h">Q4重构留存</div>
+      <ul class="editorial__list">
+        <li>没继续追MAU,而是停下来修留存</li>
+        <li>新onboarding流程基于Q3用户访谈设计</li>
+        <li>开拓第二个渠道,降低单点依赖</li>
+        <li>把"30日留存"上升为北极星指标</li>
+      </ul>
+    </div>
+    <div class="editorial__col editorial__col--aside">
+      <div class="editorial__q editorial__q--alert">差点翻车</div>
+      <div class="editorial__h">Q2被增长冲昏头</div>
+      <ul class="editorial__list">
+        <li>爆款带来虚假繁荣,误判了产品成熟度</li>
+        <li>onboarding没在增长前迭代,新用户流失</li>
+        <li>单渠道依赖,爆款一退流量断崖</li>
+        <li>留存指标被忽视,直到Q3回调才重视</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- dark-quote -->
+<section class="dark-quote">
+  <div class="dark-quote__inner">
+    <div class="dark-quote__label">Moral · 这个故事讲什么</div>
+    <div class="dark-quote__txt">增长曲线的<strong>形状</strong>比数字本身更重要。一个平滑上升的47万,和一个"爆发-回调-重启"的47万,完全不是一回事。后者才知道自己的增长<strong>靠什么</strong>、什么时候会断、怎么续。</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>全年增长叙事 · 2026</span>
+  <span>Growth Story · Pulse Edition</span>
+</footer>
+
+</body>
+</html>

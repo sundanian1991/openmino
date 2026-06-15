@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S29 长文档导航 · Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --darkgray:#2C2C2C; --olive:#4A5D3A; --earth:#8B7355; --glacier:#2A4A5A;
+  --yellow:#FFD100; --orange:#E55B2B; --rock:#808080;
+  --bg:#FAFAF8; --surface:#FFFFFF; --surface-raised:#F5F5F0; --border:#E5E5E0;
+  --text-display:#2C2C2C; --text-primary:#1A1A1A; --text-secondary:#6B6B6B; --text-disabled:#A0A0A0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
+::selection{background:var(--olive);color:#fff}
+
+.ghost{position:absolute;font-family:'Playfair Display',Georgia,serif;font-size:clamp(80px,15vw,280px);font-weight:300;line-height:1;color:var(--text-display);opacity:.04;pointer-events:none;user-select:none}
+
+/* ╔══════════════════════════════════════════════════════════╗
+   ║  S29 · 长文档导航（边栏 TOC + sticky 滚动）             ║
+   ╚══════════════════════════════════════════════════════════╝ */
+.s29-section{padding:120px 120px;position:relative;overflow:hidden}
+.s29-head{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:32px}
+.s29-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(36px,5vw,56px);font-weight:300;line-height:1.15;letter-spacing:-1.5px;color:var(--text-primary);margin-bottom:24px;max-width:760px}
+.s29-lede{font-family:'Inter',sans-serif;font-size:17px;line-height:1.7;color:var(--text-secondary);max-width:620px;margin-bottom:80px}
+
+/* 1:2 grid — 侧栏 1，主内容 2 */
+.s29-flow{display:grid;grid-template-columns:1fr 2fr;gap:80px;align-items:start}
+
+/* sticky 侧栏（关键：必须配 align-self:start） */
+.s29-sidebar{position:sticky;top:80px;align-self:start}
+.s29-sidebar__title{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:300;line-height:1.3;margin-bottom:20px;color:var(--text-display)}
+.s29-sidebar__meta{font-family:'Inter',sans-serif;font-size:12px;line-height:1.7;color:var(--text-secondary);margin-bottom:40px;padding-bottom:40px;border-bottom:1px solid var(--border)}
+.s29-sidebar__meta b{color:var(--text-primary);font-weight:500}
+.s29-sidebar__toc-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-disabled);margin-bottom:16px}
+.s29-sidebar__toc-item{display:flex;gap:14px;padding:12px 0;font-family:'Inter',sans-serif;font-size:13px;color:var(--text-secondary);border-bottom:1px solid var(--border);transition:color .2s}
+.s29-sidebar__toc-item:hover{color:var(--text-primary)}
+.s29-sidebar__toc-item:last-child{border-bottom:none}
+.s29-sidebar__toc-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-disabled);width:24px;flex-shrink:0;padding-top:2px}
+.s29-sidebar__end{margin-top:40px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-disabled);font-style:italic}
+
+/* 主内容样式 */
+.s29-content h2{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:300;line-height:1.2;letter-spacing:-1px;color:var(--text-display);margin:80px 0 24px;padding-top:40px;border-top:1px solid var(--border)}
+.s29-content h2:first-child{margin-top:0;padding-top:0;border-top:none}
+.s29-content p{font-size:15px;line-height:1.85;color:var(--text-primary);margin-bottom:18px;max-width:680px}
+.s29-content blockquote{border-left:3px solid var(--olive);padding:4px 0 4px 24px;margin:32px 0;font-style:italic;color:var(--text-secondary);max-width:680px}
+.s29-content strong{color:var(--text-display);font-weight:600}
+.s29-content em{color:var(--olive);font-style:normal;border-bottom:1px dashed var(--olive)}
+
+/* S29 自身的小 Hero（前置） */
+.s29-hero{min-height:50vh;display:flex;flex-direction:column;justify-content:center;padding:80px 120px;background:var(--surface-raised);position:relative;overflow:hidden}
+.s29-hero-tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:24px}
+.s29-hero h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(40px,6vw,72px);font-weight:300;line-height:1.1;letter-spacing:-2px;color:var(--text-primary);margin-bottom:24px;max-width:780px}
+.s29-hero p{font-family:'Inter',sans-serif;font-size:17px;line-height:1.7;color:var(--text-secondary);max-width:560px}
+
+@media (max-width:1024px){
+  .s29-hero,.s29-section{padding-left:60px;padding-right:60px}
+  .s29-flow{grid-template-columns:1fr;gap:40px}
+  .s29-sidebar{position:static}
+}
+@media (max-width:768px){
+  .s29-hero,.s29-section{padding-left:24px;padding-right:24px}
+  .s29-hero{min-height:auto;padding-top:60px;padding-bottom:60px}
+  .s29-hero h1{font-size:36px}
+  .s29-title{font-size:32px}
+  .s29-content h2{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- 前置 Hero — 引导到长文档 -->
+<section class="s29-hero">
+  <div class="s29-hero-tag">S29 · Long-Form Reading</div>
+  <h1>把一整份文档，<br>变成一次有引导的阅读。</h1>
+  <p>侧栏随滚动悬浮，章节编号、当前位置、元信息——让长报告不再让人迷路。下面是一份可滚动的样例文档，请慢慢往下读。</p>
+</section>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  S29 · 长文档导航骨架（核心示范）                      ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="s29-section" data-layout="S29">
+  <!-- Ghost 装饰（一处打破） -->
+  <div class="ghost" style="right:60px;top:60px">29</div>
+
+  <div class="s29-head">Nian Design · Reading Guide</div>
+  <h2 class="s29-title">关于<strong>克制</strong>的几条经验：<br>一份不靠装饰就能立住的文档该长什么样？</h2>
+  <p class="s29-lede">这是用 S29 骨架承载的一篇示例长文。左侧 TOC 随滚动悬浮在视口顶部，右侧是连续滚动的正文。请拖动滚动条感受节奏。</p>
+
+  <div class="s29-flow">
+
+    <!-- ====== 侧栏 ====== -->
+    <aside class="s29-sidebar">
+      <div class="s29-sidebar__title">关于克制的几条经验</div>
+      <div class="s29-sidebar__meta">
+        <b>来源：</b>Nian Design Notes<br>
+        <b>作者：</b>Mino<br>
+        <b>日期：</b>2026 · 06 · 13<br>
+        <b>阅读：</b>约 6 分钟
+      </div>
+      <div class="s29-sidebar__toc-label">Reading Guide</div>
+      <nav>
+        <a href="#ch1" class="s29-sidebar__toc-item">
+          <span class="s29-sidebar__toc-num">01</span>
+          <span>Hero 之后，进正文之前</span>
+        </a>
+        <a href="#ch2" class="s29-sidebar__toc-item">
+          <span class="s29-sidebar__toc-num">02</span>
+          <span>克制不是少做，是不做多余</span>
+        </a>
+        <a href="#ch3" class="s29-sidebar__toc-item">
+          <span class="s29-sidebar__toc-num">03</span>
+          <span>8:1 字号比的真正含义</span>
+        </a>
+        <a href="#ch4" class="s29-sidebar__toc-item">
+          <span class="s29-sidebar__toc-num">04</span>
+          <span>一处打破：把噪音降到最低</span>
+        </a>
+        <a href="#ch5" class="s29-sidebar__toc-item">
+          <span class="s29-sidebar__toc-num">05</span>
+          <span>在长文档里更要呼吸</span>
+        </a>
+        <a href="#ch6" class="s29-sidebar__toc-item">
+          <span class="s29-sidebar__toc-num">06</span>
+          <span>写在最后</span>
+        </a>
+      </nav>
+      <div class="s29-sidebar__end">END · 章 6</div>
+    </aside>
+
+    <!-- ====== 主内容 ====== -->
+    <article class="s29-content">
+
+      <h2 id="ch1">01 · Hero 之后，进正文之前</h2>
+      <p>大多数长报告的失败，不是正文写得不好，是<strong>从 Hero 到正文的过渡太硬</strong>。读者刚看完一个 96px 的大字，下一秒就被甩进一张密密麻麻的表格，眼睛需要重新对焦。</p>
+      <p>S29 的解法是：Hero 用 50vh 即可（不必 100vh），下一段留 80px 以上的间距，主内容的第一个 <em>h2</em> 字号是 30px 而不是 42px——给眼睛一个 8px 的喘息坡道。</p>
+      <blockquote>呼吸感不是留白，是节奏的密度差。</blockquote>
+
+      <h2 id="ch2">02 · 克制不是少做，是不做多余</h2>
+      <p>「克制」这个词被用烂了。设计师说克制，往往是说「我想用但没用」；产品经理说克制，往往是说「我没想清楚要什么」。真正的克制是：</p>
+      <p>——为同一个目标，不上第二种手段。<br>
+      ——能用现有 token 解决，不造新 token。<br>
+      ——能用一行 CSS 解决，不写三行 JS。</p>
+      <p>所以 S29 的侧栏<strong>只有 3 类东西</strong>：标题、元信息、TOC。不放图片、不放社交分享、不放「相关推荐」。这不是减法，是克制——为「让读者读完」这一个目标，不上第二种手段。</p>
+
+      <h2 id="ch3">03 · 8:1 字号比的真正含义</h2>
+      <p>「Hero 字号 ÷ 正文 ≥ 8」是 nian 的硬规则。但比 8:1 更重要的，是中间层级怎么排。从 96px 直接跳到 14px 是一次断崖，读者要重新识别「这是新信息」；中间塞一个 30px 的 h2，读者会自然往下读。</p>
+      <p>字号不是越大越好，<strong>字号是层级</strong>。三层结构（96 / 30 / 15）比五层结构（96 / 64 / 42 / 24 / 15）好维护、好理解、好落地。</p>
+
+      <h2 id="ch4">04 · 一处打破：把噪音降到最低</h2>
+      <p>每页恰好一处不守规则的元素。S29 的「一处打破」选在右上的 Ghost 数字 <em>29</em>——opacity 0.04 的 Playfair Display 大数字。这不是装饰，是告诉你：「这一页是第 29 号骨架，它有自己的呼吸方式。」</p>
+      <p>为什么不做两处？因为两处就不再是「打破」了，是「装饰」。一旦变成装饰，读者就开始扫它而不是读它——而你要的是让他读。</p>
+
+      <h2 id="ch5">05 · 在长文档里更要呼吸</h2>
+      <p>短报告可以靠对比取胜，长报告只能靠节奏取胜。S29 的节奏是：</p>
+      <p><strong>章节间隔 80px</strong>，比短报告的 60px 多 20px——给眼睛一个「换气」的空间。<br>
+      <strong>段落间隔 18px</strong>，比短报告的 12px 多 6px——让连续阅读不疲劳。<br>
+      <strong>blockquote 用 3px 左边线</strong>，比短报告的 4px 细 1px——长文档里要的是暗示，不是强调。</p>
+      <p>节奏不是靠元素堆出来的，是靠元素之间「空」的密度差堆出来的。</p>
+
+      <h2 id="ch6">06 · 写在最后</h2>
+      <p>S29 不是给所有文档用的。它只给长文档用——一份 ≥ 3 章节、≥ 1500 字、需要读者认真读完的报告。如果你的内容是 3 个 KPI、1 张图、200 字说明，强行套 S29 反而是噪音。</p>
+      <p>最后一句话：<strong>侧栏是给读者的礼物，不是给设计的装饰。</strong>愿你写出的每一份长文档，都配得上一根悬浮的黑线。</p>
+
+    </article>
+
+  </div>
+</section>
+
+<!-- 收束 — 深色结尾 -->
+<section style="background:var(--darkgray);padding:80px 120px;color:rgba(255,255,255,.45);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;display:flex;justify-content:space-between">
+  <span>S29 · Long-Form Reading</span>
+  <span>Nian Design · 2026</span>
+</section>
+
+</body>
+</html>

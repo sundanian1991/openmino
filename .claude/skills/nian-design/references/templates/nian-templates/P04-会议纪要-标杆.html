@@ -1,0 +1,334 @@
+<!-- =========================================================================
+  P04 · 会议纪要-标杆 | nian-design 模板库(第3批)
+  =========================================================================
+  DECISION-CARD:
+    scene       = 工作场景(会议纪要+行动项)
+    stream      = Split 对分屏
+    hero        = V2-Split (左浅会议主题 + 右深色出席人/议题)
+    components  = timeline(议程), editorial(决议要点),
+                   action(行动项 Owner/Due), insight-rows(遗留议题)
+    palette     = primary=olive, 漂浮三层底色, 无违规框
+    break       = Hero左浅右深 + 决议editorial双栏
+    base        = light
+  =========================================================================
+  示例场景:供应商Q3规划评审会(工作场景,通用)
+  QA: 5/5 passed | stream: Split | hero: V2 | base: light
+  ========================================================================= -->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q3 规划评审会 · Meeting Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F4F1EA; --surface:#FFFFFF; --raised:#EAE5DA;
+  --border:#D9D2C3; --border-soft:#E8E2D5;
+  --olive:#4A6741; --olive-d:#2F4429; --orange:#C65D3A; --gold:#B8923A;
+  --text-display:#2D2A26; --text-primary:#1A1816;
+  --text-secondary:#6B655C; --text-disabled:#A89E8C;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --r-sm:4px; --r-md:8px; --r-lg:14px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+
+/* Hero Split */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;min-height:68vh;position:relative;overflow:hidden}
+.hero__left{padding:80px 64px;display:flex;flex-direction:column;justify-content:center;background:var(--bg);position:relative;z-index:1}
+.hero__left::after{content:'会议';position:absolute;left:-2vw;bottom:-6vw;font-family:var(--font-display);font-size:24vw;font-weight:700;color:rgba(74,103,65,0.04);line-height:0.8;pointer-events:none;z-index:0}
+.hero__tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:28px}
+.hero__title{font-family:var(--font-display);font-size:clamp(38px,5vw,60px);font-weight:500;line-height:1.05;letter-spacing:-0.025em;color:var(--text-display);margin-bottom:22px}
+.hero__lead{font-size:16px;line-height:1.75;color:var(--text-secondary);max-width:460px;margin-bottom:36px}
+.hero__meta{display:flex;gap:36px;padding-top:24px;border-top:1px solid var(--border)}
+.hero__m{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-disabled)}
+.hero__m strong{display:block;font-family:var(--font-display);font-size:22px;font-weight:400;color:var(--olive);margin-top:4px}
+.hero__right{background:linear-gradient(160deg,var(--olive-d) 0%,var(--olive) 100%);color:#fff;padding:64px 56px;display:flex;flex-direction:column;justify-content:center}
+.hero__r-lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:24px}
+.attendees{display:flex;flex-direction:column;gap:0}
+.attendee{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,0.12)}
+.attendee:first-child{border-top:1px solid rgba(255,255,255,0.12)}
+.attendee__role{font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.5)}
+.attendee__name{font-family:var(--font-display);font-size:17px;font-weight:500;color:#fff}
+.attendee__dept{font-family:var(--font-mono);font-size:10px;letter-spacing:0.04em;color:rgba(255,255,255,0.45)}
+.hero__agenda-sum{margin-top:28px;padding-top:22px;border-top:1px solid rgba(255,255,255,0.12);font-family:var(--font-mono);font-size:11px;letter-spacing:0.04em;color:rgba(255,255,255,0.55)}
+.hero__agenda-sum strong{font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--gold);margin-right:6px;letter-spacing:-0.01em}
+
+/* Section */
+.section{padding:84px 72px}
+.section--narrow{max-width:820px;margin:0 auto;padding:84px 48px}
+.section--raised{background:var(--raised)}
+.section__label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:14px}
+.section__title{font-family:var(--font-display);font-size:clamp(28px,3.6vw,42px);font-weight:400;line-height:1.15;letter-spacing:-0.015em;margin-bottom:18px;color:var(--text-display);max-width:680px}
+.section__title strong{font-weight:600;color:var(--olive)}
+.section__intro{font-size:15.5px;color:var(--text-secondary);max-width:680px;margin-bottom:48px;line-height:1.75}
+
+/* timeline 议程 */
+.timeline{position:relative;padding-left:0}
+.tl-item{display:grid;grid-template-columns:96px 1fr;gap:36px;padding:0 0 32px 0;position:relative}
+.tl-item::before{content:'';position:absolute;left:95px;top:8px;bottom:-8px;width:1px;background:var(--border)}
+.tl-item:last-child::before{display:none}
+.tl-time{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--olive);letter-spacing:0.02em}
+.tl-time span{display:block;font-size:10px;color:var(--text-disabled);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase}
+.tl-body{padding-left:36px}
+.tl-h{font-size:17px;font-weight:600;color:var(--text-display);margin-bottom:6px}
+.tl-t{font-size:14px;line-height:1.7;color:var(--text-secondary)}
+.tl-t strong{color:var(--olive);font-weight:600}
+
+/* editorial 决议 */
+.editorial{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.editorial__col{position:relative}
+.editorial__col--aside{padding-left:36px;border-left:1px solid var(--border)}
+.editorial__q{font-family:var(--font-mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--olive);margin-bottom:16px}
+.editorial__q--alert{color:var(--orange)}
+.editorial__h{font-family:var(--font-display);font-size:22px;font-weight:500;color:var(--text-display);margin-bottom:14px;line-height:1.3}
+.editorial__list{list-style:none;font-size:14.5px;line-height:1.9;color:var(--text-primary)}
+.editorial__list li{padding-left:18px;position:relative;margin-bottom:10px}
+.editorial__list li::before{content:'';position:absolute;left:0;top:12px;width:8px;height:1px;background:var(--olive)}
+.editorial__col--aside .editorial__list li::before{background:var(--orange)}
+.editorial__list strong{font-weight:600;color:var(--text-display)}
+
+/* action 行动项 */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.action{background:var(--surface);border-radius:var(--r-md);padding:26px;border:1px solid var(--border-soft);position:relative}
+.action__pri{position:absolute;top:20px;right:22px;font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:var(--r-sm)}
+.action__pri--high{background:var(--orange);color:#fff}
+.action__pri--mid{background:var(--raised);color:var(--text-secondary)}
+.action__t{font-size:15px;font-weight:600;color:var(--text-display);margin-bottom:8px;padding-right:56px}
+.action__d{font-size:13px;line-height:1.65;color:var(--text-secondary);margin-bottom:14px}
+.action__meta{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:10px;letter-spacing:0.04em;padding-top:12px;border-top:1px solid var(--border-soft)}
+.action__owner{color:var(--olive)}
+.action__due{color:var(--text-secondary)}
+
+/* insight-rows 遗留议题 */
+.insight-rows{display:flex;flex-direction:column}
+.insight-row{display:grid;grid-template-columns:72px 1fr;gap:32px;padding:30px 0;border-bottom:1px solid var(--border);align-items:start}
+.insight-row:first-child{border-top:1px solid var(--border)}
+.insight-row__n{font-family:var(--font-display);font-size:44px;font-weight:400;color:var(--olive);opacity:0.35;line-height:1}
+.insight-row__h{font-size:18px;font-weight:600;color:var(--text-display);margin-bottom:10px}
+.insight-row__t{font-size:14.5px;line-height:1.8;color:var(--text-secondary);max-width:680px}
+.insight-row__t em{font-family:var(--font-display);font-style:normal;font-weight:500;color:var(--orange);font-size:1.05em}
+
+/* next-meeting */
+.next{background:var(--text-display);color:#fff;padding:72px 72px;position:relative;overflow:hidden}
+.next::after{content:'NEXT';position:absolute;right:4vw;bottom:-3vw;font-family:var(--font-display);font-size:22vw;font-weight:700;color:rgba(255,255,255,0.04);line-height:0.8;pointer-events:none}
+.next__inner{max-width:800px;margin:0 auto;position:relative;z-index:1}
+.next__label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:18px}
+.next__h{font-family:var(--font-display);font-size:clamp(22px,2.8vw,30px);font-weight:400;line-height:1.4;letter-spacing:-0.01em;margin-bottom:24px}
+.next__h strong{color:var(--gold);font-weight:600}
+.next__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.15)}
+.next__m{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.5)}
+.next__m strong{display:block;font-family:var(--font-display);font-size:20px;font-weight:500;color:#fff;margin-top:6px;letter-spacing:-0.01em}
+
+.footer{padding:36px 72px;display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-disabled)}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero__left,.hero__right{padding:48px 28px}
+  .section{padding:56px 28px}
+  .next{padding:56px 28px}
+  .editorial,.actions{grid-template-columns:1fr}
+  .editorial__col--aside{padding-left:0;padding-top:24px;border-left:none;border-top:1px solid var(--border)}
+  .tl-item{grid-template-columns:1fr;gap:8px}
+  .tl-item::before{display:none}
+  .tl-body{padding-left:0}
+  .next__grid{grid-template-columns:1fr;gap:20px}
+}
+</style>
+</head>
+<body>
+
+<!-- Hero Split -->
+<section class="hero">
+  <div class="hero__left">
+    <div class="hero__tag">Meeting Notes · 2026.06.13 · 会议纪要</div>
+    <h1 class="hero__title">供应商 Q3 规划评审会</h1>
+    <p class="hero__lead">对齐下半年主线、确认赛马规则迭代方向、敲定 AI 转型试点范围。一次开到位,会后直接进执行,不开二次会对齐。</p>
+    <div class="hero__meta">
+      <div class="hero__m">日期<strong>06/13 周五</strong></div>
+      <div class="hero__m">时长<strong>95 min</strong></div>
+      <div class="hero__m">决议<strong>7 项</strong></div>
+    </div>
+  </div>
+  <div class="hero__right">
+    <div class="hero__r-lbl">Attendees · 出席与议题</div>
+    <div class="attendees">
+      <div class="attendee"><span class="attendee__role">01</span><span class="attendee__name">卞海军</span><span class="attendee__dept">数据科技部</span></div>
+      <div class="attendee"><span class="attendee__role">02</span><span class="attendee__name">王易人</span><span class="attendee__dept">服务组</span></div>
+      <div class="attendee"><span class="attendee__role">03</span><span class="attendee__name">刘伟佳</span><span class="attendee__dept">策略组</span></div>
+      <div class="attendee"><span class="attendee__role">04</span><span class="attendee__name">年老师</span><span class="attendee__dept">服务组 · 主笔</span></div>
+    </div>
+    <div class="hero__agenda-sum"><strong>5</strong>项议题 · 覆盖规划/规则/试点/风险/协同</div>
+  </div>
+</section>
+
+<!-- 议程 timeline -->
+<section class="section">
+  <div class="section__label">Agenda · 会议议程</div>
+  <div class="section__title">95 分钟<strong>怎么花的</strong></div>
+  <p class="section__intro">五个议题按轻重排序,AI 试点讨论占了近一半时间——它是这季度最大的变量,值得多花。</p>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-time">09:00<span>15 min</span></div>
+      <div class="tl-body">
+        <div class="tl-h">Q2 复盘与 Q3 主线对齐</div>
+        <div class="tl-t">回顾 Q2 达成情况(放款 3.2 亿,超额 2%),确认 Q3 三条主线:<strong>续签前置、赛马迭代、AI 转型试点</strong>。军哥拍板主线不动。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">09:15<span>20 min</span></div>
+      <div class="tl-body">
+        <div class="tl-h">赛马机制迭代方案评审</div>
+        <div class="tl-t">讨论新增供应商"切量直转"规则的适用边界。策略组提出伽玛磨合期可能误判,达成共识:<strong>磨合窗口期(前 4 周)不参与赛马</strong>。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">09:35<span>40 min</span></div>
+      <div class="tl-body">
+        <div class="tl-h">AI 转型四阶段试点范围(重点)</div>
+        <div class="tl-t">最长议题。聚焦"能看见→能判断→能行动"前三阶段在毅航、毛毛虫两家试点的具体动作。<strong>军哥确认 6 月聚焦前三阶段,自动化 Q4 再评估</strong>。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">10:15<span>12 min</span></div>
+      <div class="tl-body">
+        <div class="tl-h">岐力投诉整改收尾确认</div>
+        <div class="tl-t">整改已达标(投诉率从 4.2% 降到 2.1%),决议:<strong>解除黄牌,恢复正常切量</strong>。流程沉淀成 SOP 复用。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-time">10:27<span>8 min</span></div>
+      <div class="tl-body">
+        <div class="tl-h">服务组与策略组协同机制</div>
+        <div class="tl-t">Q2 出现 1 次切量冲突。决议建立<strong>每周一 15:00 同步会</strong>,信息差问题前置消化。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 决议 editorial -->
+<section class="section section--raised">
+  <div class="section__label">Decisions · 关键决议</div>
+  <div class="section__title">拍板的 vs <strong>悬而未决的</strong></div>
+  <p class="section__intro">会上能定的当场定,定不了的标出来下次再说。不让"再讨论讨论"成为拖延的借口。</p>
+  <div class="editorial">
+    <div class="editorial__col">
+      <div class="editorial__q">已决议</div>
+      <div class="editorial__h">5 项可立即落地</div>
+      <ul class="editorial__list">
+        <li><strong>Q3 三主线锁定</strong>:续签前置 + 赛马迭代 + AI 试点</li>
+        <li>新供应商<strong>前 4 周磨合期</strong>退出赛马池</li>
+        <li>AI 转型 6 月只做<strong>前三阶段</strong>,自动化 Q4 评估</li>
+        <li>岐力<strong>解除黄牌</strong>,恢复正常切量</li>
+        <li>服务组与策略组建立<strong>每周一同步会</strong></li>
+      </ul>
+    </div>
+    <div class="editorial__col editorial__col--aside">
+      <div class="editorial__q editorial__q--alert">悬而未决</div>
+      <div class="editorial__h">2 项需补充数据</div>
+      <ul class="editorial__list">
+        <li>翰锐是否纳入 AI 试点第二批,<strong>等其 Q2 数据</strong>下周一同步</li>
+        <li>赛马规则中"职场容量"权重调整,<strong>需数据团队测算</strong>后表决</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 行动项 action -->
+<section class="section">
+  <div class="section__label">Actions · 行动项</div>
+  <div class="section__title">谁<strong>做什么</strong> · 什么时候交</div>
+  <p class="section__intro">决议没有行动项就是空话。每条都标 Owner 和 Due,会后直接进执行。</p>
+  <div class="actions">
+    <div class="action">
+      <div class="action__pri action__pri--high">高</div>
+      <div class="action__t">毅航 AI 试点方案初稿</div>
+      <div class="action__d">按四阶段框架,写清前三阶段在毅航的具体动作、里程碑、验收标准。</div>
+      <div class="action__meta"><span class="action__owner">Owner 年老师</span><span class="action__due">Due 06/20</span></div>
+    </div>
+    <div class="action">
+      <div class="action__pri action__pri--high">高</div>
+      <div class="action__t">赛马规则迭代文档</div>
+      <div class="action__d">把"磨合期退出赛马"规则写入制度,明确判定标准和退出流程。</div>
+      <div class="action__meta"><span class="action__owner">Owner 策略组</span><span class="action__due">Due 06/18</span></div>
+    </div>
+    <div class="action">
+      <div class="action__pri action__pri--mid">中</div>
+      <div class="action__t">岐力整改 SOP 沉淀</div>
+      <div class="action__d">把岐力整改全流程(预警→黄牌→整改→验收)整理成可复用模板。</div>
+      <div class="action__meta"><span class="action__owner">Owner 服务组</span><span class="action__due">Due 06/25</span></div>
+    </div>
+    <div class="action">
+      <div class="action__pri action__pri--mid">中</div>
+      <div class="action__t">职场容量权重测算</div>
+      <div class="action__d">请数据团队测算职场容量权重 ±10% 对赛马排名的影响,出报告。</div>
+      <div class="action__meta"><span class="action__owner">Owner 数据团队</span><span class="action__due">Due 06/30</span></div>
+    </div>
+    <div class="action">
+      <div class="action__pri action__pri--mid">中</div>
+      <div class="action__t">每周一同步会机制落地</div>
+      <div class="action__d">发会议邀请固定周一 15:00,议题模板:切量计划 + 风险预警 + 协同事项。</div>
+      <div class="action__meta"><span class="action__owner">Owner 服务+策略</span><span class="action__due">Due 06/16 起</span></div>
+    </div>
+    <div class="action">
+      <div class="action__pri action__pri--high">高</div>
+      <div class="action__t">翰锐 Q2 数据补充评估</div>
+      <div class="action__d">拉翰锐 Q2 完整业绩+投诉数据,评估是否纳入 AI 试点第二批。</div>
+      <div class="action__meta"><span class="action__owner">Owner 年老师</span><span class="action__due">Due 06/17</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 遗留议题 insight-rows -->
+<section class="section section--raised">
+  <div class="section__label">Open Issues · 遗留与风险</div>
+  <div class="section__title">三件事<strong>下次必须收敛</strong></div>
+  <div class="insight-rows">
+    <div class="insight-row">
+      <div class="insight-row__n">01</div>
+      <div>
+        <div class="insight-row__h">伽玛磨合期质量边界</div>
+        <div class="insight-row__t">"前 4 周退出赛马"虽达成共识,但<em>磨合期的质量底线</em>没定。如果磨合期投诉率突破某阈值是否提前介入?需服务组给一个量化标准,否则规则有漏洞。</div>
+      </div>
+    </div>
+    <div class="insight-row">
+      <div class="insight-row__n">02</div>
+      <div>
+        <div class="insight-row__h">AI 转型的人力替代边界</div>
+        <div class="insight-row__t">试点聚焦前三阶段,但"能行动"阶段必然涉及<em>人力结构变化</em>。要不要前置沟通?军哥倾向先出成果再谈,但有合规风险,需法务先确认。</div>
+      </div>
+    </div>
+    <div class="insight-row">
+      <div class="insight-row__n">03</div>
+      <div>
+        <div class="insight-row__h">数据看板自动化时间线</div>
+        <div class="insight-row__t">AI 试点依赖数据看板支撑"能看见",但看板自动化<em>进度滞后于试点节奏</em>。需明确看板交付里程碑,否则试点变成无米之炊。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- next-meeting -->
+<section class="next">
+  <div class="next__inner">
+    <div class="next__label">Next Meeting · 下次会议</div>
+    <div class="next__h">下次议题:<strong>AI 试点方案终审 + 赛马规则迭代验收</strong>。两个最大变量必须收敛,否则 Q3 节奏会乱。</div>
+    <div class="next__grid">
+      <div class="next__m">时间<strong>06/27 周五 09:00</strong></div>
+      <div class="next__m">时长<strong>预计 90 min</strong></div>
+      <div class="next__m">前置<strong>方案文档 06/25 前</strong></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>会议纪要 · 2026.06.13</span>
+  <span>Meeting Notes · 服务组 主笔</span>
+</footer>
+
+</body>
+</html>

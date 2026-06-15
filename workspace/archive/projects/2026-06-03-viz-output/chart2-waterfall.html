@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>图2：三大挤压因素归因瀑布</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+<body>
+<div id="chart" style="width:960px;height:540px;font-family:'Helvetica Neue',Inter,sans-serif;"></div>
+<script>
+var chart = echarts.init(document.getElementById('chart'));
+
+// 瀑布图数据：首贷精算人均 12月→5月
+// 精算人均 = 显示人均 × 纠偏系数 × 0.7
+// 12月: 17298 × 0.538 = 9,314
+// 5月:  11396 × 0.422 = 4,814
+// 拆解为三个因素：显示人均变化、纠偏系数变化、交互项
+
+var categories = ['12月起点', '显示人均变化\n(+17,298→11,396)', '纠偏系数变化\n(0.538→0.422)', '线路费+交互\n及其他', '5月终点'];
+// 辅助柱（不可见）：连接起点到各因素
+var assist = [9314, 9314, 6139, 4817, 0];
+// 各因素柱的实际值（正=绿色增量，负=红色减量）
+var factors = [0, -3175, -1322, -3, 4814];
+// 终点柱单独
+var endBar = [0, 0, 0, 0, 4814];
+
+var option = {
+  backgroundColor: '#FFFFFF',
+  title: {
+    text: '首贷精算人均从9,314降至4,814的归因拆解',
+    subtext: '精算人均 = 显示人均 × 纠偏系数 × 0.7 | 三大挤压因素的量化贡献',
+    left: 24, top: 16,
+    textStyle: { fontSize: 18, fontWeight: 600, color: '#2D2D2D' },
+    subtextStyle: { fontSize: 12, color: '#6C7A89' }
+  },
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(p) {
+      var idx = p[0].dataIndex;
+      if (idx === 0) return '<b>12月起点</b><br/>首贷精算人均: 9,314 元';
+      if (idx === 4) return '<b>5月终点</b><br/>首贷精算人均: 4,814 元';
+      var val = factors[idx];
+      if (val < 0) return '<b>' + categories[idx] + '</b><br/>拖累: ' + Math.abs(val).toLocaleString() + ' 元';
+      return '<b>' + categories[idx] + '</b><br/>贡献: +' + val.toLocaleString() + ' 元';
+    },
+    backgroundColor: '#FFFFFF', borderColor: '#E0E0E0', borderWidth: 1
+  },
+  grid: { left: 80, right: 60, top: 100, bottom: 80 },
+  xAxis: {
+    type: 'category',
+    data: categories,
+    axisLine: { lineStyle: { color: '#D5DDE5' } },
+    axisLabel: { fontSize: 11, color: '#6C7A89', interval: 0 },
+    axisTick: { show: false }
+  },
+  yAxis: {
+    type: 'value',
+    name: '精算人均（元）',
+    min: 0, max: 12000,
+    nameTextStyle: { fontSize: 11, color: '#6C7A89' },
+    splitLine: { lineStyle: { color: '#F0F0F0', type: 'dashed' } },
+    axisLabel: { fontSize: 11, color: '#6C7A89', formatter: function(v) { return v/1000 + 'k'; } }
+  },
+  series: [
+    {
+      name: '辅助',
+      type: 'bar',
+      stack: 'waterfall',
+      data: assist,
+      itemStyle: { color: 'transparent' },
+      emphasis: { itemStyle: { color: 'transparent' } }
+    },
+    {
+      name: '因素贡献',
+      type: 'bar',
+      stack: 'waterfall',
+      data: factors.map(function(v, i) {
+        if (i === 0 || i === 4) return { value: v, itemStyle: { color: '#CC6B1E' } };
+        return { value: v, itemStyle: { color: v < 0 ? '#C0392B' : '#3A8F6E' } };
+      }),
+      label: {
+        show: true,
+        position: 'outside',
+        formatter: function(p) {
+          if (p.dataIndex === 0) return '9,314';
+          if (p.dataIndex === 4) return '4,814';
+          var v = factors[p.dataIndex];
+          if (v < 0) return '-' + Math.abs(v).toLocaleString();
+          return '+' + v.toLocaleString();
+        },
+        fontSize: 12, fontWeight: 'bold',
+        color: function(p) {
+          if (p.dataIndex === 0 || p.dataIndex === 4) return '#CC6B1E';
+          return factors[p.dataIndex] < 0 ? '#C0392B' : '#3A8F6E';
+        }
+      },
+      barWidth: 40,
+      emphasis: { itemStyle: { shadowBlur: 4, shadowColor: 'rgba(0,0,0,0.15)' } }
+    }
+  ],
+  // 桥接线（辅助视觉连接）
+  graphic: [
+    { type: 'text', left: 70, top: 65, style: { text: '12月', fill: '#CC6B1E', fontSize: 11, fontWeight: 500 } },
+    { type: 'text', right: 70, top: 65, style: { text: '5月', fill: '#CC6B1E', fontSize: 11, fontWeight: 500 } },
+    // 红色减量标注
+    { type: 'text', left: '42%', bottom: 80, style: { text: '三大因素合计拖累 4,500 元', fill: '#C0392B', fontSize: 14, fontWeight: 700 } }
+  ]
+};
+chart.setOption(option);
+window.addEventListener('resize', function() { chart.resize(); });
+</script>
+</body>
+</html>

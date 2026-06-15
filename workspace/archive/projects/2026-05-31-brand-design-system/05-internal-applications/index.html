@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haglöfs 对内应用</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary-darkgray: #2C2C2C;
+  --primary-olive: #4A5D3A;
+  --primary-earth: #8B7355;
+  --accent-orange: #E55B2B;
+  --scene-glacier: #2A4A5A;
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-raised: #F5F5F0;
+  --border: #E5E5E0;
+  --text-display: #2C2C2C;
+  --text-secondary: #6B6B6B;
+  --text-disabled: #A0A0A0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text-display); line-height: 1.6; }
+
+/* HERO */
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 80px 120px; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: 0; right: 0; width: 40%; height: 100%; background: linear-gradient(135deg, var(--primary-darkgray) 0%, #1A1A1A 100%); clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%); }
+.hero-content { position: relative; z-index: 2; max-width: 600px; }
+.hero-tag { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 40px; }
+.hero h1 { font-family: 'Georgia', serif; font-size: 72px; font-weight: 300; line-height: 1.05; letter-spacing: -2px; margin-bottom: 40px; }
+.hero-desc { font-size: 18px; line-height: 1.7; color: var(--text-secondary); max-width: 440px; }
+.hero-year { position: absolute; right: 120px; bottom: 80px; font-family: 'Georgia', serif; font-size: 180px; font-weight: 200; color: rgba(255,255,255,0.08); line-height: 1; letter-spacing: -8px; z-index: 1; }
+
+/* SECTION */
+section { padding: 120px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 60px; }
+.section-title { font-family: 'Georgia', serif; font-size: 42px; font-weight: 300; line-height: 1.15; letter-spacing: -1px; margin-bottom: 60px; max-width: 700px; }
+.section-title strong { font-weight: 600; }
+.section-sub { font-size: 16px; line-height: 1.7; color: var(--text-secondary); max-width: 500px; margin-bottom: 60px; }
+
+/* PPT TEMPLATE — 完整标准 */
+.ppt-deck { margin-top: 60px; }
+.ppt-slide { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 24px; }
+.ppt-slide__inner { aspect-ratio: 16/9; padding: 48px; position: relative; display: flex; flex-direction: column; }
+.ppt-slide__inner--dark { background: var(--primary-darkgray); color: var(--bg); }
+.ppt-slide__inner--light { background: var(--surface); }
+.ppt-slide__inner--section { background: var(--surface-raised); }
+/* Header bar */
+.ppt-slide__header { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+.ppt-slide__header--olive { background: var(--primary-olive); }
+.ppt-slide__header--earth { background: var(--primary-earth); }
+.ppt-slide__header--glacier { background: var(--scene-glacier); }
+.ppt-slide__header--orange { background: var(--accent-orange); }
+/* Logo */
+.ppt-slide__logo { position: absolute; top: 24px; left: 48px; font-family: 'Georgia', serif; font-size: 14px; font-weight: 700; }
+.ppt-slide__inner--dark .ppt-slide__logo { color: rgba(255,255,255,0.3); }
+.ppt-slide__inner--light .ppt-slide__logo { color: var(--text-disabled); }
+/* Tag */
+.ppt-slide__tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 16px; }
+.ppt-slide__inner--dark .ppt-slide__tag { color: rgba(255,255,255,0.4); }
+.ppt-slide__inner--light .ppt-slide__tag { color: var(--text-secondary); }
+/* Heading */
+.ppt-slide__heading { font-family: 'Georgia', serif; font-weight: 300; line-height: 1.1; letter-spacing: -1px; margin-bottom: 16px; }
+.ppt-slide__heading--xl { font-size: 48px; }
+.ppt-slide__heading--lg { font-size: 32px; }
+.ppt-slide__heading--md { font-size: 24px; }
+/* Body */
+.ppt-slide__body { font-size: 16px; line-height: 1.7; max-width: 500px; }
+.ppt-slide__inner--dark .ppt-slide__body { color: rgba(255,255,255,0.6); }
+.ppt-slide__inner--light .ppt-slide__body { color: var(--text-secondary); }
+/* Year watermark */
+.ppt-slide__year { position: absolute; right: 48px; bottom: 48px; font-family: 'Georgia', serif; font-size: 80px; font-weight: 200; line-height: 1; }
+.ppt-slide__inner--dark .ppt-slide__year { color: rgba(255,255,255,0.06); }
+.ppt-slide__inner--light .ppt-slide__year { color: rgba(0,0,0,0.04); }
+/* Page number */
+.ppt-slide__page { position: absolute; bottom: 24px; right: 48px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+.ppt-slide__inner--dark .ppt-slide__page { color: rgba(255,255,255,0.3); }
+.ppt-slide__inner--light .ppt-slide__page { color: var(--text-disabled); }
+/* Footer bar */
+.ppt-slide__footer { position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: rgba(0,0,0,0.06); }
+.ppt-slide__inner--dark .ppt-slide__footer { background: rgba(255,255,255,0.06); }
+/* Content grid */
+.ppt-slide__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+.ppt-slide__grid-item { padding: 20px; background: rgba(0,0,0,0.03); border-radius: 4px; }
+.ppt-slide__inner--dark .ppt-slide__grid-item { background: rgba(255,255,255,0.05); }
+.ppt-slide__grid-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+.ppt-slide__inner--dark .ppt-slide__grid-label { color: rgba(255,255,255,0.4); }
+.ppt-slide__inner--light .ppt-slide__grid-label { color: var(--text-disabled); }
+.ppt-slide__grid-value { font-size: 24px; font-weight: 500; }
+.ppt-slide__inner--dark .ppt-slide__grid-value { color: var(--bg); }
+.ppt-slide__inner--light .ppt-slide__grid-value { color: var(--text-display); }
+.ppt-slide__grid-delta { font-family: 'JetBrains Mono', monospace; font-size: 11px; margin-top: 4px; }
+.ppt-slide__grid-delta.up { color: #52B788; }
+.ppt-slide__grid-delta.down { color: var(--accent-orange); }
+/* List */
+.ppt-slide__list { margin-top: 24px; }
+.ppt-slide__list-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.ppt-slide__inner--dark .ppt-slide__list-item { border-color: rgba(255,255,255,0.06); }
+.ppt-slide__list-num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-disabled); width: 24px; }
+.ppt-slide__list-text { font-size: 15px; }
+/* Table */
+.ppt-slide__table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 13px; }
+.ppt-slide__table th { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; padding: 10px 12px; border-bottom: 2px solid rgba(0,0,0,0.1); }
+.ppt-slide__inner--dark .ppt-slide__table th { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); }
+.ppt-slide__table td { padding: 10px 12px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.ppt-slide__inner--dark .ppt-slide__table td { border-color: rgba(255,255,255,0.06); }
+.ppt-slide__table td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+
+/* PPT RULES */
+.ppt-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.ppt-rule { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; }
+.ppt-rule__title { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
+.ppt-rule__item { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px; }
+.ppt-rule__item strong { color: var(--text-display); }
+
+/* WORD TEMPLATE */
+.word-doc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; max-width: 800px; margin-top: 60px; }
+.word-header { padding: 32px 48px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.word-logo { font-family: 'Georgia', serif; font-size: 16px; font-weight: 700; }
+.word-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-disabled); text-align: right; line-height: 1.6; }
+.word-body { padding: 48px; }
+.word-body h1 { font-family: 'Georgia', serif; font-size: 28px; font-weight: 300; margin-bottom: 8px; }
+.word-body .word-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-disabled); margin-bottom: 32px; }
+.word-body h2 { font-family: 'Georgia', serif; font-size: 20px; font-weight: 400; margin-top: 40px; margin-bottom: 16px; }
+.word-body p { font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 16px; max-width: 600px; }
+.word-body .word-callout { background: var(--surface-raised); padding: 20px 24px; border-left: 3px solid var(--primary-olive); margin: 24px 0; }
+.word-body .word-callout p { margin: 0; color: var(--text-display); }
+.word-footer { padding: 20px 48px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+.word-footer span { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-disabled); }
+
+/* EXCEL TEMPLATE */
+.excel-sheet { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 60px; }
+.excel-toolbar { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; background: var(--surface-raised); }
+.excel-tab { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 6px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; }
+.excel-tab.active { background: var(--primary-olive); color: var(--bg); border-color: var(--primary-olive); }
+.excel-header-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; background: var(--surface-raised); border-bottom: 2px solid var(--border-visible); }
+.excel-header-cell { padding: 12px 16px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); border-right: 1px solid var(--border); }
+.excel-data-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; border-bottom: 1px solid var(--border); }
+.excel-data-row:hover { background: var(--surface-raised); }
+.excel-data-cell { padding: 12px 16px; font-size: 13px; border-right: 1px solid var(--border); display: flex; align-items: center; }
+.excel-data-cell.num { font-family: 'JetBrains Mono', monospace; justify-content: flex-end; }
+.excel-data-cell.positive { color: var(--success); }
+.excel-data-cell.negative { color: var(--accent-orange); }
+.excel-summary { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface-raised); border-top: 2px solid var(--border-visible); }
+.excel-summary-item { padding: 16px; text-align: center; border-right: 1px solid var(--border); }
+.excel-summary-item:last-child { border-right: none; }
+.excel-summary-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-disabled); margin-bottom: 8px; }
+.excel-summary-value { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; }
+
+/* EMAIL SIGNATURE */
+.email-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 60px; max-width: 600px; }
+.email-header { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.email-from { font-size: 14px; font-weight: 500; }
+.email-to { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+.email-subject { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+.email-body { padding: 24px; font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+.email-sig { padding: 24px; border-top: 1px solid var(--border); background: var(--surface-raised); }
+.email-sig__divider { width: 40px; height: 2px; background: var(--primary-olive); margin-bottom: 20px; }
+.email-sig__row { display: flex; gap: 24px; margin-bottom: 16px; }
+.email-sig__info { flex: 1; }
+.email-sig__name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.email-sig__title { font-size: 13px; color: var(--text-secondary); }
+.email-sig__logo { font-family: 'Georgia', serif; font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+.email-sig__logo-mark { width: 32px; height: 32px; background: var(--primary-darkgray); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: 'Georgia', serif; font-size: 16px; font-weight: 700; color: var(--bg); }
+.email-sig__contact { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-disabled); line-height: 1.8; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.email-sig__legal { font-size: 10px; color: var(--text-disabled); margin-top: 16px; line-height: 1.5; }
+
+/* BUSINESS CARD */
+.card-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 60px; }
+.business-card { aspect-ratio: 3.5/2; border-radius: 8px; overflow: hidden; position: relative; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; }
+.business-card--front { background: var(--primary-darkgray); color: var(--bg); }
+.business-card--back { background: var(--surface); border: 1px solid var(--border); }
+.business-card__logo { font-family: 'Georgia', serif; font-size: 24px; font-weight: 300; }
+.business-card__name { font-size: 18px; font-weight: 500; margin-top: auto; }
+.business-card__title { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+.business-card__contact { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 16px; line-height: 1.6; }
+.business-card--back .business-card__name { color: var(--text-display); }
+.business-card--back .business-card__title { color: var(--text-secondary); }
+.business-card--back .business-card__contact { color: var(--text-disabled); }
+.business-card__pattern { position: absolute; top: 0; right: 0; width: 120px; height: 120px; opacity: 0.05; background-image: radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0); background-size: 8px 8px; }
+
+/* FOOTER */
+.footer { background: var(--primary-darkgray); color: rgba(255,255,255,0.3); padding: 60px 120px; display: flex; justify-content: space-between; align-items: center; }
+.footer-left { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; }
+.footer-right { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+@media (max-width: 1024px) { .hero, section, .footer { padding-left: 40px; padding-right: 40px; } .hero h1 { font-size: 48px; } .ppt-rules, .card-preview { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .hero, section, .footer { padding-left: 24px; padding-right: 24px; } .hero { min-height: 80vh; } .hero h1 { font-size: 36px; } .hero::before { display: none; } .hero-year { display: none; } .section-title { font-size: 28px; } .ppt-slide__inner { padding: 24px; } .ppt-slide__heading--xl { font-size: 32px; } .footer { flex-direction: column; gap: 16px; text-align: center; } }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">05 · Internal Applications</div>
+    <h1>对内应用</h1>
+    <p class="hero-desc">PPT、Word、Excel、邮件签名、名片——内部工作的品牌一致性。</p>
+  </div>
+  <div class="hero-year">2024</div>
+</section>
+
+<!-- SECTION: PPT -->
+<section>
+  <div class="section-label">01 · PPT Template</div>
+  <div class="section-title">PPT <strong>模板</strong></div>
+  <div class="section-sub">完整标准：首页、目录、章节过渡页、内容页——深色/浅色方案</div>
+
+  <div class="ppt-deck">
+    <!-- 01: Title — Dark -->
+    <div class="ppt-slide">
+      <div class="ppt-slide__inner ppt-slide__inner--dark">
+        <div class="ppt-slide__header ppt-slide__header--olive"></div>
+        <div class="ppt-slide__logo">Haglöfs</div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+          <div class="ppt-slide__tag">Q4 2024 Report</div>
+          <div class="ppt-slide__heading ppt-slide__heading--xl">Brand Performance<br>Review</div>
+          <div class="ppt-slide__body">Annual review of brand metrics, market positioning, and strategic recommendations.</div>
+        </div>
+        <div class="ppt-slide__year">2024</div>
+        <div class="ppt-slide__page">01 / 16</div>
+        <div class="ppt-slide__footer"></div>
+      </div>
+    </div>
+
+    <!-- 02: TOC — Light -->
+    <div class="ppt-slide">
+      <div class="ppt-slide__inner ppt-slide__inner--light">
+        <div class="ppt-slide__header ppt-slide__header--olive"></div>
+        <div class="ppt-slide__logo">Haglöfs</div>
+        <div class="ppt-slide__tag">Contents</div>
+        <div class="ppt-slide__heading ppt-slide__heading--lg">Table of Contents</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 300; color: var(--text-disabled);">01</span>
+            <span style="font-size: 16px;">Key Metrics</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 300; color: var(--text-disabled);">02</span>
+            <span style="font-size: 16px;">Market Analysis</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 300; color: var(--text-disabled);">03</span>
+            <span style="font-size: 16px;">Product Performance</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 300; color: var(--text-disabled);">04</span>
+            <span style="font-size: 16px;">Recommendations</span>
+          </div>
+        </div>
+        <div class="ppt-slide__page">02 / 16</div>
+        <div class="ppt-slide__footer"></div>
+      </div>
+    </div>
+
+    <!-- 03: Section — Dark -->
+    <div class="ppt-slide">
+      <div class="ppt-slide__inner ppt-slide__inner--dark">
+        <div class="ppt-slide__header ppt-slide__header--earth"></div>
+        <div class="ppt-slide__logo">Haglöfs</div>
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+          <div class="ppt-slide__tag">Section 01</div>
+          <div class="ppt-slide__heading ppt-slide__heading--xl">Key Metrics</div>
+          <div class="ppt-slide__body" style="text-align: center;">Performance indicators across all channels and product categories.</div>
+        </div>
+        <div class="ppt-slide__page">03 / 16</div>
+        <div class="ppt-slide__footer"></div>
+      </div>
+    </div>
+
+    <!-- 04: Content — Light with Grid -->
+    <div class="ppt-slide">
+      <div class="ppt-slide__inner ppt-slide__inner--light">
+        <div class="ppt-slide__header ppt-slide__header--olive"></div>
+        <div class="ppt-slide__logo">Haglöfs</div>
+        <div class="ppt-slide__tag">Key Metrics</div>
+        <div class="ppt-slide__heading ppt-slide__heading--lg">Revenue Growth</div>
+        <div class="ppt-slide__grid">
+          <div class="ppt-slide__grid-item">
+            <div class="ppt-slide__grid-label">Revenue</div>
+            <div class="ppt-slide__grid-value">€2.4M</div>
+            <div class="ppt-slide__grid-delta up">+12.5%</div>
+          </div>
+          <div class="ppt-slide__grid-item">
+            <div class="ppt-slide__grid-label">Orders</div>
+            <div class="ppt-slide__grid-value">18,420</div>
+            <div class="ppt-slide__grid-delta up">+8.3%</div>
+          </div>
+          <div class="ppt-slide__grid-item">
+            <div class="ppt-slide__grid-label">Customers</div>
+            <div class="ppt-slide__grid-value">12,847</div>
+            <div class="ppt-slide__grid-delta down">-2.1%</div>
+          </div>
+          <div class="ppt-slide__grid-item">
+            <div class="ppt-slide__grid-label">Conversion</div>
+            <div class="ppt-slide__grid-value">3.2%</div>
+            <div class="ppt-slide__grid-delta up">+0.4%</div>
+          </div>
+        </div>
+        <div class="ppt-slide__page">04 / 16</div>
+        <div class="ppt-slide__footer"></div>
+      </div>
+    </div>
+
+    <!-- 05: Content — Light with Table -->
+    <div class="ppt-slide">
+      <div class="ppt-slide__inner ppt-slide__inner--light">
+        <div class="ppt-slide__header ppt-slide__header--earth"></div>
+        <div class="ppt-slide__logo">Haglöfs</div>
+        <div class="ppt-slide__tag">Product Performance</div>
+        <div class="ppt-slide__heading ppt-slide__heading--lg">Top Products</div>
+        <table class="ppt-slide__table">
+          <thead>
+            <tr><th>Product</th><th>Category</th><th style="text-align:right;">Sales</th><th style="text-align:right;">Revenue</th><th style="text-align:right;">Growth</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>L.I.M Comp</strong></td><td>Shell Jacket</td><td class="num">2,847</td><td class="num">€684K</td><td class="num" style="color: #52B788;">+15.2%</td></tr>
+            <tr><td><strong>Rog 2</strong></td><td>Insulation</td><td class="num">1,923</td><td class="num">€384K</td><td class="num" style="color: #52B788;">+8.7%</td></tr>
+            <tr><td><strong>Tori 3</strong></td><td>Softshell</td><td class="num">1,456</td><td class="num">€218K</td><td class="num" style="color: var(--accent-orange);">-3.2%</td></tr>
+          </tbody>
+        </table>
+        <div class="ppt-slide__page">05 / 16</div>
+        <div class="ppt-slide__footer"></div>
+      </div>
+    </div>
+
+    <!-- 06: Content — Light with List -->
+    <div class="ppt-slide">
+      <div class="ppt-slide__inner ppt-slide__inner--light">
+        <div class="ppt-slide__header ppt-slide__header--olive"></div>
+        <div class="ppt-slide__logo">Haglöfs</div>
+        <div class="ppt-slide__tag">Recommendations</div>
+        <div class="ppt-slide__heading ppt-slide__heading--lg">Strategic Priorities</div>
+        <div class="ppt-slide__list">
+          <div class="ppt-slide__list-item">
+            <span class="ppt-slide__list-num">01</span>
+            <span class="ppt-slide__list-text">Expand sustainability collection with recycled materials</span>
+          </div>
+          <div class="ppt-slide__list-item">
+            <span class="ppt-slide__list-num">02</span>
+            <span class="ppt-slide__list-text">Strengthen digital presence in key markets</span>
+          </div>
+          <div class="ppt-slide__list-item">
+            <span class="ppt-slide__list-num">03</span>
+            <span class="ppt-slide__list-text">Launch urban outdoor segment targeting younger demographics</span>
+          </div>
+        </div>
+        <div class="ppt-slide__page">06 / 16</div>
+        <div class="ppt-slide__footer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PPT Rules -->
+  <div class="ppt-rules">
+    <div class="ppt-rule">
+      <div class="ppt-rule__title">Header Bar</div>
+      <div class="ppt-rule__item"><strong>Position:</strong> Top, full-width, 4px height</div>
+      <div class="ppt-rule__item"><strong>Colors:</strong> Olive, Earth, Glacier, Orange (rotate per section)</div>
+      <div class="ppt-rule__item"><strong>Usage:</strong> One color per section, consistent within</div>
+    </div>
+    <div class="ppt-rule">
+      <div class="ppt-rule__title">Logo Placement</div>
+      <div class="ppt-rule__item"><strong>Position:</strong> Top-left, 24px from top, 48px from left</div>
+      <div class="ppt-rule__item"><strong>Size:</strong> 14px, Georgia Bold</div>
+      <div class="ppt-rule__item"><strong>Color:</strong> White (dark) / Disabled (light)</div>
+    </div>
+    <div class="ppt-rule">
+      <div class="ppt-rule__title">Page Number</div>
+      <div class="ppt-rule__item"><strong>Position:</strong> Bottom-right, 24px from bottom, 48px from right</div>
+      <div class="ppt-rule__item"><strong>Format:</strong> 01 / 16 (JetBrains Mono, 10px)</div>
+      <div class="ppt-rule__item"><strong>Color:</strong> White 30% (dark) / Disabled (light)</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: WORD -->
+<section style="background: var(--surface-raised);">
+  <div class="section-label">02 · Word Template</div>
+  <div class="section-title">Word <strong>模板</strong></div>
+  <div class="section-sub">完整标准：页眉、正文、高亮框、页脚</div>
+
+  <div class="word-doc">
+    <div class="word-header">
+      <div class="word-logo">Haglöfs</div>
+      <div class="word-meta">
+        Document: Brand Strategy Review<br>
+        Version: 2.1 · Date: 2024-12-15
+      </div>
+    </div>
+    <div class="word-body">
+      <h1>Brand Strategy Review</h1>
+      <div class="word-date">2024-12-15 · Confidential</div>
+      <h2>Executive Summary</h2>
+      <p>This document outlines the key findings from our 2024 brand strategy review. The analysis covers market positioning, competitive landscape, and recommendations for the coming year.</p>
+      <div class="word-callout">
+        <p><strong>Key Finding:</strong> Brand awareness increased by 15% in target demographics, driven by the sustainability campaign and new product launches.</p>
+      </div>
+      <h2>Market Analysis</h2>
+      <p>The outdoor apparel market continues to grow at 8.2% annually. Haglöfs maintains strong positioning in the premium segment, with particular strength in the Scandinavian market.</p>
+    </div>
+    <div class="word-footer">
+      <span>Haglöfs AB</span>
+      <span>Confidential · Page 1 of 4</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: EXCEL -->
+<section>
+  <div class="section-label">03 · Excel Template</div>
+  <div class="section-title">Excel <strong>模板</strong></div>
+  <div class="section-sub">完整标准：工具栏、表头、数据行、汇总行</div>
+
+  <div class="excel-sheet">
+    <div class="excel-toolbar">
+      <div class="excel-tab active">Q4 Performance</div>
+      <div class="excel-tab">Q3 Comparison</div>
+      <div class="excel-tab">Yearly Trend</div>
+    </div>
+    <div class="excel-header-row">
+      <div class="excel-header-cell">Product</div>
+      <div class="excel-header-cell">Category</div>
+      <div class="excel-header-cell" style="text-align:right;">Sales</div>
+      <div class="excel-header-cell" style="text-align:right;">Revenue</div>
+      <div class="excel-header-cell" style="text-align:right;">Growth</div>
+    </div>
+    <div class="excel-data-row">
+      <div class="excel-data-cell" style="font-weight: 600;">L.I.M Comp</div>
+      <div class="excel-data-cell">Shell Jacket</div>
+      <div class="excel-data-cell num">2,847</div>
+      <div class="excel-data-cell num">€684K</div>
+      <div class="excel-data-cell num positive">+15.2%</div>
+    </div>
+    <div class="excel-data-row">
+      <div class="excel-data-cell" style="font-weight: 600;">Rog 2</div>
+      <div class="excel-data-cell">Insulation</div>
+      <div class="excel-data-cell num">1,923</div>
+      <div class="excel-data-cell num">€384K</div>
+      <div class="excel-data-cell num positive">+8.7%</div>
+    </div>
+    <div class="excel-data-row">
+      <div class="excel-data-cell" style="font-weight: 600;">Tori 3</div>
+      <div class="excel-data-cell">Softshell</div>
+      <div class="excel-data-cell num">1,456</div>
+      <div class="excel-data-cell num">€218K</div>
+      <div class="excel-data-cell num negative">-3.2%</div>
+    </div>
+    <div class="excel-data-row">
+      <div class="excel-data-cell" style="font-weight: 600;">L.I.M Ultimate</div>
+      <div class="excel-data-cell">Shell Jacket</div>
+      <div class="excel-data-cell num">892</div>
+      <div class="excel-data-cell num">€312K</div>
+      <div class="excel-data-cell num positive">+24.1%</div>
+    </div>
+    <div class="excel-summary">
+      <div class="excel-summary-item">
+        <div class="excel-summary-label">Total Sales</div>
+        <div class="excel-summary-value">9,274</div>
+      </div>
+      <div class="excel-summary-item">
+        <div class="excel-summary-label">Total Revenue</div>
+        <div class="excel-summary-value">€1.86M</div>
+      </div>
+      <div class="excel-summary-item">
+        <div class="excel-summary-label">Avg Growth</div>
+        <div class="excel-summary-value" style="color: var(--success);">+10.0%</div>
+      </div>
+      <div class="excel-summary-item">
+        <div class="excel-summary-label">Top Product</div>
+        <div class="excel-summary-value" style="font-size: 16px;">L.I.M Comp</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION: EMAIL + CARD -->
+<section style="background: var(--surface-raised);">
+  <div class="section-label">04 · Email & Card</div>
+  <div class="section-title">邮件签名 & 名片</div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 60px;">
+    <!-- Email -->
+    <div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 24px;">Email Signature</div>
+      <div class="email-preview">
+        <div class="email-header">
+          <div class="email-from">From: Johan Dahlström</div>
+          <div class="email-to">To: Team</div>
+          <div class="email-subject">Subject: Q4 Brand Review</div>
+        </div>
+        <div class="email-body">Hi team,<br><br>Please find attached the final version.<br><br>Best,<br>Johan</div>
+        <div class="email-sig">
+          <div class="email-sig__divider"></div>
+          <div class="email-sig__row">
+            <div class="email-sig__info">
+              <div class="email-sig__name">Johan Dahlström</div>
+              <div class="email-sig__title">Brand Director</div>
+            </div>
+            <div class="email-sig__logo">
+              <div class="email-sig__logo-mark">H</div>
+              Haglöfs
+            </div>
+          </div>
+          <div class="email-sig__contact">
+            johan.dahlstrom@haglofs.se<br>
+            +46 8 123 456 78
+          </div>
+          <div class="email-sig__legal">Confidential. This email is intended solely for the addressee.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Business Card -->
+    <div>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 24px;">Business Card</div>
+      <div class="card-preview" style="grid-template-columns: 1fr; gap: 16px;">
+        <div class="business-card business-card--front">
+          <div class="business-card__pattern"></div>
+          <div class="business-card__logo">Haglöfs</div>
+          <div>
+            <div class="business-card__name">Johan Dahlström</div>
+            <div class="business-card__title">Brand Director</div>
+          </div>
+          <div class="business-card__contact">
+            johan.dahlstrom@haglofs.se<br>
+            +46 8 123 456 78
+          </div>
+        </div>
+        <div class="business-card business-card--back">
+          <div class="business-card__pattern" style="color: var(--border);"></div>
+          <div class="business-card__logo" style="color: var(--text-display);">Haglöfs</div>
+          <div>
+            <div class="business-card__name">Haglöfs AB</div>
+            <div class="business-card__title">Stockholm, Sweden</div>
+          </div>
+          <div class="business-card__contact">
+            haglofs.se<br>
+            Est. 1914
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-left">Haglöfs Internal Applications</div>
+  <div class="footer-right">Stockholm Design Lab · 2024</div>
+</footer>
+
+</body>
+</html>

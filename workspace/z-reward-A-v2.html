@@ -1,0 +1,537 @@
+<!-- QA: 5/5 passed | stream: Statement | base: light | approach: A-Document v2 rich -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Z-Reward · Document v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--darkgray:#2C2C2C;--olive:#4A5D3A;--earth:#8B7355;--yellow:#FFD100;--orange:#E55B2B;--glacier:#2A4A5A;--rock:#808080;--bg:#FAFAF8;--surface:#FFFFFF;--surface-raised:#F5F5F0;--border:#E5E5E0;--border-strong:#C0C0B8;--text-display:#2C2C2C;--text-primary:#1A1A1A;--text-secondary:#6B6B6B;--text-disabled:#A0A0A0}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text-primary);line-height:1.7;-webkit-font-smoothing:antialiased}
+::selection{background:var(--olive);color:#fff}
+
+/* ── Reading grid ── */
+.rg{display:grid;grid-template-columns:1fr 260px;gap:48px;max-width:1080px;margin:0 auto;padding:80px 32px}
+.rm{max-width:640px}
+.rs{position:sticky;top:80px;align-self:start}
+
+/* ── nian components ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px;transition:border-color 150ms ease-out}
+.card:hover{border-color:var(--border-strong)}
+.card__tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:4px}
+.card__num{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:500;color:var(--text-display);line-height:1;letter-spacing:-0.02em}
+.card__lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);margin-top:4px}
+.card__desc{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-top:8px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;border:1px solid var(--border);border-radius:999px;padding:3px 12px;color:var(--text-secondary);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.tag--olive{border-color:var(--olive);color:var(--olive)}
+.tag--orange{border-color:var(--orange);color:var(--orange)}
+.tag--a{border-color:var(--text-display);color:var(--bg);background:var(--text-display)}
+.tag--s{font-size:9px;padding:2px 8px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);padding:8px 12px;text-align:left;font-weight:400;border-bottom:1px solid var(--border)}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-primary)}
+.tbl__num{font-family:'JetBrains Mono',monospace;text-align:right}
+.tbl__row--a{background:var(--surface-raised)}
+.tbl__row--a td:first-child{border-left:2px solid var(--olive)}
+.tbl tr:hover td{background:var(--surface-raised)}
+.list-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.list-row:last-child{border-bottom:none}
+.list-row__lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);min-width:100px}
+.list-row__val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500;color:var(--text-display);margin-left:auto}
+.list-row__unit{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-disabled)}
+
+/* ── Segmented bar ── */
+.sbar{margin:12px 0}
+.sbar__h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.sbar__lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary)}
+.sbar__val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--text-display)}
+.sbar__track{display:flex;gap:3px;height:8px}
+.sbar__seg{flex:1;border-radius:2px;background:var(--surface-raised);transition:background 0.3s ease}
+
+/* ── Prose ── */
+h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(36px,5vw,56px);font-weight:300;line-height:1.1;letter-spacing:-1px;color:var(--text-primary);margin-bottom:16px}
+h2{font-family:'Playfair Display',Georgia,serif;font-size:clamp(24px,3vw,32px);font-weight:300;line-height:1.2;letter-spacing:-0.5px;color:var(--text-primary);margin:56px 0 16px;padding-top:32px;border-top:1px solid var(--border)}
+h3{font-family:'Inter',sans-serif;font-size:16px;font-weight:600;color:var(--text-primary);margin:32px 0 12px}
+p{font-size:15px;line-height:1.8;color:var(--text-primary);margin-bottom:20px}
+.lead{font-size:17px;line-height:1.7;color:var(--text-secondary);margin-bottom:32px}
+strong{font-weight:600}
+code{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--surface-raised);padding:2px 6px;border-radius:3px;color:var(--earth)}
+
+/* ── Margin note ── */
+.mn{font-size:12px;color:var(--text-secondary);line-height:1.5;padding:14px 16px;background:var(--surface-raised);border-left:2px solid var(--olive);margin:20px 0}
+.mn strong{color:var(--olive);font-weight:600}
+
+/* ── Equation ── */
+.eq{font-family:'Playfair Display',Georgia,serif;font-size:15px;background:var(--surface);border:1px solid var(--border);padding:14px 20px;margin:16px 0;line-height:1.8;position:relative;border-radius:6px}
+.eq-n{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-disabled)}
+
+/* ── Quote ── */
+.quote-block{position:relative;padding:32px 0;margin:40px 0}
+.quote-mark{font-family:'Playfair Display',Georgia,serif;font-size:80px;color:var(--border);line-height:1;margin-bottom:-16px}
+.quote-text{font-family:'Playfair Display',Georgia,serif;font-size:clamp(20px,2.5vw,28px);font-weight:300;line-height:1.35;letter-spacing:-0.3px;color:var(--text-primary);max-width:560px}
+.quote-src{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-disabled);margin-top:16px}
+
+/* ── Process steps ── */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin:32px 0}
+.steps::before{content:'';position:absolute;top:18px;left:0;right:0;height:1px;background:var(--border)}
+.step{position:relative;padding-right:16px}
+.step__num{width:36px;height:36px;background:var(--olive);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;margin-bottom:16px;position:relative;z-index:1;border-radius:4px}
+.step__num--glacier{background:var(--glacier)}
+.step__num--earth{background:var(--earth)}
+.step__num--dark{background:var(--darkgray)}
+.step__title{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px}
+.step__desc{font-size:12px;color:var(--text-secondary);line-height:1.5}
+
+/* ── Comparison grid ── */
+.cmp{display:grid;grid-template-columns:1fr 1px 1fr;gap:0 40px;margin:32px 0}
+.cmp__div{background:var(--border)}
+.cmp__lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px}
+.cmp__title{font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:300;color:var(--text-primary);margin-bottom:14px}
+.cmp__list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.cmp__list li{font-size:13px;line-height:1.5;color:var(--text-secondary);padding-left:14px;border-left:2px solid var(--olive)}
+.cmp__list li.neg{border-left-color:var(--orange)}
+
+/* ── Loss trio ── */
+.loss-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:24px 0}
+.loss-card{padding:18px;border:1px solid var(--border);background:var(--surface);border-radius:6px;transition:border-color 150ms}
+.loss-card:hover{border-color:var(--olive)}
+
+/* ── Metric row ── */
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+
+/* ── Result bar ── */
+.rbar{display:grid;grid-template-columns:110px 1fr 50px;gap:12px;align-items:center;padding:5px 0}
+.rbar__name{font-size:13px;color:var(--text-secondary);text-align:right}
+.rbar__track{height:8px;background:var(--surface-raised);border-radius:4px;overflow:hidden}
+.rbar__fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(0.22,1,0.36,1)}
+.rbar__val{font-family:'JetBrains Mono',monospace;font-size:12px}
+
+/* ── Sidebar ── */
+.side-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px}
+.side-toc{font-size:13px;color:var(--text-disabled);padding:5px 0;border-left:2px solid transparent;padding-left:12px;cursor:pointer;transition:all 0.2s}
+.side-toc:hover,.side-toc.active{color:var(--text-primary);border-left-color:var(--olive)}
+.side-toc.active{font-weight:500}
+.side-meta{margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
+.side-meta dt{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:3px}
+.side-meta dd{font-size:13px;color:var(--text-primary);margin-bottom:14px}
+
+/* ── Ghost ── */
+.ghost{position:fixed;font-family:'Playfair Display',Georgia,serif;font-size:280px;font-weight:300;color:var(--text-display);opacity:0.025;pointer-events:none;user-select:none;right:-60px;bottom:-40px;line-height:1;z-index:0}
+
+/* ── Animated ── */
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease}
+.fade-in.vis{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="ghost">R</div>
+
+<div class="rg">
+  <!-- ════ MAIN ════ -->
+  <div class="rm">
+
+    <!-- Meta -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px">
+      <span class="tag tag--a">arXiv:2606.09076</span>
+      <span class="tag">CS.CV</span>
+      <span class="tag">Jun 2026</span>
+    </div>
+
+    <h1>Beyond Scalar Rewards<br>by Internalizing Reasoning<br>into Score Distributions</h1>
+    <p class="lead">Xin Jin, Huanqia Cai, Zhen Li, Zechao Zhan, Dengyang Jiang, Aiming Hao, Yuming Jiang, Chunle Guo, Peng Gao, Ming-Ming Cheng, Steven C.H. Hoi</p>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px">Z-Image Team, Alibaba Group &nbsp;·&nbsp; VCIP, CS, Nankai University</p>
+
+    <!-- Key metrics -->
+    <div class="metric-row fade-in">
+      <div class="card">
+        <div class="card__tag">Teacher HPA</div>
+        <div class="card__num" style="color:var(--olive)">89.6%</div>
+        <div class="card__lbl">27B GDSO</div>
+      </div>
+      <div class="card">
+        <div class="card__tag">Student HPA</div>
+        <div class="card__num" style="color:var(--glacier)">88.6%</div>
+        <div class="card__lbl">9B RISD</div>
+      </div>
+      <div class="card">
+        <div class="card__tag">GSB Gain</div>
+        <div class="card__num" style="color:var(--earth)">+41.3%</div>
+        <div class="card__lbl">vs SFT baseline</div>
+      </div>
+      <div class="card">
+        <div class="card__tag">Inference</div>
+        <div class="card__num">1</div>
+        <div class="card__lbl">token output</div>
+      </div>
+    </div>
+
+    <!-- Abstract -->
+    <h2>Abstract</h2>
+    <p>Reward models are central to text-to-image post-training, but visual preference is subjective and better represented as a <strong>distribution over rubric scores</strong> than as a deterministic scalar. Existing scalar, score-token, and pairwise reward models over-compress uncertainty, while reasoning-based generative rewards are costly to deploy.</p>
+    <p>We propose <strong>Z-Reward</strong>, a teacher-student framework that decouples reasoning-heavy judgment from efficient reward deployment. The teacher uses <strong>GDSO</strong> to learn score distributions; the student uses <strong>RISD</strong> to internalize these distributions without explicit reasoning chains at inference time.</p>
+
+    <!-- 1. Introduction -->
+    <h2>1. Introduction</h2>
+
+    <!-- Problem: 3 cards -->
+    <div class="cmp fade-in">
+      <div>
+        <div class="cmp__lbl">SCALAR / PAIRWISE RM</div>
+        <div class="cmp__title">高效但丢失信息</div>
+        <ul class="cmp__list">
+          <li>推理快，支持梯度回传</li>
+          <li class="neg">压缩不确定性</li>
+          <li class="neg">3.8 和 4.2 都被量化为 4</li>
+        </ul>
+      </div>
+      <div class="cmp__div"></div>
+      <div>
+        <div class="cmp__lbl">GENERATIVE RM</div>
+        <div class="cmp__title">判断强但部署慢</div>
+        <ul class="cmp__list">
+          <li>推理链 + 世界知识</li>
+          <li>分数分布</li>
+          <li class="neg">~750 tokens/次</li>
+          <li class="neg">不可微分</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mn fade-in">
+      <strong>核心张力</strong>：高质量打分需要推理和不确定性感知，而可扩展的后训练需要快速、直接、可微的奖励信号。Z-Reward 通过解耦判断质量和奖励效率来解决这个矛盾。
+    </div>
+
+    <!-- Core Insight quote -->
+    <div class="quote-block fade-in">
+      <div class="quote-mark">"</div>
+      <div class="quote-text">Reward models don't need to reproduce how a teacher reasons; they need to reproduce how a reasoning teacher judges.</div>
+      <div class="quote-src">— Z-Reward Paper · Core Insight</div>
+    </div>
+
+    <!-- 2. Annotation -->
+    <h2>2. Annotation and Datasets</h2>
+    <p>We build the annotation document around four dimensions: <strong>Text–Image Alignment</strong>, <strong>Realism</strong>, <strong>Aesthetics</strong>, and <strong>Physical Plausibility</strong>. Each dimension uses a five-level rubric, recorded on a nine-level half-point scale <code>s ∈ {1.0, 1.5, …, 5.0}</code>.</p>
+
+    <!-- 4 Dimensions grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0" class="fade-in">
+      <div class="card">
+        <div class="card__tag">DIMENSION 01</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Text-Image Alignment</div>
+        <div class="card__desc">图文一致性 — 生成图像是否忠实于 prompt 描述</div>
+      </div>
+      <div class="card">
+        <div class="card__tag">DIMENSION 02</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Realism</div>
+        <div class="card__desc">真实感 — 图像在视觉上是否自然、可信</div>
+      </div>
+      <div class="card">
+        <div class="card__tag">DIMENSION 03</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Aesthetics</div>
+        <div class="card__desc">美学质量 — 构图、色彩、光影的整体美感</div>
+      </div>
+      <div class="card">
+        <div class="card__tag">DIMENSION 04</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:4px">Physical Plausibility</div>
+        <div class="card__desc">物理合理性 — 光照、透视、结构是否符合物理规律</div>
+      </div>
+    </div>
+
+    <!-- Score scale -->
+    <div style="margin:24px 0" class="fade-in">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary)">9-LEVEL HALF-POINT SCALE</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-disabled)">1.0 → 5.0</span>
+      </div>
+      <div style="display:flex;gap:4px">
+        <div style="flex:1;height:32px;background:#C62828;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">1.0</div>
+        <div style="flex:1;height:32px;background:#D84315;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">1.5</div>
+        <div style="flex:1;height:32px;background:#E65100;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">2.0</div>
+        <div style="flex:1;height:32px;background:#F57F17;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">2.5</div>
+        <div style="flex:1;height:32px;background:#9E9D24;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">3.0</div>
+        <div style="flex:1;height:32px;background:#689F38;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">3.5</div>
+        <div style="flex:1;height:32px;background:#43A047;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">4.0</div>
+        <div style="flex:1;height:32px;background:#2E7D32;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">4.5</div>
+        <div style="flex:1;height:32px;background:#1B5E20;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">5.0</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px">
+        <span style="font-size:11px;color:var(--text-disabled)">差</span>
+        <span style="font-size:11px;color:var(--text-disabled)">优</span>
+      </div>
+    </div>
+
+    <h3>Annotation Workflow</h3>
+    <div class="steps fade-in">
+      <div class="step">
+        <div class="step__num">01</div>
+        <div class="step__title">打分</div>
+        <div class="step__desc">根据 rubric 和样例文档，为生成候选打分</div>
+      </div>
+      <div class="step">
+        <div class="step__num step__num--glacier">02</div>
+        <div class="step__title">对比</div>
+        <div class="step__desc">同 prompt 同 bin 内对比，可调整 ±0.5</div>
+      </div>
+      <div class="step">
+        <div class="step__num step__num--earth">03</div>
+        <div class="step__title">质控</div>
+        <div class="step__desc">提交给质控标注者审核</div>
+      </div>
+      <div class="step">
+        <div class="step__num step__num--dark">04</div>
+        <div class="step__title">入库</div>
+        <div class="step__desc">通过阈值的数据进入训练集</div>
+      </div>
+    </div>
+
+    <div class="mn fade-in">
+      <strong>Context Mismatch</strong>：标注文档太长无法放入 reward model 上下文（~307K image tokens），且标注者可以对比候选，而部署时模型只能看单个 text-image pair。这驱动了对分数和分布的直接监督。
+    </div>
+
+    <!-- 3. Method -->
+    <h2>3. Method</h2>
+    <p>Given a prompt <code>p</code>, image <code>I</code>, and reward dimension <code>d</code>, the teacher generates a reasoning trace <code>ρ</code> and predicts a distribution over score bins:</p>
+
+    <div class="eq fade-in">
+      q<sub>θ</sub>(s | p, I, d, ρ), &nbsp; s ∈ S
+      <span class="eq-n">(1)</span>
+    </div>
+
+    <p>The expected scalar score is the distribution's expectation:</p>
+    <div class="eq fade-in">
+      μ<sub>θ</sub>(p, I, d, ρ) = Σ<sub>s∈S</sub> s · q<sub>θ</sub>(s | p, I, d, ρ)
+      <span class="eq-n">(2)</span>
+    </div>
+
+    <h3>3.1 Group-wise Direct Score Optimization (GDSO)</h3>
+    <p>GDSO augments GRPO with direct supervised gradients on score distributions and score gaps. The overall objective:</p>
+    <div class="eq fade-in">
+      L<sub>GDSO</sub> = L<sub>GRPO</sub>({r<sub>j,i</sub>}) + α<sub>pt</sub> · L<sup>pt</sup><sub>CE</sub> + α<sub>pw</sub> · L<sup>pw</sup>
+      <span class="eq-n">(14)</span>
+    </div>
+
+    <!-- Loss trio cards -->
+    <div class="loss-grid fade-in">
+      <div class="loss-card">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--olive);margin-bottom:8px">POINTWISE</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px">绝对分数校准</div>
+        <div class="eq" style="font-size:12px;margin:8px 0;padding:8px 10px">r<sup>pt</sup> = 1 − |μ − ŝ| / range</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.4">让预测期望分数对齐人类标注的绝对分数</div>
+        <div style="font-size:11px;color:var(--text-disabled);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">不只是相对排序，而是绝对校准</div>
+      </div>
+      <div class="loss-card">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--glacier);margin-bottom:8px">PAIRWISE</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px">分数间距监督</div>
+        <div class="eq" style="font-size:12px;margin:8px 0;padding:8px 10px">r<sup>pw</sup> = 1 − avg|Δμ − Δŝ| / range</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.4">不只学"谁更好"，还学"好多少"</div>
+        <div style="font-size:11px;color:var(--text-disabled);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">比 BT 更精细：要求间距 = 标注间距</div>
+      </div>
+      <div class="loss-card">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--earth);margin-bottom:8px">POLICY GRAD</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px">GRPO 优势归一化</div>
+        <div class="eq" style="font-size:12px;margin:8px 0;padding:8px 10px">A<sub>i</sub> = (r<sub>i</sub> − mean) / (std + ε)</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.4">组内归一化的优势估计驱动策略更新</div>
+        <div style="font-size:11px;color:var(--text-disabled);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">策略梯度 + KL 正则化</div>
+      </div>
+    </div>
+
+    <div class="mn fade-in">
+      <strong>为什么不用 Bradley-Terry？</strong> BT 只要求赢方分数 > 输方，可以无限拉大间距。GDSO 的 pairwise loss 要求预测间距 = 标注间距，保持分数绝对校准。如果间距被任意放大，模型的绝对打分就失去了意义。
+    </div>
+
+    <h3>3.2 Reasoning-Internalized Score Distillation (RISD)</h3>
+    <p>The student is trained to predict the teacher's distribution directly, <strong>without generating reasoning chains</strong>:</p>
+    <div class="eq fade-in">
+      L<sub>RISD</sub> = E<sub>(p,I,d)</sub>[ D<sub>KL</sub>( q<sub>T</sub>(s|p,I,d,ρ<sub>T</sub>) ∥ q<sub>ϕ</sub>(s|p,I,d) ) ]
+      <span class="eq-n">(15)</span>
+    </div>
+
+    <!-- RISD vs OPD comparison -->
+    <div class="cmp fade-in" style="margin:24px 0">
+      <div>
+        <div class="cmp__lbl">OPD (BASELINE)</div>
+        <div class="cmp__title">模仿推理轨迹</div>
+        <ul class="cmp__list">
+          <li>Student 采样自己的推理链</li>
+          <li>Teacher 提供 token 级 log-prob</li>
+          <li class="neg">~750 tokens 输出</li>
+          <li class="neg">9B 推理能力弱，探索不到好轨迹</li>
+        </ul>
+        <div style="margin-top:12px">
+          <span class="tag tag--orange">HPA 83.1%</span>
+          <span class="tag tag--s" style="margin-left:4px">~750 tokens</span>
+        </div>
+      </div>
+      <div class="cmp__div"></div>
+      <div>
+        <div class="cmp__lbl" style="color:var(--olive)">RISD (OURS)</div>
+        <div class="cmp__title">匹配分数分布</div>
+        <ul class="cmp__list">
+          <li>直接学 Teacher 的判断结果</li>
+          <li>不学推理过程</li>
+          <li style="border-left-color:var(--olive)">1 token 输出</li>
+          <li style="border-left-color:var(--olive)">绕过推理能力瓶颈</li>
+        </ul>
+        <div style="margin-top:12px">
+          <span class="tag tag--olive">HPA 88.6%</span>
+          <span class="tag tag--s" style="margin-left:4px">1 token</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Experiments -->
+    <h2>4. Experiments</h2>
+    <p>Model choices: Teacher = Qwen3.5-27B, Student = Qwen3.5-9B. Evaluation metrics: PLCC/SRCC (score calibration), HPA/mHPA (preference ranking).</p>
+
+    <!-- 27B results -->
+    <div style="margin:24px 0" class="fade-in">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary)">QWEN3.5-27B TEACHER</span>
+        <span class="tag tag--s tag--olive">HPA</span>
+      </div>
+      <div class="rbar"><div class="rbar__name">Zero-shot</div><div class="rbar__track"><div class="rbar__fill" style="width:74.4%;background:var(--text-disabled)"></div></div><div class="rbar__val" style="color:var(--text-disabled)">74.4%</div></div>
+      <div class="rbar"><div class="rbar__name">SFT</div><div class="rbar__track"><div class="rbar__fill" style="width:81.4%;background:var(--text-secondary)"></div></div><div class="rbar__val" style="color:var(--text-secondary)">81.4%</div></div>
+      <div class="rbar"><div class="rbar__name">RewardDance</div><div class="rbar__track"><div class="rbar__fill" style="width:84.3%;background:var(--text-secondary)"></div></div><div class="rbar__val" style="color:var(--text-secondary)">84.3%</div></div>
+      <div class="rbar"><div class="rbar__name">GRPO</div><div class="rbar__track"><div class="rbar__fill" style="width:86.0%;background:var(--earth)"></div></div><div class="rbar__val" style="color:var(--earth)">86.0%</div></div>
+      <div class="rbar"><div class="rbar__name" style="color:var(--olive);font-weight:600">GDSO (ours)</div><div class="rbar__track"><div class="rbar__fill" style="width:89.6%;background:var(--olive)"></div></div><div class="rbar__val" style="color:var(--olive);font-weight:600">89.6%</div></div>
+    </div>
+
+    <!-- 9B results -->
+    <div style="margin:24px 0" class="fade-in">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:12px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary)">QWEN3.5-9B STUDENT</span>
+        <span class="tag tag--s tag--glacier" style="border-color:var(--glacier);color:var(--glacier)">HPA</span>
+      </div>
+      <div class="rbar"><div class="rbar__name">Zero-shot</div><div class="rbar__track"><div class="rbar__fill" style="width:65.6%;background:var(--text-disabled)"></div></div><div class="rbar__val" style="color:var(--text-disabled)">65.6%</div></div>
+      <div class="rbar"><div class="rbar__name">SFT</div><div class="rbar__track"><div class="rbar__fill" style="width:74.6%;background:var(--text-secondary)"></div></div><div class="rbar__val" style="color:var(--text-secondary)">74.6%</div></div>
+      <div class="rbar"><div class="rbar__name">RewardDance</div><div class="rbar__track"><div class="rbar__fill" style="width:78.2%;background:var(--text-secondary)"></div></div><div class="rbar__val" style="color:var(--text-secondary)">78.2%</div></div>
+      <div class="rbar"><div class="rbar__name">GRPO</div><div class="rbar__track"><div class="rbar__fill" style="width:77.0%;background:var(--earth)"></div></div><div class="rbar__val" style="color:var(--earth)">77.0%</div></div>
+      <div class="rbar"><div class="rbar__name">GDSO</div><div class="rbar__track"><div class="rbar__fill" style="width:84.0%;background:var(--earth)"></div></div><div class="rbar__val" style="color:var(--earth)">84.0%</div></div>
+      <div class="rbar"><div class="rbar__name" style="color:var(--olive);font-weight:600">RISD (ours)</div><div class="rbar__track"><div class="rbar__fill" style="width:88.6%;background:var(--olive)"></div></div><div class="rbar__val" style="color:var(--olive);font-weight:600">88.6%</div></div>
+    </div>
+
+    <!-- Full results table -->
+    <div class="fade-in" style="overflow-x:auto">
+      <table class="tbl">
+        <tr><th>Method</th><th>Reason</th><th class="tbl__num">PLCC</th><th class="tbl__num">SRCC</th><th class="tbl__num">HPA</th><th class="tbl__num">mHPA</th></tr>
+        <tr><td colspan="6" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary);padding-top:14px">Qwen3.5-27B</td></tr>
+        <tr><td>Zero-shot</td><td style="color:var(--text-disabled)">x</td><td class="tbl__num">0.630</td><td class="tbl__num">0.582</td><td class="tbl__num">0.744</td><td class="tbl__num">0.954</td></tr>
+        <tr><td>SFT</td><td style="color:var(--text-disabled)">x</td><td class="tbl__num">0.646</td><td class="tbl__num">0.591</td><td class="tbl__num">0.814</td><td class="tbl__num">0.964</td></tr>
+        <tr><td>RewardDance</td><td style="color:var(--text-disabled)">x</td><td class="tbl__num">0.667</td><td class="tbl__num">0.621</td><td class="tbl__num">0.843</td><td class="tbl__num">0.971</td></tr>
+        <tr><td>GRPO</td><td style="color:var(--olive)">&#10003;</td><td class="tbl__num">0.720</td><td class="tbl__num">0.683</td><td class="tbl__num">0.860</td><td class="tbl__num">0.983</td></tr>
+        <tr class="tbl__row--a"><td style="font-weight:600;color:var(--olive)">GDSO (ours)</td><td style="color:var(--olive)">&#10003;</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.762</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.713</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.896</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.989</td></tr>
+        <tr><td colspan="6" style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary);padding-top:14px">Qwen3.5-9B</td></tr>
+        <tr><td>Zero-shot</td><td style="color:var(--text-disabled)">x</td><td class="tbl__num">0.341</td><td class="tbl__num">0.317</td><td class="tbl__num">0.656</td><td class="tbl__num">0.750</td></tr>
+        <tr><td>SFT</td><td style="color:var(--text-disabled)">x</td><td class="tbl__num">0.530</td><td class="tbl__num">0.494</td><td class="tbl__num">0.746</td><td class="tbl__num">0.840</td></tr>
+        <tr><td>RewardDance</td><td style="color:var(--text-disabled)">x</td><td class="tbl__num">0.518</td><td class="tbl__num">0.434</td><td class="tbl__num">0.782</td><td class="tbl__num">0.897</td></tr>
+        <tr><td>GRPO</td><td style="color:var(--olive)">&#10003;</td><td class="tbl__num">0.534</td><td class="tbl__num">0.507</td><td class="tbl__num">0.770</td><td class="tbl__num">0.908</td></tr>
+        <tr><td>GDSO</td><td style="color:var(--olive)">&#10003;</td><td class="tbl__num">0.634</td><td class="tbl__num">0.567</td><td class="tbl__num">0.840</td><td class="tbl__num">0.960</td></tr>
+        <tr class="tbl__row--a"><td style="font-weight:600;color:var(--olive)">RISD (ours)</td><td style="font-size:11px;color:var(--earth)">Internalized</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.739</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.688</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.886</td><td class="tbl__num" style="font-weight:600;color:var(--olive)">0.980</td></tr>
+      </table>
+    </div>
+
+    <!-- 5. Validation -->
+    <h2>5. Validating Z-Reward as an Optimizable Reward Signal</h2>
+    <p>We apply Z-Reward to the RL stage of text-to-image generation, using the student's predicted score distributions as differentiable reward signals. Gradients are backpropagated through the denoising process to update the generator.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:24px 0" class="fade-in">
+      <div class="card" style="text-align:center;padding:28px 20px">
+        <div class="card__tag">GSB IMPROVEMENT</div>
+        <div class="card__num" style="font-size:clamp(28px,4vw,40px);color:var(--olive)">+41.3%</div>
+        <div class="card__lbl">Good − Bad / Total</div>
+      </div>
+      <div class="card" style="text-align:center;padding:28px 20px">
+        <div class="card__tag">EVALUATION</div>
+        <div class="card__num" style="font-size:clamp(28px,4vw,40px)">400</div>
+        <div class="card__lbl">Held-out prompts</div>
+      </div>
+      <div class="card" style="text-align:center;padding:28px 20px">
+        <div class="card__tag">METHOD</div>
+        <div class="card__num" style="font-size:clamp(28px,4vw,40px)">Blind</div>
+        <div class="card__lbl">Pairwise comparison</div>
+      </div>
+    </div>
+
+    <!-- 6. Discussion -->
+    <h2>6. Discussion</h2>
+    <h3>Reasoning-Score Coupling</h3>
+    <p>The direct SFT-style losses may occasionally make the final score depend more on direct score supervision than on the generated reasoning trace. Future work could add explicit reasoning-score consistency checks.</p>
+
+    <h3>Potential Generalization</h3>
+    <p>The teacher-student framework and RISD distillation strategy generalize to any sequence-to-score task where reasoning improves scoring quality but deployment requires efficiency.</p>
+
+    <!-- Footer -->
+    <div style="margin-top:64px;padding-top:32px;border-top:1px solid var(--border)">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <span class="tag tag--a">arXiv:2606.09076</span>
+        <span class="tag">Alibaba Z-Image</span>
+        <span class="tag">Nankai VCIP</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin:0">Xin Jin, Huanqia Cai, Zhen Li, Zechao Zhan, Dengyang Jiang, Aiming Hao, Yuming Jiang, Chunle Guo, Peng Gao, Ming-Ming Cheng, Steven C.H. Hoi</p>
+    </div>
+  </div>
+
+  <!-- ════ SIDEBAR ════ -->
+  <div class="rs">
+    <div class="side-label">Contents</div>
+    <div class="side-toc active">Abstract</div>
+    <div class="side-toc">1. Introduction</div>
+    <div class="side-toc">2. Annotation</div>
+    <div class="side-toc">3. Method</div>
+    <div class="side-toc" style="padding-left:28px">3.1 GDSO</div>
+    <div class="side-toc" style="padding-left:28px">3.2 RISD</div>
+    <div class="side-toc">4. Experiments</div>
+    <div class="side-toc">5. Validation</div>
+    <div class="side-toc">6. Discussion</div>
+
+    <div class="side-meta">
+      <dl>
+        <dt>Team</dt>
+        <dd>Alibaba Z-Image + Nankai VCIP</dd>
+        <dt>Teacher</dt>
+        <dd>Qwen3.5-27B + GDSO</dd>
+        <dt>Student</dt>
+        <dd>Qwen3.5-9B + RISD</dd>
+        <dt>Dimensions</dt>
+        <dd>Alignment · Realism · Aesthetics · Physics</dd>
+        <dt>Scale</dt>
+        <dd>9-level (1.0–5.0) · 4 dim × 5 bins × 15-20 examples</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<script>
+// Scroll fade-in
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// Animate bars
+const barObs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.rbar__fill').forEach((bar, i) => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => { bar.style.width = w; }, i * 100);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.rm').forEach(d => barObs.observe(d));
+
+// TOC highlight
+const tocItems = document.querySelectorAll('.side-toc');
+tocItems.forEach((t, i) => {
+  t.addEventListener('click', () => {
+    tocItems.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

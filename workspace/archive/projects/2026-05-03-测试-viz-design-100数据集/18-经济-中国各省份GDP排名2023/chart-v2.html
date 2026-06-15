@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中国各省份 GDP 排名 2023</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #FAF9F5; font-family: -apple-system, "PingFang SC", sans-serif; display: flex; justify-content: center; padding: 40px 0; }
+  .chart-wrap { background: #fff; border-radius: 12px; padding: 32px 36px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); max-width: 940px; }
+  #chart { width: 850px; height: 500px; }
+  .lead { max-width: 700px; margin: 12px 0 0; font-size: 13px; color: #5F5A54; line-height: 1.7; }
+  .lead strong { color: #141413; font-weight: 600; }
+  .footer-note { text-align: left; font-size: 11px; color: #A3A29B; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="chart-wrap">
+  <div id="chart"></div>
+  <div class="lead">
+    广东（13.6 万亿）和江苏（12.8 万亿）遥遥领先，但增速最快的不是经济大省——<strong>西藏 9.5%、海南 9.2%、内蒙古 7.3%</strong>。经济大省增速普遍偏低（广东 4.8%、河南 4.1%）。<strong>增长重心正在从沿海大省向中小省份转移。</strong>
+  </div>
+  <div class="footer-note">数据来源：国家统计局 | 2023 年度各省 GDP</div>
+</div>
+<script>
+const chart = echarts.init(document.getElementById('chart'));
+
+// Top 15，GDP 从高到低
+const provinces = ['广东','江苏','山东','浙江','四川','河南','湖北','福建','湖南','上海','安徽','河北','北京','重庆','内蒙古'];
+const gdp       = [135673,128192,92292,82553,60133,59132,55804,54355,50013,47219,47051,43944,43761,30146,24627];
+const growth    = [ 4.8,   5.8,  6.0,  6.0,  6.0,  4.1,  6.0,  4.5,  4.6,  5.0,  5.8,  5.5,  5.2,  6.1,  7.3];
+
+// 颜色：广东/江苏高亮（领先），内蒙古高亮（增速最快），其余灰色
+const colors = provinces.map(function(name, i) {
+  if (name === '广东' || name === '江苏') return '#D97757';
+  if (name === '内蒙古') return '#788C5D';
+  return '#C1C0B8';
+});
+
+const opt = {
+  title: {
+    text: '广东江苏领跑全国，但增速在中小省份',
+    subtext: '2023 年各省 GDP Top 15（万亿元）',
+    left: 'left', top: 6,
+    textStyle: { fontSize: 17, fontWeight: 700, color: '#141413', fontFamily: 'Georgia, serif' },
+    subtextStyle: { fontSize: 11, color: '#A3A29B' }
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: function(p) {
+      var i = p[0].dataIndex;
+      return provinces[i] + '<br/>GDP: ' + (gdp[i]/10000).toFixed(1) + ' 万亿<br/>增速: ' + growth[i] + '%';
+    }
+  },
+  grid: { left: 50, right: 50, top: 65, bottom: 25 },
+  xAxis: {
+    type: 'value',
+    axisLabel: { formatter: function(v) { return (v/10000).toFixed(0) + '万亿'; }, fontSize: 10, color: '#87867F' },
+    axisLine: { show: false },
+    splitLine: { show: false },
+    axisTick: { show: false }
+  },
+  yAxis: {
+    type: 'category',
+    data: provinces.map(function(name, i) { return name + '  ' + growth[i] + '%'; }),
+    axisLabel: {
+      fontSize: 11,
+      formatter: function(val, idx) {
+        var parts = val.split('  ');
+        return '{name|' + parts[0] + '}{val|' + parts[1] + '}';
+      },
+      rich: {
+        name: { fontSize: 11, color: '#3D3D3A', fontWeight: 400 },
+        val: { fontSize: 10, color: '#87867F', padding: [0, 0, 0, 6] }
+      }
+    },
+    axisLine: { show: false },
+    axisTick: { show: false }
+  },
+  series: [{
+    type: 'bar', data: gdp,
+    barWidth: '50%',
+    itemStyle: {
+      color: function(p) { return colors[p.dataIndex]; },
+      borderRadius: [0, 3, 3, 0]
+    },
+    label: {
+      show: true, position: 'right',
+      formatter: function(p) { return (p.value / 10000).toFixed(1); },
+      fontSize: 10, color: '#87867F'
+    },
+    markPoint: {
+      symbol: 'none',
+      label: { show: false },
+      data: [
+        // 内蒙古增速标注
+        { name: '增速最快', xAxis: 24627, yAxis: '内蒙古  7.3%', label: { show: true, formatter: '增速最快 7.3%', position: 'right', fontSize: 9, color: '#788C5D', fontWeight: 600 } }
+      ]
+    }
+  }]
+};
+
+chart.setOption(opt);
+</script>
+</body>
+</html>

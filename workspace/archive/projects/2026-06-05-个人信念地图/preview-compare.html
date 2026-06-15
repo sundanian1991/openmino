@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案 A vs 方案 C — 实时预览</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F0EC; --sf: #FFFFFF; --sf-alt: #E3DFD8; --border: #C4B8A8; --border-strong: #8A7D6E;
+  --text: #1A1816; --text2: #8A7D6E; --text3: #C4B8A8; --display: #2D2A26;
+  --moss: #6B8B5E; --clay: #C66B4B; --forest: #3D5A35; --slate: #4E627C; --gold: #BF9B5A; --sky: #4A80C0; --steel: #7A8B9B;
+  --red: #D9433A;
+  --container: 1120px; --pad: 32px; --space-2xl: 48px; --space-3xl: 64px; --space-4xl: 96px; --space-xl: 32px; --space-lg: 24px; --space-md: 16px; --space-sm: 8px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',-apple-system,sans-serif; background:var(--bg); color:var(--text); }
+
+/* ===== Layout ===== */
+.app { display:flex; flex-direction:column; min-height:100vh; }
+
+/* Controls bar */
+.ctrl { flex-shrink:0; padding:16px 32px; background:var(--sf); border-bottom:1px solid var(--border); display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.ctrl-col { }
+.ctrl-title { font-size:11px; font-weight:600; margin-bottom:8px; letter-spacing:0.03em; }
+.ctrl-row { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px; }
+.ctrl-row label { font-size:9px; font-family:'JetBrains Mono',monospace; letter-spacing:0.05em; text-transform:uppercase; color:var(--text2); width:100%; margin-bottom:2px; }
+.btn { padding:4px 10px; font-size:11px; font-family:'Inter',sans-serif; border:1px solid var(--border); background:var(--sf); border-radius:4px; cursor:pointer; transition:all 0.12s; }
+.btn:hover { border-color:var(--moss); }
+.btn.active { border-color:var(--moss); background:rgba(107,139,94,0.08); }
+.btn.btn-sm { font-size:10px; padding:3px 8px; }
+.btn-group { display:flex; gap:4px; flex-wrap:wrap; }
+
+/* Preview area */
+.preview-wrap { flex:1; overflow:auto; display:flex; }
+.preview-frame { flex:1; background:var(--bg); position:relative; }
+
+/* ===== Navigation ===== */
+.nav-bar { display:flex; align-items:center; gap:24px; padding:12px 32px; background:inherit; border-bottom:1px solid var(--border); }
+.nav-bar a { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text3); text-decoration:none; }
+.nav-bar a:hover { color:var(--text2); }
+.nav-bar a.active { color:inherit; }
+
+.nav-side { position:absolute; left:0; top:0; bottom:0; width:160px; background:inherit; border-right:1px solid var(--border); padding:24px 16px; display:flex; flex-direction:column; gap:16px; }
+.nav-side a { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text3); text-decoration:none; }
+.nav-side a:hover { color:var(--text2); }
+
+.nav-masthead { text-align:center; padding:20px 32px 12px; border-bottom:2px solid var(--text); }
+.nav-masthead .mast-brand { font-family:'Playfair Display',Georgia,serif; font-size:18px; font-weight:700; letter-spacing:0.08em; color:inherit; }
+.nav-masthead .mast-links { display:flex; gap:24px; justify-content:center; margin-top:8px; }
+.nav-masthead .mast-links a { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text3); text-decoration:none; }
+
+.nav-pill { position:absolute; right:32px; top:90px; display:flex; flex-direction:column; gap:4px; background:var(--sf); border:1px solid var(--border); border-radius:20px; padding:6px; }
+.nav-pill a { font-size:10px; color:var(--text3); text-decoration:none; padding:4px 10px; border-radius:12px; }
+.nav-pill a.active { background:var(--moss); color:#fff; }
+
+/* ===== Hero ===== */
+.hero { min-height:60vh; display:flex; align-items:center; position:relative; overflow:hidden; }
+.hero-inner { width:100%; max-width:var(--container); margin:0 auto; padding:0 var(--pad); position:relative; z-index:2; }
+.hero--left .hero-inner { text-align:left; }
+.hero--center .hero-inner { text-align:center; }
+.hero--split .hero-inner { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
+
+.hero-label { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:16px; }
+.hero-title { font-family:'Playfair Display',Georgia,serif; font-size:clamp(48px,7vw,96px); font-weight:300; line-height:1.05; letter-spacing:-0.025em; max-width:14ch; }
+.hero-sub { font-size:16px; font-weight:300; line-height:1.6; max-width:48ch; margin-top:16px; }
+.hero-meta { display:flex; gap:32px; padding-top:24px; margin-top:24px; }
+.hero-meta-item { display:flex; flex-direction:column; gap:4px; }
+.hero-meta-num { font-family:'JetBrains Mono',monospace; font-size:40px; font-weight:500; line-height:1; }
+.hero-meta-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.06em; text-transform:uppercase; }
+
+/* Ghost signature */
+.sig-ghost { position:absolute; font-family:'Doto',monospace; font-size:14px; letter-spacing:0.15em; opacity:0.06; pointer-events:none; }
+.sig-dot { position:absolute; display:flex; gap:2px; flex-wrap:wrap; width:80px; opacity:0.15; pointer-events:none; }
+.sig-dot span { width:6px; height:6px; border-radius:50%; }
+.sig-line { position:absolute; bottom:0; left:0; right:0; height:1px; }
+.sig-bar { position:absolute; width:32px; height:4px; }
+
+/* Content section sample */
+.content-sample { padding:48px 32px; }
+.content-sample-inner { max-width:var(--container); margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.sample-card { padding:20px; border:1px solid var(--border); border-radius:8px; }
+.sample-card h4 { font-size:13px; font-weight:500; margin-bottom:4px; }
+.sample-card p { font-size:11px; color:var(--text2); line-height:1.5; }
+
+/* Labels */
+.preview-label { position:absolute; top:8px; left:8px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.04em; color:var(--text3); background:var(--sf); padding:2px 8px; border:1px solid var(--border); border-radius:3px; z-index:10; }
+
+.ctrl-col-a .ctrl-title { color:var(--moss); }
+.ctrl-col-c .ctrl-title { color:var(--clay); }
+
+/* Empty for cut-diagonal */
+.hero.cut-diagonal { clip-path:polygon(0 0,100% 0,100% 85%,0 100%); }
+.hero.cut-bevel { clip-path:polygon(0 0,100% 0,100% 92%,0 100%); }
+
+/* Diag specific */
+.cut-line { position:absolute; bottom:0; left:0; right:0; height:1px; }
+
+@media (max-width:900px) { .ctrl { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Controls -->
+<div class="ctrl">
+  <div class="ctrl-col ctrl-col-a">
+    <div class="ctrl-title">方案 A · 选包</div>
+    <div class="ctrl-row">
+      <label>完整视觉包</label>
+      <div class="btn-group" id="packBtns"></div>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px" id="packDesc">选择上面任一包查看完整效果</div>
+  </div>
+  <div class="ctrl-col ctrl-col-c">
+    <div class="ctrl-title">方案 C · 三阶段</div>
+    <div class="ctrl-row">
+      <label>Hero 骨架</label>
+      <div class="btn-group" id="skelBtns"></div>
+    </div>
+    <div class="ctrl-row">
+      <label>签名</label>
+      <div class="btn-group" id="sigBtns"></div>
+    </div>
+    <div class="ctrl-row">
+      <label>导航</label>
+      <div class="btn-group" id="navBtns"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Preview -->
+<div class="preview-wrap">
+  <div class="preview-frame" id="previewFrame">
+    <span class="preview-label" id="schemeLabel">方案 A · P2 编辑叙事</span>
+    <div id="previewContainer"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ===== DATA =====
+const packs = {
+  P1:{name:'数据权威', bg:'dark', layout:'left', cut:'none', sig:{type:'line',pos:'bottom'}, nav:'top', meta:'深色+左对齐+分屏', mood:'authority'},
+  P2:{name:'编辑叙事', bg:'light', layout:'left', cut:'none', sig:{type:'ghost',pos:'right-top'}, nav:'top', meta:'浅色+左对齐+全幅', mood:'narrative'},
+  P3:{name:'品牌宣言', bg:'brand', layout:'split', cut:'diagonal', sig:{type:'ghost-line',pos:'center'}, nav:'side', meta:'深色+分屏+对角线', mood:'statement'},
+  P4:{name:'数据+故事', bg:'light', layout:'split', cut:'none', sig:{type:'ghost-dot',pos:'right'}, nav:'float', meta:'浅色+分屏+全幅', mood:'mixed'},
+  P5:{name:'工作汇报', bg:'light', layout:'left', cut:'bevel', sig:{type:'bar',pos:'top-left'}, nav:'top', meta:'浅色+左对齐+斜切', mood:'report'},
+  P6:{name:'流程指南', bg:'brand', layout:'left', cut:'bevel', sig:{type:'line',pos:'bottom'}, nav:'bottom', meta:'品牌底+左对齐+斜切', mood:'formal'},
+  P7:{name:'冲击宣言', bg:'dark', layout:'split', cut:'diagonal', sig:{type:'ghost-lg',pos:'center'}, nav:'masthead', meta:'深色+分屏+对角线', mood:'impact'},
+  P8:{name:'沉浸阅读', bg:'light', layout:'center', cut:'none', sig:{type:'dot',pos:'left-top'}, nav:'bottom', meta:'浅色+居中+全幅', mood:'reading'},
+};
+
+const skels = {
+  data:{
+    name:'数据型', bg:'dark', layout:'left', cut:'none', mood:'authority',
+    sigs:[{type:'line',pos:'bottom'},{type:'bar',pos:'top-left'},{type:'none',pos:''}],
+    navs:['top','float']
+  },
+  narrative:{
+    name:'叙事型', bg:'light', layout:'left', cut:'none', mood:'narrative',
+    sigs:[{type:'ghost',pos:'right-top'},{type:'dot',pos:'left-top'},{type:'none',pos:''}],
+    navs:['top','bottom']
+  },
+  statement:{
+    name:'宣言型', bg:'brand', layout:'split', cut:'diagonal', mood:'statement',
+    sigs:[{type:'ghost-line',pos:'center'},{type:'ghost-lg',pos:'center'},{type:'dot',pos:'right-top'}],
+    navs:['side','masthead']
+  }
+};
+
+let curA = 'P2';
+let curC = {skel:'narrative', sigIdx:0, navIdx:0};
+
+// ===== BUILD CONTROLS =====
+function init() {
+  // Pack buttons
+  const pb = document.getElementById('packBtns');
+  Object.entries(packs).forEach(([k,v]) => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-sm' + (k===curA?' active':'');
+    b.textContent = k + ' ' + v.name;
+    b.onclick = () => { curA=k; renderA(); updateBtns(pb, k); };
+    pb.appendChild(b);
+  });
+
+  // Skeleton buttons
+  const sb = document.getElementById('skelBtns');
+  Object.entries(skels).forEach(([k,v]) => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-sm' + (k==='narrative'?' active':'');
+    b.textContent = v.name;
+    b.onclick = () => { curC.skel=k; curC.sigIdx=0; curC.navIdx=0; renderC(); updateBtns(sb, k); updateSigNav(); };
+    sb.appendChild(b);
+  });
+
+  updateSigNav();
+  renderA();
+  renderC();
+}
+
+function updateBtns(container, activeVal) {
+  container.querySelectorAll('.btn').forEach(b => {
+    const val = b.textContent.split(' ')[0];
+    b.className = 'btn btn-sm' + ((val===activeVal||b.textContent===activeVal) ? ' active' : '');
+  });
+}
+
+function updateSigNav() {
+  const sk = skels[curC.skel];
+  // Sig btns
+  const sb = document.getElementById('sigBtns');
+  sb.innerHTML = '';
+  sk.sigs.forEach((s,i) => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-sm' + (i===curC.sigIdx?' active':'');
+    b.textContent = s.type;
+    b.onclick = () => { curC.sigIdx=i; renderC(); updateBtns(sb, s.type); };
+    sb.appendChild(b);
+  });
+  // Nav btns
+  const nb = document.getElementById('navBtns');
+  nb.innerHTML = '';
+  sk.navs.forEach((n,i) => {
+    const b = document.createElement('button');
+    b.className = 'btn btn-sm' + (i===curC.navIdx?' active':'');
+    b.textContent = {top:'顶栏',bottom:'底栏',side:'侧栏',float:'悬浮',masthead:'报头'}[n] || n;
+    b.onclick = () => { curC.navIdx=i; renderC(); updateBtns(nb, n); };
+    nb.appendChild(b);
+  });
+}
+
+// ===== RENDER =====
+function renderHTML(p, bg, layout, cut, sig, nav, label) {
+  const isDark = bg === 'dark' || bg === 'brand';
+  const bgColor = bg==='dark' ? '#2D2A26' : bg==='brand' ? '#6B8B5E' : '#F2F0EC';
+  const fgColor = isDark ? '#F2F0EC' : '#1A1816';
+  const fgSec = isDark ? '#C4B8A8' : '#8A7D6E';
+  const fgLabel = isDark ? '#8A7D6E' : '#8A7D6E';
+  const natColor = isDark ? '#6B8B5E' : '#6B8B5E';
+  const borderC = isDark ? 'rgba(255,255,255,0.1)' : 'var(--border)';
+
+  let html = '';
+
+  // Navigation
+  if (nav === 'top') {
+    html += `<div class="nav-bar" style="background:${bgColor};color:${fgColor};border-color:${borderC}">
+      <a href="#" class="active" style="color:${fgColor}">全景</a>
+      <a href="#" style="color:${fgSec}">笃定</a>
+      <a href="#" style="color:${fgSec}">形成中</a>
+      <a href="#" style="color:${fgSec}">审美</a>
+      <a href="#" style="color:${fgSec}">未答</a>
+    </div>`;
+  } else if (nav === 'bottom') {
+    html += `<div class="nav-bar" style="background:${bgColor};color:${fgColor};border-color:${borderC};position:absolute;bottom:0">
+      <a href="#" class="active" style="color:${fgColor}">全景</a>
+      <a href="#" style="color:${fgSec}">笃定</a>
+      <a href="#" style="color:${fgSec}">形成中</a>
+      <a href="#" style="color:${fgSec}">审美</a>
+      <a href="#" style="color:${fgSec}">未答</a>
+    </div>`;
+  } else if (nav === 'side') {
+    html += `<div class="nav-side" style="background:${bgColor};color:${fgColor};border-color:${borderC}">
+      <a href="#" class="active" style="color:${fgColor}">全景</a>
+      <a href="#" style="color:${fgSec}">笃定</a>
+      <a href="#" style="color:${fgSec}">形成中</a>
+      <a href="#" style="color:${fgSec}">审美</a>
+      <a href="#" style="color:${fgSec}">未答</a>
+    </div>`;
+  } else if (nav === 'masthead') {
+    html += `<div class="nav-masthead" style="background:${bgColor};color:${fgColor};border-color:${borderC}">
+      <div class="mast-brand" style="color:${fgColor}">OPINIONS</div>
+      <div class="mast-links">
+        <a href="#" style="color:${fgSec}">全景</a>
+        <a href="#" style="color:${fgSec}">笃定</a>
+        <a href="#" style="color:${fgSec}">形成中</a>
+        <a href="#" style="color:${fgSec}">未答</a>
+      </div>
+    </div>`;
+  } else if (nav === 'float') {
+    html += `<div class="nav-pill" style="border-color:${borderC}">
+      <a href="#" class="active" style="background:${natColor};color:#fff">全景</a>
+      <a href="#" style="color:${fgSec}">笃定</a>
+      <a href="#" style="color:${fgSec}">形成中</a>
+    </div>`;
+  }
+
+  // Hero
+  const splitClass = layout === 'split' ? 'hero--split' : layout === 'center' ? 'hero--center' : 'hero--left';
+  const cutClass = cut === 'diagonal' ? 'cut-diagonal' : cut === 'bevel' ? 'cut-bevel' : '';
+  html += `<div class="hero ${splitClass} ${cutClass}" style="background:${bgColor};color:${fgColor};min-height:55vh">`;
+
+  // Signature
+  if (sig.type === 'ghost') {
+    html += `<div class="sig-ghost" style="right:32px;top:32px;color:${natColor};font-size:36px">················</div>`;
+  } else if (sig.type === 'ghost-lg') {
+    html += `<div class="sig-ghost" style="right:-2%;top:5%;font-size:clamp(8rem,20vw,24rem);color:${natColor};opacity:0.04">O</div>`;
+  } else if (sig.type === 'ghost-line') {
+    html += `<div class="sig-ghost" style="left:32px;top:50%;transform:translateY(-50%);color:${natColor};font-size:48px;opacity:0.04;writing-mode:vertical-rl">OPINIONS</div>`;
+    html += `<div class="sig-line" style="background:${natColor};opacity:0.2"></div>`;
+  } else if (sig.type === 'ghost-dot') {
+    html += `<div class="sig-ghost" style="right:50px;top:80px;color:${natColor}">················</div>`;
+    html += `<div class="sig-dot" style="right:42px;top:100px">${'<span></span>'.repeat(50)}</div>`;
+  } else if (sig.type === 'dot') {
+    html += `<div class="sig-dot" style="left:32px;top:32px;width:60px">${'<span></span>'.repeat(35)}</div>`;
+  } else if (sig.type === 'line') {
+    html += `<div class="sig-line" style="background:${natColor};opacity:0.3"></div>`;
+  } else if (sig.type === 'bar') {
+    html += `<div class="sig-bar" style="top:32px;left:32px;background:${natColor}"></div>`;
+  }
+
+  // Hero content
+  html += `<div class="hero-inner"${layout==='split'?` style="grid-template-columns:1fr 1fr;gap:48px"`:''}>`;
+
+  const tColor = fgColor;
+  const sColor = fgSec;
+  const lColor = natColor;
+  const metaC = fgSec;
+
+  html += `<div>
+    <div class="hero-label" style="color:${lColor}">个人信念地图</div>
+    <h1 class="hero-title" style="color:${tColor};max-width:${layout==='center'?'100%':'14ch'}">从对话中提炼的判断</h1>
+    <p class="hero-sub" style="color:${sColor}">2026年1月至5月从1717次会话中萃取的个人信念体系。</p>
+    <div class="hero-meta" style="${layout==='center'?'justify-content:center':'justify-content:flex-start'}">
+      <div class="hero-meta-item"><span class="hero-meta-num" style="color:${natColor}">14</span><span class="hero-meta-lbl" style="color:${metaC}">笃定</span></div>
+      <div class="hero-meta-item"><span class="hero-meta-num" style="color:${isDark?'#fff':`var(--clay)`}">21</span><span class="hero-meta-lbl" style="color:${metaC}">形成中</span></div>
+      <div class="hero-meta-item"><span class="hero-meta-num" style="color:${tColor}">3</span><span class="hero-meta-lbl" style="color:${metaC}">未答</span></div>
+    </div>
+  </div>`;
+
+  if (layout === 'split') {
+    html += `<div style="display:flex;justify-content:center;align-items:center;opacity:0.15">
+      <div style="display:grid;grid-template-columns:repeat(5,12px);gap:3px">
+        ${'<div style="width:12px;height:12px;border-radius:2px;background:'+natColor+'"></div>'.repeat(25)}
+      </div>
+    </div>`;
+  }
+
+  html += `</div></div>`; // close hero-inner, hero
+
+  // Content sample
+  const contBg = bg==='dark'?'#2D2A26':bg==='brand'?'#5B7A50':'var(--sf)';
+  const contText = isDark ? '#F2F0EC' : '#1A1816';
+  const contSec = isDark ? '#C4B8A8' : '#8A7D6E';
+  html += `<div class="content-sample" style="background:${bg==='dark'||bg==='brand'?'#34302C':'var(--bg)'}">
+    <div class="content-sample-inner">
+      <div class="sample-card" style="border-color:${borderC}"><h4 style="color:${contText}">供应商管理</h4><p style="color:${contSec}">管理规范先行，协同语态</p></div>
+      <div class="sample-card" style="border-color:${borderC}"><h4 style="color:${contText}">AI 与效率</h4><p style="color:${contSec}">去迎合化，逆向检验前提</p></div>
+      <div class="sample-card" style="border-color:${borderC}"><h4 style="color:${contText}">审美标准</h4><p style="color:${contSec}">温暖色调，一眼可辨</p></div>
+    </div>
+  </div>`;
+
+  document.getElementById('schemeLabel').textContent = label;
+  document.getElementById('previewContainer').innerHTML = html;
+}
+
+function renderA() {
+  const p = packs[curA];
+  renderHTML(curA, p.bg, p.layout, p.cut, p.sig, p.nav, '方案 A · ' + p.name);
+}
+
+function renderC() {
+  const sk = skels[curC.skel];
+  const sig = sk.sigs[curC.sigIdx];
+  const nav = sk.navs[curC.navIdx];
+  renderHTML(curC.skel, sk.bg, sk.layout, sk.cut, sig, nav, '方案 C · ' + sk.name + ' · ' + sig.type + ' · ' + nav);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

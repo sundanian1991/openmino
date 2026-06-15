@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>F-Navigation 组件复审</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0ede6;--surface:#f8f8f8;--surface-alt:#e8e4dc;--border:#dbd6d2;--border-strong:#baaca8;--text-display:#383A3E;--text-primary:#1A1816;--text-secondary:#8A7D6E;--text-disabled:#c4b8a8;--forest:#3D5A35;--moss:#6B8B5E;--slate:#4E627C;--steel:#7A8B9B;--warm:#d47836;--sky-blue:#a0e3ee;--signal-red:#d86a48;--signal-clay:#C66B4B;--signal-gold:#BF9B5A;--signal-sky:#4A80C0;--font-ds:'Playfair Display',Georgia,serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;--font-dot:'Doto',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);padding:24px;max-width:1200px;margin:0 auto;padding-bottom:80px}
+h1{font-family:var(--font-ds);font-size:28px;font-weight:300;margin-bottom:8px}
+.sub{font-size:13px;color:var(--text-secondary);margin-bottom:24px}
+.review-item{border:1px solid var(--border);background:var(--surface);margin-bottom:20px;border-radius:6px;overflow:hidden}
+.review-header{display:flex;align-items:center;padding:12px 16px;background:var(--surface-alt);border-bottom:1px solid var(--border)}
+.review-id{font-family:var(--font-mono);font-size:12px;font-weight:600;color:#888;margin-right:12px}
+.review-name{font-size:14px;font-weight:600;flex:1}
+.review-name .tag-excluded{color:#C0392B;font-size:11px;font-weight:400;margin-left:6px}
+.review-select{padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:var(--font-body)}
+.review-meta{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid var(--border)}
+.meta-label{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#888;display:block;margin-bottom:2px}
+.meta-value{font-size:12px;color:#666;line-height:1.5}
+.toggle-bar{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.toggle-btn{padding:8px 16px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent}
+.toggle-btn.active{color:var(--text-display);border-bottom-color:var(--forest)}
+.preview-render{padding:16px;background:var(--bg);min-height:160px;position:relative;overflow:hidden}
+.preview-code{padding:16px;display:none;background:var(--bg)}
+.preview-code pre{background:var(--surface);border:1px solid var(--border);padding:12px;border-radius:4px;font-family:var(--font-mono);font-size:11px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;max-height:400px;overflow-y:auto}
+</style>
+</head>
+<body>
+<h1>F-Navigation 组件复审</h1>
+<p class="sub">7 个组件 · 左侧下拉标记保留/删除 · 上方切换预览和代码</p>
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px;z-index:100">
+  <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)">标记完成后</span>
+  <button onclick="generateResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--warm);color:#fff;border:none;cursor:pointer">生成复审结果</button>
+  <button onclick="copyResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--forest);color:#fff;border:none;cursor:pointer">复制结果</button>
+</div>
+<div id="result-box" style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:24px;display:none">
+<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px">复审结果</div>
+<pre id="result-text" style="font-family:var(--font-mono);font-size:12px;line-height:1.8;white-space:pre-wrap;margin:0;padding:0;background:transparent;border:none;color:var(--text-display)"></pre>
+</div>
+
+<section class="review-item" data-id="F1">
+  <div class="review-header">
+    <div class="review-id">F1</div>
+    <div class="review-name">~~Wordmark+2 links~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.nav-minimal {
+  padding: var(--space-md) var(--container-padding);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.nav-minimal__wm {
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-display);
+}
+.nav-minimal__links {
+  display: flex;
+  gap: var(--space-lg);
+}
+.nav-minimal__links a {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.nav-minimal__links a:hover { color: var(--text-primary); }</style><nav class="nav-minimal">
+  <span class="nav-minimal__wm">Haglofs</span>
+  <div class="nav-minimal__links">
+    <a href="#">Products</a>
+    <a href="#">About</a>
+  </div>
+</nav></div>
+  <div class="preview-code"><pre>&lt;nav class="nav-minimal"&gt;
+  &lt;span class="nav-minimal__wm"&gt;Haglofs&lt;/span&gt;
+  &lt;div class="nav-minimal__links"&gt;
+    &lt;a href="#"&gt;Products&lt;/a&gt;
+    &lt;a href="#"&gt;About&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="F2">
+  <div class="review-header">
+    <div class="review-id">F2</div>
+    <div class="review-name">Floating Pill </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.nav-pill {
+  position: fixed;
+  top: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+.nav-pill__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(245, 243, 239, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+}
+.nav-pill__wm {
+  font-family: Georgia, serif;
+  font-size: var(--body);
+  font-weight: 700;
+  color: var(--text-display);
+  white-space: nowrap;
+}
+.nav-pill__links {
+  display: flex;
+  gap: var(--space-md);
+}
+.nav-pill__links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+.nav-pill__links a:hover { color: var(--text-display); }
+.nav-pill__cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: var(--space-xs) var(--space-md);
+  background: var(--brand-primary);
+  color: #fff;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}</style><nav class="nav-pill">
+  <div class="nav-pill__inner">
+    <span class="nav-pill__wm">Haglofs</span>
+    <div class="nav-pill__links">
+      <a href="#">Shell</a>
+      <a href="#">Insulation</a>
+      <a href="#">Base Layer</a>
+    </div>
+    <span class="nav-pill__cta">Shop FW25</span>
+  </div>
+</nav></div>
+  <div class="preview-code"><pre>&lt;nav class="nav-pill"&gt;
+  &lt;div class="nav-pill__inner"&gt;
+    &lt;span class="nav-pill__wm"&gt;Haglofs&lt;/span&gt;
+    &lt;div class="nav-pill__links"&gt;
+      &lt;a href="#"&gt;Shell&lt;/a&gt;
+      &lt;a href="#"&gt;Insulation&lt;/a&gt;
+      &lt;a href="#"&gt;Base Layer&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;span class="nav-pill__cta"&gt;Shop FW25&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="F3">
+  <div class="review-header">
+    <div class="review-id">F3</div>
+    <div class="review-name">~~Side Rail~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.nav-rail {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  z-index: 100;
+}
+.nav-rail__icon {
+  font-family: Georgia, serif;
+  font-weight: 700;
+  font-size: var(--body);
+  color: var(--text-display);
+  margin-bottom: var(--space-lg);
+}
+.nav-rail__item {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-rail__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-disabled);
+}
+.nav-rail__item.active .nav-rail__dot {
+  background: var(--text-display);
+}</style><nav class="nav-rail">
+  <span class="nav-rail__icon">H</span>
+  <a href="#" class="nav-rail__item active">
+    <span class="nav-rail__dot"></span>
+  </a>
+  <a href="#" class="nav-rail__item">
+    <span class="nav-rail__dot"></span>
+  </a>
+  <a href="#" class="nav-rail__item">
+    <span class="nav-rail__dot"></span>
+  </a>
+</nav></div>
+  <div class="preview-code"><pre>&lt;nav class="nav-rail"&gt;
+  &lt;span class="nav-rail__icon"&gt;H&lt;/span&gt;
+  &lt;a href="#" class="nav-rail__item active"&gt;
+    &lt;span class="nav-rail__dot"&gt;&lt;/span&gt;
+  &lt;/a&gt;
+  &lt;a href="#" class="nav-rail__item"&gt;
+    &lt;span class="nav-rail__dot"&gt;&lt;/span&gt;
+  &lt;/a&gt;
+  &lt;a href="#" class="nav-rail__item"&gt;
+    &lt;span class="nav-rail__dot"&gt;&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/nav&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="F4">
+  <div class="review-header">
+    <div class="review-id">F4</div>
+    <div class="review-name">~~Cmd+K~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(245, 243, 239, 0.92);
+  display: flex;
+  justify-content: center;
+  padding-top: 20vh;
+  z-index: 200;
+}
+.cmdk {
+  width: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+}
+.cmdk__input {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body);
+  padding: var(--space-md) var(--space-lg);
+  border: none;
+  border-bottom: 1px solid var(--border);
+  outline: none;
+  background: transparent;
+}
+.cmdk__item {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--body-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.cmdk__item:hover { background: var(--surface-alt); }</style><div class="cmdk-overlay">
+  <div class="cmdk">
+    <input class="cmdk__input" placeholder="Search products, materials...">
+    <div class="cmdk__results">
+      <div class="cmdk__item">L.I.M Comp — Shell Jacket</div>
+      <div class="cmdk__item">Frost Jacket — Insulation</div>
+    </div>
+  </div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="cmdk-overlay"&gt;
+  &lt;div class="cmdk"&gt;
+    &lt;input class="cmdk__input" placeholder="Search products, materials..."&gt;
+    &lt;div class="cmdk__results"&gt;
+      &lt;div class="cmdk__item"&gt;L.I.M Comp — Shell Jacket&lt;/div&gt;
+      &lt;div class="cmdk__item"&gt;Frost Jacket — Insulation&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="F5">
+  <div class="review-header">
+    <div class="review-id">F5</div>
+    <div class="review-name">~~Floating Chip~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.nav-chip {
+  position: absolute;
+  top: var(--space-lg);
+  left: var(--space-lg);
+  display: flex;
+  gap: var(--space-xs);
+  z-index: 10;
+}
+.nav-chip__item {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  padding: var(--space-xs) var(--space-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.nav-chip__item.active {
+  background: var(--text-display);
+  color: #fff;
+  border-color: var(--text-display);
+}</style><nav class="nav-chip">
+  <a href="#" class="nav-chip__item active">All</a>
+  <a href="#" class="nav-chip__item">Shell</a>
+  <a href="#" class="nav-chip__item">Insulation</a>
+</nav></div>
+  <div class="preview-code"><pre>&lt;nav class="nav-chip"&gt;
+  &lt;a href="#" class="nav-chip__item active"&gt;All&lt;/a&gt;
+  &lt;a href="#" class="nav-chip__item"&gt;Shell&lt;/a&gt;
+  &lt;a href="#" class="nav-chip__item"&gt;Insulation&lt;/a&gt;
+&lt;/nav&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="F6">
+  <div class="review-header">
+    <div class="review-id">F6</div>
+    <div class="review-name">Newspaper Masthead </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.nav-mast {
+  padding: var(--space-lg) var(--container-padding);
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.nav-mast__issue-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-disabled);
+}
+.nav-mast__rule {
+  max-width: var(--container-max);
+  margin: var(--space-sm) auto;
+  height: 0;
+  border-top: 1px solid var(--border);
+}
+.nav-mast__rule--double {
+  border-bottom: 1px solid var(--border);
+  height: 3px;
+}
+.nav-mast__main {
+  padding: var(--space-md) 0;
+}
+.nav-mast__wm {
+  font-family: Georgia, serif;
+  font-size: var(--display-md);
+  font-weight: 700;
+  color: var(--text-display);
+  display: block;
+}
+.nav-mast__sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-disabled);
+}
+.nav-mast__links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xl);
+  padding-top: var(--space-sm);
+}
+.nav-mast__links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.nav-mast__links a:hover { color: var(--text-display); }</style><nav class="nav-mast">
+  <div class="nav-mast__issue">
+    <span class="nav-mast__issue-text">VOL. 1 / ISSUE 01 / MAY 2026</span>
+  </div>
+  <div class="nav-mast__rule nav-mast__rule--double"></div>
+  <div class="nav-mast__main">
+    <span class="nav-mast__wm">Haglofs</span>
+    <span class="nav-mast__sub">BRAND DESIGN SYSTEM</span>
+  </div>
+  <div class="nav-mast__rule nav-mast__rule--single"></div>
+  <div class="nav-mast__links">
+    <a href="#">Components</a>
+    <a href="#">Tokens</a>
+    <a href="#">Guidelines</a>
+    <a href="#">Examples</a>
+  </div>
+</nav></div>
+  <div class="preview-code"><pre>&lt;nav class="nav-mast"&gt;
+  &lt;div class="nav-mast__issue"&gt;
+    &lt;span class="nav-mast__issue-text"&gt;VOL. 1 / ISSUE 01 / MAY 2026&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="nav-mast__rule nav-mast__rule--double"&gt;&lt;/div&gt;
+  &lt;div class="nav-mast__main"&gt;
+    &lt;span class="nav-mast__wm"&gt;Haglofs&lt;/span&gt;
+    &lt;span class="nav-mast__sub"&gt;BRAND DESIGN SYSTEM&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="nav-mast__rule nav-mast__rule--single"&gt;&lt;/div&gt;
+  &lt;div class="nav-mast__links"&gt;
+    &lt;a href="#"&gt;Components&lt;/a&gt;
+    &lt;a href="#"&gt;Tokens&lt;/a&gt;
+    &lt;a href="#"&gt;Guidelines&lt;/a&gt;
+    &lt;a href="#"&gt;Examples&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="F7">
+  <div class="review-header">
+    <div class="review-id">F7</div>
+    <div class="review-name">Edge-aligned Minimal </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.nav-edge {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 0 var(--container-padding);
+}
+.nav-edge__inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+.nav-edge__wm {
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-display);
+}
+.nav-edge__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+.nav-edge__link {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+.nav-edge__link:hover { color: var(--text-primary); }
+.nav-edge__cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color 150ms ease-out;
+}
+.nav-edge__cta:hover { border-color: var(--text-primary); }</style><nav class="nav-edge">
+  <div class="nav-edge__inner">
+    <span class="nav-edge__wm">Haglofs</span>
+    <div class="nav-edge__right">
+      <a href="#" class="nav-edge__link">Products</a>
+      <a href="#" class="nav-edge__link">Technology</a>
+      <a href="#" class="nav-edge__link">Sustainability</a>
+      <a href="#" class="nav-edge__cta">Shop &rarr;</a>
+    </div>
+  </div>
+</nav></div>
+  <div class="preview-code"><pre>&lt;nav class="nav-edge"&gt;
+  &lt;div class="nav-edge__inner"&gt;
+    &lt;span class="nav-edge__wm"&gt;Haglofs&lt;/span&gt;
+    &lt;div class="nav-edge__right"&gt;
+      &lt;a href="#" class="nav-edge__link"&gt;Products&lt;/a&gt;
+      &lt;a href="#" class="nav-edge__link"&gt;Technology&lt;/a&gt;
+      &lt;a href="#" class="nav-edge__link"&gt;Sustainability&lt;/a&gt;
+      &lt;a href="#" class="nav-edge__cta"&gt;Shop &amp;rarr;&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;</pre></div>
+</section>
+<script>
+function togglePreview(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='block';item.querySelector('.preview-code').style.display='none';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function toggleCode(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='none';item.querySelector('.preview-code').style.display='block';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function generateResult(){var items=document.querySelectorAll('.review-item');var result=document.title.split(' ')[0]+' 复审结果\n==================\n\n';var keep=[],del=[],unsure=[];items.forEach(function(item){var id=item.dataset.id;var name=item.querySelector('.review-name').textContent.trim();var sel=item.querySelector('.review-select').value;if(sel==='keep')keep.push(id+' '+name);else if(sel==='delete')del.push(id+' '+name);else unsure.push(id+' '+name)});result+='✅ 保留（'+keep.length+'个）：\n';keep.forEach(function(k){result+='  '+k+'\n'});result+='\n❌ 删除（'+del.length+'个）：\n';del.forEach(function(d){result+='  '+d+'\n'});if(unsure.length>0){result+='\n⚠️ 不确定（'+unsure.length+'个）：\n';unsure.forEach(function(u){result+='  '+u+'\n'})}document.getElementById('result-text').textContent=result;document.getElementById('result-box').style.display='block'}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result-text').textContent).then(function(){var btn=event.target;btn.textContent='已复制';setTimeout(function(){btn.textContent='复制结果'},1500)})}
+</script>
+</body>
+</html>

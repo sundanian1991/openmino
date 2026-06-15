@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电销运营数据分析 — 2026年5月</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #F5F3EF;
+    --surface: #FFFFFF;
+    --surface-alt: #E8E4DD;
+    --border: #C4B8A8;
+    --border-strong: #8A7D6E;
+    --brand-primary: #4A6741;
+    --brand-secondary: #7A9B6D;
+    --signal-error: #E8453C;
+    --signal-warning: #E87A3C;
+    --text-display: #2D2A26;
+    --text-primary: #1A1816;
+    --text-secondary: #8A7D6E;
+    --text-disabled: #C4B8A8;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== HERO (DARK) ===== */
+  .hero {
+    background: var(--text-display);
+    padding: 96px 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: 'DATA';
+    position: absolute;
+    right: 40px; bottom: 10px;
+    font-family: var(--font-display);
+    font-size: 160px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .hero__inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; }
+  .hero__tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 32px;
+  }
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.2;
+    max-width: 520px;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  .hero__lead {
+    font-size: 15px;
+    color: rgba(255,255,255,0.5);
+    max-width: 460px;
+    line-height: 1.7;
+  }
+
+  /* ===== SECTION ===== */
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 72px 48px;
+  }
+  .section__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 12px;
+  }
+  .section__title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-display);
+    margin-bottom: 40px;
+    line-height: 1.25;
+  }
+
+  /* ===== METRICS ROW ===== */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+  }
+  .metric__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 8px;
+  }
+  .metric__value {
+    font-family: var(--font-mono);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--text-display);
+  }
+  .metric__value--alert { color: var(--signal-error); }
+  .metric__value--warn { color: var(--signal-warning); }
+  .metric__value--ok { color: var(--brand-primary); }
+  .metric__note {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-family: var(--font-mono);
+  }
+
+  /* ===== BAR CHART ===== */
+  .chart-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 180px;
+    padding-top: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .chart-bar__col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-bar__bar {
+    width: 100%;
+    border-radius: 3px 3px 0 0;
+    transition: all 0.3s;
+  }
+  .chart-bar__bar:hover { opacity: 0.8; }
+  .chart-bar__val {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .chart-bar__label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-disabled);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== DATA ROWS ===== */
+  .data-list { display: flex; flex-direction: column; gap: 6px; }
+  .data-row {
+    display: grid;
+    grid-template-columns: 40px 140px 1fr 80px;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .data-row__rank {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-disabled);
+    text-align: center;
+  }
+  .data-row__rank--top { color: var(--brand-primary); }
+  .data-row__rank--alert { color: var(--signal-error); }
+  .data-row__label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-display);
+    font-weight: 500;
+  }
+  .data-row__bar-wrap { height: 8px; background: var(--surface-alt); border-radius: 4px; overflow: hidden; }
+  .data-row__bar { height: 100%; border-radius: 4px; }
+  .data-row__val {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-display);
+    text-align: right;
+  }
+
+  /* ===== SEG BAR ===== */
+  .seg-list { display: flex; flex-direction: column; gap: 20px; }
+  .seg-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 60px;
+    align-items: center;
+    gap: 16px;
+  }
+  .seg-row__label { font-size: 13px; font-weight: 500; color: var(--text-display); }
+  .seg-row__sub { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+  .seg-bar { display: flex; gap: 2px; }
+  .seg-block { width: 10px; height: 20px; border-radius: 2px; background: var(--border); }
+  .seg-block--m1 { background: var(--border); }
+  .seg-block--m2 { background: var(--text-disabled); }
+  .seg-block--m3 { background: var(--text-secondary); }
+  .seg-row__val { font-family: var(--font-mono); font-size: 13px; font-weight: 500; text-align: right; }
+  .seg-row__val--alert { color: var(--signal-error); }
+
+  /* ===== INSIGHT BLOCK ===== */
+  .insight {
+    background: var(--surface);
+    border-left: 3px solid var(--brand-primary);
+    padding: 20px 24px;
+    margin-bottom: 12px;
+  }
+  .insight--warn { border-left-color: var(--signal-warning); }
+  .insight--alert { border-left-color: var(--signal-error); }
+  .insight__title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-display);
+    margin-bottom: 6px;
+  }
+  .insight__body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ===== CALLOUT ===== */
+  .callout {
+    background: var(--surface);
+    border-left: 3px solid var(--signal-warning);
+    padding: 24px 28px;
+  }
+  .callout--error { border-left-color: var(--signal-error); }
+  .callout__title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-display);
+    margin-bottom: 8px;
+  }
+  .callout__body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--text-display);
+    color: rgba(255,255,255,0.35);
+    padding: 40px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer__left {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+  .footer__right {
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .hero { padding: 60px 24px 48px; }
+    .hero__title { font-size: 28px; }
+    .section { padding: 48px 24px; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .data-row { grid-template-columns: 30px 100px 1fr 60px; }
+    .seg-row { grid-template-columns: 100px 1fr 50px; }
+    .footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== S1 · HERO ===== -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__tag">Data Report · P01 · May 2026</div>
+    <h1 class="hero__title">电销运营数据分析</h1>
+    <p class="hero__lead">
+      2026年5月全量数据：34家供应商、3,239人、四条产线。
+      核心发现：金条产能环比下滑4.2%，毛毛虫职场异常需重点关注。
+    </p>
+  </div>
+</section>
+
+<!-- ===== S2 · 核心指标 ===== -->
+<section class="section">
+  <div class="section__label">KPI · 核心指标</div>
+  <h2 class="section__title">5月运营<strong>全景</strong></h2>
+
+  <div class="metrics">
+    <div>
+      <div class="metric__label">总GMV</div>
+      <div class="metric__value">¥4,280万</div>
+      <div class="metric__note">环比 +2.1%</div>
+    </div>
+    <div>
+      <div class="metric__label">人均产能</div>
+      <div class="metric__value">¥13,200</div>
+      <div class="metric__note">目标 ¥15,000 · 差距 -12%</div>
+    </div>
+    <div>
+      <div class="metric__label">综合出勤率</div>
+      <div class="metric__value metric__value--warn">84%</div>
+      <div class="metric__note">目标 85% · 差距 -1pp</div>
+    </div>
+    <div>
+      <div class="metric__label">平均司龄</div>
+      <div class="metric__value">4.2 MOB</div>
+      <div class="metric__note">新入职占比 23%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== S3 · 月度趋势 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Trend · 月度趋势</div>
+  <h2 class="section__title">GMV月度<strong>走势</strong></h2>
+
+  <div class="chart-bar">
+    <div class="chart-bar__col">
+      <div class="chart-bar__bar" style="height:65%;background:var(--text-secondary)"></div>
+      <div class="chart-bar__val">¥3,820</div>
+      <div class="chart-bar__label">1月</div>
+    </div>
+    <div class="chart-bar__col">
+      <div class="chart-bar__bar" style="height:78%;background:var(--text-secondary)"></div>
+      <div class="chart-bar__val">¥4,050</div>
+      <div class="chart-bar__label">2月</div>
+    </div>
+    <div class="chart-bar__col">
+      <div class="chart-bar__bar" style="height:85%;background:var(--text-secondary)"></div>
+      <div class="chart-bar__val">¥4,180</div>
+      <div class="chart-bar__label">3月</div>
+    </div>
+    <div class="chart-bar__col">
+      <div class="chart-bar__bar" style="height:92%;background:var(--border-strong)"></div>
+      <div class="chart-bar__val">¥4,350</div>
+      <div class="chart-bar__label">4月</div>
+    </div>
+    <div class="chart-bar__col">
+      <div class="chart-bar__bar" style="height:100%;background:var(--brand-primary)"></div>
+      <div class="chart-bar__val">¥4,280</div>
+      <div class="chart-bar__label">5月</div>
+    </div>
+  </div>
+
+  <p style="font-size:12px;color:var(--text-disabled);margin-top:16px;font-family:var(--font-mono)">
+    单位：万元 · 5月环比微降1.6%，主要受毛毛虫职场异常拖累
+  </p>
+</section>
+
+<!-- ===== S4 · 供应商排名 ===== -->
+<section class="section">
+  <div class="section__label">Ranking · 供应商赛马</div>
+  <h2 class="section__title">TOP 10<strong>排名</strong></h2>
+
+  <div class="data-list">
+    <div class="data-row">
+      <div class="data-row__rank data-row__rank--top">1</div>
+      <div class="data-row__label">汇通科技</div>
+      <div class="data-row__bar-wrap"><div class="data-row__bar" style="width:100%;background:var(--brand-primary)"></div></div>
+      <div class="data-row__val">¥186万</div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__rank">2</div>
+      <div class="data-row__label">赛维斯</div>
+      <div class="data-row__bar-wrap"><div class="data-row__bar" style="width:92%;background:var(--brand-secondary)"></div></div>
+      <div class="data-row__val">¥171万</div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__rank">3</div>
+      <div class="data-row__label">中智外包</div>
+      <div class="data-row__bar-wrap"><div class="data-row__bar" style="width:85%;background:var(--border-strong)"></div></div>
+      <div class="data-row__val">¥158万</div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__rank">4</div>
+      <div class="data-row__label">万宝盛华</div>
+      <div class="data-row__bar-wrap"><div class="data-row__bar" style="width:78%;background:var(--text-secondary)"></div></div>
+      <div class="data-row__val">¥145万</div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__rank">5</div>
+      <div class="data-row__label">科锐国际</div>
+      <div class="data-row__bar-wrap"><div class="data-row__bar" style="width:72%;background:var(--text-secondary)"></div></div>
+      <div class="data-row__val">¥134万</div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__rank data-row__rank--alert">28</div>
+      <div class="data-row__label">毛毛虫职场</div>
+      <div class="data-row__bar-wrap"><div class="data-row__bar" style="width:35%;background:var(--signal-error)"></div></div>
+      <div class="data-row__val">¥128万</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== S5 · 产线对比 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Product Line · 产线对比</div>
+  <h2 class="section__title">四条产线<strong>赛马</strong></h2>
+
+  <div class="seg-list">
+    <div class="seg-row">
+      <div>
+        <div class="seg-row__label">金条拉新</div>
+        <div class="seg-row__sub">1,820人 · 占比56%</div>
+      </div>
+      <div class="seg-bar">
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m3"></div>
+        <div class="seg-block"></div><div class="seg-block"></div>
+        <div class="seg-block"></div><div class="seg-block"></div>
+        <div class="seg-block"></div><div class="seg-block"></div>
+        <div class="seg-block"></div>
+      </div>
+      <div class="seg-row__val seg-row__val--alert">-4.2%</div>
+    </div>
+    <div class="seg-row">
+      <div>
+        <div class="seg-row__label">企业主贷</div>
+        <div class="seg-row__sub">680人 · 占比21%</div>
+      </div>
+      <div class="seg-bar">
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block"></div>
+      </div>
+      <div class="seg-row__val">+1.8%</div>
+    </div>
+    <div class="seg-row">
+      <div>
+        <div class="seg-row__label">信用卡</div>
+        <div class="seg-row__sub">430人 · 占比13%</div>
+      </div>
+      <div class="seg-bar">
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m3"></div><div class="seg-block"></div>
+        <div class="seg-block"></div>
+      </div>
+      <div class="seg-row__val">+5.3%</div>
+    </div>
+    <div class="seg-row">
+      <div>
+        <div class="seg-row__label">财富</div>
+        <div class="seg-row__sub">309人 · 占比10%</div>
+      </div>
+      <div class="seg-bar">
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div><div class="seg-block seg-block--m2"></div>
+        <div class="seg-block seg-block--m2"></div>
+      </div>
+      <div class="seg-row__val">+8.7%</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== S6 · 数据洞察 ===== -->
+<section class="section">
+  <div class="section__label">Insight · 数据洞察</div>
+  <h2 class="section__title">司龄与产能<strong>关系</strong></h2>
+
+  <div class="insight">
+    <div class="insight__title">MOB 3-6个月是产能黄金期</div>
+    <div class="insight__body">
+      数据显示，司龄3-6个月的员工人均产能最高（¥15,800），超过6个月后逐渐下滑至¥13,200。
+      原因分析：3-6个月员工已度过新手期，熟练度足够，同时尚未产生职业倦怠。
+      建议：在MOB 6个月节点增加激励和轮岗机会，延缓产能下滑。
+    </div>
+  </div>
+
+  <div class="insight insight--warn">
+    <div class="insight__title">新入职占比23%，但产能仅为均值62%</div>
+    <div class="insight__body">
+      5月新入职745人（占比23%），人均产能仅¥8,200，拉低整体均值。
+      若剔除新人，老员人均产能¥14,600，已接近目标值。
+      建议：控制月度入职节奏，避免集中大量新人导致整体数据失真。
+    </div>
+  </div>
+
+  <div class="insight">
+    <div class="insight__title">出勤率与产能相关系数 0.78</div>
+    <div class="insight__body">
+      强正相关。出勤率>90%的供应商，产能均值比出勤率<80%的高出34%。
+      毛毛虫职场出勤率76%，是其产能下滑的核心原因之一。
+      建议：将出勤率纳入供应商月度考核权重（当前权重10%，建议提升至15%）。
+    </div>
+  </div>
+</section>
+
+<!-- ===== S7 · 异常预警 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Alert · 异常预警</div>
+  <h2 class="section__title">需要<strong>关注</strong>的信号</h2>
+
+  <div class="callout callout--error">
+    <div class="callout__title">毛毛虫职场：连续2个月C级，触发预警</div>
+    <div class="callout__body">
+      4月、5月连续C级，产能环比-18%，出勤率76%，首贷件均¥4,200。
+      已提交决策建议（S01），建议方案B（部分切量30%至赛维斯）。
+      若6月仍未改善，建议启动清退评估。
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout__title">信用卡产线：投诉率上升至3.8%</div>
+    <div class="callout__body">
+      信用卡产线5月投诉率3.8%，接近红线4%。主要集中在新话术上线后的第一周，后续已回落至3.2%。
+      建议：新话术上线前增加小范围测试（100单/天，测3天），确认无问题后再全量推广。
+    </div>
+  </div>
+</section>
+
+<!-- ===== S8 · 下月建议 ===== -->
+<section class="section">
+  <div class="section__label">Action · 下月建议</div>
+  <h2 class="section__title">6月<strong>重点</strong></h2>
+
+  <div class="insight">
+    <div class="insight__title">1. 执行毛毛虫切量方案</div>
+    <div class="insight__body">
+      按S01决策建议，6月首周启动10%切量，第二周完成30%。每日监控赛维斯承接质量，确保投诉率不高于3%。
+    </div>
+  </div>
+  <div class="insight">
+    <div class="insight__title">2. 控制新人入职节奏</div>
+    <div class="insight__body">
+      6月建议入职不超过400人（vs 5月745人），将资源用于老员激励和培训质量提升。
+    </div>
+  </div>
+  <div class="insight">
+    <div class="insight__title">3. 信用卡话术优化复盘</div>
+    <div class="insight__body">
+      召集信用卡产线TOP3供应商，复盘5月投诉集中问题，输出话术优化建议，6月15日前完成。
+    </div>
+  </div>
+  <div class="insight">
+    <div class="insight__title">4. 出勤率考核权重调整</div>
+    <div class="insight__body">
+      向王易人提交考核权重调整建议：出勤率从10%提升至15%，司龄结构纳入考核（3-6个月占比目标30%）。
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer__left">nian-design · P01 数据分析</div>
+  <div class="footer__right">京东科技电销服务组 · 2026年5月</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金融电销中心 · Q1 运营深度分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F5F5;--surface:#FFFFFF;--surface-raised:#F0F0F0;
+  --border:#E8E8E8;--border-visible:#CCCCCC;
+  --text-disabled:#999999;--text-secondary:#666666;--text-primary:#1A1A1A;--text-display:#000000;
+  --accent:#D71921;--success:#4A9E5C;--warning:#D4A843;--interactive:#007AFF;
+  --space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;--space-4xl:96px;
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--text-primary);font-family:'Inter',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:1120px;margin:0 auto;padding:0 var(--space-xl)}
+.mono{font-family:'Space Mono',monospace}
+
+/* Hero */
+.hero{padding:var(--space-4xl) 0 var(--space-3xl)}
+.hero-ey{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-md)}
+.hero-title{font-size:42px;font-weight:700;letter-spacing:-.02em;color:var(--text-display);line-height:1.15;margin-bottom:var(--space-sm)}
+.hero-sub{font-size:15px;color:var(--text-secondary);margin-bottom:var(--space-2xl);max-width:560px}
+.hero-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-lg)}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:var(--space-lg)}
+.hero-card .hc-val{font-size:32px;font-weight:700;color:var(--text-display);line-height:1.1}
+.hero-card .hc-unit{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-secondary);letter-spacing:.04em;margin-top:2px}
+.hero-card .hc-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-top:var(--space-xs)}
+.hero-card .hc-delta{font-family:'Space Mono',monospace;font-size:11px;margin-top:var(--space-xs)}
+.hc-up{color:var(--success)}.hc-down{color:var(--accent)}.hc-flat{color:var(--text-disabled)}
+
+/* Section */
+.section{margin-bottom:var(--space-3xl)}
+.sec-head{margin-bottom:var(--space-lg)}
+.sec-ey{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-xs)}
+.sec-title{font-size:22px;font-weight:600;letter-spacing:-.01em}
+.sec-desc{font-size:14px;color:var(--text-secondary);margin-top:var(--space-xs);max-width:640px}
+
+/* Card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:var(--space-xl)}
+
+/* Funnel Viz */
+.funnel-grid{display:grid;gap:var(--space-md)}
+.funnel-row{display:grid;grid-template-columns:56px 1fr;gap:var(--space-md);align-items:center;padding:var(--space-md) 0;border-bottom:1px solid var(--border)}
+.funnel-row:last-child{border-bottom:none}
+.funnel-team{font-weight:600;font-size:15px}
+.funnel-stages{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-sm)}
+.funnel-stage{text-align:center}
+.funnel-stage .fs-val{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text-display)}
+.funnel-stage .fs-rate{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-secondary)}
+.funnel-stage .fs-bar{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden}
+.funnel-stage .fs-bar-fill{height:100%;border-radius:2px}
+.funnel-header{display:grid;grid-template-columns:56px 1fr;gap:var(--space-md);padding-bottom:var(--space-sm);border-bottom:2px solid var(--border-visible)}
+.funnel-header-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-sm);text-align:center}
+.funnel-header-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}
+
+/* Insight Grid */
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+.insight-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:8px;padding:var(--space-lg)}
+.insight-card .ic-ey{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-xs)}
+.insight-card .ic-val{font-size:28px;font-weight:700;color:var(--text-display);line-height:1.1}
+.insight-card .ic-desc{font-size:13px;color:var(--text-secondary);margin-top:var(--space-sm);line-height:1.5}
+.insight-card .ic-metric{display:flex;gap:var(--space-lg);margin-top:var(--space-md)}
+.insight-card .ic-metric-item .im-val{font-family:'Space Mono',monospace;font-size:14px;font-weight:700}
+.insight-card .ic-metric-item .im-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-disabled)}
+
+/* Benchmark Table */
+.bench-table{width:100%;border-collapse:collapse}
+.bench-table th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);padding:var(--space-sm) var(--space-md);border-bottom:2px solid var(--border-visible);text-align:left;white-space:nowrap}
+.bench-table th:nth-child(n+3){text-align:right}
+.bench-table td{font-size:13px;padding:10px var(--space-md);border-bottom:1px solid var(--border);white-space:nowrap}
+.bench-table td:nth-child(n+3){text-align:right;font-family:'Space Mono',monospace;font-size:12px}
+.bench-table tr:hover{background:var(--surface-raised)}
+.bench-table .bm-best{color:var(--success);font-weight:600}
+.bench-table .bm-worst{color:var(--accent);font-weight:600}
+.bench-table .bm-avg{color:var(--text-secondary)}
+.bench-table .bm-tag{display:inline-block;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.04em;padding:2px 6px;border-radius:4px;margin-left:4px}
+.bm-tag-top{background:rgba(74,158,92,.1);color:var(--success)}
+.bm-tag-bot{background:rgba(215,25,33,.08);color:var(--accent)}
+
+/* Chart */
+.chart-wrap{position:relative;width:100%;height:320px}
+.chart-wrap canvas{width:100%!important;height:100%!important}
+
+/* Action Cards */
+.action-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md)}
+.action-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:var(--space-lg)}
+.action-card .ac-num{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.action-card .ac-title{font-size:15px;font-weight:600;margin-bottom:var(--space-xs)}
+.action-card .ac-text{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.action-card .ac-target{font-family:'Space Mono',monospace;font-size:11px;color:var(--interactive);margin-top:var(--space-sm)}
+
+/* Data Table */
+.tbl-wrap{overflow-x:auto}
+table.detail-tbl{width:100%;border-collapse:collapse}
+.detail-tbl th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);padding:var(--space-sm) var(--space-md);border-bottom:2px solid var(--border-visible);text-align:left;white-space:nowrap}
+.detail-tbl th:nth-child(n+3){text-align:right}
+.detail-tbl td{font-size:13px;padding:9px var(--space-md);border-bottom:1px solid var(--border);white-space:nowrap}
+.detail-tbl td:nth-child(n+3){text-align:right;font-family:'Space Mono',monospace;font-size:12px}
+.detail-tbl tr:hover{background:var(--surface-raised)}
+.detail-tbl .row-best td:first-child{border-left:2px solid var(--success)}
+.detail-tbl .row-worst td:first-child{border-left:2px solid var(--accent)}
+.tbl-note{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-top:var(--space-sm);letter-spacing:.04em}
+
+/* Footer */
+.footer{padding:var(--space-3xl) 0;border-top:1px solid var(--border);margin-top:var(--space-2xl)}
+.footer-inner{display:flex;justify-content:space-between;align-items:center}
+.footer-text{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-disabled)}
+.footer-dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="container">
+  <section class="hero">
+    <div class="hero-ey">消费金融电销中心 · 2025 Q1 · 深度分析</div>
+    <h1 class="hero-title">Q1 运营分析</h1>
+    <p class="hero-sub">312 名坐席，6 个团队，信用卡分期 + 现金贷。Q1 外呼 304 万次，成交 ¥3.57 亿。B 组人效是 F 组的 1.7 倍 —— 差距不在努力，在方法。</p>
+    <div class="hero-grid">
+      <div class="hero-card">
+        <div class="hc-val">304.2万</div>
+        <div class="hc-unit">外呼总量</div>
+        <div class="hc-label">TOTAL OUTBOUND</div>
+        <div class="hc-delta hc-flat">1月 106万 → 2月 85万 → 3月 113万</div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-val">¥3.57亿</div>
+        <div class="hc-unit">成交金额</div>
+        <div class="hc-label">REVENUE</div>
+        <div class="hc-delta hc-up">Q1 累计 · 3月占比 60.8%</div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-val">28.9%</div>
+        <div class="hc-unit">平均接通率</div>
+        <div class="hc-label">CONNECTION RATE</div>
+        <div class="hc-delta hc-flat">B/D 组 31-32% · C/F 组 25-27%</div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-val">2.1%</div>
+        <div class="hc-unit">平均转化率</div>
+        <div class="hc-label">CONVERSION RATE</div>
+        <div class="hc-delta hc-down">B组 2.6% 领先 · F组 1.7% 垫底</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== 01 FUNNEL ANALYSIS ===== -->
+<div class="container">
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-ey">01 — 漏斗诊断</div>
+      <h2 class="sec-title">转化漏斗：每一层都在漏</h2>
+      <p class="sec-desc">从外呼到成交经历 4 层过滤。B 组每层转化率均高于均值，C/F 组从第一层就开始掉队。差距是累积的 —— 接通率差 5 个点，到成交端放大为 50% 的效率差。</p>
+    </div>
+    <div class="card">
+      <!-- Header -->
+      <div class="funnel-header">
+        <div></div>
+        <div class="funnel-header-labels">
+          <div class="funnel-header-label">外呼量</div>
+          <div class="funnel-header-label">接通率</div>
+          <div class="funnel-header-label">意向→成交</div>
+          <div class="funnel-header-label">人效 (单/人/月)</div>
+        </div>
+      </div>
+      <!-- Rows -->
+      <div class="funnel-grid" id="funnelRows"></div>
+    </div>
+
+    <!-- Funnel Deep Dive -->
+    <div class="insight-grid" style="margin-top:var(--space-md)">
+      <div class="insight-card">
+        <div class="ic-ey">漏斗断裂点</div>
+        <div class="ic-val">C组 · 接通→意向</div>
+        <div class="ic-desc">C 组接通率 25.7%，比 B 组低 5.6 个百分点。但更致命的是接通后的意向转化：C 组仅 9.3%，B 组 11.7%。两层叠加，C 组从外呼到意向客户的整体转化率只有 B 组的 60%。</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-ey">标杆拆解</div>
+        <div class="ic-val">B组 · 全链路最优</div>
+        <div class="ic-desc">B 组不是某个环节突出，而是每一层都领先：接通率 31.3%（+2.4）、意向率 11.7%（+1.1）、转化率 2.6%（+0.5）。这种全链路优势通常指向系统性的方法论差异，而非个别坐席的能力。</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== 02 EFFICIENCY GAP ===== -->
+<div class="container">
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-ey">02 — 效率差距</div>
+      <h2 class="sec-title">人效极差：B 组 vs F 组 = 1.7x</h2>
+      <p class="sec-desc">同样 52 人团队，B 组月均产出 22.1 单，F 组仅 13.0 单。差距不是工作量 —— F 组日均拨打 284 通，B 组 289 通，几乎一样。差距在转化效率。</p>
+    </div>
+    <div class="card" style="padding:var(--space-lg)">
+      <div class="chart-wrap">
+        <canvas id="effChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Benchmark Table -->
+    <div class="card" style="margin-top:var(--space-md);padding:var(--space-lg)">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--space-md)">Q1 均值基准对标</div>
+      <div class="tbl-wrap">
+        <table class="bench-table">
+          <thead>
+            <tr><th>团队</th><th>接通率</th><th>意向率</th><th>转化率</th><th>人效</th><th>成交额(万)</th><th>平均通话(秒)</th><th>综合评价</th></tr>
+          </thead>
+          <tbody id="benchBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== 03 GROWTH ANALYSIS ===== -->
+<div class="container">
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-ey">03 — 增长归因</div>
+      <h2 class="sec-title">Q1 增长：谁在加速，谁在掉队</h2>
+      <p class="sec-desc">1→3 月成交金额增长 20.9%，但增长高度不均。B/D 组贡献了增量的 65%，C/F 组几乎原地踏步。</p>
+    </div>
+    <div class="card">
+      <div class="chart-wrap">
+        <canvas id="growthChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Growth Insight -->
+    <div class="insight-grid" style="margin-top:var(--space-md)">
+      <div class="insight-card">
+        <div class="ic-ey">2月春节效应</div>
+        <div class="ic-val">外呼量 ↓19.9%</div>
+        <div class="ic-desc">2 月全组外呼量从 106 万骤降至 85 万，但接通率反而上升（28.5% → 29.4%）。说明春节减少的主要是无效拨打，有效触达受影响较小。成交金额仅降 13%，好于外呼量降幅。</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-ey">3月反弹分化</div>
+        <div class="ic-val">B组 +28.5% · F组 +12.5%</div>
+        <div class="ic-desc">3 月全组环比增长 39%，但 B 组反弹力度是 F 组的 2.3 倍。强队在市场回暖时放大优势，弱队只是随波逐流。这说明 B 组的增长是结构性的，不是周期性的。</div>
+        <div class="ic-metric">
+          <div class="ic-metric-item"><div class="im-val" style="color:var(--success)">+31.0%</div><div class="im-label">B组 1→3月</div></div>
+          <div class="ic-metric-item"><div class="im-val" style="color:var(--accent)">+0%</div><div class="im-label">F组 1→3月</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== 04 KEY FINDINGS ===== -->
+<div class="container">
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-ey">04 — 关键发现</div>
+      <h2 class="sec-title">数据背后的真实问题</h2>
+    </div>
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="ic-ey">发现 1</div>
+        <div class="ic-val">工作量 ≠ 产出</div>
+        <div class="ic-desc">C 组日均拨打 318 通（全组最高），人效却只有 13.7。B 组日均 289 通，人效 22.1。多打 10% 的电话，产出少 38%。问题不在坐席勤不勤，在话术和客户筛选。</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-ey">发现 2</div>
+        <div class="ic-val">接通率是第一个杠杆</div>
+        <div class="ic-desc">接通率每提升 1 个百分点，按 Q1 均值约多接通 3 万次。B/D 组 31-32%，C/F 组 25-27%，差距 5-6 个百分点 = 每月少接通 15 万次。这是最大的结构性损失。</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-ey">发现 3</div>
+        <div class="ic-val">F 组需要系统性干预</div>
+        <div class="ic-desc">12 项指标中 10 项垫底，不是某一个环节的问题。建议：① 检查名单质量分配 ② 复制 B 组话术体系 ③ 考虑团队重组或管理更换。</div>
+      </div>
+      <div class="insight-card">
+        <div class="ic-ey">发现 4</div>
+        <div class="ic-val">B 组方法论可复制</div>
+        <div class="ic-desc">B 组优势是全链路的，不是个别坐席的。这意味着存在可复制的方法论。建议 Q2 让 B 组组长做跨团队培训，重点输出：名单筛选标准、开场话术、异议处理流程。</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== 05 RECOMMENDATIONS ===== -->
+<div class="container">
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-ey">05 — 行动建议</div>
+      <h2 class="sec-title">Q2 应该做什么</h2>
+    </div>
+    <div class="action-grid">
+      <div class="action-card">
+        <div class="ac-num">01</div>
+        <div class="ac-title">名单质量审计</div>
+        <div class="ac-text">C/F 组接通率低 5-6 个百分点，首先排查名单来源和分配机制。是否存在"好名单先给 B/D 组"的潜规则。</div>
+        <div class="ac-target">目标：接通率差异缩小至 2% 以内</div>
+      </div>
+      <div class="action-card">
+        <div class="ac-num">02</div>
+        <div class="ac-title">B 组话术萃取</div>
+        <div class="ac-text">安排 B 组 Top 3 坐席录音分析，提炼开场白、需求挖掘、异议处理的标准动作，形成可复制的话术手册。</div>
+        <div class="ac-target">目标：C/F 组转化率提升至 2.0%+</div>
+      </div>
+      <div class="action-card">
+        <div class="ac-num">03</div>
+        <div class="ac-title">F 组专项治理</div>
+        <div class="ac-text">10/12 项指标垫底，属于系统性落后。建议：① 团队管理诊断 ② 末位坐席 1v1 辅导 ③ 评估是否需要团队重组。</div>
+        <div class="ac-target">目标：Q2 人效从 13.0 提升至 16.0+</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== 06 DETAIL TABLE ===== -->
+<div class="container">
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-ey">06 — 月度明细</div>
+      <h2 class="sec-title">全量数据</h2>
+    </div>
+    <div class="card" style="padding:var(--space-lg)">
+      <div class="tbl-wrap">
+        <table class="detail-tbl">
+          <thead>
+            <tr><th>月份</th><th>团队</th><th>外呼量</th><th>接通率</th><th>意向率</th><th>转化率</th><th>成交额(万)</th><th>通话(秒)</th><th>日均拨打</th><th>人效</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1月</td><td>A组</td><td>186,240</td><td>28.0%</td><td>10.0%</td><td>2.0%</td><td>3,126</td><td>312</td><td>298</td><td>17.4</td></tr>
+            <tr><td>1月</td><td>B组</td><td>172,800</td><td>30.0%</td><td>11.0%</td><td>2.3%</td><td>3,591</td><td>327</td><td>288</td><td>19.9</td></tr>
+            <tr><td>1月</td><td>C组</td><td>191,520</td><td>26.1%</td><td>9.0%</td><td>1.7%</td><td>2,565</td><td>285</td><td>318</td><td>14.3</td></tr>
+            <tr><td>1月</td><td>D组</td><td>164,160</td><td>30.0%</td><td>11.0%</td><td>2.2%</td><td>3,249</td><td>318</td><td>274</td><td>18.1</td></tr>
+            <tr><td>1月</td><td>E组</td><td>179,520</td><td>28.0%</td><td>10.0%</td><td>2.0%</td><td>3,015</td><td>305</td><td>299</td><td>16.8</td></tr>
+            <tr><td>1月</td><td>F组</td><td>168,480</td><td>28.0%</td><td>9.0%</td><td>1.7%</td><td>2,421</td><td>278</td><td>281</td><td>13.5</td></tr>
+            <tr><td>2月</td><td>A组</td><td>142,560</td><td>30.0%</td><td>11.0%</td><td>2.3%</td><td>2,967</td><td>335</td><td>288</td><td>16.5</td></tr>
+            <tr><td>2月</td><td>B组</td><td>138,240</td><td>32.0%</td><td>12.0%</td><td>2.8%</td><td>3,660</td><td>348</td><td>276</td><td>20.3</td></tr>
+            <tr><td>2月</td><td>C组</td><td>151,200</td><td>26.0%</td><td>10.0%</td><td>1.9%</td><td>2,241</td><td>291</td><td>302</td><td>12.5</td></tr>
+            <tr><td>2月</td><td>D组</td><td>134,400</td><td>31.3%</td><td>12.0%</td><td>2.6%</td><td>3,327</td><td>338</td><td>269</td><td>18.5</td></tr>
+            <tr><td>2月</td><td>E组</td><td>146,880</td><td>29.6%</td><td>12.0%</td><td>2.5%</td><td>3,285</td><td>325</td><td>293</td><td>18.3</td></tr>
+            <tr><td>2月</td><td>F组</td><td>136,320</td><td>27.7%</td><td>10.0%</td><td>1.9%</td><td>2,151</td><td>282</td><td>273</td><td>12.0</td></tr>
+            <tr><td>3月</td><td>A组</td><td>194,400</td><td>29.1%</td><td>11.0%</td><td>2.3%</td><td>3,921</td><td>325</td><td>311</td><td>21.8</td></tr>
+            <tr><td>3月</td><td>B组</td><td>185,760</td><td>32.0%</td><td>12.0%</td><td>2.6%</td><td>4,704</td><td>352</td><td>302</td><td>26.1</td></tr>
+            <tr><td>3月</td><td>C组</td><td>201,600</td><td>25.0%</td><td>9.0%</td><td>1.7%</td><td>2,586</td><td>295</td><td>330</td><td>14.4</td></tr>
+            <tr><td>3月</td><td>D组</td><td>176,640</td><td>32.0%</td><td>12.0%</td><td>2.5%</td><td>4,272</td><td>342</td><td>288</td><td>23.7</td></tr>
+            <tr><td>3月</td><td>E组</td><td>190,080</td><td>29.0%</td><td>11.0%</td><td>2.3%</td><td>3,819</td><td>318</td><td>308</td><td>21.2</td></tr>
+            <tr><td>3月</td><td>F组</td><td>181,440</td><td>26.0%</td><td>9.0%</td><td>1.7%</td><td>2,421</td><td>275</td><td>298</td><td>13.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-note">Q1 均值 · 接通率 28.9% · 意向率 10.7% · 转化率 2.1% · 人效 17.8</div>
+    </div>
+  </section>
+</div>
+
+<!-- Footer -->
+<div class="container">
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-text">金融电销中心 · 2025 Q1 运营深度分析</span>
+      <div class="footer-dot"></div>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ===== DATA =====
+const teams = ['A组','B组','C组','D组','E组','F组'];
+const q1Avg = {
+  connectRate: [29.0, 31.3, 25.7, 31.1, 28.9, 27.2],
+  intentRate:  [10.7, 11.7,  9.3, 11.7, 11.0,  9.3],
+  convRate:    [2.2,  2.6,   1.8,  2.4,  2.3,  1.8],
+  efficiency:  [18.6, 22.1, 13.7, 20.1, 18.8, 13.0],
+  revenue:     [10014, 11955, 7392, 10848, 10119, 6993],
+  avgCall:     [324, 342, 290, 333, 316, 278],
+  monthly: {
+    A: [3126, 2967, 3921],
+    B: [3591, 3660, 4704],
+    C: [2565, 2241, 2586],
+    D: [3249, 3327, 4272],
+    E: [3015, 3285, 3819],
+    F: [2421, 2151, 2421]
+  }
+};
+
+// ===== FUNNEL =====
+(function(){
+  const grid = document.getElementById('funnelRows');
+  const colors = ['#1A1A1A','#4A9E5C','#999999','#666666','#CCCCCC','#D71921'];
+  const maxConn = Math.max(...q1Avg.connectRate);
+
+  teams.forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'funnel-row';
+    row.innerHTML = `
+      <div class="funnel-team" style="color:${colors[i]}">${t}</div>
+      <div class="funnel-stages">
+        <div class="funnel-stage">
+          <div class="fs-val">${(q1Avg.revenue[i]/10000*10).toFixed(0)}K</div>
+          <div class="fs-rate">月均外呼</div>
+        </div>
+        <div class="funnel-stage">
+          <div class="fs-val" style="color:${q1Avg.connectRate[i]>=30?'var(--success)':q1Avg.connectRate[i]<27?'var(--accent)':'inherit'}">${q1Avg.connectRate[i]}%</div>
+          <div class="fs-rate">接通率</div>
+          <div class="fs-bar"><div class="fs-bar-fill" style="width:${q1Avg.connectRate[i]/maxConn*100}%;background:${colors[i]}"></div></div>
+        </div>
+        <div class="funnel-stage">
+          <div class="fs-val" style="color:${q1Avg.intentRate[i]>=11?'var(--success)':q1Avg.intentRate[i]<10?'var(--accent)':'inherit'}">${q1Avg.intentRate[i]}%</div>
+          <div class="fs-rate">意向率</div>
+          <div class="fs-bar"><div class="fs-bar-fill" style="width:${q1Avg.intentRate[i]/12*100}%;background:${colors[i]}"></div></div>
+        </div>
+        <div class="funnel-stage">
+          <div class="fs-val" style="color:${q1Avg.efficiency[i]>=20?'var(--success)':q1Avg.efficiency[i]<15?'var(--accent)':'inherit'}">${q1Avg.efficiency[i]}</div>
+          <div class="fs-rate">人效</div>
+          <div class="fs-bar"><div class="fs-bar-fill" style="width:${q1Avg.efficiency[i]/22.1*100}%;background:${colors[i]}"></div></div>
+        </div>
+      </div>`;
+    grid.appendChild(row);
+  });
+})();
+
+// ===== EFFICIENCY CHART =====
+(function(){
+  const ctx = document.getElementById('effChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: teams,
+      datasets: [
+        {
+          label: '1月',
+          data: [17.4, 19.9, 14.3, 18.1, 16.8, 13.5],
+          backgroundColor: 'rgba(26,26,26,0.3)',
+          borderColor: 'transparent',
+          borderWidth: 0,
+          borderRadius: 3,
+          barPercentage: 0.7,
+          categoryPercentage: 0.8
+        },
+        {
+          label: '2月',
+          data: [16.5, 20.3, 12.5, 18.5, 18.3, 12.0],
+          backgroundColor: 'rgba(26,26,26,0.6)',
+          borderColor: 'transparent',
+          borderWidth: 0,
+          borderRadius: 3,
+          barPercentage: 0.7,
+          categoryPercentage: 0.8
+        },
+        {
+          label: '3月',
+          data: [21.8, 26.1, 14.4, 23.7, 21.2, 13.5],
+          backgroundColor: 'rgba(26,26,26,1)',
+          borderColor: 'transparent',
+          borderWidth: 0,
+          borderRadius: 3,
+          barPercentage: 0.7,
+          categoryPercentage: 0.8
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'bottom', labels: { font: { family: "'Space Mono', monospace", size: 11 }, color: '#666', boxWidth: 16, boxHeight: 8, padding: 16 } },
+        tooltip: { backgroundColor: '#1A1A1A', titleFont: { family: "'Space Mono', monospace", size: 12 }, bodyFont: { family: "'Space Mono', monospace", size: 12 }, padding: 10, cornerRadius: 4, callbacks: { label: function(c) { return c.dataset.label + ': ' + c.parsed.y + ' 单/人/月'; } } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif", size: 13, weight: 500 }, color: '#1A1A1A' } },
+        y: { grid: { color: '#E8E8E8' }, ticks: { font: { family: "'Space Mono', monospace", size: 11 }, color: '#999' }, beginAtZero: true, suggestedMax: 30 }
+      }
+    }
+  });
+})();
+
+// ===== BENCHMARK TABLE =====
+(function(){
+  const body = document.getElementById('benchBody');
+  const overallAvg = [28.9, 10.7, 2.1, 17.8, 9346, 314];
+  const data = teams.map((t, i) => ({
+    name: t,
+    conn: q1Avg.connectRate[i],
+    intent: q1Avg.intentRate[i],
+    conv: q1Avg.convRate[i],
+    eff: q1Avg.efficiency[i],
+    rev: q1Avg.revenue[i],
+    call: q1Avg.avgCall[i]
+  }));
+
+  // Determine best/worst for each column
+  const metrics = ['conn','intent','conv','eff','rev','call'];
+  const best = {}, worst = {};
+  metrics.forEach(m => {
+    best[m] = Math.max(...data.map(d => d[m]));
+    worst[m] = Math.min(...data.map(d => d[m]));
+  });
+
+  // Overall评价
+  const ratings = ['中等','标杆','待改进','优秀','中等','待改进'];
+  const ratingColors = ['var(--text-secondary)','var(--success)','var(--accent)','var(--success)','var(--text-secondary)','var(--accent)'];
+
+  data.forEach((d, i) => {
+    const tr = document.createElement('tr');
+    const connClass = d.conn === best.conn ? 'bm-best' : d.conn === worst.conn ? 'bm-worst' : '';
+    const intentClass = d.intent === best.intent ? 'bm-best' : d.intent === worst.intent ? 'bm-worst' : '';
+    const convClass = d.conv === best.conv ? 'bm-best' : d.conv === worst.conv ? 'bm-worst' : '';
+    const effClass = d.eff === best.eff ? 'bm-best' : d.eff === worst.eff ? 'bm-worst' : '';
+    const revClass = d.rev === best.rev ? 'bm-best' : d.rev === worst.rev ? 'bm-worst' : '';
+    const callClass = d.call === best.call ? 'bm-best' : d.call === worst.call ? 'bm-worst' : '';
+    const tagClass = i === 1 || i === 3 ? 'bm-tag-top' : i === 2 || i === 5 ? 'bm-tag-bot' : '';
+    const tagText = i === 1 ? 'TOP' : i === 3 ? 'TOP' : i === 2 ? 'LOW' : i === 5 ? 'LOW' : '';
+
+    tr.innerHTML = `
+      <td>${d.name}</td>
+      <td class="${connClass}">${d.conn}%</td>
+      <td class="${intentClass}">${d.intent}%</td>
+      <td class="${convClass}">${d.conv}%</td>
+      <td class="${effClass}">${d.eff}</td>
+      <td class="${revClass}">${d.rev.toLocaleString()}</td>
+      <td class="${callClass}">${d.call}</td>
+      <td><span style="color:${ratingColors[i]};font-weight:500">${ratings[i]}</span>${tagText ? `<span class="bm-tag ${tagClass}">${tagText}</span>` : ''}</td>`;
+    body.appendChild(tr);
+  });
+
+  // Avg row
+  const avgTr = document.createElement('tr');
+  avgTr.style.borderTop = '2px solid #CCCCCC';
+  avgTr.innerHTML = `
+    <td style="font-weight:600;color:var(--text-secondary)">Q1 均值</td>
+    <td class="bm-avg">${overallAvg[0]}%</td>
+    <td class="bm-avg">${overallAvg[1]}%</td>
+    <td class="bm-avg">${overallAvg[2]}%</td>
+    <td class="bm-avg">${overallAvg[3]}</td>
+    <td class="bm-avg">${overallAvg[4].toLocaleString()}</td>
+    <td class="bm-avg">${overallAvg[5]}</td>
+    <td></td>`;
+  body.appendChild(avgTr);
+})();
+
+// ===== GROWTH CHART =====
+(function(){
+  const ctx = document.getElementById('growthChart').getContext('2d');
+  const teamColors = ['#1A1A1A','#4A9E5C','#999999','#666666','#CCCCCC','#D71921'];
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['1月', '2月', '3月'],
+      datasets: teams.map((t, i) => ({
+        label: t,
+        data: q1Avg.monthly[t.charAt(0)],
+        borderColor: teamColors[i],
+        backgroundColor: 'transparent',
+        borderWidth: i === 1 ? 2.5 : 1.5,
+        pointRadius: i === 1 ? 5 : 3,
+        pointBackgroundColor: teamColors[i],
+        tension: 0,
+        borderDash: i === 5 ? [4, 3] : []
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, position: 'bottom', labels: { font: { family: "'Space Mono', monospace", size: 11 }, color: '#666', boxWidth: 20, boxHeight: 2, padding: 16 } },
+        tooltip: { backgroundColor: '#1A1A1A', titleFont: { family: "'Space Mono', monospace", size: 12 }, bodyFont: { family: "'Space Mono', monospace", size: 12 }, padding: 10, cornerRadius: 4, callbacks: { label: function(c) { return c.dataset.label + ': ¥' + c.parsed.y.toLocaleString() + '万'; } } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: "'Space Mono', monospace", size: 12 }, color: '#666' } },
+        y: { grid: { color: '#E8E8E8' }, ticks: { font: { family: "'Space Mono', monospace", size: 11 }, color: '#999', callback: function(v) { return '¥' + v.toLocaleString(); } }, beginAtZero: false }
+      }
+    }
+  });
+})();
+</script>
+
+<!-- Nothing Editor 注入开始 -->
+<style id="ne-styles">
+body.editing [data-edit]{outline:1px dashed transparent;transition:outline-color .15s}
+body.editing [data-edit]:hover{outline-color:rgba(0,0,0,.15)}
+body.editing [data-edit]:focus{outline-color:#D71921;outline-width:2px;outline-style:solid}
+body.editing{box-shadow:inset 0 0 0 2px #D71921}
+#ne-toolbar{position:fixed;top:16px;right:16px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #ccc;border-radius:999px;padding:6px 12px;z-index:9999;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em}
+#ne-toolbar button{background:transparent;border:none;font-family:inherit;font-size:inherit;letter-spacing:inherit;color:#666;cursor:pointer;padding:6px 10px;border-radius:999px;transition:all .15s}
+#ne-toolbar button:hover{background:#F0F0F0;color:#1A1A1A}
+#ne-toolbar button.active{background:#D71921;color:#fff}
+#ne-toolbar button:disabled{opacity:.3;cursor:default}
+.ne-sep{width:1px;height:16px;background:#ccc}
+.ne-mode-label{position:fixed;bottom:16px;right:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#999;z-index:9999}
+body.editing .ne-mode-label{color:#D71921}
+.ne-toast{position:fixed;bottom:48px;left:50%;transform:translateX(-50%);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;padding:8px 16px;border-radius:999px;background:#1A1A1A;color:#fff;opacity:0;pointer-events:none;transition:opacity .3s;z-index:9999}
+.ne-toast.show{opacity:1}
+</style>
+<div id="ne-toolbar">
+  <button id="ne-toggle">编辑</button>
+  <span class="ne-sep"></span>
+  <button id="ne-undo" disabled>撤销</button>
+  <button id="ne-redo" disabled>重做</button>
+  <span class="ne-sep"></span>
+  <button id="ne-export">导出</button>
+</div>
+<div class="ne-mode-label" id="ne-mode">浏览</div>
+<div class="ne-toast" id="ne-toast"></div>
+<script>
+(function(){
+  var toggle=document.getElementById('ne-toggle'),
+      undoBtn=document.getElementById('ne-undo'),
+      redoBtn=document.getElementById('ne-redo'),
+      exportBtn=document.getElementById('ne-export'),
+      modeLabel=document.getElementById('ne-mode'),
+      toast=document.getElementById('ne-toast');
+  var editing=false,undoStack=[],redoStack=[],observer=null;
+  function toastMsg(m){toast.textContent=m;toast.classList.add('show');setTimeout(function(){toast.classList.remove('show')},1200)}
+  function snapshot(){var e=document.querySelectorAll('[data-edit]'),h='';e.forEach(function(el){h+=el.innerHTML});undoStack.push(h);redoStack=[];if(undoStack.length>50)undoStack.shift();undoBtn.disabled=undoStack.length===0;redoBtn.disabled=true}
+  toggle.addEventListener('click',function(){
+    editing=!editing;document.body.classList.toggle('editing',editing);
+    toggle.textContent=editing?'编辑中':'编辑';toggle.classList.toggle('active',editing);
+    modeLabel.textContent=editing?'编辑':'浏览';
+    document.querySelectorAll('[data-edit]').forEach(function(el){el.contentEditable=editing?'true':'false'});
+    if(editing){snapshot();observer=new MutationObserver(function(){snapshot()});observer.observe(document.body,{childList:true,subtree:true,characterData:true})}
+    else if(observer){observer.disconnect();observer=null}
+  });
+  undoBtn.addEventListener('click',function(){
+    if(!undoStack.length)return;var c=[];document.querySelectorAll('[data-edit]').forEach(function(el){c.push(el.innerHTML)});redoStack.push(c.join(''));var p=undoStack.pop().split('');
+    document.querySelectorAll('[data-edit]').forEach(function(el,i){if(p[i]!==undefined)el.innerHTML=p[i]});undoBtn.disabled=undoStack.length===0;redoBtn.disabled=false;toastMsg('已撤销');
+  });
+  redoBtn.addEventListener('click',function(){
+    if(!redoStack.length)return;var c=[];document.querySelectorAll('[data-edit]').forEach(function(el){c.push(el.innerHTML)});undoStack.push(c.join(''));var n=redoStack.pop().split('');
+    document.querySelectorAll('[data-edit]').forEach(function(el,i){if(n[i]!==undefined)el.innerHTML=n[i]});redoBtn.disabled=redoStack.length===0;undoBtn.disabled=false;toastMsg('已重做');
+  });
+  exportBtn.addEventListener('click',function(){
+    var clone=document.documentElement.cloneNode(true);clone.querySelectorAll('[data-edit]').forEach(function(el){el.removeAttribute('data-edit')});
+    var s=clone.querySelector('#ne-styles');if(s)s.remove();var tb=clone.querySelector('#ne-toolbar');if(tb)tb.remove();var ml=clone.querySelector('#ne-mode');if(ml)ml.remove();var ts=clone.querySelector('#ne-toast');if(ts)ts.remove();
+    clone.querySelectorAll('script').forEach(function(s){s.remove()});var html='<!DOCTYPE html>\n'+clone.outerHTML;
+    var blob=new Blob([html],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='金融电销Q1运营深度分析.html';a.click();URL.revokeObjectURL(a.href);toastMsg('已导出');
+  });
+})();
+</script>
+<!-- Nothing Editor 注入结束 -->
+
+</body>
+</html>

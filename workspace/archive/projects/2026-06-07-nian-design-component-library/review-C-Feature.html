@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>C-Feature 组件复审</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0ede6;--surface:#f8f8f8;--surface-alt:#e8e4dc;--border:#dbd6d2;--border-strong:#baaca8;--text-display:#383A3E;--text-primary:#1A1816;--text-secondary:#8A7D6E;--text-disabled:#c4b8a8;--forest:#3D5A35;--moss:#6B8B5E;--slate:#4E627C;--steel:#7A8B9B;--warm:#d47836;--sky-blue:#a0e3ee;--signal-red:#d86a48;--signal-clay:#C66B4B;--signal-gold:#BF9B5A;--signal-sky:#4A80C0;--font-ds:'Playfair Display',Georgia,serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;--font-dot:'Doto',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);padding:24px;max-width:1200px;margin:0 auto;padding-bottom:80px}
+h1{font-family:var(--font-ds);font-size:28px;font-weight:300;margin-bottom:8px}
+.sub{font-size:13px;color:var(--text-secondary);margin-bottom:24px}
+.review-item{border:1px solid var(--border);background:var(--surface);margin-bottom:20px;border-radius:6px;overflow:hidden}
+.review-header{display:flex;align-items:center;padding:12px 16px;background:var(--surface-alt);border-bottom:1px solid var(--border)}
+.review-id{font-family:var(--font-mono);font-size:12px;font-weight:600;color:#888;margin-right:12px}
+.review-name{font-size:14px;font-weight:600;flex:1}
+.review-name .tag-excluded{color:#C0392B;font-size:11px;font-weight:400;margin-left:6px}
+.review-select{padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:var(--font-body)}
+.review-meta{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid var(--border)}
+.meta-label{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#888;display:block;margin-bottom:2px}
+.meta-value{font-size:12px;color:#666;line-height:1.5}
+.toggle-bar{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.toggle-btn{padding:8px 16px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent}
+.toggle-btn.active{color:var(--text-display);border-bottom-color:var(--forest)}
+.preview-render{padding:16px;background:var(--bg);min-height:160px;position:relative;overflow:hidden}
+.preview-code{padding:16px;display:none;background:var(--bg)}
+.preview-code pre{background:var(--surface);border:1px solid var(--border);padding:12px;border-radius:4px;font-family:var(--font-mono);font-size:11px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;max-height:400px;overflow-y:auto}
+
+/* Component CSS */
+
+/* ===== Nian Design Tokens ===== */
+:root {
+  /* Colors */
+  --bg: #FAF8F5;
+  --surface: #FFFFFF;
+  --surface-alt: #F5F3EF;
+  --border: #E6E3DD;
+  --border-strong: #C8C4BC;
+  --text-display: #1A1A1A;
+  --text-primary: #2C2C2C;
+  --text-secondary: #6B6863;
+  --text-disabled: #B0ACA5;
+  /* Brand */
+  --brand-primary: #4A7C6F;
+  --forest: #3A6B5E;
+  --moss: #5A8A7A;
+  --sky: #7A9BAE;
+  --slate: #6B7B8C;
+  --clay: #B8957A;
+  --steel: #8A8A8A;
+  --gold: #C4A882;
+  /* Signal */
+  --success: #5A8A7A;
+  --warning: #C4A04A;
+  --error: #B55A5A;
+  /* Typography */
+  --font-mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  /* Sizes */
+  --display-lg: 42px;
+  --display-md: 32px;
+  --heading-lg: 22px;
+  --body: 15px;
+  --body-lg: 17px;
+  --body-sm: 13px;
+  --label: 10px;
+  --small: 9px;
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 40px;
+  --space-3xl: 56px;
+  --space-4xl: 80px;
+  /* Layout */
+  --container-max: 1080px;
+  --container-padding: 24px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+}
+
+/* ===== Global Page Styles ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ===== Layout ===== */
+.page-wrap {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--container-padding);
+}
+.page-title {
+  font-family: var(--font-serif);
+  font-size: var(--display-md);
+  font-weight: 700;
+  color: var(--text-display);
+  margin-bottom: var(--space-xs);
+}
+.page-sub {
+  font-size: var(--body);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2xl);
+}
+
+/* ===== TOC ===== */
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-lg) var(--space-xl);
+  margin-bottom: var(--space-3xl);
+}
+.toc__title {
+  font-family: var(--font-mono);
+  font-size: var(--label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  margin-bottom: var(--space-md);
+}
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xs);
+  list-style: none;
+}
+.toc-grid li { font-size: 12px; }
+.toc-grid a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 3px 0;
+  display: inline-block;
+}
+.toc-grid a:hover { color: var(--brand-primary); }
+
+/* ===== Component Entry ===== */
+.component-entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: var(--space-2xl);
+}
+.comp-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+}
+.comp-id {
+  font-family: var(--font-mono);
+  font-size: var(--small);
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+  background: var(--surface-alt);
+  padding: 3px 8px;
+  flex-shrink: 0;
+}
+.comp-name {
+  font-family: var(--font-serif);
+  font-size: var(--heading-lg);
+  font-weight: 700;
+  color: var(--text-display);
+  flex: 1;
+}
+.comp-badge {
+  font-family: var(--font-mono);
+  font-size: var(--small);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  background: var(--surface-alt);
+  color: var(--brand-primary);
+  border: 1px solid var(--border);
+}
+.comp-badge.excluded {
+  color: var(--text-disabled);
+  text-decoration: line-through;
+}
+
+/* ===== Meta ===== */
+.comp-meta {
+  padding: var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-alt);
+}
+.comp-meta dl { display: grid; grid-template-columns: 110px 1fr; gap: var(--space-xs) 0; }
+.comp-meta dt {
+  font-family: var(--font-mono);
+  font-size: var(--small);
+  letter-spacing: 0.06em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+.comp-meta dd {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  padding: 2px 0;
+  line-height: 1.5;
+}
+
+/* ===== Preview ===== */
+.comp-preview {
+  padding: var(--space-xl);
+  overflow-x: auto;
+}
+.comp-preview .sl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  display: block;
+}
+
+/* ===== All Component Styles (inline) ===== */
+
+/* C1: Bento */
+.bento { padding: var(--space-2xl) var(--container-padding); background: var(--bg); }
+.bento__grid { max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 200px; gap: var(--space-md); }
+.bento__tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column; }
+.bento__tile--large { grid-column: span 2; grid-row: span 2; }
+.bento__tile--wide { grid-column: span 2; }
+.bento__tile-body { padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-xs); flex: 1; justify-content: flex-end; }
+.bento__tile-title { font-family: var(--font-serif); font-size: var(--heading-lg); font-weight: 700; color: var(--text-display); margin: 0; }
+.bento__tile-meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--text-disabled); }
+
+/* C2: Sticky-stack */
+.sticky-stack { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2xl); padding: var(--space-2xl) var(--container-padding); max-width: var(--container-max); margin: 0 auto; }
+.sticky-stack__pinned { position: sticky; top: 80px; align-self: start; }
+.sticky-stack__title { font-family: var(--font-serif); font-size: var(--display-md); font-weight: 700; color: var(--text-display); margin: var(--space-sm) 0 var(--space-md) 0; }
+.sticky-stack__desc { font-family: var(--font-sans); font-size: var(--body); color: var(--text-secondary); line-height: 1.6; margin: 0 0 var(--space-xl) 0; }
+.sticky-stack__specs { display: flex; flex-direction: column; }
+.sticky-stack__scroll { display: flex; flex-direction: column; gap: var(--space-2xl); }
+.sticky-stack__step { position: relative; }
+.sticky-stack__img { width: 100%; border-radius: var(--radius-md); border: 1px solid var(--border); }
+.sticky-stack__step-label { font-family: var(--font-mono); font-size: var(--label); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-disabled); display: block; margin-top: var(--space-sm); }
+.spec-row { display: flex; gap: var(--space-md); padding: var(--space-xs) 0; border-bottom: 1px solid var(--border); }
+.spec-row .sl { min-width: 100px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-disabled); }
+.spec-row .sv { font-size: 14px; color: var(--text-primary); }
+
+/* C3: Spec Sheet */
+.spec-sheet { padding: var(--space-2xl) var(--container-padding); background: var(--bg); }
+.spec-sheet__header { max-width: var(--container-max); margin: 0 auto var(--space-xl); }
+.spec-sheet__title { font-family: var(--font-serif); font-size: var(--heading-lg); font-weight: 700; color: var(--text-display); margin: var(--space-sm) 0 0 0; }
+.spec-sheet__grid { max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2xl); }
+.spec-sheet__group { display: flex; flex-direction: column; }
+.spec-sheet__group-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-disabled); padding-bottom: var(--space-sm); border-bottom: 1px solid var(--border); margin-bottom: var(--space-xs); }
+
+/* C4: Step Sequence + Flow Pipeline */
+.step-seq { padding: var(--space-2xl) var(--container-padding); background: var(--bg); }
+.step-seq__header { max-width: var(--container-max); margin: 0 auto var(--space-xl); }
+.step-seq__title { font-family: var(--font-serif); font-size: var(--display-md); font-weight: 700; color: var(--text-display); margin: var(--space-sm) 0 0 0; }
+.flow-pipeline { max-width: var(--container-max); margin: 0 auto; display: flex; align-items: center; gap: 0; padding: var(--space-md) 0; }
+.flow-stage { display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-sm) var(--space-md); }
+.flow-value { font-family: var(--font-serif); font-size: var(--body); color: var(--text-secondary); }
+.flow-stage--active .flow-value { color: var(--text-display); font-weight: 600; }
+.flow-stage--done .flow-value { color: var(--success); }
+.flow-arrow { font-size: 18px; color: var(--text-disabled); padding: 0 var(--space-xs); line-height: 1; }
+
+/* C5: Annotated */
+.annotated { padding: var(--space-2xl) var(--container-padding); background: var(--bg); }
+.annotated__header { max-width: var(--container-max); margin: 0 auto var(--space-xl); }
+.annotated__title { font-family: var(--font-serif); font-size: var(--display-md); font-weight: 700; color: var(--text-display); margin: var(--space-sm) 0 0 0; }
+.annotated__frame { max-width: var(--container-max); margin: 0 auto; position: relative; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.annotated__img { width: 100%; display: block; }
+.annotated__pin { position: absolute; display: flex; align-items: center; gap: var(--space-sm); }
+.annotated__pin-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-primary); border: 2px solid var(--surface); flex-shrink: 0; }
+.annotated__pin-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--text-primary); background: var(--surface); border: 1px solid var(--border); padding: 4px 8px; white-space: nowrap; }
+
+/* C6: Product Grid */
+.product-grid { padding: var(--space-2xl) var(--container-padding); background: var(--bg); }
+.product-grid__items { max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+.product-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+.product-card__image { aspect-ratio: 4/3; background: var(--surface-alt); overflow: hidden; }
+.product-card__image img { width: 100%; height: 100%; object-fit: cover; }
+.product-card__body { padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-xs); }
+.product-name { font-family: var(--font-serif); font-size: var(--heading-lg); font-weight: 700; color: var(--text-display); }
+.tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--text-secondary); text-transform: uppercase; }
+.product-card__specs { display: flex; gap: var(--space-md); padding-top: var(--space-sm); border-top: 1px solid var(--border); }
+
+/* C7: Three-col */
+.three-col-section { padding: var(--space-2xl) var(--container-padding); background: var(--bg); }
+.three-col { max-width: var(--container-max); margin: 0 auto; display: grid; grid-template-columns: 3fr 2fr 1fr; gap: var(--space-md); }
+.three-col__primary, .three-col__secondary, .three-col__tertiary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--space-lg); }
+.three-col__title { font-family: var(--font-serif); font-size: var(--heading-lg); font-weight: 700; color: var(--text-display); margin: var(--space-sm) 0; }
+.three-col__desc { font-size: var(--body-sm); color: var(--text-secondary); line-height: 1.6; margin: 0; }
+
+/* C8: Tab Panel */
+.tab-panel { border: 1px solid var(--border-strong); border-radius: var(--radius-md); overflow: hidden; }
+.tab-bar { display: flex; border-bottom: 1px solid var(--border-strong); }
+.tab-item { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; padding: var(--space-md) var(--space-lg); border: none; background: transparent; color: var(--text-disabled); cursor: pointer; position: relative; transition: color 150ms ease-out; }
+.tab-item:hover { color: var(--text-secondary); }
+.tab-item.active { color: var(--text-display); }
+.tab-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--text-display); }
+.tab-content { padding: var(--space-lg); }
+.tab-content__text { font-size: var(--body); color: var(--text-primary); line-height: 1.6; margin: 0; }
+
+/* C9: Accordion */
+.accordion { border-top: 1px solid var(--border-strong); }
+.accordion-item { border-bottom: 1px solid var(--border-strong); }
+.accordion-toggle { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) 0; background: transparent; border: none; cursor: pointer; text-align: left; }
+.accordion-label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; color: var(--text-primary); }
+.accordion-icon { font-family: var(--font-mono); font-size: 16px; color: var(--text-disabled); min-width: 20px; text-align: right; }
+.accordion-item.open .accordion-icon { color: var(--text-display); }
+.accordion-body { padding: 0 0 var(--space-lg) 0; font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+/* C10: Checklist */
+.checklist { display: flex; flex-direction: column; }
+.checklist-item { display: flex; align-items: center; gap: 12px; padding: var(--space-md) 0; border-bottom: 1px solid var(--border); }
+.checklist-item:last-child { border-bottom: none; }
+.check-box { width: 16px; height: 16px; border: 1px solid var(--border-strong); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.check-box.checked { background: var(--brand-primary); border-color: var(--brand-primary); }
+.check-box.checked::after { content: ''; width: 6px; height: 2px; background: #fff; margin-top: -1px; }
+.check-label { flex: 1; font-size: 14px; color: var(--text-primary); line-height: 1.4; }
+.check-status { font-family: var(--font-mono); font-size: var(--small); letter-spacing: 0.08em; color: var(--text-disabled); }
+.check-status.pending { color: var(--warning); }
+
+/* C12: Brand Card */
+.brand-card { padding: var(--space-3xl) var(--space-md); text-align: center; max-width: 640px; margin: 0 auto; }
+.brand-card__label { font-family: var(--font-mono); font-size: var(--label); font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: var(--space-md); }
+.brand-stmt { font-family: var(--font-serif); font-size: var(--display-lg); font-weight: 700; color: var(--text-display); line-height: 1.15; margin-bottom: var(--space-sm); }
+.brand-card__sub { font-size: var(--body-lg); color: var(--text-secondary); font-style: italic; }
+
+/* C14: App Card */
+.app-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: var(--space-lg); text-align: center; }
+.app-card__icon { width: 48px; height: 48px; margin: 0 auto var(--space-md); display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+.app-card__name { font-weight: 600; font-size: var(--body); margin-bottom: var(--space-xs); }
+.app-card__desc { font-size: var(--body-sm); color: var(--text-secondary); line-height: 1.6; }
+
+/* C16: Dot Pattern (decorative) */
+.dot-pattern { display: grid; grid-template-columns: repeat(auto-fill, 8px); grid-auto-rows: 8px; gap: 4px; opacity: 0.4; }
+
+/* C17: Detail Panel */
+.detail-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(245,243,239,0.92); display: none; overflow-y: auto; padding: 5vh 2rem; }
+.detail-overlay.active { display: block; }
+.detail-close { position: fixed; top: 16px; right: 16px; width: 44px; height: 44px; border: 1px solid var(--border-strong); border-radius: 0; background: var(--surface); color: var(--text-primary); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 101; }
+.detail-panel { max-width: 640px; margin: 0 auto; border: 1px solid var(--border-strong); background: var(--surface); }
+.detail-header { padding: 32px 32px 24px; border-bottom: 1px solid var(--border); }
+.detail-label { font-family: var(--font-mono); font-size: var(--small); letter-spacing: 0.1em; color: var(--text-disabled); }
+.detail-title { font-family: var(--font-serif); font-size: var(--heading-lg); font-weight: 700; color: var(--text-display); margin-top: 8px; }
+.detail-body { padding: 24px 32px 32px; font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+/* C18: Compare Table */
+.compare-table { display: grid; grid-template-columns: 0.35fr 1fr; gap: 48px; align-items: start; }
+.compare-side { position: sticky; top: 80px; }
+.compare-big-label { font-family: var(--font-serif); font-size: 64px; font-weight: 700; color: var(--text-display); opacity: 0.06; line-height: 0.85; display: block; }
+.compare-section-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--text-disabled); display: block; margin-bottom: 4px; }
+.compare-section-title { font-family: var(--font-serif); font-size: var(--heading-lg); font-weight: 700; color: var(--text-display); }
+.compare-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 8px; line-height: 1.5; }
+.compare-row-item { display: grid; grid-template-columns: 48px 1fr 1fr; gap: 16px; padding: 24px 0; border-bottom: 1px solid var(--border); }
+.compare-row-item:last-child { border-bottom: none; }
+.compare-row-num { font-family: var(--font-mono); font-size: 24px; color: var(--text-disabled); line-height: 1; }
+.compare-cell { display: flex; flex-direction: column; gap: 4px; }
+.compare-cell-label { font-family: var(--font-mono); font-size: var(--small); letter-spacing: 0.1em; color: var(--text-disabled); text-transform: uppercase; }
+.compare-cell-value { font-family: var(--font-sans); font-size: 15px; color: var(--text-primary); line-height: 1.4; }
+
+/* C19: Segmented Control */
+.seg-control { display: inline-flex; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); overflow: hidden; }
+.seg-item { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; padding: 10px 20px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 150ms ease-out; }
+.seg-item:hover { background: var(--surface-alt); }
+.seg-item.active { background: var(--brand-primary); color: #fff; }
+
+/* C20: Callout */
+.callout { border-left: 2px solid var(--brand-primary); background: var(--surface-alt); padding: 16px 20px; }
+.callout__title { font-family: var(--font-mono); font-size: var(--small); letter-spacing: 0.1em; text-transform: uppercase; color: var(--brand-primary); margin-bottom: 6px; }
+.callout__body { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+/* C21: Timeline */
+.timeline { display: flex; align-items: center; gap: 0; }
+.timeline-node { display: flex; flex-direction: column; gap: 4px; padding: 8px 16px; }
+.timeline-year { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--text-disabled); }
+.timeline-label { font-family: var(--font-serif); font-size: 14px; color: var(--text-secondary); }
+.timeline-node--active .timeline-label { color: var(--text-display); font-weight: 600; }
+.timeline-node--active .timeline-year { color: var(--text-secondary); }
+.timeline-connector { flex: 1; height: 1px; background: var(--border); position: relative; }
+.timeline-connector::after { content: ''; position: absolute; right: -4px; top: -3px; width: 0; height: 0; border-top: 3px solid transparent; border-bottom: 3px solid transparent; border-left: 5px solid var(--border); }
+
+/* C22: Alert */
+.alert { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; padding: 10px 16px; border: 1px solid var(--border); background: var(--surface); }
+.alert--success { color: var(--success); border-color: var(--success); }
+.alert--warning { color: var(--warning); border-color: var(--warning); }
+.alert--error { color: var(--error); border-color: var(--error); }
+
+/* C23: Inputs */
+.input-group { max-width: 400px; }
+.input-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-secondary); display: block; margin-bottom: 8px; }
+.input { width: 100%; font-family: var(--font-sans); font-size: 14px; color: var(--text-primary); background: transparent; border: none; border-bottom: 1px solid var(--border-strong); padding: 8px 0; outline: none; transition: border-color 150ms ease-out; }
+.input:focus { border-color: var(--text-primary); }
+.input::placeholder { color: var(--text-disabled); }
+.input-error { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--error); display: block; margin-top: 6px; }
+
+/* C24: Toggle */
+.toggle { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.toggle__input { display: none; }
+.toggle__track { width: 44px; height: 24px; background: var(--border); border-radius: 12px; position: relative; transition: background 150ms ease-out; }
+.toggle__thumb { width: 18px; height: 18px; background: var(--text-disabled); border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: all 150ms ease-out; }
+.toggle__input:checked ~ .toggle__track { background: var(--brand-primary); }
+.toggle__input:checked ~ .toggle__track .toggle__thumb { background: #fff; left: 23px; }
+.toggle__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--text-secondary); }
+
+/* C25: Magazine Cut */
+.mag-card { background: var(--surface); border: 1px solid var(--border); padding: var(--space-xl); display: flex; flex-direction: column; justify-content: center; min-height: 220px; }
+.mag-card__tag { font-family: var(--font-mono); font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--border-strong); margin-bottom: 8px; }
+.mag-card__title { font-family: 'Playfair Display', var(--font-serif); font-size: 28px; font-weight: 600; line-height: 1.15; color: var(--text-display); margin-bottom: 8px; }
+.mag-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; max-width: 360px; }
+
+/* C26: Number-led */
+.nl-card { background: var(--surface); border: 1px solid var(--border); padding: var(--space-lg); position: relative; overflow: hidden; }
+.nl-card__num { font-family: var(--font-mono); font-size: 48px; font-weight: 300; color: var(--text-disabled); opacity: 0.2; line-height: 1; position: absolute; top: 12px; right: 16px; pointer-events: none; }
+.nl-card__step { font-family: var(--font-mono); font-size: 10px; color: var(--forest); margin-bottom: 8px; display: block; }
+.nl-card__title { font-family: 'Playfair Display', var(--font-serif); font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.nl-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* C27: Icon Card */
+.ic-card { display: flex; align-items: stretch; background: var(--surface); border: 1px solid var(--border); overflow: hidden; }
+.ic-card__icon { flex: 0 0 80px; display: flex; align-items: center; justify-content: center; background: var(--surface-alt); }
+.ic-card__icon svg { width: 28px; height: 28px; stroke: var(--steel); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.ic-card__body { flex: 1; padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; }
+.ic-card__tag { font-family: var(--font-mono); font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--border-strong); margin-bottom: 4px; }
+.ic-card__title { font-family: 'Playfair Display', var(--font-serif); font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.ic-card__desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+/* C28: Dashed Box */
+.dash-box { position: relative; border: 2px dashed var(--border-strong); padding: 32px 24px; }
+.dash-box__label { position: absolute; top: -10px; left: 24px; font-family: var(--font-mono); font-size: var(--small); letter-spacing: 2px; text-transform: uppercase; color: var(--sky); background: var(--bg); padding: 0 8px; }
+.dash-box__title { font-family: 'Playfair Display', var(--font-serif); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.dash-box__body { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+/* C29: Carousel */
+.carousel { display: flex; align-items: center; border: 1px solid var(--border); background: var(--surface); overflow: hidden; }
+.carousel__btn { flex: 0 0 44px; height: 120px; display: flex; align-items: center; justify-content: center; border: none; background: var(--surface-alt); cursor: pointer; color: var(--text-secondary); font-size: 18px; }
+.carousel__btn:hover { background: var(--border); }
+.carousel__panel { flex: 1; padding: 16px 24px; display: flex; flex-direction: column; justify-content: center; min-height: 120px; }
+.carousel__title { font-family: 'Playfair Display', var(--font-serif); font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.carousel__desc { font-size: 13px; color: var(--text-secondary); }
+.carousel__dots { display: flex; gap: 6px; justify-content: center; margin-top: 8px; }
+.carousel__dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.carousel__dot.on { background: var(--slate); }
+
+/* C30: Stacked Cards */
+.stacked { position: relative; height: 240px; width: 80%; margin: 0 auto; }
+.stacked__card { position: absolute; inset: 0; background: var(--surface); border: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; justify-content: center; transition: transform 300ms cubic-bezier(0.16,1,0.3,1), opacity 300ms; }
+.stacked__card:nth-child(1) { transform: translateY(0) scale(1); z-index: 3; cursor: pointer; }
+.stacked__card:nth-child(2) { transform: translateY(8px) scale(0.97); z-index: 2; opacity: 0.6; }
+.stacked__card:nth-child(3) { transform: translateY(16px) scale(0.94); z-index: 1; opacity: 0.3; }
+.stacked__tag { font-family: var(--font-mono); font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; }
+.stacked__title { font-family: 'Playfair Display', var(--font-serif); font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.stacked__desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+/* C31: Hover Reveal */
+.hr-card { background: var(--surface); border: 1px solid var(--border); padding: 24px; position: relative; cursor: help; overflow: hidden; }
+.hr-card__front { transition: opacity 200ms; }
+.hr-card__back { position: absolute; inset: 0; padding: 24px; display: flex; flex-direction: column; justify-content: center; background: var(--forest); color: rgba(255,255,255,0.9); opacity: 0; transition: opacity 200ms; }
+.hr-card:hover .hr-card__front { opacity: 0; }
+.hr-card:hover .hr-card__back { opacity: 1; }
+.hr-card__title { font-family: 'Playfair Display', var(--font-serif); font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.hr-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.hr-card__back .hr-card__desc { color: rgba(255,255,255,0.7); }
+
+/* C32: Interactive Checklist */
+.i-list { display: flex; flex-direction: column; border: 1px solid var(--border); background: var(--surface); }
+.i-item { display: flex; align-items: center; gap: 16px; padding: 8px 24px; border-bottom: 1px solid var(--border); cursor: pointer; }
+.i-item:last-child { border-bottom: none; }
+.i-item:hover { background: var(--surface-alt); }
+.i-item__check { width: 18px; height: 18px; border: 1.5px solid var(--border-strong); flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
+.i-item.checked .i-item__check { background: var(--forest); border-color: var(--forest); }
+.i-item.checked .i-item__check::after { content: ''; width: 8px; height: 4px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg) translateY(-1px); }
+.i-item__text { flex: 1; font-size: 14px; color: var(--text-primary); }
+.i-item.checked .i-item__text { color: var(--text-disabled); text-decoration: line-through; }
+.i-item__tag { font-family: var(--font-mono); font-size: 8px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 8px; border: 1px solid var(--border); color: var(--text-secondary); border-radius: 2px; }
+.i-item__tag.done { background: var(--moss); color: #fff; border-color: var(--moss); }
+
+/* C33: Chat Bubble */
+.chat { display: flex; flex-direction: column; gap: 16px; max-width: 600px; }
+.chat__bubble { padding: 16px 20px; max-width: 85%; }
+.chat__bubble--user { align-self: flex-end; background: var(--forest); color: rgba(255,255,255,0.9); border-radius: 8px 8px 4px 8px; }
+.chat__bubble--ai { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 8px 8px 8px 4px; }
+.chat__bubble-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+.chat__bubble--user .chat__bubble-label { color: rgba(255,255,255,0.5); }
+.chat__bubble--ai .chat__bubble-label { color: var(--text-secondary); }
+.chat__bubble p { font-size: 14px; line-height: 1.6; margin: 0; }
+
+/* C34: Device Shell */
+.dev-browser { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.dev-browser__bar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--surface-alt); border-bottom: 1px solid var(--border); }
+.dev-dot { width: 8px; height: 8px; border-radius: 50%; }
+.dev-dot:nth-child(1) { background: #ff5f56; }
+.dev-dot:nth-child(2) { background: #ffbd2e; }
+.dev-dot:nth-child(3) { background: #27c93f; }
+.dev-browser__url { flex: 1; margin-left: 8px; height: 14px; border-radius: 3px; background: var(--surface); }
+.dev-browser__screen { min-height: 120px; background: var(--surface-alt); padding: 20px; display: flex; align-items: center; justify-content: center; color: var(--text-disabled); font-family: var(--font-mono); font-size: 11px; }
+
+/* C35: Bento Project */
+.bento-project { max-width: 900px; margin: 0 auto; padding: 48px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.bento-project .cell { background: var(--surface); padding: 28px; }
+.bento-project .cell--2col { grid-column: span 2; }
+.bento-project .cell--4col { grid-column: span 4; }
+.bento-project .cell--dark { background: var(--text-display); color: #FFFFFF; }
+.bento-project .cell--cream { background: var(--surface-alt); }
+.bento-project .cell__label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-disabled); margin-bottom: 12px; }
+.bento-project .cell__label--dark { color: rgba(255,255,255,0.35); }
+.bento-project .cell__num { font-family: var(--font-mono); font-size: 36px; font-weight: 500; line-height: 1; margin-bottom: 6px; color: var(--text-display); }
+.bento-project .cell__note { font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary); }
+.phase-bar { display: flex; gap: 0; height: 36px; }
+.phase__block { flex: 1; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; border-right: 1px solid var(--surface); }
+.phase__block:last-child { border-right: none; }
+.phase__block--done { background: var(--border-strong); color: #FFFFFF; }
+.phase__block--current { background: var(--text-display); color: #FFFFFF; }
+.phase__block--pending { background: var(--surface-alt); color: var(--text-secondary); }
+.phase-labels { display: flex; gap: 0; margin-top: 8px; }
+.phase-labels__item { flex: 1; font-size: 10px; color: var(--text-secondary); }
+.phase-labels__name { font-weight: 500; color: var(--text-primary); font-size: 11px; }
+.phase-labels__date { font-family: var(--font-mono); font-size: 9px; color: var(--text-disabled); }
+
+</style>
+</head>
+<body>
+<h1>C-Feature 组件复审</h1>
+<p class="sub">35 个组件 · 左侧下拉标记保留/删除 · 上方切换预览和代码</p>
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px;z-index:100">
+  <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)">标记完成后</span>
+  <button onclick="generateResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--warm);color:#fff;border:none;cursor:pointer">生成复审结果</button>
+  <button onclick="copyResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--forest);color:#fff;border:none;cursor:pointer">复制结果</button>
+</div>
+<div id="result-box" style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:24px;display:none">
+<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px">复审结果</div>
+<pre id="result-text" style="font-family:var(--font-mono);font-size:12px;line-height:1.8;white-space:pre-wrap;margin:0;padding:0;background:transparent;border:none;color:var(--text-display)"></pre>
+</div>
+
+<section class="review-item" data-id="C1">
+  <div class="review-header">
+    <div class="review-id">C1</div>
+    <div class="review-name">Bento Grid </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<section class="bento" style="padding:var(--space-lg) 0;background:transparent;">
+      <div class="bento__grid">
+        <div class="bento__tile bento__tile--large">
+          <div class="bento__tile-body">
+            <span class="sl">SHELL</span>
+            <h3 class="bento__tile-title">L.I.M Comp</h3>
+            <span class="bento__tile-meta">485g / Gore-Tex Pro</span>
+</div>
+  <div class="preview-code"><pre>&lt;section class="bento"&gt;
+  &lt;div class="bento__grid"&gt;
+    &lt;div class="bento__tile bento__tile--large"&gt;
+      &lt;div class="bento__tile-body"&gt;
+        &lt;span class="sl"&gt;SHELL&lt;/span&gt;
+        &lt;h3 class="bento__tile-title"&gt;L.I.M Comp&lt;/h3&gt;
+        &lt;span class="bento__tile-meta"&gt;485g / Gore-Tex Pro&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="bento__tile"&gt;
+      &lt;div class="bento__tile-body"&gt;
+        &lt;span class="sl"&gt;INSULATION&lt;/span&gt;
+        &lt;h3 class="bento__tile-title"&gt;Frost Jacket&lt;/h3&gt;
+        &lt;span class="bento__tile-meta"&gt;380g / PrimaLoft&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="bento__tile"&gt;
+      &lt;div class="bento__tile-body"&gt;
+        &lt;span class="sl"&gt;BASE LAYER&lt;/span&gt;
+        &lt;h3 class="bento__tile-title"&gt;Merino Grid&lt;/h3&gt;
+        &lt;span class="bento__tile-meta"&gt;180g / Merino Wool&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="bento__tile bento__tile--wide"&gt;
+      &lt;div class="bento__tile-body"&gt;
+        &lt;span class="sl"&gt;ACCESSORIES&lt;/span&gt;
+        &lt;h3 class="bento__tile-title"&gt;Hats, Gloves &amp; Packs&lt;/h3&gt;
+        &lt;span class="bento__tile-meta"&gt;Complete the system&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C2">
+  <div class="review-header">
+    <div class="review-id">C2</div>
+    <div class="review-name">Checklist </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="sticky-stack" style="padding:var(--space-lg) 0;">
+      <div class="sticky-stack__pinned" style="position:static;">
+        <span class="sl">TECHNOLOGY</span>
+        <h2 class="sticky-stack__title">Gore-Tex Pro Shell</h2>
+        <p class="sticky-stack__desc">3 层结构，28,000mm 防水等级。每平方英寸承载 90 亿个微孔。</p>
+        <div class="sticky-stack__specs">
+          <div class="spec-row">
+            <span class="sl">SHELL</span><span class="sv">80D Nylon</span>
+</div>
+  <div class="preview-code"><pre>&lt;div class="checklist"&gt;
+  &lt;div class="checklist-item"&gt;
+    &lt;span class="check-box checked"&gt;&lt;/span&gt;
+    &lt;span class="check-label"&gt;Gore-Tex Pro certified&lt;/span&gt;
+    &lt;span class="check-status"&gt;OK&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="checklist-item"&gt;
+    &lt;span class="check-box checked"&gt;&lt;/span&gt;
+    &lt;span class="check-label"&gt;PFC-free DWR treatment&lt;/span&gt;
+    &lt;span class="check-status"&gt;OK&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="checklist-item"&gt;
+    &lt;span class="check-box"&gt;&lt;/span&gt;
+    &lt;span class="check-label"&gt;bluesign approved fabric&lt;/span&gt;
+    &lt;span class="check-status pending"&gt;PENDING&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="checklist-item"&gt;
+    &lt;span class="check-box"&gt;&lt;/span&gt;
+    &lt;span class="check-label"&gt;Fair Trade Certified sewn&lt;/span&gt;
+    &lt;span class="check-status pending"&gt;PENDING&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C3">
+  <div class="review-header">
+    <div class="review-id">C3</div>
+    <div class="review-name">Product Card </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<section class="spec-sheet" style="padding:var(--space-lg) 0;background:transparent;">
+      <div class="spec-sheet__header">
+        <span class="sl">TECHNICAL SPECIFICATIONS</span>
+        <h3 class="spec-sheet__title">L.I.M Comp</h3>
+</div>
+  <div class="preview-code"><pre>&lt;div class="product-card"&gt;
+  &lt;div class="product-card__image"&gt;
+    &lt;img src="..." alt="..."&gt;
+  &lt;/div&gt;
+  &lt;div class="product-card__body"&gt;
+    &lt;span class="product-name" data-edit&gt;L.I.M Comp&lt;/span&gt;
+    &lt;span class="tag" data-edit&gt;Shell Jacket&lt;/span&gt;
+    &lt;div class="product-card__specs"&gt;
+      &lt;span class="sl"&gt;Weight&lt;/span&gt;&lt;span class="sv" data-edit&gt;485g&lt;/span&gt;
+      &lt;span class="sl"&gt;Waterproof&lt;/span&gt;&lt;span class="sv" data-edit&gt;28,000mm&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C4">
+  <div class="review-header">
+    <div class="review-id">C4</div>
+    <div class="review-name">Brand Statement Card </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<section class="step-seq" style="padding:var(--space-lg) 0;background:transparent;">
+      <div class="step-seq__header">
+        <span class="sl">PROCESS</span>
+        <h2 class="step-seq__title">Supplier Lifecycle</h2>
+</div>
+  <div class="preview-code"><pre>&lt;div class="brand-card"&gt;
+  &lt;div class="brand-card__label"&gt;Brand Statement&lt;/div&gt;
+  &lt;div class="brand-stmt" data-edit&gt;Engineered for Nature&lt;/div&gt;
+  &lt;div class="brand-card__sub" data-edit&gt;与自然共生，而非征服&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C5">
+  <div class="review-header">
+    <div class="review-id">C5</div>
+    <div class="review-name">State Patterns </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<section class="annotated" style="padding:var(--space-lg) 0;background:transparent;">
+      <div class="annotated__header">
+        <span class="sl">DETAIL VIEW</span>
+        <h2 class="annotated__title">Construction Details</h2>
+</div>
+  <div class="preview-code"><pre></pre></div>
+</section>
+
+<section class="review-item" data-id="C6">
+  <div class="review-header">
+    <div class="review-id">C6</div>
+    <div class="review-name">Application Card </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<section class="product-grid" style="padding:var(--space-lg) 0;background:transparent;">
+      <div class="product-grid__items">
+        <div class="product-card">
+          <div class="product-card__image">
+            <div style="width:100%;height:100%;background:var(--surface-alt);display:flex;align-items:center;justify-content:center;color:var(--text-disabled);font-size:11px;">[Image]
+</div>
+  <div class="preview-code"><pre>&lt;div class="app-card"&gt;
+  &lt;div class="app-card__icon"&gt;&lt;!-- SVG --&gt;&lt;/div&gt;
+  &lt;div class="app-card__name"&gt;包装&lt;/div&gt;
+  &lt;div class="app-card__desc" data-edit&gt;模块化可回收包装。镂空品牌符号作为视觉识别。&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C7">
+  <div class="review-header">
+    <div class="review-id">C7</div>
+    <div class="review-name">Flow Pipeline </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<section class="three-col-section" style="padding:var(--space-lg) 0;background:transparent;">
+      <div class="three-col">
+        <div class="three-col__primary">
+          <span class="sl">PRIMARY</span>
+          <h3 class="three-col__title">Shell Layer</h3>
+          <p class="three-col__desc">Gore-Tex Pro 80D，28,000mm 防水。全天候防护的核心层。</p>
+</div>
+  <div class="preview-code"><pre>&lt;div class="flow-pipeline"&gt;
+  &lt;div class="flow-stage flow-stage--done"&gt;
+    &lt;span class="flow-label sl"&gt;STAGE ONE&lt;/span&gt;
+    &lt;span class="flow-value" data-edit&gt;准入&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;span class="flow-arrow"&gt;›&lt;/span&gt;
+  &lt;div class="flow-stage flow-stage--active"&gt;
+    &lt;span class="flow-label sl"&gt;STAGE TWO&lt;/span&gt;
+    &lt;span class="flow-value" data-edit&gt;分工&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;span class="flow-arrow"&gt;›&lt;/span&gt;
+  &lt;div class="flow-stage"&gt;
+    &lt;span class="flow-label sl"&gt;STAGE THREE&lt;/span&gt;
+    &lt;span class="flow-value" data-edit&gt;运营&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;span class="flow-arrow"&gt;›&lt;/span&gt;
+  &lt;div class="flow-stage"&gt;
+    &lt;span class="flow-label sl"&gt;STAGE FOUR&lt;/span&gt;
+    &lt;span class="flow-value" data-edit&gt;清退&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C8">
+  <div class="review-header">
+    <div class="review-id">C8</div>
+    <div class="review-name">Dot Pattern </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="tab-panel">
+      <div class="tab-bar">
+        <button class="tab-item active">OVERVIEW</button>
+        <button class="tab-item">SPECS</button>
+        <button class="tab-item">SUSTAINABILITY</button>
+</div>
+  <div class="preview-code"><pre>&lt;div class="dot-pattern"&gt;
+  &lt;!-- Grid of dots with varying opacity --&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C9">
+  <div class="review-header">
+    <div class="review-id">C9</div>
+    <div class="review-name">Detail Panel </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="accordion">
+      <div class="accordion-item open">
+        <button class="accordion-toggle">
+          <span class="accordion-label">MATERIAL COMPOSITION</span>
+          <span class="accordion-icon">&minus;</span>
+        </button>
+        <div class="accordion-body">
+          <p>Shell: 100% Nylon (Gore-Tex Pro 80D). Lining: 100% Polyester (Micro Grid Backer). DWR: PFC-free C0 finish.</p>
+</div>
+  <div class="preview-code"><pre>&lt;div class="detail-overlay" id="detail-panel"&gt;
+  &lt;button class="detail-close"&gt;&amp;times;&lt;/button&gt;
+  &lt;div class="detail-panel"&gt;
+    &lt;div class="detail-header"&gt;
+      &lt;span class="detail-label"&gt;DETAIL VIEW&lt;/span&gt;
+      &lt;h2 class="detail-title" data-edit&gt;Product Name&lt;/h2&gt;
+    &lt;/div&gt;
+    &lt;div class="detail-body"&gt;&lt;p data-edit&gt;Full content here.&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C10">
+  <div class="review-header">
+    <div class="review-id">C10</div>
+    <div class="review-name">Asymmetric Comparison Table </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="checklist">
+      <div class="checklist-item">
+        <span class="check-box checked"></span>
+        <span class="check-label">Gore-Tex Pro certified</span>
+        <span class="check-status">OK</span>
+</div>
+  <div class="preview-code"><pre>&lt;div class="compare-table"&gt;
+  &lt;div class="compare-side"&gt;
+    &lt;span class="compare-big-label"&gt;VS&lt;/span&gt;
+    &lt;span class="compare-section-num"&gt;01&lt;/span&gt;
+    &lt;h2 class="compare-section-title" data-edit&gt;Shell Comparison&lt;/h2&gt;
+    &lt;p class="compare-subtitle" data-edit&gt;Context description&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="compare-rows"&gt;
+    &lt;div class="compare-row-item"&gt;
+      &lt;span class="compare-row-num"&gt;01&lt;/span&gt;
+      &lt;div class="compare-cell"&gt;
+        &lt;span class="compare-cell-label"&gt;L.I.M COMP&lt;/span&gt;
+        &lt;span class="compare-cell-value" data-edit&gt;485g&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="compare-cell"&gt;
+        &lt;span class="compare-cell-label"&gt;L.I.M ULTIMATE&lt;/span&gt;
+        &lt;span class="compare-cell-value" data-edit&gt;310g&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C11">
+  <div class="review-header">
+    <div class="review-id">C11</div>
+    <div class="review-name">Segmented Control </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="max-width:360px;">
+      <div class="product-card">
+        <div class="product-card__image">
+          <div style="width:100%;height:100%;background:var(--surface-alt);display:flex;align-items:center;justify-content:center;color:var(--text-disabled);font-size:11px;">[Product Image]
+</div>
+  <div class="preview-code"><pre>&lt;div class="seg-control"&gt;
+  &lt;button class="seg-item active" data-edit&gt;Forest&lt;/button&gt;
+  &lt;button class="seg-item" data-edit&gt;Alpine&lt;/button&gt;
+  &lt;button class="seg-item" data-edit&gt;Desert&lt;/button&gt;
+  &lt;button class="seg-item" data-edit&gt;Urban&lt;/button&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C12">
+  <div class="review-header">
+    <div class="review-id">C12</div>
+    <div class="review-name">Sticky-scroll Stack </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="brand-card">
+      <div class="brand-card__label">Brand Statement
+</div>
+  <div class="preview-code"><pre>&lt;section class="sticky-stack"&gt;
+  &lt;div class="sticky-stack__pinned"&gt;
+    &lt;span class="sl"&gt;TECHNOLOGY&lt;/span&gt;
+    &lt;h2 class="sticky-stack__title"&gt;Gore-Tex Pro Shell&lt;/h2&gt;
+    &lt;p class="sticky-stack__desc"&gt;3 层结构，28,000mm 防水等级。每平方英寸承载 90 亿个微孔。&lt;/p&gt;
+    &lt;div class="sticky-stack__specs"&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;SHELL&lt;/span&gt;&lt;span class="sv"&gt;80D Nylon&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;MEMBRANE&lt;/span&gt;&lt;span class="sv"&gt;ePTFE&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;BACKER&lt;/span&gt;&lt;span class="sv"&gt;Micro Grid&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="sticky-stack__scroll"&gt;
+    &lt;div class="sticky-stack__step"&gt;
+      &lt;img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&amp;h=400&amp;fit=crop" alt="Layer 1" class="sticky-stack__img"&gt;
+      &lt;span class="sticky-stack__step-label"&gt;LAYER 1: SHELL&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="sticky-stack__step"&gt;
+      &lt;img src="https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=600&amp;h=400&amp;fit=crop" alt="Layer 2" class="sticky-stack__img"&gt;
+      &lt;span class="sticky-stack__step-label"&gt;LAYER 2: INSULATION&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="sticky-stack__step"&gt;
+      &lt;img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&amp;h=400&amp;fit=crop" alt="Layer 3" class="sticky-stack__img"&gt;
+      &lt;span class="sticky-stack__step-label"&gt;LAYER 3: BASE&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C13">
+  <div class="review-header">
+    <div class="review-id">C13</div>
+    <div class="review-name">Callout/Annotation </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);">
+      <div style="padding:var(--space-md);border:1px solid var(--border);font-family:var(--font-mono);font-size:10px;letter-spacing:0.06em;color:var(--text-disabled);">[LOADING...]
+</div>
+  <div class="preview-code"><pre>&lt;div class="callout"&gt;
+  &lt;div class="callout__title"&gt;METHODOLOGY&lt;/div&gt;
+  &lt;div class="callout__body" data-edit&gt;Scores are weighted by volume across all active product lines.&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C14">
+  <div class="review-header">
+    <div class="review-id">C14</div>
+    <div class="review-name">Timeline/Era Connector </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);">
+      <div class="app-card">
+        <div class="app-card__icon"><svg width="28" height="28" viewBox="0 0 24 24" stroke="var(--steel)" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+</div>
+  <div class="preview-code"><pre>&lt;div class="timeline"&gt;
+  &lt;div class="timeline-node"&gt;
+    &lt;span class="timeline-year"&gt;1914&lt;/span&gt;
+    &lt;span class="timeline-label" data-edit&gt;Founded&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="timeline-connector"&gt;&lt;/div&gt;
+  &lt;div class="timeline-node"&gt;
+    &lt;span class="timeline-year"&gt;1970s&lt;/span&gt;
+    &lt;span class="timeline-label" data-edit&gt;Technical Innovation&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="timeline-connector"&gt;&lt;/div&gt;
+  &lt;div class="timeline-node timeline-node--active"&gt;
+    &lt;span class="timeline-year"&gt;2025&lt;/span&gt;
+    &lt;span class="timeline-label" data-edit&gt;111 Years&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C15">
+  <div class="review-header">
+    <div class="review-id">C15</div>
+    <div class="review-name">Alert/Inline Status </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="flow-pipeline">
+      <div class="flow-stage flow-stage--done">
+        <span class="flow-label sl">STAGE ONE</span>
+        <span class="flow-value">准入</span>
+</div>
+  <div class="preview-code"><pre>&lt;div class="alert alert--success"&gt;[SAVED] Changes applied.&lt;/div&gt;
+&lt;div class="alert alert--warning"&gt;[WARNING] Stock low.&lt;/div&gt;
+&lt;div class="alert alert--error"&gt;[ERROR] Connection failed.&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C16">
+  <div class="review-header">
+    <div class="review-id">C16</div>
+    <div class="review-name">Inputs </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="padding:var(--space-lg);background:var(--surface-alt);border:1px solid var(--border);">
+      <div class="dot-pattern" style="opacity:0.4;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--text-disabled);">
+</div>
+  <div class="preview-code"><pre>&lt;div class="input-group"&gt;
+  &lt;label class="input-label"&gt;PRODUCT NAME&lt;/label&gt;
+  &lt;input class="input" type="text" placeholder="L.I.M Comp"&gt;
+  &lt;span class="input-error"&gt;Required field&lt;/span&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C17">
+  <div class="review-header">
+    <div class="review-id">C17</div>
+    <div class="review-name">Toggle/Switch </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="detail-panel" style="position:static;max-width:100%;">
+      <div class="detail-header">
+        <span class="detail-label">DETAIL VIEW</span>
+        <h2 class="detail-title">L.I.M Comp</h2>
+</div>
+  <div class="preview-code"><pre>&lt;label class="toggle"&gt;
+  &lt;input type="checkbox" class="toggle__input"&gt;
+  &lt;span class="toggle__track"&gt;&lt;span class="toggle__thumb"&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class="toggle__label"&gt;OFF-ROAD MODE&lt;/span&gt;
+&lt;/label&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C18">
+  <div class="review-header">
+    <div class="review-id">C18</div>
+    <div class="review-name">Magazine Cut 大标题卡 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="compare-table">
+      <div class="compare-side" style="position:static;">
+        <span class="compare-big-label">VS</span>
+        <span class="compare-section-num">01</span>
+        <h2 class="compare-section-title">Shell Comparison</h2>
+        <p class="compare-subtitle">对比 L.I.M 系列两款主力壳层</p>
+</div>
+  <div class="preview-code"><pre>&lt;div class="mag-card"&gt;
+  &lt;span class="mag-card__tag"&gt;FEATURE&lt;/span&gt;
+  &lt;div class="mag-card__title"&gt;设计是减法&lt;/div&gt;
+  &lt;p class="mag-card__desc"&gt;功能少一行是一行，代码少一段是一段。&lt;/p&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C19">
+  <div class="review-header">
+    <div class="review-id">C19</div>
+    <div class="review-name">Number-Led 编号卡片 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="seg-control">
+      <button class="seg-item active">Forest</button>
+      <button class="seg-item">Alpine</button>
+      <button class="seg-item">Desert</button>
+      <button class="seg-item">Urban</button>
+</div>
+  <div class="preview-code"><pre>&lt;div class="nl-card"&gt;
+  &lt;div class="nl-card__num"&gt;01&lt;/div&gt;
+  &lt;span class="nl-card__step"&gt;STEP ONE&lt;/span&gt;
+  &lt;div class="nl-card__title"&gt;对齐需求&lt;/div&gt;
+  &lt;p class="nl-card__desc"&gt;5 个维度确认需求。&lt;/p&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C20">
+  <div class="review-header">
+    <div class="review-id">C20</div>
+    <div class="review-name">Icon Card 侧边图标卡片 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:flex;flex-direction:column;gap:var(--space-md);">
+      <div class="callout">
+        <div class="callout__title">METHODOLOGY
+</div>
+  <div class="preview-code"><pre>&lt;div class="ic-card"&gt;
+  &lt;div class="ic-card__icon"&gt;
+    &lt;svg viewBox="0 0 24 24"&gt;&lt;rect x="3" y="3" width="18" height="18" rx="2"/&gt;&lt;/svg&gt;
+  &lt;/div&gt;
+  &lt;div class="ic-card__body"&gt;
+    &lt;span class="ic-card__tag"&gt;LAYOUT&lt;/span&gt;
+    &lt;div class="ic-card__title"&gt;容器标准化&lt;/div&gt;
+    &lt;p class="ic-card__desc"&gt;固定 100vh / 混合 / 卡片化。&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C21">
+  <div class="review-header">
+    <div class="review-id">C21</div>
+    <div class="review-name">Dashed Box 虚线框 + 浮动标签 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="timeline">
+      <div class="timeline-node">
+        <span class="timeline-year">1914</span>
+        <span class="timeline-label">Founded</span>
+</div>
+  <div class="preview-code"><pre>&lt;div class="dash-box"&gt;
+  &lt;span class="dash-box__label"&gt;KEY INSIGHT&lt;/span&gt;
+  &lt;div class="dash-box__title"&gt;设计是减法&lt;/div&gt;
+  &lt;p class="dash-box__body"&gt;功能少一行是一行，代码少一段是一段。&lt;/p&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C22">
+  <div class="review-header">
+    <div class="review-id">C22</div>
+    <div class="review-name">Arrow Carousel 轮播 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:flex;flex-direction:column;gap:var(--space-sm);">
+      <div class="alert alert--success">[SAVED] Changes applied.
+</div>
+  <div class="preview-code"><pre>&lt;div class="carousel"&gt;
+  &lt;button class="carousel__btn"&gt;&amp;larr;&lt;/button&gt;
+  &lt;div class="carousel__panel"&gt;
+    &lt;div class="carousel__title"&gt;固定 100vh&lt;/div&gt;
+    &lt;p class="carousel__desc"&gt;每页等大，深浅交替。&lt;/p&gt;
+    &lt;div class="carousel__dots"&gt;
+      &lt;span class="carousel__dot on"&gt;&lt;/span&gt;
+      &lt;span class="carousel__dot"&gt;&lt;/span&gt;
+      &lt;span class="carousel__dot"&gt;&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button class="carousel__btn"&gt;&amp;rarr;&lt;/button&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C23">
+  <div class="review-header">
+    <div class="review-id">C23</div>
+    <div class="review-name">Tabular Spec Sheet </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="input-group">
+      <label class="input-label">PRODUCT NAME</label>
+      <input class="input" type="text" placeholder="L.I.M Comp" value="">
+      <span class="input-error">Required field</span>
+</div>
+  <div class="preview-code"><pre>&lt;section class="spec-sheet"&gt;
+  &lt;div class="spec-sheet__header"&gt;
+    &lt;span class="sl"&gt;TECHNICAL SPECIFICATIONS&lt;/span&gt;
+    &lt;h3 class="spec-sheet__title"&gt;L.I.M Comp&lt;/h3&gt;
+  &lt;/div&gt;
+  &lt;div class="spec-sheet__grid"&gt;
+    &lt;div class="spec-sheet__group"&gt;
+      &lt;span class="spec-sheet__group-label"&gt;MATERIAL&lt;/span&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;SHELL&lt;/span&gt;&lt;span class="sv"&gt;Gore-Tex Pro 80D&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;LINING&lt;/span&gt;&lt;span class="sv"&gt;Micro Grid Backer&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;DWR&lt;/span&gt;&lt;span class="sv"&gt;PFC-free&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="spec-sheet__group"&gt;
+      &lt;span class="spec-sheet__group-label"&gt;PERFORMANCE&lt;/span&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;WATERPROOF&lt;/span&gt;&lt;span class="sv"&gt;28,000mm&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;BREATHABILITY&lt;/span&gt;&lt;span class="sv"&gt;25,000g/m2/24h&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class="spec-row"&gt;
+        &lt;span class="sl"&gt;WEIGHT&lt;/span&gt;&lt;span class="sv"&gt;485g (L)&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C24">
+  <div class="review-header">
+    <div class="review-id">C24</div>
+    <div class="review-name">Stacked Cards 堆叠卡片 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:flex;flex-direction:column;gap:var(--space-md);">
+      <label class="toggle">
+        <input type="checkbox" class="toggle__input" checked>
+        <span class="toggle__track"><span class="toggle__thumb"></span></span>
+        <span class="toggle__label">OFF-ROAD MODE</span>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" class="toggle__input">
+        <span class="toggle__track"><span class="toggle__thumb"></span></span>
+        <span class="toggle__label">ECO MODE</span>
+      </label>
+</div>
+  <div class="preview-code"><pre>&lt;div class="stacked"&gt;
+  &lt;div class="stacked__card"&gt;
+    &lt;span class="stacked__tag"&gt;LAYER 1&lt;/span&gt;
+    &lt;div class="stacked__title"&gt;容器标准化&lt;/div&gt;
+    &lt;p class="stacked__desc"&gt;固定 100vh 默认。&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="stacked__card"&gt;
+    &lt;span class="stacked__tag"&gt;LAYER 2&lt;/span&gt;
+    &lt;div class="stacked__title"&gt;组件吸收&lt;/div&gt;
+    &lt;p class="stacked__desc"&gt;12 个组件已重写。&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C25">
+  <div class="review-header">
+    <div class="review-id">C25</div>
+    <div class="review-name">Hover Reveal 悬停揭示 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="mag-card">
+      <span class="mag-card__tag">FEATURE</span>
+      <div class="mag-card__title">设计是减法
+</div>
+  <div class="preview-code"><pre>&lt;div class="hr-card"&gt;
+  &lt;div class="hr-card__front"&gt;
+    &lt;div class="hr-card__title"&gt;固定 100vh&lt;/div&gt;
+    &lt;p class="hr-card__desc"&gt;悬停查看解释&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="hr-card__back"&gt;
+    &lt;div class="hr-card__title" style="color:#fff"&gt;每页等大&lt;/div&gt;
+    &lt;p class="hr-card__desc"&gt;内容多少不影响尺寸。&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C26">
+  <div class="review-header">
+    <div class="review-id">C26</div>
+    <div class="review-name">Interactive Checklist 交互清单 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);">
+      <div class="nl-card">
+        <div class="nl-card__num">01
+</div>
+  <div class="preview-code"><pre>&lt;div class="i-list"&gt;
+  &lt;div class="i-item checked"&gt;
+    &lt;span class="i-item__check"&gt;&lt;/span&gt;
+    &lt;span class="i-item__text"&gt;容器规范已建立&lt;/span&gt;
+    &lt;span class="i-item__tag done"&gt;Done&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="i-item"&gt;
+    &lt;span class="i-item__check"&gt;&lt;/span&gt;
+    &lt;span class="i-item__text"&gt;组件吸收完成&lt;/span&gt;
+    &lt;span class="i-item__tag"&gt;Pending&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C27">
+  <div class="review-header">
+    <div class="review-id">C27</div>
+    <div class="review-name">Chat Bubble 对话气泡 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:flex;flex-direction:column;gap:var(--space-md);">
+      <div class="ic-card">
+        <div class="ic-card__icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+</div>
+  <div class="preview-code"><pre>&lt;div class="chat"&gt;
+  &lt;div class="chat__bubble chat__bubble--user"&gt;
+    &lt;div class="chat__bubble-label"&gt;USER&lt;/div&gt;
+    &lt;p&gt;这个月的供应商数据怎么样？&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="chat__bubble chat__bubble--ai"&gt;
+    &lt;div class="chat__bubble-label"&gt;AI&lt;/div&gt;
+    &lt;p&gt;6 月共有 35 家供应商活跃，总业绩 3.2 亿，环比 +8.3%。&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C28">
+  <div class="review-header">
+    <div class="review-id">C28</div>
+    <div class="review-name">Device Shell 设备外壳 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="dash-box">
+      <span class="dash-box__label">KEY INSIGHT</span>
+      <div class="dash-box__title">设计是减法
+</div>
+  <div class="preview-code"><pre>&lt;div class="dev-browser"&gt;
+  &lt;div class="dev-browser__bar"&gt;
+    &lt;span class="dev-dot"&gt;&lt;/span&gt;&lt;span class="dev-dot"&gt;&lt;/span&gt;&lt;span class="dev-dot"&gt;&lt;/span&gt;
+    &lt;span class="dev-browser__url"&gt;app.example.com&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="dev-browser__screen"&gt;[截图内容]&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C29">
+  <div class="review-header">
+    <div class="review-id">C29</div>
+    <div class="review-name">项目面板 Bento Project </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="carousel">
+      <button class="carousel__btn">&larr;</button>
+      <div class="carousel__panel">
+        <div class="carousel__title">固定 100vh
+</div>
+  <div class="preview-code"><pre>&lt;section class="bento"&gt;
+
+  &lt;!-- KPI 指标行 --&gt;
+  &lt;div class="bento__cell"&gt;
+    &lt;div class="cell__label"&gt;整体进度&lt;/div&gt;
+    &lt;div class="cell__num"&gt;62&lt;span style="font-size:14px"&gt;%&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="cell__note"&gt;4 阶段完成 2.5&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bento__cell"&gt;
+    &lt;div class="cell__label"&gt;已用工期&lt;/div&gt;
+    &lt;div class="cell__num"&gt;45&lt;span style="font-size:14px"&gt; 天&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="cell__note"&gt;计划 72 天&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bento__cell"&gt;
+    &lt;div class="cell__label"&gt;交付物&lt;/div&gt;
+    &lt;div class="cell__num"&gt;7&lt;span style="font-size:14px"&gt;/12&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="cell__note"&gt;已交付 7 份&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bento__cell"&gt;
+    &lt;div class="cell__label"&gt;待决事项&lt;/div&gt;
+    &lt;div class="cell__num"&gt;3&lt;/div&gt;
+    &lt;div class="cell__note"&gt;需协调 2 个部门&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 阶段进度条（跨 4 列） --&gt;
+  &lt;div class="bento__cell bento__cell--4col"&gt;
+    &lt;div class="cell__label"&gt;阶段进度&lt;/div&gt;
+    &lt;div class="phase-bar"&gt;
+      &lt;div class="phase__block phase__block--done"&gt;P1 资质审查&lt;/div&gt;
+      &lt;div class="phase__block phase__block--done"&gt;P2 系统对接&lt;/div&gt;
+      &lt;div class="phase__block phase__block--current"&gt;P3 合规审核&lt;/div&gt;
+      &lt;div class="phase__block phase__block--pending"&gt;P4 试运行&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="phase-labels"&gt;
+      &lt;div class="phase-labels__item"&gt;
+        &lt;div class="phase-labels__name"&gt;资质审查&lt;/div&gt;
+        &lt;div class="phase-labels__date"&gt;04.19 – 05.02&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="phase-labels__item"&gt;
+        &lt;div class="phase-labels__name"&gt;系统对接&lt;/div&gt;
+        &lt;div class="phase-labels__date"&gt;05.03 – 05.20&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="phase-labels__item"&gt;
+        &lt;div class="phase-labels__name"&gt;合规审核&lt;/div&gt;
+        &lt;div class="phase-labels__date"&gt;05.21 – 06.20&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="phase-labels__item"&gt;
+        &lt;div class="phase-labels__name"&gt;试运行&lt;/div&gt;
+        &lt;div class="phase-labels__date"&gt;06.21 – 07.15&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 维度完成度 + 交付物（各跨 2 列） --&gt;
+  &lt;div class="bento__cell bento__cell--2col"&gt;
+    &lt;div class="cell__label"&gt;各维度完成度&lt;/div&gt;
+    &lt;!-- seg-bar rows --&gt;
+  &lt;/div&gt;
+
+  &lt;div class="bento__cell bento__cell--2col"&gt;
+    &lt;div class="cell__label"&gt;已完成交付物&lt;/div&gt;
+    &lt;!-- dl-stack --&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 下一步 + 风险卡点（各跨 2 列，深色/奶油色变体） --&gt;
+  &lt;div class="bento__cell bento__cell--2col bento__cell--dark"&gt;
+    &lt;div class="cell__label cell__label--dark"&gt;下一步&lt;/div&gt;
+    &lt;!-- next steps --&gt;
+  &lt;/div&gt;
+
+  &lt;div class="bento__cell bento__cell--2col bento__cell--cream"&gt;
+    &lt;div class="cell__label"&gt;当前卡点&lt;/div&gt;
+    &lt;!-- risk-stack --&gt;
+  &lt;/div&gt;
+
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C30">
+  <div class="review-header">
+    <div class="review-id">C30</div>
+    <div class="review-name">Step Sequence </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="stacked">
+      <div class="stacked__card">
+        <span class="stacked__tag">LAYER 1</span>
+        <div class="stacked__title">容器标准化
+</div>
+  <div class="preview-code"><pre>&lt;section class="step-seq"&gt;
+  &lt;div class="step-seq__header"&gt;
+    &lt;span class="sl"&gt;PROCESS&lt;/span&gt;
+    &lt;h2 class="step-seq__title"&gt;Supplier Lifecycle&lt;/h2&gt;
+  &lt;/div&gt;
+  &lt;div class="flow-pipeline"&gt;
+    &lt;div class="flow-stage flow-stage--done"&gt;
+      &lt;span class="flow-label sl"&gt;STAGE ONE&lt;/span&gt;
+      &lt;span class="flow-value"&gt;准入审核&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;span class="flow-arrow"&gt;&amp;rsaquo;&lt;/span&gt;
+    &lt;div class="flow-stage flow-stage--active"&gt;
+      &lt;span class="flow-label sl"&gt;STAGE TWO&lt;/span&gt;
+      &lt;span class="flow-value"&gt;分工协作&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;span class="flow-arrow"&gt;&amp;rsaquo;&lt;/span&gt;
+    &lt;div class="flow-stage"&gt;
+      &lt;span class="flow-label sl"&gt;STAGE THREE&lt;/span&gt;
+      &lt;span class="flow-value"&gt;运营管理&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;span class="flow-arrow"&gt;&amp;rsaquo;&lt;/span&gt;
+    &lt;div class="flow-stage"&gt;
+      &lt;span class="flow-label sl"&gt;STAGE FOUR&lt;/span&gt;
+      &lt;span class="flow-value"&gt;绩效评估&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C31">
+  <div class="review-header">
+    <div class="review-id">C31</div>
+    <div class="review-name">Annotated Screenshot </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="hr-card" style="max-width:400px;">
+      <div class="hr-card__front">
+        <div class="hr-card__title">固定 100vh
+</div>
+  <div class="preview-code"><pre>&lt;section class="annotated"&gt;
+  &lt;div class="annotated__header"&gt;
+    &lt;span class="sl"&gt;DETAIL VIEW&lt;/span&gt;
+    &lt;h2 class="annotated__title"&gt;Construction Details&lt;/h2&gt;
+  &lt;/div&gt;
+  &lt;div class="annotated__frame"&gt;
+    &lt;img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&amp;h=600&amp;fit=crop" alt="Jacket detail" class="annotated__img"&gt;
+    &lt;div class="annotated__pin" style="top:25%;left:30%;"&gt;
+      &lt;span class="annotated__pin-dot"&gt;&lt;/span&gt;
+      &lt;span class="annotated__pin-label"&gt;YKK AquaGuard Zipper&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="annotated__pin" style="top:50%;left:65%;"&gt;
+      &lt;span class="annotated__pin-dot"&gt;&lt;/span&gt;
+      &lt;span class="annotated__pin-label"&gt;Seam-sealed 3-layer construction&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="annotated__pin" style="top:70%;left:40%;"&gt;
+      &lt;span class="annotated__pin-dot"&gt;&lt;/span&gt;
+      &lt;span class="annotated__pin-label"&gt;Articulated hood with wired brim&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C32">
+  <div class="review-header">
+    <div class="review-id">C32</div>
+    <div class="review-name">~~Product Card Grid~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="i-list">
+      <div class="i-item checked">
+        <span class="i-item__check"></span>
+        <span class="i-item__text">容器规范已建立</span>
+        <span class="i-item__tag done">Done</span>
+</div>
+  <div class="preview-code"><pre>&lt;section class="product-grid"&gt;
+  &lt;div class="product-grid__items"&gt;
+    &lt;div class="product-card"&gt;
+      &lt;div class="product-card__image"&gt;
+        &lt;img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&amp;h=300&amp;fit=crop" alt="L.I.M Comp"&gt;
+      &lt;/div&gt;
+      &lt;div class="product-card__body"&gt;
+        &lt;span class="product-name"&gt;L.I.M Comp&lt;/span&gt;
+        &lt;span class="tag"&gt;Shell Jacket&lt;/span&gt;
+        &lt;div class="product-card__specs"&gt;
+          &lt;span class="sl"&gt;Weight&lt;/span&gt;&lt;span class="sv"&gt;485g&lt;/span&gt;
+          &lt;span class="sl"&gt;Waterproof&lt;/span&gt;&lt;span class="sv"&gt;28,000mm&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="product-card"&gt;
+      &lt;div class="product-card__image"&gt;
+        &lt;img src="https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=400&amp;h=300&amp;fit=crop" alt="Frost Jacket"&gt;
+      &lt;/div&gt;
+      &lt;div class="product-card__body"&gt;
+        &lt;span class="product-name"&gt;Frost Jacket&lt;/span&gt;
+        &lt;span class="tag"&gt;Insulation&lt;/span&gt;
+        &lt;div class="product-card__specs"&gt;
+          &lt;span class="sl"&gt;Weight&lt;/span&gt;&lt;span class="sv"&gt;380g&lt;/span&gt;
+          &lt;span class="sl"&gt;Fill&lt;/span&gt;&lt;span class="sv"&gt;PrimaLoft&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C33">
+  <div class="review-header">
+    <div class="review-id">C33</div>
+    <div class="review-name">Three-Column Grid </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="chat">
+      <div class="chat__bubble chat__bubble--ai">
+        <div class="chat__bubble-label">AI
+</div>
+  <div class="preview-code"><pre>&lt;section class="three-col-section"&gt;
+  &lt;div class="three-col"&gt;
+    &lt;div class="three-col__primary"&gt;
+      &lt;span class="sl"&gt;PRIMARY&lt;/span&gt;
+      &lt;h3 class="three-col__title"&gt;Shell Layer&lt;/h3&gt;
+      &lt;p class="three-col__desc"&gt;Gore-Tex Pro 80D，28,000mm 防水。全天候防护的核心层。&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="three-col__secondary"&gt;
+      &lt;span class="sl"&gt;SECONDARY&lt;/span&gt;
+      &lt;h3 class="three-col__title"&gt;Insulation&lt;/h3&gt;
+      &lt;p class="three-col__desc"&gt;PrimaLoft Gold，380g 轻量保暖。&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="three-col__tertiary"&gt;
+      &lt;span class="sl"&gt;DETAIL&lt;/span&gt;
+      &lt;h3 class="three-col__title"&gt;180g&lt;/h3&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C34">
+  <div class="review-header">
+    <div class="review-id">C34</div>
+    <div class="review-name">Tab Panel </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-lg);">
+      <div>
+        <div class="dev-browser">
+          <div class="dev-browser__bar">
+            <span class="dev-dot"></span><span class="dev-dot"></span><span class="dev-dot"></span>
+            <span class="dev-browser__url"></span>
+</div>
+  <div class="preview-code"><pre>&lt;div class="tab-panel"&gt;
+  &lt;div class="tab-bar"&gt;
+    &lt;button class="tab-item active"&gt;OVERVIEW&lt;/button&gt;
+    &lt;button class="tab-item"&gt;SPECS&lt;/button&gt;
+    &lt;button class="tab-item"&gt;SUSTAINABILITY&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="tab-content"&gt;
+    &lt;p class="tab-content__text"&gt;L.I.M Comp 是 Haglofs 最轻量的防水冲锋衣。Gore-Tex Pro 80D 壳层搭配 PFC-free DWR 处理，在极端天气中提供可靠防护。&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="C35">
+  <div class="review-header">
+    <div class="review-id">C35</div>
+    <div class="review-name">Accordion </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render">
+<div class="bento-project">
+      <div class="cell">
+        <div class="cell__label">整体进度
+</div>
+  <div class="preview-code"><pre>&lt;div class="accordion"&gt;
+  &lt;div class="accordion-item open"&gt;
+    &lt;button class="accordion-toggle"&gt;
+      &lt;span class="accordion-label"&gt;MATERIAL COMPOSITION&lt;/span&gt;
+      &lt;span class="accordion-icon"&gt;&amp;minus;&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="accordion-body"&gt;
+      &lt;p&gt;Shell: 100% Nylon (Gore-Tex Pro 80D). Lining: 100% Polyester (Micro Grid Backer). DWR: PFC-free C0 finish.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="accordion-item"&gt;
+    &lt;button class="accordion-toggle"&gt;
+      &lt;span class="accordion-label"&gt;SIZING &amp;amp; FIT&lt;/span&gt;
+      &lt;span class="accordion-icon"&gt;+&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;div class="accordion-body" style="display:none;"&gt;
+      &lt;p&gt;Regular fit. Articulated sleeves for freedom of movement. Adjustable hem and hood.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+<script>
+function togglePreview(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='block';item.querySelector('.preview-code').style.display='none';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function toggleCode(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='none';item.querySelector('.preview-code').style.display='block';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function generateResult(){var items=document.querySelectorAll('.review-item');var result=document.title.split(' ')[0]+' 复审结果\n==================\n\n';var keep=[],del=[],unsure=[];items.forEach(function(item){var id=item.dataset.id;var name=item.querySelector('.review-name').textContent.trim();var sel=item.querySelector('.review-select').value;if(sel==='keep')keep.push(id+' '+name);else if(sel==='delete')del.push(id+' '+name);else unsure.push(id+' '+name)});result+='✅ 保留（'+keep.length+'个）：\n';keep.forEach(function(k){result+='  '+k+'\n'});result+='\n❌ 删除（'+del.length+'个）：\n';del.forEach(function(d){result+='  '+d+'\n'});if(unsure.length>0){result+='\n⚠️ 不确定（'+unsure.length+'个）：\n';unsure.forEach(function(u){result+='  '+u+'\n'})}document.getElementById('result-text').textContent=result;document.getElementById('result-box').style.display='block'}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result-text').textContent).then(function(){var btn=event.target;btn.textContent='已复制';setTimeout(function(){btn.textContent='复制结果'},1500)})}
+</script>
+</body>
+</html>

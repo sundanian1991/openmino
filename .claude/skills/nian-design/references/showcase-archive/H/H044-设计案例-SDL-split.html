@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haglöfs · Design Principles · SDL Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pk: #2C2C2C;
+  --olive: #4A5D3A;
+  --earth: #8B7355;
+  --org: #E55B2B;
+  --glacier: #2A4A5A;
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --bg-alt: #F5F5F0;
+  --bd: #E5E5E0;
+  --td: #2C2C2C;
+  --tp: #1A1A1A;
+  --ts: #6B6B6B;
+  --tda: #A0A0A0;
+  --fd: Georgia, 'Times New Roman', serif;
+  --fb: 'Inter', -apple-system, sans-serif;
+  --fm: 'JetBrains Mono', 'SF Mono', monospace;
+  --xs:10px;--sm:12px;--base:14px;--lg:16px;--xl:20px;--2xl:24px;--3xl:32px;--4xl:48px;--5xl:64px;
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s20:80px;--s24:96px;
+  --r4:4px;--r6:6px;
+  --eo:cubic-bezier(.16,1,.3,1);--df:150ms;--dn:250ms;--ds:400ms
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:var(--fb);background:var(--bg);color:var(--tp);line-height:1.6;overflow-x:hidden}
+::selection{background:rgba(74,93,58,.15);color:var(--tp)}
+.fd{font-family:var(--fd)}.fm{font-family:var(--fm)}
+
+.cmp-lbl{
+  font-family:var(--fm);font-size:var(--xs);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--tda);display:inline-block;padding-bottom:var(--s2);margin-bottom:var(--s12);
+}
+.cmp-lbl em{font-style:normal;color:var(--org);font-weight:600}
+
+.sec{padding:var(--s24) var(--s8)}
+.sec--w{max-width:1120px;margin:0 auto}
+.sec--n{max-width:720px;margin:0 auto}
+.sec--m{max-width:960px;margin:0 auto}
+
+/* ========== HERO ========== */
+.hero{
+  min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:hidden;
+}
+.hero::after{
+  content:'DESIGN PRINCIPLES';position:absolute;right:-.04em;bottom:-.06em;
+  font-family:var(--fd);font-size:clamp(6rem,14vw,14rem);font-weight:700;line-height:.8;
+  letter-spacing:-.04em;color:var(--pk);opacity:.025;pointer-events:none;user-select:none;
+}
+.hero__l{
+  display:flex;flex-direction:column;justify-content:center;padding:var(--s24) var(--s8);z-index:2;
+}
+.hero__tag{
+  font-family:var(--fm);font-size:var(--sm);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--tda);margin-bottom:var(--s6);display:flex;align-items:center;gap:var(--s2);
+}
+.hero__tag::before{content:'';width:32px;height:1px;background:var(--bd)}
+.hero__h{
+  font-family:var(--fd);font-size:clamp(2.5rem,5vw,4.5rem);font-weight:700;
+  line-height:1.02;letter-spacing:-.03em;color:var(--td);margin-bottom:var(--s6);
+}
+.hero__h .hl{color:var(--olive)}
+.hero__sub{
+  font-size:var(--xl);color:var(--ts);line-height:1.6;max-width:400px;margin-bottom:var(--s12);
+}
+.hero__meta{
+  display:flex;gap:var(--s12);font-family:var(--fm);font-size:var(--xs);
+  letter-spacing:.06em;text-transform:uppercase;color:var(--tda);
+}
+.hero__r{
+  background:var(--pk);display:flex;align-items:flex-end;justify-content:center;
+  padding:var(--s16) var(--s8);position:relative;overflow:hidden;
+}
+.hero__dots{
+  position:absolute;top:var(--s16);right:var(--s16);
+  display:grid;grid-template-columns:repeat(5,1fr);gap:10px;opacity:.05;
+}
+.hero__dots span{width:4px;height:4px;border-radius:50%;background:#fff}
+.hero__qt{
+  font-family:var(--fd);font-size:clamp(1.25rem,2.5vw,2rem);font-weight:400;
+  color:rgba(255,255,255,.85);line-height:1.5;max-width:340px;position:relative;z-index:2;
+  margin-bottom:var(--s12);
+}
+.hero__qt em{font-style:italic;color:var(--org);opacity:.6}
+.hero__attr{
+  font-family:var(--fm);font-size:var(--xs);letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(255,255,255,.2);position:relative;z-index:2;
+}
+
+/* ========== DUALISM ========== */
+.dualism{background:var(--pk);color:#fff}
+.dualism__grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:var(--s8);
+}
+.dl{
+  padding:var(--s12);border:1px solid rgba(255,255,255,.06);position:relative;
+}
+.dl__num{
+  font-family:var(--fm);font-size:var(--xs);letter-spacing:.1em;color:rgba(255,255,255,.2);
+  margin-bottom:var(--s4);
+}
+.dl__pair{
+  display:flex;align-items:center;gap:var(--s4);margin-bottom:var(--s4);
+}
+.dl__a{
+  font-family:var(--fd);font-size:var(--2xl);font-weight:400;color:rgba(255,255,255,.9);
+}
+.dl__v{
+  width:1px;height:24px;background:rgba(255,255,255,.2);
+}
+.dl__b{
+  font-family:var(--fd);font-size:var(--2xl);font-weight:700;color:var(--olive);
+}
+.dl__d{
+  font-size:var(--base);line-height:1.7;color:rgba(255,255,255,.4);max-width:360px;
+}
+
+/* ========== SEPARATED FIELDS ========== */
+.fields__grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s10);margin-top:var(--s8);
+}
+.fld{
+  position:relative;
+}
+.fld::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--bd);
+}
+.fld__icon{
+  width:24px;height:24px;border:1.5px solid var(--olive);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;margin-bottom:var(--s4);
+  font-family:var(--fm);font-size:var(--xs);color:var(--olive);
+}
+.fld__h{font-family:var(--fm);font-size:var(--sm);font-weight:600;color:var(--tp);margin-bottom:var(--s2);text-transform:uppercase;letter-spacing:.04em;}
+.fld__p{font-size:var(--base);line-height:1.7;color:var(--ts)}
+
+/* ========== COLOR PILLARS ========== */
+.pillars{background:var(--sr)}
+.pillars__grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:var(--s8);
+  background:var(--bd);
+}
+.pll{
+  padding:var(--s12) var(--s6);background:var(--bg);position:relative;overflow:hidden;
+}
+.pll__bar{width:32px;height:2px;margin-bottom:var(--s4);}
+.pll__label{font-family:var(--fm);font-size:var(--xs);letter-spacing:.08em;text-transform:uppercase;color:var(--tda);margin-bottom:var(--s4)}
+.pll__num{font-family:var(--fm);font-size:var(--4xl);font-weight:600;line-height:1;letter-spacing:-.03em;color:var(--td);margin-bottom:var(--s2)}
+.pll__desc{font-size:var(--sm);line-height:1.6;color:var(--ts)}
+.pll__deco{
+  position:absolute;right:var(--s6);bottom:var(--s6);width:80px;height:80px;border-radius:50%;
+  opacity:.04;pointer-events:none;
+}
+
+/* ========== FIFTH ELEMENT ========== */
+.fifth{background:var(--pk);color:#fff;text-align:center}
+.fifth__grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:2px;
+  max-width:300px;margin:var(--s12) auto;
+}
+.fifth__grid .dot{
+  aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.08);
+  transition:background var(--dn) var(--eo);
+}
+.fifth__grid .dot.on{background:rgba(255,255,255,.3)}
+.fifth__grid .dot.hl{background:var(--olive)}
+.fifth__p{
+  font-size:var(--base);color:rgba(255,255,255,.3);max-width:560px;margin:0 auto;line-height:1.8;
+}
+.fifth__p em{color:rgba(255,255,255,.6);font-style:normal}
+
+/* ========== TYPOGRAPHY SPECIMEN ========== */
+.specimen__grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:var(--s6);margin-top:var(--s6);
+}
+.spec{
+  padding:var(--s6);border:1px solid var(--bd);border-radius:var(--r4);
+  transition:border-color var(--df) var(--eo);
+}
+.spec:hover{border-color:var(--tda)}
+.spec__role{font-family:var(--fm);font-size:var(--xs);letter-spacing:.08em;text-transform:uppercase;color:var(--tda);margin-bottom:var(--s2)}
+.spec__font{font-size:var(--lg);margin-bottom:var(--s1)}
+.spec__demo{font-size:var(--sm);color:var(--ts);line-height:1.6;border-top:1px solid var(--bd);padding-top:var(--s4);margin-top:var(--s4)}
+.spec__demo .x{font-family:var(--fd);display:block;font-size:2rem;line-height:1.2;color:var(--td)}
+.spec__demo .m{font-family:var(--fm);display:block;font-size:1.25rem;color:var(--td);margin-top:var(--s1)}
+
+/* ========== SYSTEM APPS ========== */
+.apps{background:var(--sr)}
+.apps__grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s4);margin-top:var(--s6);
+}
+.app{
+  padding:var(--s6);background:var(--sf);border:1px solid var(--bd);border-radius:var(--r4);
+  text-align:center;transition:all var(--df) var(--eo);
+}
+.app:hover{border-color:var(--tda);transform:translateY(-2px)}
+.app__ico{width:32px;height:32px;margin:0 auto var(--s3);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:var(--sm);font-weight:600;color:#fff}
+.app__n{font-family:var(--fm);font-size:var(--xs);font-weight:600;color:var(--tp);margin-bottom:var(--s1);letter-spacing:.02em;text-transform:uppercase}
+.app__d{font-size:var(--xs);color:var(--ts);line-height:1.5}
+
+/* ========== SUMMARY ========== */
+.summary{background:var(--pk);color:#fff}
+.summary__out{font-family:var(--fd);font-size:var(--5xl);font-weight:700;line-height:1;letter-spacing:-.03em;color:#fff;margin-bottom:var(--s8)}
+.summary__hed{font-family:var(--fm);font-size:var(--xs);letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:var(--s4)}
+.summary__items{display:flex;flex-direction:column;gap:var(--s4)}
+.si{display:flex;gap:var(--s4);padding-bottom:var(--s4);border-bottom:1px solid rgba(255,255,255,.06)}
+.si:last-child{border:none;padding-bottom:0}
+.si__n{font-family:var(--fm);font-size:var(--sm);color:rgba(255,255,255,.2);flex-shrink:0;width:24px}
+.si__t{font-size:var(--base);line-height:1.6;color:rgba(255,255,255,.7)}
+.si__t .m{font-family:var(--fm);color:var(--olive)}
+
+/* ========== CHAPTER INDEX ========== */
+.ch-idx{background:var(--pk);border-top:1px solid rgba(255,255,255,.04);color:#fff;padding:var(--s12) var(--s8)}
+.ch-idx__inner{max-width:1120px;margin:0 auto}
+.ch-idx__label{font-family:var(--fm);font-size:var(--xs);letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-bottom:var(--s8)}
+.ch-idx__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s8);margin-bottom:var(--s6)}
+.ch{display:flex;gap:var(--s4);align-items:flex-start}
+.ch__num{font-family:var(--fm);font-size:var(--sm);color:rgba(255,255,255,.2);flex-shrink:0;width:28px}
+.ch.act .ch__num{color:var(--olive)}
+.ch__name{font-size:var(--base);color:rgba(255,255,255,.4);line-height:1.5}
+.ch.act .ch__name{color:#fff}
+.ch__ctx{display:block;font-family:var(--fm);font-size:var(--xs);color:rgba(255,255,255,.15);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+.ch.act::before{content:'\2192';font-family:var(--fm);font-size:var(--sm);color:var(--olive);margin-right:var(--s2)}
+.ch.act{display:flex}
+.ptrl{
+  display:flex;gap:var(--s2);align-items:center;padding:var(--s6) 0;
+  border-top:1px solid rgba(255,255,255,.04);
+}
+.ptrl__d{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.1);transition:all var(--dn) var(--eo)}
+.ptrl__d.done{background:rgba(255,255,255,.15)}
+.ptrl__d.cur{background:var(--olive);width:20px;border-radius:3px}
+.ptrl__lbl{font-family:var(--fm);font-size:var(--xs);letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.15);margin-left:var(--s2)}
+
+/* ========== FOOTER ========== */
+.ftr{
+  background:var(--pk);padding:var(--s8) var(--s8) var(--s4);
+  border-top:1px solid rgba(255,255,255,.03);
+}
+.ftr__in{max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.ftr__b{font-family:var(--fm);font-size:var(--xs);letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.1)}
+.ftr__m{font-family:var(--fm);font-size:var(--xs);color:rgba(255,255,255,.08)}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:1024px){
+  .apps__grid{grid-template-columns:repeat(2,1fr)}
+  .ch-idx__grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero__r{min-height:40vh;padding:var(--s10) var(--s6)}
+  .hero__dots{display:none}
+  .dualism__grid{grid-template-columns:1fr}
+  .fields__grid{grid-template-columns:1fr;gap:var(--s6)}
+  .pillars__grid{grid-template-columns:1fr}
+  .specimen__grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .sec{padding:var(--s12) var(--s4)}
+  .apps__grid{grid-template-columns:1fr}
+  .ch-idx__grid{grid-template-columns:1fr}
+  .hero__l{padding:var(--s12) var(--s4)}
+  .hero__r{padding:var(--s8) var(--s4)}
+  .hero__h{font-size:clamp(2rem,8vw,2.5rem)}
+  .dl{padding:var(--s8) var(--s4)}
+  .pll{padding:var(--s8) var(--s4)}
+  .ftr__in{flex-direction:column;gap:var(--s2);align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<div style="position:relative">
+  <div class="cmp-lbl" style="position:absolute;top:24px;left:32px;z-index:10;color:var(--tda);border-bottom:none;padding:2px 10px;background:var(--bg)">
+    H1 · <em>Hero — Simple. Remarkable.</em>
+  </div>
+  <section class="hero">
+    <div class="hero__l">
+      <div class="hero__tag">Stockholm Design Lab · 设计原则</div>
+      <h1 class="hero__h">
+        Simple.<br>
+        <span class="hl">Remarkable.</span>
+      </h1>
+      <p class="hero__sub">斯德哥尔摩设计实验室的方法论：用一个简单的想法，做出非凡的设计。四组核心原则，驱动整个品牌体系。</p>
+      <div class="hero__meta">
+        <span>6 大原则</span>
+        <span>阅读 + 分析</span>
+        <span>双场景</span>
+      </div>
+    </div>
+    <div class="hero__r">
+      <div class="hero__dots">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <blockquote>
+        <p class="hero__qt">"What I care about the most<br>doesn't scale.<br><em>Detail. Texture. Deliberation.</em>"</p>
+        <cite class="hero__attr">Oskar Ekman · Arketyp, on SDL</cite>
+      </blockquote>
+    </div>
+  </section>
+</div>
+
+<!-- ========== DUALISM ========== -->
+<section class="sec dualism">
+  <div class="sec--w">
+    <div class="cmp-lbl" style="color:rgba(255,255,255,.3);border-bottom-color:rgba(255,255,255,.1)">
+      P1 · <em style="color:rgba(229,91,43,.7)">Dualism</em> — 双元对比
+    </div>
+    <div class="dualism__grid">
+      <div class="dl">
+        <div class="dl__num">01</div>
+        <div class="dl__pair">
+          <span class="dl__a">Heritage</span>
+          <span class="dl__v"></span>
+          <span class="dl__b">Future</span>
+        </div>
+        <p class="dl__d">111 年的历史不是束缚，是基座。每款新产品必须同时回答：它尊重了什么传统？突破了什么边界？</p>
+      </div>
+      <div class="dl">
+        <div class="dl__num">02</div>
+        <div class="dl__pair">
+          <span class="dl__a">Organic</span>
+          <span class="dl__v"></span>
+          <span class="dl__b">Engineered</span>
+        </div>
+        <p class="dl__d">自然的形态通过精确的几何被提炼。每一个弧度都有功能理由——不是为了好看，是为了好用。</p>
+      </div>
+      <div class="dl">
+        <div class="dl__num">03</div>
+        <div class="dl__pair">
+          <span class="dl__a">Nature</span>
+          <span class="dl__v"></span>
+          <span class="dl__b">Tech</span>
+        </div>
+        <p class="dl__d">泥土色的基底上，用精准的橙色信号做功能提示。有机的轮廓里，嵌入工程优化的结构。</p>
+      </div>
+      <div class="dl">
+        <div class="dl__num">04</div>
+        <div class="dl__pair">
+          <span class="dl__a">Warmth</span>
+          <span class="dl__v"></span>
+          <span class="dl__b">Precision</span>
+        </div>
+        <p class="dl__d">功能上的精确性和情感上的温度必须同时存在。大到戴手套也能操作的拉链头，形状要让人愿意触碰。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SEPARATED FIELDS ========== -->
+<section class="sec">
+  <div class="sec--w">
+    <div class="cmp-lbl">P2 · <em>Separated Fields</em> — 分隔场域</div>
+    <div class="fields__grid">
+      <div class="fld">
+        <div class="fld__icon">F</div>
+        <div class="fld__h">Form Follows Function</div>
+        <div class="fld__p">每个组件的形态由其功能决定。装饰不是加法——是未被发现的减法。去掉，直到不能再去掉。</div>
+      </div>
+      <div class="fld">
+        <div class="fld__icon">G</div>
+        <div class="fld__h">Grid as Rhythm</div>
+        <div class="fld__p">网格不是牢笼。8px 是步长，不是精度。用间距而非分割线建立层级——野外你不会在开阔地和营地之间画线。</div>
+      </div>
+      <div class="fld">
+        <div class="fld__icon">T</div>
+        <div class="fld__h">Typography as Voice</div>
+        <div class="fld__p">三种字体，三种角色，永不混用。Georgia 是宣言，Inter 是叙述，JetBrains Mono 是证据。每页不超过 3 字号 2 字重。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== COLOR PILLARS ========== -->
+<section class="sec pillars">
+  <div class="sec--w">
+    <div class="cmp-lbl">P3 · <em>Color Pillars</em> — 色彩编码</div>
+    <div class="pillars__grid">
+      <div class="pll">
+        <div class="pll__bar" style="background:var(--olive)"></div>
+        <div class="pll__label">Nature · 户外 DNA</div>
+        <div class="pll__num">olive</div>
+        <div class="pll__desc">#4A5D3A — 品牌主色，承载户外基因与可持续理念。80% 视觉面积由此色系定义。</div>
+        <div class="pll__deco" style="background:var(--olive)"></div>
+      </div>
+      <div class="pll">
+        <div class="pll__bar" style="background:var(--earth)"></div>
+        <div class="pll__label">Material · 工艺温度</div>
+        <div class="pll__num">earth</div>
+        <div class="pll__desc">#8B7355 — 辅助品牌色，传递材质温暖与自然纹理。用于工艺展示和历史叙事。</div>
+        <div class="pll__deco" style="background:var(--earth)"></div>
+      </div>
+      <div class="pll">
+        <div class="pll__bar" style="background:var(--glacier)"></div>
+        <div class="pll__label">Tech · 技术精确</div>
+        <div class="pll__num">glacier</div>
+        <div class="pll__desc">#2A4A5A — 场景色，代表冬季/高海拔/技术。用于数据面板和技术规格展示。</div>
+        <div class="pll__deco" style="background:var(--glacier)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FIFTH ELEMENT ========== -->
+<section class="sec fifth">
+  <div class="sec--n">
+    <div class="cmp-lbl" style="color:rgba(255,255,255,.3);border-bottom-color:rgba(255,255,255,.1)">
+      P4 · <em style="color:rgba(229,91,43,.7)">The Fifth Element</em> — 第五元素
+    </div>
+    <div class="fifth__grid">
+      <span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span>
+      <span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot on"></span>
+      <span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot on"></span>
+      <span class="dot hl"></span><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot on"></span>
+      <span class="dot on"></span><span class="dot"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span>
+      <span class="dot hl"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot on"></span>
+      <span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span>
+    </div>
+    <p class="fifth__p">
+      点阵 H 是 Haglöfs 品牌的 <em>第五元素</em>——一个贯穿系统的签名视觉符号。从 Hero 区到数据卡片，从装订线到页脚，它不做装饰，只做标记。在 OPPO 品牌中，SDL 设计了视觉界面模块（Visual Interface Module）作为第五元素；在 Stadium 中，它是一组运动数字。每个品牌系统都需要一个属于自己的"第五元素"。
+    </p>
+  </div>
+</section>
+
+<!-- ========== TYPOGRAPHY ========== -->
+<section class="sec">
+  <div class="sec--m">
+    <div class="cmp-lbl">P5 · <em>Typography as Voice</em> — 字体即声音</div>
+    <div class="specimen__grid">
+      <div class="spec">
+        <div class="spec__role">Display · 展示</div>
+        <div class="spec__font" style="font-family:var(--fd)">Georgia</div>
+        <div class="spec__demo">
+          <span class="x">Haglöfs</span>
+          <span class="m">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</span>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="spec__role">Body · 正文</div>
+        <div class="spec__font" style="font-family:var(--fb)">Inter</div>
+        <div class="spec__demo">
+          <span style="font-family:var(--fb);font-size:1.125rem;display:block;line-height:1.4">Crafted for the wild, since 1914.</span>
+          <span class="m" style="font-family:var(--fb)">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</span>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="spec__role">Mono · 数据</div>
+        <div class="spec__font" style="font-family:var(--fm)">JetBrains Mono</div>
+        <div class="spec__demo">
+          <span style="font-family:var(--fm);font-size:1.125rem;display:block;letter-spacing:.04em">TECH-SPECS: 024 720 891</span>
+          <span class="m" style="font-family:var(--fm)">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</span>
+        </div>
+      </div>
+      <div class="spec">
+        <div class="spec__role">Usage · 使用规则</div>
+        <div class="spec__font">1 : 10 : 1</div>
+        <div class="spec__demo">
+          <span style="display:block;line-height:1.6">Georgia : Inter : Mono 的使用频率比。<br>Georgia 仅用于 5-10% 的标题层级，Inter 覆盖 80%+ 正文，Mono 只做数据标签。这个比例本身就是视觉层级。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SYSTEM APPS ========== -->
+<section class="sec apps">
+  <div class="sec--w">
+    <div class="cmp-lbl">P6 · <em>Holistic Ecosystem</em> — 系统应用</div>
+    <div class="apps__grid">
+      <div class="app">
+        <div class="app__ico" style="background:var(--olive)">R</div>
+        <div class="app__n">Reading Portal</div>
+        <div class="app__d">阅读入口 · 书卷式封面</div>
+      </div>
+      <div class="app">
+        <div class="app__ico" style="background:var(--glacier)">M</div>
+        <div class="app__n">Marginalia</div>
+        <div class="app__d">边注系统 · 3:1 双栏</div>
+      </div>
+      <div class="app">
+        <div class="app__ico" style="background:var(--earth)">D</div>
+        <div class="app__n">Data Matrix</div>
+        <div class="app__d">数据矩阵 · 关键指标</div>
+      </div>
+      <div class="app">
+        <div class="app__ico" style="background:var(--pk)">S</div>
+        <div class="app__n">Summary</div>
+        <div class="app__d">摘要胶囊 · 核心结论</div>
+      </div>
+      <div class="app">
+        <div class="app__ico" style="background:var(--olive)">I</div>
+        <div class="app__n">Insight Cards</div>
+        <div class="app__d">分析洞察 · 进度指标</div>
+      </div>
+      <div class="app">
+        <div class="app__ico" style="background:var(--glacier)">Q</div>
+        <div class="app__n">Quote Array</div>
+        <div class="app__d">引用阵列 · 关键片段</div>
+      </div>
+      <div class="app">
+        <div class="app__ico" style="background:var(--earth)">T</div>
+        <div class="app__n">Key Terms</div>
+        <div class="app__d">关键术语 · 交叉引用</div>
+      </div>
+      <div class="app">
+        <div class="app__ico" style="background:var(--pk)">C</div>
+        <div class="app__n">Chapter Index</div>
+        <div class="app__d">章节索引 · 阅读轨迹</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SUMMARY ========== -->
+<section class="sec summary">
+  <div class="sec--n">
+    <div class="cmp-lbl" style="color:rgba(255,255,255,.3);border-bottom-color:rgba(255,255,255,.1)">
+      Synthesis · <em style="color:rgba(229,91,43,.7)">SDL Design Principles</em>
+    </div>
+    <div class="summary__hed">阅读 + 分析 · 核心结论</div>
+    <div class="summary__out">4</div>
+    <div class="summary__items">
+      <div class="si">
+        <span class="si__n">01</span>
+        <p class="si__t"><span class="m">Dualism</span> — 双元对比是品牌能量的来源。四组张力对同时工作，不是妥协，是同时拉向相反方向的力量。</p>
+      </div>
+      <div class="si">
+        <span class="si__n">02</span>
+        <p class="si__t"><span class="m">Separated Fields</span> — 用间距建立层级，不用分割线。网格是步长，不是精度。8px 步长允许 4px 或 12px 的偏离。</p>
+      </div>
+      <div class="si">
+        <span class="si__n">03</span>
+        <p class="si__t"><span class="m">Color Coding</span> — 颜色必须承载功能。80% brand primary + 10-15% scene + 5-10% accent。accent 仅做信号不做装饰。</p>
+      </div>
+      <div class="si">
+        <span class="si__n">04</span>
+        <p class="si__t"><span class="m">The Fifth Element</span> — 每个品牌需要一个贯穿系统的签名元素。点阵 H、视觉界面模块、一组数字——不做装饰，只做标记。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CHAPTER INDEX ========== -->
+<section class="ch-idx">
+  <div class="ch-idx__inner">
+    <div class="cmp-lbl" style="color:rgba(255,255,255,.3);border-bottom-color:rgba(255,255,255,.1)">
+      V1 · <em style="color:rgba(229,91,43,.7)">Course Index</em> — 课程目录
+    </div>
+    <div class="ch-idx__label">学习路径 · 6 个模块</div>
+    <div class="ch-idx__grid">
+      <div class="ch act">
+        <span class="ch__num">01</span>
+        <div>
+          <div class="ch__name">双元对比 · Dualism</div>
+          <span class="ch__ctx">当前 · 设计哲学</span>
+        </div>
+      </div>
+      <div class="ch">
+        <span class="ch__num">02</span>
+        <div>
+          <div class="ch__name">分隔场域 · Separated Fields</div>
+          <span class="ch__ctx">网格与间距系统</span>
+        </div>
+      </div>
+      <div class="ch">
+        <span class="ch__num">03</span>
+        <div>
+          <div class="ch__name">色彩编码 · Color Pillars</div>
+          <span class="ch__ctx">颜色功能化</span>
+        </div>
+      </div>
+      <div class="ch">
+        <span class="ch__num">04</span>
+        <div>
+          <div class="ch__name">第五元素 · The Fifth Element</div>
+          <span class="ch__ctx">签名视觉</span>
+        </div>
+      </div>
+      <div class="ch">
+        <span class="ch__num">05</span>
+        <div>
+          <div class="ch__name">字体即声音 · Typography</div>
+          <span class="ch__ctx">三工分离</span>
+        </div>
+      </div>
+      <div class="ch">
+        <span class="ch__num">06</span>
+        <div>
+          <div class="ch__name">系统应用 · Ecosystem</div>
+          <span class="ch__ctx">全触点覆盖</span>
+        </div>
+      </div>
+    </div>
+    <div class="ptrl">
+      <span class="ptrl__d done"></span>
+      <span class="ptrl__d cur"></span>
+      <span class="ptrl__d"></span>
+      <span class="ptrl__d"></span>
+      <span class="ptrl__d"></span>
+      <span class="ptrl__d"></span>
+      <span class="ptrl__lbl">当前 · 双元对比</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="ftr">
+  <div class="ftr__in">
+    <span class="ftr__b">Haglöfs · nian-design</span>
+    <span class="ftr__m">SDL Design Principles · 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>

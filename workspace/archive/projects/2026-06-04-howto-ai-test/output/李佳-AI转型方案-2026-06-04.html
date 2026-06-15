@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentAI 工具迭代诊断报告</title>
+<style>
+  :root {
+    --bg: #faf8f5;
+    --card-bg: #ffffff;
+    --text: #2c2c2c;
+    --text-secondary: #6b6b6b;
+    --accent: #4a90d9;
+    --accent-light: #e8f1fb;
+    --border: #e8e4df;
+    --success: #3a8f6a;
+    --warning: #d4a742;
+    --danger: #d94a4a;
+    --tag-bg: #f0ede8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Serif SC", "STSong", "Songti SC", Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 40px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 16px 0 8px;
+  }
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  /* 卡片 */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card-header {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-header .icon { font-size: 18px; }
+  /* 标签 */
+  .tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 2px 4px 2px 0;
+  }
+  .tag.active { background: var(--accent-light); color: var(--accent); }
+  .tag.installed { background: #e8f5e9; color: var(--success); }
+  .tag.needed { background: #fff8e1; color: var(--warning); }
+  /* 迭代建议卡片颜色编码 */
+  .iter-critical { border-left: 4px solid var(--danger); }
+  .iter-recommend { border-left: 4px solid var(--warning); }
+  .iter-keep { border-left: 4px solid var(--success); }
+  .iter-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .iter-badge.critical { background: #fde8e8; color: var(--danger); }
+  .iter-badge.recommend { background: #fff8e1; color: var(--warning); }
+  .iter-badge.keep { background: #e8f5e9; color: var(--success); }
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+  th {
+    background: var(--bg);
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  /* Skill 推荐卡片 */
+  .skill-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .skill-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .skill-card .skill-info { flex: 1; }
+  .skill-card .skill-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .skill-card .skill-desc { font-size: 13px; color: var(--text-secondary); }
+  .skill-card .skill-meta { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+  .skill-card .skill-action { white-space: nowrap; }
+  /* 进度条 */
+  .progress-bar {
+    background: var(--border);
+    border-radius: 6px;
+    height: 8px;
+    margin: 8px 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: var(--accent);
+    height: 100%;
+    border-radius: 6px;
+  }
+  /* 时间线 */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 24px;
+    padding-left: 20px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--card-bg);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .timeline-week {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .timeline-title {
+    font-weight: 600;
+    margin: 4px 0;
+  }
+  .timeline-detail {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  /* 自动化任务卡片 */
+  .auto-card {
+    background: linear-gradient(135deg, #f0f7ff, #f8f5ff);
+    border: 1px solid #dde5f0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .auto-card .auto-name { font-weight: 600; font-size: 14px; }
+  .auto-card .auto-meta { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+  .auto-card .auto-meta span { margin-right: 16px; }
+  /* 对比网格 */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 8px 12px;
+    align-items: center;
+    font-size: 14px;
+  }
+  .compare-grid .vs { text-align: center; color: var(--text-secondary); font-weight: 600; }
+  /* ══════ 可打印周度 Todo 清单 ══════ */
+  .weekly-plan { margin-bottom: 24px; }
+  .week-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    page-break-inside: avoid;
+  }
+  .week-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent-light);
+  }
+  .week-badge {
+    background: var(--accent);
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .week-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+  }
+  .week-subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .week-target {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .week-target strong { color: var(--accent); }
+  /* 勾选清单行 */
+  .checklist { list-style: none; padding: 0; margin: 0; }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item .cb {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #c4bfb8;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    position: relative;
+    background: #fff;
+    transition: border-color 0.2s;
+    cursor: default;
+  }
+  .checklist-item .cb::after {
+    content: '';
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 1px;
+    width: 8px;
+    height: 13px;
+    border: solid var(--success);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .checklist-item .cb.checked { border-color: var(--success); background: #e8f5e9; }
+  .checklist-item .cb.checked::after { display: block; }
+  .checklist-item .task-content { flex: 1; }
+  .checklist-item .task-content .task-name { font-weight: 500; margin-bottom: 2px; }
+  .checklist-item .task-content .task-detail { font-size: 12px; color: var(--text-secondary); }
+  .checklist-item .task-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  .task-tag.must { background: #fde8e8; color: var(--danger); }
+  .task-tag.should { background: #fff8e1; color: var(--warning); }
+  .task-tag.nice { background: #e8f5e9; color: var(--success); }
+  /* 时间估算汇总 */
+  .time-summary {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+  }
+  .time-summary .time-badge {
+    background: var(--tag-bg);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  .time-badge.total { background: var(--accent-light); color: var(--accent); font-weight: 600; }
+  /* 打印说明 */
+  .print-tip {
+    background: #f0f7ff;
+    border: 1px dashed var(--accent);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .print-tip .tip-icon { font-size: 20px; }
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  /* ══════ 打印样式 ══════ */
+  @media print {
+    body {
+      background: #fff;
+      padding: 20px;
+      max-width: 100%;
+      font-size: 13px;
+      color: #000;
+    }
+    .card, .skill-card, .auto-card, .week-section {
+      box-shadow: none;
+      border: 1px solid #ccc;
+      background: #fff;
+    }
+    .week-section { page-break-inside: avoid; }
+    .checklist-item .cb {
+      border-color: #999;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .checklist-item .cb.checked {
+      border-color: #333;
+      background: #e0e0e0;
+    }
+    .print-tip { display: none; }
+    .footer { border-top-color: #ccc; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 17px; }
+    table { font-size: 12px; }
+    th, td { padding: 6px 8px; }
+  }
+  @media (max-width: 600px) {
+    body { padding: 20px 12px; }
+    .compare-grid { grid-template-columns: 1fr 40px 1fr; font-size: 13px; }
+    .skill-card { flex-direction: column; }
+    .skill-card .skill-action { margin-top: 8px; }
+    .checklist-item { flex-wrap: wrap; }
+    .checklist-item .task-tag { margin-left: 34px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>AgentAI 工具迭代诊断报告</h1>
+<p class="subtitle">生成日期：2026-06-04 ｜ 李佳 · 财富管理业务部 · 投资研究组 · 投资研究岗</p>
+
+<!-- 工作简报 -->
+<div class="card" style="border-left: 4px solid var(--accent);">
+  <div class="card-header">工作简报</div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+    <div><strong>时间画像</strong><br><span style="font-size:24px;font-weight:700;color:var(--accent);">168h</span><span style="font-size:13px;color:var(--text-secondary);">/月</span></div>
+    <div><strong>同岗对比</strong><br><span style="font-size:14px;">你的工时 168h，同岗位平均 168h</span></div>
+    <div><strong>AI 化潜力</strong><br><span style="font-size:14px;">高潜力 0 个 · 中潜力 4 个</span></div>
+    <div><strong>工作流匹配</strong><br><span style="font-size:14px;">数据处理链 · 客户服务链 · 内容生产链</span></div>
+  </div>
+  <div class="work-brief-detail" style="font-size:14px;color:var(--text-secondary);">
+    月工时 168h（持平同岗），集中在方案设计（84h/月，占 50%）。核心痛点是因子多、权重和逻辑梳理费时间。
+  </div>
+</div>
+
+<!-- 用户画像 -->
+<div class="card">
+  <div class="card-header"><span class="icon">👤</span> 用户画像</div>
+  <table>
+    <tr><td style="width: 100px; color: var(--text-secondary);">职业</td><td>财富管理业务部 · 投资研究组 · 投资研究岗</td></tr>
+    <tr><td style="color: var(--text-secondary);">技术背景</td><td><span class="tag active">熟练使用 AI 工具，能配置工作流</span></td></tr>
+    <tr><td style="color: var(--text-secondary);">核心痛点</td><td>方案设计——行业分析因子多，权重和逻辑思路的确定费时间</td></tr>
+    <tr><td style="color: var(--text-secondary);">高频任务</td><td>方案设计（84h/月）→ 行业分析→因子筛选→权重设定→逻辑梳理→输出报告</td></tr>
+    <tr><td style="color: var(--text-secondary);">时间预算</td><td>每周 3+ 小时</td></tr>
+    <tr><td style="color: var(--text-secondary);">切换容忍度</td><td><span class="tag active">激进型</span></td></tr>
+  </table>
+</div>
+
+<!-- 工作流关联分析 -->
+<h2>工作流关联分析</h2>
+<div class="card">
+  <div class="card-header">模块上下游关系</div>
+  <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">从数据中识别的工作流链：</p>
+  <div style="font-size:14px;line-height:2;">
+    
+<div style="padding:8px 0;border-bottom:1px solid var(--border);">
+  <strong>数据处理链：</strong>资料收集 → 数据分析 → 策略制定
+  <span style="color:var(--text-secondary);margin-left:12px;">（核心工作流，可端到端打通）</span>
+</div>
+<div style="padding:8px 0;border-bottom:1px solid var(--border);">
+  <strong>客户服务链：</strong>客户服务 → 会议沟通 → 文档处理
+  <span style="color:var(--text-secondary);margin-left:12px;">（全流程覆盖）</span>
+</div>
+<div style="padding:8px 0;">
+  <strong>内容生产链：</strong>资料收集 → 内容创作 → 文档处理
+  <span style="color:var(--text-secondary);margin-left:12px;">（覆盖 2/3 环节）</span>
+</div>
+
+  </div>
+  <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:14px;">
+    <strong>整体 AI 化指数：</strong><br>
+    <span style="color:var(--text-secondary);">单模块优化：该岗位 0 个高潜力目标，可独立提效 50%+</span><br>
+    <span style="color:var(--text-secondary);">流程自动化：1 条工作流可端到端自动化（提效 80%+）</span><br>
+    <span style="color:var(--text-secondary);">建议策略：先买后建 — 安装 financial-analysis-agent 覆盖投资分析环节，再自建因子权重辅助模块</span>
+  </div>
+</div>
+
+<!-- 痛点 → AgentAI 场景翻译 -->
+<h2>痛点 → AgentAI 场景翻译</h2>
+<div class="card">
+  <table>
+    <tr><th>你说的</th><th>对应的 AI 技术场景</th></tr>
+    <tr><td>因子多、权重和逻辑思路费时间</td><td>AI 辅助因子分析 → 权重建议 → 逻辑框架搭建</td></tr>
+  </table>
+</div>
+
+<!-- AgentAI vs 手动 AI 对照 -->
+<h2>AgentAI 方案 vs 手动 AI 对话</h2>
+<div class="card">
+  <table>
+    <tr><th>维度</th><th>手动 AI 对话</th><th style="background: var(--accent-light);">AgentAI 方案</th></tr>
+    
+<tr><td>怎么用</td><td>手动收集数据→分析因子→定权重→写结论</td><td style="background:var(--accent-light);">AI 辅助因子筛选+权重建议+报告初稿</td></tr>
+<tr><td>技术栈</td><td>JoyCode/Like Code + Excel</td><td style="background:var(--accent-light);">financial-analysis-agent + 定制 Prompt</td></tr>
+<tr><td>适用场景</td><td>方案设计 84h/月</td><td style="background:var(--accent-light);">因子分析 + 逻辑框架 + 投研报告生成</td></tr>
+
+  </table>
+</div>
+
+<!-- 当前技术栈 -->
+<h2>当前技术栈清单</h2>
+<div class="card">
+  <div class="card-header"><span class="icon">🔧</span> 已安装 & 待安装</div>
+  <table>
+    <tr><th>工具/平台</th><th>用途</th><th>状态</th></tr>
+    <tr><td>MyAgents</td><td>Agent 平台</td><td><span class="tag installed">可用</span></td></tr><tr><td>financial-analysis-agent</td><td>投资评估与风险分析</td><td><span class="tag needed">推荐安装</span></td></tr>
+  </table>
+</div>
+
+<!-- Skill 扫描结果 -->
+<h2>Skill 市场扫描结果</h2>
+
+<div class="skill-card"><div class="skill-info"><div class="skill-name">financial-analysis-agent <span class="tag needed" style="background:var(--warning);color:#fff;">推荐安装</span></div><div class="skill-desc">投资评估、风险分析、数据驱动推荐</div><div class="skill-meta">来源：skills.sh · 1K 安装</div></div><div class="skill-action"><button class="copy-btn" onclick="copyText('npx skills add qodex-ai/ai-agent-skills@financial-analysis-agent',this)">copy</button></div></div>
+<div class="skill-card"><div class="skill-info"><div class="skill-name">financial-deep-research <span class="tag needed" style="background:var(--warning);color:#fff;">推荐安装</span></div><div class="skill-desc">8阶段金融深度研究管线，引用溯源</div><div class="skill-meta">来源：skills.sh · 516 安装</div></div><div class="skill-action"><button class="copy-btn" onclick="copyText('npx skills add eng0ai/eng0-template-skills@financial-deep-research',this)">copy</button></div></div>
+
+
+<!-- 系统视角 -->
+<h2>系统视角（跨模块协同增效）</h2>
+<div class="card">
+  <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">先系统视角，再局部方案——推荐组合而非孤立 Skill：</p>
+  <div style="font-size:14px;line-height:2.2;">
+    
+<div style="padding:10px 0;border-bottom:1px solid var(--border);">
+  <strong>financial-analysis-agent + financial-deep-research</strong> → 投研全流程：数据收集→因子分析→深度研究→报告输出
+  <span style="display:block;font-size:13px;color:var(--text-secondary);">两个 Skill 互补，覆盖你的投研工作流</span>
+</div>
+<div style="padding:10px 0;">
+  <strong>因子权重 AI 辅助（自建）</strong> → 针对你的核心痛点：因子筛选、权重建议、逻辑框架
+  <span style="display:block;font-size:13px;color:var(--text-secondary);">现成 Skill 覆盖通用投研，定制 Prompt 覆盖个性化因子分析</span>
+</div>
+
+  </div>
+</div>
+
+<!-- 迭代建议 -->
+<h2>工具迭代建议</h2>
+<div class="card">
+  <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+    根据你的 <strong>激进型</strong> 策略，以下是当前建议：
+  </p>
+  <div class="card iter-recommend" style="border-left:4px solid var(--warning);"><div style="display:flex;justify-content:space-between;"><div><strong>financial-analysis-agent</strong> <span class="iter-badge recommend" style="background:#fff8e1;color:var(--warning);">推荐安装</span></div></div><p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">与你的投研场景高度匹配，建议优先安装</p></div><div class="card iter-recommend"><div><strong>financial-deep-research</strong> <span class="iter-badge recommend">推荐安装</span></div><p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">深度研究管线，适合固收产品研究</p></div>
+</div>
+
+<!-- 自动化任务配置 -->
+<h2>自动化任务配置</h2>
+<div class="auto-card"><div class="auto-name">AI 投研工具迭代检查</div><div class="auto-meta"><span>频率：每周</span><span>过滤：激进型·全列</span></div><div class="auto-meta"><span>下次运行：2026-06-11</span></div></div>
+
+<!-- ══════ 可打印周度 Todo 清单 ══════ -->
+<h2>📋 周度 Todo 清单（可打印）</h2>
+<div class="print-tip">
+  <span class="tip-icon">🖨️</span>
+  按 <strong>Ctrl+P / ⌘+P</strong> 打印此清单，贴在工位旁边逐项勾选。每完成一项就用笔涂掉复选框 ☑️
+</div>
+<div class="weekly-plan">
+  
+<div class="week-section"><div class="week-header"><div class="week-badge">W1</div><div><div class="week-title">安装投研 AI Skill + 试跑</div><div class="week-subtitle">验收：跑通 financial-analysis-agent 的核心功能</div></div></div><ul class="checklist">
+<li class="checklist-item"><div class="cb" onclick="toggleCheck(this)"></div><div class="task-content"><div class="task-name">安装 financial-analysis-agent</div><div class="task-detail">npx skills add qodex-ai/ai-agent-skills@financial-analysis-agent</div></div><span class="task-tag must">必做</span><span style="font-size:12px;color:var(--text-secondary);">15min</span></li>
+<li class="checklist-item"><div class="cb" onclick="toggleCheck(this)"></div><div class="task-content"><div class="task-name">用 agent 跑一次固收分析</div><div class="task-detail">选择一只债基/货基，测试 AI 的分析质量</div></div><span class="task-tag must">必做</span><span style="font-size:12px;color:var(--text-secondary);">60min</span></li>
+</ul></div>
+<div class="week-section"><div class="week-header"><div class="week-badge">W2</div><div><div class="week-title">定制因子分析 Prompt</div><div class="week-subtitle">验收：因子权重 AI 辅助 Prompt 可用</div></div></div><ul class="checklist">
+<li class="checklist-item"><div class="cb" onclick="toggleCheck(this)"></div><div class="task-content"><div class="task-name">安装 financial-deep-research</div><div class="task-detail">补充深度研究管线，用于固收产品深度报告</div></div><span class="task-tag should">建议</span><span style="font-size:12px;color:var(--text-secondary);">15min</span></li>
+<li class="checklist-item"><div class="cb" onclick="toggleCheck(this)"></div><div class="task-content"><div class="task-name">在新对话搭建因子权重 Prompt</div><div class="task-detail">用定制 Prompt 引导 AI 辅助因子筛选和权重建议</div></div><span class="task-tag should">建议</span><span style="font-size:12px;color:var(--text-secondary);">60min</span></li>
+</ul></div>
+
+</div>
+
+<div class="footer">
+  <p>本报告由 howto-ai Agent 自动生成 ｜ 基于你的真实工作场景设计</p>
+  <p>下次自动迭代检查：2026-06-11 ｜ 任务状态：已激活</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!-- =========================================================================
+  X01 · 长文导航结构-示范 | nian-design 模板库(第4批)
+  =========================================================================
+  DECISION-CARD:
+    scene       = 结构型示范(带书签的长报告/方法论长文)
+    stream      = Editorial 阅读结构
+    hero        = 结构头(无大hero,紧凑标题+元信息)
+    components  = 左侧固定nav(section-bookmark), 右侧长内容(article),
+                   滚动高亮(原生JS), data-rows, insight-rows
+    palette     = primary=olive, 漂浮三层底色, 无违规框
+    break       = 左固定nav + 滚动联动高亮,可叠加到任意视觉型
+    base        = light
+  =========================================================================
+  示例场景:一篇设计方法论长文(通用长文,可替换为任意主题)
+  QA: 5/5 passed | stream: Editorial | hero: 结构头 | base: light
+  ========================================================================= -->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>设计方法论长文 · 长文导航结构示范</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --surface:#FFFFFF; --raised:#EAE5DA;
+  --border:#D9D2C3; --border-soft:#E8E2D5;
+  --olive:#4A6741; --olive-d:#2F4429; --orange:#C65D3A; --gold:#B8923A;
+  --text-display:#2D2A26; --text-primary:#1A1816;
+  --text-secondary:#6B655C; --text-disabled:#A89E8C;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --r-sm:4px; --r-md:8px;
+  --nav-w:260px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+
+/* 结构头(无大hero) */
+.doc-head{padding:64px 80px 48px;border-bottom:1px solid var(--border);background:var(--bg)}
+.doc-head__tag{font-family:var(--font-mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:20px}
+.doc-head__title{font-family:var(--font-display);font-size:clamp(30px,4vw,48px);font-weight:500;line-height:1.12;letter-spacing:-0.02em;color:var(--text-display);max-width:780px;margin-bottom:18px}
+.doc-head__title em{font-style:normal;color:var(--olive)}
+.doc-head__lead{font-size:16px;line-height:1.75;color:var(--text-secondary);max-width:680px;margin-bottom:28px}
+.doc-head__meta{display:flex;gap:32px;flex-wrap:wrap}
+.doc-head__m{font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-disabled)}
+.doc-head__m strong{display:block;font-family:var(--font-display);font-size:18px;font-weight:400;color:var(--olive);margin-top:4px}
+
+/* 双栏布局 */
+.layout{display:grid;grid-template-columns:var(--nav-w) 1fr;max-width:1280px;margin:0 auto}
+
+/* 左侧固定nav */
+.nav{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;padding:48px 32px 48px 48px;border-right:1px solid var(--border)}
+.nav__label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border-soft)}
+.nav__list{list-style:none;display:flex;flex-direction:column;gap:2px}
+.nav__item{display:block}
+.nav__link{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:baseline;padding:10px 12px;border-radius:var(--r-sm);text-decoration:none;color:var(--text-secondary);font-size:13.5px;line-height:1.5;transition:all 150ms;position:relative}
+.nav__link:hover{background:var(--raised);color:var(--text-primary)}
+.nav__link.is-active{background:rgba(74,103,65,0.08);color:var(--olive);font-weight:600}
+.nav__link.is-active::before{content:'';position:absolute;left:-48px;top:50%;transform:translateY(-50%);width:3px;height:20px;background:var(--olive);border-radius:0 2px 2px 0}
+.nav__num{font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);letter-spacing:0.04em}
+.nav__link.is-active .nav__num{color:var(--olive)}
+.nav__progress{margin-top:32px;padding-top:24px;border-top:1px solid var(--border-soft)}
+.nav__progress__lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:10px}
+.nav__progress__bar{height:3px;background:var(--raised);border-radius:2px;overflow:hidden}
+.nav__progress__fill{height:100%;background:var(--olive);width:0%;transition:width 200ms}
+.nav__progress__pct{font-family:var(--font-mono);font-size:11px;color:var(--olive);margin-top:8px;font-weight:600}
+
+/* 右侧长内容 */
+.article{padding:64px 80px 96px;max-width:760px}
+.section-bookmark{padding:48px 0;border-bottom:1px solid var(--border-soft)}
+.section-bookmark:first-child{padding-top:16px}
+.section-bookmark:last-child{border-bottom:none}
+.sb__num{font-family:var(--font-mono);font-size:11px;letter-spacing:0.12em;color:var(--olive);margin-bottom:12px}
+.sb__h{font-family:var(--font-display);font-size:clamp(24px,3vw,34px);font-weight:500;line-height:1.2;letter-spacing:-0.015em;color:var(--text-display);margin-bottom:20px;scroll-margin-top:24px}
+.sb__h em{font-style:normal;color:var(--olive)}
+.sb__p{font-size:16px;line-height:1.85;color:var(--text-primary);margin-bottom:18px}
+.sb__p strong{color:var(--olive);font-weight:600}
+.sb__quote{font-family:var(--font-display);font-size:20px;font-style:italic;line-height:1.5;color:var(--text-display);padding:20px 0 20px 24px;margin:24px 0;position:relative}
+.sb__quote::before{content:'';position:absolute;left:0;top:20px;bottom:20px;width:2px;background:var(--gold)}
+
+/* data-rows(结构内嵌) */
+.data-rows{display:flex;flex-direction:column;margin:24px 0}
+.data-row{display:grid;grid-template-columns:1fr auto 1.6fr;gap:28px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--border)}
+.data-row:first-child{border-top:1px solid var(--border)}
+.data-row__lbl{font-size:13.5px;font-weight:600;color:var(--text-display)}
+.data-row__val{font-family:var(--font-display);text-align:right;line-height:1}
+.data-row__val em{font-size:30px;font-weight:400;font-style:normal;color:var(--olive);letter-spacing:-0.02em}
+.data-row__note{font-size:12.5px;color:var(--text-secondary);line-height:1.55}
+
+/* insight-rows(结构内嵌) */
+.insight-rows{display:flex;flex-direction:column;margin:24px 0}
+.insight-row{display:grid;grid-template-columns:56px 1fr;gap:24px;padding:22px 0;border-bottom:1px solid var(--border-soft);align-items:start}
+.insight-row:first-child{border-top:1px solid var(--border-soft)}
+.insight-row__n{font-family:var(--font-display);font-size:32px;font-weight:400;color:var(--olive);opacity:0.35;line-height:1}
+.insight-row__h{font-size:16px;font-weight:600;color:var(--text-display);margin-bottom:8px}
+.insight-row__t{font-size:14.5px;line-height:1.75;color:var(--text-secondary)}
+.insight-row__t em{font-family:var(--font-display);font-style:normal;font-weight:500;color:var(--olive)}
+
+.doc-foot{padding:48px 80px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-disabled)}
+
+/* 移动端:nav变顶部横向 */
+@media(max-width:900px){
+  .doc-head{padding:48px 28px 36px}
+  .layout{grid-template-columns:1fr}
+  .nav{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);padding:24px 28px;overflow-x:auto}
+  .nav__list{flex-direction:row;gap:8px;flex-wrap:nowrap}
+  .nav__link{white-space:nowrap;padding:8px 12px}
+  .nav__link.is-active::before{display:none}
+  .nav__progress{display:none}
+  .article{padding:40px 28px 64px}
+  .data-row{grid-template-columns:1fr;gap:6px}
+  .data-row__val{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<!-- 结构头 -->
+<header class="doc-head">
+  <div class="doc-head__tag">Long-form Navigation · 长文导航结构示范</div>
+  <h1 class="doc-head__title">把<em>克制</em>当成方法 — 设计方法论长文</h1>
+  <p class="doc-head__lead">这是一篇可替换为任意主题的长文示范。重点不在内容本身,而在它如何用"左侧固定导航 + 滚动联动高亮"让长文变得可导航、可回溯。读到哪、还有多少、跳到哪——结构先行,内容填空。</p>
+  <div class="doc-head__meta">
+    <div class="doc-head__m">篇幅<strong>约 8 段</strong></div>
+    <div class="doc-head__m">阅读时长<strong>6 分钟</strong></div>
+    <div class="doc-head__m">结构<strong>左nav+右文</strong></div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- 左侧固定 nav -->
+  <nav class="nav" id="docNav">
+    <div class="nav__label">目录 · Contents</div>
+    <ul class="nav__list">
+      <li class="nav__item"><a class="nav__link is-active" href="#s1"><span class="nav__num">01</span><span>为什么是克制</span></a></li>
+      <li class="nav__item"><a class="nav__link" href="#s2"><span class="nav__num">02</span><span>克制不是少,是准</span></a></li>
+      <li class="nav__item"><a class="nav__link" href="#s3"><span class="nav__num">03</span><span>三个检验标尺</span></a></li>
+      <li class="nav__item"><a class="nav__link" href="#s4"><span class="nav__num">04</span><span>克制的反面案例</span></a></li>
+      <li class="nav__item"><a class="nav__link" href="#s5"><span class="nav__num">05</span><span>什么时候该破戒</span></a></li>
+      <li class="nav__item"><a class="nav__link" href="#s6"><span class="nav__num">06</span><span>把它变成肌肉记忆</span></a></li>
+    </ul>
+    <div class="nav__progress">
+      <div class="nav__progress__lbl">阅读进度</div>
+      <div class="nav__progress__bar"><div class="nav__progress__fill" id="progressFill"></div></div>
+      <div class="nav__progress__pct" id="progressPct">0%</div>
+    </div>
+  </nav>
+
+  <!-- 右侧长内容 -->
+  <article class="article">
+    <section class="section-bookmark" id="s1">
+      <div class="sb__num">01 · WHY</div>
+      <h2 class="sb__h">为什么是<em>克制</em></h2>
+      <p class="sb__p">"少即是多"被说烂了,但很少有人讲清楚——少的是什么,多的是什么。<strong>克制的少,是减掉一切不承载信息的元素</strong>;它换来的多,是注意力被集中到真正重要的那一处。</p>
+      <p class="sb__p">一个页面上的每个像素都在争夺读者的注意力。当你加一个阴影、一个渐变、一个图标,你以为是在"丰富",实际是在稀释。克制的本质,是对读者注意力的尊重——你认怂,承认读者没有那么多预算分给你。</p>
+      <div class="sb__quote">"装饰是当你不知道说什么时的填充物。知道说什么的人,不需要装饰。"</div>
+    </section>
+
+    <section class="section-bookmark" id="s2">
+      <div class="sb__num">02 · WHAT</div>
+      <h2 class="sb__h">克制不是少, 是<em>准</em></h2>
+      <p class="sb__p">很多人误以为克制等于极简,等于留白,等于黑白灰。这是表象。<strong>克制的内核是"准确"</strong>——每一个元素都刚好够用,既不多一分累赘,也不少一分不足。</p>
+      <p class="sb__p">一个数据看板如果信息密度高,那它就应该是密集的——强行留白反而显得空洞。一份儿童读物如果需要活泼,那它就可以有色彩和图形——克制不等于禁欲。准,是对场景的回应,不是对审美的教条。</p>
+      <div class="data-rows">
+        <div class="data-row">
+          <div class="data-row__lbl">极简 Minimal</div>
+          <div class="data-row__val"><em>少</em></div>
+          <div class="data-row__note">为少而少,可能牺牲信息或表达力</div>
+        </div>
+        <div class="data-row">
+          <div class="data-row__lbl">克制 Restrained</div>
+          <div class="data-row__val"><em>准</em></div>
+          <div class="data-row__note">每个元素都刚好够用,服务于内容</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-bookmark" id="s3">
+      <div class="sb__num">03 · HOW</div>
+      <h2 class="sb__h">三个<em>检验标尺</em></h2>
+      <p class="sb__p">怎么判断一个设计是不是克制?三个问题问完自己。能答"是",留下;答"否"或犹豫,删掉。</p>
+      <div class="insight-rows">
+        <div class="insight-row">
+          <div class="insight-row__n">01</div>
+          <div>
+            <div class="insight-row__h">删掉它,信息会丢吗?</div>
+            <div class="insight-row__t">如果删掉一个元素,读者获取的信息量没变,那它就是装饰。<em>装饰不承载信息,就该删。</em></div>
+          </div>
+        </div>
+        <div class="insight-row">
+          <div class="insight-row__n">02</div>
+          <div>
+            <div class="insight-row__h">它服务于哪个决策?</div>
+            <div class="insight-row__t">每个视觉元素都应该指向一个读者要做出的判断或动作。<em>说不清"它帮读者干什么"的元素,是噪音。</em></div>
+          </div>
+        </div>
+        <div class="insight-row">
+          <div class="insight-row__n">03</div>
+          <div>
+            <div class="insight-row__h">三层之内能找到它吗?</div>
+            <div class="insight-row__t">读者的视线跳超过三层才注意到关键信息,说明层级没拉开。<em>克制不等于平均,是让重要的凸显。</em></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-bookmark" id="s4">
+      <div class="sb__num">04 · ANTI</div>
+      <h2 class="sb__h">克制的<em>反面案例</em></h2>
+      <p class="sb__p">最常见的"伪克制"有三种。识别它们,比理解克制本身更重要——因为大部分翻车,都是踩进了这三个坑。</p>
+      <p class="sb__p"><strong>第一种:留白强迫症。</strong>把所有元素都推到角落,中间留一大片空。留白没有服务于焦点,只是显得空洞。真正的留白是给焦点让位,不是均匀稀释。</p>
+      <p class="sb__p"><strong>第二种:灰度教条。</strong>认为克制就只能用黑白灰,拒绝任何色彩。结果信息没有强调,所有内容一样平。色彩是层级工具,不是克制的敌人。</p>
+      <p class="sb__p"><strong>第三种:字体洁癖。</strong>全篇一种字体一种字号,以为这是统一。实际是放弃了用字体建立层级——读者抓不住重点。统一不等于单调。</p>
+    </section>
+
+    <section class="section-bookmark" id="s5">
+      <div class="sb__num">05 · WHEN</div>
+      <h2 class="sb__h">什么时候<em>该破戒</em></h2>
+      <p class="sb__p">克制是默认值,不是铁律。有三种场景,你应当主动破戒——因为破戒本身承载了信息。</p>
+      <p class="sb__p"><strong>警示类信息。</strong>风险提示、错误警告、截止时间——这些需要读者立刻注意到。用强色、用粗体、甚至用反常规的视觉,是因为"它重要"这个信息,比"克制"更重要。</p>
+      <p class="sb__p"><strong>情绪类内容。</strong>品牌宣言、故事开场、纪念性页面——这里要传递的是感受而非数据。克制的理性语调会杀掉情绪。该感性的时候,就让视觉感性。</p>
+      <p class="sb__p"><strong>破例的标尺只有一个:破戒本身,是否在传递信息。</strong>如果破戒只是因为"想好看",那是装饰;如果破戒是因为"这件事必须被看见",那是设计。</p>
+    </section>
+
+    <section class="section-bookmark" id="s6">
+      <div class="sb__num">06 · HABIT</div>
+      <h2 class="sb__h">把它变成<em>肌肉记忆</em></h2>
+      <p class="sb__p">克制不是一种天赋,是一种可训练的习惯。三个动作,反复做,它会从"刻意"变成"本能"。</p>
+      <p class="sb__p"><strong>动作一:先做加法,再做减法。</strong>把所有想表达的东西都放上去,然后逐个问"删掉它会怎样"。减法比加法难,但只有先有,才能减。</p>
+      <p class="sb__p"><strong>动作二:隔夜再看。</strong>做完当天的设计,睡一觉,第二天第一眼再看。那些"昨天觉得挺好的元素",常常会在新鲜感消退后暴露出多余。距离产生判断力。</p>
+      <p class="sb__p"><strong>动作三:找一个参照。</strong>固定几个你认可的设计范本,每次完成后拿去对比。不是抄,是校准——你的"克制"和它的"克制",差在哪。久而久之,你的标尺会和它们对齐。</p>
+      <div class="sb__quote">"克制不是终点,是起点。它让你把省下来的注意力,花在真正值得的地方。"</div>
+    </section>
+  </article>
+</div>
+
+<footer class="doc-foot">
+  <span>Long-form Navigation · 结构示范</span>
+  <span>可叠加到任意视觉型模板</span>
+</footer>
+
+<script>
+  // 滚动高亮 + 进度条 + 平滑滚动
+    var nav = document.getElementById('docNav');
+    var links = nav ? nav.querySelectorAll('.nav__link') : [];
+    var sections = [];
+    links.forEach(function(l){
+      var id = l.getAttribute('href').slice(1);
+      var sec = document.getElementById(id);
+      if(sec) sections.push({link: l, sec: sec});
+    });
+    var progressFill = document.getElementById('progressFill');
+    var progressPct = document.getElementById('progressPct');
+
+    // 平滑滚动
+    links.forEach(function(l){
+      l.addEventListener('click', function(e){
+        e.preventDefault();
+        var id = l.getAttribute('href').slice(1);
+        var sec = document.getElementById(id);
+        if(sec) sec.scrollIntoView({behavior: 'smooth', block: 'start'});
+      });
+    });
+
+    // 滚动联动
+    function update(){
+      var scrollY = window.scrollY;
+      var winH = window.innerHeight;
+      var docH = document.documentElement.scrollHeight;
+      // 进度
+      var pct = Math.min(100, Math.max(0, (scrollY / (docH - winH)) * 100));
+      if(progressFill) progressFill.style.width = pct + '%';
+      if(progressPct) progressPct.textContent = Math.round(pct) + '%';
+      // 高亮当前 section
+      var current = sections[0];
+      var offset = scrollY + winH * 0.3;
+      sections.forEach(function(s){
+        if(s.sec.offsetTop <= offset) current = s;
+      });
+      links.forEach(function(l){ l.classList.remove('is-active'); });
+      if(current) current.link.classList.add('is-active');
+    }
+    window.addEventListener('scroll', update, {passive: true});
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>
+
+</body>
+</html>

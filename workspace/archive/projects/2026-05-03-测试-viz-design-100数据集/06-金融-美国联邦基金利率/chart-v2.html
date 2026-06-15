@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>迟到的大锤：美联储利率如何追逐通胀</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #FAF9F5; font-family: -apple-system, "PingFang SC", sans-serif; display: flex; justify-content: center; padding: 40px 0; }
+  .chart-wrap { background: #fff; border-radius: 12px; padding: 32px 36px 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); max-width: 960px; }
+  #chart { width: 960px; height: 520px; }
+  .lead { max-width: 750px; margin: 12px 0 0; font-size: 13px; color: #5F5A54; line-height: 1.7; }
+  .lead strong { color: #141413; font-weight: 600; }
+  .footer-note { text-align: left; font-size: 11px; color: #A3A29B; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="chart-wrap">
+  <div id="chart"></div>
+  <div class="lead">
+    CPI 总是先到，加息总是迟到。2021 年通胀已飙至 <strong>5.4%</strong>，利率仍趴在 <strong>0.08%</strong>——直到 2022 年才以 40 年来最激进的方式追赶，18 个月从 0.08% 飙至 <strong>5.33%</strong>。<strong>时滞是这个故事的核心。</strong>
+  </div>
+  <div class="footer-note">数据来源：Federal Reserve | 2015.01 — 2025.03 关键节点数据</div>
+</div>
+<script>
+const chart = echarts.init(document.getElementById('chart'));
+
+const dates = [
+  '2015-01','2015-07','2016-01','2016-07','2016-12',
+  '2017-06','2017-12','2018-06','2018-12','2019-06','2019-12',
+  '2020-03','2020-06','2020-12','2021-06','2021-12',
+  '2022-03','2022-06','2022-09','2022-12','2023-03','2023-06','2023-09','2023-12',
+  '2024-03','2024-06','2024-09','2024-12','2025-03'
+];
+const rate  = [0.11,0.13,0.27,0.39,0.51, 1.01,1.41,1.82,2.40,2.38,1.55, 0.65,0.08,0.09,0.08,0.08, 0.33,1.44,2.56,4.10,4.65,5.08,5.33,5.33, 5.33,5.33,5.08,4.33,4.33];
+const cpi   = [-0.1,0.2,1.4,0.8,2.1, 1.6,2.1,2.8,1.9,1.6,2.3, 1.5,0.6,1.4,5.4,7.0, 8.5,9.1,8.2,6.5,5.0,3.0,3.7,3.4, 3.5,3.3,2.4,2.9,2.4];
+
+const W = 960, H = 520;
+const pad = { top: 70, right: 70, bottom: 40, left: 55 };
+const plotW = W - pad.left - pad.right;
+const plotH = H - pad.top - pad.bottom;
+
+const rateYMin = 0, rateYMax = 6;
+const cpiYMin = -1, cpiYMax = 10;
+
+function xPx(i) { return pad.left + (i + 0.5) / dates.length * plotW; }
+function yPxRate(v) { return pad.top + plotH - (v - rateYMin) / (rateYMax - rateYMin) * plotH; }
+function yPxCpi(v) { return pad.top + plotH - (v - cpiYMin) / (cpiYMax - cpiYMin) * plotH; }
+
+// 核心标注索引
+const idx2020Zero = 12;   // 2020-06 零利率
+const idx2021Infl = 14;   // 2021-06 通胀爆发
+const idx2023Peak = 22;   // 2023-09 利率峰值
+const idxEnd = 28;        // 2025-03 最新
+
+const opt = {
+  title: {
+    text: '迟到的大锤：美联储利率如何追逐通胀',
+    subtext: '2015 — 2025 联邦基金利率 vs CPI同比（%）',
+    left: 'left', top: 6,
+    textStyle: { fontSize: 17, fontWeight: 700, color: '#141413' },
+    subtextStyle: { fontSize: 11, color: '#A3A29B' }
+  },
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(p) {
+      let s = p[0].axisValue + '<br/>';
+      p.forEach(function(item) { s += item.marker + item.seriesName + ': ' + item.value + '%<br/>'; });
+      return s;
+    }
+  },
+  grid: { left: pad.left, right: pad.right, top: pad.top, bottom: pad.bottom },
+  xAxis: {
+    type: 'category', data: dates,
+    axisLabel: {
+      interval: 3,
+      fontSize: 10, color: '#87867F',
+      formatter: function(val) { return val.replace('-', '.'); }
+    },
+    axisLine: { lineStyle: { color: '#E3DACC' } },
+    axisTick: { show: false }
+  },
+  yAxis: [
+    {
+      type: 'value', name: '利率 %',
+      min: rateYMin, max: rateYMax, interval: 1,
+      axisLabel: { formatter: '{value}%', fontSize: 10, color: '#D97757' },
+      axisLine: { show: false },
+      splitLine: { lineStyle: { color: '#E6E3DA', type: 'dashed', width: 0.5 } },
+      axisTick: { show: false }
+    },
+    {
+      type: 'value', name: 'CPI %',
+      min: cpiYMin, max: cpiYMax, interval: 2,
+      axisLabel: { formatter: '{value}%', fontSize: 10, color: '#A3A29B' },
+      axisLine: { show: false },
+      splitLine: { show: false },
+      axisTick: { show: false }
+    }
+  ],
+  series: [
+    {
+      name: '联邦基金利率', type: 'line', yAxisIndex: 0, data: rate,
+      smooth: 0.2, symbol: 'none',
+      lineStyle: { width: 3, color: '#D97757' },
+      itemStyle: { color: '#D97757' }
+    },
+    {
+      name: 'CPI同比', type: 'line', yAxisIndex: 1, data: cpi,
+      smooth: 0.2, symbol: 'none',
+      lineStyle: { width: 2, color: '#A3A29B' },
+      itemStyle: { color: '#A3A29B' }
+    }
+  ],
+  graphic: [
+    // 零利率参考线
+    {
+      type: 'line',
+      shape: { x1: pad.left, y1: yPxRate(0), x2: W - pad.right, y2: yPxRate(0) },
+      style: { stroke: '#D1CFC5', lineWidth: 1, lineDash: [4, 4] }
+    },
+    {
+      type: 'text', style: { text: '零利率', fill: '#D1CFC5', fontSize: 9 },
+      left: pad.left - 32, top: yPxRate(0) - 6
+    },
+
+    // 标注1: 2020-06 零利率 — 疫情降息锚点
+    {
+      type: 'circle', shape: { cx: xPx(idx2020Zero), cy: yPxRate(0.08), r: 4 },
+      style: { fill: '#D97757', stroke: '#fff', lineWidth: 2 }
+    },
+    {
+      type: 'text', style: { text: '疫情归零', fill: '#D97757', fontSize: 9 },
+      left: xPx(idx2020Zero) - 14, top: yPxRate(0.08) + 12
+    },
+
+    // 标注2: 2021-06 通胀爆发 — CPI 领先利率的关键转折
+    {
+      type: 'circle', shape: { cx: xPx(idx2021Infl), cy: yPxCpi(5.4), r: 5 },
+      style: { fill: '#A3A29B', stroke: '#fff', lineWidth: 2 }
+    },
+    {
+      type: 'text',
+      style: { text: '通胀 5.4% 利率仍 0.08%', fill: '#A3A29B', fontSize: 10, fontWeight: 600 },
+      left: xPx(idx2021Infl) + 10, top: yPxCpi(5.4) - 16
+    },
+
+    // 标注3: 2023-09 利率峰值 — 18 个月暴力追赶
+    {
+      type: 'circle', shape: { cx: xPx(idx2023Peak), cy: yPxRate(5.33), r: 5 },
+      style: { fill: '#D97757', stroke: '#fff', lineWidth: 2 }
+    },
+    {
+      type: 'text',
+      style: { text: '18 个月飙至 5.33%', fill: '#D97757', fontSize: 10, fontWeight: 600 },
+      left: xPx(idx2023Peak) + 10, top: yPxRate(5.33) - 18
+    },
+
+    // 标注4: 2025-03 当前 — 降息未竟
+    {
+      type: 'circle', shape: { cx: xPx(idxEnd), cy: yPxRate(4.33), r: 4 },
+      style: { fill: '#D97757', stroke: '#fff', lineWidth: 2 }
+    },
+    {
+      type: 'text',
+      style: { text: '谨慎降息至 4.33%', fill: '#D97757', fontSize: 10, fontWeight: 600 },
+      left: xPx(idxEnd) - 30, top: yPxRate(4.33) - 18
+    }
+  ]
+};
+
+chart.setOption(opt);
+</script>
+</body>
+</html>

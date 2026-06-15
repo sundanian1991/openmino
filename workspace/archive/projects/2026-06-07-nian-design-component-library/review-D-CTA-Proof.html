@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>D-CTA-Proof 组件复审</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0ede6;--surface:#f8f8f8;--surface-alt:#e8e4dc;--border:#dbd6d2;--border-strong:#baaca8;--text-display:#383A3E;--text-primary:#1A1816;--text-secondary:#8A7D6E;--text-disabled:#c4b8a8;--forest:#3D5A35;--moss:#6B8B5E;--slate:#4E627C;--steel:#7A8B9B;--warm:#d47836;--sky-blue:#a0e3ee;--signal-red:#d86a48;--signal-clay:#C66B4B;--signal-gold:#BF9B5A;--signal-sky:#4A80C0;--font-ds:'Playfair Display',Georgia,serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;--font-dot:'Doto',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);padding:24px;max-width:1200px;margin:0 auto;padding-bottom:80px}
+h1{font-family:var(--font-ds);font-size:28px;font-weight:300;margin-bottom:8px}
+.sub{font-size:13px;color:var(--text-secondary);margin-bottom:24px}
+.review-item{border:1px solid var(--border);background:var(--surface);margin-bottom:20px;border-radius:6px;overflow:hidden}
+.review-header{display:flex;align-items:center;padding:12px 16px;background:var(--surface-alt);border-bottom:1px solid var(--border)}
+.review-id{font-family:var(--font-mono);font-size:12px;font-weight:600;color:#888;margin-right:12px}
+.review-name{font-size:14px;font-weight:600;flex:1}
+.review-name .tag-excluded{color:#C0392B;font-size:11px;font-weight:400;margin-left:6px}
+.review-select{padding:4px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:var(--font-body)}
+.review-meta{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid var(--border)}
+.meta-label{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#888;display:block;margin-bottom:2px}
+.meta-value{font-size:12px;color:#666;line-height:1.5}
+.toggle-bar{display:flex;gap:0;border-bottom:1px solid var(--border)}
+.toggle-btn{padding:8px 16px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent}
+.toggle-btn.active{color:var(--text-display);border-bottom-color:var(--forest)}
+.preview-render{padding:16px;background:var(--bg);min-height:160px;position:relative;overflow:hidden}
+.preview-code{padding:16px;display:none;background:var(--bg)}
+.preview-code pre{background:var(--surface);border:1px solid var(--border);padding:12px;border-radius:4px;font-family:var(--font-mono);font-size:11px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;max-height:400px;overflow-y:auto}
+</style>
+</head>
+<body>
+<h1>D-CTA-Proof 组件复审</h1>
+<p class="sub">24 个组件 · 左侧下拉标记保留/删除 · 上方切换预览和代码</p>
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px;z-index:100">
+  <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)">标记完成后</span>
+  <button onclick="generateResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--warm);color:#fff;border:none;cursor:pointer">生成复审结果</button>
+  <button onclick="copyResult()" style="padding:10px 28px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;background:var(--forest);color:#fff;border:none;cursor:pointer">复制结果</button>
+</div>
+<div id="result-box" style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:24px;display:none">
+<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px">复审结果</div>
+<pre id="result-text" style="font-family:var(--font-mono);font-size:12px;line-height:1.8;white-space:pre-wrap;margin:0;padding:0;background:transparent;border:none;color:var(--text-display)"></pre>
+</div>
+
+<section class="review-item" data-id="D1">
+  <div class="review-header">
+    <div class="review-id">D1</div>
+    <div class="review-name">Flip Card 翻转卡片 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.flip-card { perspective: 1200px; height: 320px; cursor: pointer; }
+.flip-card__inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+.flip-card:hover .flip-card__inner { transform: rotateY(180deg); }
+.flip-card__front, .flip-card__back {
+  position: absolute; inset: 0;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  border-radius: 6px; padding: 32px;
+  display: flex; flex-direction: column; justify-content: center;
+  border: 1px solid var(--border);
+}
+.flip-card__front { background: var(--surface); }
+.flip-card__back { background: var(--forest); color: rgba(255,255,255,0.9); transform: rotateY(180deg); border-color: var(--forest); }
+.flip-card__label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-disabled); margin-bottom: 8px; }
+.flip-card__title { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 600; line-height: 1.25; margin-bottom: 8px; }
+.flip-card__desc { font-size: 14px; line-height: 1.7; color: var(--text-secondary); }
+.flip-card__back .flip-card__desc { color: rgba(255,255,255,0.7); }</style><div class="flip-card">
+  <div class="flip-card__inner">
+    <div class="flip-card__front">
+      <span class="flip-card__label">CARD 01</span>
+      <div class="flip-card__title">品牌设计</div>
+      <p class="flip-card__desc">hover 翻转查看背后的设计原则。</p>
+    </div>
+    <div class="flip-card__back">
+      <span class="flip-card__label">→ FLIP</span>
+      <div class="flip-card__title">自然色系</div>
+      <p class="flip-card__desc">Answer / Argument / Evidence 三层结构。</p>
+    </div>
+  </div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="flip-card"&gt;
+  &lt;div class="flip-card__inner"&gt;
+    &lt;div class="flip-card__front"&gt;
+      &lt;span class="flip-card__label"&gt;CARD 01&lt;/span&gt;
+      &lt;div class="flip-card__title"&gt;品牌设计&lt;/div&gt;
+      &lt;p class="flip-card__desc"&gt;hover 翻转查看背后的设计原则。&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="flip-card__back"&gt;
+      &lt;span class="flip-card__label"&gt;→ FLIP&lt;/span&gt;
+      &lt;div class="flip-card__title"&gt;自然色系&lt;/div&gt;
+      &lt;p class="flip-card__desc"&gt;Answer / Argument / Evidence 三层结构。&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D2">
+  <div class="review-header">
+    <div class="review-id">D2</div>
+    <div class="review-name">Code Panel 代码面板 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.code-panel { border: 1px solid var(--border); overflow: hidden; }
+.code-panel__header { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface-alt); border-bottom: 1px solid var(--border); }
+.code-panel__dots { display: flex; gap: 5px; }
+.code-panel__dot { width: 8px; height: 8px; border-radius: 50%; }
+.code-panel__dot.r { background: #ff5f56; }
+.code-panel__dot.y { background: #ffbd2e; }
+.code-panel__dot.g { background: #27c93f; }
+.code-panel__title { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-disabled); flex: 1; text-align: center; }
+.code-panel__body { padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 2; color: var(--text-primary); background: var(--surface); overflow-x: auto; }
+.code-panel__body .kw { color: #7c3aed; }
+.code-panel__body .str { color: #D9433A; }
+.code-panel__body .cm { color: var(--text-disabled); font-style: italic; }
+.code-panel__body .fn { color: var(--sky); }
+.code-panel--notebook { background: #FFFEF8; position: relative; }
+.code-panel--notebook .code-panel__body { background: transparent; padding-left: 48px; background-image: repeating-linear-gradient(transparent,transparent 31px,rgba(74,128,192,0.04) 31px,rgba(74,128,192,0.04) 32px); }
+.code-panel--notebook::before { content: ''; position: absolute; left: 28px; top: 0; bottom: 0; width: 1px; background: rgba(217,67,58,0.12); }</style><!-- macOS 窗口 -->
+<div class="code-panel">
+  <div class="code-panel__header">
+    <div class="code-panel__dots">
+      <span class="code-panel__dot r"></span>
+      <span class="code-panel__dot y"></span>
+      <span class="code-panel__dot g"></span>
+    </div>
+    <span class="code-panel__title">component.ts</span>
+  </div>
+  <pre class="code-panel__body"><span class="cm">// comment</span>
+<span class="kw">export</span> <span class="kw">const</span> App = { <span class="str">"name"</span>: <span class="str">"test"</span> };</pre>
+</div>
+
+<!-- 笔记纸 -->
+<div class="code-panel code-panel--notebook">
+  <div class="code-panel__header"><span style="font-weight:600;color:var(--sky)">笔记</span></div>
+  <pre class="code-panel__body"><span class="cm"># Output</span>
+$ build --watch
+<span class="fn">[done]</span> Ready in 340ms</pre>
+</div></div>
+  <div class="preview-code"><pre>&lt;!-- macOS 窗口 --&gt;
+&lt;div class="code-panel"&gt;
+  &lt;div class="code-panel__header"&gt;
+    &lt;div class="code-panel__dots"&gt;
+      &lt;span class="code-panel__dot r"&gt;&lt;/span&gt;
+      &lt;span class="code-panel__dot y"&gt;&lt;/span&gt;
+      &lt;span class="code-panel__dot g"&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;span class="code-panel__title"&gt;component.ts&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;pre class="code-panel__body"&gt;&lt;span class="cm"&gt;// comment&lt;/span&gt;
+&lt;span class="kw"&gt;export&lt;/span&gt; &lt;span class="kw"&gt;const&lt;/span&gt; App = { &lt;span class="str"&gt;"name"&lt;/span&gt;: &lt;span class="str"&gt;"test"&lt;/span&gt; };&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;!-- 笔记纸 --&gt;
+&lt;div class="code-panel code-panel--notebook"&gt;
+  &lt;div class="code-panel__header"&gt;&lt;span style="font-weight:600;color:var(--sky)"&gt;笔记&lt;/span&gt;&lt;/div&gt;
+  &lt;pre class="code-panel__body"&gt;&lt;span class="cm"&gt;# Output&lt;/span&gt;
+$ build --watch
+&lt;span class="fn"&gt;[done]&lt;/span&gt; Ready in 340ms&lt;/pre&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D3">
+  <div class="review-header">
+    <div class="review-id">D3</div>
+    <div class="review-name">Tag Card 标签卡片 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.tag-card { background: var(--surface); border: 1px solid var(--border); padding: var(--space-lg); }
+.tag-card__pill { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border: 1px solid var(--border); color: var(--text-secondary); margin-bottom: 8px; }
+.tag-card__pill--sky { border-color: var(--sky); color: var(--sky); }
+.tag-card__pill--clay { border-color: var(--clay); color: var(--clay); }
+.tag-card__pill--forest { border-color: var(--forest); color: var(--forest); }
+.tag-card__title { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.tag-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }</style><div class="tag-card">
+  <div class="tag-card__pill">UI</div>
+  <div class="tag-card__pill--sky">Component</div>
+  <div class="tag-card__title">卡片组件</div>
+  <p class="tag-card__desc">5 种卡片变体。</p>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="tag-card"&gt;
+  &lt;div class="tag-card__pill"&gt;UI&lt;/div&gt;
+  &lt;div class="tag-card__pill--sky"&gt;Component&lt;/div&gt;
+  &lt;div class="tag-card__title"&gt;卡片组件&lt;/div&gt;
+  &lt;p class="tag-card__desc"&gt;5 种卡片变体。&lt;/p&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D4">
+  <div class="review-header">
+    <div class="review-id">D4</div>
+    <div class="review-name">Editorial Quote 大引号引用 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.ed-quote { background: var(--surface); border: 1px solid var(--border); padding: 32px; position: relative; }
+.ed-quote__mark { font-family: 'Playfair Display', Georgia, serif; font-size: 80px; font-weight: 700; color: var(--text-disabled); opacity: 0.12; line-height: 0.6; display: block; margin-bottom: 8px; }
+.ed-quote__text { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 400; font-style: italic; line-height: 1.5; color: var(--text-display); margin-bottom: 16px; }
+.ed-quote__cite { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary); display: block; }
+.ed-quote--alt { background: var(--surface-alt); border-left: 3px solid var(--slate); }
+.ed-quote--alt .ed-quote__mark { display: none; }
+.ed-quote--alt .ed-quote__text { font-style: normal; font-size: 18px; }</style><!-- 大引号风格 -->
+<div class="ed-quote">
+  <span class="ed-quote__mark">&ldquo;</span>
+  <div class="ed-quote__text">Design is not just what it looks like.</div>
+  <span class="ed-quote__cite">— Steve Jobs</span>
+</div>
+
+<!-- 左侧竖线风格 -->
+<div class="ed-quote ed-quote--alt">
+  <div class="ed-quote__text">减法不是不做，是知道什么不用做。</div>
+  <span class="ed-quote__cite">— 年老师</span>
+</div></div>
+  <div class="preview-code"><pre>&lt;!-- 大引号风格 --&gt;
+&lt;div class="ed-quote"&gt;
+  &lt;span class="ed-quote__mark"&gt;&amp;ldquo;&lt;/span&gt;
+  &lt;div class="ed-quote__text"&gt;Design is not just what it looks like.&lt;/div&gt;
+  &lt;span class="ed-quote__cite"&gt;— Steve Jobs&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- 左侧竖线风格 --&gt;
+&lt;div class="ed-quote ed-quote--alt"&gt;
+  &lt;div class="ed-quote__text"&gt;减法不是不做，是知道什么不用做。&lt;/div&gt;
+  &lt;span class="ed-quote__cite"&gt;— 年老师&lt;/span&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D5">
+  <div class="review-header">
+    <div class="review-id">D5</div>
+    <div class="review-name">Period Navigation 日期周期导航 </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.period-nav { display: inline-flex; align-items: center; gap: 0; border: 1px solid var(--border); background: var(--surface); }
+.period-nav__btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 16px; transition: background 150ms; }
+.period-nav__btn:hover { background: var(--surface-alt); }
+.period-nav__label { padding: 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-display); white-space: nowrap; }</style><div class="period-nav">
+  <button class="period-nav__btn">&larr;</button>
+  <span class="period-nav__label">2026 年 6 月</span>
+  <button class="period-nav__btn">&rarr;</button>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="period-nav"&gt;
+  &lt;button class="period-nav__btn"&gt;&amp;larr;&lt;/button&gt;
+  &lt;span class="period-nav__label"&gt;2026 年 6 月&lt;/span&gt;
+  &lt;button class="period-nav__btn"&gt;&amp;rarr;&lt;/button&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D6">
+  <div class="review-header">
+    <div class="review-id">D6</div>
+    <div class="review-name">Typographic Link </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.cta-link {
+  padding: var(--space-4xl) var(--container-padding);
+  background: var(--bg);
+}
+.cta-link__inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+.typo-link {
+  font-family: Georgia, serif;
+  font-size: var(--display-md);
+  font-weight: 700;
+  color: var(--text-display);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  border-bottom: 2px solid var(--text-display);
+  padding-bottom: var(--space-xs);
+  transition: opacity 150ms ease-out;
+}
+.typo-link:hover { opacity: 0.6; }
+.typo-link__arrow {
+  font-size: var(--body);
+  transition: transform 150ms ease-out;
+}
+.typo-link:hover .typo-link__arrow { transform: translateX(4px); }</style><section class="cta-link">
+  <div class="cta-link__inner">
+    <a href="#" class="typo-link">Explore the L.I.M Collection <span class="typo-link__arrow">&rarr;</span></a>
+    <a href="#" class="typo-link">View Sustainability Report <span class="typo-link__arrow">&rarr;</span></a>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="cta-link"&gt;
+  &lt;div class="cta-link__inner"&gt;
+    &lt;a href="#" class="typo-link"&gt;Explore the L.I.M Collection &lt;span class="typo-link__arrow"&gt;&amp;rarr;&lt;/span&gt;&lt;/a&gt;
+    &lt;a href="#" class="typo-link"&gt;View Sustainability Report &lt;span class="typo-link__arrow"&gt;&amp;rarr;&lt;/span&gt;&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D7">
+  <div class="review-header">
+    <div class="review-id">D7</div>
+    <div class="review-name">Inline Bar </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.inline-bar { display: flex; align-items: center; gap: var(--space-sm); }
+.inline-bar__track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.inline-bar__fill {
+  height: 100%;
+  background: var(--brand-primary);
+  border-radius: 2px;
+}</style><div class="inline-bar">
+  <span class="inline-bar__label sl">Waterproof</span>
+  <div class="inline-bar__track">
+    <div class="inline-bar__fill" style="width: 93%;"></div>
+  </div>
+  <span class="inline-bar__value sv">28,000mm</span>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="inline-bar"&gt;
+  &lt;span class="inline-bar__label sl"&gt;Waterproof&lt;/span&gt;
+  &lt;div class="inline-bar__track"&gt;
+    &lt;div class="inline-bar__fill" style="width: 93%;"&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;span class="inline-bar__value sv"&gt;28,000mm&lt;/span&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D8">
+  <div class="review-header">
+    <div class="review-id">D8</div>
+    <div class="review-name">Segmented Block Bar </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.block-bar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.block-bar__track {
+  display: flex;
+  gap: 2px;
+}
+.block-bar__block {
+  flex: 1;
+  min-width: 6px;
+  height: 12px;
+  border-radius: 0;
+}
+.block-bar__block--filled { background: var(--brand-primary); }
+.block-bar__block--empty { background: var(--border); }
+.block-bar__block--accent { background: var(--signal-warning); }
+.block-bar__block--good { background: var(--success); }
+.block-bar__block--warn { background: var(--warning); }</style><div class="block-bar">
+  <div class="block-bar__header">
+    <span class="block-bar__label sl">SUSTAINABILITY</span>
+    <span class="block-bar__value sv" data-edit>87/100</span>
+  </div>
+  <div class="block-bar__track" data-total="20" data-filled="17">
+    <!-- JS-generated: 20 blocks, 17 filled -->
+  </div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="block-bar"&gt;
+  &lt;div class="block-bar__header"&gt;
+    &lt;span class="block-bar__label sl"&gt;SUSTAINABILITY&lt;/span&gt;
+    &lt;span class="block-bar__value sv" data-edit&gt;87/100&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="block-bar__track" data-total="20" data-filled="17"&gt;
+    &lt;!-- JS-generated: 20 blocks, 17 filled --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D9">
+  <div class="review-header">
+    <div class="review-id">D9</div>
+    <div class="review-name">Metric Card LED-Style </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.metric-card {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  padding: var(--space-lg) var(--space-xl);
+  position: relative;
+}
+.metric-card__label {
+  position: absolute;
+  top: 16px;
+  left: 24px;
+}
+.metric-card__hero {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 64px;
+  font-weight: 600;
+  color: var(--text-display);
+  line-height: 1;
+  margin-top: 32px;
+}
+.metric-card__sub {
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+  margin-top: 8px;
+}</style><div class="metric-card">
+  <span class="metric-card__label sl">ACTIVE SUPPLIERS</span>
+  <div class="metric-card__hero" data-edit>24</div>
+  <div class="metric-card__sub" data-edit>覆盖 6 条产线</div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="metric-card"&gt;
+  &lt;span class="metric-card__label sl"&gt;ACTIVE SUPPLIERS&lt;/span&gt;
+  &lt;div class="metric-card__hero" data-edit&gt;24&lt;/div&gt;
+  &lt;div class="metric-card__sub" data-edit&gt;覆盖 6 条产线&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D10">
+  <div class="review-header">
+    <div class="review-id">D10</div>
+    <div class="review-name">Nameplate Label </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.nameplate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+}
+.nameplate__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+}
+.nameplate__text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}</style><span class="nameplate">
+  <span class="nameplate__dot"></span>
+  <span class="nameplate__text" data-edit>GORE-TEX PRO</span>
+</span></div>
+  <div class="preview-code"><pre>&lt;span class="nameplate"&gt;
+  &lt;span class="nameplate__dot"&gt;&lt;/span&gt;
+  &lt;span class="nameplate__text" data-edit&gt;GORE-TEX PRO&lt;/span&gt;
+&lt;/span&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D11">
+  <div class="review-header">
+    <div class="review-id">D11</div>
+    <div class="review-name">Gauge Arc </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.gauge-arc { text-align: center; }
+.gauge-arc__value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--display-md);
+  font-weight: 600;
+  color: var(--text-display);
+  margin-top: -16px;
+}
+.gauge-arc__label { margin-top: 4px; }</style><div class="gauge-arc">
+  <svg viewBox="0 0 200 120" width="200" height="120">
+    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--brand-primary)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="33" id="gauge-fill"/>
+    <!-- Tick marks generated by JS -->
+  </svg>
+  <div class="gauge-arc__value" data-edit>87</div>
+  <div class="gauge-arc__label sl">SCORE</div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="gauge-arc"&gt;
+  &lt;svg viewBox="0 0 200 120" width="200" height="120"&gt;
+    &lt;path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/&gt;
+    &lt;path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--brand-primary)" stroke-width="8" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="33" id="gauge-fill"/&gt;
+    &lt;!-- Tick marks generated by JS --&gt;
+  &lt;/svg&gt;
+  &lt;div class="gauge-arc__value" data-edit&gt;87&lt;/div&gt;
+  &lt;div class="gauge-arc__label sl"&gt;SCORE&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D12">
+  <div class="review-header">
+    <div class="review-id">D12</div>
+    <div class="review-name">SVG Sparkline </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><div class="sparkline">
+  <svg viewBox="0 0 160 32" width="160" height="32">
+    <polyline points="0,24 20,20 40,22 60,16 80,18 100,12 120,14 140,8 160,6"
+      fill="none" stroke="var(--text-display)" stroke-width="1.5"
+      stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="160" cy="6" r="2.5" fill="var(--brand-primary)"/>
+  </svg>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="sparkline"&gt;
+  &lt;svg viewBox="0 0 160 32" width="160" height="32"&gt;
+    &lt;polyline points="0,24 20,20 40,22 60,16 80,18 100,12 120,14 140,8 160,6"
+      fill="none" stroke="var(--text-display)" stroke-width="1.5"
+      stroke-linecap="round" stroke-linejoin="round"/&gt;
+    &lt;circle cx="160" cy="6" r="2.5" fill="var(--brand-primary)"/&gt;
+  &lt;/svg&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D13">
+  <div class="review-header">
+    <div class="review-id">D13</div>
+    <div class="review-name">Reference Line Overlay </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.ref-line {
+  position: absolute;
+  top: -20px; bottom: 0;
+  width: 1px;
+  background: var(--signal-warning);
+  opacity: 0.5;
+}
+.ref-label {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--signal-warning);
+  white-space: nowrap;
+}</style><div class="block-bar-ref" style="position:relative;">
+  <div class="block-bar__track"><!-- Segmented blocks --></div>
+  <div class="ref-line" style="left:75%;">
+    <span class="ref-label">TARGET</span>
+  </div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="block-bar-ref" style="position:relative;"&gt;
+  &lt;div class="block-bar__track"&gt;&lt;!-- Segmented blocks --&gt;&lt;/div&gt;
+  &lt;div class="ref-line" style="left:75%;"&gt;
+    &lt;span class="ref-label"&gt;TARGET&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D14">
+  <div class="review-header">
+    <div class="review-id">D14</div>
+    <div class="review-name">Data Spotlight </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.spotlight {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.spotlight__value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--text-display);
+  line-height: 1;
+}
+.spotlight__unit {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}</style><div class="spotlight">
+  <span class="spotlight__value" data-edit>94</span>
+  <span class="spotlight__unit">%</span>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="spotlight"&gt;
+  &lt;span class="spotlight__value" data-edit&gt;94&lt;/span&gt;
+  &lt;span class="spotlight__unit"&gt;%&lt;/span&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D15">
+  <div class="review-header">
+    <div class="review-id">D15</div>
+    <div class="review-name">Buttons </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 12px 24px; min-height: 44px;
+  cursor: pointer; border: none;
+  transition: all 150ms ease-out;
+}
+.btn--primary { background: var(--brand-primary); color: #fff; border-radius: 4px; }
+.btn--primary:hover { background: #3d4d2e; }
+.btn--secondary { background: transparent; border: 1px solid var(--border-strong); color: var(--text-primary); border-radius: 4px; }
+.btn--secondary:hover { border-color: var(--text-primary); }
+.btn--ghost { background: transparent; color: var(--text-secondary); border-radius: 0; }
+.btn--ghost:hover { color: var(--text-primary); }
+.btn--destructive { background: transparent; border: 1px solid var(--error); color: var(--error); border-radius: 4px; }</style><button class="btn btn--primary">ADD TO CART</button>
+<button class="btn btn--secondary">COMPARE</button>
+<button class="btn btn--ghost">VIEW ALL</button>
+<button class="btn btn--destructive">REMOVE</button></div>
+  <div class="preview-code"><pre>&lt;button class="btn btn--primary"&gt;ADD TO CART&lt;/button&gt;
+&lt;button class="btn btn--secondary"&gt;COMPARE&lt;/button&gt;
+&lt;button class="btn btn--ghost"&gt;VIEW ALL&lt;/button&gt;
+&lt;button class="btn btn--destructive"&gt;REMOVE&lt;/button&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D16">
+  <div class="review-header">
+    <div class="review-id">D16</div>
+    <div class="review-name">Blockquote/Pull-Quote </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>blockquote.blockquote {
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 24px 0; margin: 0; position: relative;
+}
+blockquote.blockquote::before {
+  content: '\201C'; font-family: Georgia, serif;
+  font-size: 48px; color: var(--text-disabled);
+  position: absolute; top: 8px; left: -8px; line-height: 1;
+}
+.blockquote__text {
+  font-family: Georgia, serif; font-size: var(--body-lg);
+  font-style: italic; color: var(--text-primary);
+  line-height: 1.6; padding-left: 16px;
+}
+.blockquote__cite {
+  display: block; margin-top: 12px; padding-left: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-disabled);
+  font-style: normal;
+}</style><blockquote class="blockquote">
+  <p class="blockquote__text">We believe in moving with nature.</p>
+  <cite class="blockquote__cite">HAGLOFS MANIFESTO, 1914</cite>
+</blockquote></div>
+  <div class="preview-code"><pre>&lt;blockquote class="blockquote"&gt;
+  &lt;p class="blockquote__text"&gt;We believe in moving with nature.&lt;/p&gt;
+  &lt;cite class="blockquote__cite"&gt;HAGLOFS MANIFESTO, 1914&lt;/cite&gt;
+&lt;/blockquote&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D17">
+  <div class="review-header">
+    <div class="review-id">D17</div>
+    <div class="review-name">~~Outlined Chip~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.chip-group {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+.chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  background: transparent;
+}
+.chip--olive {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+}
+.chip--orange {
+  border-color: var(--signal-warning);
+  color: var(--signal-warning);
+}</style><div class="chip-group">
+  <span class="chip">Shell</span>
+  <span class="chip chip--olive">Gore-Tex</span>
+  <span class="chip chip--orange">Limited</span>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="chip-group"&gt;
+  &lt;span class="chip"&gt;Shell&lt;/span&gt;
+  &lt;span class="chip chip--olive"&gt;Gore-Tex&lt;/span&gt;
+  &lt;span class="chip chip--orange"&gt;Limited&lt;/span&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D18">
+  <div class="review-header">
+    <div class="review-id">D18</div>
+    <div class="review-name">~~Inline Form~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.inline-form {
+  max-width: 400px;
+}
+.inline-form__row {
+  display: flex;
+  gap: var(--space-sm);
+}
+.inline-form__row .input { flex: 1; }</style><div class="inline-form">
+  <label class="input-label">EMAIL</label>
+  <div class="inline-form__row">
+    <input class="input" type="email" placeholder="your@email.com">
+    <button class="btn btn--primary btn--sm">SUBSCRIBE</button>
+  </div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="inline-form"&gt;
+  &lt;label class="input-label"&gt;EMAIL&lt;/label&gt;
+  &lt;div class="inline-form__row"&gt;
+    &lt;input class="input" type="email" placeholder="your@email.com"&gt;
+    &lt;button class="btn btn--primary btn--sm"&gt;SUBSCRIBE&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D19">
+  <div class="review-header">
+    <div class="review-id">D19</div>
+    <div class="review-name">Pull-quote </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.pull-quote-section {
+  padding: var(--space-4xl) var(--container-padding);
+  background: var(--bg);
+}
+.pull-quote {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-2xl);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-xl);
+}
+.pull-quote__text {
+  font-family: Georgia, serif;
+  font-size: var(--body-lg);
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+}
+.pull-quote__margin {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  align-self: start;
+  padding-top: var(--space-sm);
+}
+.pull-quote__name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-display);
+}
+.pull-quote__role {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--body-sm);
+  color: var(--text-secondary);
+}
+.pull-quote__gear {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-disabled);
+}</style><section class="pull-quote-section">
+  <div class="pull-quote">
+    <div class="pull-quote__body">
+      <p class="pull-quote__text">In 15 years of alpine guiding, the L.I.M Comp is the only shell I trust when the weather turns. It disappears in the pack and performs when it matters.</p>
+    </div>
+    <div class="pull-quote__margin">
+      <span class="pull-quote__name">ERIK LINDQVIST</span>
+      <span class="pull-quote__role">Mountain Guide, Abisko</span>
+      <span class="pull-quote__gear">Gear: L.I.M Comp / Rabbi Pants</span>
+    </div>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="pull-quote-section"&gt;
+  &lt;div class="pull-quote"&gt;
+    &lt;div class="pull-quote__body"&gt;
+      &lt;p class="pull-quote__text"&gt;In 15 years of alpine guiding, the L.I.M Comp is the only shell I trust when the weather turns. It disappears in the pack and performs when it matters.&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="pull-quote__margin"&gt;
+      &lt;span class="pull-quote__name"&gt;ERIK LINDQVIST&lt;/span&gt;
+      &lt;span class="pull-quote__role"&gt;Mountain Guide, Abisko&lt;/span&gt;
+      &lt;span class="pull-quote__gear"&gt;Gear: L.I.M Comp / Rabbi Pants&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D20">
+  <div class="review-header">
+    <div class="review-id">D20</div>
+    <div class="review-name">Logo Wall </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.logo-wall {
+  padding: var(--space-4xl) var(--container-padding);
+  background: var(--bg);
+}
+.logo-wall__header {
+  max-width: var(--container-max);
+  margin: 0 auto var(--space-xl);
+}
+.logo-wall__grid {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.logo-wall__item {
+  background: var(--surface);
+  padding: var(--space-xl) var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-wall__wordmark {
+  font-family: Georgia, serif;
+  font-size: var(--body-sm);
+  font-weight: 500;
+  color: var(--text-disabled);
+  text-align: center;
+  opacity: 0.6;
+}</style><section class="logo-wall">
+  <div class="logo-wall__header">
+    <span class="sl">PARTNERS</span>
+  </div>
+  <div class="logo-wall__grid">
+    <div class="logo-wall__item">
+      <span class="logo-wall__wordmark">Swedish Olympic Committee</span>
+    </div>
+    <div class="logo-wall__item">
+      <span class="logo-wall__wordmark">Stockholm Outdoor Club</span>
+    </div>
+    <div class="logo-wall__item">
+      <span class="logo-wall__wordmark">Nordic Naturism Federation</span>
+    </div>
+    <div class="logo-wall__item">
+      <span class="logo-wall__wordmark">Abisko Research Station</span>
+    </div>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="logo-wall"&gt;
+  &lt;div class="logo-wall__header"&gt;
+    &lt;span class="sl"&gt;PARTNERS&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="logo-wall__grid"&gt;
+    &lt;div class="logo-wall__item"&gt;
+      &lt;span class="logo-wall__wordmark"&gt;Swedish Olympic Committee&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="logo-wall__item"&gt;
+      &lt;span class="logo-wall__wordmark"&gt;Stockholm Outdoor Club&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="logo-wall__item"&gt;
+      &lt;span class="logo-wall__wordmark"&gt;Nordic Naturism Federation&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="logo-wall__item"&gt;
+      &lt;span class="logo-wall__wordmark"&gt;Abisko Research Station&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D21">
+  <div class="review-header">
+    <div class="review-id">D21</div>
+    <div class="review-name">Single Huge Quote </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.huge-quote {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: var(--space-4xl) var(--container-padding);
+}
+.huge-quote__inner {
+  max-width: 720px;
+  text-align: center;
+}
+.huge-quote__text {
+  font-family: Georgia, serif;
+  font-size: var(--display-lg);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-display);
+  line-height: 1.3;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.huge-quote__cite {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: var(--space-2xl);
+  font-style: normal;
+}
+.huge-quote__author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.huge-quote__year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+}</style><section class="huge-quote">
+  <div class="huge-quote__inner">
+    <blockquote class="huge-quote__text">
+      We believe in moving with nature, not against it. Every product we make is a promise to the wild.
+    </blockquote>
+    <cite class="huge-quote__cite">
+      <span class="huge-quote__author">HAGLOFS MANIFESTO</span>
+      <span class="huge-quote__year">SINCE 1914</span>
+    </cite>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="huge-quote"&gt;
+  &lt;div class="huge-quote__inner"&gt;
+    &lt;blockquote class="huge-quote__text"&gt;
+      We believe in moving with nature, not against it. Every product we make is a promise to the wild.
+    &lt;/blockquote&gt;
+    &lt;cite class="huge-quote__cite"&gt;
+      &lt;span class="huge-quote__author"&gt;HAGLOFS MANIFESTO&lt;/span&gt;
+      &lt;span class="huge-quote__year"&gt;SINCE 1914&lt;/span&gt;
+    &lt;/cite&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D22">
+  <div class="review-header">
+    <div class="review-id">D22</div>
+    <div class="review-name">~~Numbered Stat Strip~~ <span class="tag-excluded">⚠️ 已排除</span></div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.stat-strip {
+  padding: var(--space-2xl) var(--container-padding);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat-strip__grid {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  text-align: center;
+}
+.stat-strip__num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--display-md);
+  font-weight: 600;
+  color: var(--text-display);
+  display: block;
+}
+.stat-strip__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  display: block;
+  margin-top: var(--space-xs);
+}</style><section class="stat-strip">
+  <div class="stat-strip__grid">
+    <div class="stat-strip__item">
+      <span class="stat-strip__num">111</span>
+      <span class="stat-strip__label">YEARS</span>
+    </div>
+    <div class="stat-strip__item">
+      <span class="stat-strip__num">28K</span>
+      <span class="stat-strip__label">MM WATERPROOF</span>
+    </div>
+    <div class="stat-strip__item">
+      <span class="stat-strip__num">485g</span>
+      <span class="stat-strip__label">SHELL WEIGHT</span>
+    </div>
+    <div class="stat-strip__item">
+      <span class="stat-strip__num">100%</span>
+      <span class="stat-strip__label">PFC-FREE</span>
+    </div>
+  </div>
+</section></div>
+  <div class="preview-code"><pre>&lt;section class="stat-strip"&gt;
+  &lt;div class="stat-strip__grid"&gt;
+    &lt;div class="stat-strip__item"&gt;
+      &lt;span class="stat-strip__num"&gt;111&lt;/span&gt;
+      &lt;span class="stat-strip__label"&gt;YEARS&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="stat-strip__item"&gt;
+      &lt;span class="stat-strip__num"&gt;28K&lt;/span&gt;
+      &lt;span class="stat-strip__label"&gt;MM WATERPROOF&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="stat-strip__item"&gt;
+      &lt;span class="stat-strip__num"&gt;485g&lt;/span&gt;
+      &lt;span class="stat-strip__label"&gt;SHELL WEIGHT&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="stat-strip__item"&gt;
+      &lt;span class="stat-strip__num"&gt;100%&lt;/span&gt;
+      &lt;span class="stat-strip__label"&gt;PFC-FREE&lt;/span&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D23">
+  <div class="review-header">
+    <div class="review-id">D23</div>
+    <div class="review-name">Tag </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: var(--label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: inline-block;
+}</style><span class="tag" data-edit>Gore-Tex Pro</span></div>
+  <div class="preview-code"><pre>&lt;span class="tag" data-edit&gt;Gore-Tex Pro&lt;/span&gt;</pre></div>
+</section>
+
+<section class="review-item" data-id="D24">
+  <div class="review-header">
+    <div class="review-id">D24</div>
+    <div class="review-name">Progress Bar </div>
+    <select class="review-select"><option value="keep">✅ 保留</option><option value="delete">❌ 删除</option><option value="uncertain">⚠️ 不确定</option></select>
+  </div>
+  <div class="review-meta">
+    <div><span class="meta-label">适用场景</span><span class="meta-value">见组件定义</span></div>
+    <div><span class="meta-label">CSS 要点</span><span class="meta-value">见组件代码</span></div>
+    <div><span class="meta-label">使用边界</span><span class="meta-value">需人工确认</span></div>
+    <div><span class="meta-label">推荐D值</span><span class="meta-value">需确认</span></div>
+  </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="togglePreview(this)">预览</button>
+    <button class="toggle-btn" onclick="toggleCode(this)">代码</button>
+  </div>
+  <div class="preview-render"><style>.progress-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}</style><div class="progress-bar">
+  <div class="progress-bar__segment" style="width: 85%; background: var(--brand-primary);"></div>
+  <div class="progress-bar__segment" style="width: 10%; background: var(--brand-secondary);"></div>
+  <div class="progress-bar__segment" style="width: 5%; background: var(--signal-caution);"></div>
+</div></div>
+  <div class="preview-code"><pre>&lt;div class="progress-bar"&gt;
+  &lt;div class="progress-bar__segment" style="width: 85%; background: var(--brand-primary);"&gt;&lt;/div&gt;
+  &lt;div class="progress-bar__segment" style="width: 10%; background: var(--brand-secondary);"&gt;&lt;/div&gt;
+  &lt;div class="progress-bar__segment" style="width: 5%; background: var(--signal-caution);"&gt;&lt;/div&gt;
+&lt;/div&gt;</pre></div>
+</section>
+<script>
+function togglePreview(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='block';item.querySelector('.preview-code').style.display='none';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function toggleCode(btn){var item=btn.closest('.review-item');item.querySelector('.preview-render').style.display='none';item.querySelector('.preview-code').style.display='block';item.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active')}
+function generateResult(){var items=document.querySelectorAll('.review-item');var result=document.title.split(' ')[0]+' 复审结果\n==================\n\n';var keep=[],del=[],unsure=[];items.forEach(function(item){var id=item.dataset.id;var name=item.querySelector('.review-name').textContent.trim();var sel=item.querySelector('.review-select').value;if(sel==='keep')keep.push(id+' '+name);else if(sel==='delete')del.push(id+' '+name);else unsure.push(id+' '+name)});result+='✅ 保留（'+keep.length+'个）：\n';keep.forEach(function(k){result+='  '+k+'\n'});result+='\n❌ 删除（'+del.length+'个）：\n';del.forEach(function(d){result+='  '+d+'\n'});if(unsure.length>0){result+='\n⚠️ 不确定（'+unsure.length+'个）：\n';unsure.forEach(function(u){result+='  '+u+'\n'})}document.getElementById('result-text').textContent=result;document.getElementById('result-box').style.display='block'}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('result-text').textContent).then(function(){var btn=event.target;btn.textContent='已复制';setTimeout(function(){btn.textContent='复制结果'},1500)})}
+</script>
+</body>
+</html>

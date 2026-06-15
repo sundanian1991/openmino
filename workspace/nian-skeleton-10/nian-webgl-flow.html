@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian · WebGL 流场效果演示</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--off-white:#F6F6F0;--cream:#EDEDE0;--sand:#E2E0D0;--stone:#A09888;--magnetite:#6A6558;--ink:#1A1816;--forest:#3D5A35;--moss:#6B8B5E;--gold:#BF9B5A}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',sans-serif;background:var(--off-white);color:var(--ink);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- 效果 1：Forest 流场 -->
+<section style="min-height:100vh;background:var(--forest);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="flow-forest" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;cursor:crosshair"></canvas>
+  <div style="position:relative;z-index:1;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:32px">FLOW FIELD · FOREST</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:#fff;margin-bottom:24px">液体流动感</h1>
+    <p style="font-size:17px;color:rgba(255,255,255,.65);max-width:500px">粒子跟随 Perlin 噪声场运动，像墨水在水中扩散。</p>
+  </div>
+</section>
+
+<!-- 效果 2：Ink 流场（黑底白粒子） -->
+<section style="min-height:100vh;background:var(--ink);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="flow-ink" style="position:absolute;inset:0;width:100%;height:100%;z-index:0"></canvas>
+  <div style="position:relative;z-index:1;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:32px">FLOW FIELD · INK</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:#fff;margin-bottom:24px">星空流动</h1>
+    <p style="font-size:17px;color:rgba(255,255,255,.55);max-width:500px">白色粒子在黑色背景上跟随噪声场流动，像星云、像神经脉冲。</p>
+  </div>
+</section>
+
+<!-- 效果 3：Gold 流场（暖色调） -->
+<section style="min-height:100vh;background:#2A2520;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="flow-gold" style="position:absolute;inset:0;width:100%;height:100%;z-index:0"></canvas>
+  <div style="position:relative;z-index:1;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(191,155,90,.5);margin-bottom:32px">FLOW FIELD · GOLD</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:var(--gold);margin-bottom:24px">暖色流场</h1>
+    <p style="font-size:17px;color:rgba(191,155,90,.6);max-width:500px">金色粒子在深棕底上流动，适合品牌展示和对外层。</p>
+  </div>
+</section>
+
+<!-- 效果 4：Slate 流场（冷色调） -->
+<section style="min-height:100vh;background:#1A2530;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 96px">
+  <canvas id="flow-slate" style="position:absolute;inset:0;width:100%;height:100%;z-index:0"></canvas>
+  <div style="position:relative;z-index:1;pointer-events:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:rgba(122,139,155,.5);margin-bottom:32px">FLOW FIELD · SLATE</div>
+    <h1 style="font-family:'Playfair Display',serif;font-weight:300;font-size:clamp(48px,7vw,96px);line-height:1.05;letter-spacing:-.02em;color:var(--steel);margin-bottom:24px">冷色流场</h1>
+    <p style="font-size:17px;color:rgba(122,139,155,.6);max-width:500px">蓝灰粒子在深蓝底上流动，适合数据分析和技术文档。</p>
+  </div>
+</section>
+
+<footer style="padding:32px 96px;background:var(--ink);color:rgba(255,255,255,.3);font-family:'JetBrains Mono',monospace;font-size:10px;display:flex;justify-content:space-between">
+  <span>nian · WebGL 流场效果</span>
+  <span>4 种配色方案</span>
+</footer>
+
+<script>
+// ===== Simplex Noise 实现 =====
+class SimplexNoise {
+  constructor(seed = Math.random()) {
+    this.p = new Uint8Array(512);
+    const perm = new Uint8Array(256);
+    for (let i = 0; i < 256; i++) perm[i] = i;
+    for (let i = 255; i > 0; i--) {
+      seed = (seed * 16807) % 2147483647;
+      const j = Math.floor((seed / 2147483647) * (i + 1));
+      [perm[i], perm[j]] = [perm[j], perm[i]];
+    }
+    for (let i = 0; i < 512; i++) this.p[i] = perm[i & 255];
+  }
+  noise2D(x, y) {
+    const F2 = 0.5 * (Math.sqrt(3) - 1);
+    const G2 = (3 - Math.sqrt(3)) / 6;
+    const s = (x + y) * F2;
+    const i = Math.floor(x + s);
+    const j = Math.floor(y + s);
+    const t = (i + j) * G2;
+    const X0 = i - t, Y0 = j - t;
+    const x0 = x - X0, y0 = y - Y0;
+    let i1, j1;
+    if (x0 > y0) { i1 = 1; j1 = 0; } else { i1 = 0; j1 = 1; }
+    const x1 = x0 - i1 + G2, y1 = y0 - j1 + G2;
+    const x2 = x0 - 1 + 2 * G2, y2 = y0 - 1 + 2 * G2;
+    const ii = i & 255, jj = j & 255;
+    const grad = (hash, gx, gy) => {
+      const h = hash & 7;
+      const u = h < 4 ? gx : gy;
+      const v = h < 4 ? gy : gx;
+      return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
+    };
+    let n0 = 0, n1 = 0, n2 = 0;
+    let t0 = 0.5 - x0 * x0 - y0 * y0;
+    if (t0 >= 0) { t0 *= t0; n0 = t0 * t0 * grad(this.p[ii + this.p[jj]], x0, y0); }
+    let t1 = 0.5 - x1 * x1 - y1 * y1;
+    if (t1 >= 0) { t1 *= t1; n1 = t1 * t1 * grad(this.p[ii + i1 + this.p[jj + j1]], x1, y1); }
+    let t2 = 0.5 - x2 * x2 - y2 * y2;
+    if (t2 >= 0) { t2 *= t2; n2 = t2 * t2 * grad(this.p[ii + 1 + this.p[jj + 1]], x2, y2); }
+    return 70 * (n0 + n1 + n2);
+  }
+}
+
+// ===== 流场粒子系统 =====
+function initFlowField(canvasId, config) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  const gl = canvas.getContext('webgl', { alpha: true, antialias: true });
+  if (!gl) { canvas.style.display = 'none'; return; }
+
+  const noise = new SimplexNoise();
+  const dpr = window.devicePixelRatio || 1;
+
+  function resize() {
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // 着色器
+  const vsSource = `
+    attribute vec2 a_position;
+    attribute float a_size;
+    attribute float a_opacity;
+    attribute vec3 a_color;
+    varying float v_opacity;
+    varying vec3 v_color;
+    void main() {
+      gl_Position = vec4(a_position, 0.0, 1.0);
+      gl_PointSize = a_size;
+      v_opacity = a_opacity;
+      v_color = a_color;
+    }
+  `;
+  const fsSource = `
+    precision mediump float;
+    varying float v_opacity;
+    varying vec3 v_color;
+    void main() {
+      float dist = length(gl_PointCoord - vec2(0.5));
+      if (dist > 0.5) discard;
+      float alpha = v_opacity * (1.0 - dist * 2.0);
+      gl_FragColor = vec4(v_color, alpha);
+    }
+  `;
+
+  function createShader(type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null;
+  }
+
+  const vs = createShader(gl.VERTEX_SHADER, vsSource);
+  const fs = createShader(gl.FRAGMENT_SHADER, fsSource);
+  if (!vs || !fs) return;
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+  gl.useProgram(program);
+
+  const aPos = gl.getAttribLocation(program, 'a_position');
+  const aSize = gl.getAttribLocation(program, 'a_size');
+  const aOp = gl.getAttribLocation(program, 'a_opacity');
+  const aCol = gl.getAttribLocation(program, 'a_color');
+
+  // 粒子
+  const particles = [];
+  for (let i = 0; i < config.count; i++) {
+    particles.push({
+      x: Math.random() * 2 - 1,
+      y: Math.random() * 2 - 1,
+      life: Math.random() * config.lifeMax,
+      maxLife: config.lifeMax,
+      speed: config.speed * (0.5 + Math.random() * 0.5)
+    });
+  }
+
+  const posBuf = gl.createBuffer();
+  const sizeBuf = gl.createBuffer();
+  const opBuf = gl.createBuffer();
+  const colBuf = gl.createBuffer();
+
+  let time = 0;
+  let mouseX = 0, mouseY = 0;
+  let mouseInfluence = 0;
+
+  // 鼠标跟踪
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouseY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    mouseInfluence = 1;
+  });
+  canvas.addEventListener('mouseleave', () => { mouseInfluence = 0; });
+
+  function render() {
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);  // 加法混合，粒子叠加发光
+
+    time += config.speed * 0.001;
+    mouseInfluence *= 0.98;  // 鼠标影响衰减
+
+    const positions = new Float32Array(particles.length * 2);
+    const sizes = new Float32Array(particles.length);
+    const opacities = new Float32Array(particles.length);
+    const colors = new Float32Array(particles.length * 3);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.life++;
+
+      // Perlin 噪声驱动运动
+      const angle = noise.noise2D(p.x * config.noiseScale + time, p.y * config.noiseScale + time) * Math.PI * 2;
+      let dx = Math.cos(angle) * p.speed * 0.005;
+      let dy = Math.sin(angle) * p.speed * 0.005;
+
+      // 鼠标影响：粒子被鼠标吸引
+      if (mouseInfluence > 0.01) {
+        const mdx = mouseX - p.x;
+        const mdy = mouseY - p.y;
+        const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mDist < 0.4 && mDist > 0.01) {
+          const force = (0.4 - mDist) / 0.4 * config.mouseForce * mouseInfluence;
+          dx += (mdx / mDist) * force * 0.008;
+          dy += (mdy / mDist) * force * 0.008;
+        }
+      }
+
+      p.x += dx;
+      p.y += dy;
+
+      // 边界处理：超出范围时重生
+      if (p.x < -1.1 || p.x > 1.1 || p.y < -1.1 || p.y > 1.1 || p.life > p.maxLife) {
+        p.x = Math.random() * 2 - 1;
+        p.y = Math.random() * 2 - 1;
+        p.life = 0;
+      }
+
+      // 生命周期淡入淡出
+      const lifeRatio = p.life / p.maxLife;
+      const fadeIn = Math.min(lifeRatio * 5, 1);
+      const fadeOut = Math.max(1 - (lifeRatio - 0.7) / 0.3, 0);
+      const alpha = fadeIn * fadeOut * config.baseOpacity;
+
+      positions[i * 2] = p.x;
+      positions[i * 2 + 1] = p.y;
+      sizes[i] = config.size * (0.5 + Math.sin(lifeRatio * Math.PI) * 0.5) * dpr;
+      opacities[i] = alpha;
+
+      // 颜色：基于噪声值渐变
+      const noiseVal = noise.noise2D(p.x * 2, p.y * 2) * 0.5 + 0.5;
+      colors[i * 3] = config.color1[0] + (config.color2[0] - config.color1[0]) * noiseVal;
+      colors[i * 3 + 1] = config.color1[1] + (config.color2[1] - config.color1[1]) * noiseVal;
+      colors[i * 3 + 2] = config.color1[2] + (config.color2[2] - config.color1[2]) * noiseVal;
+    }
+
+    // 绘制
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, sizes, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(aSize);
+    gl.vertexAttribPointer(aSize, 1, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, opBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, opacities, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(aOp);
+    gl.vertexAttribPointer(aOp, 1, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(aCol);
+    gl.vertexAttribPointer(aCol, 3, gl.FLOAT, false, 0, 0);
+
+    gl.drawArrays(gl.POINTS, 0, particles.length);
+    requestAnimationFrame(render);
+  }
+
+  render();
+}
+
+// ===== 初始化 4 种配色流场 =====
+
+// Forest 流场：白色粒子在深绿底上
+initFlowField('flow-forest', {
+  count: 150,
+  speed: 1.2,
+  size: 3,
+  lifeMax: 300,
+  noiseScale: 1.5,
+  baseOpacity: 0.35,
+  mouseForce: 3.0,
+  color1: [1.0, 1.0, 1.0],      // 白
+  color2: [0.6, 0.8, 0.5]       // 浅绿
+});
+
+// Ink 流场：白+蓝粒子在黑底上
+initFlowField('flow-ink', {
+  count: 200,
+  speed: 1.0,
+  size: 2.5,
+  lifeMax: 400,
+  noiseScale: 1.2,
+  baseOpacity: 0.3,
+  mouseForce: 3.5,
+  color1: [0.8, 0.85, 1.0],     // 浅蓝白
+  color2: [0.4, 0.5, 0.8]       // 蓝
+});
+
+// Gold 流场：金+暖白粒子在深棕底上
+initFlowField('flow-gold', {
+  count: 120,
+  speed: 0.8,
+  size: 3.5,
+  lifeMax: 350,
+  noiseScale: 1.8,
+  baseOpacity: 0.3,
+  mouseForce: 1.5,
+  color1: [0.9, 0.8, 0.5],      // 金
+  color2: [1.0, 0.95, 0.85]     // 暖白
+});
+
+// Slate 流场：蓝灰粒子在深蓝底上
+initFlowField('flow-slate', {
+  count: 100,
+  speed: 0.6,
+  size: 4,
+  lifeMax: 500,
+  noiseScale: 1.0,
+  baseOpacity: 0.25,
+  mouseForce: 1.8,
+  color1: [0.5, 0.6, 0.75],     // 蓝灰
+  color2: [0.7, 0.8, 0.9]       // 浅蓝灰
+});
+</script>
+
+</body>
+</html>

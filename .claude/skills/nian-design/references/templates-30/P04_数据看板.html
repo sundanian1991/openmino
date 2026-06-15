@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据看板 — 供应商健康度实时监控</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #F5F3EF;
+    --surface: #FFFFFF;
+    --surface-alt: #E8E4DD;
+    --border: #C4B8A8;
+    --border-strong: #8A7D6E;
+    --brand-primary: #3D5A80;
+    --brand-secondary: #5C8A9E;
+    --accent: #D4A373;
+    --success: #2A9D8F;
+    --danger: #E8453C;
+    --text-display: #2D2A26;
+    --text-primary: #1A1816;
+    --text-secondary: #8A7D6E;
+    --text-disabled: #C4B8A8;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(160deg, #0F1A2A 0%, #1A2D3D 50%, #3D5A80 100%);
+    padding: 120px 48px 100px;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero::after {
+    content: 'DASHBOARD';
+    position: absolute;
+    right: 48px; bottom: 40px;
+    font-family: var(--font-display);
+    font-size: 100px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .hero__inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; width: 100%; }
+  .hero__tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 32px;
+  }
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .hero__subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+    max-width: 520px;
+  }
+  .hero__meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .hero__meta-item {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.05em;
+  }
+  .hero__meta-item strong {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    margin-top: 6px;
+    letter-spacing: 0;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    padding: 80px 48px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .section__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 16px;
+  }
+  .section__title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-display);
+    line-height: 1.25;
+    margin-bottom: 40px;
+  }
+  .section__title strong { color: var(--brand-primary); font-weight: 700; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+  .card__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 12px;
+  }
+  .card__title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-display);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .card__body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+  .card--dark {
+    background: linear-gradient(135deg, #0F1A2A 0%, #1A2D3D 100%);
+    border: none;
+    color: #fff;
+  }
+  .card--dark .card__title { color: #fff; }
+  .card--dark .card__body { color: rgba(255,255,255,0.7); }
+  .card--dark .card__eyebrow { color: rgba(255,255,255,0.4); }
+
+  .card--accent {
+    border-left: 4px solid var(--brand-primary);
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card--data {
+    text-align: center;
+    padding: 36px 24px;
+  }
+  .card--data .data-value {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--brand-primary);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .card--data .data-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border);
+  }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
+  tr:hover td { background: var(--surface-alt); }
+
+  /* ===== STAT ROW ===== */
+  .stat-row {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .stat-row__item {
+    flex: 1;
+    padding: 28px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat-row__item:last-child { border-right: none; }
+  .stat-row__value {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--brand-primary);
+  }
+  .stat-row__label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  /* ===== CHECKLIST ===== */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .checklist li::before {
+    content: '✓';
+    position: absolute;
+    left: 0; top: 0;
+    width: 20px; height: 20px;
+    background: var(--brand-primary);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== QUOTE ===== */
+  .quote {
+    border-left: 4px solid var(--brand-primary);
+    padding: 20px 28px;
+    background: var(--surface);
+    margin: 24px 0;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-display);
+    line-height: 1.6;
+  }
+  .quote__source {
+    margin-top: 12px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-style: normal;
+    color: var(--text-secondary);
+  }
+
+  /* ===== TAGS ===== */
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .tag {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .tag--highlight {
+    background: var(--brand-primary);
+    color: #fff;
+    border-color: var(--brand-primary);
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar {
+    height: 8px;
+    background: var(--surface-alt);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .progress-bar__fill {
+    height: 100%;
+    background: var(--brand-primary);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  .progress-bar__fill--success { background: #2A9D8F; }
+  .progress-bar__fill--warning { background: #E76F51; }
+  .progress-bar__fill--danger { background: #E63946; }
+
+  /* ===== STATUS INDICATOR ===== */
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .status-indicator::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+  }
+  .status-indicator--green::before { background: #2A9D8F; }
+  .status-indicator--yellow::before { background: #E9C46A; }
+  .status-indicator--red::before { background: #E63946; }
+
+  /* ===== ALERT CARD ===== */
+  .alert-card {
+    padding: 16px 20px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--brand-primary);
+    margin-bottom: 12px;
+  }
+  .alert-card--red { border-left-color: #E63946; background: rgba(230,57,70,0.04); }
+  .alert-card--yellow { border-left-color: #E9C46A; background: rgba(233,196,106,0.06); }
+  .alert-card__title { font-weight: 600; font-size: 14px; color: var(--text-display); margin-bottom: 4px; }
+  .alert-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .alert-card__meta { font-size: 11px; color: var(--text-secondary); margin-top: 8px; font-family: var(--font-mono); }
+
+  /* ===== MINI CHART ===== */
+  .mini-chart { display: flex; align-items: flex-end; gap: 4px; height: 40px; }
+  .mini-chart__bar {
+    flex: 1;
+    background: var(--brand-primary);
+    border-radius: 2px 2px 0 0;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .mini-chart__bar:hover { opacity: 1; }
+
+  /* ===== DATA DICTIONARY ===== */
+  .data-dictionary { margin-top: 16px; }
+  .data-dictionary__row {
+    display: grid;
+    grid-template-columns: 140px 1fr 160px 120px 100px 100px;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    align-items: center;
+  }
+  .data-dictionary__row--header {
+    background: var(--surface-alt);
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .data-dictionary__row dd, .data-dictionary__row dt { margin: 0; }
+  .data-dictionary__name { font-weight: 600; color: var(--text-display); }
+  .data-dictionary__freq { font-family: var(--font-mono); font-size: 11px; }
+
+  /* ===== KPI TILE ===== */
+  .kpi-tile {
+    padding: 20px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+  .kpi-tile__value {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--brand-primary);
+    margin-bottom: 4px;
+  }
+  .kpi-tile__label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+  .kpi-tile__status { font-size: 11px; font-family: var(--font-mono); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .hero { padding: 64px 24px; }
+    .hero__title { font-size: 36px; }
+    .section { padding: 48px 24px; }
+    .stat-row { flex-direction: column; }
+    .stat-row__item { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SECTION 1: HERO ===== -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__tag">Data Dashboard / 数据看板</div>
+    <h1 class="hero__title">数据看板</h1>
+    <p class="hero__subtitle">供应商健康度实时监控。一个页面，看清34家供应商的全部关键指标。</p>
+    <div class="hero__meta">
+      <div class="hero__meta-item">状态<strong>原型设计中</strong></div>
+      <div class="hero__meta-item">覆盖<strong>7维度</strong></div>
+      <div class="hero__meta-item">刷新<strong>24小时</strong></div>
+      <div class="hero__meta-item">目标<strong>管理层决策支持</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: 看板设计 ===== -->
+<section class="section">
+  <div class="section__label">Design · 看板设计</div>
+  <h2 class="section__title">看板要展示<strong>什么</strong></h2>
+  <div class="grid-2">
+    <div class="card card--accent">
+      <div class="card__eyebrow">模块 01</div>
+      <div class="card__title">总览面板</div>
+      <div class="card__body">核心KPI一览：总GMV、总产能、平均出勤率、平均费效、S/A/B/C分布。一眼看清全局。</div>
+    </div>
+    <div class="card">
+      <div class="card__eyebrow">模块 02</div>
+      <div class="card__title">产线对比</div>
+      <div class="card__body">四条产线（金条/企业主贷/信用卡/财富）的GMV、产能、转化率横向对比。快速识别哪个产线需要关注。</div>
+    </div>
+    <div class="card">
+      <div class="card__eyebrow">模块 03</div>
+      <div class="card__title">供应商排名</div>
+      <div class="card__body">34家供应商按综合得分排名。可切换排序维度：产能、质量、出勤、合规、成本、创新、风险。</div>
+    </div>
+    <div class="card card--accent">
+      <div class="card__eyebrow">模块 04</div>
+      <div class="card__title">异常预警</div>
+      <div class="card__body">自动标红异常指标：产能下滑>10%、出勤率<90%、合规事件、人员流失率>20%。让问题无处可藏。</div>
+    </div>
+    <div class="card card--dark">
+      <div class="card__eyebrow">模块 05</div>
+      <div class="card__title">趋势分析</div>
+      <div class="card__body">近6个月的关键指标趋势图。识别季节性波动、长期趋势、突发异常。</div>
+    </div>
+    <div class="card">
+      <div class="card__eyebrow">模块 06</div>
+      <div class="card__title">详情下钻</div>
+      <div class="card__body">点击任意供应商，下钻查看7维度详细数据、历史评分、整改记录、现场巡检报告。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 3: 数据源 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Data Source · 数据源</div>
+  <h2 class="section__title">数据从哪<strong>来</strong></h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card__eyebrow">系统 01</div>
+      <div class="card__title">星空系统</div>
+      <div class="card__body">产能、GMV、出勤、人员数据的主要来源。通过API对接，每日自动同步。</div>
+    </div>
+    <div class="card">
+      <div class="card__eyebrow">系统 02</div>
+      <div class="card__title">质检平台</div>
+      <div class="card__body">质量评分、客户投诉、质检覆盖率。每周同步一次。</div>
+    </div>
+    <div class="card card--accent">
+      <div class="card__eyebrow">系统 03</div>
+      <div class="card__title">财务系统</div>
+      <div class="card__body">费效、单价、预算执行。每月同步一次。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 4: 技术方案 ===== -->
+<section class="section">
+  <div class="section__label">Tech · 技术方案</div>
+  <h2 class="section__title">怎么<strong>实现</strong></h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card__eyebrow">方案 A</div>
+      <div class="card__title">内部开发</div>
+      <div class="card__body">由IT部门开发，与现有系统深度集成。优势：数据安全、可定制性强。劣势：排期长、依赖IT资源。</div>
+    </div>
+    <div class="card card--accent">
+      <div class="card__eyebrow">方案 B</div>
+      <div class="card__title">外包开发</div>
+      <div class="card__body">委托外部团队开发，我们提供需求和数据接口。优势：速度快、专业度高。劣势：成本增加、数据安全风险。</div>
+    </div>
+  </div>
+  <div class="card card--dark" style="margin-top:24px;">
+    <div class="card__eyebrow">推荐方案</div>
+    <div class="card__title">方案B + 数据脱敏</div>
+    <div class="card__body">考虑到IT排期已满，建议采用外包开发。关键措施：敏感数据脱敏后传输、合同明确数据归属、开发完成后代码移交内部维护。</div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5: 结语 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Closing · 结语</div>
+  <h2 class="section__title">看板的<strong>价值</strong></h2>
+  <div class="quote">
+    "数据看板不是为了好看，而是为了让决策更快。当管理层能在2分钟内看清全局，而不是等2天拿到报表时，组织的响应速度就提升了一个数量级。"
+    <div class="quote__source">—— 数据看板设计原则</div>
+  </div>
+</section>
+
+<!-- ===== SECTION 6: 实时告警规则 ===== -->
+<section class="section">
+  <div class="section__label">Alerts · 实时告警</div>
+  <h2 class="section__title">异常<strong>早发现</strong></h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="font-family:var(--font-display);font-size:18px;margin-bottom:16px;">当前告警</h3>
+      <div class="alert-card alert-card--red">
+        <div class="alert-card__title">质检覆盖率跌破阈值</div>
+        <div class="alert-card__desc">供应商「万声通讯」本周质检覆盖率降至87%，低于90%红线。</div>
+        <div class="alert-card__meta">触发时间：2026-06-13 14:32 · 等级：P1</div>
+      </div>
+      <div class="alert-card alert-card--yellow">
+        <div class="alert-card__title">人均产能连续下滑</div>
+        <div class="alert-card__desc">供应商「泰盈科技」人均产能连续3周环比下降，累计降幅8.5%。</div>
+        <div class="alert-card__meta">触发时间：2026-06-12 09:15 · 等级：P2</div>
+      </div>
+      <div class="alert-card alert-card--yellow">
+        <div class="alert-card__title">人员流失率突破警戒</div>
+        <div class="alert-card__desc">供应商「众信服务」月度流失率达16.2%，超过15%黄色警戒线。</div>
+        <div class="alert-card__meta">触发时间：2026-06-11 18:00 · 等级：P2</div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-family:var(--font-display);font-size:18px;margin-bottom:16px;">告警规则配置</h3>
+      <div class="table-wrap">
+        <table style="font-size:13px;">
+          <thead>
+            <tr><th>规则名称</th><th>触发条件</th><th>阈值</th><th>通知对象</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>质检覆盖率</td><td>周均值 &lt; 阈值</td><td>90%</td><td>运营主管+供应商经理</td></tr>
+            <tr><td>人均产能下滑</td><td>连续3周环比下降</td><td>累计&gt;5%</td><td>运营主管</td></tr>
+            <tr><td>流失率预警</td><td>月度值 &gt; 阈值</td><td>15%</td><td>供应商经理</td></tr>
+            <tr><td>费效比异常</td><td>周均值 &lt; 阈值</td><td>1:2.0</td><td>管理层</td></tr>
+            <tr><td>出勤率异常</td><td>周均值 &lt; 阈值</td><td>85%</td><td>运营主管</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="alert-box alert-box--info" style="margin-top:16px;">
+        <strong>说明：</strong>P1级告警触发后30分钟内必须响应，P2级告警需在4小时内响应。所有告警自动同步至企业微信「供应商管理」群组。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 7: 数据字典 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Data Dictionary · 数据字典</div>
+  <h2 class="section__title">指标<strong>定义与口径</strong></h2>
+  <div class="table-wrap">
+    <table style="font-size:13px;width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:var(--surface-alt);font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;">
+          <th style="padding:12px 16px;text-align:left;">指标名称</th>
+          <th style="padding:12px 16px;text-align:left;">定义</th>
+          <th style="padding:12px 16px;text-align:left;">计算方式</th>
+          <th style="padding:12px 16px;text-align:left;">来源</th>
+          <th style="padding:12px 16px;text-align:left;">频率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">总GMV</td>
+          <td style="padding:12px 16px;">所有供应商成交总额</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">SUM(成交金额)</td>
+          <td style="padding:12px 16px;">供应商日报</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">日</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">人均产能</td>
+          <td style="padding:12px 16px;">单员工月均成交金额</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">GMV / 在职人数</td>
+          <td style="padding:12px 16px;">HR系统+业务系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">周</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">流失率</td>
+          <td style="padding:12px 16px;">月度离职人员占比</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">离职数 / 期初人数</td>
+          <td style="padding:12px 16px;">HR系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">月</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">费效比</td>
+          <td style="padding:12px 16px;">投入产出效率</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">GMV / 总成本</td>
+          <td style="padding:12px 16px;">财务系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">周</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">质检覆盖率</td>
+          <td style="padding:12px 16px;">被质检通话占总通话比例</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">质检数 / 总通话数</td>
+          <td style="padding:12px 16px;">质检系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">日</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">出勤率</td>
+          <td style="padding:12px 16px;">实际出勤天数占应出勤比例</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">出勤天数 / 应出勤</td>
+          <td style="padding:12px 16px;">考勤系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">日</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">客户满意度</td>
+          <td style="padding:12px 16px;">NPS净推荐值</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">推荐% - 贬损%</td>
+          <td style="padding:12px 16px;">调研系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">季</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">S/A/B/C分布</td>
+          <td style="padding:12px 16px;">供应商评级占比</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">各等级数 / 总数</td>
+          <td style="padding:12px 16px;">评估系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">月</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">AI应用率</td>
+          <td style="padding:12px 16px;">AI辅助通话占比</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">AI通话 / 总通话</td>
+          <td style="padding:12px 16px;">AI系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">周</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:12px 16px;font-weight:600;">投诉率</td>
+          <td style="padding:12px 16px;">客户投诉占总服务量比例</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:12px;">投诉数 / 总服务量</td>
+          <td style="padding:12px 16px;">客服系统</td>
+          <td style="padding:12px 16px;font-family:var(--font-mono);font-size:11px;">日</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SECTION 8: 看板权限矩阵 ===== -->
+<section class="section">
+  <div class="section__label">Access Control · 权限矩阵</div>
+  <h2 class="section__title">谁可以看<strong>什么</strong></h2>
+  <div class="grid-2">
+    <div>
+      <div class="table-wrap">
+        <table style="font-size:13px;width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="background:var(--surface-alt);font-size:11px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;">
+              <th style="padding:12px 16px;text-align:left;">角色</th>
+              <th style="padding:12px 16px;text-align:center;">总览</th>
+              <th style="padding:12px 16px;text-align:center;">明细</th>
+              <th style="padding:12px 16px;text-align:center;">配置</th>
+              <th style="padding:12px 16px;text-align:center;">告警</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:12px 16px;font-weight:600;">管理层</td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">管理</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">管理</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">管理</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">管理</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:12px 16px;font-weight:600;">运营主管</td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">编辑</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">编辑</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--yellow">只读</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">编辑</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:12px 16px;font-weight:600;">供应商经理</td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--yellow">只读</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">编辑</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--red">无权限</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--yellow">只读</span></td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:12px 16px;font-weight:600;">数据分析师</td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">编辑</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">编辑</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--green">编辑</span></td>
+              <td style="padding:12px 16px;text-align:center;"><span class="status-indicator status-indicator--yellow">只读</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-family:var(--font-display);font-size:18px;margin-bottom:16px;">系统健康度</h3>
+      <div class="grid-3">
+        <div class="kpi-tile">
+          <div class="kpi-tile__value">99.9%</div>
+          <div class="kpi-tile__label">系统可用率</div>
+          <div class="kpi-tile__status"><span class="status-indicator status-indicator--green">正常</span></div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile__value">1.2min</div>
+          <div class="kpi-tile__label">数据延迟</div>
+          <div class="kpi-tile__status"><span class="status-indicator status-indicator--green">正常</span></div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile__value">99.7%</div>
+          <div class="kpi-tile__label">接口成功率</div>
+          <div class="kpi-tile__status"><span class="status-indicator status-indicator--green">正常</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="card__eyebrow">本周数据质量报告</div>
+        <div class="card__title">完整性 98.5% · 准确性 99.1%</div>
+        <div class="card__body">缺失数据主要集中在3家尾部供应商的日报提交环节，已触发自动催办。异常数据共12条，已全部人工复核并修正。</div>
+        <div class="mini-chart" style="margin-top:12px;">
+          <div class="mini-chart__bar" style="height:60%"></div>
+          <div class="mini-chart__bar" style="height:80%"></div>
+          <div class="mini-chart__bar" style="height:45%"></div>
+          <div class="mini-chart__bar" style="height:90%"></div>
+          <div class="mini-chart__bar" style="height:70%"></div>
+          <div class="mini-chart__bar" style="height:85%"></div>
+          <div class="mini-chart__bar" style="height:55%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

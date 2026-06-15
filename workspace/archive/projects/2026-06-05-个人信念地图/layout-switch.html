@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>布局模式切换 · 交互演示</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/reset.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{background:#F2F0EC;padding:24px;font-family:'Inter',-apple-system,sans-serif}
+.app{max-width:1200px;margin:0 auto}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:#8A7D6E;margin-bottom:20px}
+
+/* Controls */
+.controls{background:#fff;border:1px solid #C4B8A8;border-radius:8px;padding:16px 20px;margin-bottom:20px;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+.ctrl-group{display:flex;flex-direction:column;gap:4px}
+.ctrl-group label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:#8A7D6E}
+
+/* Preview */
+.preview{border:1px solid #C4B8A8;border-radius:8px;overflow:hidden;background:#fff;transition:all .3s}
+
+/* ===== HERO ===== */
+.hero{position:relative;overflow:hidden;padding:64px 48px;background:#F2F0EC;border-bottom:1px solid #C4B8A8}
+.hero.full{min-height:70vh;display:flex;align-items:center}
+.hero.narrow{padding:48px 48px 32px;min-height:auto}
+.hero.split{display:grid;grid-template-columns:1.2fr 0.8fr;gap:48px;min-height:60vh;align-items:center}
+.hero.grid{min-height:50vh;display:flex;align-items:center}
+.hero.aside{min-height:55vh;display:flex;align-items:center}
+.hero.dashboard{min-height:40vh;display:flex;align-items:center;padding:48px 48px 24px}
+
+.hero-inner{width:100%;max-width:1120px;margin:0 auto}
+.hero-inner.narrow{max-width:720px}
+.hero-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#6B8B5E;margin-bottom:12px}
+.hero-title{font-family:'Playfair Display',Georgia,serif;font-size:clamp(36px,5vw,64px);font-weight:300;line-height:1.05;letter-spacing:-0.03em;color:#2D2A26;max-width:14ch;margin-bottom:12px}
+.hero-sub{font-size:14px;color:#8A7D6E;max-width:440px;line-height:1.6}
+.hero-meta{display:flex;gap:32px;margin-top:24px;padding-top:20px;border-top:1px solid rgba(196,184,168,0.3)}
+
+/* ===== CONTENT ===== */
+.content{padding:40px 48px;background:#fff}
+.content-inner{max-width:1120px;margin:0 auto}
+.content-inner.narrow{max-width:720px}
+
+/* Section label */
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#8A7D6E;margin-bottom:16px}
+.sec-title{font-family:'Playfair Display',Georgia,serif;font-size:28px;font-weight:300;color:#2D2A26;margin-bottom:20px;line-height:1.2}
+
+/* Card variants */
+.card-grid{display:grid;gap:12px}
+.card-grid.three{grid-template-columns:repeat(3,1fr)}
+.card-grid.two{grid-template-columns:repeat(2,1fr)}
+.card-grid.one{grid-template-columns:1fr}
+.card-grid.four{grid-template-columns:repeat(4,1fr)}
+.card{background:#F5F5F0;border:1px solid #E5E5E0;border-radius:6px;padding:16px 20px}
+.card h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.card p{font-size:11px;color:#8A7D6E;line-height:1.5}
+
+/* Data rows */
+.data-rows{display:flex;flex-direction:column;gap:0}
+.data-row{display:grid;grid-template-columns:140px 1fr 60px;gap:12px;padding:8px 0;border-bottom:1px solid #E5E5E0;font-size:12px;align-items:center}
+.data-row:last-child{border-bottom:none}
+.data-row .lbl{color:#8A7D6E}
+.data-row .bar{height:6px;background:#E3DFD8;border-radius:3px;overflow:hidden}
+.data-row .fill{height:100%;background:#6B8B5E;border-radius:3px}
+.data-row .val{font-family:'JetBrains Mono',monospace;font-size:11px;text-align:right;color:#2D2A26}
+
+/* Two-col split (for split layout) */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* Info bar */
+.info-bar{display:flex;gap:16px;flex-wrap:wrap;padding:10px 48px;background:#F5F5F0;border-bottom:1px solid #C4B8A8;font-size:11px;color:#8A7D6E}
+.info-bar .tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.04em;color:#6B8B5E}
+
+.hero-right{display:flex;justify-content:center;align-items:center}
+
+.stat-num{font-family:'Playfair Display',Georgia,serif;font-size:36px;font-weight:400;line-height:1;color:#2D2A26}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:#8A7D6E}
+
+@media(max-width:900px){
+  .card-grid.three,.card-grid.two,.card-grid.four{grid-template-columns:1fr}
+  .hero.split{grid-template-columns:1fr}
+  .two-col{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <h1>布局模式对比</h1>
+  <p class="sub">同一内容，不同布局。切换看看布局对阅读体验和视觉层级的影响。</p>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>布局模式</label>
+      <div id="layoutRadios"></div>
+    </div>
+    <div class="ctrl-group">
+      <label>卡片宽度</label>
+      <div id="cardWidthRadios"></div>
+    </div>
+    <div class="ctrl-group">
+      <label>当前模式</label>
+      <span id="modeDesc" style="font-size:12px;color:#2D2A26;font-weight:500"></span>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview" id="previewArea">
+    <div id="previewContent"></div>
+  </div>
+
+  <!-- Impact -->
+  <div style="margin-top:16px;background:#fff;border:1px solid #C4B8A8;border-radius:8px;padding:16px 20px">
+    <div style="font-size:12px;font-weight:500;margin-bottom:8px">布局影响分析</div>
+    <div id="impactText" style="font-size:12px;color:#8A7D6E;line-height:1.7"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/antd/5.12.8/antd.min.js"></script>
+<script>
+const { Radio, Select, Space } = antd;
+
+// Content data (same for all layouts)
+const CONTENT = {
+  title: '供应商体系优化季度复盘',
+  subtitle: 'Q2 关键事件还原，可复用的改进项归纳',
+  stats: [
+    { label: '完成项目', num: '7/8', note: '88%' },
+    { label: '关键卡点', num: '3', note: '均已缓解' },
+    { label: '改进项', num: '5', note: '3项已纳入Q3' },
+  ],
+  sections: [
+    { label: 'Timeline', title: 'Q2 关键事件', items: [
+      '4月初 · 自建标杆启动 — 成绩单被认定为可复用的标杆模式',
+      '4月中旬 · 分级框架确定 — ABC 三级供应商分级方案通过评审',
+      '5月初 · 岐力续约分歧 — 合同谈判陷入僵局，触发备选方案',
+      '5月底 · 系统选型完成 — 云枢科技 Pro 版确定为推荐方案',
+    ]},
+    { label: 'Learnings', title: '做得好的 & 可以更好的', items: [
+      '做得好的：分级框架从定稿到落地仅用3周，前期充分沟通是关键',
+      '可以更好的：岐力续约谈判启动偏晚，应提前2个月纳入预警',
+    ]},
+  ],
+};
+
+const LAYOUTS = [
+  { id: 'statement', name: '展示型（Statement）', desc: '默认单栏。Hero窄幅+内容720px窄列。适合深度阅读、品牌声明。信息密度低，留白多。占比33%。', cols: 1, hero: 'narrow' },
+  { id: 'full', name: '全幅型（Full-width）', desc: 'Hero全屏+内容1120px宽列。适合数据报告、行业全景。信息密度高，可视区域大。', cols: 3, hero: 'full' },
+  { id: 'split', name: '分屏型（Split）', desc: 'Hero双栏+内容双栏交替。适合方案对比、品牌展示。视觉节奏丰富，对比感强。', cols: 2, hero: 'split' },
+  { id: 'grid', name: '网格型（Grid）', desc: 'Hero压缩+内容多列网格。适合仪表盘、目录式内容。信息密度最高，一眼览多。', cols: 4, hero: 'grid' },
+  { id: 'aside', name: '侧栏型（Aside）', desc: 'Hero窄幅+内容主区+侧边栏。适合知识管理、操作手册。参考性与导航性并重。', cols: 2, hero: 'aside' },
+  { id: 'compact', name: '紧凑型（Compact）', desc: 'Hero精简+内容密集行。适合周报、执行层。效率优先，快速扫描。', cols: 1, hero: 'dashboard' },
+];
+
+function renderPreview(layout) {
+  const c = CONTENT;
+  const isNarrow = layout.hero === 'narrow' || layout.hero === 'aside' || layout.hero === 'dashboard';
+  const contentWide = layout.id === 'statement' || layout.id === 'aside';
+  const cardCount = layout.cols;
+
+  let heroHtml = '';
+  if (layout.hero === 'split') {
+    heroHtml = `<div class="hero split"><div class="hero-inner"><div class="hero-label">Retrospective · Q2</div>
+      <h1 class="hero-title">${c.title}</h1><p class="hero-sub">${c.subtitle}</p>
+      <div class="hero-meta">${c.stats.map(s => `<div><div class="stat-num">${s.num}</div><div class="stat-lbl">${s.label}</div></div>`).join('')}</div>
+    </div><div class="hero-right"><div style="display:grid;grid-template-columns:repeat(5,12px);gap:3px;opacity:0.1">${'<div style="width:12px;height:12px;border-radius:2px;background:#6B8B5E"></div>'.repeat(25)}</div></div></div>`;
+  } else {
+    const heroClass = layout.hero === 'full' ? 'hero full' : layout.hero === 'dashboard' ? 'hero dashboard' : 'hero';
+    const innerClass = contentWide ? 'hero-inner narrow' : 'hero-inner';
+    heroHtml = `<div class="${heroClass}"><div class="${innerClass}">
+      <div class="hero-label">Retrospective · Q2</div>
+      <h1 class="hero-title">${c.title}</h1>
+      <p class="hero-sub">${c.subtitle}</p>
+      <div class="hero-meta">${c.stats.map(s => `<div><div class="stat-num">${s.num}</div><div class="stat-lbl">${s.label}</div></div>`).join('')}</div>
+    </div></div>`;
+  }
+
+  const contentInner = contentWide ? 'content-inner narrow' : 'content-inner';
+  const gridClass = cardCount === 3 ? 'three' : cardCount === 2 ? 'two' : cardCount === 4 ? 'four' : 'one';
+
+  let contentHtml = `<div class="content"><div class="${contentInner}">`;
+  
+  c.sections.forEach(sec => {
+    contentHtml += `<div class="sec-label">${sec.label}</div><div class="sec-title">${sec.title}</div>`;
+    
+    if (layout.id === 'split' || layout.id === 'aside') {
+      contentHtml += `<div class="two-col">`;
+      sec.items.forEach((item, i) => {
+        const [head, ...rest] = item.split(' — ');
+        contentHtml += `<div class="card"><h4>${head}</h4><p>${rest.join(' — ')}</p></div>`;
+      });
+      contentHtml += `</div>`;
+    } else if (layout.id === 'compact') {
+      contentHtml += `<div class="data-rows">`;
+      sec.items.forEach(item => {
+        const [head, ...rest] = item.split(' — ');
+        contentHtml += `<div class="data-row"><span class="lbl">${head}</span><div class="bar"><div class="fill" style="width:${Math.random()*60+30}%"></div></div><span class="val">${rest.join('')}</span></div>`;
+      });
+      contentHtml += `</div>`;
+    } else {
+      contentHtml += `<div class="card-grid ${gridClass}">`;
+      sec.items.forEach(item => {
+        const [head, ...rest] = item.split(' — ');
+        contentHtml += `<div class="card"><h4>${head}</h4><p>${rest.join(' — ')}</p></div>`;
+      });
+      contentHtml += `</div>`;
+    }
+  });
+
+  contentHtml += `</div></div>`;
+  
+  document.getElementById('previewContent').innerHTML = heroHtml + contentHtml;
+}
+
+function render(layoutId) {
+  const layout = LAYOUTS.find(l => l.id === layoutId);
+  renderPreview(layout);
+  document.getElementById('modeDesc').textContent = layout.name;
+  
+  const impacts = {
+    statement: '【展示型】单栏窄列（720px）。Hero 信息密度低，内容垂直排列。适合需要深度阅读的场景（沉淀层、知识管理）。优点：阅读专注度高。缺点：单位视口信息量小，长页面需要更多滚动。占比33%说明这是最常用的默认模式，但过度依赖导致页面多样性不足。',
+    full: '【全幅型】Hero 全屏+宽列（1120px）。Hero 嵌入数据行，内容横向展开。适合数据报告、行业全景（感知层）。优点：信息密度高，可在首屏展示更多内容。缺点：宽列长行降低阅读速度。',
+    split: '【分屏型】Hero 双栏布局，内容双栏交替。视觉节奏丰富，天生适合对比叙事。适合方案选型、品牌展示（决策/对外层）。优点：对比感强，视觉不单调。缺点：移动端需谨慎处理堆叠顺序。',
+    grid: '【网格型】Hero 压缩，内容多列网格。信息密度最高，一眼览多。适合仪表盘、数据目录（感知层 L4）。优点：信息扫描效率最高。缺点：容易视觉拥挤，需控制网格间距。',
+    aside: '【侧栏型】Hero 窄幅 + 主区 + 侧栏。参考性与导航性并重。适合知识管理、操作手册（沉淀/计划层）。优点：同一视口可同时查看导航和内容。缺点：侧栏占用水平空间，窄屏需折叠。',
+    compact: '【紧凑型】Hero 精简（40vh），内容密集数据行。效率优先，快速扫描。适合周报、执行层同步。优点：信息密度极高，适合快速更新场景。缺点：视觉冲击力不足，不适合品牌展示。',
+  };
+  document.getElementById('impactText').textContent = impacts[layoutId] || '';
+}
+
+// State
+let currentLayout = 'statement';
+let currentBtn = null;
+
+function setLayout(id) {
+  currentLayout = id;
+  render(id);
+  // Update radio visual
+  document.querySelectorAll('.layout-btn').forEach(b => {
+    b.style.borderColor = b.dataset.id === id ? '#6B8B5E' : '#C4B8A8';
+    b.style.background = b.dataset.id === id ? 'rgba(107,139,94,0.06)' : '#fff';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.getElementById('layoutRadios');
+  LAYOUTS.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'layout-btn';
+    btn.dataset.id = l.id;
+    btn.textContent = l.name;
+    btn.style.cssText = 'padding:4px 12px;font-size:11px;border:1px solid #C4B8A8;border-radius:4px;cursor:pointer;margin:2px;background:#fff;transition:all.1s';
+    btn.onclick = () => setLayout(l.id);
+    container.appendChild(btn);
+  });
+
+  // Card width toggle
+  const wc = document.getElementById('cardWidthRadios');
+  ['标准', '窄列', '宽列'].forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'layout-btn';
+    btn.textContent = label;
+    btn.style.cssText = 'padding:4px 12px;font-size:11px;border:1px solid #C4B8A8;border-radius:4px;cursor:pointer;margin:2px;background:#fff;transition:all.1s';
+    btn.onclick = () => {
+      document.querySelectorAll('#cardWidthRadios .layout-btn').forEach(b => { b.style.borderColor = '#C4B8A8'; b.style.background = '#fff'; });
+      btn.style.borderColor = '#6B8B5E'; btn.style.background = 'rgba(107,139,94,0.06)';
+    };
+    wc.appendChild(btn);
+  });
+  wc.firstChild.style.borderColor = '#6B8B5E'; wc.firstChild.style.background = 'rgba(107,139,94,0.06)';
+
+  setLayout('statement');
+});
+</script>
+</body>
+</html>

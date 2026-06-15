@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Demo · 数据分析页 · Slate 技术调</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F3EF;--surface:#fff;--surface-alt:#E8E4DD;
+  --border:#C4B8A8;--border-strong:#8A7D6E;
+  --text-primary:#1A1816;--text-body:#2D2A26;--text-secondary:#8A7D6E;--text-disabled:#C4B8A8;
+  --brand-primary:#5B6B7A;--brand-secondary:#7A8B9B;--brand-tertiary:#7A9B6D;
+  --signal-error:#E8453C;--signal-warning:#E87A3C;--signal-info:#3C7AE8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-body);-webkit-font-smoothing:antialiased}
+
+/* Nav */
+.nav{display:flex;justify-content:space-between;align-items:center;padding:14px 40px;background:var(--surface);border-bottom:1px solid var(--border);font-size:12px}
+.nav-l{display:flex;align-items:center;gap:8px}
+.nav-l .dot{width:8px;height:8px;border-radius:50%;background:var(--brand-primary)}
+.nav-l .name{font-weight:600;color:var(--text-primary)}
+.nav-r{display:flex;gap:20px;color:var(--text-secondary)}
+
+/* Top bar */
+.top{padding:20px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.top h1{font-size:18px;font-weight:600;color:var(--text-primary)}
+.top .period{font-size:11px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace}
+.top .filters{display:flex;gap:6px}
+.top .filters span{padding:4px 12px;border-radius:4px;font-size:11px;background:var(--surface-alt);color:var(--text-secondary);cursor:default}
+.top .filters .a{background:var(--brand-primary);color:#fff}
+
+/* Metrics */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 40px 20px}
+.met{background:var(--surface);border-radius:6px;padding:16px;border:1px solid var(--border)}
+.met .lbl{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:4px}
+.met .val{font-size:22px;font-weight:700;color:var(--text-primary);letter-spacing:-.5px}
+.met .ch{font-size:10px;margin-top:2px}
+.met .ch.up{color:var(--brand-tertiary)}
+.met .ch.down{color:var(--signal-error)}
+
+/* Chart area */
+.chart-sec{padding:0 40px 20px;display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.chart-main{background:var(--surface);border-radius:6px;padding:20px;border:1px solid var(--border)}
+.chart-main .ct{font-size:11px;font-weight:500;color:var(--text-primary);margin-bottom:12px}
+.bars{display:flex;gap:4px;align-items:flex-end;height:160px}
+.bars .b{flex:1;border-radius:2px 2px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-top:4px;position:relative}
+.bars .b .v{position:absolute;top:-16px;font-size:8px;font-family:'JetBrains Mono',monospace;color:var(--text-secondary)}
+.bars .b .lbl{position:absolute;bottom:-14px;font-size:7px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;color:var(--text-disabled)}
+.chart-side{background:var(--surface);border-radius:6px;padding:20px;border:1px solid var(--border)}
+.chart-side .ct{font-size:11px;font-weight:500;margin-bottom:12px;color:var(--text-primary)}
+.rank-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--surface-alt);font-size:11px}
+.rank-item:last-child{border-bottom:none}
+.rank-item .k{color:var(--text-secondary)}
+.rank-item .v{font-family:'JetBrains Mono',monospace;font-weight:500}
+
+/* Table section */
+.table-sec{padding:0 40px 40px}
+.table-sec .tbl{width:100%;border-collapse:collapse;background:var(--surface);border-radius:6px;overflow:hidden;border:1px solid var(--border);font-size:12px}
+.table-sec .tbl th{padding:10px 14px;background:var(--surface-alt);font-weight:500;color:var(--text-body);text-align:left;font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.04em}
+.table-sec .tbl td{padding:8px 14px;border-bottom:1px solid var(--surface-alt);color:var(--text-body)}
+.table-sec .tbl td .sig{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.table-sec .tbl tr:last-child td{border-bottom:none}
+
+/* Footer */
+.footer{padding:24px 40px;background:var(--surface-alt);border-top:1px solid var(--border);font-size:10px;color:var(--text-secondary);text-align:center}
+
+@media(max-width:768px){
+  .nav{padding:10px 16px;flex-direction:column;gap:6px}
+  .top,.chart-sec{padding:12px 16px}.metrics{padding:0 16px 12px;grid-template-columns:repeat(2,1fr)}
+  .chart-sec{grid-template-columns:1fr}.table-sec{padding:0 16px 24px;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<div class="nav-l"><div class="dot"></div><span class="name">Analytics</span></div>
+<div class="nav-r"><span>概览</span><span class="a" style="font-weight:500;color:var(--text-primary)">报表</span><span>设置</span></div>
+</nav>
+
+<div class="top">
+<div><h1>营收报表</h1><div class="period">2026 Q2 · 截至 6 月 3 日</div></div>
+<div class="filters"><span class="a">本月</span><span>季度</span><span>年度</span></div>
+</div>
+
+<div class="metrics">
+<div class="met">
+<div class="lbl">总收入</div>
+<div class="val">$12.4M</div>
+<div class="ch up">+8.2% ↑</div>
+</div>
+<div class="met">
+<div class="lbl">活跃用户</div>
+<div class="val">48.2K</div>
+<div class="ch up">+3.7% ↑</div>
+</div>
+<div class="met">
+<div class="lbl">转化率</div>
+<div class="val">3.42%</div>
+<div class="ch down">-0.28% ↓</div>
+</div>
+<div class="met">
+<div class="lbl">平均客单</div>
+<div class="val">$258</div>
+<div class="ch up">+1.4% ↑</div>
+</div>
+</div>
+
+<div class="chart-sec">
+<div class="chart-main">
+<div class="ct">月度营收趋势 · Slate 主色 · Steel 辅色</div>
+<div class="bars">
+<div class="b" style="background:var(--brand-primary);height:28%"><span class="v">2.8</span><span class="lbl">1月</span></div>
+<div class="b" style="background:var(--brand-primary);height:35%"><span class="v">3.5</span><span class="lbl">2月</span></div>
+<div class="b" style="background:var(--brand-primary);height:42%"><span class="v">4.2</span><span class="lbl">3月</span></div>
+<div class="b" style="background:var(--brand-primary);height:38%"><span class="v">3.8</span><span class="lbl">4月</span></div>
+<div class="b" style="background:var(--brand-primary);height:52%"><span class="v">5.2</span><span class="lbl">5月</span></div>
+<div class="b" style="background:#5B6B7A;height:65%;border:2px solid var(--brand-secondary)"><span class="v">6.5</span><span class="lbl">6月</span></div>
+</div>
+</div>
+<div class="chart-side">
+<div class="ct">Top 渠道 · 品牌辅色点缀</div>
+<div class="rank-item"><span class="k">直接访问</span><span class="v" style="color:var(--brand-tertiary)">42%</span></div>
+<div class="rank-item"><span class="k">搜索引擎</span><span class="v" style="color:var(--brand-secondary)">28%</span></div>
+<div class="rank-item"><span class="k">社交媒体</span><span class="v" style="color:var(--brand-tertiary)">18%</span></div>
+<div class="rank-item"><span class="k">邮件营销</span><span class="v" style="color:var(--brand-secondary)">12%</span></div>
+</div>
+</div>
+
+<div class="table-sec">
+<table class="tbl">
+<tr><th>产品</th><th>营收</th><th>增长</th><th>状态</th><th>负责人</th></tr>
+<tr><td>Forest Pro</td><td>$4.2M</td><td style="color:var(--brand-tertiary)">+12.4%</td><td><span class="sig" style="background:var(--brand-tertiary)"></span>稳定</td><td>张明</td></tr>
+<tr><td>Moss Lite</td><td>$3.1M</td><td style="color:var(--brand-tertiary)">+5.8%</td><td><span class="sig" style="background:var(--brand-tertiary)"></span>稳定</td><td>李华</td></tr>
+<tr><td>Slate Core</td><td>$2.8M</td><td style="color:var(--signal-warning)">-2.1%</td><td><span class="sig" style="background:var(--signal-warning)"></span>关注</td><td>王丽</td></tr>
+<tr><td>Steel Edge</td><td>$1.2M</td><td style="color:var(--signal-error)">-8.5%</td><td><span class="sig" style="background:var(--signal-error)"></span>异常</td><td>陈伟</td></tr>
+</table>
+</div>
+
+<footer class="footer">Slate 主导 · 纯技术场景 · Forest 不出场 · Signal 用于功能状态标记</footer>
+
+</body>
+</html>

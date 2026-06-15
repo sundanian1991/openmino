@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>执行跟进 — 供应商管理任务追踪</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #F5F3EF;
+    --surface: #FFFFFF;
+    --surface-alt: #E8E4DD;
+    --border: #C4B8A8;
+    --border-strong: #8A7D6E;
+    --brand-primary: #E76F51;
+    --brand-secondary: #F4A261;
+    --accent: #2A9D8F;
+    --success: #2A9D8F;
+    --danger: #E8453C;
+    --text-display: #2D2A26;
+    --text-primary: #1A1816;
+    --text-secondary: #8A7D6E;
+    --text-disabled: #C4B8A8;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, #2D1A1A 0%, #5C2A2A 50%, #8A3D3D 100%);
+    padding: 120px 48px 100px;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 70% 30%, rgba(231,111,81,0.15) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: 'TRACK';
+    position: absolute;
+    right: 48px; bottom: 40px;
+    font-family: var(--font-display);
+    font-size: 160px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .hero__inner { max-width: 900px; margin: 0 auto; position: relative; z-index: 2; width: 100%; }
+  .hero__tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 32px;
+  }
+  .hero__title {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .hero__subtitle {
+    font-size: 18px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+    max-width: 520px;
+  }
+  .hero__meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .hero__meta-item {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.05em;
+  }
+  .hero__meta-item strong {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    margin-top: 6px;
+    letter-spacing: 0;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    padding: 80px 48px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .section__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 16px;
+  }
+  .section__title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-display);
+    line-height: 1.25;
+    margin-bottom: 40px;
+  }
+  .section__title strong { color: var(--brand-primary); font-weight: 700; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+  .card__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    margin-bottom: 12px;
+  }
+  .card__title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-display);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .card__body { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+  .card--dark {
+    background: linear-gradient(135deg, #2D1A1A 0%, #5C2A2A 100%);
+    border: none;
+    color: #fff;
+  }
+  .card--dark .card__title { color: #fff; }
+  .card--dark .card__body { color: rgba(255,255,255,0.7); }
+  .card--dark .card__eyebrow { color: rgba(255,255,255,0.4); }
+
+  .card--accent {
+    border-left: 4px solid var(--brand-primary);
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card--data {
+    text-align: center;
+    padding: 36px 24px;
+  }
+  .card--data .data-value {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--brand-primary);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .card--data .data-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border);
+  }
+  td { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
+  tr:hover td { background: var(--surface-alt); }
+
+  /* ===== STAT ROW ===== */
+  .stat-row {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .stat-row__item {
+    flex: 1;
+    padding: 28px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat-row__item:last-child { border-right: none; }
+  .stat-row__value {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--brand-primary);
+  }
+  .stat-row__label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  /* ===== CHECKLIST ===== */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .checklist li::before {
+    content: '✓';
+    position: absolute;
+    left: 0; top: 0;
+    width: 20px; height: 20px;
+    background: var(--brand-primary);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .checklist li.pending::before {
+    content: '○';
+    background: var(--surface-alt);
+    color: var(--text-disabled);
+  }
+  .checklist li.at-risk::before {
+    content: '!';
+    background: var(--danger);
+    color: #fff;
+  }
+
+  /* ===== QUOTE ===== */
+  .quote {
+    border-left: 4px solid var(--brand-primary);
+    padding: 20px 28px;
+    background: var(--surface);
+    margin: 24px 0;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-display);
+    line-height: 1.6;
+  }
+  .quote__source {
+    margin-top: 12px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-style: normal;
+    color: var(--text-secondary);
+  }
+
+  /* ===== TAGS ===== */
+  .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .tag {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .tag--highlight {
+    background: var(--brand-primary);
+    color: #fff;
+    border-color: var(--brand-primary);
+  }
+
+  /* ===== TASK PROGRESS ===== */
+  .task-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .task-progress__bar {
+    width: 80px;
+    height: 6px;
+    background: var(--surface-alt);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .task-progress__fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--brand-primary);
+  }
+  .task-progress__fill--done { background: var(--success); }
+  .task-progress__fill--warning { background: var(--brand-secondary); }
+  .task-progress__fill--danger { background: var(--danger); }
+  .task-progress__text { font-size: 11px; font-family: var(--font-mono); color: var(--text-secondary); }
+
+  /* ===== MILESTONE TIMELINE ===== */
+  .milestone-track {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+  .milestone {
+    flex: 1;
+    text-align: center;
+    padding: 20px 12px;
+    position: relative;
+  }
+  .milestone::after {
+    content: '';
+    position: absolute;
+    top: 28px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0;
+  }
+  .milestone:last-child::after { display: none; }
+  .milestone__dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 3px solid var(--border);
+    margin: 0 auto 12px;
+    position: relative;
+    z-index: 1;
+  }
+  .milestone--done .milestone__dot { border-color: var(--success); background: var(--success); }
+  .milestone--active .milestone__dot { border-color: var(--brand-primary); background: var(--brand-primary); }
+  .milestone--done::after { background: var(--success); }
+  .milestone__date {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-disabled);
+    margin-bottom: 4px;
+  }
+  .milestone__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* ===== RESOURCE TABLE ===== */
+  .resource-table td:nth-child(3),
+  .resource-table td:nth-child(4),
+  .resource-table td:nth-child(5) { text-align: center; }
+  .resource-table th:nth-child(3),
+  .resource-table th:nth-child(4),
+  .resource-table th:nth-child(5) { text-align: center; }
+
+  /* ===== STATUS PILLS ===== */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pill--green { background: rgba(42,157,143,0.12); color: #1D7A6E; }
+  .pill--yellow { background: rgba(244,162,97,0.15); color: #B86A2E; }
+  .pill--red { background: rgba(232,69,60,0.10); color: #C0392B; }
+  .pill--gray { background: var(--surface-alt); color: var(--text-secondary); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .hero { padding: 64px 24px; }
+    .hero__title { font-size: 36px; }
+    .section { padding: 48px 24px; }
+    .stat-row { flex-direction: column; }
+    .stat-row__item { border-right: none; border-bottom: 1px solid var(--border); }
+    .milestone-track { flex-direction: column; }
+    .milestone::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SECTION 1: HERO ===== -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__tag">Execution Tracking / 执行跟进</div>
+    <h1 class="hero__title">执行跟进</h1>
+    <p class="hero__subtitle">供应商管理核心任务追踪看板。谁在做什么、做到哪了、卡在哪了，一目了然。</p>
+    <div class="hero__meta">
+      <div class="hero__meta-item">负责人<strong>供应商管理组</strong></div>
+      <div class="hero__meta-item">更新频率<strong>每日</strong></div>
+      <div class="hero__meta-item">任务总数<strong>12</strong></div>
+      <div class="hero__meta-item">截止日期<strong>2026.06.30</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: 任务概览 ===== -->
+<section class="section">
+  <div class="section__label">Overview · 任务概览</div>
+  <h2 class="section__title">当前任务<strong>状态</strong></h2>
+  <div class="stat-row">
+    <div class="stat-row__item">
+      <div class="stat-row__value">4</div>
+      <div class="stat-row__label">已完成</div>
+    </div>
+    <div class="stat-row__item">
+      <div class="stat-row__value">5</div>
+      <div class="stat-row__label">进行中</div>
+    </div>
+    <div class="stat-row__item">
+      <div class="stat-row__value">2</div>
+      <div class="stat-row__label">待启动</div>
+    </div>
+    <div class="stat-row__item">
+      <div class="stat-row__value">1</div>
+      <div class="stat-row__label">已逾期</div>
+    </div>
+    <div class="stat-row__item">
+      <div class="stat-row__value">78%</div>
+      <div class="stat-row__label">整体进度</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 3: 任务清单 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Tasks · 任务清单</div>
+  <h2 class="section__title">具体任务<strong>追踪</strong></h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>任务</th><th>负责人</th><th>截止</th><th>进度</th><th>状态</th><th>备注</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>D19合规整改验收</td><td>供应商管理组</td><td>6.14</td><td>100%</td><td style="color:var(--success)">已完成</td><td>验收通过，解除预警</td></tr>
+        <tr><td>引入清单2.0发布</td><td>供应商管理组</td><td>6.15</td><td>95%</td><td style="color:var(--brand-primary)">进行中</td><td>待明日邮件发布</td></tr>
+        <tr><td>数据看板原型评审</td><td>供应商管理组</td><td>6.16</td><td>80%</td><td style="color:var(--brand-primary)">进行中</td><td>技术评审待进行</td></tr>
+        <tr><td>财富产线产能恢复</td><td>供应商管理组</td><td>6.20</td><td>60%</td><td style="color:var(--brand-primary)">进行中</td><td>D28招聘滞后</td></tr>
+        <tr><td>降价谈判（D03/D07）</td><td>供应商管理组</td><td>6.12</td><td>100%</td><td style="color:var(--success)">已完成</td><td>平均降幅10%</td></tr>
+        <tr><td>清退SOP终稿</td><td>供应商管理组</td><td>6.30</td><td>40%</td><td style="color:var(--brand-primary)">进行中</td><td>法务审批中</td></tr>
+        <tr><td>D31故障复盘报告</td><td>D31供应商</td><td>6.17</td><td>0%</td><td style="color:var(--text-disabled)">待启动</td><td>供应商撰写中</td></tr>
+        <tr><td>供应商反向满意度调研</td><td>供应商管理组</td><td>6.25</td><td>0%</td><td style="color:var(--text-disabled)">待启动</td><td>问卷设计中</td></tr>
+        <tr><td>内部培训材料第一版</td><td>供应商管理组</td><td>6.30</td><td>30%</td><td style="color:var(--brand-primary)">进行中</td><td>框架已完成</td></tr>
+        <tr><td>AI试点供应商筛选</td><td>供应商管理组</td><td>6.18</td><td>50%</td><td style="color:var(--brand-primary)">进行中</td><td>D07/D12候选</td></tr>
+        <tr><td>策略组价格复盘会议</td><td>供应商管理组</td><td>6.10</td><td>100%</td><td style="color:var(--success)">已完成</td><td>会议已召开</td></tr>
+        <tr><td>月度回顾文档</td><td>供应商管理组</td><td>6.05</td><td>100%</td><td style="color:var(--danger)">已逾期</td><td>延期至6.18</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SECTION 4: 阻塞问题 ===== -->
+<section class="section">
+  <div class="section__label">Blockers · 阻塞问题</div>
+  <h2 class="section__title">什么在<strong>卡进度</strong></h2>
+  <div class="grid-2">
+    <div class="card card--accent">
+      <div class="card__eyebrow">阻塞 01 / 高</div>
+      <div class="card__title">清退SOP法务审批延迟</div>
+      <div class="card__body">法务部门排期已满，清退SOP审批预计延期2周。可能影响Q2制度落地目标。已尝试以"征求意见稿"形式获取口头确认。</div>
+    </div>
+    <div class="card">
+      <div class="card__eyebrow">阻塞 02 / 中</div>
+      <div class="card__title">数据看板IT排期冲突</div>
+      <div class="card__body">IT部门当前 sprint 已满，看板开发无法排入。评估外包开发方案中，预计增加成本3-5万。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5: 下一步行动 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Next · 下一步行动</div>
+  <h2 class="section__title">本周要<strong>推进</strong>什么</h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="font-family:var(--font-display);font-size:18px;margin-bottom:16px;">高优先级</h3>
+      <ul class="checklist">
+        <li>引入清单2.0正式发布（6.15）</li>
+        <li>数据看板技术评审（6.16）</li>
+        <li>D31故障复盘报告审阅（6.17）</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-family:var(--font-display);font-size:18px;margin-bottom:16px;">中优先级</h3>
+      <ul class="checklist">
+        <li class="pending">财富产线产能恢复跟进</li>
+        <li class="pending">清退SOP法务催办</li>
+        <li class="pending">AI试点供应商确认</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 6: 里程碑时间线 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Milestones · 里程碑时间线</div>
+  <h2 class="section__title">6月关键<strong>节点</strong></h2>
+  <div class="milestone-track">
+    <div class="milestone milestone--done">
+      <div class="milestone__dot"></div>
+      <div class="milestone__date">6.10</div>
+      <div class="milestone__title">D19整改验收</div>
+    </div>
+    <div class="milestone milestone--done">
+      <div class="milestone__dot"></div>
+      <div class="milestone__date">6.14</div>
+      <div class="milestone__title">合规报告归档</div>
+    </div>
+    <div class="milestone milestone--active">
+      <div class="milestone__dot"></div>
+      <div class="milestone__date">6.15–6.20</div>
+      <div class="milestone__title">引入清单发布</div>
+    </div>
+    <div class="milestone">
+      <div class="milestone__dot"></div>
+      <div class="milestone__date">6.22</div>
+      <div class="milestone__title">数据看板评审</div>
+    </div>
+    <div class="milestone">
+      <div class="milestone__dot"></div>
+      <div class="milestone__date">6.28</div>
+      <div class="milestone__title">月度复盘会</div>
+    </div>
+    <div class="milestone">
+      <div class="milestone__dot"></div>
+      <div class="milestone__date">6.30</div>
+      <div class="milestone__title">Q2目标截止</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 7: 资源投入追踪 ===== -->
+<section class="section">
+  <div class="section__label">Resources · 资源投入追踪</div>
+  <h2 class="section__title">人力与<strong>预算</strong>分配</h2>
+  <div class="table-wrap">
+    <table class="resource-table">
+      <thead>
+        <tr><th>任务</th><th>主责人</th><th>人力(人日)</th><th>预算(万元)</th><th>已使用</th><th>使用率</th><th>状态</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>引入清单2.0开发</td><td>张敏</td><td>18</td><td>2.0</td><td>1.8</td>
+          <td><div class="task-progress"><div class="task-progress__bar"><div class="task-progress__fill" style="width:90%"></div></div><span class="task-progress__text">90%</span></div></td>
+          <td><span class="pill pill--green">正常</span></td>
+        </tr>
+        <tr>
+          <td>数据看板开发</td><td>王磊</td><td>24</td><td>5.0</td><td>3.2</td>
+          <td><div class="task-progress"><div class="task-progress__bar"><div class="task-progress__fill task-progress__fill--warning" style="width:64%"></div></div><span class="task-progress__text">64%</span></div></td>
+          <td><span class="pill pill--yellow">滞后</span></td>
+        </tr>
+        <tr>
+          <td>财富产线产能恢复</td><td>李强</td><td>12</td><td>1.5</td><td>0.6</td>
+          <td><div class="task-progress"><div class="task-progress__bar"><div class="task-progress__fill task-progress__fill--warning" style="width:40%"></div></div><span class="task-progress__text">40%</span></div></td>
+          <td><span class="pill pill--yellow">滞后</span></td>
+        </tr>
+        <tr>
+          <td>降价谈判</td><td>陈芳</td><td>6</td><td>0.5</td><td>0.5</td>
+          <td><div class="task-progress"><div class="task-progress__bar"><div class="task-progress__fill" style="width:100%"></div></div><span class="task-progress__text">100%</span></div></td>
+          <td><span class="pill pill--green">正常</span></td>
+        </tr>
+        <tr>
+          <td>清退SOP编制</td><td>赵涛</td><td>10</td><td>0.3</td><td>0.05</td>
+          <td><div class="task-progress"><div class="task-progress__bar"><div class="task-progress__fill task-progress__fill--danger" style="width:17%"></div></div><span class="task-progress__text">17%</span></div></td>
+          <td><span class="pill pill--red">严重滞后</span></td>
+        </tr>
+        <tr>
+          <td>AI试点接入</td><td>周明</td><td>8</td><td>3.0</td><td>0</td>
+          <td><div class="task-progress"><div class="task-progress__bar"><div class="task-progress__fill task-progress__fill--danger" style="width:0%"></div></div><span class="task-progress__text">0%</span></div></td>
+          <td><span class="pill pill--gray">未启动</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== SECTION 8: 风险任务预警 ===== -->
+<section class="section" style="background:var(--surface-alt)">
+  <div class="section__label">Risk Alert · 风险任务预警</div>
+  <h2 class="section__title">需立即关注的<strong>风险项</strong></h2>
+  <div class="grid-3">
+    <div class="card" style="border-top:3px solid var(--danger)">
+      <div class="card__eyebrow"><span class="pill pill--red">逾期3天</span></div>
+      <div class="card__title">清退SOP法务审批</div>
+      <div class="card__body">
+        法务排期冲突导致审批停滞，已逾期3天。建议升级至部门总监协调资源，或启用备选律所进行合规审查。
+        <div style="margin-top:12px;font-size:12px;color:var(--text-secondary)">
+          影响范围：Q2制度落地、清退执行<br>
+          升级建议：立即升级至VP
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--brand-secondary)">
+      <div class="card__eyebrow"><span class="pill pill--yellow">风险上升</span></div>
+      <div class="card__title">财富产线产能恢复</div>
+      <div class="card__body">
+        D28招聘进度仅完成40%，距6.20目标缺口较大。已启动第三方招聘渠道，预计6.18补充到位15人。
+        <div style="margin-top:12px;font-size:12px;color:var(--text-secondary)">
+          影响范围：GMV目标、客户满意度<br>
+          缓解措施：第三方招聘+临时调配
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--brand-secondary)">
+      <div class="card__eyebrow"><span class="pill pill--yellow">排期冲突</span></div>
+      <div class="card__title">数据看板IT开发</div>
+      <div class="card__body">
+        IT sprint已满，无法排入开发。评估外包方案中，预算增加3-5万，周期缩短1周。需本周五前决策。
+        <div style="margin-top:12px;font-size:12px;color:var(--text-secondary)">
+          影响范围：管理可视化、决策效率<br>
+          决策截止：6.18（周五）
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 9: 结语 ===== -->
+<section class="section">
+  <div class="section__label">Closing · 结语</div>
+  <h2 class="section__title">跟进<strong>原则</strong></h2>
+  <div class="quote">
+    "执行跟进不是为了 micromanage，而是为了在问题还能解决时发现它。好的跟进是'眼看手勿动'——保持可见性，但克制干预。"
+    <div class="quote__source">—— 执行跟进原则</div>
+  </div>
+</section>
+
+</body>
+</html>

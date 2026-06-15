@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商准入决策树</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #F5F5F5;
+    color: #1A1A1A;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    min-height: 100vh;
+    padding: 48px 64px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: flex-end;
+    gap: 32px;
+    margin-bottom: 48px;
+    border-bottom: 1px solid #E8E8E8;
+    padding-bottom: 32px;
+  }
+  .header-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+  .header-subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+  .hero-block {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .hero-number {
+    font-family: 'Doto', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1;
+    color: #1A1A1A;
+  }
+  .hero-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Main layout */
+  .main {
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+  }
+  .tree-area {
+    flex: 1;
+    min-width: 0;
+  }
+  .stats-area {
+    width: 260px;
+    flex-shrink: 0;
+  }
+
+  /* Tree SVG */
+  .tree-svg {
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+  }
+
+  /* Stats cards */
+  .stats-card {
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    padding: 24px;
+  }
+  .stats-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+  .gate-stat {
+    margin-bottom: 20px;
+  }
+  .gate-stat:last-child { margin-bottom: 0; }
+  .gate-stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .gate-stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .gate-stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+  .gate-stat-bar {
+    height: 3px;
+    background: #E8E8E8;
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .gate-stat-fill {
+    height: 100%;
+    border-radius: 0;
+  }
+  .final-stat {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #E8E8E8;
+  }
+  .final-stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+  .final-stat-value {
+    font-family: 'Doto', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    color: #4A9E5C;
+  }
+  .final-stat-unit {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    color: #999;
+    margin-left: 4px;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">供应商准入决策树</div>
+    <div class="header-subtitle">Supplier Admission Decision Tree</div>
+  </div>
+  <div class="hero-block">
+    <span class="hero-number">3</span>
+    <span class="hero-label">Decision Gates</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="tree-area">
+    <svg class="tree-svg" viewBox="0 0 720 640" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .node-rect { rx: 4; ry: 4; stroke-width: 1.5; }
+          .node-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            fill: #1A1A1A;
+          }
+          .node-condition {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            fill: #666;
+            letter-spacing: 0.06em;
+          }
+          .gate-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            fill: #999;
+            letter-spacing: 0.06em;
+          }
+          .terminal-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+          }
+          .terminal-sub {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            fill: #999;
+            letter-spacing: 0.06em;
+          }
+          .path-yes {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            fill: #4A9E5C;
+            letter-spacing: 0.06em;
+          }
+          .path-no {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            fill: #D71921;
+            letter-spacing: 0.06em;
+          }
+          .connector { stroke: #D8D8D8; stroke-width: 1.5; fill: none; }
+          .connector-no { stroke: #D8D8D8; stroke-width: 1.5; fill: none; stroke-dasharray: 6,4; }
+          .admit-mark {
+            font-family: 'Doto', sans-serif;
+            font-size: 48px;
+            font-weight: 700;
+            fill: #4A9E5C;
+          }
+        </style>
+      </defs>
+
+      <!-- ===== ROOT NODE ===== -->
+      <rect class="node-rect" x="220" y="16" width="280" height="48" fill="#FFFFFF" stroke="#1A1A1A" />
+      <text class="node-title" x="360" y="44" text-anchor="middle">新供应商提交准入申请</text>
+
+      <!-- Connector: Root → Gate 1 -->
+      <line class="connector" x1="360" y1="64" x2="360" y2="108" />
+
+      <!-- ===== GATE 1 ===== -->
+      <rect class="node-rect" x="220" y="108" width="280" height="72" fill="#FFFFFF" stroke="#1A1A1A" />
+      <text class="gate-label" x="360" y="126" text-anchor="middle">GATE 1</text>
+      <text class="node-title" x="360" y="146" text-anchor="middle">资质审核</text>
+      <text class="node-condition" x="360" y="164" text-anchor="middle">注册资本 >= 500W | 经营年限 >= 1Y</text>
+
+      <!-- Gate 1 → 拒绝 (NO path, left) -->
+      <line class="connector-no" x1="220" y1="144" x2="100" y2="144" />
+      <line class="connector-no" x1="100" y1="144" x2="100" y2="210" />
+      <text class="path-no" x="148" y="138">NO</text>
+
+      <!-- 拒绝 terminal -->
+      <rect class="node-rect" x="40" y="210" width="120" height="44" fill="#FDECEA" stroke="#D71921" />
+      <text class="terminal-title" x="100" y="233" text-anchor="middle" fill="#D71921">拒绝</text>
+      <text class="terminal-sub" x="100" y="248" text-anchor="middle">REJECTED</text>
+
+      <!-- Gate 1 → Gate 2 (YES path, down) -->
+      <line class="connector" x1="360" y1="180" x2="360" y2="228" />
+      <text class="path-yes" x="372" y="212">YES</text>
+
+      <!-- ===== GATE 2 ===== -->
+      <rect class="node-rect" x="220" y="228" width="280" height="72" fill="#FFFFFF" stroke="#1A1A1A" />
+      <text class="gate-label" x="360" y="246" text-anchor="middle">GATE 2</text>
+      <text class="node-title" x="360" y="266" text-anchor="middle">合规审查</text>
+      <text class="node-condition" x="360" y="284" text-anchor="middle">质检体系完备 | 数据安全达标</text>
+
+      <!-- Gate 2 → 补充材料 (NO path, right) -->
+      <line class="connector-no" x1="500" y1="264" x2="600" y2="264" />
+      <line class="connector-no" x1="600" y1="264" x2="600" y2="330" />
+      <text class="path-no" x="536" y="258">NO</text>
+
+      <!-- 补充材料 terminal (yellow, re-enterable) -->
+      <rect class="node-rect" x="540" y="330" width="120" height="44" fill="#FDF6E3" stroke="#D4A843" />
+      <text class="terminal-title" x="600" y="353" text-anchor="middle" fill="#D4A843">补充材料</text>
+      <text class="terminal-sub" x="600" y="368" text-anchor="middle">RE-ENTER</text>
+
+      <!-- Re-enter arrow: 补充材料 back up to Gate 2 -->
+      <line class="connector-no" x1="660" y1="352" x2="690" y2="352" />
+      <line class="connector-no" x1="690" y1="352" x2="690" y2="264" />
+      <line class="connector-no" x1="690" y1="264" x2="500" y2="264" stroke-dasharray="4,3" opacity="0.4" />
+
+      <!-- Gate 2 → Gate 3 (YES path, down) -->
+      <line class="connector" x1="360" y1="300" x2="360" y2="348" />
+      <text class="path-yes" x="372" y="332">YES</text>
+
+      <!-- ===== GATE 3 ===== -->
+      <rect class="node-rect" x="220" y="348" width="280" height="72" fill="#FFFFFF" stroke="#1A1A1A" />
+      <text class="gate-label" x="360" y="366" text-anchor="middle">GATE 3</text>
+      <text class="node-title" x="360" y="386" text-anchor="middle">述标评审</text>
+      <text class="node-condition" x="360" y="404" text-anchor="middle">综合评分 >= 60</text>
+
+      <!-- Gate 3 → 储备池等待 (NO path, left) -->
+      <line class="connector-no" x1="220" y1="384" x2="100" y2="384" />
+      <line class="connector-no" x1="100" y1="384" x2="100" y2="450" />
+      <text class="path-no" x="148" y="378">NO</text>
+
+      <!-- 储备池等待 terminal (gray) -->
+      <rect class="node-rect" x="40" y="450" width="120" height="44" fill="#F5F5F5" stroke="#999" />
+      <text class="terminal-title" x="100" y="473" text-anchor="middle" fill="#999">储备池等待</text>
+      <text class="terminal-sub" x="100" y="488" text-anchor="middle">WAITLIST</text>
+
+      <!-- Gate 3 → 准入 (YES path, down) -->
+      <line class="connector" x1="360" y1="420" x2="360" y2="480" />
+      <text class="path-yes" x="372" y="460">YES</text>
+
+      <!-- 准入 terminal (green, large mark) -->
+      <rect class="node-rect" x="230" y="480" width="260" height="100" fill="#E8F5E9" stroke="#4A9E5C" stroke-width="2.5" />
+      <text class="admit-mark" x="360" y="530" text-anchor="middle">准入</text>
+      <text class="terminal-sub" x="360" y="568" text-anchor="middle">ADMITTED</text>
+
+      <!-- Green accent bar on admit node -->
+      <rect x="230" y="480" width="6" height="100" fill="#4A9E5C" />
+
+    </svg>
+  </div>
+
+  <div class="stats-area">
+    <div class="stats-card">
+      <div class="stats-title">Pass Rate By Gate</div>
+
+      <div class="gate-stat">
+        <div class="gate-stat-header">
+          <span class="gate-stat-label">Gate 1 - 资质审核</span>
+          <span class="gate-stat-value">82%</span>
+        </div>
+        <div class="gate-stat-bar">
+          <div class="gate-stat-fill" style="width:82%; background:#1A1A1A"></div>
+        </div>
+      </div>
+
+      <div class="gate-stat">
+        <div class="gate-stat-header">
+          <span class="gate-stat-label">Gate 2 - 合规审查</span>
+          <span class="gate-stat-value">91%</span>
+        </div>
+        <div class="gate-stat-bar">
+          <div class="gate-stat-fill" style="width:91%; background:#1A1A1A"></div>
+        </div>
+      </div>
+
+      <div class="gate-stat">
+        <div class="gate-stat-header">
+          <span class="gate-stat-label">Gate 3 - 述标评审</span>
+          <span class="gate-stat-value">63%</span>
+        </div>
+        <div class="gate-stat-bar">
+          <div class="gate-stat-fill" style="width:63%; background:#1A1A1A"></div>
+        </div>
+      </div>
+
+      <div class="final-stat">
+        <div class="final-stat-label">Final Admission Rate</div>
+        <div>
+          <span class="final-stat-value">47</span>
+          <span class="final-stat-unit">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
