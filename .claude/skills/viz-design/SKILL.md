@@ -34,9 +34,8 @@ trigger: |
 **渲染目标选择**：
 - 数据图表 → **ECharts HTML**（自包含，双击可开）
 - 概念图 → **SVG**
-- 印刷级/学术论文 → 可调用 nature-figure 技能
 
-**Birchline 色系**：全阶段统一使用 html-interactive 中的 Birchline Design System 色彩，不新增任何颜色。
+**色系统一**：全阶段使用 ECharts 手法对照表（echarts-recipes.md）中的 Warm/Stone/Teal 三色系，不新增任何颜色。
 
 ---
 
@@ -108,7 +107,7 @@ Phase 4：渲染+验收（读 references/design-principles.md 获取判断标准
   Part B — 渲染：出第一版图
   Part C — 验收：
     传达检验（"读者看完应该得出什么判断"5 秒验证）
-    通用检查（Birchline 色系 / 语法 / 标题 / 重叠 / 标注 ≤3）
+    通用检查（Warm/Stone/Teal 色系 / 语法 / 标题 / 重叠 / 标注 ≤3）
     图表专项检查
   Part D — 修复：
     首次失败 → 调参重试

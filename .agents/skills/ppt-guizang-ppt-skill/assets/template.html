@@ -198,11 +198,6 @@
   body.low-power #hint{opacity:.72;color:var(--paper);mix-blend-mode:normal}
   body.light-bg.low-power #hint{color:var(--ink)}
 
-  /* ============ 顶部进度条 ============ */
-  #progress{position:fixed;top:0;left:0;height:2px;z-index:40;width:0%;transition:width .5s cubic-bezier(.77,0,.175,1)}
-  .slide.light ~ #progress,#progress{background:var(--ink)}
-  body.light-bg #progress{background:var(--paper)}
-
   /* ============================================================
      ============ LAYOUTS API · 面向 agent 的类（v2）============
      所有 layouts.md 中的骨架都基于下面这套命名。
@@ -479,7 +474,6 @@
 
 <canvas id="bg-dark" class="bg"></canvas>
 <canvas id="bg-light" class="bg"></canvas>
-<div id="progress"></div>
 <div id="hint">← → 翻页 · B 静态 · ESC 索引</div>
 
 <div id="deck">
@@ -647,9 +641,6 @@ function go(n){
   window.__currentSlideIndex = idx;
   deck.style.transform=`translateX(${-idx*100}vw)`;
   nav.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
-  /* 更新顶部进度条 */
-  const prog=document.getElementById('progress');
-  if(prog) prog.style.width=((idx+1)/total*100)+'%';
   /* 主题切换：优先读 data-theme，其次从 class（light/dark）推断 */
   const el=slides[idx];
   const th=el.dataset.theme || (el.classList.contains('light')?'light':(el.classList.contains('dark')?'dark':'dark'));
@@ -740,31 +731,6 @@ addEventListener('touchend',e=>{
 },{passive:true});
 
 go(0);
-
-/* =============== 图片懒加载 ===============
-   翻页时才加载可见页及前后一页的图片，首屏更快
-*/
-(function lazyLoadImages(){
-  const imgs=document.querySelectorAll('.frame-img img');
-  if(!imgs.length) return;
-  // 先用 data-src 暂存真实路径，src 留空避免提前加载
-  imgs.forEach(img=>{
-    if(img.src && !img.dataset.src){
-      img.dataset.src=img.src;
-      img.removeAttribute('src');
-    }
-  });
-  // IntersectionObserver：进入视口±1页范围才加载
-  const observer=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        const img=e.target;
-        if(img.dataset.src){img.src=img.dataset.src;observer.unobserve(img);}
-      }
-    });
-  },{root:deck,rootMargin:'110vw 0px'}); // 前后各多留一页的余量
-  imgs.forEach(img=>observer.observe(img));
-})();
 </script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script>lucide.createIcons();</script>

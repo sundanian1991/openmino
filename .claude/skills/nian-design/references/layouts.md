@@ -1,6 +1,6 @@
 # 页面布局库（Layouts）
 
-> 20 种页面级骨架。从 Guizang 32 种布局中提取去重，用 nian 设计语言重写。
+> 28 种页面级骨架。从 Guizang 32 种布局中提取去重，用 nian 设计语言重写。
 > 每种是完整可粘贴的 `<section>` HTML 代码块。AI 做：选骨架 → 替文案 → 完成。
 
 ---
@@ -22,7 +22,7 @@
 | 字体四工 | Playfair = Hero / Inter = Body / JetBrains = Data / Doto = 装饰 |
 | 一处打破 | 每页恰好 1 处不守规则的元素 |
 | 单一场景色 | 同一 section 只用一个场景色（Olive/Glacier/Rock） |
-| 禁止项 | 渐变/阴影/圆角>8px/emoji/深色模式 |
+| 禁止项 | 渐变/阴影/圆角>8px/emoji（深色模式可用，见 components.md 双模式色板） |
 
 ### 颜色 Token（Brand DNA 7 色）
 

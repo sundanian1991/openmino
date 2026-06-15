@@ -439,7 +439,7 @@ const appleChartColors = ['#0071e3', '#86868b', '#bf4800', '#1d1d1f'];
 
 ## 设计系统（强制）
 
-所有生成的 HTML 必须使用这套暖色设计系统。不使用 Tailwind，不使用外部 CDN。
+所有生成的 HTML 必须使用这套暖色设计系统（除非被编辑风格覆盖）。不使用 Tailwind，不使用外部 CDN（⚠️ 字体 CDN 例外：Google Fonts / Adobe Fonts 等字体 CDN 允许加载，所有其他类型的 CDN 仍禁止）。
 
 ### 色彩变量（暖色基础系统）
 
@@ -517,7 +517,7 @@ a.card:hover {
 1. **每个元素都要可操作** — 能点击展开、能拖拽、能切换、能调参数
 2. **有明确的反馈** — hover 状态、展开/折叠动画、颜色变化
 3. **导出能力** — 编辑类页面必须有"复制结果"按钮，把 UI 操作转回可粘贴的文本
-4. **自包含** — 单文件 HTML，双击就能开。不依赖 CDN、不依赖构建工具
+4. **自包含** — 单文件 HTML，双击就能开。不依赖构建工具、不依赖 CDN 库（⚠️ 字体 CDN 例外：允许 Google Fonts / Adobe Fonts 等字体服务）
 5. **纯 vanilla** — CSS 变量 + 原生 JS。不用 React、不用 Tailwind、不用框架
 
 ### 组件配方索引
@@ -712,7 +712,7 @@ a.card:hover {
 
 - 不用 Tailwind / Bootstrap / 任何 CSS 框架
 - 不用 React / Vue / 任何 JS 框架
-- 不用 CDN 链接（字体、图标、库都不允许）
+- 不用 CDN 链接（⚠️ 字体 CDN 例外：Google Fonts / Adobe Fonts 等字体服务允许加载；图标库、CSS 框架、JS 库仍禁止）
 - 不编造 placeholder 内容
 - 不生成"看起来像但用不了"的静态模拟（如果要拖拽，就实现真正的拖拽）
 - 不在亮色系设计系统中使用紫色渐变

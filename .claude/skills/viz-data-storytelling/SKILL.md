@@ -504,6 +504,8 @@ viz-design（视觉设计：SPEC + JSON）
 └── viz-narrative-text（T8 叙事文本）
 ```
 
+**若图表需要嵌入整页报告（而非独立成图）**，叙事大纲 + viz-design 渲染产物作为"素材"交给 `nian-decision-card` 出决策卡，再交 `nian-design` 施工整页 HTML。viz 家族不进入 nian 组件体系，只提供图表素材；nian-decision-card 决定图表嵌入哪个 section、占多大位置。
+
 ---
 
 ## 完成检查

@@ -292,3 +292,11 @@ When the user opens the HTML file, they should be able to immediately do three t
 3. Execute the fixes in order: change the opener, reorder sections, cut the dead weight, go find evidence for the gaps, sharpen the weak arguments.
 
 If the user finishes looking at the artifact and still doesn't know what to do next, the skill did not do its job.
+
+---
+
+## 参考资源
+
+| 资源 | 内容 | 何时加载 |
+|------|------|---------|
+| `references/mece-theory.md` | MECE 原理详解（三步流程、失败模式、适用边界） | 需要解释 MECE 理论或诊断到 MECE 违规时 |

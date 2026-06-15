@@ -23,7 +23,9 @@ skillsDir: ./.claude/skills
 
 | 文件 | 用途 |
 |------|------|
-| [01-SOUL.md](.claude/rules/01-SOUL.md) | 身份 + 性格 + 思维方式 |
+| [01-SOUL.md](.claude/rules/01-SOUL.md) | 身份 + 性格 + 态度锚点 |
+| [02-COLLAB.md](.claude/rules/02-COLLAB.md) | 协作规范 + 分析框架 |
+| [03-OUTPUT.md](.claude/rules/03-OUTPUT.md) | 输出风格 + 审美基线 |
 | [MEMORY-L1.md](.claude/rules/MEMORY-L1.md) | 用户画像 + 记忆索引 |
 | [06-NOW.md](.claude/rules/06-NOW.md) | 当前状态、活跃项目 |
 
@@ -43,6 +45,38 @@ skillsDir: ./.claude/skills
 
 ---
 
+## 对话摘要（每次会话自动启用）
+
+**强制**：每次会话开始时，在 `workspace/YYYY-MM-DD-对话摘要/` 下创建 `对话总结-YYYY-MM-DD.md`，按以下模板初始化。对话中实时维护——每完成阶段性任务追加 worklog，每做出关键决策追加 Decisions。compact 时摘要已是完整状态，新 session 直接读取恢复。
+
+**模板**：
+
+```
+# Session Title（简短5-10字）
+
+# Current State
+当前状态、待完成任务
+
+# Task Specification
+用户要求、设计决策、背景
+
+# Key Files
+重要文件路径及作用
+
+# Errors & Corrections
+错误及解决方案
+
+# Decisions & Learnings
+关键决策、有效做法、应避免做法
+
+# Worklog
+逐步操作记录，极简摘要
+```
+
+**注意**：简单一问一答的会话不需要摘要。有实质性多轮对话、产生了代码/决策/产出的会话才维护。
+
+---
+
 ## 规范
 
 **Git**：Commit 格式 `type: description`（feat/fix/docs/refactor/chore/test）；禁止 `--no-verify`、`reset --hard`、`push --force main`、`commit --amend`。
@@ -56,21 +90,19 @@ skillsDir: ./.claude/skills
 | 工具 | 用途 |
 |------|------|
 | tavily-mcp | 网页搜索 |
-| web-search | 中文搜索 |
+| anysearch | 中文搜索 |
 | webReader | 网页→Markdown（100 次/月） |
 
 **技能搜索**：见 [.claude/reference/skill-search.md](.claude/reference/skill-search.md)
 
----
+### HTML 文件写入（DeepSeek 模型特定）
 
-## 数据分析
+Write 工具传大段 HTML 时因 content 含特殊符号（`"` `$` 反引号 `{}` 等），经 **opencode.ai 中转层（Anthropic→OpenAI 协议转换）** 时 JSON 格式可能被破坏，导致 tool call 失败（非 Write 工具自身限制，是中转层的序列化问题）。
 
-**数据解读前置校验**：进行分析前，必须先验证数据解读假设：
+→ 一律用 `cat > path << 'EOF'` 通过 Bash 写入，不走 Write 工具。
 
-1. **活跃定义**：何为"活跃"员工
-2. **人数口径**：人员数是否包含离职人员
-3. **时间边界**：计算周期的起止边界
+
 
 ---
 
-*最后更新：2026-06-05 — 规则体系精简，删除行为约束层*
+*最后更新：2026-06-06 — 新增 DeepSeek HTML 写入约束*
