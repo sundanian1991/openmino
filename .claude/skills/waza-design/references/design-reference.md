@@ -123,38 +123,16 @@ When extending an existing interface, first spend time understanding its visual 
 
 If swapping in different content would make the new component look out of place, the vocabulary was not matched closely enough.
 
+### Responsive & Screen Verification
+- Verify the rendered surface, not a type check or CSS-balance read. Several regressions (early wraps, orphaned separator dots, table overflow) are invisible in source and only show in the render. Screenshot at phone (375px, plus 320px for buttons) and desktop (1280px), in every shipped locale.
+- Line widows: eliminate 1-2 word last lines by trimming the copy so the block rebalances, not by adding a `max-width` cap (a cap narrower than its container wraps early and leaves empty space on the right, which reads as a premature break). Detect objectively: flag any text block whose last line is under ~13% of its widest line; eyeballing misses them, and nested `<code>` hides them from greps.
+- Mobile CTA resting state: natural width, left-aligned to the surrounding text edge, height unchanged. Centering reads as floating; full-width `flex: 1` reads heavy; dropping button height to relieve a "too full" feel treats a width problem as a height one.
+- Spacing is a system, not a per-gap value. Run section spacing as one responsive ladder; when a page reads too airy or too tight, scale the whole set by a single factor across all breakpoints rather than tuning one gap. Asymmetry that survives tuning is structural.
+- Long-form and documentation surfaces stay light: a borderless prev/next text pager (not bordered cards), a sidebar active state as a thin rail rather than a filled block, and build-time zero-runtime-JS code highlighting (bake static spans, plain code stays the source) over a shipped highlighter.
+
 ## Data Visualization Surfaces
 
-### Dashboard defaults
-
-Dashboards are utility surfaces: orient the user, show status, enable action. No hero sections, no marketing copy. Every element must earn its place by answering a question the user has.
-
-- Primary layout: status summary at top, detail below; or sidebar filters + main chart area.
-- Whitespace: tighter than marketing pages; users scan, not read. Use generous column spacing, not generous row height.
-- Number density: many numbers on screen at once is not a problem. Crowding without alignment is. Use `font-variant-numeric: tabular-nums` for all numeric columns. Right-align numbers. Left-align labels.
-
-### Chart selection
-
-| Use case | Chart type |
-|---|---|
-| Comparing values across categories | Bar chart (horizontal if labels are long) |
-| Trend over time | Line chart; avoid bars for time series with many points |
-| Part-whole relationships | Treemap (6+ segments) or stacked bar; pie only for 2-4 segments |
-| Distribution | Histogram or box plot; never pie chart |
-| Correlation | Scatter plot; do not use line chart |
-
-Pie charts with more than 4 segments communicate nothing. Use a treemap or ranked list instead.
-
-### Number-dense interfaces
-
-- `font-variant-numeric: tabular-nums` on every number column so digits align vertically.
-- Right-align all numbers; left-align all text labels. Mixed alignment in the same column is always wrong.
-- Subtle row separators: `1px` line at `rgba(0,0,0,0.06)` (light) or `rgba(255,255,255,0.05)` (dark). Alternating row backgrounds only if the table is very wide (12+ columns).
-- Column spacing: at least `16px` between adjacent columns; more between logically distinct groups.
-
-### Using a product as a benchmark
-
-When the user references a product for visual benchmark ("make it feel like Grafana" / "similar to Linear analytics"): extract 3-5 concrete data-visualization-specific properties from that product, not general aesthetic properties. Useful properties: chart color palette (exact values), grid line weight and opacity, axis label size and color, tooltip border-radius and shadow, empty-state treatment. Do not extract "minimal" or "clean" as properties; those are not actionable.
+For dashboards, analytics views, chart-heavy interfaces, or number-dense displays, load `references/design-data-viz.md`. It owns dashboard defaults, chart selection, number alignment, and product-benchmark extraction.
 
 ## Reflex Fonts to Reject
 
@@ -168,6 +146,16 @@ Reject: Inter, DM Sans, DM Serif Display, DM Serif Text, Outfit, Plus Jakarta Sa
 2. Name the three fonts you would reach for reflexively.
 3. Reject all three.
 4. Pick a typeface from a named foundry (Klim, Commercial Type, Colophon, Grilli Type, OH no Type, Village, etc.) or an open-source option with a clear personality that matches the brand words. Be able to explain why that specific typeface in one sentence.
+
+## CJK & Multilingual Type
+
+When the interface mixes Chinese, Japanese, or Korean with Latin, Latin-only type rules silently break the CJK text. Apply these before handoff:
+
+- **Latin face first, system CJK face after** in the stack, so each script renders with correct glyphs: `font-family: -apple-system, "SF Pro Text", "PingFang SC", "Noto Sans SC", sans-serif;`. Latin runs use the Latin face; Han characters fall through to the CJK face.
+- **Give CJK body text more line-height than Latin**: roughly 1.7–1.8 for reading. Dense Hanzi needs more vertical room than the 1.4–1.5 that suits Latin body copy.
+- **Tag runs with `lang="zh"` / `lang="ja"` / `lang="en"`** so the browser picks the right font and line-breaking. Mixed-language paragraphs break badly without it.
+- **Serif reading modes need an explicit CJK serif fallback.** Most Latin "reading serif" webfonts carry no CJK glyphs, so a serif toggle silently drops Chinese back to a sans and looks broken. Pair them: `"Newsreader", "Songti SC", "Noto Serif SC", serif`.
+- **Do not apply negative letter-spacing to CJK runs.** The display-type tracking rule above is Latin-only; tightening tracking on Hanzi cramps the glyphs and reads as a rendering bug. Scope tracking to `lang="en"` runs.
 
 ## Color System: OKLCH Rules
 
@@ -279,6 +267,28 @@ These are not visual polish items. They are the difference between a demo and a 
 ## AI Slop Test
 
 Would a stranger glancing at the first viewport say "an AI made this" immediately? If yes, the committed direction was not committed enough. The usual culprits: reflex font, default purple accent, centered hero with generic card grid beneath. Fix the typography, the color system, or the layout until the answer flips.
+
+## Brand Preset Flow
+
+For well-known brands (Linear, Stripe, Claude, Vercel, Apple, Tesla, Notion, Figma, Airbnb, Spotify, and ~56 others catalogued in `awesome-design-md`): ask the user whether to pull the curated preset via `npx getdesign@latest add <brand>`. If they approve, run it, read the generated `DESIGN.md` at project root, then do the 3-property decomposition against that file rather than from memory. The preset is a starting point, not a direction: the user still names the aesthetic precisely, and the reflex-font blocklist and absolute bans still win on any conflict.
+
+## App Shell Rules
+
+When building a sidebar + main workspace layout (Slack, Linear, Notion class):
+- Decorative backgrounds default to off
+- Surface hierarchy uses background-color steps and shadow only
+- All interactive elements get `active:scale-95`
+- Button radius is consistent within each component type (pick one: pill, square, or one fixed value, do not mix)
+- Commit to a named radius scale before the first component (see Border radius system above)
+
+## Options Guide
+
+When asked for design options, give at least 3 variations spread across genuinely different dimensions:
+
+- **Dimensions to vary**: visual density, typographic personality, color temperature, layout structure, motion character, amount of decoration, level of abstraction
+- **Mix approaches**: one option that follows existing conventions closely, one that remixes the brand DNA in a new way, one that is deliberately unexpected
+- **Progress from basic to bold**: the first option is safe and understandable; later options push further
+- Three options that differ only by accent color are not three variations. Vary the layout, the typeface, the motion, the surface treatment.
 
 ---
 
