@@ -95,7 +95,11 @@ class WikiHealthChecker:
         for md_file in self.distill_dir.glob("*.md"):
             content = md_file.read_text(encoding="utf-8")
             for match in raw_ref_pattern.finditer(content):
-                referenced_raws.add(match.group(1))
+                ref = match.group(1)
+                # 过滤描述性文字：引用名里必须有编码特征(字母数字+连字符/下划线)，
+                # 排除"原文""原文层"这类被中文括号/空格截断的非文件名片段
+                if re.search(r'[A-Za-z0-9]', ref) and not re.search(r'[（）()]', ref):
+                    referenced_raws.add(ref)
             for match in source_ref_pattern.finditer(content):
                 ref = match.group(1).strip()
                 # 如果来源是raw文件路径（排除scripts/notes/distill等内部路径）
