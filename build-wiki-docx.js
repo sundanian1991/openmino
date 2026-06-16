@@ -170,7 +170,7 @@ var doc = new Document({
       // ===== 封面 =====
       new Paragraph({ spacing: { before: 2400 }, children: [new TextRun("")] }),
       new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 }, children: [new TextRun({ text: `把团队工作沉淀为 AI 可用的知识库`, size: 48, bold: true, color: COLOR_ACCENT, font: FONT })] }),
-      new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 600 }, children: [new TextRun({ text: `——卡帕西 LLM Wiki 范式与三个落地技能`, size: 28, color: COLOR_MUTED, font: FONT })] }),
+      new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 600 }, children: [new TextRun({ text: `——卡帕西 LLM Wiki 范式、三个落地技能与 KaaS 团队共享`, size: 28, color: COLOR_MUTED, font: FONT })] }),
       new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 1200, after: 100 }, children: [new TextRun({ text: `面向团队内部分享`, size: 24, color: COLOR_DARK, font: FONT })] }),
       new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `2026 年 6 月`, size: 24, color: COLOR_MUTED, font: FONT })] }),
       new Paragraph({ children: [new PageBreak()] }),
@@ -335,8 +335,103 @@ var doc = new Document({
       ),
       spacer(),
 
-      // ===== 六 =====
-      h1(`六、现在的重点放在哪`),
+      new Paragraph({ children: [new PageBreak()] }),
+
+      // ===== 六、KaaS 使用指南 =====
+      h1(`六、团队共享：KaaS 知识库使用指南`),
+      p(`前面讲的是"个人如何沉淀知识"。这一章讲"如何把个人沉淀变成团队共享资产"——这就是 KaaS 知识库中台的作用。`, { spacingAfter: 160 }),
+
+      h2(`KaaS 是什么`),
+      p(`KaaS 是事业群级的知识库中台，把散落在各团队的 PRD、实现文档、测试用例、架构说明沉淀到一个统一的地方，通过两种方式对外提供服务：`, { spacingAfter: 100 }),
+      bullet(`Web 管理台——人用，做项目维护、文档录入、召回调试。`),
+      bullet(`MCP 服务——AI Agent 用，让 AI 写 PRD / 改代码 / 写用例时自动拿到历史全量上下文。`),
+      spacer(),
+      makeTable(
+        [`信息`, `内容`],
+        [
+          [`管理台地址`, `http://ai-kaas.pre-apps.jd.com`],
+          [`MCP 接口`, `https://ai-analysis-api.jd.com/mcp/ （注意必须带尾斜杠）`],
+          [`数据源`, `Git 仓库 knowledge-base.git（master 分支）`],
+          [`适用场景`, `写 PRD、改前端/后端、写测试用例、二期开发拿历史上下文`],
+          [`不适用`, `实时生产数据、线上日志、事业群以外的集团文档`]
+        ],
+        [2400, 6960]
+      ),
+      spacer(),
+
+      h2(`核心概念：三个层级`),
+      makeTable(
+        [`概念`, `说明`, `例子`],
+        [
+          [`一级域（L1）`, `事业群下的业务大块，目录第一层`, `payment（支付）、enterprise-finance（企业金融）`],
+          [`项目（Topic）`, `一级域下的具体业务主题，检索最小单元`, `voiceprint（声纹）、aipay（京东AI付）`],
+          [`知识库（KB）`, `项目下可独立配置召回策略的库`, `kb_e4bbdf31（声纹识别库）`]
+        ],
+        [1800, 4400, 3160]
+      ),
+      spacer(),
+      p(`目前已收录的项目：rental-3c（3C租赁）、payment-basic（支付基础）、aipay（京东AI付）、voiceprint（声纹识别）等。`, { spacingAfter: 160 }),
+
+      h2(`仓库目录结构`),
+      p(`知识库源是 Git 仓库，按固定结构组织：`, { spacingAfter: 100 }),
+      quote(`domains/一级域/项目/\n  ├── template/   模板（PRD 章节骨架等）\n  ├── wiki/       角色 wiki（用户心智、规范、约定）\n  ├── docs/       历史 PRD、设计文档\n  └── artifacts/  架构图、ADR、Runbook`),
+      spacer(),
+      p(`注意：KaaS 的目录结构和我们本地 wiki 的 raw/distill/notes 是对应的——KaaS 的 wiki/ 角色知识和我们的 distill/ 提炼层本质相同，只是一个是团队共享版、一个是个人本地版。`, { spacingAfter: 160 }),
+
+      h2(`如何录入团队知识（从个人 wiki 到 KaaS）`),
+      p(`这是闭环的关键一步。把个人本地 wiki 里确认好的内容，录入团队 KaaS：`, { spacingAfter: 100 }),
+      new Paragraph({ numbering: { reference: "steps3", level: 0 }, spacing: { after: 60 }, children: [run(`在 KaaS 管理台「项目管理」新建项目（或找到已有项目），认真填写关键词和描述——它们直接影响检索效果`)] }),
+      new Paragraph({ numbering: { reference: "steps3", level: 0 }, spacing: { after: 60 }, children: [run(`把本地 distill/ 里确认准确的内容，整理成 KaaS 需要的目录结构（template/wiki/docs/artifacts）`)] }),
+      new Paragraph({ numbering: { reference: "steps3", level: 0 }, spacing: { after: 60 }, children: [run(`通过「文档批量录入」从 JoySpace 目录批量入库，或直接提交 Git`)] }),
+      new Paragraph({ numbering: { reference: "steps3", level: 0 }, spacing: { after: 60 }, children: [run(`在「知识库管理」创建知识库并绑定到项目`)] }),
+      new Paragraph({ numbering: { reference: "steps3", level: 0 }, spacing: { after: 120 }, children: [run(`在「召回调试」验证文档能被正确召回`)] }),
+      quote(`关键：不是所有个人 wiki 内容都要上传团队库。只上传"团队共享有价值、已确认准确、去除个人隐私"的部分。`),
+
+      h2(`AI 如何调用 KaaS（MCP 六个工具）`),
+      p(`这是同事日常最常用的部分。配置好 MCP 后，AI 能自动检索团队知识库。同事说"查一下声纹支付的 PRD"即可，不用懂底层。`, { spacingAfter: 100 }),
+      makeTable(
+        [`工具`, `用途`, `何时用`],
+        [
+          [`kb_describe`, `服务能力自描述`, `第一次接入时了解能力`],
+          [`kb_search`, `关键词检索，返回片段`, `快速看知识库里有没有相关内容`],
+          [`kb_resolve`, `路由决策 + 候选主题文件清单`, `不知道属于哪个项目时`],
+          [`kb_pack`, `写作前首选：组装模板+wiki+PRD全文`, `写 PRD / 改代码前，一次性拿全量上下文`],
+          [`kb_get_artifact`, `读单篇完整原文`, `需要某篇文档全文时`],
+          [`kb_get_artifacts`, `批量读多篇原文`, `需要多篇文章时`]
+        ],
+        [2000, 3600, 3760]
+      ),
+      spacer(),
+
+      h3(`强制工作流：写 PRD / 改代码前必走`),
+      p(`这是 KaaS 服务端明确要求的流程，违反是已知反模式：`, { spacingAfter: 100 }),
+      new Paragraph({ numbering: { reference: "steps2", level: 0 }, spacing: { after: 60 }, children: [run(`kb_search(query="需求关键词") → 看命中哪个项目（topic）`)] }),
+      new Paragraph({ numbering: { reference: "steps2", level: 0 }, spacing: { after: 60 }, children: [run(`kb_pack(topic, role, intent, query) → 一次性拿到模板 + 角色 wiki + 历史全文`)] }),
+      new Paragraph({ numbering: { reference: "steps2", level: 0 }, spacing: { after: 60 }, children: [run(`基于 pack 返回的 template 章节顺序起草`)] }),
+      new Paragraph({ numbering: { reference: "steps2", level: 0 }, spacing: { after: 120 }, children: [run(`有缺口 → kb_get_artifacts(paths=[...]) 补齐`)] }),
+      quote(`铁律：写 PRD 前必须先 kb_pack 拿全量，不能只用 kb_search 片段就动笔——片段会漏掉入口枚举、用户心智、历史决策。`),
+
+      h3(`如何接入 MCP`),
+      p(`在项目的 .mcp.json 中加入（本项目已配置）：`, { spacingAfter: 100 }),
+      quote(`"kaas-knowledge": {\n  "type": "http",\n  "url": "https://ai-analysis-api.jd.com/mcp/"\n}`),
+      p(`配置后重启 AI 会话即可。仅京东内网可用。`, { spacingAfter: 160 }),
+
+      h2(`常见问题速查`),
+      makeTable(
+        [`问题`, `解决`],
+        [
+          [`MCP 连接失败（307重定向）`, `URL 必须带尾斜杠 /mcp/`],
+          [`外网访问不了`, `内网服务，需接入内网或 VPN`],
+          [`kb_search 召回不准`, `检查项目的关键词和描述是否充分；二期 top_k 建议 10-20`],
+          [`文档没被收录`, `检查 Git 仓库目录是否有文件；管理台点「同步」触发 git pull`],
+          [`需要批量录入`, `用「文档批量录入」页面，从 JoySpace 目录批量入库`]
+        ],
+        [3200, 6160]
+      ),
+      spacer(),
+
+      // ===== 七 =====
+      h1(`七、现在的重点放在哪`),
       p(`方案已经清晰，但执行力决定成败。我的建议是明确优先级：`, { spacingAfter: 160 }),
 
       h2(`第一优先级：先把现有文档 wiki 化`),
@@ -356,8 +451,8 @@ var doc = new Document({
 
       new Paragraph({ children: [new PageBreak()] }),
 
-      // ===== 七 =====
-      h1(`七、诚实的边界：目前还做不到什么`),
+      // ===== 八 =====
+      h1(`八、诚实的边界：目前还做不到什么`),
       p(`为了建立信任，主动说明当前的局限：`, { spacingAfter: 120 }),
       bulletRich([run(`没有"一键批量 wiki 化"的完全自动化`, { bold: true }), run(`：目前 ingest 是半自动——AI 读原文 + 按规范写 distill，但分类、编码、提炼质量的把关需要人。这是设计如此，不是缺陷。`)]),
       bulletRich([run(`健康检查还比较粗`, { bold: true }), run(`：脚本现在查来源覆盖、raw 完整性、冲突数。卡帕西说的"孤儿页检测、交叉引用密度"还没有完全实现，是下一步要补的。`)]),
@@ -365,8 +460,8 @@ var doc = new Document({
       bulletRich([run(`技能还在 0.1 版本`, { bold: true }), run(`：三个 wiki 技能的流程完整，但都需要用真实文档喂养成熟。`)]),
       spacer(),
 
-      // ===== 八 =====
-      h1(`八、下一步行动计划`),
+      // ===== 九 =====
+      h1(`九、下一步行动计划`),
       makeTable(
         [`时间`, `行动`, `产出`],
         [
