@@ -19,7 +19,6 @@ Wiki Health Check — 供应商管理知识库健康巡检脚本
 日期：2026-06-13
 """
 
-import os
 import re
 import json
 import argparse
@@ -65,8 +64,8 @@ class WikiHealthChecker:
                 if i < len(sections):
                     section_title = sections[i].strip()
                     section_content = sections[i+1] if i+1 < len(sections) else ""
-                    # 跳过目录、索引、总览等元段落
-                    if any(skip in section_title for skip in ["索引", "导航", "总览", "速查", "目录"]):
+                    # 跳过目录、索引、总览、纯交叉链接导航等元段落
+                    if any(skip in section_title for skip in ["索引", "导航", "总览", "速查", "目录", "与其他分册的关联", "交叉链接", "关联分册"]):
                         continue
                     if source_pattern.search(section_content):
                         self.stats["sections_with_source"] += 1
@@ -87,25 +86,34 @@ class WikiHealthChecker:
 
         self.stats["raw_files"] = len(list(self.raw_dir.iterdir()))
 
-        # 扫描distill中引用的raw文件
-        raw_ref_pattern = re.compile(r'`?raw/([^`\s\]]+)`?')
+        # 扫描distill中引用的raw文件（排除逗号/中文逗号，支持多来源写法）
+        raw_ref_pattern = re.compile(r'`?raw/([^`\s\],，]+)`?')
         source_ref_pattern = re.compile(r'\[来源[：:]\s*([^\]]+)\]')
+        # 去掉 §章节 等描述后缀，只保留文件路径/名
+        section_suffix = re.compile(r'\s*§.*$')
 
         referenced_raws = set()
         for md_file in self.distill_dir.glob("*.md"):
             content = md_file.read_text(encoding="utf-8")
             for match in raw_ref_pattern.finditer(content):
                 ref = match.group(1)
-                # 过滤描述性文字：引用名里必须有编码特征(字母数字+连字符/下划线)，
-                # 排除"原文""原文层"这类被中文括号/空格截断的非文件名片段
-                if re.search(r'[A-Za-z0-9]', ref) and not re.search(r'[（）()]', ref):
+                # 只保留文件路径型引用：带扩展名，或带编码特征（避免匹配 "raw/distill/notes" 这类目录描述）
+                if re.search(r'[（）()]', ref):
+                    continue
+                valid_exts = ('.md', '.json', '.docx', '.pdf', '.txt', '.xlsx', '.pptx')
+                has_code = re.search(r'[A-Za-z0-9]', ref) and ('_' in ref or '-' in ref)
+                if ref.endswith(valid_exts) or has_code:
                     referenced_raws.add(ref)
             for match in source_ref_pattern.finditer(content):
-                ref = match.group(1).strip()
-                # 如果来源是raw文件路径（排除scripts/notes/distill等内部路径）
-                if ('raw/' in ref or ref.endswith('.md') or ref.endswith('.json')) and \
-                   not any(skip in ref for skip in ['scripts/', 'notes/', 'distill/', '目录']):
-                    referenced_raws.add(ref.split('/')[-1] if '/' in ref else ref)
+                ref_str = match.group(1).strip()
+                # 支持多来源逗号分隔：[来源：raw/A.md, raw/B.md, ...]
+                for ref in re.split(r'[,，]', ref_str):
+                    ref = ref.strip()
+                    # 如果来源是raw文件路径（排除scripts/notes/distill等内部路径）
+                    if ('raw/' in ref or ref.endswith('.md') or ref.endswith('.json')) and \
+                       not any(skip in ref for skip in ['scripts/', 'notes/', 'distill/', '目录']):
+                        ref = section_suffix.sub('', ref).strip()
+                        referenced_raws.add(ref.split('/')[-1] if '/' in ref else ref)
 
         # 检查引用的文件是否存在
         for ref in referenced_raws:
@@ -123,10 +131,13 @@ class WikiHealthChecker:
                 ref + '.txt',
             ]
             found = any((self.raw_dir / name).exists() for name in possible_names)
-            # 也尝试前缀匹配（如SM-2026-001匹配SM-2026-001_xxx.md）
+            # 也尝试子目录路径（如 raw/2026-06-16_主题/文件.md）
+            if not found and '/' in ref:
+                found = (self.raw_dir / ref).exists()
+            # 也尝试前缀匹配（如SM-2026-001匹配SM-2026-001_xxx.md），递归子目录
             if not found:
-                for raw_file in self.raw_dir.iterdir():
-                    if raw_file.name.startswith(ref) or ref in raw_file.name:
+                for raw_file in self.raw_dir.rglob('*'):
+                    if raw_file.is_file() and (raw_file.name.startswith(ref) or ref in raw_file.name):
                         found = True
                         break
             if not found:
@@ -145,9 +156,19 @@ class WikiHealthChecker:
         conflict_file = self.notes_dir / "冲突记录.md"
         if conflict_file.exists():
             content = conflict_file.read_text(encoding="utf-8")
-            # 统计冲突条目数
-            conflicts = re.findall(r'### 冲突\d+', content)
-            self.stats["conflicts_open"] = len(conflicts)
+            # 统计冲突条目总数
+            conflicts_all = re.findall(r'### 冲突\d+', content)
+            # 已解决：段落里出现 ✅ / 已解决 / 已修正 / 用户已确认 等状态标记
+            resolved_markers = re.compile(
+                r'✅|☑️|已解决|已确认|已修正|用户已确认|状态[：:]\s*\[?✅'
+            )
+            conflicts_resolved = 0
+            # 按冲突块切分：每块从"### 冲突N"到下一个"### 冲突N"
+            blocks = re.split(r'(?=### 冲突\d+)', content)
+            for block in blocks:
+                if block.startswith('### 冲突') and resolved_markers.search(block):
+                    conflicts_resolved += 1
+            self.stats["conflicts_open"] = len(conflicts_all) - conflicts_resolved
 
         # 检查待验证假设
         assumption_file = self.notes_dir / "待验证假设.md"
