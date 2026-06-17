@@ -1,0 +1,47 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "INPUT=$(cat); FP=$(echo \"$INPUT\" | jq -r '.tool_input.file_path // \"\"' 2>/dev/null); [ -z \"$FP\" ] && echo '{\"continue\":true}' && exit 0; case \"$FP\" in */settings.local.json|*.env) echo '{\"continue\":false,\"stopReason\":\"BLOCKED: protected file — use 年老师 confirmation first\"}' ;; *) echo '{\"continue\":true}' ;; esac",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CACHE_FILE=\"/tmp/.claude_read_cache_$${MYAGENTS_SESSION_ID:-$$}\"; INPUT=$(cat); FP=$(echo \"$INPUT\" | jq -r '.tool_input.file_path // \"\"' 2>/dev/null); [ -z \"$FP\" ] && echo '{\"continue\":true}' && exit 0; echo \"$INPUT\" | jq -e '.tool_input.offset // .tool_input.limit' >/dev/null 2>&1 && echo '{\"continue\":true}' && exit 0; if [ -f \"$CACHE_FILE\" ] && grep -qxF \"$FP\" \"$CACHE_FILE\" 2>/dev/null; then echo \"{\\\"continue\\\":false,\\\"stopReason\\\":\\\"SKIP: $FP already read this session (cached)\\\"}\"; exit 0; fi; mkdir -p \"$(dirname \"$CACHE_FILE\")\"; echo \"$FP\" >> \"$CACHE_FILE\"; echo '{\"continue\":true}'",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "INPUT=$(cat); CMD=$(echo \"$INPUT\" | jq -r '.tool_input.command // \"\"' 2>/dev/null); [ -z \"$CMD\" ] && echo '{\"continue\":true}' && exit 0; if echo \"$CMD\" | grep -q 'git diff' && ! echo \"$CMD\" | grep -q 'compress-diff' && ! echo \"$CMD\" | grep -qE 'git diff --(stat|name-only|name-status)'; then SCRIPT_DIR=\"/Users/sundanian/Documents/projects/ai-agents/my-agent/.claude\"; NEW_CMD=\"$${CMD} | bash $${SCRIPT_DIR}/scripts/compress-diff.sh\"; echo \"$INPUT\" | jq --arg cmd \"$NEW_CMD\" '{\"continue\":true,\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"updatedInput\":(.tool_input.command = $cmd)}}'; exit 0; fi; echo '{\"continue\":true}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 '/Users/sundanian/Documents/projects/ai-agents/my-agent/.codex/hooks/wal-enqueue.py'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

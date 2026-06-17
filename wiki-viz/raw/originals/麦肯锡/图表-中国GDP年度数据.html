@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国 GDP 年度数据图表 | 麦肯锡风格</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #F4F7F9; color: #051c2c; }
+        .nav { height: 48px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+        .nav-title { font-size: 14px; font-weight: 600; color: #051c2c; }
+        .nav-actions { display: flex; gap: 8px; }
+        .btn { padding: 6px 14px; font-size: 12px; font-weight: 500; border: 1px solid #e2e8f0; border-radius: 4px; background: #fff; color: #051c2c; cursor: pointer; transition: all 0.2s; }
+        .btn:hover { border-color: #00A9E0; color: #00A9E0; }
+        .tabs { display: flex; gap: 0; background: #fff; border-bottom: 1px solid #e2e8f0; padding: 0 24px; }
+        .tab { padding: 10px 20px; font-size: 13px; font-weight: 500; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .tab.active { color: #051c2c; border-bottom-color: #051c2c; }
+        .tab:hover { color: #051c2c; }
+        .main { display: flex; justify-content: center; align-items: flex-start; padding: 32px; min-height: calc(100vh - 96px); }
+        .card { background: #fff; box-shadow: 0 4px 24px rgba(0,0,0,0.06); position: relative; }
+        .chart-panel { display: none; }
+        .chart-panel.active { display: block; }
+        .watermark { position: absolute; bottom: 12px; right: 18px; font-size: 11px; color: rgba(5,28,44,0.25); font-weight: 600; pointer-events: none; letter-spacing: 0.04em; }
+        #svgExport { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <span class="nav-title">中国 GDP 年度数据</span>
+        <div class="nav-actions">
+            <button class="btn" onclick="exportCurrent('png')">导出 4K PNG</button>
+            <button class="btn" onclick="exportCurrent('svg')">导出 SVG</button>
+        </div>
+    </div>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab(0)">GDP 总量与增速</div>
+        <div class="tab" onclick="switchTab(1)">产业结构变化</div>
+    </div>
+    <div class="main">
+        <div id="card0" class="card chart-panel active" style="width:1200px;height:700px;">
+            <div id="chart0" style="width:100%;height:100%;"></div>
+            <div class="watermark">TR | Strategic Analysis</div>
+        </div>
+        <div id="card1" class="card chart-panel" style="width:1200px;height:700px;">
+            <div id="chart1" style="width:100%;height:100%;"></div>
+            <div class="watermark">TR | Strategic Analysis</div>
+        </div>
+    </div>
+    <div id="svgExport"></div>
+
+<script>
+var charts = [];
+var currentTab = 0;
+
+// Data
+var years = ['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'];
+var gdpTrillion = [70.3, 76.1, 84.7, 93.6, 100.6, 103.5, 117.4, 123.4, 129.4, 134.9];
+var growthPct = [7.0, 6.8, 6.9, 6.8, 6.1, 2.3, 8.6, 3.1, 5.4, 5.0];
+var servicesPct = [51.7, 53.3, 53.5, 54.1, 55.2, 55.5, 54.8, 55.0, 56.3, 56.7];
+var industryPct = [40.0, 38.8, 39.1, 39.0, 37.8, 36.9, 38.1, 37.9, 36.8, 36.5];
+
+var fontFam = 'Inter, "PingFang SC", "Microsoft YaHei", sans-serif';
+
+// Chart 1: GDP + Growth (line_bar)
+var option0 = {
+    backgroundColor: '#fff',
+    title: {
+        text: '2015-2024 中国 GDP 总量与增速',
+        left: 60, top: 20,
+        textStyle: { fontFamily: fontFam, fontSize: 20, fontWeight: 600, color: '#051c2c' }
+    },
+    tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        textStyle: { color: '#333', fontFamily: fontFam },
+        borderColor: '#ddd',
+        formatter: function(ps) {
+            var s = '<b>' + ps[0].axisValue + ' 年</b><br/>';
+            ps.forEach(function(p) {
+                s += p.marker + ' ' + p.seriesName + ': ';
+                if (p.seriesName === 'GDP 总量（万亿元）') s += p.value + ' 万亿元';
+                else s += p.value + '%';
+                s += '<br/>';
+            });
+            return s;
+        }
+    },
+    legend: {
+        top: 25, right: 60,
+        icon: 'circle', itemWidth: 10, itemHeight: 10,
+        textStyle: { color: '#666', fontFamily: fontFam }
+    },
+    grid: { top: 80, bottom: 60, left: 60, right: 60, containLabel: true },
+    xAxis: {
+        type: 'category', data: years,
+        axisLabel: { fontSize: 12, fontFamily: fontFam, interval: 0 }
+    },
+    yAxis: [
+        {
+            type: 'value', name: '万亿元',
+            min: 0, max: 140, interval: 20,
+            splitLine: { show: true, lineStyle: { type: 'dashed', color: '#e2e8f0' } },
+            axisLabel: { fontSize: 11, fontFamily: fontFam },
+            nameTextStyle: { fontSize: 11, fontFamily: fontFam }
+        },
+        {
+            type: 'value', name: '%',
+            splitLine: { show: false },
+            axisLabel: { fontSize: 11, fontFamily: fontFam },
+            nameTextStyle: { fontSize: 11, fontFamily: fontFam }
+        }
+    ],
+    textStyle: { fontFamily: fontFam },
+    series: [
+        {
+            name: 'GDP 总量（万亿元）', type: 'bar',
+            data: gdpTrillion,
+            barWidth: '40%',
+            itemStyle: { color: '#051c2c', borderRadius: [3,3,0,0] },
+            label: { show: true, position: 'top', fontSize: 11, color: '#051c2c', fontFamily: fontFam,
+                formatter: function(p) { return p.value.toFixed(1); }
+            }
+        },
+        {
+            name: 'GDP 增长率（%）', type: 'line', yAxisIndex: 1,
+            data: growthPct,
+            itemStyle: { color: '#00A9E0' },
+            lineStyle: { width: 3 },
+            symbol: 'circle', symbolSize: 8,
+            label: { show: true, position: 'top', fontSize: 11, color: '#00A9E0', fontFamily: fontFam,
+                formatter: function(p) { return p.value + '%'; }
+            }
+        }
+    ]
+};
+
+// Chart 2: Industry structure (area_stacked)
+var option1 = {
+    backgroundColor: '#fff',
+    title: {
+        text: '2015-2024 中国 GDP 产业结构变化',
+        left: 60, top: 20,
+        textStyle: { fontFamily: fontFam, fontSize: 20, fontWeight: 600, color: '#051c2c' }
+    },
+    tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        textStyle: { color: '#333', fontFamily: fontFam },
+        borderColor: '#ddd',
+        formatter: function(ps) {
+            var s = '<b>' + ps[0].axisValue + ' 年</b><br/>';
+            ps.forEach(function(p) {
+                s += p.marker + ' ' + p.seriesName + ': ' + p.data + '%<br/>';
+            });
+            return s;
+        }
+    },
+    legend: {
+        top: 25, right: 60,
+        icon: 'circle', itemWidth: 10, itemHeight: 10,
+        textStyle: { color: '#666', fontFamily: fontFam }
+    },
+    grid: { top: 80, bottom: 60, left: 60, right: 60, containLabel: true },
+    xAxis: {
+        type: 'category', data: years, boundaryGap: false,
+        axisLabel: { fontSize: 12, fontFamily: fontFam, interval: 0 }
+    },
+    yAxis: {
+        type: 'value', name: '占 GDP 比重 (%)',
+        min: 0, max: 70, interval: 10,
+        splitLine: { show: true, lineStyle: { type: 'dashed', color: '#e2e8f0' } },
+        axisLabel: { fontSize: 11, fontFamily: fontFam },
+        nameTextStyle: { fontSize: 11, fontFamily: fontFam }
+    },
+    textStyle: { fontFamily: fontFam },
+    series: [
+        {
+            name: '服务业', type: 'line', stack: 'gdp',
+            data: servicesPct,
+            areaStyle: { color: 'rgba(0,169,224,0.35)', origin: 'start' },
+            lineStyle: { color: '#00A9E0', width: 2 },
+            itemStyle: { color: '#00A9E0' },
+            symbol: 'circle', symbolSize: 6,
+            label: { show: true, position: 'top', fontSize: 11, color: '#00A9E0', fontFamily: fontFam,
+                formatter: function(p) { return p.value + '%'; }
+            }
+        },
+        {
+            name: '工业', type: 'line', stack: 'gdp',
+            data: industryPct,
+            areaStyle: { color: 'rgba(5,28,44,0.25)', origin: 'start' },
+            lineStyle: { color: '#051c2c', width: 2 },
+            itemStyle: { color: '#051c2c' },
+            symbol: 'circle', symbolSize: 6,
+            label: { show: true, position: 'bottom', fontSize: 11, color: '#051c2c', fontFamily: fontFam,
+                formatter: function(p) { return p.value + '%'; }
+            }
+        }
+    ]
+};
+
+// Init
+charts[0] = echarts.init(document.getElementById('chart0'));
+charts[0].setOption(option0);
+charts[1] = echarts.init(document.getElementById('chart1'));
+charts[1].setOption(option1);
+
+function switchTab(idx) {
+    currentTab = idx;
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.chart-panel');
+    tabs.forEach(function(t, i) { t.classList.toggle('active', i === idx); });
+    panels.forEach(function(p, i) { p.classList.toggle('active', i === idx); });
+    setTimeout(function() { charts[idx].resize(); }, 50);
+}
+
+function exportCurrent(fmt) {
+    var chart = charts[currentTab];
+    if (!chart) return;
+    if (fmt === 'png') {
+        var url = chart.getDataURL({ type: 'png', pixelRatio: 4, backgroundColor: '#fff' });
+        download(url, 'GDP_Chart_' + (currentTab === 0 ? '总量与增速' : '产业结构') + '.png');
+    } else {
+        var container = document.getElementById('svgExport');
+        container.style.width = '1200px';
+        container.style.height = '700px';
+        var svgChart = echarts.init(container, null, { renderer: 'svg' });
+        var opt = currentTab === 0 ? JSON.parse(JSON.stringify(option0)) : JSON.parse(JSON.stringify(option1));
+        opt.animation = false;
+        svgChart.setOption(opt);
+        setTimeout(function() {
+            var svgData = svgChart.getDataURL({ type: 'svg' });
+            download(svgData, 'GDP_Chart_' + (currentTab === 0 ? '总量与增速' : '产业结构') + '.svg');
+            svgChart.dispose();
+        }, 100);
+    }
+}
+
+function download(url, filename) {
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+window.addEventListener('resize', function() {
+    charts.forEach(function(c) { if (c) c.resize(); });
+});
+</script>
+</body>
+</html>
