@@ -67,9 +67,9 @@ Dashboard ────→ [监控|看板]      ────→ +bento +gauge +sp
 [S1黑条/S2长文]→ 叠加到任意视觉型 → 挂 nav/TOC
 ```
 
-### 2.2 模板总量:27
+### 2.2 模板总量:16
 
-**9 底座 + ~18 场景变体 = 27 个**(从 388 收敛)。
+**9 气质 × 6 场景 经正交筛选后 = 16 个变体 + 1 个结构型**(从 388 收敛)。实际评估结果:11 个 SEED + 5 个 ADAPT + 14 个 ARCHIVE，矩阵覆盖 93%。
 
 正交带来的可对比性:
 - **同底座比场景**:Statement-数据 vs Statement-决策 → 场景如何影响 section 序列
@@ -89,7 +89,7 @@ Dashboard ────→ [监控|看板]      ────→ +bento +gauge +sp
 | Pulse      |  —   |  —   |  —   |  ✓   |  —   |  ✓   | 2 |
 | Dashboard  |  ✓   |  —   |  —   |  —   |  —   | ✓★★  | 2 |
 
-★★ = 该气质在此场景是首选/高频。变体数合计 = 3+2+3+1+2+2+2 = **15 视觉变体**。
+★★ = 该气质在此场景是首选/高频。变体数合计 = 3+2+3+1+2+2+2 = **15 视觉变体**。实际落地时补充了 Pulse 监控备选（`pulse--monitor-v2`），最终为 **16 个变体**。
 
 **结构型叠加(不占槽位,挂到任意视觉变体上)**:
 - S1 黑条书签:≥3章节 + 持久导航
@@ -157,10 +157,12 @@ references/
       long-nav.html
     INDEX.md                          ← 唯一索引(矩阵表 + 注入说明)
   _archive/                           ← 归档区(388 中未选中的)
+    legacy-root-templates-content/    ← templates/ 根 + 第三方
+    nian-templates-evaluated/         ← nian-templates 评估后未选中 14 个 + EVAL.md
     templates-30/
     templates-matrix/
     templates-v2/
-    legacy-root/                      ← templates/ 根 + 第三方
+    template-catalog.md               ← 失效的 36 矩阵目录
   layouts.md                          ← 保留(S01-S29 section 骨架,Layer C 用)
   components.md                       ← 保留(26 族,Layer B 注入用)
   VISUAL-STREAMS.md                   ← 保留(9 气质定义)
@@ -184,27 +186,28 @@ references/
 
 ### 4.2 候选种子(来自 nian-templates/,最新且对齐)
 
-| 新变体 | 种子候选(nian-templates) | 说明 |
-|--------|--------------------------|------|
-| statement--decision | S01-决策建议-标准.html | Statement+决策,基础 |
-| statement--brand | S05-品牌宣言-标杆.html | Statement+品牌,标杆 |
-| statement--data | S04-AI转型方案-标杆.html | 含数据叙事,需改造 |
-| diagonal--report | D01-工作汇报-标准.html | Diagonal+汇报 |
-| diagonal--brand | (showcase R3 品牌展示) | 需从 showcase 提取 |
-| split--data | P01-数据分析报告-标准.html | Split+数据 |
-| split--decision | (无直接种子) | 需新建或从 matrix T03 改造 |
-| split--knowledge | (showcase H021 知识管理-split) | 需提取 |
-| numeral--data | N01-行业全景-标准.html | Numeral+数据 |
-| entrance--knowledge | E01-深度阅读笔记-标准.html | Entrance+阅读 |
-| entrance--brand | E02-主题展馆-标杆.html | Entrance+品牌展馆 |
-| pulse--report | P02-周报进度同步-标准.html | Pulse+汇报 |
-| pulse--monitor | U03-风险预警脉动-标杆.html | Pulse+监控 |
-| dashboard--data | B01-数据仪表盘-标准.html | Dashboard+数据 |
-| dashboard--monitor | B02-监控看板-标准.html | Dashboard+监控 |
-| structure/black-bar | (showcase H062) | 需提取 |
-| structure/long-nav | X01-长文导航结构-示范.html | 结构型 |
+| 新变体 | 种子候选(nian-templates) | 状态 | 说明 |
+|--------|--------------------------|:----:|------|
+| statement--decision | S01-决策建议-标准.html | SEED | Statement+决策,基础 |
+| statement--brand | S05-品牌宣言-标杆.html | SEED | Statement+品牌,标杆 |
+| statement--data | S04-AI转型方案-标杆.html | ADAPT | 含数据叙事,需泛化 |
+| diagonal--report | D01-工作汇报-标准.html | SEED | Diagonal+汇报 |
+| diagonal--brand | D04-最佳实践库-标杆.html | ADAPT | Diagonal+品牌,需泛化 |
+| split--data | P01-数据分析报告-标准.html | SEED | Split+数据 |
+| split--decision | P04-会议纪要-标准.html | ADAPT | Split+决策,需泛化 |
+| split--knowledge | templates-matrix/T06-Split-KNOWLEDGE.html | SEED | 从 matrix 提取 |
+| numeral--data | N01-行业全景-标准.html | SEED | Numeral+数据 |
+| entrance--knowledge | E01-深度阅读笔记-标准.html | SEED | Entrance+阅读 |
+| entrance--brand | E02-主题展馆-标杆.html | SEED | Entrance+品牌展馆 |
+| pulse--report | P02-周报进度同步-标准.html | ADAPT | Pulse+汇报,需泛化 |
+| pulse--monitor | U02-数据分析中心-标准.html | SEED | Pulse+监控 |
+| pulse--monitor-v2 | U03-风险预警脉动-标杆.html | ADAPT | Pulse+监控备选 |
+| dashboard--data | B01-数据仪表盘-标准.html | SEED | Dashboard+数据 |
+| dashboard--monitor | B02-监控看板-标准.html | SEED | Dashboard+监控 |
+| structure/long-nav | X01-长文导航结构-示范.html | SEED | 结构型 |
+| structure/black-bar | (showcase H062) | 待建 | 频次极低,按需再建 |
 
-**约 12 个有直接种子,3-5 个需从 showcase 提取或新建。**
+**11 个 SEED + 5 个 ADAPT,14 个未选中归档。**
 
 ### 4.3 评估流程(实现阶段执行)
 
@@ -236,12 +239,13 @@ references/
 
 ### 5.3 需归档(不删除,移入 _archive/)
 
-- `references/templates-30/`(30)
-- `references/templates-matrix/`(25)
-- `references/templates-v2/`(16)
-- `references/templates/` 根的第三方 + batch1(~50)
-- `templates/` skill 根杂烩(24)
-- `references/showcase-archive/` 的非 H 系列参考(评估后)
+- `references/_archive/legacy-root-templates-content/` — 原 `templates/` 根杂烩 + 第三方
+- `references/_archive/nian-templates-evaluated/` — nian-templates 评估后未选中 14 个 + EVAL.md + 旧 INDEX.md
+- `references/_archive/templates-30/` — 旧版 30 模板
+- `references/_archive/templates-matrix/` — 18 气质×场景矩阵 + batch1
+- `references/_archive/templates-v2/` — 早期 19 模板实验
+- `references/_archive/template-catalog.md` — 失效的 36 矩阵目录
+- `references/showcase-archive/` 的非 H 系列参考(评估后不动)
 
 ### 5.4 不变
 
@@ -255,7 +259,7 @@ references/
 ## 6. 验证标准
 
 实现完成后需通过:
-1. **数量**:模板库 20-27 个,单一目录,单一索引
+1. **数量**:模板库 16 个变体 + 1 个结构型,单一目录,单一索引
 2. **正交**:同底座变体可对比、同场景不同气质可对比
 3. **字段对齐**:决策卡每个字段都有明确消费路径(A/B/C 分层)
 4. **种子质量**:每个变体通过 5 硬规则 + 气质克制规则
