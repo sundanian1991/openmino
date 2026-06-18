@@ -1,0 +1,113 @@
+{
+  "name": "joyspace-intent-routing",
+  "description": "JoySpace 文档助手意图识别与路由规则",
+  "rules": [
+    {
+      "priority": 1,
+      "intent": "搜索文档",
+      "keywords": ["搜索joyspace", "查找joyspace", "找一下"],
+      "tools": ["search_recent_doc", "joyspace.search_in_team"]
+    },
+    {
+      "priority": 2,
+      "intent": "查看文档",
+      "keywords": ["打开joyspace", "查看joyspace", "joyspace内容"],
+      "tools": ["get_page_basic_info", "joyspace.get_normal_markdown_content"]
+    },
+    {
+      "priority": 3,
+      "intent": "文档摘要",
+      "keywords": ["摘要", "总结joyspace", "大纲"],
+      "tools": ["summarize_and_outline"]
+    },
+    {
+      "priority": 4,
+      "intent": "收到的文档",
+      "keywords": ["收到的", "分享给我的", "未读"],
+      "tools": ["list_received_doc"]
+    },
+    {
+      "priority": 5,
+      "intent": "目录浏览",
+      "keywords": ["目录", "文件夹", "空间"],
+      "tools": ["joyspace.list_folders", "joyspace.list_doc_by_page"]
+    },
+    {
+      "priority": 6,
+      "intent": "移动文档",
+      "keywords": ["移动", "整理", "归档"],
+      "tools": ["joyspace.move_to"]
+    },
+    {
+      "priority": 7,
+      "intent": "标签管理",
+      "keywords": ["标签", "打标", "分类"],
+      "tools": [
+        "joyspace.list_tags",
+        "joyspace.create_tag",
+        "joyspace.rename_tag",
+        "joyspace.delete_tag",
+        "joyspace.get_page_tag_list",
+        "joyspace.page_add_tag_ref",
+        "joyspace.page_remove_tag_ref"
+      ]
+    },
+    {
+      "priority": 8,
+      "intent": "目录问答",
+      "keywords": ["问一下", "基于目录", "RAG"],
+      "tools": ["joyspace.directory_qa"]
+    },
+    {
+      "priority": 9,
+      "intent": "关联日程/任务",
+      "keywords": ["日程", "任务", "待办"],
+      "tools": [
+        "joyspace.get_doc_related_schedules",
+        "joyspace.get_tasks_from_received",
+        "joyspace.get_tasks_from_pages",
+        "joyspace.get_doc_related_work",
+        "joyspace.get_joyday_relation"
+      ]
+    },
+    {
+      "priority": 10,
+      "intent": "创建文档",
+      "keywords": ["新建joyspace", "创建joyspace文档", "上传joyspace"],
+      "tools": ["create_doc_routing"]
+    }
+  ],
+  "field_resolution": {
+    "page_id": {
+      "rule": "禁止猜测，必须先搜索",
+      "steps": [
+        "提取用户提供的关键词",
+        "调用 search_recent_doc 或 joyspace.search_in_team",
+        "唯一匹配直接使用；多条展示候选；无结果提示确认"
+      ]
+    },
+    "team_id": {
+      "rule": "私人空间用 root，团队空间先 search_team"
+    },
+    "folder_id": {
+      "rule": "根目录用 root，子目录先 list_folders"
+    }
+  },
+  "auth_failure": {
+    "status": "auth_required",
+    "action": "立即询问用户",
+    "fields": {
+      "question": "__question__.question",
+      "options": "__question__.options"
+    },
+    "browser_open": {
+      "tool": "likecodenex_browser_panel_open",
+      "url": "http://erp.jd.com"
+    }
+  },
+  "output_rules": {
+    "created_doc_url": "https://joyspace.jd.com/pages/{page_id}",
+    "format": "markdown",
+    "no_secrets": true
+  }
+}
