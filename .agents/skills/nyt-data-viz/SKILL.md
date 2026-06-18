@@ -1,6 +1,6 @@
 ---
 name: nyt-data-viz
-description: NYT-discipline data visualization. Applies the design rules of The New York Times graphics desk + Upshot — color, typography, annotation, chart-type selection — to make any chart render at Times grade. Use whenever generating charts, dashboards, reports, or data-driven webpages.
+description: NYT-discipline data visualization. Applies NYT graphics desk + Upshot rules (color, typography, annotation, chart-type selection) to render charts at Times grade. For charts, dashboards, reports, data-driven webpages.
 type: skill
 ---
 

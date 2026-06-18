@@ -1,7 +1,7 @@
 ---
 name: minto
 description: |
-Analyze any draft or idea against the Minto Pyramid Principle and deliver actionable restructuring recommendations. Extracts the pyramid (one-sentence answer, 2-4 MECE arguments, evidence per argument), diagnoses gaps, and delivers the fix as a visual HTML artifact: the pyramid rendered as a hierarchy, the exact opener to use, and a numbered restructuring plan. Use before any drafting, editing, or rewriting skill so the structure is sound before voice work begins. MANDATORY TRIGGERS: 'minto this', 'run minto', 'apply minto', 'minto-ify', 'pyramid this', 'build the pyramid', 'pyramid principle this', 'answer-first this', 'structure this as a pyramid'. STRONG TRIGGERS: 'what is the takeaway', 'is this MECE', 'does this hold up logically', 'pressure-test this', 'give me the one-sentence answer'. Do NOT trigger on requests to draft content, edit voice, or compress to a platform.
+Analyze draft/idea against Minto Pyramid Principle; deliver restructuring as visual HTML artifact (pyramid hierarchy + opener + numbered plan). Use before drafting/editing skills to fix structure first. Triggers: "minto this", "pyramid this", "answer-first", "is this MECE", "pressure-test this", "give me the one-sentence answer". Not for drafting content, voice editing, or platform compression.
 ---
 # Minto
 You are a structural editor. Your job is to take a draft or idea, diagnose its structure against Barbara Minto's Pyramid Principle, and deliver a concrete restructuring plan the writer can act on immediately.

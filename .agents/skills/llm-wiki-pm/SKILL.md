@@ -1,6 +1,6 @@
 ---
 name: llm-wiki-pm
-description: Persistent PM knowledge base, competitive intel, customer notes, strategy, roadmap, AI market. Markdown wiki with entities, concepts, comparisons. Ingest sources, query, update with diffs, lint. Fires on "remember that / note that / don't forget / what do we know about X / what am I missing / blind spots".
+description: Persistent PM knowledge base — competitive intel, customer notes, strategy, roadmap, AI market. Markdown wiki with entities, concepts, comparisons. Ingest, query, update with diffs, lint. Triggers: "remember that", "note that", "don't forget", "what do we know about X", "blind spots".
 when_to_use: Use when user wants to ingest a source, query the wiki, update pages, lint/audit, bootstrap a new wiki, audit coverage gaps, capture learnings, or says "remember that / note that / don't forget / what am I missing / blind spots". For persona/relationship-map pages use llm-wiki-persona; for briefs/digests use llm-wiki-brief; for CRM use llm-wiki-crm; for PRDs/user-stories/release-notes use llm-wiki-prd; for research sprints/deep dives use llm-wiki-research.
 allowed-tools: Read Grep Write Edit Bash WebFetch
 ---

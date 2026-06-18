@@ -1,6 +1,6 @@
 ---
 name: NYC Subway Campaign
-description: End-to-end method to visualize a full NYC subway (MTA) out-of-home ad campaign for any brand: lock a vivid brand identity, create a canonical logo asset FIRST and reuse it across every image-gen run for brand consistency, render the ads photoreally in real subway placements with GPT Image 2, and assemble an agency-grade single-page case study. Use when someone wants to mock up / pitch / visualize a brand's subway campaign.
+description: End-to-end method to visualize a full NYC subway (MTA) ad campaign for any brand. Lock brand identity, create canonical logo first, render ads photoreally with GPT Image 2, assemble agency-grade single-page case study. Use to mock up/pitch/visualize a brand's subway campaign.
 type: skill
 ---
 
