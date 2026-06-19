@@ -37,6 +37,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _ab_common import agent_browser_cmd  # noqa: E402
+from _ab_common import ab_session  # noqa: E402
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
@@ -476,15 +477,6 @@ def main(workspace: str) -> int:
 
     base_url = brand.get("base_url") or f"https://{raw_assets.get('host', '')}"
 
-    # Two ways to point at a logo:
-    # 1. Standard path — chosen_logo.id refers to a stable candidate id in
-    #    raw-assets.json (the schema synthesize-brand.md describes).
-    # 2. Direct URL — chosen_logo.url + (optional) chosen_logo.kind. Used when
-    #    the LLM identified an authoritative source (e.g. JSON-LD
-    #    Organization.logo or a press-kit URL) that wasn't enumerated as a
-    #    discrete candidate by enumerate_assets.py. The candidate enumerator
-    #    can't always know which JSON-LD logos are organisational vs product
-    #    listings, so this escape hatch lets the LLM pick what evidence shows.
     cand: dict
     if logo_id:
         found = find_candidate(raw_assets, logo_id)
@@ -499,6 +491,15 @@ def main(workspace: str) -> int:
     else:
         cand = {"id": "(explicit-url)", "kind": explicit_kind, "url": explicit_url, "page": "(explicit)"}
 
+    # ab_session() tears down the agent-browser daemon + Chrome for Testing on
+    # exit — materialize_url() may drive the browser for third-party CDN logos;
+    # without this the browser stays open forever (daemon has no idle timeout).
+    with ab_session():
+        return _embed_main_work(cand, assets_dir, base_url)
+
+
+def _embed_main_work(cand: dict, assets_dir: Path, base_url: str) -> int:
+    """Logo materialize + embed. Caller wraps in ab_session()."""
     print(f"chosen logo:  id={cand.get('id')}  kind={cand['kind']}  page={cand.get('page', '?')}")
 
     if cand["kind"] == "inline-svg":

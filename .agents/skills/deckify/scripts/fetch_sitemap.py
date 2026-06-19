@@ -32,6 +32,7 @@ from urllib.parse import urlparse
 # stealth flags every brand-CDN-blocked site needs. See _ab_common.py.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _ab_common import agent_browser_cmd  # noqa: E402
+from _ab_common import run_ab as _run_ab, ab_session  # noqa: E402
 
 
 JS_NAV_LINKS = r"""(() => {
@@ -73,8 +74,9 @@ JS_JSONLD = r"""(() => {
 
 
 def run_ab(args: list[str], capture: bool = True, check: bool = False) -> subprocess.CompletedProcess:
-    """Invoke agent-browser with explicit args (no shell)."""
-    return subprocess.run(agent_browser_cmd(*args), capture_output=capture, text=True, check=check, timeout=180)
+    """Thin wrapper over _ab_common.run_ab with the higher 180s timeout this
+    script historically used for home-page DOM dumps on heavy brand sites."""
+    return _run_ab(args, capture=capture, check=check, timeout=180)
 
 
 def parse_ab_eval(stdout: str) -> str:
@@ -112,6 +114,15 @@ def main() -> int:
     print(f"URL:     {url}")
     print(f"WS:      {ws}\n")
 
+    # ab_session() tears down the agent-browser daemon + Chrome for Testing on
+    # exit — even on error/Ctrl-C. Without this the browser stays open forever.
+    with ab_session():
+        _main_work(url, ws, recon)
+    return 0
+
+
+def _main_work(url: str, ws: Path, recon: Path) -> None:
+    """Phase 1a recon: home DOM, nav links, sitemap, JSON-LD. Caller wraps in ab_session()."""
     # ── 1. Home page DOM + screenshot ─────────────────────────────────────
     print("[1/4] navigate + dump home")
     run_ab(["set", "viewport", "1440", "900"])
@@ -189,7 +200,6 @@ def main() -> int:
         print(f"  {p.name}")
     print("\nNext step: the agent reads home.html / nav-links.json / sitemap-urls.txt /"
           "\njsonld.json and writes pages.txt — the URL list to fetch in step 1b.")
-    return 0
 
 
 if __name__ == "__main__":

@@ -33,14 +33,32 @@ Why default-on (no opt-in env var):
   - The env var DECKIFY_NO_STEALTH=1 disables them as an emergency escape
     hatch, never required in normal operation.
 
+Lifecycle / daemon cleanup (added 2026-06-18):
+  agent-browser runs a PERSISTENT daemon (daemon.js) that keeps the Chrome for
+  Testing process alive indefinitely — it has NO idle timeout and only exits
+  on an explicit `agent-browser close` or SIGTERM/SIGINT. Before this fix,
+  deckify's Phase 1 scripts opened the browser but never closed it, leaving a
+  zombie "Google Chrome for Testing" window that the user couldn't kill (the
+  daemon respawned it). Every deckify entry point now MUST wrap its agent-browser
+  usage in `ab_session()` (or call `close_agent_browser()` in a finally) so the
+  daemon + browser are torn down when the script exits — even on error.
+
 Usage:
-    from _ab_common import agent_browser_cmd
+    from _ab_common import agent_browser_cmd, run_ab, ab_session, close_agent_browser
+
+    # Preferred: context manager guarantees close on exit, even on exception.
+    with ab_session():
+        run_ab(["open", url])
+        run_ab(["eval", js])
+
+    # Lower-level: build a command for subprocess.run directly.
     subprocess.run(agent_browser_cmd("open", url), ...)
-    subprocess.run(agent_browser_cmd("eval", js), ...)
 """
 from __future__ import annotations
 
+import contextlib
 import os
+import subprocess
 
 
 # Real macOS Chrome 131 UA (current stable channel as of late 2025/early 2026).
@@ -79,3 +97,49 @@ def agent_browser_cmd(*verb_and_args: str) -> list[str]:
         cmd.extend(["--args", _STEALTH_CHROME_ARGS, "--user-agent", _REAL_CHROME_UA])
     cmd.extend(verb_and_args)
     return cmd
+
+
+def run_ab(args: list[str], *, capture: bool = True, check: bool = False,
+           timeout: int = 60) -> subprocess.CompletedProcess:
+    """Invoke agent-browser with explicit args (no shell).
+
+    Centralised so every caller gets consistent stealth flags + a single place
+    to tune timeouts. Prefer this over hand-rolled subprocess.run(agent_browser_cmd(...)).
+    """
+    return subprocess.run(agent_browser_cmd(*args),
+                          capture_output=capture, text=True, check=check, timeout=timeout)
+
+
+def close_agent_browser(*, timeout: int = 15) -> bool:
+    """Tear down the agent-browser daemon + Chrome for Testing.
+
+    agent-browser's daemon is persistent and never self-exits; without this the
+    "Chrome for Testing" window stays open forever (respawned by the daemon on
+    close). Best-effort: swallows errors so a cleanup step can never mask the
+    real error from the try block that called it. Returns True on clean close.
+    """
+    try:
+        r = subprocess.run(agent_browser_cmd("close"),
+                           capture_output=True, timeout=timeout, check=False)
+        return r.returncode == 0
+    except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+        return False
+
+
+@contextlib.contextmanager
+def ab_session():
+    """Context manager that guarantees the agent-browser daemon is closed on exit.
+
+    Usage:
+        with ab_session():
+            run_ab(["open", url])
+            ...
+
+    The daemon + Chrome for Testing are torn down in finally, so a navigate
+    timeout / JSON parse error / Ctrl-C can never leave a zombie browser behind.
+    Safe to nest — only the outermost close actually has a daemon to kill.
+    """
+    try:
+        yield
+    finally:
+        close_agent_browser()

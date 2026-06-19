@@ -32,6 +32,7 @@ from urllib.parse import urlparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _ab_common import agent_browser_cmd  # noqa: E402
+from _ab_common import run_ab, ab_session  # noqa: E402
 
 
 PROBE_JS = r"""(() => {
@@ -161,10 +162,6 @@ def slugify(url: str) -> str:
     return slug[:60]
 
 
-def run_ab(args: list[str], capture: bool = True, check: bool = False, timeout: int = 60) -> subprocess.CompletedProcess:
-    return subprocess.run(agent_browser_cmd(*args), capture_output=capture, text=True, check=check, timeout=timeout)
-
-
 def navigate_or_settle(url: str) -> tuple[bool, str]:
     """Navigate to URL. agent-browser's 'open' waits for networkidle, which
     on heavy brand sites (videos, ad SDKs, 3p analytics) routinely doesn't
@@ -272,6 +269,15 @@ def main() -> int:
         print("agent-browser not on PATH", file=sys.stderr)
         return 127
 
+    # ab_session() tears down the agent-browser daemon + Chrome for Testing on
+    # exit — even on navigate timeout / parse error / Ctrl-C. Without this the
+    # browser stays open forever (daemon has no idle timeout). See _ab_common.py.
+    with ab_session():
+        return _fetch_main_work(pages_file, pages_dir)
+
+
+def _fetch_main_work(pages_file: Path, pages_dir: Path) -> int:
+    """Phase 1c fetch loop. Caller wraps this in ab_session()."""
     consecutive_failures = 0
     i = 0
 
