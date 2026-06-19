@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能调用密度与推理-执行分离 · 交互式文档</title>
+<style>
+:root {
+  --ivory: #FAF9F5;
+  --paper: #FFFFFF;
+  --slate: #141413;
+  --clay: #D97757;
+  --clay-d: #B85C3E;
+  --oat: #E3DACC;
+  --olive: #788C5D;
+  --g100: #F0EEE6;
+  --g200: #E6E3DA;
+  --g300: #D1CFC5;
+  --g500: #87867F;
+  --g700: #3D3D3A;
+  --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--ivory);
+  color: var(--slate);
+  line-height: 1.7;
+  font-size: 16px;
+}
+.container { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
+
+/* Header */
+.doc-header { margin-bottom: 48px; }
+.doc-header h1 {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+.doc-summary {
+  font-size: 18px;
+  color: var(--g500);
+  max-width: 720px;
+  margin-bottom: 32px;
+  padding-left: 16px;
+  border-left: 3px solid var(--clay);
+}
+
+/* TOC */
+.toc {
+  background: var(--g100);
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+.toc h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--g500);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.toc ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px 24px;
+}
+.toc a {
+  color: var(--clay);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+.toc a:hover { text-decoration: underline; }
+
+/* Sections */
+.section-title {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 400;
+  margin: 48px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--g200);
+}
+.section-intro {
+  color: var(--g500);
+  font-size: 17px;
+  margin-bottom: 24px;
+}
+
+/* Details / Foldable */
+details {
+  background: var(--paper);
+  border: 1px solid var(--g200);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+details[open] { border-color: var(--g300); }
+summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--g700);
+  list-style: none;
+}
+summary::-webkit-details-marker { display: none; }
+.summary-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--clay);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+details[open] .summary-num { background: var(--clay-d); }
+.details-content {
+  padding: 8px 20px 24px 60px;
+  color: var(--g700);
+}
+.details-content p { margin-bottom: 16px; }
+
+/* Highlight blocks */
+.key-point {
+  border-left: 3px solid var(--clay);
+  padding: 12px 16px;
+  margin: 20px 0;
+  background: var(--g100);
+  border-radius: 0 8px 8px 0;
+}
+.key-point strong { color: var(--clay); }
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+}
+th, td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--g200);
+}
+th {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--g500);
+  border-bottom: 2px solid var(--g300);
+}
+tr:hover td { background: var(--g100); }
+
+/* Checklist */
+.checklist {
+  list-style: none;
+  margin: 20px 0;
+}
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--g200);
+}
+.checklist input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--clay);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.checklist label { cursor: pointer; }
+.checklist .checked { text-decoration: line-through; color: var(--g500); }
+
+/* SVG Flow */
+.flow-diagram {
+  margin: 32px 0;
+  padding: 24px;
+  background: var(--g100);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+/* Footer */
+footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--g200);
+  color: var(--g500);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Editor */
+#qe-toolbar {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 99999;
+  display: flex;
+  gap: 8px;
+}
+#qe-toolbar button {
+  padding: 8px 16px;
+  border: 1.5px solid var(--g300);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--g700);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+#qe-toolbar button:hover {
+  border-color: var(--clay);
+  color: var(--clay);
+}
+#qe-toolbar button.active {
+  background: var(--clay);
+  color: #fff;
+  border-color: var(--clay);
+}
+[contenteditable="true"] {
+  outline: 2px dashed var(--clay);
+  outline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .container { padding: 32px 20px; }
+  .details-content { padding: 8px 20px 20px 20px; }
+  summary { padding: 14px 16px; }
+  .toc ul { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="qe-toolbar">
+  <button id="qe-toggle">编辑</button>
+  <button id="qe-export">导出</button>
+</div>
+
+<div class="container">
+
+<header class="doc-header">
+  <h1>智能调用密度与推理-执行分离</h1>
+  <p class="doc-summary">AI时代的能力由"密度 × 策略"决定。真正的分层不是看你用了多少token，而是看你用token创造了多少价值。</p>
+  <nav class="toc">
+    <h3>目录</h3>
+    <ul>
+      <li><a href="#intro">为什么需要这个框架</a></li>
+      <li><a href="#density">智能调用密度</a></li>
+      <li><a href="#separation">推理-执行分离</a></li>
+      <li><a href="#synergy">密度 × 策略</a></li>
+      <li><a href="#practice">实践指南</a></li>
+      <li><a href="#implication">社会分层推演</a></li>
+      <li><a href="#checklist">自检清单</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section id="intro">
+  <h2 class="section-title">为什么需要这个框架</h2>
+  <p class="section-intro">两个观察指向同一个结论。</p>
+
+  <details open>
+    <summary><span class="summary-num">1</span><span>观察一：token消耗量不等于能力</span></summary>
+    <div class="details-content">
+      <p>有人日耗2亿token，产出平平。有人日耗2000万token，产出惊人。</p>
+      <div class="key-point"><strong>核心观点</strong>：token消耗量不是能力指标。真正的能力指标是<strong>智能调用密度</strong>——单位时间内有效调用智能的次数 × 每次调用的决策质量。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">2</span><span>观察二：工具分工决定效率</span></summary>
+    <div class="details-content">
+      <p>有人用同一个AI工具做所有事，效率低下。有人把推理和执行分开，用不同工具处理不同任务，效率倍增。</p>
+      <div class="key-point"><strong>核心观点</strong>：光有密度还不够，还需要<strong>正确的调用策略</strong>——把对的任务交给对的工具。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">3</span><span>结论</span></summary>
+    <div class="details-content">
+      <p><strong>AI时代的能力 = 智能调用密度 × 策略。</strong></p>
+      <p>密度告诉你该追求什么，策略告诉你怎么做到。两者结合，才是完整的AI时代能力框架。</p>
+    </div>
+  </details>
+</section>
+
+<section id="density">
+  <h2 class="section-title">智能调用密度</h2>
+  <p class="section-intro">密度 = 有效调用次数 × 决策质量 ÷ 时间</p>
+
+  <details open>
+    <summary><span class="summary-num">1</span><span>有效调用</span></summary>
+    <div class="details-content">
+      <p>不是所有token消耗都是有效调用。有效的判断标准：</p>
+      <ul style="margin-left: 20px; margin-bottom: 16px;">
+        <li>产生了可验证的输出（代码、文档、决策、方案）</li>
+        <li>改变了你的决策或行动</li>
+        <li>解决了一个真实的问题</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">2</span><span>决策质量</span></summary>
+    <div class="details-content">
+      <table>
+        <thead><tr><th>层级</th><th>示例</th></tr></thead>
+        <tbody>
+          <tr><td>低质量</td><td>问"帮我写个方案"，然后把AI的回答直接复制</td></tr>
+          <tr><td>中质量</td><td>问"这个方案的三个核心风险是什么"，然后自己判断哪些需要改</td></tr>
+          <tr><td>高质量</td><td>问"如果我是竞争对手，我会怎么攻击这个方案的第二点"，然后基于回答重新设计防御</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">3</span><span>三个机制</span></summary>
+    <div class="details-content">
+      <div class="key-point"><strong>机制一：认知负荷转移</strong><br>把AI擅长的reasoning交给AI，人的前额叶专注于问题拆解、质量判断与决策整合。</div>
+      <div class="key-point"><strong>机制二：迭代速度倍增</strong><br>拆成5个子问题并行问AI，整合回答后验证迭代。同样时间迭代次数是低密度的3-5倍。</div>
+      <div class="key-point"><strong>机制三：探索广度扩展</strong><br>3个方向同时探索，快速淘汰弱方向，集中资源在强方向。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">4</span><span>密度自检清单</span></summary>
+    <div class="details-content">
+      <table>
+        <thead><tr><th>检查项</th><th>低密度信号</th><th>高密度信号</th></tr></thead>
+        <tbody>
+          <tr><td>有效调用次数</td><td>想不起来AI帮你改变了什么决策</td><td>能列出3个以上"如果没有AI我会做不同"的决策</td></tr>
+          <tr><td>单次调用质量</td><td>经常问"帮我写个XX"然后直接用</td><td>经常问"如果XX会怎样"然后自己判断</td></tr>
+          <tr><td>调用策略</td><td>想到就问，不满意就换种方式再问</td><td>先想清楚问题，再设计prompt，最后验证回答</td></tr>
+          <tr><td>无效消耗</td><td>经常用AI消磨时间、探索无方向</td><td>每次调用都有明确目标，达成后就停</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<section id="separation">
+  <h2 class="section-title">推理-执行分离</h2>
+  <p class="section-intro">把异质任务分开，让对的工具做对的事。</p>
+
+  <details open>
+    <summary><span class="summary-num">1</span><span>角色分工</span></summary>
+    <div class="details-content">
+      <table>
+        <thead><tr><th>角色</th><th>核心职责</th><th>任务类型</th><th>工具定位</th></tr></thead>
+        <tbody>
+          <tr><td><strong>人</strong></td><td>目标定义、约束设定、优先级排序、最终决策</td><td>战略层</td><td>方向把控者</td></tr>
+          <tr><td><strong>GPT Pro</strong></td><td>需求澄清、任务拆解、方案设计、验收标准、结果review</td><td>推理层</td><td>规划与审核者</td></tr>
+          <tr><td><strong>Codex</strong></td><td>代码库操作、代码修改、测试执行、生成diff/PR</td><td>执行层</td><td>工程实现者</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">2</span><span>三阶段工作流</span></summary>
+    <div class="details-content">
+      <div class="flow-diagram">
+        <svg width="100%" height="120" viewBox="0 0 800 120" style="min-width: 600px;">
+          <rect x="20" y="30" width="220" height="60" rx="8" fill="var(--clay)" opacity="0.15" stroke="var(--clay)" stroke-width="2"/>
+          <text x="130" y="50" text-anchor="middle" font-family="var(--sans)" font-size="14" font-weight="600" fill="var(--slate)">阶段一：规划</text>
+          <text x="130" y="72" text-anchor="middle" font-family="var(--sans)" font-size="12" fill="var(--g500)">GPT Pro 主导</text>
+          <text x="130" y="90" text-anchor="middle" font-family="var(--sans)" font-size="11" fill="var(--g700)">脑暴 · 拆解 · 验收标准</text>
+          <polygon points="260,60 280,50 280,70" fill="var(--g500)"/>
+          <line x1="240" y1="60" x2="280" y2="60" stroke="var(--g500)" stroke-width="2"/>
+
+          <rect x="300" y="30" width="220" height="60" rx="8" fill="var(--olive)" opacity="0.15" stroke="var(--olive)" stroke-width="2"/>
+          <text x="410" y="50" text-anchor="middle" font-family="var(--sans)" font-size="14" font-weight="600" fill="var(--slate)">阶段二：执行</text>
+          <text x="410" y="72" text-anchor="middle" font-family="var(--sans)" font-size="12" fill="var(--g500)">Codex 主导</text>
+          <text x="410" y="90" text-anchor="middle" font-family="var(--sans)" font-size="11" fill="var(--g700)">改代码 · 跑测试 · 生成PR</text>
+          <polygon points="540,60 560,50 560,70" fill="var(--g500)"/>
+          <line x1="520" y1="60" x2="560" y2="60" stroke="var(--g500)" stroke-width="2"/>
+
+          <rect x="580" y="30" width="200" height="60" rx="8" fill="var(--clay)" opacity="0.15" stroke="var(--clay)" stroke-width="2"/>
+          <text x="680" y="50" text-anchor="middle" font-family="var(--sans)" font-size="14" font-weight="600" fill="var(--slate)">阶段三：审核</text>
+          <text x="680" y="72" text-anchor="middle" font-family="var(--sans)" font-size="12" fill="var(--g500)">GPT Pro 主导</text>
+          <text x="680" y="90" text-anchor="middle" font-family="var(--sans)" font-size="11" fill="var(--g700)">质量评估 · 迭代推进</text>
+        </svg>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">3</span><span>适用场景</span></summary>
+    <div class="details-content">
+      <table>
+        <thead><tr><th>场景类型</th><th>适用特征</th><th>案例说明</th></tr></thead>
+        <tbody>
+          <tr><td>从0到1 MVP开发</td><td>无明确PRD、技术方案和阶段计划</td><td>产品想法 → GPT Pro拆解 → Codex分阶段实现</td></tr>
+          <tr><td>中长期项目</td><td>需持续开发，易丢上下文</td><td>ChatGPT Project沉淀记录，Codex仅执行阶段任务</td></tr>
+          <tr><td>复杂重构</td><td>几十万行代码，影响范围大</td><td>GPT Pro做影响分析 → 拆阶段 → Codex分阶段执行</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<section id="synergy">
+  <h2 class="section-title">密度 × 策略</h2>
+  <p class="section-intro">两者不是独立概念，而是同一个能力框架的两个层面。</p>
+
+  <details open>
+    <summary><span class="summary-num">1</span><span>协同关系</span></summary>
+    <div class="details-content">
+      <div class="key-point"><strong>密度 = f(调用策略, 工具分工, 任务拆解)</strong></div>
+      <p><strong>用密度诊断问题</strong>：密度低时，判断是"调用次数不够"还是"单次质量不高"。</p>
+      <p><strong>用策略提升密度</strong>：推理-执行分离减少上下文膨胀，任务包标准化减少需求偏离，review闭环保证每次调用都有可验证输出。</p>
+      <p><strong>用密度评估策略</strong>：实施新策略后，密度是否提升？没有提升说明策略不适合当前场景。</p>
+    </div>
+  </details>
+</section>
+
+<section id="practice">
+  <h2 class="section-title">实践指南</h2>
+  <p class="section-intro">从知道到做到，四步落地。</p>
+
+  <details open>
+    <summary><span class="summary-num">1</span><span>第一步：建立密度基线</span></summary>
+    <div class="details-content">
+      <p>用一周时间记录：每天的token消耗量、有效调用次数、单次调用质量。计算初始密度，作为后续优化的基准。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">2</span><span>第二步：实施推理-执行分离</span></summary>
+    <div class="details-content">
+      <p>选择一个中等复杂度的项目，尝试这个工作流：</p>
+      <ol style="margin-left: 20px; margin-bottom: 16px;">
+        <li>用GPT Pro做需求澄清和任务拆解</li>
+        <li>生成结构化任务包</li>
+        <li>用Codex执行任务包</li>
+        <li>用GPT Pro review执行结果</li>
+        <li>迭代</li>
+      </ol>
+      <p>记录实施前后的密度变化。</p>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">3</span><span>第三步：优化调用策略</span></summary>
+    <div class="details-content">
+      <p>基于密度数据，识别瓶颈：</p>
+      <ul style="margin-left: 20px; margin-bottom: 16px;">
+        <li>有效调用次数低 → 优化任务拆解</li>
+        <li>单次调用质量低 → 优化prompt设计</li>
+        <li>时间维度低 → 优化并行调用策略</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">4</span><span>第四步：建立个人调用系统</span></summary>
+    <div class="details-content">
+      <p>把优化后的策略固化为个人工作流：</p>
+      <ul style="margin-left: 20px; margin-bottom: 16px;">
+        <li>标准化任务包格式</li>
+        <li>建立常用prompt模板</li>
+        <li>设计review checklist</li>
+        <li>定期复盘密度数据</li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="implication">
+  <h2 class="section-title">密度决定社会分层</h2>
+  <p class="section-intro">当智能成本趋近于零，密度成为稀缺资源。</p>
+
+  <details open>
+    <summary><span class="summary-num">1</span><span>推演逻辑</span></summary>
+    <div class="details-content">
+      <ol style="margin-left: 20px; margin-bottom: 16px;">
+        <li>智能成本持续下降（这是确定的）</li>
+        <li>人类对智能的需求没有上限（这也是确定的）</li>
+        <li>因此，限制因素从"能不能用得起智能"变成"能不能有效调用智能"</li>
+        <li>有效调用智能的能力 = 智能调用密度</li>
+        <li>密度差异导致的产出差距会指数级放大</li>
+      </ol>
+    </div>
+  </details>
+
+  <details>
+    <summary><span class="summary-num">2</span><span>10万倍差距的来源</span></summary>
+    <div class="details-content">
+      <p>不是资源差距——2亿token只要93元，谁都能用得起。</p>
+      <p>是认知差距：</p>
+      <div class="key-point"><strong>低密度者</strong>：把AI当问答机，每天消耗10万token，产出价值100元。</div>
+      <div class="key-point"><strong>高密度者</strong>：把AI当智能杠杆，每天消耗10亿token，产出价值10万元。</div>
+      <p>差距是1000倍。当高密度者学会用AI提升自己的调用密度时，密度会进一步提高——这就是<strong>密度的复利效应</strong>。</p>
+    </div>
+  </details>
+</section>
+
+<section id="checklist">
+  <h2 class="section-title">自检清单</h2>
+  <p class="section-intro">如果你对这三个问题的答案不满意，问题不在于token消耗量不够，而在于密度和策略都需要提升。</p>
+
+  <ul class="checklist">
+    <li><input type="checkbox" id="c1"><label for="c1">过去一周，我有多少次AI调用改变了我的决策？（密度指标）</label></li>
+    <li><input type="checkbox" id="c2"><label for="c2">我的调用模式是"推理和执行混在一起"还是"分开处理"？（策略诊断）</label></li>
+    <li><input type="checkbox" id="c3"><label for="c3">如果我实施推理-执行分离，密度会提升多少？（策略评估）</label></li>
+  </ul>
+
+  <div class="key-point"><strong>一句话总结</strong>：AI时代真正的分层，不是看你用了多少token，而是看你用token创造了多少价值。密度是指标，策略是方法，两者缺一不可。</div>
+</section>
+
+<footer>
+  <span>AI Capability Framework · 2026</span>
+  <span>Generated with html-interactive</span>
+</footer>
+
+</div>
+
+<script>
+// Smooth scroll for TOC links
+document.querySelectorAll('.toc a').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Checklist state persistence
+const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+checkboxes.forEach(cb => {
+  const key = 'density-check-' + cb.id;
+  const saved = localStorage.getItem(key);
+  if (saved === 'true') cb.checked = true;
+  cb.addEventListener('change', () => {
+    localStorage.setItem(key, cb.checked);
+    cb.parentElement.classList.toggle('checked', cb.checked);
+  });
+  cb.parentElement.classList.toggle('checked', cb.checked);
+});
+
+// Quick editor
+let editing = false;
+const editableSelectors = 'h1, h2, h3, h4, p, li, td, th, summary, .key-point';
+const toggleBtn = document.getElementById('qe-toggle');
+const exportBtn = document.getElementById('qe-export');
+
+toggleBtn.addEventListener('click', () => {
+  editing = !editing;
+  document.querySelectorAll(editableSelectors).forEach(el => {
+    el.contentEditable = editing;
+  });
+  toggleBtn.textContent = editing ? '完成' : '编辑';
+  toggleBtn.classList.toggle('active', editing);
+});
+
+exportBtn.addEventListener('click', () => {
+  // Clone document and remove editor UI
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelector('#qe-toolbar').remove();
+  const script = clone.querySelector('script');
+  if (script) script.remove();
+  // Remove contenteditable attributes
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '智能调用密度-导出.html';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+
+</body>
+</html>
