@@ -72,14 +72,14 @@ layoutSequence:
     role: hero | statement | evidence | transition | flow | closure
 ```
 
-骨架族参考（来自 layouts.md）：
+骨架族参考（来自 layouts.md，实际 S01-S28，校验脚本动态解析）：
 - Hero类：S01-S04
 - 总览类：S05, S06, S14, S22
 - 展开类：S07, S09, S11, S19
 - 转场类：S03, S13, S15
 - 流程类：S08, S10, S20, S24
 - 收束类：S18, S21, S27
-- 长文档类：S29
+- 长文档类：S28
 
 ---
 
@@ -93,7 +93,7 @@ components:
     purpose: 供应商业绩排名     # 这个组件用在哪
 ```
 
-26族速查：01 Cards / 02 Buttons / 03 Inputs / 04 Lists / 05 Tables / 06 Navigation / 07 Tags / 08 Segmented / 09 Date / 10 Toggles / 11 Progress / 12 Mini Charts / 13 Widgets / 14 Overlays / 15 State / 16 Flow Pipeline / 17 Do-Don't / 18 Tab / 19 Accordion / 20 对比表 / 21 Detail / 22 Checklist / 23 数字标题 / 24 三列网格 / 25 Flip / 26 堆叠图卡
+32 族速查（实际枚举以 `components.md` 为准，校验脚本动态解析）：01 Cards / 02 Buttons / 03 Inputs / 04 Lists / 05 Tables / 06 Navigation / 07 Tags / 08 Segmented / 09 Date / 10 Toggles / 11 Progress / 12 Mini Charts（含 12a Bar / 12b Sparkline / 12c Gauge / 12d Dot Grid）/ 13 Widgets / 14 Overlays / 15 State / 16 Flow Pipeline / 17 Do-Don't / 18 Tab / 19 Accordion / 20 Asymmetric Comparison / 21 Detail / 22 Checklist / 23 Decorative Number Header / 24 Three-Column Numbered Grid / 25 Flip Card / 26 Stacked Image Cards / 27 Gantt / 28 Pyramid Stack / 29 Radial Data / 30 Quarter Bar / 31 Flow Diagram Tree / 32 Tree Architecture
 
 ---
 
@@ -163,4 +163,4 @@ source:
 
 ---
 
-*最后更新：2026-06-13 — 决策卡 schema v1，对齐 nian-design 施工输入*
+*最后更新：2026-06-19 — schema v2，修正族数（26→32）与骨架范围（S29→S28），对齐 components.md/layouts.md 实际枚举*
