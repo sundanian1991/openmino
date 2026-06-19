@@ -33,47 +33,19 @@ skillsDir: ./.claude/skills
 
 ## 子代理原则
 
-主代理做协调和决策。轻量操作直做（单文件读取、简单搜索、单行修改）。复杂/多文件/并行任务 → 派子代理或 Workflow。每步先判断是否需要额外注意力，能直做就不绕路。
+轻量操作直做，复杂/多文件/并行任务派子代理。
 
 ---
 
 ## 目录约定
 
-详见 [workspace-conventions.md](.claude/reference/workspace-conventions.md)（workspace 命名/归档/流转规则、核心目录表）
-
-**核心原则**：workspace 入库 git 跟踪；创建文件夹用 `YYYY-MM-DD-主题`；归档/整理时按需读取详细规范。
+详见 [workspace-conventions.md](.claude/reference/workspace-conventions.md)。核心原则：workspace 入库 git 跟踪；创建文件夹用 `YYYY-MM-DD-主题`。
 
 ---
 
-## 对话摘要（每次会话自动启用）
+## 对话摘要
 
-**强制**：每次会话开始时，在 `workspace/YYYY-MM-DD-对话摘要/` 下创建 `对话总结-YYYY-MM-DD.md`，按以下模板初始化。对话中实时维护——每完成阶段性任务追加 worklog，每做出关键决策追加 Decisions。compact 时摘要已是完整状态，新 session 直接读取恢复。
-
-**模板**：
-
-```
-# Session Title（简短5-10字）
-
-# Current State
-当前状态、待完成任务
-
-# Task Specification
-用户要求、设计决策、背景
-
-# Key Files
-重要文件路径及作用
-
-# Errors & Corrections
-错误及解决方案
-
-# Decisions & Learnings
-关键决策、有效做法、应避免做法
-
-# Worklog
-逐步操作记录，极简摘要
-```
-
-**注意**：简单一问一答的会话不需要摘要。有实质性多轮对话、产生了代码/决策/产出的会话才维护。
+有实质性多轮对话/产出时维护。模板与流程见 [workspace/README.md](workspace/README.md)。
 
 ---
 
@@ -101,8 +73,3 @@ Write 工具传大段 HTML 时因 content 含特殊符号（`"` `$` 反引号 `{
 
 → 一律用 `cat > path << 'EOF'` 通过 Bash 写入，不走 Write 工具。
 
-
-
----
-
-*最后更新：2026-06-06 — 新增 DeepSeek HTML 写入约束*
