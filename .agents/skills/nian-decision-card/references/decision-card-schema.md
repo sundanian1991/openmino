@@ -13,7 +13,7 @@
 | `structuralStream` | enum/null | | 结构型气质，叠加用，null 则不用 |
 | `layoutSequence` | array | ✓ | 每个 section 的骨架序列 |
 | `heroType` | enum | ✓ | Hero 类型，由气质决定 |
-| `components` | array | ✓ | 从26组件族选 |
+| `components` | array | ✓ | 从32组件族选 |
 | `breakPoint` | object | ✓ | 打破位置，恰好1处 |
 | `palette` | object | ✓ | 配色角色 |
 | `dataCharts` | array/null | | 数据分支才填 |
@@ -68,7 +68,7 @@
 ```yaml
 layoutSequence:
   - section: 封面              # section 名称
-    layout: S01                # data-layout 值，来自 layouts.md S01-S29
+    layout: S01                # data-layout 值，来自 layouts.md S01-S28
     role: hero | statement | evidence | transition | flow | closure
 ```
 
@@ -85,7 +85,7 @@ layoutSequence:
 
 ## `components` 结构
 
-数组，每项从 components.md 26族选：
+数组，每项从 components.md 32族选：
 
 ```yaml
 components:

@@ -5,6 +5,7 @@
     python3 validate-decision-card.py <决策卡.yaml>
     python3 validate-decision-card.py output/            # 批量校验目录下所有 .yaml
     python3 validate-decision-card.py <file> --strict    # warnings 也算 fail
+    python3 validate-decision-card.py --lint-self        # 扫描技能文档元数据漂移
 
 校验项（参照 decision-card-schema.md）：
   1. 顶层字段完整：branch/visualStream/layoutSequence/heroType/components/breakPoint/palette/source
@@ -39,13 +40,13 @@ NIAN_DESIGN_REF = SKILL_ROOT.parent / "nian-design" / "references"
 VISUAL_STREAMS = {"Statement", "Diagonal", "Split", "Numeral", "Entrance", "Pulse", "Dashboard"}
 STRUCTURAL_STREAMS = {"S1-黑条书签", "S2-长文导航", None}
 HERO_MAP = {
-    "Statement": "V4-Statement",
-    "Diagonal": "V1-Diagonal",
-    "Split": "V2-Split",
-    "Numeral": "V6-Numeral",
-    "Entrance": "整屏居中大字",
-    "Pulse": "Numeral简化",
-    "Dashboard": "Numeral缩到60vh",
+    "Statement": {"V4-Statement"},
+    "Diagonal": {"V1-Diagonal"},
+    "Split": {"V2-Split"},
+    "Numeral": {"V6-Numeral"},
+    "Entrance": {"整屏居中大字"},
+    "Pulse": {"Numeral简化", "Split简化"},
+    "Dashboard": {"Numeral缩到60vh"},
 }
 BREAK_METHODS = {"ghost水印", "超大数字", "accent色", "异形元素"}
 PALETTE_PRIMARY = {"darkgray", "olive", "earth"}
@@ -127,9 +128,9 @@ def validate(card: dict, layouts: set[str], components: set[str]) -> list[Issue]
     ht = card.get("heroType")
     if vs and vs in HERO_MAP:
         expected = HERO_MAP[vs]
-        if ht and ht != expected:
+        if ht and ht not in expected:
             issues.append(Issue("WARN", "heroType",
-                                f"由 visualStream={vs} 应为 {expected!r}，实际 {ht!r}"))
+                                f"由 visualStream={vs} 应为 {sorted(expected)}，实际 {ht!r}"))
 
     # 7. components
     comps = card.get("components")
@@ -221,10 +222,68 @@ def format_issues(path: Path, issues: list[Issue]) -> str:
     return "\n".join(lines)
 
 
+def lint_self() -> int:
+    """扫描技能自身文档的元数据漂移（FM-05/FM-06 自动化防御）。
+
+    检查 SKILL.md / schema.md / intake-*.md 里写的"N 族""S01-SXX"是否
+    与 components.md / layouts.md 实际枚举一致。漂移则报错。
+    """
+    layouts = parse_layouts()
+    components = parse_components()
+    max_layout = max(layouts)  # 如 "S28"
+    # 组件族数 = 主编号数（01-32），不含子编号 12a 等
+    comp_main = {c for c in components if re.fullmatch(r"\d{2}", c)}
+    comp_count = len(comp_main)
+
+    docs = [
+        SKILL_ROOT / "SKILL.md",
+        SKILL_ROOT / "references" / "decision-card-schema.md",
+        SKILL_ROOT / "references" / "intake-text.md",
+        SKILL_ROOT / "references" / "intake-data.md",
+    ]
+
+    print(f"已加载源枚举：layouts 最大 {max_layout}，components 主族 {comp_count} 个")
+    print(f"扫描 {len(docs)} 个文档\n")
+
+    has_fail = False
+    for doc in docs:
+        if not doc.exists():
+            continue
+        text = doc.read_text(encoding="utf-8")
+        issues: list[Issue] = []
+
+        # 检查 "N族" / "N组件族" / "N 族" 表述
+        for m in re.finditer(r"(\d+)\s*(?:组件)?族", text):
+            n = int(m.group(1))
+            if n != comp_count:
+                issues.append(Issue("ERROR", "元数据漂移",
+                                    f'写"{n}族"，实际 components.md 主族 {comp_count} 个'))
+
+        # 检查 "S01-SXX" 表述——只报"声明了不存在的骨架"（XX > 实际最大）
+        # 子分组描述如"Hero类：S01-S04"不报（04 < 28 是合理的子范围）
+        max_layout_num = int(max_layout[1:])
+        for m in re.finditer(r"S01-S(\d{2})", text):
+            written_num = int(m.group(1))
+            if written_num > max_layout_num:
+                issues.append(Issue("ERROR", "元数据漂移",
+                                    f'写"S01-S{m.group(1)}"，实际 layouts.md 最大 {max_layout}（声明了不存在的骨架）'))
+
+        status = "FAIL" if any(i.level == "ERROR" for i in issues) else "PASS"
+        print(f"  {status:8}  {doc.relative_to(SKILL_ROOT)}  ({len(issues)} err)")
+        for i in issues:
+            print(f"           [{i.level}] {i.field}: {i.msg}")
+        if any(i.level == "ERROR" for i in issues):
+            has_fail = True
+
+    return 1 if has_fail else 0
+
+
 def main(argv: list[str]) -> int:
     if len(argv) < 2:
         print(__doc__)
         return 2
+    if "--lint-self" in argv:
+        return lint_self()
     strict = "--strict" in argv
     targets = [Path(a) for a in argv[1:] if not a.startswith("-")]
     if not targets:

@@ -78,6 +78,7 @@
 - 编号后的名称可简写，但编号必须准确。
 - 校验脚本从 `components.md` 动态解析枚举，不依赖 schema 写死的数字。
 - **schema.md 与 SKILL.md 的族数描述必须与 components.md 同步**——这是元数据漂移的高发点。
+- **自动化防御**：`validate-decision-card.py --lint-self` 扫描技能文档的"N族"表述，与源文件对比，漂移即报错。
 
 **出处**：本次审计发现 SKILL.md 写"26 族"、schema.md 写"26族速查"，实际 components.md 是 32 族。已修正。
 
@@ -93,6 +94,7 @@
 - `layout` 必须在 `layouts.md` 实际枚举内（S01-S28，动态解析）。
 - 校验脚本从 `layouts.md` 解析，不依赖 schema 写死的范围。
 - schema.md 与 SKILL.md 的骨架范围描述必须与 layouts.md 同步。
+- **自动化防御**：`validate-decision-card.py --lint-self` 扫描技能文档的"S01-SXX"表述，声明了不存在的骨架即报错。
 
 **出处**：本次审计发现 SKILL.md 写"S01-S29"、schema.md 写"S01-S29"，实际 layouts.md 是 S01-S28。已修正。
 

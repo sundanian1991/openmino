@@ -79,7 +79,7 @@ description: |
 | ≥1500字 + 需导航 | + S2 长文导航（结构型，叠加） |
 | ≥3章节 + 持久导航 | + S1 黑条书签（结构型，叠加） |
 
-**决策 B · 定骨架序列**（从 layouts.md S01-S29 选 N）
+**决策 B · 定骨架序列**（从 layouts.md S01-S28 选 N）
 
 骨架序列 = 每个 section 的 data-layout 顺序。
 - 文字分支：直接从阶段2页面类型表映射
@@ -205,10 +205,22 @@ nian-lenses 的 supplier-alliance-decision-trace.json 可作为本技能 schema 
 python3 scripts/validate-decision-card.py <决策卡.yaml>
 # 或批量校验 output/ 目录
 python3 scripts/validate-decision-card.py output/
+# --strict 把 WARN 也当 FAIL
+python3 scripts/validate-decision-card.py <file> --strict
 ```
 
 脚本从 `nian-design/references/` 动态解析枚举（layouts/components/VISUAL-STREAMS），不依赖本技能 schema 写死的数字——避免元数据漂移。校验失败的决策卡是废卡，nian-design 不收。
 
+### 元数据漂移自检
+
+改了 `components.md` 或 `layouts.md` 后，跑 `--lint-self` 检查技能文档描述是否过时：
+
+```bash
+python3 scripts/validate-decision-card.py --lint-self
+```
+
+扫描 SKILL.md / schema.md / intake-*.md 里的"N族""S01-SXX"表述，与源文件实际枚举对比。漂移则报错。这是 FM-05/FM-06 的自动化防御。
+
 ---
 
-*最后更新：2026-06-19 — v2，新增校验脚本/evals/失败模式库，修正族数与骨架数描述*
+*最后更新：2026-06-19 — v2，新增校验脚本/evals/失败模式库/--lint-self，修正族数与骨架数描述*
