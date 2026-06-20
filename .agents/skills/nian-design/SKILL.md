@@ -1,16 +1,16 @@
 ---
 name: nian-design
 description: |
-  nian-design — 施工方定位。26 组件族 + 6 Token 文件 + 5 条硬规则。
+  nian-design — 施工方定位。32 组件族 + 6 Token 文件 + 5 条硬规则。
   输入：上游 nian-decision-card 产出的决策卡。输出：高质量 HTML。不决策，只施工。
-  Landscape and signal. One type system, 26 components.
+  Landscape and signal. One type system, 32 components.
 ---
 
 # nian-design
 
 > **我是施工方，不是设计师。**
 > 上游 `nian-decision-card` 出决策卡，我照决策卡施工。
-> 组件从 `components.md`（26 族原子组件）中按需选取，不自己发明。
+> 组件从 `components.md`（32 族原子组件）中按需选取，不自己发明。
 > 5 条硬规则全部通过才能输出。
 
 ---
@@ -55,7 +55,7 @@ structuralStream:  S2-长文导航            # 结构型（可选，叠加）
 layoutSequence:                           # 每个 section 的骨架序列
   - { section: 封面, layout: S01, role: hero }
 heroType:          V4-Statement           # Hero 类型（由气质决定）
-components:                               # 从 components.md 26 族选
+components:                               # 从 components.md 32 族选
   - { id: "03 TABLES", purpose: 排名 }
 breakPoint:        { section: 核心结论, method: ghost水印, spec: {...} }
 palette:           { primary: olive, accent: yellow, baseMode: light }
@@ -106,7 +106,7 @@ source:            { narrative: ..., audience: ... }
 | 决策卡字段 | 查表 |
 |---|---|
 | `heroType` + `visualStream` | `VISUAL-STREAMS.md` 对应气质的克制规则 |
-| `layoutSequence` | `layouts.md` 每个 section 的骨架代码（S01-S29） |
+| `layoutSequence` | `layouts.md` 每个 section 的骨架代码（S01-S28） |
 | `components` | `components.md` 中对应组件族的 HTML + CSS |
 | `palette.baseMode` | `components.md` 亮色用默认 / 深色用 `-d` 后缀 token |
 
@@ -211,9 +211,9 @@ nian-design 的 5 步走工作流，对应 **Layer 3 + Layer 2**（施工）。
 | `references/DESIGN-SYSTEM-MAP.md` | 首次使用 | 5 层架构入口 |
 | `references/CRAFT-RULES.md` | **Step 4 必读** | 5 条硬规则 + 自检方法 |
 | `references/VISUAL-STREAMS.md` | Step 1 参考 | 9 种气质定义 |
-| `references/components.md` | **Step 2-3 必读** | 26 组件族 · 亮色+深色 · 双模式标准 |
+| `references/components.md` | **Step 2-3 必读** | 32 组件族 · 亮色+深色 · 双模式标准 |
 | `references/philosophy.md` | 首次使用 / 刷新直觉 | 设计哲学全文 |
-| `references/layouts.md` | Step 2 选骨架 | S01-S29 骨架代码 |
+| `references/layouts.md` | Step 2 选骨架 | S01-S28 骨架代码 |
 | `references/showcase-archive/R/` `H/` | 找参考 | R 39 个 + H 67 个 showcase |
 | `references/templates/` | 选完整模板 | 20 个端到端 nian 模板 |
 | `references/templates-batch1/` | **Step 2 优先** | 6 个 L3 核心模板（每场景1个，含真实业务数据） |

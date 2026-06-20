@@ -192,6 +192,7 @@ nian-lenses 的 supplier-alliance-decision-trace.json 可作为本技能 schema 
 | `../nian-design/references/layouts.md` | S01-S28 骨架（选骨架必读） |
 | `../nian-design/references/components.md` | 32 组件族（选组件必读） |
 | `references/failure-modes.md` | 失败模式库（施工踩坑规则化） |
+| `references/contract-reconciliation.md` | 契约对账（与 nian-design 双向对齐记录） |
 | `scripts/validate-decision-card.py` | 硬校验脚本（产出必跑） |
 | `evals/evals.json` | 8 条评测集（覆盖双分支+边界） |
 
@@ -213,14 +214,17 @@ python3 scripts/validate-decision-card.py <file> --strict
 
 ### 元数据漂移自检
 
-改了 `components.md` 或 `layouts.md` 后，跑 `--lint-self` 检查技能文档描述是否过时：
+改了 `components.md` 或 `layouts.md` 后，跑两个 lint 检查描述是否过时：
 
 ```bash
+# 扫描 decision-card 自身文档
 python3 scripts/validate-decision-card.py --lint-self
+# 跨技能扫描 nian-design 侧文档（契约对账防御盲区）
+python3 scripts/validate-decision-card.py --lint-all
 ```
 
-扫描 SKILL.md / schema.md / intake-*.md 里的"N族""S01-SXX"表述，与源文件实际枚举对比。漂移则报错。这是 FM-05/FM-06 的自动化防御。
+扫描 SKILL.md / schema.md / intake-*.md / nian-design 侧文档的"N族""S01-SXX"表述，与源文件实际枚举对比。漂移则报错。这是 FM-05/FM-06 的自动化防御。`--lint-all` 补上了"decision-card 校验不到下游文档漂移"的盲区（见 `references/contract-reconciliation.md`）。
 
 ---
 
-*最后更新：2026-06-19 — v2，新增校验脚本/evals/失败模式库/--lint-self，修正族数与骨架数描述*
+*最后更新：2026-06-19 — v3，新增 contract-reconciliation/--lint-all，修正 nian-design 侧 14 处元数据漂移*

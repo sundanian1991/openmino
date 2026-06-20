@@ -6,6 +6,7 @@
     python3 validate-decision-card.py output/            # 批量校验目录下所有 .yaml
     python3 validate-decision-card.py <file> --strict    # warnings 也算 fail
     python3 validate-decision-card.py --lint-self        # 扫描技能文档元数据漂移
+    python3 validate-decision-card.py --lint-all         # 跨技能扫描 nian-design 侧
 
 校验项（参照 decision-card-schema.md）：
   1. 顶层字段完整：branch/visualStream/layoutSequence/heroType/components/breakPoint/palette/source
@@ -250,26 +251,79 @@ def lint_self() -> int:
         if not doc.exists():
             continue
         text = doc.read_text(encoding="utf-8")
-        issues: list[Issue] = []
-
-        # 检查 "N族" / "N组件族" / "N 族" 表述
-        for m in re.finditer(r"(\d+)\s*(?:组件)?族", text):
-            n = int(m.group(1))
-            if n != comp_count:
-                issues.append(Issue("ERROR", "元数据漂移",
-                                    f'写"{n}族"，实际 components.md 主族 {comp_count} 个'))
-
-        # 检查 "S01-SXX" 表述——只报"声明了不存在的骨架"（XX > 实际最大）
-        # 子分组描述如"Hero类：S01-S04"不报（04 < 28 是合理的子范围）
-        max_layout_num = int(max_layout[1:])
-        for m in re.finditer(r"S01-S(\d{2})", text):
-            written_num = int(m.group(1))
-            if written_num > max_layout_num:
-                issues.append(Issue("ERROR", "元数据漂移",
-                                    f'写"S01-S{m.group(1)}"，实际 layouts.md 最大 {max_layout}（声明了不存在的骨架）'))
+        issues = _scan_metadata_drift(text, comp_count, max_layout)
 
         status = "FAIL" if any(i.level == "ERROR" for i in issues) else "PASS"
         print(f"  {status:8}  {doc.relative_to(SKILL_ROOT)}  ({len(issues)} err)")
+        for i in issues:
+            print(f"           [{i.level}] {i.field}: {i.msg}")
+        if any(i.level == "ERROR" for i in issues):
+            has_fail = True
+
+    return 1 if has_fail else 0
+
+
+def _scan_metadata_drift(text: str, comp_count: int, max_layout: str) -> list[Issue]:
+    """扫描文本中的元数据漂移（N族 / S01-SXX 表述与源枚举不符）。
+
+    白名单：包含 "Nothing Design" "原始 26" 的行是来源说明，跳过。
+    """
+    issues: list[Issue] = []
+    max_layout_num = int(max_layout[1:])
+
+    for m in re.finditer(r"(\d+)\s*(?:组件)?族", text):
+        # 跳过 Nothing Design 来源说明（"Nothing Design 26 组件族"是历史事实）
+        line_start = text.rfind("\n", 0, m.start()) + 1
+        line = text[line_start:text.find("\n", m.end())]
+        if "Nothing Design" in line or "原始 26" in line:
+            continue
+        n = int(m.group(1))
+        if n != comp_count:
+            issues.append(Issue("ERROR", "元数据漂移",
+                                f'写"{n}族"，实际 components.md 主族 {comp_count} 个'))
+
+    for m in re.finditer(r"S01-S(\d{2})", text):
+        written_num = int(m.group(1))
+        if written_num > max_layout_num:
+            issues.append(Issue("ERROR", "元数据漂移",
+                                f'写"S01-S{m.group(1)}"，实际 layouts.md 最大 {max_layout}（声明了不存在的骨架）'))
+    return issues
+
+
+def lint_all() -> int:
+    """跨技能扫描：检查 nian-design 侧文档的元数据漂移（契约对账防御盲区）。
+
+    --lint-self 只扫 decision-card 自身，但 nian-design 侧文档也会写
+    "N族""S01-SXX"，漂移时 decision-card 校验不到。本模式补上这个缺口。
+    """
+    layouts = parse_layouts()
+    components = parse_components()
+    max_layout = max(layouts)
+    comp_main = {c for c in components if re.fullmatch(r"\d{2}", c)}
+    comp_count = len(comp_main)
+
+    nian_design_root = SKILL_ROOT.parent / "nian-design"
+    docs = [
+        nian_design_root / "SKILL.md",
+        nian_design_root / "references" / "CRAFT-RULES.md",
+        nian_design_root / "references" / "checklist.md",
+        nian_design_root / "references" / "DESIGN-SYSTEM-MAP.md",
+        nian_design_root / "references" / "showcase-index.md",
+    ]
+
+    print(f"跨技能扫描 nian-design 侧文档（源枚举：layouts 最大 {max_layout}，components 主族 {comp_count} 个）")
+    print(f"扫描 {len(docs)} 个文档\n")
+
+    has_fail = False
+    for doc in docs:
+        if not doc.exists():
+            continue
+        text = doc.read_text(encoding="utf-8")
+        issues = _scan_metadata_drift(text, comp_count, max_layout)
+
+        status = "FAIL" if any(i.level == "ERROR" for i in issues) else "PASS"
+        rel = doc.relative_to(SKILL_ROOT.parent)
+        print(f"  {status:8}  {rel}  ({len(issues)} err)")
         for i in issues:
             print(f"           [{i.level}] {i.field}: {i.msg}")
         if any(i.level == "ERROR" for i in issues):
@@ -284,6 +338,8 @@ def main(argv: list[str]) -> int:
         return 2
     if "--lint-self" in argv:
         return lint_self()
+    if "--lint-all" in argv:
+        return lint_all()
     strict = "--strict" in argv
     targets = [Path(a) for a in argv[1:] if not a.startswith("-")]
     if not targets:

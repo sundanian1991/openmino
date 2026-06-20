@@ -1,5 +1,38 @@
 # CHANGELOG
 
+## 2026-06-19 · v3 — 契约对账与跨技能防御
+
+### 新增
+
+- **`references/contract-reconciliation.md`**：契约对账文档（P4 产出）
+  - 字段消费对账：10 字段中 6 个明确消费，4 个有 gap
+  - 枚举漂移对账：发现 nian-design 侧 14 处过时枚举
+  - 硬规则对齐：CRAFT-RULES Rule 4 打破形态与 breakPoint.method 不完全对齐
+  - 修复清单 + 验证方式
+
+- **`--lint-all` 模式**：跨技能扫描 nian-design 侧文档
+  - 补上"decision-card 校验不到下游文档漂移"的盲区
+  - 扫描 nian-design 的 SKILL.md / CRAFT-RULES.md / checklist.md / DESIGN-SYSTEM-MAP.md / showcase-index.md
+  - 白名单：含"Nothing Design""原始 26"的来源说明行跳过（历史事实）
+
+### 修正（nian-design 侧 14 处元数据漂移）
+
+- SKILL.md 6 处：26→32，S01-S29→S01-S28
+- DESIGN-SYSTEM-MAP.md 5 处：同上 + 补 27-32 组件清单
+- checklist.md 2 处：S01-S21→S01-S28，S01-S12→S01-S28
+- showcase-index.md 1 处：S01-S21→S01-S28
+- templates-v2/ 2 文件 5 处：26→32
+- templates/ 和 templates-matrix/ HTML 各 1 处：26→32
+- showcase/nian-components.md 和 .html 各 1 处：标注"原始 26 族，现已扩展至 32 族"
+
+### 设计决策
+
+- **`--lint-all` 把跨技能元数据漂移变成可自动发现的问题**：contract-reconciliation 暴露的盲区——decision-card 自身文档干净，但 nian-design 侧文档有 14 处漂移——现在用 `--lint-all` 自动扫描
+- **白名单机制**：来源说明（"Nothing Design 26 组件族"是历史事实）不报，只报"声称当前枚举数"的漂移
+- **契约对账作为 P4 轻量版**：不空跑完整 HTML，用对账表暴露契约 gap，比真跑一遍 nian-design 更高效
+
+---
+
 ## 2026-06-19 · v2 — 闭环加固
 
 ### 新增

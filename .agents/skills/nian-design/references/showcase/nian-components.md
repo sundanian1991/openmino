@@ -1,9 +1,9 @@
 # Nian Design System — 统一组件库
 
-> 来源：Nothing Design（26 组件族）+ nian-design 独特组件 + mino-design 关键组件
+> 来源：Nothing Design（26 组件族）+ nian-design 独特组件 + mino-design 关键组件，现已扩展至 32 族
 > 输出：`nian-components.md`（本文件）+ `nian-components.html`（单文件预览）
 > 质量基线：H001-品牌展示-statement.html
-> 标注规则：`[N]`=Nothing 26 族 · `[nian]`=nian 独特 · `[mino]`=mino 关键 · `[变种 X/Y]`=同族变种关系
+> 标注规则：`[N]`=Nothing 原始 26 族 · `[nian]`=nian 独特（含 27-32 扩展） · `[mino]`=mino 关键 · `[变种 X/Y]`=同族变种关系
 
 ---
 

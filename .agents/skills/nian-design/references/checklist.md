@@ -18,8 +18,8 @@
 | 0-6 | 禁止用颜色区分数据时跳过 opacity/梯度直接上信号色 | 目测检查数据可视化颜色序列 |
 | 0-7 | 禁止斑马纹、填充图标、骨架屏 | 目测 |
 | 0-8 | 禁止视差、滚动劫持、弹跳缓动 | 目测 |
-| **0-11** | **版式锁定：每个 `<section>` 必须有 `data-layout="S01"`~`"S21"`** | grep `data-layout` |
-| **0-12** | **禁止发明 S01-S21 之外的骨架结构** | 对照 `references/layouts.md` |
+| **0-11** | **版式锁定：每个 `<section>` 必须有 `data-layout="S01"`~`"S28"`** | grep `data-layout` |
+| **0-12** | **禁止发明 S01-S28 之外的骨架结构** | 对照 `references/layouts.md` |
 | **0-13** | **图片网格用 `height:Nvh`，禁止用 `aspect-ratio` 撑容器** | grep `aspect-ratio` 在 grid 容器内 |
 | **0-14** | **大字号双约束 `min(Xvw, Yvh)`，且 Y ≥ X × 1.6** | grep `font-size:min\(` 检查 Y/X 比值 |
 | **0-15** | **底部内容不碰 nav 安全区（≥ 8vh）** | 目测 + grep `margin-top:auto` 在底部附近 |
@@ -106,7 +106,7 @@ grep -rn 'linear-gradient\|box-shadow.*0\|blur\|backdrop-filter\|emoji\|border-r
 
 # P0 版式锁定检查
 grep -c 'data-layout=' path/to/output.html  # 应等于 section 数量
-grep -oP 'data-layout="[^"]+' path/to/output.html | sort -u  # 应只有 S01-S12
+grep -oP 'data-layout="[^"]+' path/to/output.html | sort -u  # 应只有 S01-S28
 
 # P1 字体角色检查（Display 字体不应出现在 body 中）
 grep -rn 'font-family.*Playfair Display\|font-family.*Georgia' templates/ --include='*.html' | grep -i 'body\|p \|\.body'

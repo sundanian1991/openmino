@@ -1,7 +1,7 @@
 # Showcase 索引 — 场景 → 骨架映射
 
 > 查表用。找到场景，拿到骨架和组件，去做。
-> 完整骨架代码见 `references/layouts.md`（S01-S21），每个 section 写 `data-layout="Sxx"`。
+> 完整骨架代码见 `references/layouts.md`（S01-S28），每个 section 写 `data-layout="Sxx"`。
 
 ---
 
