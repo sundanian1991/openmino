@@ -1,0 +1,246 @@
+<!-- QA: 5/5 passed | stream: Diagonal | hero: V1 | base: light -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>区位矩阵 · 8 城市职场热力</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --darkgray:#2C2C2C;--olive:#5A6B3D;--earth:#A08060;--yellow:#D4B85A;--orange:#C97A3D;--glacier:#2A4A5A;--rock:#8B8680;
+  --surface:#FAF8F3;--surface-raised:#F0EDE5;--bg:#F5F2EC;
+  --tx1:#2C2C2C;--tx2:#6B6B6B;--tx3:#9A958C;
+  --border:#E5E2DC;--border-strong:#D4D0C8;
+  --serif:'Playfair Display'serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx1);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:64px 40px 80px;position:relative}
+.ghost{position:absolute;font-family:var(--serif);font-style:italic;font-weight:600;font-size:320px;color:var(--darkgray);opacity:0.045;top:40px;right:-30px;z-index:0;pointer-events:none;line-height:.8;letter-spacing:-.04em}
+
+/* hero V1-Diagonal */
+.hero{position:relative;z-index:1;display:grid;grid-template-columns:8fr 4fr;gap:48px;padding-bottom:56px;border-bottom:1px solid var(--border);margin-bottom:48px}
+.hero-left .hero-num{font-family:var(--serif);font-style:italic;font-weight:600;font-size:128px;line-height:.9;color:var(--olive);letter-spacing:-.03em;margin-bottom:8px}
+.hero-label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--tx2);margin-bottom:20px}
+.hero-claim{font-family:var(--serif);font-style:italic;font-weight:400;font-size:28px;line-height:1.35;color:var(--tx1);margin-bottom:20px;max-width:540px}
+.hero-claim em{font-style:italic;color:var(--olive)}
+.hero-meta{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--tx3)}
+.pyramid{display:flex;flex-direction:column;gap:14px;align-self:end}
+.pyr-row{padding:14px 16px;background:var(--surface);border-left:2px solid var(--border)}
+.pyr-row.answer{border-left-color:var(--olive)}
+.pyr-row.argument{border-left-color:var(--earth)}
+.pyr-row.evidence{border-left-color:var(--glacier)}
+.pyr-tag{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--tx3);margin-bottom:4px}
+.pyr-txt{font-size:13px;color:var(--tx1);line-height:1.4}
+.pyr-row.answer .pyr-txt{font-family:var(--serif);font-style:italic;font-size:15px}
+
+/* matrix */
+.matrix{position:relative;z-index:1;margin-bottom:56px}
+.matrix-head{display:grid;grid-template-columns:8fr 4fr;gap:48px;margin-bottom:20px;align-items:baseline}
+.matrix-title{font-family:var(--serif);font-weight:600;font-size:22px;color:var(--tx1)}
+.matrix-sub{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--tx2);text-align:right}
+table{width:100%;border-collapse:collapse;background:var(--surface)}
+th,td{padding:14px 12px;text-align:left;border-bottom:1px solid var(--border)}
+th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--tx2);font-weight:400;border-bottom:1px solid var(--border-strong);background:var(--surface-raised)}
+th:first-child{text-align:left}
+th:not(:first-child),td:not(:first-child){text-align:center}
+td.city{font-family:var(--serif);font-weight:600;font-size:15px;color:var(--tx1);white-space:nowrap}
+td.city .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;vertical-align:middle}
+td.city .dot.best{background:var(--olive)}
+td.city .dot.worst{background:var(--orange)}
+.cell{display:flex;flex-direction:column;align-items:center;gap:6px}
+.cell-val{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--tx1);letter-spacing:.02em}
+.cell-bar{width:56px;height:4px;background:var(--border);position:relative;overflow:hidden}
+.cell-bar .fill{height:100%;background:var(--olive)}
+.cell-bar .fill.earth{background:var(--earth)}
+.cell-bar .fill.glacier{background:var(--glacier)}
+.cell-tag{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:var(--tx3)}
+tr.active td{background:rgba(90,107,61,.03)}
+tr:last-child td{border-bottom:none}
+
+/* reading guide */
+.guide{position:relative;z-index:1;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:16px;margin-bottom:48px}
+.guide-card{padding:20px;background:var(--surface);border-top:2px solid var(--border)}
+.guide-card.main{border-top-color:var(--olive);grid-row:span 1}
+.guide-card.g2{border-top-color:var(--earth)}
+.guide-card.g3{border-top-color:var(--glacier)}
+.guide-card.g4{border-top-color:var(--rock)}
+.guide-tag{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--tx3);margin-bottom:8px}
+.guide-city{font-family:var(--serif);font-style:italic;font-weight:600;font-size:20px;color:var(--tx1);margin-bottom:4px}
+.guide-card.main .guide-city{font-size:26px;color:var(--olive)}
+.guide-val{font-family:var(--mono);font-size:12px;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em}
+.guide-note{font-size:12px;color:var(--tx2);margin-top:8px;line-height:1.4}
+
+/* evidence */
+.evidence{position:relative;z-index:1;display:grid;grid-template-columns:8fr 4fr;gap:48px;padding-top:32px;border-top:1px solid var(--border)}
+.ev-title{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--tx3);margin-bottom:10px}
+.ev-body{font-size:13px;color:var(--tx2);line-height:1.6}
+.ev-legend{display:flex;flex-direction:column;gap:8px}
+.leg-row{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--tx2)}
+.leg-swatch{width:24px;height:6px}
+.leg-swatch.olive{background:var(--olive)}
+.leg-swatch.earth{background:var(--earth)}
+.leg-swatch.glacier{background:var(--glacier)}
+
+@media(max-width:760px){
+  .wrap{padding:40px 20px}
+  .hero,.matrix-head,.evidence{grid-template-columns:1fr;gap:24px}
+  .guide{grid-template-columns:1fr}
+  .ghost{font-size:200px;right:-10px}
+  th,td{padding:10px 6px}
+  td.city{font-size:13px}
+  .cell-bar{width:40px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="ghost">域</div>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-num">8</div>
+    <div class="hero-label">CITY × METRIC · 2026 Q2</div>
+    <div class="hero-claim">合肥达成 <em>95%</em> 领跑八城，南昌 <em>70%</em> 垫底——中部职场产能差 <em>25 点</em>，资源该往哪倾斜一目了然。</div>
+    <div class="hero-meta">2026-04 ~ 06 · 金条产线 · 8 职场 · 1,240 坐席</div>
+  </div>
+  <div class="pyramid">
+    <div class="pyr-row answer">
+      <div class="pyr-tag">Answer</div>
+      <div class="pyr-txt">合肥最佳，南昌待整顿</div>
+    </div>
+    <div class="pyr-row argument">
+      <div class="pyr-tag">Argument</div>
+      <div class="pyr-txt">4 指标横向对比，达成率三色分档定位梯队</div>
+    </div>
+    <div class="pyr-row evidence">
+      <div class="pyr-tag">Evidence</div>
+      <div class="pyr-txt">坐席系统日报 · 2026 Q2 汇总</div>
+    </div>
+  </div>
+</section>
+
+<section class="matrix">
+  <div class="matrix-head">
+    <div class="matrix-title">8 城市职场热力矩阵</div>
+    <div class="matrix-sub">每格 · 值 + 4px mini bar · 三色分档</div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>职场</th>
+        <th>达成率</th>
+        <th>坐席数</th>
+        <th>转化率</th>
+        <th>人均产能</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="active">
+        <td class="city"><span class="dot best"></span>合肥</td>
+        <td><div class="cell"><div class="cell-val">95%</div><div class="cell-bar"><div class="fill" style="width:95%"></div></div><div class="cell-tag">best</div></div></td>
+        <td><div class="cell"><div class="cell-val">186</div><div class="cell-bar"><div class="fill" style="width:93%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">4.2%</div><div class="cell-bar"><div class="fill" style="width:88%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥8.6K</div><div class="cell-bar"><div class="fill" style="width:96%"></div></div><div class="cell-tag">best</div></div></td>
+      </tr>
+      <tr>
+        <td class="city">成都</td>
+        <td><div class="cell"><div class="cell-val">92%</div><div class="cell-bar"><div class="fill" style="width:92%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">162</div><div class="cell-bar"><div class="fill" style="width:81%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">4.0%</div><div class="cell-bar"><div class="fill" style="width:83%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥8.1K</div><div class="cell-bar"><div class="fill" style="width:90%"></div></div><div class="cell-tag">—</div></div></td>
+      </tr>
+      <tr>
+        <td class="city">武汉</td>
+        <td><div class="cell"><div class="cell-val">88%</div><div class="cell-bar"><div class="fill earth" style="width:88%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">174</div><div class="cell-bar"><div class="fill earth" style="width:87%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">3.8%</div><div class="cell-bar"><div class="fill earth" style="width:79%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥7.4K</div><div class="cell-bar"><div class="fill earth" style="width:82%"></div></div><div class="cell-tag">—</div></div></td>
+      </tr>
+      <tr>
+        <td class="city">西安</td>
+        <td><div class="cell"><div class="cell-val">85%</div><div class="cell-bar"><div class="fill earth" style="width:85%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">148</div><div class="cell-bar"><div class="fill earth" style="width:74%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">3.5%</div><div class="cell-bar"><div class="fill earth" style="width:73%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥6.9K</div><div class="cell-bar"><div class="fill earth" style="width:77%"></div></div><div class="cell-tag">—</div></div></td>
+      </tr>
+      <tr>
+        <td class="city">郑州</td>
+        <td><div class="cell"><div class="cell-val">82%</div><div class="cell-bar"><div class="fill earth" style="width:82%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">156</div><div class="cell-bar"><div class="fill earth" style="width:78%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">3.3%</div><div class="cell-bar"><div class="fill earth" style="width:69%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥6.5K</div><div class="cell-bar"><div class="fill earth" style="width:72%"></div></div><div class="cell-tag">—</div></div></td>
+      </tr>
+      <tr>
+        <td class="city">长沙</td>
+        <td><div class="cell"><div class="cell-val">78%</div><div class="cell-bar"><div class="fill glacier" style="width:78%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">138</div><div class="cell-bar"><div class="fill glacier" style="width:69%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">3.0%</div><div class="cell-bar"><div class="fill glacier" style="width:63%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥5.9K</div><div class="cell-bar"><div class="fill glacier" style="width:66%"></div></div><div class="cell-tag">—</div></div></td>
+      </tr>
+      <tr>
+        <td class="city">重庆</td>
+        <td><div class="cell"><div class="cell-val">75%</div><div class="cell-bar"><div class="fill glacier" style="width:75%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">144</div><div class="cell-bar"><div class="fill glacier" style="width:72%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">2.8%</div><div class="cell-bar"><div class="fill glacier" style="width:58%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥5.5K</div><div class="cell-bar"><div class="fill glacier" style="width:61%"></div></div><div class="cell-tag">—</div></div></td>
+      </tr>
+      <tr>
+        <td class="city"><span class="dot worst"></span>南昌</td>
+        <td><div class="cell"><div class="cell-val">70%</div><div class="cell-bar"><div class="fill glacier" style="width:70%"></div></div><div class="cell-tag">worst</div></div></td>
+        <td><div class="cell"><div class="cell-val">132</div><div class="cell-bar"><div class="fill glacier" style="width:66%"></div></div><div class="cell-tag">—</div></div></td>
+        <td><div class="cell"><div class="cell-val">2.5%</div><div class="cell-bar"><div class="fill glacier" style="width:52%"></div></div><div class="cell-tag">worst</div></div></td>
+        <td><div class="cell"><div class="cell-val">¥5.0K</div><div class="cell-bar"><div class="fill glacier" style="width:56%"></div></div><div class="cell-tag">worst</div></div></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="guide">
+  <div class="guide-card main">
+    <div class="guide-tag">Best · 主力</div>
+    <div class="guide-city">合肥</div>
+    <div class="guide-val">95% · ¥8.6K · 186 席</div>
+    <div class="guide-note">达成率、人均产能双 best。转化漏斗成熟，可作为标杆复盘输出最佳实践，向重庆/南昌复制。</div>
+  </div>
+  <div class="guide-card g2">
+    <div class="guide-tag">Stable · 协同</div>
+    <div class="guide-city">武汉</div>
+    <div class="guide-val">88% · ¥7.4K</div>
+    <div class="guide-note">中部第二梯队，坐席规模最大。</div>
+  </div>
+  <div class="guide-card g3">
+    <div class="guide-tag">Watch · 观察</div>
+    <div class="guide-city">长沙</div>
+    <div class="guide-val">78% · ¥5.9K</div>
+    <div class="guide-note">滑入 glacier 档，连续两月下行。</div>
+  </div>
+  <div class="guide-card g4">
+    <div class="guide-tag">Worst · 整顿</div>
+    <div class="guide-city">南昌</div>
+    <div class="guide-val">70% · ¥5.0K</div>
+    <div class="guide-note">4 指标 3 项 worst，建议驻场辅导。</div>
+  </div>
+</section>
+
+<section class="evidence">
+  <div>
+    <div class="ev-title">Evidence · 数据来源</div>
+    <div class="ev-body">数据周期 2026-04-01 至 2026-06-30，取自坐席管理系统日报汇总。达成率 = 实际放款/目标放款；转化率 = 成功外呼/接通；人均产能 = 月放款/坐席数。8 职场均为金条产线自有坐席，合计 1,240 席。三色分档阈值：olive ≥90% · earth 80–89% · glacier <80%。</div>
+  </div>
+  <div>
+    <div class="ev-title">Legend · 分档</div>
+    <div class="ev-legend">
+      <div class="leg-row"><span class="leg-swatch olive"></span>olive · 领跑 ≥90%</div>
+      <div class="leg-row"><span class="leg-swatch earth"></span>earth · 中段 80–89%</div>
+      <div class="leg-row"><span class="leg-swatch glacier"></span>glacier · 待提 <80%</div>
+    </div>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

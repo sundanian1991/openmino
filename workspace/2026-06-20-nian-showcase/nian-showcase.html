@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nian Design — 供应商管理全景</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & TOKENS ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Primary 80% */
+  --darkgray: #2C2C2C;
+  --olive: #4A5D3A;
+  --earth: #8B7355;
+  /* Accent 10% */
+  --yellow: #FFD100;
+  --orange: #E55B2B;
+  /* Scene 10% */
+  --glacier: #2A4A5A;
+  --rock: #808080;
+
+  /* Surfaces */
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-raised: #F5F5F0;
+  --border: #E5E5E0;
+  --border-strong: #C0C0B8;
+
+  /* Text */
+  --text-display: #2d3142;
+  --text-primary: #222222;
+  --text-secondary: #8A7D6E;
+  --text-muted: #b0a898;
+
+  /* Status */
+  --error: #C62828;
+  --success: #2E7D32;
+  --warning: #F9A825;
+
+  /* Fonts */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-data: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ===== NOISE TEXTURE (Scandinavian craft feel) ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== NAV ===== */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(250,250,248,0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+}
+.nav-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text-display);
+  letter-spacing: -0.01em;
+}
+.nav-links {
+  display: flex;
+  gap: var(--space-lg);
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+.nav-links a:hover { color: var(--text-secondary); }
+.nav-links a.active { color: var(--text-primary); }
+.nav-links a.active::after {
+  content: '';
+  display: block;
+  height: 2px;
+  background: var(--darkgray);
+  margin-top: 2px;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== HERO — Asymmetric: Playfair 120px left, data stack right ===== */
+.hero {
+  padding: var(--space-4xl) 0 var(--space-3xl);
+  border-bottom: 1px solid var(--border);
+}
+.hero-inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3xl);
+  align-items: end;
+}
+.hero-left {}
+.hero-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(72px, 10vw, 120px);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--text-display);
+}
+.hero-subtitle {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 400px;
+  margin-top: var(--space-md);
+}
+.hero-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-sm);
+}
+.hero-stat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+.hero-stat-val {
+  font-family: var(--font-data);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text-display);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hero-stat-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.hero-stat-val.olive { color: var(--olive); }
+.hero-stat-val.orange { color: var(--orange); }
+
+/* ===== SECTION ===== */
+.section {
+  padding: var(--space-3xl) 0;
+  border-bottom: 1px solid var(--border);
+}
+.section-header {
+  margin-bottom: var(--space-2xl);
+}
+.section-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+.section-title {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-display);
+}
+
+/* ===== DECORATIVE NUMBER (one per page — the "break") ===== */
+.deco-section {
+  position: relative;
+  overflow: hidden;
+}
+.deco-section .deco-bg {
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  font-family: var(--font-display);
+  font-size: 160px;
+  font-weight: 700;
+  color: var(--text-display);
+  opacity: 0.03;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ===== DATA TABLE ===== */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.tbl th {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 400;
+  border-bottom: 1px solid var(--border-strong);
+}
+.tbl td {
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.tbl__num {
+  font-family: var(--font-data);
+  text-align: right;
+  font-weight: 500;
+}
+.tbl__num.good { color: var(--olive); }
+.tbl__num.warn { color: var(--orange); }
+.tbl__num.bad { color: var(--error); }
+.tbl tr:hover td { background: var(--surface-raised); }
+
+/* ===== SPARKLINE TABLE ===== */
+.spark-tbl { width: 100%; border-collapse: collapse; }
+.spark-tbl th {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 8px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--border-strong);
+}
+.spark-tbl th:nth-child(3),
+.spark-tbl th:nth-child(4),
+.spark-tbl th:nth-child(5) { text-align: right; }
+.spark-tbl td {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.spark-tbl td:nth-child(3),
+.spark-tbl td:nth-child(4),
+.spark-tbl td:nth-child(5) { text-align: right; }
+.spark-tbl tr:hover td { background: rgba(74,93,58,0.02); }
+
+.td-name { font-weight: 600; color: var(--text-primary); font-size: 14px; }
+.td-sub {
+  font-family: var(--font-data);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+.td-val {
+  font-family: var(--font-data);
+  font-weight: 500;
+  font-size: 16px;
+}
+.td-val.good { color: var(--olive); }
+.td-val.warn { color: var(--orange); }
+.td-val.bad { color: var(--error); }
+.td-change {
+  font-family: var(--font-data);
+  font-size: 11px;
+}
+.td-change.up { color: var(--olive); }
+.td-change.down { color: var(--error); }
+.td-peak {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* ===== SEGMENTED PROGRESS BARS ===== */
+.sbar { margin-bottom: var(--space-lg); }
+.sbar__h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.sbar__lbl {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.sbar__val {
+  font-family: var(--font-data);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-display);
+}
+.sbar__track {
+  display: flex;
+  gap: 3px;
+  height: 12px;
+}
+.sbar__s {
+  flex: 1;
+  background: var(--border);
+  border-radius: 1px;
+  transition: background 150ms ease-out;
+}
+.sbar__s--f { background: var(--darkgray); }
+.sbar__s--h { background: var(--olive); }
+.sbar__s--o { background: var(--orange); }
+.sbar__s--e { background: var(--error); }
+
+/* ===== COMPARISON BAR ===== */
+.cmp-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 60px;
+  align-items: center;
+  gap: var(--space-md);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cmp-label {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+.bar-track {
+  height: 4px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.bar-fill.primary { background: var(--darkgray); z-index: 2; }
+.bar-fill.secondary { background: var(--border-strong); z-index: 1; }
+.cmp-val {
+  font-family: var(--font-data);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--olive);
+  text-align: right;
+}
+
+/* ===== WIDGET CARDS ===== */
+.widget-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+}
+.widget {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px;
+  transition: border-color 150ms ease-out;
+}
+.widget:hover { border-color: var(--border-strong); }
+.widget__cat {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.widget__hero {
+  font-family: var(--font-data);
+  font-size: 36px;
+  font-weight: 500;
+  color: var(--text-display);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.widget__unit {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+.widget__ctx {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+  line-height: 1.4;
+}
+
+/* ===== INSIGHT CALLOUT ===== */
+.callout {
+  padding: 16px 20px;
+  border-left: 2px solid var(--orange);
+  background: var(--surface);
+  margin-top: var(--space-xl);
+}
+.callout-title {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: var(--space-sm);
+}
+.callout-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.callout-text strong { color: var(--text-primary); font-weight: 600; }
+
+/* ===== TIMELINE ===== */
+.timeline { margin-top: var(--space-lg); }
+.day-label {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-strong);
+}
+.tl-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 160px;
+  gap: var(--space-md);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+  transition: background 150ms ease-out;
+}
+.tl-row:hover { background: var(--surface); }
+.tl-time {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-muted);
+  padding-top: 2px;
+}
+.tl-title {
+  font-size: 14px;
+  color: var(--text-display);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.tl-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.tl-speaker {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: right;
+}
+.tl-tag {
+  display: inline-block;
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.tl-tag.highlight {
+  border-color: var(--olive);
+  color: var(--olive);
+}
+
+/* ===== MODULE CARDS ===== */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+.module-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: var(--space-lg);
+  transition: border-color 150ms ease-out;
+}
+.module-card:hover { border-color: var(--border-strong); }
+.module-header {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+.module-num {
+  font-family: var(--font-data);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--text-display);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  min-width: 40px;
+}
+.module-title {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-display);
+  margin-bottom: 2px;
+}
+.module-meta {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.module-question {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-raised);
+  border-left: 2px solid var(--olive);
+  border-radius: 0 4px 4px 0;
+}
+.module-topics {
+  list-style: none;
+}
+.module-topics li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding: 3px 0;
+  padding-left: var(--space-md);
+  position: relative;
+}
+.module-topics li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--border-strong);
+}
+.module-topics li strong { color: var(--text-primary); font-weight: 500; }
+
+/* ===== PIPELINE / FLOW ===== */
+.pipe {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: var(--space-lg) 0;
+}
+.pipe__stage {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 20px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  transition: border-color 150ms ease-out;
+}
+.pipe__stage:hover { border-color: var(--border-strong); }
+.pipe__stage--active {
+  border-color: var(--olive);
+  background: rgba(74,93,58,0.04);
+}
+.pipe__stage--done {
+  border-color: var(--olive);
+}
+.pipe__label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.pipe__value {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.pipe__stage--active .pipe__value { color: var(--text-primary); font-weight: 500; }
+.pipe__stage--done .pipe__value { color: var(--olive); }
+.pipe__arrow {
+  font-size: 16px;
+  color: var(--text-muted);
+  padding: 0 var(--space-sm);
+}
+
+/* ===== ROUNDTABLE ===== */
+.roundtable-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+}
+.rt-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: var(--space-lg);
+}
+.rt-card .rt-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+.rt-card .rt-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  padding: var(--space-2xl) 0;
+  border-top: 1px solid var(--border);
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-text {
+  font-family: var(--font-data);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-right { flex-direction: row; flex-wrap: wrap; gap: var(--space-lg); }
+  .widget-grid { grid-template-columns: repeat(2, 1fr); }
+  .modules-grid { grid-template-columns: 1fr; }
+  .roundtable-grid { grid-template-columns: 1fr; }
+  .tl-row { grid-template-columns: 80px 1fr; }
+  .tl-speaker { grid-column: 2; text-align: left; }
+  .cmp-row { grid-template-columns: 1fr; }
+  .pipe { flex-wrap: wrap; gap: var(--space-sm); }
+  .pipe__arrow { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-brand">Nian</span>
+    <ul class="nav-links">
+      <li><a href="#overview" class="active">全景</a></li>
+      <li><a href="#trends">趋势</a></li>
+      <li><a href="#process">流程</a></li>
+      <li><a href="#modules">模块</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO — Asymmetric: Playfair 120px left, data stack right -->
+<section class="hero" id="overview">
+  <div class="container reveal">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-label">Supplier Management · Q2 2026</div>
+        <h1 class="hero-title">6</h1>
+        <p class="hero-subtitle">六家核心供应商，3亿+职场规模。从准入到清退，全链路管理。</p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-stat">
+          <span class="hero-stat-val olive">91.2%</span>
+          <span class="hero-stat-label">Overall Achievement</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-val">¥312M</span>
+          <span class="hero-stat-label">Total GMV</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-val orange">3</span>
+          <span class="hero-stat-label">Below Target</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-val">5,174</span>
+          <span class="hero-stat-label">Total Headcount</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WIDGET GRID — 4 key metrics -->
+<section class="section">
+  <div class="container reveal">
+    <div class="widget-grid">
+      <div class="widget">
+        <span class="widget__cat">Top Performer</span>
+        <span class="widget__hero" style="color:var(--olive)">108%</span>
+        <span class="widget__unit">毅航 · 合肥</span>
+        <span class="widget__ctx">复贷 S 率 50%，全池 TOP10 包揽</span>
+      </div>
+      <div class="widget">
+        <span class="widget__cat">Compliance</span>
+        <span class="widget__hero">62.5%</span>
+        <span class="widget__unit">达标率</span>
+        <span class="widget__ctx">6 家供应商中 4 家合规</span>
+      </div>
+      <div class="widget">
+        <span class="widget__cat">Max Capacity</span>
+        <span class="widget__hero">320</span>
+        <span class="widget__unit">Head Count · 合肥</span>
+        <span class="widget__ctx">毅航合肥职场最大产能</span>
+      </div>
+      <div class="widget">
+        <span class="widget__cat">Risk</span>
+        <span class="widget__hero" style="color:var(--orange)">-8.7%</span>
+        <span class="widget__unit">Worst MoM · 岐力</span>
+        <span class="widget__ctx">连续 3 个月下滑，需介入</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEGMENTED PROGRESS BARS -->
+<section class="section deco-section">
+  <div class="container reveal">
+    <span class="deco-bg">S</span>
+    <div class="section-header">
+      <div class="section-label">Achievement Ranking</div>
+      <h2 class="section-title">赛马达成率</h2>
+    </div>
+
+    <div class="sbar">
+      <div class="sbar__h">
+        <span class="sbar__lbl">毅航 · YIHANG</span>
+        <span class="sbar__val" style="color:var(--olive)">108%</span>
+      </div>
+      <div class="sbar__track">
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--h"></div>
+        <div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--h"></div>
+        <div class="sbar__s"></div><div class="sbar__s"></div>
+      </div>
+    </div>
+
+    <div class="sbar">
+      <div class="sbar__h">
+        <span class="sbar__lbl">伽玛 · GAMMA</span>
+        <span class="sbar__val">94%</span>
+      </div>
+      <div class="sbar__track">
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s"></div><div class="sbar__s"></div>
+      </div>
+    </div>
+
+    <div class="sbar">
+      <div class="sbar__h">
+        <span class="sbar__lbl">毛毛虫 · MAOCHONG</span>
+        <span class="sbar__val">82%</span>
+      </div>
+      <div class="sbar__track">
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div>
+      </div>
+    </div>
+
+    <div class="sbar">
+      <div class="sbar__h">
+        <span class="sbar__lbl">翰锐 · HANRUI</span>
+        <span class="sbar__val">76%</span>
+      </div>
+      <div class="sbar__track">
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div>
+      </div>
+    </div>
+
+    <div class="sbar">
+      <div class="sbar__h">
+        <span class="sbar__lbl">赛维斯 · SAIWEISI</span>
+        <span class="sbar__val" style="color:var(--orange)">68%</span>
+      </div>
+      <div class="sbar__track">
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div>
+        <div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div>
+      </div>
+    </div>
+
+    <div class="sbar">
+      <div class="sbar__h">
+        <span class="sbar__lbl">岐力 · QILI</span>
+        <span class="sbar__val" style="color:var(--error)">55%</span>
+      </div>
+      <div class="sbar__track">
+        <div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div>
+        <div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div><div class="sbar__s sbar__s--e"></div>
+        <div class="sbar__s sbar__s--e"></div>
+        <div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div>
+      </div>
+    </div>
+
+    <!-- COMPARISON BARS -->
+    <div style="margin-top:var(--space-2xl);">
+      <div class="section-label">Benchmark vs Actual</div>
+      <div style="margin-top:var(--space-md);">
+        <div class="cmp-row">
+          <div class="cmp-label">复贷 S 率</div>
+          <div class="bar-track"><div class="bar-fill primary" style="width:50%"></div><div class="bar-fill secondary" style="width:20%"></div></div>
+          <div class="cmp-val">2.5x</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">新人 S+A 率</div>
+          <div class="bar-track"><div class="bar-fill primary" style="width:92%"></div><div class="bar-fill secondary" style="width:38%"></div></div>
+          <div class="cmp-val">2.4x</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">复贷中位得分</div>
+          <div class="bar-track"><div class="bar-fill primary" style="width:73%"></div><div class="bar-fill secondary" style="width:50%"></div></div>
+          <div class="cmp-val">1.5x</div>
+        </div>
+        <div class="cmp-row">
+          <div class="cmp-label">首贷 S 率</div>
+          <div class="bar-track"><div class="bar-fill primary" style="width:27%"></div><div class="bar-fill secondary" style="width:20%"></div></div>
+          <div class="cmp-val">1.4x</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">核心判断</div>
+      <div class="callout-text">毅航不是几个人强，是<strong>组织能力强</strong>。128 人参评，复贷 S 率 50%；3 月内新人进来 <strong>92% 能拿 S+A</strong>；全池 TOP10 全出自毅航。方法论可复制。</div>
+    </div>
+  </div>
+</section>
+
+<!-- SPARKLINE TABLE — 12-month trends -->
+<section class="section" id="trends">
+  <div class="container reveal">
+    <div class="section-header">
+      <div class="section-label">12-Month Trend</div>
+      <h2 class="section-title">趋势线</h2>
+    </div>
+
+    <table class="spark-tbl">
+      <thead>
+        <tr>
+          <th>Supplier</th>
+          <th>Trend (12M)</th>
+          <th>Current</th>
+          <th>MoM</th>
+          <th>Peak</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="td-name">毅航</div><div class="td-sub">YIHANG · 合肥</div></td>
+          <td>
+            <svg width="160" height="32" viewBox="0 0 160 32">
+              <polyline points="0,26 14,22 29,24 43,20 57,18 71,14 86,16 100,10 114,8 129,6 143,4 160,2" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="160" cy="2" r="2.5" fill="#4A5D3A"/>
+            </svg>
+          </td>
+          <td class="td-val good">108%</td>
+          <td class="td-change up">+12.3%</td>
+          <td class="td-peak">Mar 118%</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">伽玛</div><div class="td-sub">GAMMA · 合肥</div></td>
+          <td>
+            <svg width="160" height="32" viewBox="0 0 160 32">
+              <polyline points="0,14 14,12 29,16 43,10 57,12 71,8 86,10 100,6 114,8 129,4 143,6 160,4" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="160" cy="4" r="2.5" fill="#2C2C2C"/>
+            </svg>
+          </td>
+          <td class="td-val good">94%</td>
+          <td class="td-change up">+3.1%</td>
+          <td class="td-peak">Oct 97%</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">毛毛虫</div><div class="td-sub">MAOCHONG · 北京</div></td>
+          <td>
+            <svg width="160" height="32" viewBox="0 0 160 32">
+              <polyline points="0,10 14,12 29,8 43,14 57,10 71,12 86,14 100,16 114,14 129,16 143,14 160,12" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="160" cy="12" r="2.5" fill="#808080"/>
+            </svg>
+          </td>
+          <td class="td-val">82%</td>
+          <td class="td-change" style="color:var(--text-muted)">-0.8%</td>
+          <td class="td-peak">Apr 89%</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">翰锐</div><div class="td-sub">HANRUI · 武汉</div></td>
+          <td>
+            <svg width="160" height="32" viewBox="0 0 160 32">
+              <polyline points="0,8 14,10 29,12 43,10 57,14 71,16 86,18 100,16 114,18 129,16 143,18 160,16" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="160" cy="16" r="2.5" fill="#808080"/>
+            </svg>
+          </td>
+          <td class="td-val">76%</td>
+          <td class="td-change" style="color:var(--text-muted)">-1.2%</td>
+          <td class="td-peak">Jan 84%</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">赛维斯</div><div class="td-sub">SAIWEISI · 成都</div></td>
+          <td>
+            <svg width="160" height="32" viewBox="0 0 160 32">
+              <polyline points="0,6 14,8 29,10 43,12 57,14 71,16 86,18 100,20 114,22 129,24 143,22 160,20" fill="none" stroke="#E55B2B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="160" cy="20" r="2.5" fill="#E55B2B"/>
+            </svg>
+          </td>
+          <td class="td-val warn">68%</td>
+          <td class="td-change down">-4.5%</td>
+          <td class="td-peak">Jan 82%</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">岐力</div><div class="td-sub">QILI · 西安</div></td>
+          <td>
+            <svg width="160" height="32" viewBox="0 0 160 32">
+              <polyline points="0,4 14,6 29,8 43,10 57,12 71,14 86,18 100,20 114,22 129,24 143,28 160,30" fill="none" stroke="#C62828" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="160" cy="30" r="2.5" fill="#C62828"/>
+            </svg>
+          </td>
+          <td class="td-val bad">55%</td>
+          <td class="td-change down">-8.7%</td>
+          <td class="td-peak">Jan 72%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FLOW PIPELINE — Supplier lifecycle -->
+<section class="section" id="process">
+  <div class="container reveal">
+    <div class="section-header">
+      <div class="section-label">Lifecycle</div>
+      <h2 class="section-title">供应商管理流程</h2>
+    </div>
+
+    <div class="pipe">
+      <div class="pipe__stage pipe__stage--done">
+        <span class="pipe__label">Stage 01</span>
+        <span class="pipe__value">准入评估</span>
+      </div>
+      <span class="pipe__arrow">&rsaquo;</span>
+      <div class="pipe__stage pipe__stage--done">
+        <span class="pipe__label">Stage 02</span>
+        <span class="pipe__value">试运营</span>
+      </div>
+      <span class="pipe__arrow">&rsaquo;</span>
+      <div class="pipe__stage pipe__stage--active">
+        <span class="pipe__label">Stage 03</span>
+        <span class="pipe__value">正式运营</span>
+      </div>
+      <span class="pipe__arrow">&rsaquo;</span>
+      <div class="pipe__stage">
+        <span class="pipe__label">Stage 04</span>
+        <span class="pipe__value">绩效评估</span>
+      </div>
+      <span class="pipe__arrow">&rsaquo;</span>
+      <div class="pipe__stage">
+        <span class="pipe__label">Stage 05</span>
+        <span class="pipe__value">分级管理</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE CARDS — Sharing session requirements -->
+<section class="section" id="modules">
+  <div class="container reveal">
+    <div class="section-header">
+      <div class="section-label">Knowledge Sharing</div>
+      <h2 class="section-title">联盟分享会模块</h2>
+    </div>
+
+    <div class="modules-grid">
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-num">01</span>
+          <div>
+            <div class="module-title">经营心得与组织演进</div>
+            <div class="module-meta">毅航老板曹总 · 40 min</div>
+          </div>
+        </div>
+        <div class="module-question">哪些关键决策让团队从"能干活"到"持续出业绩"？</div>
+        <ul class="module-topics">
+          <li><strong>发展历程</strong> — 从合作到现在的规模，经历了哪几个阶段</li>
+          <li><strong>关键决策回顾</strong> — 有没有"差点做错但及时调整"的时刻</li>
+          <li><strong>组织架构</strong> — 组长的选拔标准、组长和坐席的比例</li>
+          <li><strong>文化建设</strong> — 怎么让坐席有归属感</li>
+        </ul>
+      </div>
+
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-num">02</span>
+          <div>
+            <div class="module-title">基本法、激励与绩优留存</div>
+            <div class="module-meta">曹总 + 运营主管 · 40 min</div>
+          </div>
+        </div>
+        <div class="module-question">提成/奖金怎么设，坐席才愿意多打、打好？</div>
+        <ul class="module-topics">
+          <li><strong>基本法结构</strong> — 底薪/提成/奖金的占比</li>
+          <li><strong>绩优留存</strong> — MOB12+ 老员工 S 率是 MOB1-3 的 2.5 倍</li>
+          <li><strong>淘汰机制</strong> — 连续 C 级怎么处理</li>
+        </ul>
+      </div>
+
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-num">03</span>
+          <div>
+            <div class="module-title">新人培养体系</div>
+            <div class="module-meta">培训主管 + 带教 · 40 min</div>
+          </div>
+        </div>
+        <div class="module-question">为什么毅航新人 S+A 率能到 92.1%？</div>
+        <ul class="module-topics">
+          <li><strong>入职第一周</strong> — Day 1-3 话术培训、Day 4-7 模拟拨打</li>
+          <li><strong>岗中带教</strong> — 一对一绑定、带教筛选标准</li>
+          <li><strong>客群分配策略</strong> — 新人"新手保护期"</li>
+        </ul>
+      </div>
+
+      <div class="module-card">
+        <div class="module-header">
+          <span class="module-num">04</span>
+          <div>
+            <div class="module-title">复贷客群经营与拨打 SOP</div>
+            <div class="module-meta">组长 / 绩优坐席 · 40 min</div>
+          </div>
+        </div>
+        <div class="module-question">复贷 S 率 50%、TOP10 全出自毅航，靠的是什么？</div>
+        <ul class="module-topics">
+          <li><strong>客群分层</strong> — 按什么维度分层、分成几层</li>
+          <li><strong>拨打节奏</strong> — 一天的节奏、一周的节奏</li>
+          <li><strong>T0 转化</strong> — 什么场景触发当天回拨</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUNDTABLE -->
+<section class="section">
+  <div class="container reveal">
+    <div class="section-header">
+      <div class="section-label">Closing</div>
+      <h2 class="section-title">圆桌讨论收口</h2>
+    </div>
+
+    <div class="roundtable-grid">
+      <div class="rt-card">
+        <div class="rt-label">收口 01</div>
+        <div class="rt-text">各组动作计划汇总</div>
+      </div>
+      <div class="rt-card">
+        <div class="rt-label">收口 02</div>
+        <div class="rt-text">京东侧明确后续跟进计划</div>
+      </div>
+      <div class="rt-card">
+        <div class="rt-label">收口 03</div>
+        <div class="rt-text">下一次联盟分享的时间和主题方向</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-text">Nian Design System · Supplier Management</span>
+      <span class="footer-text">Playfair Display · Inter · JetBrains Mono</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

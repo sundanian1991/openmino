@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dark Mode Rules · 可视化验证</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ─── Token Root（Haglofs 15 色 + .dark 覆写）─── */
+:root {
+  --color-offwhite: #F5F3EF; --color-cream: #E8E4DD; --color-sand: #C4B8A8; --color-stone: #8A7D6E;
+  --color-charcoal: #2D2A26; --color-black: #1A1816;
+  --color-forest: #4A6741; --color-moss: #7A9B6D; --color-slate: #5B6B7A; --color-steel: #7A8B9B;
+  --color-signal-red: #E8453C; --color-signal-orange: #E87A3C; --color-signal-yellow: #E8B83C; --color-signal-blue: #3C7AE8;
+  --success: var(--color-moss); --warning: var(--color-signal-orange); --error: var(--color-signal-red); --link: var(--color-signal-blue);
+  --bg: var(--color-offwhite); --surface: #FFFFFF; --surface-raised: var(--color-cream);
+  --border: var(--color-sand); --border-strong: var(--color-stone);
+  --text-display: var(--color-black); --text-primary: var(--color-charcoal); --text-secondary: var(--color-stone); --text-disabled: #B5AC9D;
+  --primary: var(--color-forest); --primary-2: var(--color-moss); --accent: var(--color-signal-orange); --accent-2: var(--color-signal-yellow);
+  --font-display: 'Playfair Display', Georgia, serif; --font-body: 'Inter', -apple-system, sans-serif; --font-data: 'JetBrains Mono', 'SF Mono', monospace;
+  --r-xs: 2px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px;
+  --s-sm: 8px; --s-md: 16px; --s-lg: 24px; --s-xl: 32px;
+}
+.dark, [data-mode="dark"] {
+  --bg: #1A1816; --surface: #2D2A26; --surface-raised: #38332E;
+  --border: #3D3833; --border-strong: #4D4640;
+  --text-display: #FFFFFF; --text-primary: #E8E4DD; --text-secondary: #9C9388; --text-disabled: #6B635A;
+  --primary: #6B8B5E; --primary-2: #8FAB7F; --accent: #E87A3C; --accent-2: #E8B83C;
+  --success: #8FAB7F; --warning: #E87A3C; --error: #E8453C; --link: #5B8DE8;
+  --color-forest: #6B8B5E; --color-moss: #8FAB7F; --color-slate: #7A8B9B; --color-sand: #4D4640; --color-stone: #6B635A;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
+body { font-family: var(--font-body); background: var(--bg); color: var(--text-primary); line-height: 1.6; padding: 32px; transition: background 250ms, color 250ms; }
+.container { max-width: 960px; margin: 0 auto; }
+h1 { font-family: var(--font-display); font-size: 28px; font-weight: 400; color: var(--text-display); margin-bottom: 8px; }
+.subtitle { font-family: var(--font-data); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 32px; }
+.toggle-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); }
+.toggle-bar label { font-family: var(--font-data); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); cursor: pointer; }
+.toggle { width: 40px; height: 22px; background: var(--border); border-radius: 11px; position: relative; cursor: pointer; transition: background 200ms; }
+.toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform 200ms; }
+.dark .toggle, [data-mode="dark"] .toggle { background: var(--primary); }
+.dark .toggle::after, [data-mode="dark"] .toggle::after { transform: translateX(18px); }
+
+.section { margin-bottom: 48px; }
+.section-title { font-family: var(--font-data); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+/* ─── Component Previews ─── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 20px; }
+.card__num { font-family: var(--font-data); font-size: 28px; font-weight: 500; color: var(--text-display); }
+.card__lbl { font-family: var(--font-data); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); margin-top: 4px; }
+
+.tag { display: inline-block; font-family: var(--font-data); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border: 1px solid var(--border); border-radius: var(--r-xs); color: var(--text-secondary); }
+.tag--a { border-color: var(--text-display); background: var(--text-display); color: var(--bg); }
+.tag--olive { border-color: var(--primary); color: var(--primary); }
+
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; }
+.seg__item { padding: 6px 14px; font-family: var(--font-data); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); cursor: pointer; border-right: 1px solid var(--border); }
+.seg__item:last-child { border-right: none; }
+.seg__item--a { background: var(--text-display); color: var(--bg); }
+
+.btn { font-family: var(--font-body); font-size: 13px; font-weight: 500; padding: 10px 24px; border-radius: var(--r-md); cursor: pointer; border: none; transition: all 150ms; }
+.btn--primary { background: var(--primary); color: #fff; }
+.btn--secondary { background: none; border: 1px solid var(--border); color: var(--text-primary); }
+
+.sbar { display: flex; gap: 2px; height: 8px; }
+.sbar__s { flex: 1; background: var(--border); border-radius: 1px; }
+.sbar__s--f { background: var(--text-display); }
+.sbar__s--h { background: var(--primary); }
+
+.tl { position: relative; padding-left: 24px; }
+.tl::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 1px; background: var(--border); }
+.tl__item { position: relative; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.tl__dot { position: absolute; left: -20px; top: 18px; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); border: 2px solid var(--bg); z-index: 1; }
+.tl__title { font-size: 14px; font-weight: 600; color: var(--text-display); }
+
+.nav-bar { display: flex; gap: 24px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.nav-lnk { font-family: var(--font-data); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); cursor: pointer; text-decoration: none; }
+.nav-lnk--a { color: var(--text-display); border-bottom: 1px solid var(--primary); padding-bottom: 2px; }
+
+.bento { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.bento__c { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: 20px; }
+.bento__num { font-family: var(--font-data); font-size: 24px; font-weight: 500; color: var(--text-display); }
+
+.darkquote { min-height: 200px; display: flex; align-items: center; justify-content: center; background: var(--color-charcoal); color: #fff; padding: 48px 32px; border-radius: var(--r-md); }
+.dark .darkquote, [data-mode="dark"] .darkquote { background: var(--color-black); }
+.darkquote__txt { font-family: var(--font-display); font-size: 22px; font-weight: 400; line-height: 1.5; text-align: center; }
+.darkquote__txt em { color: var(--accent-2); font-style: normal; font-weight: 600; }
+.darkquote__attr { margin-top: 16px; font-family: var(--font-data); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); text-align: center; }
+
+.palette { display: flex; gap: 8px; flex-wrap: wrap; }
+.swatch { width: 48px; height: 48px; border-radius: var(--r-sm); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--font-data); font-size: 8px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+
+.check-list { list-style: none; padding: 0; }
+.check-list li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+.check-list li::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); flex-shrink: 0; }
+.check-list li.warn::before { background: var(--accent); }
+.check-list li.fail::before { background: var(--error); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Dark Mode Rules · 可视化验证</h1>
+<p class="subtitle">Toggle 暗色模式，验证 token 覆写 + 组件适配</p>
+
+<div class="toggle-bar">
+  <label for="darkToggle">Light</label>
+  <div class="toggle" id="darkToggle" onclick="document.body.classList.toggle('dark')"></div>
+  <label for="darkToggle">Dark</label>
+  <span style="margin-left:auto;font-family:var(--font-data);font-size:10px;color:var(--text-disabled)">点击切换 · .dark 类触发</span>
+</div>
+
+<!-- 1. Surface 反转 -->
+<div class="section">
+  <div class="section-title">① Surface 反转（中性阶梯）</div>
+  <div class="palette">
+    <div class="swatch" style="background:var(--surface);color:var(--text-primary);border-color:var(--border)">white</div>
+    <div class="swatch" style="background:var(--bg)">offwhite</div>
+    <div class="swatch" style="background:var(--surface-raised)">cream</div>
+    <div class="swatch" style="background:var(--border)">sand</div>
+    <div class="swatch" style="background:var(--border-strong)">stone</div>
+    <div class="swatch" style="background:var(--text-primary)">char</div>
+    <div class="swatch" style="background:var(--text-display)">black</div>
+  </div>
+</div>
+
+<!-- 2. Text 反转 -->
+<div class="section">
+  <div class="section-title">② Text 反转</div>
+  <div style="background:var(--surface);padding:20px;border-radius:var(--r-md);border:1px solid var(--border)">
+    <p style="font-size:18px;font-weight:600;color:var(--text-display)">text-display · 标题用最亮</p>
+    <p style="color:var(--text-primary)">text-primary · 正文用温润色</p>
+    <p style="color:var(--text-secondary)">text-secondary · 次要信息</p>
+    <p style="color:var(--text-disabled)">text-disabled · 禁用态</p>
+  </div>
+</div>
+
+<!-- 3. 品牌色提亮 -->
+<div class="section">
+  <div class="section-title">③ 品牌色提亮（深底保对比度）</div>
+  <div class="palette">
+    <div class="swatch" style="background:var(--primary)">forest</div>
+    <div class="swatch" style="background:var(--primary-2)">moss</div>
+    <div class="swatch" style="background:var(--accent)">orange</div>
+    <div class="swatch" style="background:var(--accent-2)">yellow</div>
+    <div class="swatch" style="background:var(--color-slate)">slate</div>
+    <div class="swatch" style="background:var(--success)">success</div>
+    <div class="swatch" style="background:var(--error)">error</div>
+  </div>
+</div>
+
+<!-- 4. 组件适配 -->
+<div class="section">
+  <div class="section-title">④ 组件适配 · 模式 A/B/C/D/E</div>
+  <div class="grid">
+    <!-- Card (A) -->
+    <div class="card">
+      <div class="card__num">1,240</div>
+      <div class="card__lbl">Active Users</div>
+    </div>
+    <!-- Tags (E) -->
+    <div class="card">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="tag">Default</span>
+        <span class="tag tag--a">Active</span>
+        <span class="tag tag--olive">Forest</span>
+      </div>
+    </div>
+    <!-- Segmented (C) -->
+    <div class="card">
+      <div class="seg">
+        <div class="seg__item seg__item--a">Day</div>
+        <div class="seg__item">Week</div>
+        <div class="seg__item">Month</div>
+      </div>
+    </div>
+    <!-- Buttons (C) -->
+    <div class="card">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn--primary">Primary</button>
+        <button class="btn btn--secondary">Secondary</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. 数据可视化 -->
+<div class="section">
+  <div class="section-title">⑤ 数据可视化 · 模式 D</div>
+  <div class="card" style="max-width:400px">
+    <div style="font-family:var(--font-data);font-size:10px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase">Segmented Progress</div>
+    <div class="sbar">
+      <div class="sbar__s sbar__s--f" style="flex:3"></div>
+      <div class="sbar__s sbar__s--h" style="flex:2"></div>
+      <div class="sbar__s" style="flex:1"></div>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:8px">
+      <span style="font-family:var(--font-data);font-size:10px;color:var(--text-display)">■ Fill</span>
+      <span style="font-family:var(--font-data);font-size:10px;color:var(--primary)">■ Highlight</span>
+      <span style="font-family:var(--font-data);font-size:10px;color:var(--text-disabled)">■ Neutral</span>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Navigation -->
+<div class="section">
+  <div class="section-title">⑥ Navigation · 模式 C</div>
+  <div class="card">
+    <div class="nav-bar">
+      <a class="nav-lnk nav-lnk--a">Overview</a>
+      <a class="nav-lnk">Details</a>
+      <a class="nav-lnk">History</a>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Bento Grid -->
+<div class="section">
+  <div class="section-title">⑦ Bento Grid · 模式 A+B</div>
+  <div class="bento">
+    <div class="bento__c"><div class="bento__num">27</div><div style="font-size:11px;color:var(--text-secondary)">Books Read</div></div>
+    <div class="bento__c"><div class="bento__num">89%</div><div style="font-size:11px;color:var(--text-secondary)">Retention</div></div>
+  </div>
+</div>
+
+<!-- 8. Timeline -->
+<div class="section">
+  <div class="section-title">⑧ Timeline · 模式 A+D</div>
+  <div class="card">
+    <div class="tl">
+      <div class="tl__item"><div class="tl__dot"></div><div class="tl__title">Phase 1 · Research</div></div>
+      <div class="tl__item"><div class="tl__dot"></div><div class="tl__title">Phase 2 · Build</div></div>
+      <div class="tl__item"><div class="tl__dot"></div><div class="tl__title">Phase 3 · Launch</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. 暗色块面 -->
+<div class="section">
+  <div class="section-title">⑨ 暗色块面（永远深色，非 .dark 模式）</div>
+  <div class="darkquote">
+    <div>
+      <p class="darkquote__txt">衡量阅读的，从来不是书单上的<em>数字</em>，而是被改写的<em>决策</em>。</p>
+      <p class="darkquote__attr">— 2026 阅读复盘</p>
+    </div>
+  </div>
+</div>
+
+<!-- 10. 自检清单 -->
+<div class="section">
+  <div class="section-title">⑩ 自检清单</div>
+  <ul class="check-list">
+    <li>触发方式统一为 .dark 类</li>
+    <li>token-root.css 的 .dark 覆写完整（15 色）</li>
+    <li>组件 CSS 只用语义别名，无硬编码 hex</li>
+    <li>.dark 规则中无旧色名（--olive/--darkgray/--glacier）</li>
+    <li>暗色块面用 charcoal 底 + white+opacity</li>
+    <li>暗色块面在 .dark 下加深为 black</li>
+    <li>品牌色深底对比度 ≥ 4.5:1</li>
+    <li>层次过渡走相邻级，不跳级</li>
+    <li>填充/进度条暗色用 --text-display（白）</li>
+    <li>激活态反转：bg: text-display / color: bg</li>
+  </ul>
+</div>
+
+</div>
+
+<script>
+// Keyboard shortcut: press 'D' to toggle dark mode
+document.addEventListener('keydown', e => {
+  if (e.key === 'd' || e.key === 'D') document.body.classList.toggle('dark');
+});
+</script>
+</body>
+</html>

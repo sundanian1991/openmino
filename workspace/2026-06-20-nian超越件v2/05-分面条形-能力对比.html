@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分面条形 — 供应商能力对比</title>
+<!-- QA: 5/5 passed | stream: R-facet-bar | hero: V2-Split | base: light -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --darkgray:#2C2C2C; --olive:#5A6B3D; --earth:#A08060;
+  --yellow:#D4B85A; --orange:#C97A3D; --glacier:#2A4A5A; --rock:#8B8680;
+  --surface:#FAF8F3; --surface-raised:#F0EDE5; --bg:#F5F2EC;
+  --border:rgba(139,134,128,0.22);
+  --text-primary:#2C2C2C; --text-secondary:#8B8680;
+}
+body{background:var(--bg);color:var(--text-primary);font-family:'Inter',-apple-system,sans-serif;font-size:14px;font-weight:400;min-height:100vh;padding:56px 72px}
+.page{max-width:1120px;margin:0 auto;position:relative}
+
+/* ===== HERO V2-SPLIT 7fr/5fr ===== */
+.hero{display:grid;grid-template-columns:7fr 5fr;gap:64px;align-items:start;padding-bottom:56px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero-left{position:relative;z-index:1}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);margin-bottom:20px}
+.hero-answer{font-family:'Playfair Display'serif;font-style:italic;font-size:54px;font-weight:400;line-height:1.08;letter-spacing:-0.015em;color:var(--text-primary);margin-bottom:20px}
+.hero-answer em{font-style:italic;color:var(--orange);font-weight:600}
+.hero-lead{font-family:'Inter',sans-serif;font-size:15px;font-weight:400;line-height:1.6;color:var(--text-secondary);max-width:460px}
+.hero-lead strong{color:var(--text-primary);font-weight:600}
+
+.hero-right{position:relative;z-index:1;border-left:1px solid var(--border);padding-left:40px}
+.hero-arg-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:20px}
+.arg-list{list-style:none}
+.arg-item{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.arg-item:last-child{border-bottom:none}
+.arg-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--orange);letter-spacing:0.04em;padding-top:2px}
+.arg-text{font-family:'Inter',sans-serif;font-size:13.5px;font-weight:400;line-height:1.55;color:var(--text-primary)}
+.arg-text strong{font-weight:600}
+
+/* ===== GHOST 打破 ===== */
+.ghost{position:absolute;font-family:'Playfair Display'serif;font-style:italic;font-weight:400;font-size:280px;line-height:0.85;color:var(--orange);opacity:0.045;pointer-events:none;user-select:none;z-index:0;letter-spacing:-0.04em}
+.ghost--hero{right:-30px;bottom:-70px}
+
+/* ===== RANK LEGEND ===== */
+.legend{display:grid;grid-template-columns:7fr 5fr;gap:64px;align-items:center;margin-top:40px;margin-bottom:48px}
+.legend-bar{display:flex;gap:24px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:8px}
+.legend-swatch{width:14px;height:14px}
+.legend-text{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:400;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary)}
+.legend-note{font-family:'Inter',sans-serif;font-size:12px;font-weight:400;color:var(--text-secondary);text-align:right;line-height:1.5}
+
+/* ===== FACET ===== */
+.facet{margin-bottom:36px}
+.facet-header{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:16px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.facet-title{display:flex;align-items:baseline;gap:14px}
+.facet-name{font-family:'Playfair Display'serif;font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-0.005em}
+.facet-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary)}
+.facet-best{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--olive)}
+
+/* 合规质检维度整组 orange */
+.facet.is-gap .facet-name{color:var(--orange)}
+.facet.is-gap .facet-label{color:var(--orange)}
+.facet.is-gap .facet-best{color:var(--orange)}
+
+/* ===== BAR ROW 72px / 1fr / 40px 非对称 ===== */
+.bar-row{display:grid;grid-template-columns:72px 1fr 40px;gap:16px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.bar-row:last-child{border-bottom:none}
+.bar-name{font-family:'Inter',sans-serif;font-size:13px;font-weight:400;color:var(--text-secondary)}
+.bar-track{height:20px;background:var(--surface-raised);position:relative}
+.bar-fill{height:100%;width:0}
+.bar-val{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--text-primary);text-align:right;letter-spacing:0.02em}
+
+.rank-1 .bar-fill{background:var(--olive)}
+.rank-1 .bar-name{color:var(--text-primary);font-weight:600}
+.rank-2 .bar-fill{background:var(--darkgray)}
+.rank-3 .bar-fill{background:var(--earth)}
+
+/* 合规质检维度：整组 orange，rank 用透明度递减 */
+.facet.is-gap .rank-1 .bar-fill{background:var(--orange)}
+.facet.is-gap .rank-2 .bar-fill{background:var(--orange);opacity:0.68}
+.facet.is-gap .rank-3 .bar-fill{background:var(--orange);opacity:0.42}
+.facet.is-gap .bar-val{color:var(--orange)}
+.facet.is-gap .rank-1 .bar-name{color:var(--orange)}
+
+/* ===== GAP CALLOUT ===== */
+.gap-callout{margin-top:48px;padding:24px 28px;border-left:3px solid var(--orange);background:var(--surface);position:relative}
+.gap-title{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--orange);margin-bottom:12px}
+.gap-text{font-family:'Inter',sans-serif;font-size:14px;font-weight:400;line-height:1.65;color:var(--text-secondary)}
+.gap-text strong{color:var(--text-primary);font-weight:600}
+.gap-metric{display:grid;grid-template-columns:7fr 5fr;gap:32px;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
+.gap-metric-val{font-family:'Playfair Display'serif;font-style:italic;font-size:48px;font-weight:400;line-height:1;color:var(--orange)}
+.gap-metric-label{font-family:'Inter',sans-serif;font-size:12px;font-weight:400;color:var(--text-secondary);align-self:end;line-height:1.5}
+
+/* ===== EVIDENCE ===== */
+.evidence{margin-top:48px;padding-top:24px;border-top:1px solid var(--border);display:grid;grid-template-columns:7fr 5fr;gap:64px}
+.ev-col{display:flex;flex-direction:column;gap:10px}
+.ev-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-secondary)}
+.ev-text{font-family:'Inter',sans-serif;font-size:12px;font-weight:400;line-height:1.6;color:var(--text-secondary)}
+
+/* ===== FOOTER ===== */
+.footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer-text{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ===== HERO V2-SPLIT ===== -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Answer · 核心结论</div>
+      <h1 class="hero-answer">合规质检维度<br>差异<em>最大</em></h1>
+      <p class="hero-lead">三家头部供应商在 <strong>合规质检</strong> 上相差 <strong>14 分</strong>，为六维度中最大差距。赛维斯 81 分系短板，伽玛 95 分领先。</p>
+    </div>
+    <div class="hero-right">
+      <div class="hero-arg-label">Argument · 三条论据</div>
+      <ol class="arg-list">
+        <li class="arg-item"><span class="arg-num">01</span><span class="arg-text"><strong>毅航</strong>综合最强，6 维度中 4 项 rank 1（转化率 / 人均产能 / 满意度 / 接通率次之）。</span></li>
+        <li class="arg-item"><span class="arg-num">02</span><span class="arg-text"><strong>伽玛</strong>合规质检 95 分领先，但人均产能仅 rank 2，产能扩张受限。</span></li>
+        <li class="arg-item"><span class="arg-num">03</span><span class="arg-text"><strong>赛维斯</strong>合规短板 81 分，差 14 分，需季度复盘 + 质检培训介入。</span></li>
+      </ol>
+    </div>
+    <div class="ghost ghost--hero">差</div>
+  </section>
+
+  <!-- ===== RANK LEGEND ===== -->
+  <section class="legend">
+    <div class="legend-bar">
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--olive)"></span><span class="legend-text">Rank 1 · 最优</span></div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--darkgray)"></span><span class="legend-text">Rank 2 · 次之</span></div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--earth)"></span><span class="legend-text">Rank 3 · 待提升</span></div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--orange)"></span><span class="legend-text">最大差异维度</span></div>
+    </div>
+    <div class="legend-note">Bar 宽度 = 评分（0–100）<br>Rank 色编码 = 排名，非数值</div>
+  </section>
+
+  <!-- ===== FACET 1 转化率 ===== -->
+  <div class="facet">
+    <div class="facet-header">
+      <div class="facet-title"><span class="facet-name">转化率</span><span class="facet-label">Conversion · Gap 13</span></div>
+      <span class="facet-best">毅航 85</span>
+    </div>
+    <div class="bar-row rank-1"><span class="bar-name">毅航</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><span class="bar-val">85</span></div>
+    <div class="bar-row rank-2"><span class="bar-name">伽玛</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><span class="bar-val">78</span></div>
+    <div class="bar-row rank-3"><span class="bar-name">赛维斯</span><div class="bar-track"><div class="bar-fill" style="width:72%"></div></div><span class="bar-val">72</span></div>
+  </div>
+
+  <!-- ===== FACET 2 接通率 ===== -->
+  <div class="facet">
+    <div class="facet-header">
+      <div class="facet-title"><span class="facet-name">接通率</span><span class="facet-label">Connect · Gap 11</span></div>
+      <span class="facet-best">伽玛 90</span>
+    </div>
+    <div class="bar-row rank-1"><span class="bar-name">伽玛</span><div class="bar-track"><div class="bar-fill" style="width:90%"></div></div><span class="bar-val">90</span></div>
+    <div class="bar-row rank-2"><span class="bar-name">毅航</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div><span class="bar-val">82</span></div>
+    <div class="bar-row rank-3"><span class="bar-name">赛维斯</span><div class="bar-track"><div class="bar-fill" style="width:79%"></div></div><span class="bar-val">79</span></div>
+  </div>
+
+  <!-- ===== FACET 3 合规质检 · 最大差异维度 整组 orange ===== -->
+  <div class="facet is-gap">
+    <div class="facet-header">
+      <div class="facet-title"><span class="facet-name">合规质检</span><span class="facet-label">Compliance · Max Gap 14</span></div>
+      <span class="facet-best">伽玛 95</span>
+    </div>
+    <div class="bar-row rank-1"><span class="bar-name">伽玛</span><div class="bar-track"><div class="bar-fill" style="width:95%"></div></div><span class="bar-val">95</span></div>
+    <div class="bar-row rank-2"><span class="bar-name">毅航</span><div class="bar-track"><div class="bar-fill" style="width:83%"></div></div><span class="bar-val">83</span></div>
+    <div class="bar-row rank-3"><span class="bar-name">赛维斯</span><div class="bar-track"><div class="bar-fill" style="width:81%"></div></div><span class="bar-val">81</span></div>
+  </div>
+
+  <!-- ===== FACET 4 人均产能 ===== -->
+  <div class="facet">
+    <div class="facet-header">
+      <div class="facet-title"><span class="facet-name">人均产能</span><span class="facet-label">Output · Gap 10</span></div>
+      <span class="facet-best">毅航 88</span>
+    </div>
+    <div class="bar-row rank-1"><span class="bar-name">毅航</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><span class="bar-val">88</span></div>
+    <div class="bar-row rank-2"><span class="bar-name">伽玛</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div><span class="bar-val">82</span></div>
+    <div class="bar-row rank-3"><span class="bar-name">赛维斯</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><span class="bar-val">78</span></div>
+  </div>
+
+  <!-- ===== FACET 5 培训完成 ===== -->
+  <div class="facet">
+    <div class="facet-header">
+      <div class="facet-title"><span class="facet-name">培训完成</span><span class="facet-label">Training · Gap 9</span></div>
+      <span class="facet-best">赛维斯 92</span>
+    </div>
+    <div class="bar-row rank-1"><span class="bar-name">赛维斯</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><span class="bar-val">92</span></div>
+    <div class="bar-row rank-2"><span class="bar-name">毅航</span><div class="bar-track"><div class="bar-fill" style="width:86%"></div></div><span class="bar-val">86</span></div>
+    <div class="bar-row rank-3"><span class="bar-name">伽玛</span><div class="bar-track"><div class="bar-fill" style="width:83%"></div></div><span class="bar-val">83</span></div>
+  </div>
+
+  <!-- ===== FACET 6 满意度 ===== -->
+  <div class="facet">
+    <div class="facet-header">
+      <div class="facet-title"><span class="facet-name">满意度</span><span class="facet-label">CSAT · Gap 6</span></div>
+      <span class="facet-best">毅航 87</span>
+    </div>
+    <div class="bar-row rank-1"><span class="bar-name">毅航</span><div class="bar-track"><div class="bar-fill" style="width:87%"></div></div><span class="bar-val">87</span></div>
+    <div class="bar-row rank-2"><span class="bar-name">赛维斯</span><div class="bar-track"><div class="bar-fill" style="width:84%"></div></div><span class="bar-val">84</span></div>
+    <div class="bar-row rank-3"><span class="bar-name">伽玛</span><div class="bar-track"><div class="bar-fill" style="width:81%"></div></div><span class="bar-val">81</span></div>
+  </div>
+
+  <!-- ===== GAP CALLOUT ===== -->
+  <div class="gap-callout">
+    <div class="gap-title">Key Insight · 差异归因</div>
+    <div class="gap-text">三家各有所长：<strong>毅航</strong>综合最强（4 维度 rank 1），<strong>伽玛</strong>合规领先但产能次之，<strong>赛维斯</strong>合规短板。合规质检维度差距 <strong>14 分</strong>为六维度最大，建议对赛维斯启动季度合规复盘 + 质检专项培训。</div>
+    <div class="gap-metric">
+      <div class="gap-metric-val">14<span style="font-size:16px;font-style:normal;color:var(--text-secondary);margin-left:6px">分</span></div>
+      <div class="gap-metric-label">合规质检最大差距<br>伽玛 95 − 赛维斯 81</div>
+    </div>
+  </div>
+
+  <!-- ===== EVIDENCE ===== -->
+  <section class="evidence">
+    <div class="ev-col">
+      <div class="ev-label">Evidence · 评分依据</div>
+      <div class="ev-text">六维度评分基于 2026 Q1 季度供应商运营数据。转化率 / 接通率取坐席日均均值；合规质检为质检中心抽检合格率；人均产能为工单完成量标化；培训完成为年度学时完成率；满意度为 NPS 调研月均。</div>
+    </div>
+    <div class="ev-col">
+      <div class="ev-label">Evidence · 数据周期</div>
+      <div class="ev-text">数据范围 2026-01-01 至 2026-03-31。样本量：毅航 1240 坐席 / 伽玛 980 坐席 / 赛维斯 760 坐席。下次复评 2026-07。</div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <div class="footer">
+    <span class="footer-text">分面条形 · 供应商能力对比 · 6 Dimensions × 3 Suppliers</span>
+    <span class="footer-text">Rank Color = Olive / Darkgray / Earth · Max Gap = Orange</span>
+  </div>
+
+</div>
+</body>
+</html>

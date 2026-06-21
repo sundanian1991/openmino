@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nian — 关联矩阵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --darkgray:#2C2C2C;--olive:#4A5D3A;--earth:#8B7355;--yellow:#FFD100;--orange:#E55B2B;--glacier:#2A4A5A;--rock:#808080;
+  --bg:#FAFAF8;--surface:#FFFFFF;--surface-raised:#F5F5F0;--border:#E5E5E0;--border-strong:#C0C0B8;
+  --text-display:#2d3142;--text-primary:#222222;--text-secondary:#8A7D6E;--text-muted:#b0a898;
+  --error:#C62828;--success:#2E7D32;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif;--font-data:'JetBrains Mono','Courier New',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding:48px 64px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-size:256px 256px;pointer-events:none;z-index:0}
+.page{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+
+.header{display:flex;align-items:baseline;gap:16px;margin-bottom:64px;border-bottom:1px solid var(--border);padding-bottom:32px}
+.hero-num{font-family:var(--font-display);font-size:64px;font-weight:300;line-height:1;color:var(--text-display);letter-spacing:-0.03em}
+.hero-label{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+.hero-title{font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--text-display);margin-left:auto}
+
+.nameplate{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--border-strong);border-radius:2px;margin-bottom:24px}
+.nameplate-dot{width:4px;height:4px;border-radius:50%;background:var(--olive)}
+.nameplate-text{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+
+/* MATRIX */
+.matrix-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.matrix-header{display:grid;grid-template-columns:120px repeat(4,1fr);border-bottom:1px solid var(--border-strong)}
+.matrix-header-cell{font-family:var(--font-data);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);padding:12px 16px;text-align:center}
+.matrix-header-cell:first-child{text-align:left;color:var(--text-secondary)}
+.matrix-row{display:grid;grid-template-columns:120px repeat(4,1fr);border-bottom:1px solid var(--border)}
+.matrix-row:last-child{border-bottom:none}
+.matrix-row:hover{background:var(--surface-raised)}
+.matrix-label{padding:16px;font-size:13px;font-weight:500;color:var(--text-primary);display:flex;flex-direction:column;justify-content:center}
+.matrix-label-sub{font-family:var(--font-data);font-size:9px;color:var(--text-muted);margin-top:2px;letter-spacing:0.04em}
+.matrix-cell{padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--border)}
+.matrix-cell-inner{display:flex;align-items:center;gap:8px}
+
+/* Fill blocks — discrete, not gradient */
+.fill-blocks{display:flex;gap:3px}
+.fill-block{width:14px;height:14px;border-radius:2px;background:var(--border)}
+.fill-block.filled{background:var(--darkgray)}
+.fill-block.filled-olive{background:var(--olive)}
+.fill-block.filled-earth{background:var(--earth)}
+.fill-block.filled-orange{background:var(--orange)}
+.fill-block.filled-glacier{background:var(--glacier)}
+
+.matrix-cell-val{font-family:var(--font-data);font-size:14px;font-weight:500;color:var(--text-display);min-width:40px;text-align:right}
+.matrix-cell-unit{font-family:var(--font-data);font-size:8px;color:var(--text-muted);letter-spacing:0.04em}
+
+.seam{height:1px;background:linear-gradient(90deg,transparent,var(--border-strong),transparent);margin:48px 0}
+
+/* SUMMARY ROW */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:20px}
+.summary-cat{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+.summary-hero{font-family:var(--font-data);font-size:32px;font-weight:500;color:var(--text-display);line-height:1;letter-spacing:-0.02em}
+.summary-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+
+.callout{margin-top:32px;padding:16px 20px;border-left:2px solid var(--olive);background:var(--surface)}
+.callout-title{font-family:var(--font-data);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--olive);margin-bottom:8px}
+.callout-text{font-size:14px;color:var(--text-secondary);line-height:1.6}
+.callout-text strong{color:var(--text-primary);font-weight:600}
+
+.footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer-text{font-family:var(--font-data);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="hero-num">6</span>
+    <div><div class="hero-label">Suppliers</div></div>
+    <span class="hero-title">关联矩阵 · Relationship Matrix</span>
+  </div>
+
+  <div class="nameplate"><div class="nameplate-dot"></div><span class="nameplate-text">6 Suppliers × 4 Business Lines · Block Count = Business Weight</span></div>
+
+  <div class="matrix-wrap">
+    <div class="matrix-header">
+      <div class="matrix-header-cell">供应商</div>
+      <div class="matrix-header-cell">金条</div>
+      <div class="matrix-header-cell">企金</div>
+      <div class="matrix-header-cell">信用卡</div>
+      <div class="matrix-header-cell">财富</div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">毅航<div class="matrix-label-sub">YIHANG</div></div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div></div>
+          <span class="matrix-cell-val">108%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">92%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">85%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-earth"></div></div>
+          <span class="matrix-cell-val">78%</span>
+        </div>
+      </div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">伽玛<div class="matrix-label-sub">GAMMA</div></div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">94%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div></div>
+          <span class="matrix-cell-val">97%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">88%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-earth"></div><div class="block filled-earth"></div></div>
+          <span class="matrix-cell-val">82%</span>
+        </div>
+      </div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">毛毛虫<div class="matrix-label-sub">MAOCHONG</div></div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">82%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">75%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div><div class="block filled-olive"></div></div>
+          <span class="matrix-cell-val">91%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div></div>
+          <span class="matrix-cell-val">68%</span>
+        </div>
+      </div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">翰锐<div class="matrix-label-sub">HANRUI</div></div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">88%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div></div>
+          <span class="matrix-cell-val">65%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">72%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-earth"></div><div class="block filled-earth"></div><div class="block filled-earth"></div></div>
+          <span class="matrix-cell-val">80%</span>
+        </div>
+      </div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">赛维斯<div class="matrix-label-sub">SAIWEISI</div></div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-orange"></div><div class="block filled-orange"></div></div>
+          <span class="matrix-cell-val" style="color:var(--orange)">68%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">80%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div></div>
+          <span class="matrix-cell-val">62%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block"></div></div>
+          <span class="matrix-cell-val" style="color:var(--text-muted)">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">岐力<div class="matrix-label-sub">QILI</div></div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-orange"></div></div>
+          <span class="matrix-cell-val" style="color:var(--orange)">55%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled"></div><div class="block filled"></div></div>
+          <span class="matrix-cell-val">70%</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block"></div></div>
+          <span class="matrix-cell-val" style="color:var(--text-muted)">—</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-cell-inner">
+          <div class="fill-blocks"><div class="block filled-earth"></div></div>
+          <span class="matrix-cell-val">65%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-cat">金条</div>
+      <div class="summary-hero" style="color:var(--olive)">108%</div>
+      <div class="summary-sub">毅航 TOP · 5 家参与</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-cat">企金</div>
+      <div class="summary-hero">97%</div>
+      <div class="summary-sub">伽玛 TOP · 6 家参与</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-cat">信用卡</div>
+      <div class="summary-hero">91%</div>
+      <div class="summary-sub">毛毛虫 TOP · 5 家参与</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-cat">财富</div>
+      <div class="summary-hero">82%</div>
+      <div class="summary-sub">伽玛 TOP · 5 家参与</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">矩阵规则</div>
+    <div class="callout-text">关联矩阵用<strong>离散方块数量</strong>编码业务权重，不用连续填充或热力色。5 块 = 最大权重，1 块 = 边缘参与。方块颜色区分：olive = 产线 TOP，darkgray = 正常，earth = 辅助线，orange = 预警。数字精确到百分比，方块直观到一眼。<strong>空位用 em dash</strong>，不用 0%——"未参与"和"参与但为零"是两件事。</div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">关联矩阵 · Relationship Matrix · Nian Design</span>
+    <span class="footer-text">6 × 4 · Block Count = Business Weight</span>
+  </div>
+
+</div>
+</body>
+</html>

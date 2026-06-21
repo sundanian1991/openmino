@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>区位矩阵 · 关联矩阵 — nian-design 复刻超越</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== ROOT TOKENS (nian-design) ===== */
+:root{
+  --darkgray:#2C2C2C; --olive:#4A5D3A; --earth:#8B7355;
+  --yellow:#FFD100; --orange:#E55B2B;
+  --glacier:#2A4A5A; --rock:#808080;
+  --bg:#FAFAF8; --surface:#FFFFFF; --surface-raised:#F5F5F0;
+  --border:#E5E5E0; --border-strong:#C0C0B8;
+  --success:#2E7D32; --warning:#F9A825; --error:#C62828;
+  --text-display:#2C2C2C; --text-primary:#1A1A1A;
+  --text-secondary:#6B6B6B; --text-disabled:#A0A0A0;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+  --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+  --s-3xs:1px; --s-2xs:2px; --s-xs:4px; --s-sm:8px;
+  --s-md:16px; --s-lg:24px; --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px;
+  --c-max:1120px; --pad:32px; --gap:24px;
+  --r-0:0; --r-xs:2px; --r-sm:4px; --r-md:8px; --r-lg:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+
+/* ===== PAGE ===== */
+.page{max-width:var(--c-max);margin:0 auto;padding:var(--pad);position:relative}
+
+/* ===== GHOST WATERMARK (每页1处，Georgia超大斜体) ===== */
+.ghost{position:absolute;top:24px;right:32px;font-family:var(--font-display);font-size:120px;font-style:italic;font-weight:700;color:var(--text-display);opacity:0.04;line-height:1;pointer-events:none;user-select:none;z-index:0}
+
+/* ===== SECTION HEADER (三层金字塔) ===== */
+.section-header{position:relative;z-index:1;margin-bottom:var(--s-3xl);max-width:75%}
+.section-header .pyramid-primary{font-family:var(--font-display);font-size:32px;font-weight:400;color:var(--text-display);line-height:1.2;margin-bottom:var(--s-sm)}
+.section-header .pyramid-secondary{font-family:var(--font-body);font-size:15px;font-weight:400;color:var(--text-secondary);line-height:1.6;margin-bottom:var(--s-xs)}
+.section-header .pyramid-tertiary{font-family:var(--font-data);font-size:11px;font-weight:400;color:var(--text-disabled);letter-spacing:0.02em}
+.section-header--right{max-width:65%;margin-left:auto}
+
+/* ===== MATRIX TABLE ===== */
+.matrix-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);overflow-x:auto;position:relative;z-index:1;-webkit-overflow-scrolling:touch}
+.matrix{width:100%;border-collapse:collapse;min-width:640px}
+.matrix th{font-family:var(--font-data);font-size:11px;font-weight:500;letter-spacing:0.04em;color:var(--text-disabled);padding:var(--s-md) var(--s-sm);border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.matrix th:not(:first-child){text-align:center}
+.matrix td{padding:0;border-bottom:1px solid var(--border);transition:background 0.15s ease}
+.matrix td:first-child{padding:var(--s-md) var(--s-md);font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--text-primary);border-right:1px solid var(--border);white-space:nowrap;width:80px}
+.matrix tr:last-child td{border-bottom:none}
+.matrix tr:hover td{background:var(--surface-raised)}
+.matrix tr:hover td:first-child{background:var(--surface-raised)}
+
+/* ===== MATRIX CELL ===== */
+.cell{padding:var(--s-md) var(--s-sm);text-align:center;min-width:88px;vertical-align:middle}
+.cell-val{font-family:var(--font-body);font-size:15px;font-weight:500;color:var(--text-primary);line-height:1.3}
+.cell-val--data{font-family:var(--font-data);font-size:13px;font-weight:500}
+.cell-sub{font-family:var(--font-data);font-size:10px;color:var(--text-secondary);margin-top:2px;letter-spacing:0.02em}
+.cell-bar{height:4px;border-radius:var(--s-2xs);margin-top:6px;background:var(--border);overflow:hidden}
+.cell-bar-fill{height:100%;border-radius:var(--s-2xs);transition:width 0.3s ease-out}
+
+/* ===== 7-LEVEL COLOR ENCODING (取代Nothing的4级灰阶) ===== */
+.cell--t1{background:var(--olive)}
+.cell--t1 .cell-val,.cell--t1 .cell-sub{color:#fff}
+.cell--t1 .cell-bar-fill{background:rgba(255,255,255,0.5)}
+.cell--t1 .cell-sub{color:rgba(255,255,255,0.8)}
+
+.cell--t2{background:rgba(74,93,58,0.65)}
+.cell--t2 .cell-val,.cell--t2 .cell-sub{color:#fff}
+.cell--t2 .cell-bar-fill{background:rgba(255,255,255,0.5)}
+.cell--t2 .cell-sub{color:rgba(255,255,255,0.8)}
+
+.cell--t3{background:var(--orange)}
+.cell--t3 .cell-val,.cell--t3 .cell-sub{color:#fff}
+.cell--t3 .cell-bar-fill{background:rgba(255,255,255,0.5)}
+.cell--t3 .cell-sub{color:rgba(255,255,255,0.8)}
+
+.cell--t4{background:var(--earth)}
+.cell--t4 .cell-val,.cell--t4 .cell-sub{color:#fff}
+.cell--t4 .cell-bar-fill{background:rgba(255,255,255,0.4)}
+.cell--t4 .cell-sub{color:rgba(255,255,255,0.75)}
+
+.cell--t5{background:rgba(139,115,85,0.4)}
+.cell--t5 .cell-sub{color:var(--text-secondary)}
+.cell--t5 .cell-bar-fill{background:var(--earth)}
+
+.cell--t6{background:rgba(128,128,128,0.15)}
+.cell--t6 .cell-sub{color:var(--text-disabled)}
+.cell--t6 .cell-bar-fill{background:var(--rock)}
+
+.cell--t7{background:transparent}
+.cell--t7 .cell-val{color:var(--text-disabled)}
+.cell--t7 .cell-sub{color:var(--text-disabled)}
+.cell--t7 .cell-bar{background:transparent}
+
+/* ===== INSIGHT CALLOUT (orange) ===== */
+.insight{margin:var(--s-2xl) 0;padding:var(--s-lg) var(--s-xl);background:rgba(229,91,43,0.06);border-left:3px solid var(--orange);max-width:80%;position:relative;z-index:1}
+.insight-label{font-family:var(--font-data);font-size:10px;font-weight:500;color:var(--orange);letter-spacing:0.06em;margin-bottom:var(--s-xs)}
+.insight-text{font-family:var(--font-body);font-size:15px;font-weight:400;color:var(--text-primary);line-height:1.7}
+
+/* ===== BREATHING SECTION (文字金句转场) ===== */
+.breathing{padding:var(--s-4xl) 0 var(--s-3xl);position:relative;z-index:1}
+.breathing-quote{font-family:var(--font-display);font-size:26px;font-style:italic;font-weight:400;color:var(--text-disabled);line-height:1.5;max-width:70%}
+.breathing-author{font-family:var(--font-body);font-size:13px;font-weight:400;color:var(--rock);margin-top:var(--s-md);letter-spacing:0.04em}
+
+/* ===== TOTAL ROW (关联矩阵) ===== */
+.row-total td{border-top:2px solid var(--border-strong);background:rgba(74,93,58,0.04)}
+.row-total td:first-child{font-family:var(--font-data);font-size:11px;letter-spacing:0.04em;color:var(--text-secondary);font-weight:500}
+
+/* ===== FOOTER ===== */
+.footer{margin-top:var(--s-xl);padding-top:var(--s-md);border-top:1px solid var(--border);display:flex;justify-content:space-between;position:relative;z-index:1}
+.footer-text{font-family:var(--font-data);font-size:10px;letter-spacing:0.04em;color:var(--text-disabled)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- GHOST WATERMARK（每页1处不守规则，Georgia超大斜体） -->
+  <div class="ghost">N</div>
+
+  <!-- ==================== SECTION 1: 区位矩阵 ==================== -->
+  <div class="section-header">
+    <div class="pyramid-primary">8×4 区位矩阵</div>
+    <div class="pyramid-secondary">金条B端企业主贷 · 8职场 · 4项核心指标 · 2026 Q1</div>
+    <div class="pyramid-tertiary">放款量 / 达成率 / 在岗人力 / 人效</div>
+  </div>
+
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th style="width:80px"></th>
+          <th>合肥</th>
+          <th>武汉</th>
+          <th>成都</th>
+          <th>西安</th>
+          <th>郑州</th>
+          <th>长沙</th>
+          <th>重庆</th>
+          <th>昆明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 放款量 -->
+        <tr>
+          <td>放款量</td>
+          <td class="cell cell--t1">
+            <div class="cell-val">¥134M</div>
+            <div class="cell-sub">43%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:43%"></div></div>
+          </td>
+          <td class="cell cell--t2">
+            <div class="cell-val">¥56M</div>
+            <div class="cell-sub">18%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:18%"></div></div>
+          </td>
+          <td class="cell cell--t3">
+            <div class="cell-val">¥37M</div>
+            <div class="cell-sub">12%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:12%"></div></div>
+          </td>
+          <td class="cell cell--t4">
+            <div class="cell-val">¥28M</div>
+            <div class="cell-sub">9%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:9%"></div></div>
+          </td>
+          <td class="cell cell--t5">
+            <div class="cell-val">¥22M</div>
+            <div class="cell-sub">7%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:7%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">¥16M</div>
+            <div class="cell-sub">5%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:5%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">¥12M</div>
+            <div class="cell-sub">4%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:4%"></div></div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">¥7M</div>
+            <div class="cell-sub">2%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:2%"></div></div>
+          </td>
+        </tr>
+        <!-- 达成率 -->
+        <tr>
+          <td>达成率</td>
+          <td class="cell cell--t2">
+            <div class="cell-val">101%</div>
+            <div class="cell-sub">达标</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:76%"></div></div>
+          </td>
+          <td class="cell cell--t5">
+            <div class="cell-val">98%</div>
+            <div class="cell-sub">接近</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:73.5%"></div></div>
+          </td>
+          <td class="cell cell--t1">
+            <div class="cell-val">105%</div>
+            <div class="cell-sub">最高</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:79%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">87%</div>
+            <div class="cell-sub">偏低</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:65%"></div></div>
+          </td>
+          <td class="cell cell--t5">
+            <div class="cell-val">92%</div>
+            <div class="cell-sub">接近</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:69%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">76%</div>
+            <div class="cell-sub">预警</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:57%"></div></div>
+          </td>
+          <td class="cell cell--t1">
+            <div class="cell-val">112%</div>
+            <div class="cell-sub">最高</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:84%"></div></div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">68%</div>
+            <div class="cell-sub">最低</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:51%"></div></div>
+          </td>
+        </tr>
+        <!-- 在岗人力 -->
+        <tr>
+          <td>在岗人力</td>
+          <td class="cell cell--t1">
+            <div class="cell-val">320</div>
+            <div class="cell-sub">最多</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:80%"></div></div>
+          </td>
+          <td class="cell cell--t2">
+            <div class="cell-val">180</div>
+            <div class="cell-sub">45%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:45%"></div></div>
+          </td>
+          <td class="cell cell--t3">
+            <div class="cell-val">110</div>
+            <div class="cell-sub">28%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:28%"></div></div>
+          </td>
+          <td class="cell cell--t4">
+            <div class="cell-val">85</div>
+            <div class="cell-sub">21%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:21%"></div></div>
+          </td>
+          <td class="cell cell--t5">
+            <div class="cell-val">72</div>
+            <div class="cell-sub">18%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:18%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">55</div>
+            <div class="cell-sub">14%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:14%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">40</div>
+            <div class="cell-sub">10%</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:10%"></div></div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">22</div>
+            <div class="cell-sub">最少</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:6%"></div></div>
+          </td>
+        </tr>
+        <!-- 人效 -->
+        <tr>
+          <td>人效</td>
+          <td class="cell cell--t1">
+            <div class="cell-val">¥419K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:60%"></div></div>
+          </td>
+          <td class="cell cell--t5">
+            <div class="cell-val">¥311K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:45%"></div></div>
+          </td>
+          <td class="cell cell--t2">
+            <div class="cell-val">¥336K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:48%"></div></div>
+          </td>
+          <td class="cell cell--t3">
+            <div class="cell-val">¥329K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:47%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">¥306K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:44%"></div></div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">¥291K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:42%"></div></div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">¥300K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:43%"></div></div>
+          </td>
+          <td class="cell cell--t4">
+            <div class="cell-val">¥318K</div>
+            <div class="cell-sub">/人/月</div>
+            <div class="cell-bar"><div class="cell-bar-fill" style="width:46%"></div></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- INSIGHT 1 -->
+  <div class="insight">
+    <div class="insight-label">Insight</div>
+    <div class="insight-text">合肥在放款量、人效、在岗人力三项领先，但达成率仅达标。重庆以112%达成率领跑全盘，昆明68%垫底需关注。成都是唯一达成率与人效双优的非头部职场，有潜力放量。武汉人效¥311K、仅高于长沙，与其180人在岗规模不匹配。</div>
+  </div>
+
+  <!-- ==================== BREATHING SECTION ==================== -->
+  <div class="breathing">
+    <div class="breathing-quote">规模不是护城河，效率才是。当一个职场的人效持续落后于同行，它的存在本身就是机会成本。</div>
+    <div class="breathing-author">— 业务复盘笔记 · 2026 Q1</div>
+  </div>
+
+  <!-- ==================== SECTION 2: 关联矩阵 ==================== -->
+  <div class="section-header section-header--right">
+    <div class="pyramid-primary">6×4 关联矩阵</div>
+    <div class="pyramid-secondary">6家供应商 × 4条业务线的关联密度 · 用填充深度编码业务权重</div>
+    <div class="pyramid-tertiary"><span style="background:var(--olive);display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:4px"></span> 主力 · <span style="background:var(--orange);display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:4px"></span> 重点 · <span style="background:var(--earth);display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:4px"></span> 参与 · <span style="background:rgba(128,128,128,0.15);display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:4px"></span> 边缘</div>
+  </div>
+
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th style="width:80px"></th>
+          <th>金条<span style="display:block;font-size:9px;color:var(--text-disabled);font-weight:400;margin-top:2px">核心产线</span></th>
+          <th>企金<span style="display:block;font-size:9px;color:var(--text-disabled);font-weight:400;margin-top:2px">增长产线</span></th>
+          <th>信用卡<span style="display:block;font-size:9px;color:var(--text-disabled);font-weight:400;margin-top:2px">稳定产线</span></th>
+          <th>财富<span style="display:block;font-size:9px;color:var(--text-disabled);font-weight:400;margin-top:2px">新生产线</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 毅航：金条主力 + 企金 -->
+        <tr>
+          <td>毅航</td>
+          <td class="cell cell--t1">
+            <div class="cell-val">¥86M</div>
+            <div class="cell-sub">28% · 主力</div>
+          </td>
+          <td class="cell cell--t3">
+            <div class="cell-val">¥32M</div>
+            <div class="cell-sub">10%</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+        </tr>
+        <!-- 伽玛：金条主力 + 企金 -->
+        <tr>
+          <td>伽玛</td>
+          <td class="cell cell--t1">
+            <div class="cell-val">¥72M</div>
+            <div class="cell-sub">23% · 主力</div>
+          </td>
+          <td class="cell cell--t5">
+            <div class="cell-val">¥18M</div>
+            <div class="cell-sub">6%</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+        </tr>
+        <!-- 毛毛虫：金条 + 信用卡 -->
+        <tr>
+          <td>毛毛虫</td>
+          <td class="cell cell--t2">
+            <div class="cell-val">¥48M</div>
+            <div class="cell-sub">15%</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t6">
+            <div class="cell-val">¥14M</div>
+            <div class="cell-sub">4%</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+        </tr>
+        <!-- 翰锐：金条 + 信用卡 -->
+        <tr>
+          <td>翰锐</td>
+          <td class="cell cell--t2">
+            <div class="cell-val">¥42M</div>
+            <div class="cell-sub">14%</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t3">
+            <div class="cell-val">¥22M</div>
+            <div class="cell-sub">7%</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+        </tr>
+        <!-- 赛维斯：金条 + 财富 -->
+        <tr>
+          <td>赛维斯</td>
+          <td class="cell cell--t5">
+            <div class="cell-val">¥24M</div>
+            <div class="cell-sub">8%</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t4">
+            <div class="cell-val">¥18M</div>
+            <div class="cell-sub">6%</div>
+          </td>
+        </tr>
+        <!-- 岐力：企金专精 -->
+        <tr>
+          <td>岐力</td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t1">
+            <div class="cell-val">¥46M</div>
+            <div class="cell-sub">15% · 主力</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+          <td class="cell cell--t7">
+            <div class="cell-val">—</div>
+          </td>
+        </tr>
+        <!-- TOTAL -->
+        <tr class="row-total">
+          <td>Total</td>
+          <td class="cell">
+            <div class="cell-val" style="color:var(--text-primary);font-weight:600">¥272M</div>
+            <div class="cell-sub">88%</div>
+          </td>
+          <td class="cell">
+            <div class="cell-val" style="color:var(--earth);font-weight:600">¥96M</div>
+            <div class="cell-sub">31%</div>
+          </td>
+          <td class="cell">
+            <div class="cell-val" style="color:var(--rock);font-weight:600">¥36M</div>
+            <div class="cell-sub">12%</div>
+          </td>
+          <td class="cell">
+            <div class="cell-val" style="color:var(--text-disabled);font-weight:600">¥18M</div>
+            <div class="cell-sub">6%</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- INSIGHT 2 -->
+  <div class="insight" style="margin-left:auto;max-width:80%">
+    <div class="insight-label">Insight</div>
+    <div class="insight-text">毅航和伽玛纵深于金条核心产线，两席合计占全盘51%，构成供给侧的"双子塔"。岐力专注企金做到15%独占，是典型的单点击穿策略。翰锐是唯一在双产线（金条+信用卡）均有中高占比的供应商，产线组合最健康。财富线仅赛维斯一人入场，6%占比意味着该产线仍处孵化期，供应链未成型。</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-text">nian-design · 复刻超越 Nothing Design</span>
+    <span class="footer-text">olive / orange / earth · 7-Level Color Encoding</span>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian-design · 对账闭环</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-white:#FFFFFF;--color-offwhite:#F5F3EF;--color-cream:#E8E4DD;
+  --color-sand:#C4B8A8;--color-stone:#8A7D6E;--color-charcoal:#2D2A26;--color-black:#1A1816;
+  --color-forest:#4A6741;--color-moss:#7A9B6D;--color-slate:#5B6B7A;--color-steel:#7A8B9B;
+  --color-signal-red:#E8453C;--color-signal-orange:#E87A3C;--color-signal-yellow:#E8B83C;--color-signal-blue:#3C7AE8;
+  --bg:var(--color-offwhite);--surface:var(--color-white);--surface-raised:var(--color-cream);
+  --border:var(--color-sand);--border-strong:var(--color-stone);
+  --text-display:var(--color-black);--text-primary:var(--color-charcoal);--text-secondary:var(--color-stone);--text-muted:#B5AC9D;--text-disabled:var(--color-stone);
+  --primary:var(--color-forest);--primary-2:var(--color-moss);--accent:var(--color-signal-orange);--accent-2:var(--color-signal-yellow);
+  --success:var(--color-moss);--warning:var(--color-signal-orange);--error:var(--color-signal-red);
+  --font-display:'Playfair Display',Georgia,serif;--font-decorative:'Doto','JetBrains Mono',monospace;--font-body:'Inter',-apple-system,sans-serif;--font-data:'JetBrains Mono','SF Mono',monospace;
+  --fs-display:clamp(48px,7vw,88px);--fs-h1:clamp(32px,4.5vw,48px);--fs-h2:clamp(22px,2.8vw,30px);--fs-h3:18px;
+  --fs-body-lg:16px;--fs-body:15px;--fs-caption:13px;--fs-data:11px;
+  --fw-light:300;--fw-regular:400;--fw-medium:500;--fw-semibold:600;--fw-bold:700;
+  --lh-tight:1.1;--lh-snug:1.3;--lh-body:1.7;--lh-read:1.8;--lh-data:1.4;
+  --ls-tight:-0.02em;--ls-wide:0.06em;--ls-wider:0.2em;
+  --r-sm:4px;--r-md:6px;--r-lg:8px;
+  --s-sm:8px;--s-md:16px;--s-lg:24px;--s-xl:32px;--s-2xl:48px;--s-3xl:64px;--s-4xl:96px;--s-5xl:120px;
+  --c-max:1080px;--c-read:680px;--ease-out:cubic-bezier(0.16,1,0.3,1);--dur-fast:150ms;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);background:var(--bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* ═══ 文字排版风格（杂志感·简报指定）═══ */
+.prose{max-width:var(--c-read);line-height:var(--lh-read)}
+.prose p{margin-bottom:1.2em}
+.prose em{font-family:var(--font-display);font-style:italic;font-weight:var(--fw-regular);color:var(--text-display)}
+
+/* ═══ HERO ═══ */
+.hero{padding:var(--s-5xl) var(--s-3xl) var(--s-4xl);max-width:var(--c-max);margin:0 auto}
+.hero__eyebrow{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--s-lg);display:flex;align-items:center;gap:12px}
+.hero__eyebrow::before{content:'';width:32px;height:1px;background:var(--text-secondary)}
+.hero__title{font-family:var(--font-display);font-weight:var(--fw-light);font-size:var(--fs-display);line-height:1.08;letter-spacing:var(--ls-tight);color:var(--text-display);max-width:800px;margin-bottom:var(--s-xl)}
+.hero__title em{font-style:italic;color:var(--primary)}
+.hero__lede{font-size:var(--fs-body-lg);line-height:var(--lh-read);color:var(--text-primary);max-width:var(--c-read);margin-bottom:var(--s-3xl)}
+.hero__metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.metric{padding:var(--s-xl) var(--s-md);display:flex;flex-direction:column;gap:6px}
+.metric__num{font-family:var(--font-display);font-size:clamp(36px,5vw,56px);font-weight:var(--fw-light);line-height:1;color:var(--text-display);letter-spacing:var(--ls-tight)}
+.metric__num--accent{color:var(--accent)}
+.metric__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary);line-height:1.3}
+
+/* ═══ SECTION 通用 ═══ */
+.section{padding:var(--s-5xl) var(--s-3xl);max-width:var(--c-max);margin:0 auto}
+.section-label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--s-md);display:flex;align-items:center;gap:12px}
+.section-label::before{content:'';width:32px;height:1px;background:var(--text-secondary)}
+.section-title{font-family:var(--font-display);font-weight:var(--fw-light);font-size:var(--fs-h1);line-height:1.12;letter-spacing:var(--ls-tight);color:var(--text-display);margin-bottom:var(--s-2xl);max-width:680px}
+.section-title em{font-style:italic;color:var(--primary)}
+.section-lede{font-size:var(--fs-body-lg);line-height:var(--lh-read);color:var(--text-primary);max-width:var(--c-read);margin-bottom:var(--s-3xl)}
+
+/* ═══ 病灶格子卡 ═══ */
+.findings{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.finding{background:var(--surface);padding:var(--s-xl) var(--s-lg);display:flex;flex-direction:column;gap:var(--s-sm)}
+.finding__id{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.finding__title{font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-regular);line-height:1.2;color:var(--text-display);margin-bottom:var(--s-sm)}
+.finding__desc{font-size:var(--fs-caption);line-height:1.6;color:var(--text-primary);flex:1}
+.finding__fix{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--success);padding-top:var(--s-sm);border-top:1px solid var(--border);margin-top:var(--s-sm)}
+
+/* ═══ 误判转折（打破点·signal-orange）═══ */
+.pivot{background:var(--color-charcoal);position:relative;overflow:hidden}
+.pivot-inner{max-width:var(--c-max);margin:0 auto;padding:var(--s-5xl) var(--s-3xl);position:relative;z-index:2;display:grid;grid-template-columns:5fr 7fr;gap:var(--s-3xl);align-items:center}
+.pivot__ghost{font-family:var(--font-display);font-weight:var(--fw-light);font-size:clamp(240px,30vw,420px);line-height:0.85;color:var(--color-signal-orange);opacity:0.08;position:absolute;top:50%;right:-5%;transform:translateY(-50%);pointer-events:none;z-index:1}
+.pivot__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--color-signal-orange);margin-bottom:var(--s-lg)}
+.pivot__text{font-family:var(--font-display);font-weight:var(--fw-light);font-style:italic;font-size:clamp(28px,3.5vw,40px);line-height:1.3;color:var(--color-offwhite);max-width:500px}
+.pivot__text strong{font-style:normal;font-weight:var(--fw-semibold);color:var(--color-signal-orange)}
+.pivot__detail{font-size:var(--fs-caption);line-height:1.7;color:rgba(245,243,239,0.55);max-width:420px}
+.pivot__detail-line{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:rgba(245,243,239,0.4);margin-top:var(--s-md)}
+
+/* ═══ 五幕时间线 ═══ */
+.acts{display:flex;flex-direction:column;gap:0;position:relative;padding-left:var(--s-xl)}
+.acts::before{content:'';position:absolute;left:11px;top:8px;bottom:8px;width:1px;background:var(--border)}
+.act{display:grid;grid-template-columns:24px 1fr;gap:var(--s-xl);padding-bottom:var(--s-2xl);position:relative}
+.act:last-child{padding-bottom:0}
+.act__dot{width:24px;height:24px;border:1px solid var(--border-strong);background:var(--surface);display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:10px;color:var(--text-display);position:relative;z-index:2}
+.act__dot--error{border-color:var(--error);color:var(--error)}
+.act__dot--pivot{border-color:var(--accent);background:var(--accent);color:var(--color-offwhite)}
+.act__dot--success{border-color:var(--success);color:var(--success)}
+.act__role{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px}
+.act__title{font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--fw-regular);color:var(--text-display);line-height:1.3;margin-bottom:4px}
+.act__desc{font-size:var(--fs-caption);line-height:1.7;color:var(--text-primary);max-width:520px}
+
+/* ═══ 63 分解式（forest 大色块·全页视觉最重）═══ */
+.decomp{background:var(--primary);color:var(--color-offwhite);position:relative;overflow:hidden}
+.decomp-inner{max-width:var(--c-max);margin:0 auto;padding:var(--s-5xl) var(--s-3xl);position:relative;z-index:2}
+.decomp .section-label,.decomp .section-title{color:var(--color-offwhite)}
+.decomp .section-label::before{background:rgba(245,243,239,0.4)}
+.decomp .section-label{color:rgba(245,243,239,0.6)}
+.decomp .section-title em{color:var(--color-signal-yellow)}
+.decomp-table{width:100%;border-collapse:collapse}
+.decomp-table th,.decomp-table td{padding:var(--s-md) var(--s-sm);text-align:left;border-bottom:1px solid rgba(245,243,239,0.15)}
+.decomp-table th{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:rgba(245,243,239,0.5);font-weight:var(--fw-regular)}
+.decomp-table td:nth-child(1){font-family:var(--font-display);font-size:28px;font-weight:var(--fw-light);color:var(--color-offwhite);width:50px;line-height:1}
+.decomp-table td:nth-child(2){font-family:var(--font-data);font-size:var(--fs-data);color:var(--color-signal-yellow);width:50px}
+.decomp-table td:nth-child(3){font-size:var(--fs-caption);color:rgba(245,243,239,0.7)}
+.decomp-table td:nth-child(4){font-size:var(--fs-caption);color:rgba(245,243,239,0.5)}
+.decomp-table tr:last-child td{border-bottom:none;padding-top:var(--s-lg);font-weight:var(--fw-medium)}
+.decomp-table tr:last-child td:nth-child(1){font-size:36px;color:var(--color-signal-yellow)}
+.decomp-table tr:last-child td:nth-child(2){font-size:14px;color:var(--color-offwhite)}
+.decomp__ghost{font-family:var(--font-display);font-weight:var(--fw-light);font-size:clamp(280px,35vw,480px);line-height:0.8;color:rgba(245,243,239,0.04);position:absolute;bottom:-8%;right:-3%;pointer-events:none;z-index:1}
+
+/* ═══ 验证清单 ═══ */
+.verify-list{border:1px solid var(--border)}
+.verify-item{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s-md);align-items:center;padding:var(--s-md) var(--s-lg);border-bottom:1px solid var(--border);font-size:var(--fs-body)}
+.verify-item:last-child{border-bottom:none}
+.verify-mark{width:20px;height:20px;display:flex;align-items:center;justify-content:center;color:var(--success);font-size:12px;font-family:var(--font-data)}
+.verify-label{color:var(--text-primary)}
+.verify-status{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--success)}
+
+/* ═══ 收束 ═══ */
+.closing{background:var(--color-charcoal);padding:var(--s-5xl) var(--s-3xl);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:55vh;position:relative;overflow:hidden}
+.closing__ghost{font-family:var(--font-display);font-weight:var(--fw-light);font-size:clamp(300px,40vw,560px);line-height:0.8;color:rgba(122,155,109,0.05);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.closing__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:rgba(245,243,239,0.4);margin-bottom:var(--s-xl);position:relative;z-index:2}
+.closing__text{font-family:var(--font-display);font-weight:var(--fw-light);font-size:clamp(32px,4vw,48px);line-height:1.25;color:var(--color-offwhite);max-width:680px;position:relative;z-index:2}
+.closing__text em{font-style:italic;color:var(--primary-2)}
+.closing__meta{display:flex;gap:var(--s-2xl);margin-top:var(--s-3xl);font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:rgba(245,243,239,0.35);position:relative;z-index:2}
+
+@media(max-width:768px){
+  .hero,.section{padding:var(--s-3xl) var(--s-lg)}
+  .hero__metrics{grid-template-columns:repeat(2,1fr)}
+  .findings{grid-template-columns:1fr}
+  .pivot-inner{grid-template-columns:1fr;gap:var(--s-xl)}
+  .decomp-inner{padding:var(--s-3xl) var(--s-lg)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero__eyebrow">2026.06.21 · NIAN-DESIGN · HEALTH AUDIT</div>
+  <h1 class="hero__title">纠错机制，<br>比<em>不犯错</em>更重要。</h1>
+  <p class="hero__lede">
+    一次技能审查发现 15 个问题。但修复它们不是逐个打补丁——
+    是把散落在 6 个文件里的真相收拢到一处。审查本身也犯了错，
+    而那个错误恰好是最好的证据。
+  </p>
+  <div class="hero__metrics">
+    <div class="metric"><div class="metric__num">15</div><div class="metric__label">Issues Found</div></div>
+    <div class="metric"><div class="metric__num">11</div><div class="metric__label">Files Fixed</div></div>
+    <div class="metric"><div class="metric__num">63</div><div class="metric__label">Components Unified</div></div>
+    <div class="metric"><div class="metric__num metric__num--accent">1</div><div class="metric__label">Audit Mistake</div></div>
+  </div>
+</section>
+
+<!-- ═══ 病灶分布 ═══ -->
+<section class="section">
+  <div class="section-label">01 / DIAGNOSIS</div>
+  <h2 class="section-title">散落的真相，<br>必然<em>分裂</em>。</h2>
+  <div class="findings">
+    <div class="finding">
+      <div class="finding__id">C1 · CRITICAL</div>
+      <div class="finding__title">入口断裂</div>
+      <div class="finding__desc">SKILL.md 指向已删除的 components-core.md，施工第一行就迷路。</div>
+      <div class="finding__fix">→ 统一指向 COMPONENTS-MASTER.md</div>
+    </div>
+    <div class="finding">
+      <div class="finding__id">C2 · CRITICAL</div>
+      <div class="finding__title">幽灵组件</div>
+      <div class="finding__desc">决策表残留 5 个已删除组件，触发回溯死循环。</div>
+      <div class="finding__fix">→ 清除 B04/B05/F09/F12/F13</div>
+    </div>
+    <div class="finding">
+      <div class="finding__id">C3 · CRITICAL</div>
+      <div class="finding__title">矛盾双表</div>
+      <div class="finding__desc">两套互相矛盾的骨架决策表，同一意图映射到不同编号。</div>
+      <div class="finding__fix">→ 删除第二套，保留权威</div>
+    </div>
+    <div class="finding">
+      <div class="finding__id">H1 · HIGH</div>
+      <div class="finding__title">数字漂移</div>
+      <div class="finding__desc">组件数在 52/56/63 三个值之间漂移，6 个文件各说各话。</div>
+      <div class="finding__fix">→ 全局统一 63</div>
+    </div>
+    <div class="finding">
+      <div class="finding__id">H5 · HIGH</div>
+      <div class="finding__title">Token 过期</div>
+      <div class="finding__desc">引用已归档的 6 个 token 文件，实际信源是 token-root.css。</div>
+      <div class="finding__fix">→ 改指 token-root.css 单文件</div>
+    </div>
+    <div class="finding">
+      <div class="finding__id">M1 · MEDIUM</div>
+      <div class="finding__title">定义缺失</div>
+      <div class="finding__desc">Democratic 气质有频次无正文定义。</div>
+      <div class="finding__fix">→ 补充完整定义</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 误判转折（打破点）═══ -->
+<section class="pivot">
+  <div class="pivot__ghost">1</div>
+  <div class="pivot-inner">
+    <div>
+      <div class="pivot__label">02 / THE MISTAKE</div>
+      <p class="pivot__text">
+        审查了<br>
+        <strong>错误的版本。</strong>
+      </p>
+    </div>
+    <div>
+      <p class="pivot__detail">
+        项目本地版是旧残留——上一轮 handoff 明确标注"全局版是唯一权威"。
+        审查报告指向了错误的目标，产出了错误的结论。
+        发现后重新审查全局版，之前的"严重问题"大部分已不存在。
+      </p>
+      <p class="pivot__detail-line">MISTAKE → CORRECTION → RE-AUDIT</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 五幕时间线 ═══ -->
+<section class="section">
+  <div class="section-label">03 / PROCESS</div>
+  <h2 class="section-title">五幕<em>对账闭环</em>。</h2>
+  <div class="acts">
+    <div class="act">
+      <div class="act__dot">01</div>
+      <div>
+        <div class="act__role">ACT 1 · COMMISSION</div>
+        <div class="act__title">体检令</div>
+        <div class="act__desc">审查 nian-design 是否"完整可靠"。</div>
+      </div>
+    </div>
+    <div class="act">
+      <div class="act__dot act__dot--error">02</div>
+      <div>
+        <div class="act__role">ACT 2 · SCAN</div>
+        <div class="act__title">病灶浮出</div>
+        <div class="act__desc">入口断裂、幽灵组件、矛盾表、数字漂移——15 个问题。</div>
+      </div>
+    </div>
+    <div class="act">
+      <div class="act__dot act__dot--pivot">03</div>
+      <div>
+        <div class="act__role">ACT 3 · PIVOT</div>
+        <div class="act__title">误判回拉</div>
+        <div class="act__desc">审查了项目本地版（旧残留），发现全局版才是权威。重新来。</div>
+      </div>
+    </div>
+    <div class="act">
+      <div class="act__dot act__dot--success">04</div>
+      <div>
+        <div class="act__role">ACT 4 · FIX</div>
+        <div class="act__title">对账修复</div>
+        <div class="act__desc">删除幽灵、迁移色名、统一数字。三档策略，11 个文件。</div>
+      </div>
+    </div>
+    <div class="act">
+      <div class="act__dot act__dot--success">05</div>
+      <div>
+        <div class="act__role">ACT 5 · VERIFY</div>
+        <div class="act__title">闭环收口</div>
+        <div class="act__desc">幽灵引用 0 处、旧色名 0 处、组件数 63 全局一致。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 63 分解式（forest 大色块）═══ -->
+<section class="decomp">
+  <div class="decomp__ghost">63</div>
+  <div class="decomp-inner">
+    <div class="section-label">04 / DECOMPOSITION</div>
+    <h2 class="section-title">63 = 八族<em>对账和</em></h2>
+    <table class="decomp-table">
+      <thead><tr><th></th><th>数</th><th>分类</th><th>核心组件</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>8</td><td>基础容器</td><td>Card · List · Table · Bento</td></tr>
+        <tr><td>B</td><td>8</td><td>数据进度</td><td>Progress · Bar · Pyramid · Waffle</td></tr>
+        <tr><td>C</td><td>7</td><td>流程导航</td><td>Timeline · Tree · Tag · Segmented</td></tr>
+        <tr><td>D</td><td>10</td><td>对比交互</td><td>Do-Don't · Button · Tab · Checklist</td></tr>
+        <tr><td>E</td><td>3</td><td>状态反馈</td><td>State · Toast · Deco Number</td></tr>
+        <tr><td>F</td><td>11</td><td>内容排版</td><td>Prose · Quote · Tension · Newspaper</td></tr>
+        <tr><td>G</td><td>5</td><td>mino 工具</td><td>Chat · Filter · Carousel</td></tr>
+        <tr><td>H</td><td>11</td><td>mino 吸收</td><td>Header · Dark Hero · Book Card</td></tr>
+        <tr><td>Σ</td><td>63</td><td>单一信源</td><td>全局一致 · 对账闭环</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ 验证清单 ═══ -->
+<section class="section">
+  <div class="section-label">05 / VERIFICATION</div>
+  <h2 class="section-title">五项<em>对账</em>通过。</h2>
+  <div class="verify-list">
+    <div class="verify-item"><div class="verify-mark">✓</div><div class="verify-label">幽灵文件引用（components-core / extended）</div><div class="verify-status">0 RESIDUE</div></div>
+    <div class="verify-item"><div class="verify-mark">✓</div><div class="verify-label">旧 7 色名（olive / earth / darkgray）</div><div class="verify-status">0 RESIDUE</div></div>
+    <div class="verify-item"><div class="verify-mark">✓</div><div class="verify-label">组件数一致性（52/56/63 漂移）</div><div class="verify-status">UNIFIED 63</div></div>
+    <div class="verify-item"><div class="verify-mark">✓</div><div class="verify-label">骨架决策表唯一性</div><div class="verify-status">1 AUTHORITATIVE</div></div>
+    <div class="verify-item"><div class="verify-mark">✓</div><div class="verify-label">气质定义完整性</div><div class="verify-status">9/9 DEFINED</div></div>
+  </div>
+</section>
+
+<!-- ═══ 收束 ═══ -->
+<section class="closing">
+  <div class="closing__ghost">63</div>
+  <div class="closing__label">PRINCIPLE</div>
+  <p class="closing__text">
+    每个变更都要<em>广播</em>到所有引用方。<br>
+    否则文档会<em>分裂</em>成多个真相。
+  </p>
+  <div class="closing__meta">
+    <span>NIAN-DESIGN v63</span>
+    <span>HAGLÖFS 15 COLORS</span>
+    <span>2026.06.21</span>
+  </div>
+</section>
+
+</body>
+</html>

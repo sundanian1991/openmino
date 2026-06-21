@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>颜色使用规则 · 实际效果验证</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* === Haglofs 15 色（你确认的）=== */
+  --color-offwhite:#F5F3EF; --color-cream:#E8E4DD; --color-sand:#C4B8A8;
+  --color-stone:#8A7D6E; --color-charcoal:#2D2A26; --color-black:#1A1816;
+  --color-forest:#4A6741; --color-moss:#7A9B6D; --color-slate:#5B6B7A; --color-steel:#7A8B9B;
+  --color-signal-red:#E8453C; --color-signal-orange:#E87A3C; --color-signal-yellow:#E8B83C; --color-signal-blue:#3C7AE8;
+  /* 别名 */
+  --bg:var(--color-offwhite); --surface:#FFF; --surface-raised:var(--color-cream);
+  --border:var(--color-sand); --border-strong:var(--color-stone);
+  --text-display:var(--color-black); --text-primary:var(--color-charcoal);
+  --text-secondary:var(--color-stone); --text-disabled:#B5AC9D;
+  --primary:var(--color-forest); --primary-2:var(--color-moss);
+  --accent:var(--color-signal-orange); --accent-2:var(--color-signal-yellow);
+  --font-display:Georgia,serif; --font-body:'Inter',sans-serif; --font-data:'JetBrains Mono',monospace;
+  --r-sm:4px; --r-md:6px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* === 页面框架 === */
+.head{padding:64px 48px 40px;border-bottom:1px solid var(--border)}
+.head .sub{font-family:var(--font-data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:12px}
+.head h1{font-family:var(--font-display);font-size:34px;font-weight:400;color:var(--text-display);letter-spacing:-.01em;margin-bottom:10px}
+.head p{font-size:14px;color:var(--text-secondary);max-width:680px;line-height:1.7}
+
+/* === 标注气泡（核心：每个位置标注用什么色）=== */
+.anno{display:inline-block;font-family:var(--font-data);font-size:9px;letter-spacing:.04em;background:var(--color-black);color:var(--color-offwhite);padding:2px 6px;border-radius:var(--r-sm);margin-left:6px;vertical-align:middle;white-space:nowrap}
+.anno-brand{background:var(--color-forest)}
+.anno-signal{background:var(--color-signal-orange)}
+.anno-neutral{background:var(--color-stone)}
+
+/* === 分段 === */
+.sec{padding:56px 48px;border-bottom:1px solid var(--border)}
+.sec-lbl{font-family:var(--font-data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px}
+.sec-lbl .id{color:var(--text-secondary)}  /* section 编号用中性灰（参考源一致），signal-orange 只留给 component-id 唯一强调 */
+.sec-title{font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--text-display);margin-bottom:8px}
+.sec-desc{font-size:13px;color:var(--text-secondary);margin-bottom:32px;max-width:640px;line-height:1.6}
+
+/* === 中性阶梯可视化 === */
+.ladder{display:flex;gap:0;border-radius:var(--r-md);overflow:hidden;border:1px solid var(--border);margin-bottom:16px}
+.ladder-step{flex:1;padding:20px 16px;display:flex;flex-direction:column;gap:4px;position:relative}
+.ladder-step .lvl{font-family:var(--font-data);font-size:9px;letter-spacing:.1em;opacity:.6}
+.ladder-step .name{font-family:var(--font-display);font-size:14px;font-weight:500}
+.ladder-step .hex{font-family:var(--font-data);font-size:10px;opacity:.7}
+.ladder-step .role{font-family:var(--font-data);font-size:8px;letter-spacing:.04em;opacity:.5;margin-top:auto}
+.l-arrow{display:flex;align-items:center;padding:0 8px;font-family:var(--font-data);font-size:10px;color:var(--text-disabled)}
+
+/* === Demo 区：真实组件 + 标注 === */
+.demo-row{display:grid;grid-template-columns:1fr 280px;gap:32px;margin-bottom:28px;align-items:start}
+.demo-stage{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:32px;position:relative}
+.demo-stage--neutral{background:var(--bg);border:none;padding:32px 0}
+.demo-rules{font-size:12px;color:var(--text-secondary);line-height:1.7}
+.demo-rules h4{font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-primary);margin-bottom:8px}
+.demo-rules .rule{padding:6px 0;border-bottom:1px solid var(--border)}
+.demo-rules .rule:last-child{border:none}
+.demo-rules .rule b{color:var(--primary)}
+.demo-rules code{font-family:var(--font-data);font-size:10px;background:var(--surface-raised);padding:1px 5px;border-radius:2px}
+
+/* === 真实组件样式（用 Haglofs 色）=== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:24px;transition:background 150ms ease-out}
+.card:hover{background:var(--surface-raised)}  /* ← 原则2：white→cream 相邻级 */
+.card__tag{font-family:var(--font-data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px}
+.card__num{font-family:var(--font-display);font-size:32px;font-weight:400;color:var(--text-display);line-height:1}
+.card__lbl{font-family:var(--font-data);font-size:10px;color:var(--text-secondary);margin-top:4px}
+.card__desc{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-top:10px}
+
+/* hero tag 用 forest */
+.hero-tag{font-family:var(--font-data);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);margin-bottom:12px}
+
+/* 进度条填充用 forest */
+.sbar__track{display:flex;gap:3px;height:10px}
+.sbar__s{flex:1;background:var(--border);border-radius:1px}
+.sbar__s--f{background:var(--primary)}
+.sbar__h{display:flex;justify-content:space-between;margin-bottom:6px}
+.sbar__lbl{font-family:var(--font-data);font-size:10px;color:var(--text-secondary)}
+.sbar__val{font-family:var(--font-data);font-size:14px;font-weight:500;color:var(--text-primary)}
+
+/* bento hover 到 sand */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bento__c{background:var(--surface-raised);border-radius:var(--r-sm);padding:16px;transition:background 150ms}
+.bento__c:hover{background:var(--border)}  /* ← cream→sand 相邻级 */
+.bento__c--lg{grid-row:span 2;background:var(--primary);color:#fff}
+.bento__tag{font-family:var(--font-data);font-size:8px;color:var(--text-disabled);margin-bottom:2px}
+.bento__c--lg .bento__tag{color:rgba(255,255,255,.6)}
+.bento__num{font-family:var(--font-data);font-size:20px;font-weight:500;color:var(--text-display)}
+.bento__c--lg .bento__num{color:#fff}
+
+/* 步骤号 sand opacity 0.4 */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{background:var(--surface);border:1px solid var(--border);padding:24px 20px;position:relative;overflow:hidden}
+.step__n{position:absolute;top:-8px;right:10px;font-family:var(--font-display);font-size:56px;font-weight:300;color:rgba(196,184,168,0.4);line-height:1}  /* ← sand opacity 0.4 */
+.step__t{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:4px;position:relative}
+.step__d{font-size:12px;color:var(--text-secondary);line-height:1.5;position:relative}
+
+/* 引用块左 forest 线 */
+.quote-min{border-left:2px solid var(--primary);padding:8px 0 8px 16px;font-family:var(--font-display);font-style:italic;color:var(--text-primary);font-size:16px;line-height:1.6}
+
+/* 装饰大数字 charcoal opacity 0.05 */
+.deco{position:relative;padding:20px;overflow:hidden}
+.deco__n{position:absolute;top:-16px;right:-8px;font-family:var(--font-display);font-size:80px;font-weight:700;color:var(--text-display);opacity:.05;line-height:1}
+.deco__l{font-family:var(--font-data);font-size:9px;color:var(--text-disabled);margin-bottom:4px;position:relative}
+.deco__t{font-size:16px;font-weight:600;color:var(--text-primary);position:relative}
+
+/* 点阵 sand opacity 0.25 */
+.dots{display:flex;gap:8px;margin:12px 0}
+.dot{width:4px;height:4px;border-radius:50%;background:var(--color-sand);opacity:.25}
+
+/* 深色块：white + opacity 层次 */
+.darkblock{background:var(--color-black);color:#fff;padding:32px;border-radius:var(--r-md)}
+.darkblock__lbl{font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px}
+.darkblock__title{font-family:var(--font-display);font-size:22px;font-weight:400;color:#fff;margin-bottom:12px}
+.darkblock__txt{font-size:14px;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:8px}
+.darkblock__sub{font-size:12px;color:rgba(255,255,255,.5)}
+.darkblock__sep{height:1px;background:rgba(255,255,255,.08);margin:16px 0}
+
+/* signal-orange 打破点 */
+.break-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:24px;position:relative;overflow:hidden}
+.break-card::after{content:'';position:absolute;bottom:0;right:0;width:50%;height:40%;background:var(--color-signal-orange);opacity:.15;border-radius:60px 0 0 0}  /* ← 信号色 opacity 0.15 装饰 */
+
+/* 表格 active 行左 forest 线 */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-family:var(--font-data);font-size:10px;color:var(--text-secondary);padding:8px 12px;text-align:left;font-weight:400;border-bottom:1px solid var(--border)}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-primary)}
+.tbl__row--a{background:var(--surface-raised)}
+.tbl__row--a td:first-child{border-left:2px solid var(--primary)}
+
+/* 自检清单 */
+.checklist{display:flex;flex-direction:column;gap:10px}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm)}
+.check-box{width:18px;height:18px;border:1.5px solid var(--border-strong);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:11px;color:var(--text-disabled);margin-top:1px}
+.check-item--ok .check-box{background:var(--primary);color:#fff;border-color:var(--primary)}
+.check-item--ok .check-txt{color:var(--text-secondary)}
+.check-item--bad .check-box{background:var(--color-signal-red);color:#fff;border-color:var(--color-signal-red)}
+.check-txt{font-size:13px;color:var(--text-primary);line-height:1.5}
+.check-txt b{color:var(--primary)}
+
+/* 对比：错误用法 vs 正确用法 */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.vs-col{border-radius:var(--r-md);overflow:hidden}
+.vs-head{padding:8px 14px;font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.vs-bad .vs-head{background:var(--color-signal-red);color:#fff}
+.vs-good .vs-head{background:var(--primary);color:#fff}
+.vs-body{padding:20px;border:1px solid var(--border);border-top:none}
+.vs-body p{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+/* 错误示范：跳级 hover */
+.bad-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:20px;transition:background 150ms}
+.bad-card:hover{background:var(--color-stone)}  /* ← 跳级：white→stone，突兀 */
+.bad-card__t{font-size:13px;font-weight:600;color:var(--text-primary)}
+.bad-card__d{font-size:11px;color:var(--text-secondary);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="sub">Color Usage Rules · 实际效果验证</div>
+  <h1>颜色使用规则 · 每个位置标注"用什么色、为什么"</h1>
+  <p>用 Haglofs 15 色渲染真实组件，每个关键位置标注用了什么色、属于哪条原则。你看完确认：这个规则是否符合你想要的质感。</p>
+</div>
+
+<!-- ═══ 原则1+2：中性阶梯 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">P1+P2</span> · 中性阶梯 · 骨架</div>
+  <div class="sec-title">7 个中性色构成一条连续暖灰阶</div>
+  <p class="sec-desc">画面 80% 靠这 7 个色。层次过渡只走相邻级，不跳级——这是"不张扬但有质感"的根源。</p>
+
+  <div class="ladder">
+    <div class="ladder-step" style="background:#FFF;color:var(--text-primary)"><span class="lvl">LV0</span><span class="name">white</span><span class="hex">#FFFFFF</span><span class="role">卡片底</span></div>
+    <div class="l-arrow">→</div>
+    <div class="ladder-step" style="background:var(--color-offwhite);color:var(--text-primary)"><span class="lvl">LV1</span><span class="name">offwhite</span><span class="hex">#F5F3EF</span><span class="role">页面主底</span></div>
+    <div class="l-arrow">→</div>
+    <div class="ladder-step" style="background:var(--color-cream);color:var(--text-primary)"><span class="lvl">LV2</span><span class="name">cream</span><span class="hex">#E8E4DD</span><span class="role">次级面/浅hover</span></div>
+    <div class="l-arrow">→</div>
+    <div class="ladder-step" style="background:var(--color-sand);color:var(--text-primary)"><span class="lvl">LV3</span><span class="name">sand</span><span class="hex">#C4B8A8</span><span class="role">边框/深hover</span></div>
+    <div class="l-arrow">→</div>
+    <div class="ladder-step" style="background:var(--color-stone);color:#fff"><span class="lvl">LV4</span><span class="name">stone</span><span class="hex">#8A7D6E</span><span class="role">次要文字</span></div>
+    <div class="l-arrow">→</div>
+    <div class="ladder-step" style="background:var(--color-charcoal);color:#fff"><span class="lvl">LV5</span><span class="name">charcoal</span><span class="hex">#2D2A26</span><span class="role">正文/icon</span></div>
+    <div class="l-arrow">→</div>
+    <div class="ladder-step" style="background:var(--color-black);color:#fff"><span class="lvl">LV6</span><span class="name">black</span><span class="hex">#1A1816</span><span class="role">强深色块</span></div>
+  </div>
+  <p style="font-size:12px;color:var(--text-secondary);font-family:var(--font-data)">← 每个相邻级差距恒定。hover/层次只走相邻级，不跳级 →</p>
+</div>
+
+<!-- ═══ hover 标准路径 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">P2</span> · hover 标准路径 · 相邻级过渡</div>
+  <div class="sec-title">把鼠标移上去试试 —— 颜色只跳一级</div>
+  <p class="sec-desc">你说的"浅棕变深棕"，就是这条阶梯相邻级在动。不是两个独立颜色。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div class="card"><div class="card__tag">WHITE→CREAM</div><div class="card__num">27</div><div class="card__lbl">悬停看底色</div></div>
+        <div class="bento__c"><div class="bento__tag">CREAM→SAND</div><div class="bento__num">15%</div><div class="bento__lbl" style="font-family:var(--font-data);font-size:8px;color:var(--text-secondary)">悬停看底色</div></div>
+        <div class="card" style="background:var(--surface-raised);border:none"><div class="card__tag">CREAM→SAND</div><div class="card__num">4/27</div><div class="card__lbl">悬停看底色</div></div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>规则</h4>
+      <div class="rule">白卡 hover → <b>cream</b> <code>white→#E8E4DD</code></div>
+      <div class="rule">米卡 hover → <b>cream</b> <code>offwhite→cream</code></div>
+      <div class="rule">bento hover → <b>sand</b> <code>cream→sand</code></div>
+      <div class="rule">边框 hover → <b>stone</b> <code>sand→stone</code></div>
+      <div class="rule" style="color:var(--color-signal-red)">✗ 禁止跳级：white→stone</div>
+    </div>
+  </div>
+
+  <!-- 对比：错误 vs 正确 -->
+  <div class="vs">
+    <div class="vs-col vs-bad">
+      <div class="vs-head">✗ 错误 · 跳级 hover</div>
+      <div class="vs-body">
+        <div class="bad-card"><div class="bad-card__t">悬停我</div><div class="bad-card__d">white → stone 跳了 3 级</div></div>
+        <p style="margin-top:12px">跳级 = 突兀。这就是灰蒙蒙/没质感的来源之一。</p>
+      </div>
+    </div>
+    <div class="vs-col vs-good">
+      <div class="vs-head">✓ 正确 · 相邻级 hover</div>
+      <div class="vs-body">
+        <div class="card"><div class="card__t" style="font-size:13px;font-weight:600">悬停我</div><div class="card__desc">white → cream 只跳 1 级</div></div>
+        <p style="margin-top:12px">相邻级 = 自然。质感就建立在这条阶梯的连续性上。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 步骤号 sand opacity 0.4 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">P5</span> · 装饰元素 · 阶梯低位 + opacity</div>
+  <div class="sec-title">步骤号 01/02/03 —— 你问的"微妙差异"</div>
+  <p class="sec-desc">不是 charcoal，是 <code style="font-family:var(--font-data);background:var(--surface-raised);padding:1px 5px;border-radius:2px">sand + opacity 0.4</code>。比 charcoal 浅得多，退到背景但不消失。来自 H062 principles-num 验证。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div class="steps">
+        <div class="step"><span class="step__n">01</span><div class="step__t">读完即用</div><div class="step__d">一周内用上</div></div>
+        <div class="step"><span class="step__n">02</span><div class="step__t">一句话锚点</div><div class="step__d">提炼框架</div></div>
+        <div class="step"><span class="step__n">03</span><div class="step__t">主动设限</div><div class="step__d">每月2本</div></div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>装饰元素的用色</h4>
+      <div class="rule">步骤号 → <b>sand opacity 0.4</b></div>
+      <div class="rule">角落大数字 → <b>charcoal opacity 0.05</b></div>
+      <div class="rule">点阵装饰 → <b>sand opacity 0.25</b></div>
+      <div class="rule">ghost 水印 → <b>black opacity 0.04</b></div>
+      <div class="rule">深底装饰 → <b>white opacity 0.08-0.3</b></div>
+      <div class="rule" style="color:var(--color-signal-red)">✗ 禁止用品牌色做装饰</div>
+    </div>
+  </div>
+
+  <!-- 装饰元素实物 -->
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="deco"><span class="deco__n">03</span><span class="deco__l">SECTION</span><div class="deco__t">装饰大数字</div></div>
+        <div>
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div style="font-family:var(--font-data);font-size:10px;color:var(--text-disabled)">点阵 · sand opacity 0.25</div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>为什么不用品牌色</h4>
+      <p style="font-size:12px;color:var(--text-secondary);line-height:1.7">装饰元素职责是"看得见但不抢戏"。用中性阶梯低位 + opacity，它自然退到背景。如果用 forest/signal-orange，它会抢夺注意力，破坏层次。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 品牌色用法 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">P3</span> · 品牌色 · 一页最多 2 个</div>
+  <div class="sec-title">forest 主强调 · moss 辅强调</div>
+  <p class="sec-desc">品牌色是气质担当，但不能堆。一个 section 最多 2 个，且明度拉开。forest 是默认主色，moss 是它的亮版（深底用 moss 提亮）。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div class="hero-tag">REVIEW · 2026 上半年<span class="anno anno-brand">forest</span></div>
+      <div style="font-family:var(--font-display);font-size:28px;font-weight:400;color:var(--text-display);line-height:1.2;margin-bottom:16px">读得多，不如读得深。</div>
+      <div style="margin-top:20px">
+        <div class="sbar__h"><span class="sbar__lbl">留存率</span><span class="sbar__val">15%</span></div>
+        <div class="sbar__track"><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div></div>
+      </div>
+      <div style="margin-top:12px;font-family:var(--font-data);font-size:9px;color:var(--text-disabled)">进度填充<span class="anno anno-brand">forest</span> · 值<span class="anno anno-neutral">charcoal</span></div>
+    </div>
+    <div class="demo-rules">
+      <h4>品牌色用法</h4>
+      <div class="rule">Hero tag/label → <b>forest</b></div>
+      <div class="rule">进度条/排名填充 → <b>forest</b></div>
+      <div class="rule">blockquote 左线 → <b>forest</b></div>
+      <div class="rule">active 行左线 → <b>forest</b></div>
+      <div class="rule">深底强调 → <b>moss</b>（提亮）</div>
+      <div class="rule">成功态 → <b>moss</b></div>
+    </div>
+  </div>
+
+  <!-- forest vs moss 对比 -->
+  <div class="demo-row">
+    <div class="demo-stage">
+      <blockquote class="quote-min" style="margin-bottom:16px">阅读量是最诚实的伪指标。<span class="anno anno-brand" style="background:var(--color-forest)">左线 forest</span></blockquote>
+      <table class="tbl">
+        <tr><th>类别</th><th>数量</th></tr>
+        <tr><td>社科</td><td>17</td></tr>
+        <tr class="tbl__row--a"><td>商业</td><td>7</td></tr>
+        <tr><td>技术</td><td>3</td></tr>
+      </table>
+    </div>
+    <div class="demo-rules">
+      <h4>为什么不堆品牌色</h4>
+      <p style="font-size:12px;color:var(--text-secondary);line-height:1.7">一个 section 如果同时出现 forest + moss + slate，三个品牌色互相竞争，反而谁都不突出。克制到 1-2 个，让该被看见的被看见。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 信号色 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">P4</span> · 信号色 · 每页 1-2 处</div>
+  <div class="sec-title">signal-orange 打断 · 不装饰</div>
+  <p class="sec-desc">信号色饱和度高，职责是"打断"不是"装饰"。整页不超过 2 处。signal-orange 最常用（section 编号 + 打破点）。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div style="font-family:var(--font-data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">SECTION <span style="color:var(--color-signal-orange)">BS5</span><span class="anno anno-signal">signal-orange</span></div>
+      <div style="font-family:var(--font-display);font-size:22px;color:var(--text-display);margin-bottom:20px">Tension Grid 张力网格</div>
+      <div class="break-card">
+        <div style="font-family:var(--font-display);font-size:18px;color:var(--text-primary);margin-bottom:6px">打破点卡片</div>
+        <div style="font-size:12px;color:var(--text-secondary)">右下角橙色块 = signal-orange opacity 0.15</div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>信号色唯一合法用途</h4>
+      <div class="rule">section 编号 → <b>signal-orange</b></div>
+      <div class="rule">打破点装饰块 → <b>signal-orange op.0.15</b></div>
+      <div class="rule">错误 icon → <b>signal-red</b></div>
+      <div class="rule">链接 → <b>signal-blue</b></div>
+      <div class="rule">金句高亮 → <b>signal-yellow op.0.15</b></div>
+      <div class="rule" style="color:var(--color-signal-red)">✗ 禁止大面积填充信号色</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GAP1：涨跌色 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">G1</span> · 涨跌色 · moss 涨 / signal-red 跌</div>
+  <div class="sec-title">涨用 moss 不用 forest，跌只认 signal-red</div>
+  <p class="sec-desc">forest 留给"这页最重要的数据"。涨跌是高频辅助信息，用 moss 才不抢主数据的戏，又能和 forest 拉开深→浅的层次。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div>
+          <div style="font-family:var(--font-data);font-size:10px;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:4px">营收 YoY</div>
+          <div style="font-family:var(--font-display);font-size:30px;font-weight:400;color:var(--color-moss)">+12.4%<span class="anno anno-brand">moss</span></div>
+          <div style="font-family:var(--font-data);font-size:11px;color:var(--text-secondary);margin-top:2px">↑ 高频辅助信息</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-data);font-size:10px;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:4px">利润 YoY</div>
+          <div style="font-family:var(--font-display);font-size:30px;font-weight:400;color:var(--color-signal-red)">−3.1%<span class="anno anno-signal">signal-red</span></div>
+          <div style="font-family:var(--font-data);font-size:11px;color:var(--text-secondary);margin-top:2px">↓ 天然打断/警示</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-data);font-size:10px;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:4px">主数据（对比）</div>
+          <div style="font-family:var(--font-display);font-size:30px;font-weight:400;color:var(--primary)">¥1.2M<span class="anno anno-brand">forest</span></div>
+          <div style="font-family:var(--font-data);font-size:11px;color:var(--text-secondary);margin-top:2px">★ 页面最重要 · forest</div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>涨跌色铁律</h4>
+      <div class="rule">涨/增长 → <b>moss</b></div>
+      <div class="rule">跌/下滑 → <b>signal-red</b></div>
+      <div class="rule">主数据 → <b>forest</b>（别让涨跌抢戏）</div>
+      <div class="rule" style="color:var(--color-signal-red)">✗ 禁止 forest 涨 / orange 跌</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GAP2：多段占比色链 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">G2</span> · 多段占比 · 6 段色链</div>
+  <div class="sec-title">forest→moss→slate→steel→stone→signal-blue，按段数依次取</div>
+  <p class="sec-desc">前 4 段品牌色明度递减，第 5 段退到中性 stone（尾段本就该退），第 6 段才碰信号色 signal-blue 收尾（不用 orange，orange 留给打破点）。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div style="margin-bottom:16px">
+        <div style="font-family:var(--font-data);font-size:10px;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:6px">4 段 · 品牌4色明度深→浅</div>
+        <div style="display:flex;height:26px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border)">
+          <div style="flex:42;background:var(--color-forest)"></div>
+          <div style="flex:28;background:var(--color-moss)"></div>
+          <div style="flex:18;background:var(--color-slate)"></div>
+          <div style="flex:12;background:var(--color-steel)"></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-family:var(--font-data);font-size:10px;color:var(--text-secondary)">
+          <span><i style="display:inline-block;width:8px;height:8px;background:var(--color-forest);margin-right:4px;vertical-align:middle"></i>forest 42%</span>
+          <span><i style="display:inline-block;width:8px;height:8px;background:var(--color-moss);margin-right:4px;vertical-align:middle"></i>moss 28%</span>
+          <span><i style="display:inline-block;width:8px;height:8px;background:var(--color-slate);margin-right:4px;vertical-align:middle"></i>slate 18%</span>
+          <span><i style="display:inline-block;width:8px;height:8px;background:var(--color-steel);margin-right:4px;vertical-align:middle"></i>steel 12%</span>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-family:var(--font-data);font-size:10px;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:6px">5 段 · 第 5 段退到 <b style="color:var(--color-stone)">stone</b></div>
+        <div style="display:flex;height:26px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border)">
+          <div style="flex:38;background:var(--color-forest)"></div>
+          <div style="flex:25;background:var(--color-moss)"></div>
+          <div style="flex:17;background:var(--color-slate)"></div>
+          <div style="flex:12;background:var(--color-steel)"></div>
+          <div style="flex:8;background:var(--color-stone)"></div>
+        </div>
+        <div style="font-family:var(--font-data);font-size:10px;color:var(--text-secondary);margin-top:6px">尾段退到中性，不抢戏</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-data);font-size:10px;letter-spacing:.08em;color:var(--text-secondary);margin-bottom:6px">6 段 · 第 6 段 <b style="color:var(--color-signal-blue)">signal-blue</b> 收尾</div>
+        <div style="display:flex;height:26px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border)">
+          <div style="flex:34;background:var(--color-forest)"></div>
+          <div style="flex:23;background:var(--color-moss)"></div>
+          <div style="flex:16;background:var(--color-slate)"></div>
+          <div style="flex:11;background:var(--color-steel)"></div>
+          <div style="flex:9;background:var(--color-stone)"></div>
+          <div style="flex:7;background:var(--color-signal-blue)"></div>
+        </div>
+        <div style="font-family:var(--font-data);font-size:10px;color:var(--text-secondary);margin-top:6px">signal-blue 收尾，orange 不参与（留给打破点）</div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>分段色链配方</h4>
+      <div class="rule">2 段 → <b>forest + moss</b></div>
+      <div class="rule">3 段 → <b>+ slate</b></div>
+      <div class="rule">4 段 → <b>+ steel</b></div>
+      <div class="rule">5 段 → <b>+ stone</b></div>
+      <div class="rule">6 段+ → <b>+ signal-blue</b></div>
+      <div class="rule" style="color:var(--color-signal-red)">✗ 禁止前 5 段混入信号色</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GAP3：卡中卡层次 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">G3</span> · 卡中卡 · 外 white 内 cream</div>
+  <div class="sec-title">嵌套容器只走相邻一级：外层白，内层奶油</div>
+  <p class="sec-desc">嵌套层次本质还是"中性阶梯相邻级过渡"。记住 white→cream 这一对，嵌再多层都不会乱。反着嵌会凹陷，跳级会和边框撞色。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage">
+      <div class="vs" style="margin-bottom:0">
+        <div class="vs-col vs-good">
+          <div class="vs-head">✓ 外 white → 内 cream</div>
+          <div class="vs-body" style="background:var(--surface)">
+            <div style="font-family:var(--font-data);font-size:9px;color:var(--text-secondary);margin-bottom:8px">外层卡 · surface</div>
+            <div style="background:var(--surface-raised);border-radius:var(--r-sm);padding:14px;border:1px solid var(--border)">
+              <div style="font-family:var(--font-data);font-size:9px;color:var(--text-secondary);margin-bottom:4px">内层卡 · surface-raised</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary)">指标块</div>
+              <div style="font-family:var(--font-data);font-size:18px;color:var(--primary);margin-top:2px">94.2</div>
+            </div>
+          </div>
+        </div>
+        <div class="vs-col vs-bad">
+          <div class="vs-head">✗ 外 cream → 内 white</div>
+          <div class="vs-body" style="background:var(--surface-raised)">
+            <div style="font-family:var(--font-data);font-size:9px;color:var(--text-secondary);margin-bottom:8px">外层卡 · surface-raised</div>
+            <div style="background:var(--surface);border-radius:var(--r-sm);padding:14px;border:1px solid var(--border)">
+              <div style="font-family:var(--font-data);font-size:9px;color:var(--text-secondary);margin-bottom:4px">内层卡 · surface（凹陷错觉）</div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary)">指标块</div>
+              <div style="font-family:var(--font-data);font-size:18px;color:var(--primary);margin-top:2px">94.2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>卡中卡铁律</h4>
+      <div class="rule">外层 → <b>white</b>（surface）</div>
+      <div class="rule">内层 → <b>cream</b>（surface-raised）</div>
+      <div class="rule">只走相邻一级，不引入新色</div>
+      <div class="rule" style="color:var(--color-signal-red)">✗ 禁止反嵌 / 跳到 sand / 用 forest 当容器底</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 深色块 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">P6</span> · 深色块 · white + opacity</div>
+  <div class="sec-title">深底内部层次用 white 透明度，不用中性色</div>
+  <p class="sec-desc">深色 section 内部，所有层次用 white + 不同 opacity。不用 sand/stone（它们在深底会发灰）。这是 4 个验证文件里反复出现的模式。</p>
+
+  <div class="demo-row">
+    <div class="demo-stage" style="background:var(--bg);border:none;padding:0">
+      <div class="darkblock">
+        <div class="darkblock__lbl">CLOSING · 收束 <span class="anno" style="background:rgba(255,255,255,.15)">white op.0.4</span></div>
+        <div class="darkblock__title">衡量阅读的不是数字，而是决策。<span class="anno" style="background:rgba(255,255,255,.15)">white op.1</span></div>
+        <div class="darkblock__txt">下半年少读一半，但让每一本都真正发生。<span class="anno" style="background:rgba(255,255,255,.15)">white op.0.8</span></div>
+        <div class="darkblock__sep"><span class="anno" style="background:rgba(255,255,255,.15)">white op.0.08</span></div>
+        <div class="darkblock__sub">— 2026 阅读复盘 <span class="anno" style="background:rgba(255,255,255,.15)">white op.0.5</span></div>
+      </div>
+    </div>
+    <div class="demo-rules">
+      <h4>深底层次（white opacity）</h4>
+      <div class="rule">主标题 → <b>white op.1</b></div>
+      <div class="rule">正文 → <b>white op.0.8</b></div>
+      <div class="rule">次要文字 → <b>white op.0.5</b></div>
+      <div class="rule">label/装饰 → <b>white op.0.3-0.4</b></div>
+      <div class="rule">分隔线 → <b>white op.0.08</b></div>
+      <div class="rule" style="color:var(--color-signal-red)">✗ 禁止在深底用 sand/stone</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 自检清单 ═══ -->
+<div class="sec">
+  <div class="sec-lbl"><span class="id">CHECK</span> · 自检清单 · 防灰蒙蒙的 7 道防线</div>
+  <div class="sec-title">每次施工后过一遍 —— 7 条都过就不会灰蒙蒙</div>
+  <p class="sec-desc">灰蒙蒙 = 这 7 条被破坏了至少 3 条。</p>
+
+  <div class="checklist">
+    <div class="check-item check-item--ok"><div class="check-box">✓</div><div class="check-txt"><b>中性层次只走相邻级</b> —— 没有 white→stone 这种跳级 hover</div></div>
+    <div class="check-item check-item--ok"><div class="check-box">✓</div><div class="check-txt"><b>品牌色 ≤2 个/section</b> —— 没有 forest+moss+slate 三个同时出现</div></div>
+    <div class="check-item check-item--ok"><div class="check-box">✓</div><div class="check-txt"><b>信号色 ≤2 处/页</b> —— signal-orange 只在编号+打破点</div></div>
+    <div class="check-item check-item--ok"><div class="check-box">✓</div><div class="check-txt"><b>hover 走标准路径</b> —— white→cream / cream→sand</div></div>
+    <div class="check-item check-item--ok"><div class="check-box">✓</div><div class="check-txt"><b>深色块用 white+opacity</b> —— 深底不用 sand/stone</div></div>
+    <div class="check-item check-item--ok"><div class="check-box">✓</div><div class="check-txt"><b>装饰用阶梯低位+opacity</b> —— 不用品牌色做装饰</div></div>
+    <div class="check-item check-item--ok"><div class="check-box">✓</div><div class="check-txt"><b>步骤号用 sand opacity 0.4</b> —— 不是 charcoal</div></div>
+  </div>
+
+  <div style="margin-top:24px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);border-left:3px solid var(--color-signal-red)">
+    <div style="font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-signal-red);margin-bottom:8px">✗ 灰蒙蒙的典型症状</div>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:1.7">所有元素都用同一个灰 → 缺少阶梯<br>品牌色到处撒 → 缺少克制<br>深底用中性色 → 发灰发脏<br>装饰用品牌色 → 抢戏<br>hover 跳级 → 突兀</p>
+  </div>
+</div>
+
+<div style="padding:40px 48px 64px;text-align:center">
+  <div style="font-family:var(--font-data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-disabled)">颜色使用规则 · 6 原则 + 速查 + 自检 · 来自 H001/H061/H062/showcase 验证</div>
+</div>
+
+</body>
+</html>

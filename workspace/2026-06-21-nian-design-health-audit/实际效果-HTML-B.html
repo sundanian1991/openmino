@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nian-design · 对账闭环</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-white:#FFFFFF;--color-offwhite:#F5F3EF;--color-cream:#E8E4DD;
+  --color-sand:#C4B8A8;--color-stone:#8A7D6E;--color-charcoal:#2D2A26;--color-black:#1A1816;
+  --color-forest:#4A6741;--color-moss:#7A9B6D;--color-slate:#5B6B7A;--color-steel:#7A8B9B;
+  --color-signal-red:#E8453C;--color-signal-orange:#E87A3C;--color-signal-yellow:#E8B83C;--color-signal-blue:#3C7AE8;
+  --bg:var(--color-offwhite);--surface:var(--color-white);--surface-raised:var(--color-cream);
+  --border:var(--color-sand);--border-strong:var(--color-stone);
+  --text-display:var(--color-black);--text-primary:var(--color-charcoal);--text-secondary:var(--color-stone);--text-muted:#B5AC9D;--text-disabled:var(--color-stone);
+  --primary:var(--color-forest);--primary-2:var(--color-moss);--accent:var(--color-signal-orange);--accent-2:var(--color-signal-yellow);
+  --success:var(--color-moss);--warning:var(--color-signal-orange);--error:var(--color-signal-red);
+  --font-display:'Playfair Display',Georgia,serif;--font-decorative:'Doto','JetBrains Mono',monospace;--font-body:'Inter',-apple-system,sans-serif;--font-data:'JetBrains Mono','SF Mono',monospace;
+  --fs-display:clamp(56px,8vw,96px);--fs-h1:clamp(36px,5vw,56px);--fs-h2:clamp(24px,3vw,32px);--fs-h3:18px;
+  --fs-body-lg:15px;--fs-body:14px;--fs-caption:12px;--fs-data:11px;
+  --fw-light:300;--fw-regular:400;--fw-medium:500;--fw-semibold:600;--fw-bold:700;
+  --lh-tight:1.1;--lh-snug:1.3;--lh-body:1.65;--lh-data:1.4;
+  --ls-tight:-0.02em;--ls-wide:0.06em;--ls-wider:0.2em;
+  --r-sm:4px;--r-md:6px;--r-lg:8px;
+  --s-sm:8px;--s-md:16px;--s-lg:24px;--s-xl:32px;--s-2xl:48px;--s-3xl:64px;--s-4xl:96px;--s-5xl:120px;
+  --c-max:1120px;--ease-out:cubic-bezier(0.16,1,0.3,1);--dur-fast:150ms;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+/* ═══ 设计注释条（HTML B 特有：展示判断过程）═══ */
+.design-note{background:var(--color-charcoal);color:var(--color-offwhite);padding:var(--s-lg) var(--s-xl);font-family:var(--font-data);font-size:var(--fs-data);line-height:1.8;letter-spacing:var(--ls-wide);text-transform:uppercase;display:flex;gap:var(--s-xl);flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--color-stone)}
+.design-note span{opacity:0.5}
+.design-note strong{color:var(--color-signal-orange);font-weight:500}
+
+/* ═══ HERO · S05 论证型指标开屏 ═══ */
+.hero{padding:120px 64px;max-width:var(--c-max);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4xl);align-items:end;min-height:80vh}
+.hero__left{display:flex;flex-direction:column;gap:var(--s-lg)}
+.eyebrow{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--text-secondary);display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:'';width:24px;height:1px;background:var(--text-secondary)}
+.hero__title{font-family:var(--font-display);font-weight:var(--fw-light);font-size:var(--fs-display);line-height:var(--lh-tight);letter-spacing:var(--ls-tight);color:var(--text-display)}
+.hero__title em{font-style:italic;color:var(--primary)}
+.hero__desc{font-size:var(--fs-body-lg);line-height:1.75;color:var(--text-primary);max-width:440px;margin-top:var(--s-md)}
+.hero__right{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border)}
+.metric{background:var(--surface);padding:var(--s-xl) var(--s-lg);display:flex;flex-direction:column;gap:6px}
+.metric__num{font-family:var(--font-display);font-size:clamp(48px,6vw,80px);font-weight:var(--fw-light);line-height:1;color:var(--text-display)}
+.metric__num--accent{color:var(--accent)}
+.metric__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary)}
+
+/* ═══ SECTION 通用 ═══ */
+.section{padding:120px 64px;max-width:var(--c-max);margin:0 auto}
+.section--dark{background:var(--color-charcoal);max-width:none;padding-left:64px;padding-right:64px}
+.section--dark-inner{max-width:var(--c-max);margin:0 auto}
+.section--forest{background:var(--primary);max-width:none;padding-left:64px;padding-right:64px;color:var(--color-offwhite)}
+.section--forest-inner{max-width:var(--c-max);margin:0 auto}
+.s-label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--s-md);display:flex;align-items:center;gap:12px}
+.s-label::before{content:'';width:24px;height:1px;background:var(--text-secondary)}
+.section--dark .s-label,.section--forest .s-label{color:rgba(245,243,239,0.5)}
+.section--dark .s-label::before,.section--forest .s-label::before{background:rgba(245,243,239,0.5)}
+.s-title{font-family:var(--font-display);font-weight:var(--fw-light);font-size:var(--fs-h1);line-height:var(--lh-tight);letter-spacing:var(--ls-tight);color:var(--text-display);margin-bottom:var(--s-2xl);max-width:700px}
+.section--dark .s-title,.section--forest .s-title{color:var(--color-offwhite)}
+.s-title em{font-style:italic;color:var(--primary)}
+.section--dark .s-title em{color:var(--primary-2)}
+.section--forest .s-title em{color:var(--color-signal-yellow)}
+
+/* ═══ S14 · 病灶格子卡（论证型核心族：编号网格） ═══ */
+.issue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border)}
+.issue-card{background:var(--surface);padding:var(--s-xl) var(--s-lg);display:flex;flex-direction:column;gap:var(--s-md)}
+.issue-card__id{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--accent)}
+.issue-card__title{font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-regular);line-height:var(--lh-snug);color:var(--text-display)}
+.issue-card__desc{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);flex:1}
+.issue-card__fix{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--success);padding-top:var(--s-md);border-top:1px solid var(--border)}
+
+/* ═══ 时间线 · 回溯流程（论证型的方向感） ═══ */
+.tl{display:flex;flex-direction:column;gap:0;position:relative}
+.tl::before{content:'';position:absolute;left:11px;top:12px;bottom:12px;width:1px;background:var(--border)}
+.tl-item{display:grid;grid-template-columns:24px 1fr;gap:var(--s-xl);padding:0 0 var(--s-2xl) 0;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-item__dot{width:24px;height:24px;background:var(--surface);border:1px solid var(--border-strong);display:flex;align-items:center;justify-content:center;color:var(--text-display);font-family:var(--font-data);font-size:10px;position:relative;z-index:2;margin-top:2px}
+.tl-item__dot--error{border-color:var(--error);color:var(--error)}
+.tl-item__dot--pivot{border-color:var(--accent);background:var(--accent);color:var(--color-offwhite)}
+.tl-item__dot--success{border-color:var(--success);color:var(--success)}
+.tl-item__phase{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px}
+.tl-item__title{font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--fw-regular);color:var(--text-display);line-height:var(--lh-snug);margin-bottom:4px}
+.tl-item__desc{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary);max-width:580px}
+
+/* ═══ A03 表格 · 63 分解式 ═══ */
+.decomp-table{width:100%;border-collapse:collapse;border:1px solid var(--border)}
+.decomp-table th,.decomp-table td{padding:var(--s-md) var(--s-lg);border-bottom:1px solid var(--border);text-align:left;font-size:var(--fs-body);line-height:1.5}
+.decomp-table th{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary);font-weight:var(--fw-regular);background:var(--surface-raised)}
+.decomp-table td:nth-child(1){font-family:var(--font-display);font-size:24px;font-weight:var(--fw-light);color:var(--text-display);width:60px;line-height:1}
+.decomp-table td:nth-child(2){font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--accent);width:80px}
+.decomp-table td:nth-child(4){font-family:var(--font-data);font-size:var(--fs-data);color:var(--text-secondary);text-align:right;white-space:nowrap}
+.decomp-table tr:last-child td{border-bottom:none;font-weight:var(--fw-medium)}
+.decomp-table tr:last-child td:nth-child(1){font-size:32px;color:var(--primary)}
+
+/* ═══ D05 Checklist · 验证清单 ═══ */
+.checklist{border:1px solid var(--border);background:var(--surface)}
+.check-item{display:grid;grid-template-columns:auto 1fr auto;gap:var(--s-md);align-items:center;padding:var(--s-md) var(--s-lg);border-bottom:1px solid var(--border);font-size:var(--fs-body)}
+.check-item:last-child{border-bottom:none}
+.check-mark{width:20px;height:20px;border:1px solid var(--success);display:flex;align-items:center;justify-content:center;color:var(--success);font-size:11px;font-family:var(--font-data)}
+.check-label{color:var(--text-primary)}
+.check-status{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--success)}
+
+/* ═══ 深色金句 · 打破点（反直觉数字） ═══ */
+.pivot-quote{padding:140px 64px;background:var(--color-charcoal);text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;min-height:50vh}
+.pivot-quote__ghost{font-family:var(--font-display);font-weight:var(--fw-light);font-size:clamp(200px,30vw,480px);line-height:1;color:rgba(232,122,60,0.06);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.pivot-quote__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:rgba(245,243,239,0.4);margin-bottom:var(--s-xl);position:relative;z-index:2}
+.pivot-quote__text{font-family:var(--font-display);font-weight:var(--fw-light);font-style:italic;font-size:clamp(32px,4vw,48px);line-height:1.35;color:var(--color-offwhite);max-width:700px;position:relative;z-index:2}
+.pivot-quote__text strong{font-style:normal;font-weight:var(--fw-semibold);color:var(--color-signal-orange)}
+
+/* ═══ 收束 ═══ */
+.closing{padding:160px 64px;background:var(--color-charcoal);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:60vh}
+.closing__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wider);text-transform:uppercase;color:rgba(245,243,239,0.4);margin-bottom:var(--s-xl)}
+.closing__text{font-family:var(--font-display);font-weight:var(--fw-light);font-size:clamp(40px,5vw,64px);line-height:var(--lh-tight);color:var(--color-offwhite);max-width:800px}
+.closing__text em{font-style:italic;color:var(--primary-2)}
+.closing__meta{display:flex;gap:var(--s-2xl);margin-top:var(--s-3xl);font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:rgba(245,243,239,0.4)}
+
+@media(max-width:1024px){
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero__right{grid-template-columns:1fr 1fr}
+  .issue-grid{grid-template-columns:1fr}
+  .section{padding:80px 32px}
+  .design-note{flex-direction:column;align-items:flex-start;gap:var(--s-sm)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ═══ 设计注释条：展示判断过程 ═══ -->
+<div class="design-note">
+  <span>JUDGMENT:</span>
+  <span>记住 → 文档真相只住一个地方</span>
+  <span>张力 → 逻辑的链</span>
+  <span>情绪 → 信服</span>
+  <strong>ESSENCE B · 论证</strong>
+  <span>LENGTH → 短(≤10页)</span>
+</div>
+
+<!-- ═══ HERO · 论证型指标开屏 ═══ -->
+<section class="hero">
+  <div class="hero__left">
+    <div class="eyebrow">NIAN-DESIGN · HEALTH AUDIT · 2026.06.21</div>
+    <h1 class="hero__title">文档的真相，<br>只能住在<em>一个</em>地方。</h1>
+    <p class="hero__desc">
+      一次技能健康审查，15 个问题，11 项修复，1 次误判纠正。
+      最终收束为一个数字——不是补丁记录，是多信源对账的方法论。
+    </p>
+  </div>
+  <div class="hero__right">
+    <div class="metric">
+      <div class="metric__num">15</div>
+      <div class="metric__label">Issues Found</div>
+    </div>
+    <div class="metric">
+      <div class="metric__num">11</div>
+      <div class="metric__label">Files Fixed</div>
+    </div>
+    <div class="metric">
+      <div class="metric__num metric__num--accent">63</div>
+      <div class="metric__label">Components Unified</div>
+    </div>
+    <div class="metric">
+      <div class="metric__num">1</div>
+      <div class="metric__label">Source of Truth</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ S14 · 病灶格子卡（论证型核心族） ═══ -->
+<section class="section">
+  <div class="s-label">01 / DIAGNOSIS</div>
+  <h2 class="s-title">六类病灶，一个<em>根因</em>。</h2>
+  <div class="issue-grid">
+    <div class="issue-card">
+      <div class="issue-card__id">C1 · CRITICAL</div>
+      <div class="issue-card__title">入口断裂</div>
+      <div class="issue-card__desc">SKILL.md 指向已删除的 components-core.md / components-extended.md。施工方第一行就迷路。</div>
+      <div class="issue-card__fix">→ 统一指向 COMPONENTS-MASTER.md</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-card__id">C2 · CRITICAL</div>
+      <div class="issue-card__title">幽灵组件</div>
+      <div class="issue-card__desc">决策表残留 B04/B05/F09/F12/F13 共 5 个已删除组件，触发回溯死循环。</div>
+      <div class="issue-card__fix">→ 清除全部幽灵行</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-card__id">C3 · CRITICAL</div>
+      <div class="issue-card__title">矛盾双表</div>
+      <div class="issue-card__desc">layouts.md 存在两套互相矛盾的骨架决策表，同一意图映射到不同 S 编号。</div>
+      <div class="issue-card__fix">→ 删除第二套，保留权威</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-card__id">H1 · HIGH</div>
+      <div class="issue-card__title">数字漂移</div>
+      <div class="issue-card__desc">组件数在 52 / 56 / 63 三个值之间漂移，6 个文件各说各话。</div>
+      <div class="issue-card__fix">→ 全局统一 63</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-card__id">H5 · HIGH</div>
+      <div class="issue-card__title">Token 过期</div>
+      <div class="issue-card__desc">DESIGN-SYSTEM-MAP 引用已归档的 6 个 token 文件。实际信源是 token-root.css。</div>
+      <div class="issue-card__fix">→ 改指 token-root.css 单文件</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-card__id">M1 · MEDIUM</div>
+      <div class="issue-card__title">定义缺失</div>
+      <div class="issue-card__desc">VISUAL-STREAMS 频次表列了 Democratic 气质，但全文无正文定义章节。</div>
+      <div class="issue-card__fix">→ 补充完整正文定义</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 打破点 · 深色金句（反直觉数字） ═══ -->
+<section class="pivot-quote">
+  <div class="pivot-quote__ghost">1</div>
+  <div class="pivot-quote__label">02 / PIVOT</div>
+  <p class="pivot-quote__text">
+    审查了错误的版本。<br>
+    项目本地是旧残留，<br>
+    <strong>全局版才是唯一权威。</strong>
+  </p>
+</section>
+
+<!-- ═══ 时间线 · 回溯流程（论证型的方向感） ═══ -->
+<section class="section">
+  <div class="s-label">03 / PROCESS</div>
+  <h2 class="s-title">五幕<em>对账闭环</em>。</h2>
+  <div class="tl">
+    <div class="tl-item">
+      <div class="tl-item__dot">01</div>
+      <div>
+        <div class="tl-item__phase">ACT 1 · COMMISSION</div>
+        <div class="tl-item__title">体检令下达</div>
+        <div class="tl-item__desc">用户要求审查 nian-design 是否"完整可靠、充分可信赖"。审查范围：组件位置、骨架、气质、HTML 版本。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-item__dot tl-item__dot--error">02</div>
+      <div>
+        <div class="tl-item__phase">ACT 2 · SCAN</div>
+        <div class="tl-item__title">15 个问题浮出</div>
+        <div class="tl-item__desc">入口断裂、幽灵组件、矛盾决策表、颜色表过期、组件数漂移——胶水层的系统性问题。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-item__dot tl-item__dot--pivot">03</div>
+      <div>
+        <div class="tl-item__phase">ACT 3 · PIVOT</div>
+        <div class="tl-item__title">误判回拉</div>
+        <div class="tl-item__desc">审查了项目本地版（旧残留），产出了错误的审查报告。发现上一轮 handoff 明确标注"全局版是唯一权威"。重新审查全局版。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-item__dot tl-item__dot--success">04</div>
+      <div>
+        <div class="tl-item__phase">ACT 4 · FIX</div>
+        <div class="tl-item__title">11 项批量修复</div>
+        <div class="tl-item__desc">删除（幽灵组件/矛盾表）+ 迁移（颜色表→Haglofs 15 色）+ 统一（组件数 63 / 变体数 24+5）。三档策略。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-item__dot tl-item__dot--success">05</div>
+      <div>
+        <div class="tl-item__phase">ACT 5 · VERIFY</div>
+        <div class="tl-item__title">对账闭环收口</div>
+        <div class="tl-item__desc">全文件扫描：幽灵引用 0 处、旧色名 0 处、组件数 63 全局一致、骨架决策表唯一。闭环完成。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ A03 表格 · 63 分解式 ═══ -->
+<section class="section section--forest">
+  <div class="section--forest-inner">
+    <div class="s-label">04 / DECOMPOSITION</div>
+    <h2 class="s-title">63 = 八族<em>对账和</em>。</h2>
+    <table class="decomp-table" style="background:var(--color-offwhite)">
+      <thead>
+        <tr><th>族</th><th>数量</th><th>分类</th><th>核心组件</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>A</td><td>8</td><td>基础容器</td><td>Card · List · Table · Bento</td></tr>
+        <tr><td>B</td><td>8</td><td>数据进度</td><td>Progress · Bar · Pyramid · Waffle</td></tr>
+        <tr><td>C</td><td>7</td><td>流程导航</td><td>Timeline · Tree · Tag · Segmented</td></tr>
+        <tr><td>D</td><td>10</td><td>对比交互</td><td>Do/Don't · Button · Tab · Checklist</td></tr>
+        <tr><td>E</td><td>3</td><td>状态反馈</td><td>State · Toast · Deco Number</td></tr>
+        <tr><td>F</td><td>11</td><td>内容排版</td><td>Prose · Quote · Tension · Newspaper</td></tr>
+        <tr><td>G</td><td>5</td><td>mino 工具</td><td>Chat · Filter · Carousel</td></tr>
+        <tr><td>H</td><td>11</td><td>mino 吸收</td><td>Section Header · Dark Hero · Book Card</td></tr>
+        <tr><td>∑</td><td>63</td><td>合计</td><td>单一信源 · 全局一致</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══ D05 Checklist · 验证清单 ═══ -->
+<section class="section">
+  <div class="s-label">05 / VERIFICATION</div>
+  <h2 class="s-title">五项<em>对账自检</em>。</h2>
+  <div class="checklist">
+    <div class="check-item">
+      <div class="check-mark">✓</div>
+      <div class="check-label">幽灵文件引用（components-core / components-extended）</div>
+      <div class="check-status">0 RESIDUE</div>
+    </div>
+    <div class="check-item">
+      <div class="check-mark">✓</div>
+      <div class="check-label">旧 7 色名（--olive / --earth / --darkgray）</div>
+      <div class="check-status">0 RESIDUE</div>
+    </div>
+    <div class="check-item">
+      <div class="check-mark">✓</div>
+      <div class="check-label">组件数一致性（52 / 56 / 63 漂移）</div>
+      <div class="check-status">UNIFIED 63</div>
+    </div>
+    <div class="check-item">
+      <div class="check-mark">✓</div>
+      <div class="check-label">骨架决策表唯一性（两套矛盾表）</div>
+      <div class="check-status">1 AUTHORITATIVE</div>
+    </div>
+    <div class="check-item">
+      <div class="check-mark">✓</div>
+      <div class="check-label">9 种气质定义完整性（含 Democratic）</div>
+      <div class="check-status">9/9 DEFINED</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 收束 ═══ -->
+<section class="closing">
+  <div class="closing__label">PRINCIPLE</div>
+  <p class="closing__text">
+    每个变更都要<em>广播</em>到所有引用方。<br>
+    否则文档会<em>分裂</em>成多个真相。
+  </p>
+  <div class="closing__meta">
+    <span>NIAN-DESIGN v63</span>
+    <span>HAGLÖFS 15 COLORS</span>
+    <span>2026.06.21</span>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nian — 面条形</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --darkgray:#2C2C2C;--olive:#4A5D3A;--earth:#8B7355;--yellow:#FFD100;--orange:#E55B2B;--glacier:#2A4A5A;--rock:#808080;
+  --bg:#FAFAF8;--surface:#FFFFFF;--surface-raised:#F5F5F0;--border:#E5E5E0;--border-strong:#C0C0B8;
+  --text-display:#2d3142;--text-primary:#222222;--text-secondary:#8A7D6E;--text-muted:#b0a898;
+  --error:#C62828;--success:#2E7D32;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif;--font-data:'JetBrains Mono','Courier New',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding:48px 64px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-size:256px 256px;pointer-events:none;z-index:0}
+.page{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+
+.header{display:flex;align-items:baseline;gap:16px;margin-bottom:64px;border-bottom:1px solid var(--border);padding-bottom:32px}
+.hero-num{font-family:var(--font-display);font-size:64px;font-weight:300;line-height:1;color:var(--text-display);letter-spacing:-0.03em}
+.hero-label{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+.hero-title{font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--text-display);margin-left:auto}
+
+.nameplate{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--border-strong);border-radius:2px;margin-bottom:24px}
+.nameplate-dot{width:4px;height:4px;border-radius:50%;background:var(--olive)}
+.nameplate-text{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+
+/* FACETED BARS — one row per dimension, one bar per supplier */
+.facet-section{margin-bottom:64px}
+.facet-row{margin-bottom:32px}
+.facet-label{font-family:var(--font-data);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.facet-bars{display:flex;flex-direction:column;gap:8px}
+.facet-bar-row{display:grid;grid-template-columns:80px 1fr 50px;gap:12px;align-items:center}
+.facet-bar-name{font-size:13px;color:var(--text-primary);font-weight:500}
+.facet-bar-track{height:12px;background:var(--border);border-radius:1px;overflow:hidden;position:relative}
+.facet-bar-fill{height:100%;border-radius:1px;position:absolute;left:0;top:0}
+.facet-bar-fill.primary{background:var(--darkgray)}
+.facet-bar-fill.olive{background:var(--olive)}
+.facet-bar-fill.earth{background:var(--earth)}
+.facet-bar-fill.orange{background:var(--orange)}
+.facet-bar-fill.rock{background:var(--rock)}
+.facet-bar-val{font-family:var(--font-data);font-size:12px;font-weight:500;text-align:right}
+.facet-bar-val.good{color:var(--olive)}
+.facet-bar-val.mid{color:var(--text-secondary)}
+.facet-bar-val.bad{color:var(--orange)}
+
+/* REFERENCE LINE at 100% */
+.facet-bar-track .ref{position:absolute;top:-4px;bottom:-4px;width:1px;background:var(--olive);opacity:0.3;z-index:2}
+
+/* COMPARISON — side by side */
+.compare-wrap{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:64px}
+.compare-side{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:32px}
+.compare-label{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:16px;display:inline-block}
+.compare-label.radar{background:rgba(198,40,40,0.06);color:var(--error)}
+.compare-label.faceted{background:rgba(74,93,58,0.06);color:var(--olive)}
+
+/* Radar mock (bad) */
+.radar-mock{display:flex;justify-content:center;align-items:center;height:240px;position:relative}
+.radar-hex{width:180px;height:180px;position:relative}
+.radar-hex::before{content:'';position:absolute;inset:0;border:1px solid var(--border);border-radius:50%}
+.radar-hex::after{content:'';position:absolute;inset:30px;border:1px solid var(--border);border-radius:50%}
+.radar-dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--darkgray)}
+.radar-label{position:absolute;font-family:var(--font-data);font-size:8px;color:var(--text-muted);letter-spacing:0.04em}
+
+/* Faceted (good) */
+.faceted-mock{display:flex;flex-direction:column;gap:12px;padding-top:8px}
+.faceted-mini{display:grid;grid-template-columns:60px 1fr 40px;gap:8px;align-items:center}
+.faceted-mini-name{font-size:11px;color:var(--text-secondary)}
+.faceted-mini-bar{height:8px;background:var(--border);border-radius:1px;overflow:hidden}
+.faceted-mini-fill{height:100%;border-radius:1px}
+.faceted-mini-val{font-family:var(--font-data);font-size:10px;font-weight:500;text-align:right}
+
+.seam{height:1px;background:linear-gradient(90deg,transparent,var(--border-strong),transparent);margin:48px 0}
+
+.callout{margin-top:32px;padding:16px 20px;border-left:2px solid var(--olive);background:var(--surface)}
+.callout-title{font-family:var(--font-data);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--olive);margin-bottom:8px}
+.callout-text{font-size:14px;color:var(--text-secondary);line-height:1.6}
+.callout-text strong{color:var(--text-primary);font-weight:600}
+
+.footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer-text{font-family:var(--font-data);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="hero-num">6</span>
+    <div><div class="hero-label">Suppliers</div></div>
+    <span class="hero-title">面条形 · Faceted Bar</span>
+  </div>
+
+  <div class="nameplate"><div class="nameplate-dot"></div><span class="nameplate-text">6 Dimensions × 3 Suppliers · Replaces Radar Chart</span></div>
+
+  <!-- COMPARISON: Radar vs Faceted -->
+  <div class="compare-wrap">
+    <div class="compare-side">
+      <span class="compare-label radar">Radar · Hard to Read</span>
+      <div class="radar-mock">
+        <div class="radar-hex">
+          <div class="radar-dot" style="top:10px;left:80px"></div>
+          <div class="radar-dot" style="top:40px;right:10px"></div>
+          <div class="radar-dot" style="top:100px;right:20px"></div>
+          <div class="radar-dot" style="bottom:20px;left:60px"></div>
+          <div class="radar-dot" style="top:60px;left:10px"></div>
+          <div class="radar-label" style="top:-16px;left:50%;transform:translateX(-50%)">达成率</div>
+          <div class="radar-label" style="top:40px;right:-30px">合规</div>
+          <div class="radar-label" style="bottom:40px;right:-20px">人力</div>
+          <div class="radar-label" style="bottom:-16px;left:50%;transform:translateX(-50%)">环比</div>
+          <div class="radar-label" style="top:40px;left:-20px">留存</div>
+          <div class="radar-label" style="bottom:40px;left:-30px">满意度</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:12px;line-height:1.5">六边形重叠难以区分。三个供应商的雷达线交叉缠绕，无法快速判断谁在哪个维度更强。</p>
+    </div>
+
+    <div class="compare-side">
+      <span class="compare-label faceted">Faceted · Instant Clarity</span>
+      <div class="faceted-mock">
+        <div class="faceted-mini">
+          <span class="faceted-mini-name">达成率</span>
+          <div class="faceted-mini-bar"><div class="faceted-mini-fill" style="width:100%;background:var(--olive)"></div></div>
+          <span class="faceted-mini-val" style="color:var(--olive)">108%</span>
+        </div>
+        <div class="faceted-mini">
+          <span class="faceted-mini-name">合规</span>
+          <div class="faceted-mini-bar"><div class="faceted-mini-fill" style="width:90%;background:var(--darkgray)"></div></div>
+          <span class="faceted-mini-val">98%</span>
+        </div>
+        <div class="faceted-mini">
+          <span class="faceted-mini-name">人力</span>
+          <div class="faceted-mini-bar"><div class="faceted-mini-fill" style="width:85%;background:var(--darkgray)"></div></div>
+          <span class="faceted-mini-val">320</span>
+        </div>
+        <div class="faceted-mini">
+          <span class="faceted-mini-name">环比</span>
+          <div class="faceted-mini-bar"><div class="faceted-mini-fill" style="width:70%;background:var(--earth)"></div></div>
+          <span class="faceted-mini-val">+12%</span>
+        </div>
+        <div class="faceted-mini">
+          <span class="faceted-mini-name">留存</span>
+          <div class="faceted-mini-bar"><div class="faceted-mini-fill" style="width:80%;background:var(--darkgray)"></div></div>
+          <span class="faceted-mini-val">85%</span>
+        </div>
+        <div class="faceted-mini">
+          <span class="faceted-mini-name">满意度</span>
+          <div class="faceted-mini-bar"><div class="faceted-mini-fill" style="width:75%;background:var(--earth)"></div></div>
+          <span class="faceted-mini-val">4.2</span>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:12px;line-height:1.5">每个维度独立一行，每行三个供应商的条形并排。强弱一目了然，不需要数角度。</p>
+    </div>
+  </div>
+
+  <div class="seam"></div>
+
+  <!-- FULL FACETED BARS -->
+  <div class="facet-section">
+    <div class="nameplate"><div class="nameplate-dot"></div><span class="nameplate-text">Full Faceted Bar · 6 Dimensions × 3 Suppliers</span></div>
+
+    <div class="facet-row">
+      <div class="facet-label">达成率 · Achievement Rate</div>
+      <div class="facet-bars">
+        <div class="facet-bar-row"><span class="facet-bar-name">毅航</span><div class="facet-bar-track"><div class="facet-bar-fill olive" style="width:100%"></div><div class="ref" style="left:100%"></div></div><span class="facet-bar-val good">108%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">伽玛</span><div class="facet-bar-track"><div class="facet-bar-fill primary" style="width:87%"></div></div><span class="facet-bar-val mid">94%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">岐力</span><div class="facet-bar-track"><div class="facet-bar-fill orange" style="width:51%"></div></div><span class="facet-bar-val bad">55%</span></div>
+      </div>
+    </div>
+
+    <div class="facet-row">
+      <div class="facet-label">合规率 · Compliance Rate</div>
+      <div class="facet-bars">
+        <div class="facet-bar-row"><span class="facet-bar-name">毅航</span><div class="facet-bar-track"><div class="facet-bar-fill olive" style="width:98%"></div></div><span class="facet-bar-val good">98%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">伽玛</span><div class="facet-bar-track"><div class="facet-bar-fill primary" style="width:85%"></div></div><span class="facet-bar-val mid">85%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">岐力</span><div class="facet-bar-track"><div class="facet-bar-fill orange" style="width:45%"></div></div><span class="facet-bar-val bad">45%</span></div>
+      </div>
+    </div>
+
+    <div class="facet-row">
+      <div class="facet-label">人力规模 · Headcount</div>
+      <div class="facet-bars">
+        <div class="facet-bar-row"><span class="facet-bar-name">毅航</span><div class="facet-bar-track"><div class="facet-bar-fill olive" style="width:100%"></div></div><span class="facet-bar-val good">320</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">伽玛</span><div class="facet-bar-track"><div class="facet-bar-fill primary" style="width:75%"></div></div><span class="facet-bar-val mid">240</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">岐力</span><div class="facet-bar-track"><div class="facet-bar-fill earth" style="width:38%"></div></div><span class="facet-bar-val mid">120</span></div>
+      </div>
+    </div>
+
+    <div class="facet-row">
+      <div class="facet-label">环比增长 · MoM Growth</div>
+      <div class="facet-bars">
+        <div class="facet-bar-row"><span class="facet-bar-name">毅航</span><div class="facet-bar-track"><div class="facet-bar-fill olive" style="width:70%"></div></div><span class="facet-bar-val good">+12.3%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">伽玛</span><div class="facet-bar-track"><div class="facet-bar-fill primary" style="width:30%"></div></div><span class="facet-bar-val mid">+3.1%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">岐力</span><div class="facet-bar-track"><div class="facet-bar-fill orange" style="width:50%"></div></div><span class="facet-bar-val bad">-8.7%</span></div>
+      </div>
+    </div>
+
+    <div class="facet-row">
+      <div class="facet-label">绩优留存 · Retention Rate</div>
+      <div class="facet-bars">
+        <div class="facet-bar-row"><span class="facet-bar-name">毅航</span><div class="facet-bar-track"><div class="facet-bar-fill olive" style="width:85%"></div></div><span class="facet-bar-val good">85%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">伽玛</span><div class="facet-bar-track"><div class="facet-bar-fill primary" style="width:72%"></div></div><span class="facet-bar-val mid">72%</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">岐力</span><div class="facet-bar-track"><div class="facet-bar-fill earth" style="width:48%"></div></div><span class="facet-bar-val bad">48%</span></div>
+      </div>
+    </div>
+
+    <div class="facet-row">
+      <div class="facet-label">客户满意度 · CSAT</div>
+      <div class="facet-bars">
+        <div class="facet-bar-row"><span class="facet-bar-name">毅航</span><div class="facet-bar-track"><div class="facet-bar-fill olive" style="width:84%"></div></div><span class="facet-bar-val good">4.2</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">伽玛</span><div class="facet-bar-track"><div class="facet-bar-fill primary" style="width:76%"></div></div><span class="facet-bar-val mid">3.8</span></div>
+        <div class="facet-bar-row"><span class="facet-bar-name">岐力</span><div class="facet-bar-track"><div class="facet-bar-fill earth" style="width:60%"></div></div><span class="facet-bar-val bad">3.0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">面条形规则</div>
+    <div class="callout-text">面条形（Faceted Bar）是雷达图的<strong>可读替代</strong>。雷达图的六边形交叉缠绕，无法快速比较；面条形把每个维度拆成独立行，每行三个供应商的条形并排，强弱一目了然。颜色编码：olive = TOP，darkgray = 正常，earth = 辅助，orange = 预警。<strong>每行条形等高</strong>（12px），不用高度编码数值——宽度已经是数值了，高度再编码是冗余。</div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">面条形 · Faceted Bar · Nian Design</span>
+    <span class="footer-text">6 Dimensions × 3 Suppliers · Replaces Radar</span>
+  </div>
+
+</div>
+</body>
+</html>

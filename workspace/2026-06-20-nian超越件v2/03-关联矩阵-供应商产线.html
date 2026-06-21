@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关联矩阵 — 供应商产线覆盖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --darkgray:#2C2C2C;
+  --olive:#5A6B3D;
+  --earth:#A08060;
+  --yellow:#D4B85A;
+  --orange:#C97A3D;
+  --glacier:#2A4A5A;
+  --rock:#8B8680;
+  --surface:#FAF8F3;
+  --surface-raised:#F0EDE5;
+  --bg:#F5F2EC;
+}
+body{
+  background:var(--bg);
+  color:var(--darkgray);
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:400;
+  min-height:100vh;
+  padding:48px 64px;
+  position:relative;
+  overflow-x:hidden;
+}
+.page{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+
+/* GHOST 唯一打破 */
+.ghost{
+  position:absolute;
+  top:60px;
+  right:-30px;
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-weight:400;
+  font-size:320px;
+  line-height:1;
+  color:var(--olive);
+  opacity:0.045;
+  z-index:0;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* HERO V5-Numeral 非对称 8fr/4fr */
+.hero{
+  display:grid;
+  grid-template-columns:8fr 4fr;
+  gap:48px;
+  align-items:end;
+  margin-bottom:56px;
+  padding-bottom:32px;
+  border-bottom:1px solid var(--rock);
+  position:relative;
+  z-index:1;
+}
+.hero-left{display:flex;align-items:baseline;gap:24px}
+.hero-num{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-weight:600;
+  font-size:120px;
+  line-height:0.9;
+  color:var(--darkgray);
+  letter-spacing:-0.04em;
+}
+.hero-meta{display:flex;flex-direction:column;gap:6px}
+.hero-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:400;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--rock);
+}
+.hero-title{
+  font-family:'Inter',sans-serif;
+  font-size:16px;
+  font-weight:600;
+  color:var(--darkgray);
+  line-height:1.3;
+}
+.hero-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--rock);
+  margin-top:2px;
+}
+
+/* 三层金字塔 Answer → Argument → Evidence */
+.pyramid{display:flex;flex-direction:column;gap:12px}
+.pyramid-row{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:start}
+.pyramid-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding-top:2px;
+}
+.pyramid-row.answer .pyramid-tag{color:var(--olive)}
+.pyramid-row.argument .pyramid-tag{color:var(--darkgray)}
+.pyramid-row.evidence .pyramid-tag{color:var(--earth)}
+.pyramid-text{
+  font-family:'Inter',sans-serif;
+  font-size:12px;
+  font-weight:400;
+  line-height:1.55;
+  color:var(--darkgray);
+}
+.pyramid-row.evidence .pyramid-text{color:var(--rock)}
+
+/* MATRIX */
+.matrix-wrap{
+  background:var(--surface);
+  border:1px solid var(--rock);
+  position:relative;
+  z-index:1;
+}
+.matrix{width:100%;border-collapse:collapse}
+.matrix th{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:400;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--rock);
+  padding:18px 14px;
+  border-bottom:1px solid var(--rock);
+  text-align:center;
+  white-space:nowrap;
+}
+.matrix th:first-child{text-align:left;width:150px;padding-left:18px}
+.matrix th .sub{
+  font-size:10px;
+  color:var(--rock);
+  opacity:0.7;
+  letter-spacing:0.06em;
+  display:block;
+  margin-top:4px;
+}
+.matrix th .dot{
+  display:inline-block;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  margin-left:6px;
+  vertical-align:middle;
+}
+.matrix th .dot-yellow{background:var(--yellow)}
+.matrix th .dot-orange{background:var(--orange)}
+.matrix td{padding:0;border-bottom:1px solid var(--rock)}
+.matrix td:first-child{
+  padding:18px;
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  font-weight:600;
+  color:var(--darkgray);
+  border-right:1px solid var(--rock);
+  white-space:nowrap;
+}
+.matrix td:first-child .sid{
+  display:block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--rock);
+  margin-top:4px;
+}
+.matrix tr:last-child td{border-bottom:none}
+
+/* CELL 四级填充 —— nian 自然色超越点 */
+.cell{padding:16px 14px;text-align:center;min-width:130px}
+.cell-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:0.02em;
+  text-transform:uppercase;
+  line-height:1;
+}
+.cell-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  margin-top:6px;
+}
+
+/* primary 主力 olive 实底白字 */
+.cell-primary{background:var(--olive)}
+.cell-primary .cell-val{color:#fff}
+.cell-primary .cell-sub{color:rgba(255,255,255,0.7)}
+
+/* secondary 协同 darkgray 实底白字 */
+.cell-secondary{background:var(--darkgray)}
+.cell-secondary .cell-val{color:#fff}
+.cell-secondary .cell-sub{color:rgba(255,255,255,0.65)}
+
+/* tertiary 试水 surface-raised 深灰字 */
+.cell-tertiary{background:var(--surface-raised)}
+.cell-tertiary .cell-val{color:var(--darkgray)}
+.cell-tertiary .cell-sub{color:var(--rock)}
+
+/* empty 未覆盖 bg 透明+虚线边框 */
+.cell-empty{
+  background:var(--bg);
+  border:1px dashed var(--rock);
+}
+.cell-empty .cell-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:400;
+  color:var(--rock);
+  letter-spacing:0.1em;
+}
+.cell-empty .cell-sub{color:var(--rock);opacity:0.6}
+
+/* TOTAL ROW olive 2px border-top */
+.row-total td{
+  border-top:2px solid var(--olive);
+  border-bottom:none;
+  background:var(--surface);
+}
+.row-total td:first-child{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--olive);
+}
+.row-total .cell-val{color:var(--darkgray);font-size:18px}
+.row-total .cell-sub{color:var(--rock)}
+
+/* LEGEND 非对称 8fr/4fr */
+.legend{
+  display:grid;
+  grid-template-columns:8fr 4fr;
+  gap:48px;
+  margin-top:40px;
+  padding-top:24px;
+  border-top:1px solid var(--rock);
+}
+.legend-fill{display:flex;flex-direction:column;gap:10px}
+.legend-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--rock);
+  margin-bottom:4px;
+}
+.legend-items{display:flex;gap:24px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:8px}
+.legend-swatch{width:14px;height:14px;display:inline-block}
+.legend-swatch.primary{background:var(--olive)}
+.legend-swatch.secondary{background:var(--darkgray)}
+.legend-swatch.tertiary{background:var(--surface-raised);border:1px solid var(--rock)}
+.legend-swatch.empty{background:var(--bg);border:1px dashed var(--rock)}
+.legend-text{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--darkgray);
+}
+.legend-dots{display:flex;flex-direction:column;gap:10px}
+.legend-dot-item{display:flex;align-items:center;gap:8px}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+.legend-dot.yellow{background:var(--yellow)}
+.legend-dot.orange{background:var(--orange)}
+
+/* RANK 条形 第二形态 */
+.rank-section{
+  margin-top:40px;
+  padding-top:24px;
+  border-top:1px solid var(--rock);
+}
+.rank-title{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--rock);
+  margin-bottom:16px;
+}
+.rank-list{display:flex;flex-direction:column;gap:10px}
+.rank-row{
+  display:grid;
+  grid-template-columns:28px 1fr 90px 70px;
+  gap:16px;
+  align-items:center;
+}
+.rank-no{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+  color:var(--rock);
+}
+.rank-name{
+  font-family:'Playfair Display',serif;
+  font-size:14px;
+  font-weight:600;
+  color:var(--darkgray);
+}
+.rank-bar-wrap{
+  height:6px;
+  background:var(--surface-raised);
+  position:relative;
+}
+.rank-bar{height:100%;background:var(--olive)}
+.rank-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  color:var(--darkgray);
+  text-align:right;
+}
+
+/* EVIDENCE FOOTER 非对称 8fr/4fr */
+.evidence{
+  margin-top:40px;
+  padding-top:20px;
+  border-top:1px solid var(--rock);
+  display:grid;
+  grid-template-columns:8fr 4fr;
+  gap:48px;
+  align-items:start;
+}
+.evidence-list{display:flex;flex-direction:column;gap:6px}
+.evidence-item{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--rock);
+  line-height:1.6;
+}
+.evidence-item strong{color:var(--darkgray);font-weight:600}
+.evidence-meta{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--rock);
+  text-align:right;
+  line-height:1.9;
+}
+</style>
+</head>
+<body>
+<!-- QA: 5/5 passed | stream: Numeral | hero: V5 | base: light -->
+<div class="page">
+
+  <!-- GHOST 唯一打破 -->
+  <div class="ghost">网</div>
+
+  <!-- HERO V5-Numeral 非对称 8fr/4fr -->
+  <div class="hero">
+    <div class="hero-left">
+      <span class="hero-num">6</span>
+      <div class="hero-meta">
+        <span class="hero-label">Suppliers · 重点供应商</span>
+        <span class="hero-title">供应商-产线覆盖矩阵</span>
+        <span class="hero-sub">6 Suppliers × 4 Products · Seat Coverage</span>
+      </div>
+    </div>
+    <div class="pyramid">
+      <div class="pyramid-row answer">
+        <span class="pyramid-tag">Answer</span>
+        <span class="pyramid-text">6 家重点供应商覆盖 4 产线，金条承载 56% 坐席，为绝对主力产线</span>
+      </div>
+      <div class="pyramid-row argument">
+        <span class="pyramid-tag">Argument</span>
+        <span class="pyramid-text">覆盖深度呈金字塔——金条密集、企金集中、信用卡单点、财富试水</span>
+      </div>
+      <div class="pyramid-row evidence">
+        <span class="pyramid-tag">Evidence</span>
+        <span class="pyramid-text">746 总坐席 · 4 级填充编码 · 合规/预警双圆点标注</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATRIX 矩阵主体 第一形态 -->
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th></th>
+          <th>金条<span class="sub">核心产线</span><span class="dot dot-yellow"></span></th>
+          <th>企金<span class="sub">增长产线</span></th>
+          <th>信用卡<span class="sub">稳定产线</span></th>
+          <th>财富<span class="sub">新生产线</span><span class="dot dot-orange"></span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>毅航<span class="sid">S-01</span></td>
+          <td class="cell cell-primary"><div class="cell-val">120</div><div class="cell-sub">38% · 主力</div></td>
+          <td class="cell cell-secondary"><div class="cell-val">45</div><div class="cell-sub">27% · 协同</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+        </tr>
+        <tr>
+          <td>毛毛虫<span class="sid">S-02</span></td>
+          <td class="cell cell-primary"><div class="cell-val">98</div><div class="cell-sub">31% · 主力</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-tertiary"><div class="cell-val">22</div><div class="cell-sub">22% · 试水</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+        </tr>
+        <tr>
+          <td>伽玛<span class="sid">S-03</span></td>
+          <td class="cell cell-primary"><div class="cell-val">110</div><div class="cell-sub">35% · 主力</div></td>
+          <td class="cell cell-secondary"><div class="cell-val">38</div><div class="cell-sub">23% · 协同</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+        </tr>
+        <tr>
+          <td>赛维斯<span class="sid">S-04</span></td>
+          <td class="cell cell-tertiary"><div class="cell-val">28</div><div class="cell-sub">9% · 试水</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-secondary"><div class="cell-val">42</div><div class="cell-sub">70% · 协同</div></td>
+        </tr>
+        <tr>
+          <td>岐力<span class="sid">S-05</span></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-primary"><div class="cell-val">85</div><div class="cell-sub">51% · 主力</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+        </tr>
+        <tr>
+          <td>翰锐<span class="sid">S-06</span></td>
+          <td class="cell cell-secondary"><div class="cell-val">62</div><div class="cell-sub">20% · 协同</div></td>
+          <td class="cell cell-empty"><div class="cell-val">—</div><div class="cell-sub">未覆盖</div></td>
+          <td class="cell cell-primary"><div class="cell-val">78</div><div class="cell-sub">78% · 主力</div></td>
+          <td class="cell cell-tertiary"><div class="cell-val">18</div><div class="cell-sub">30% · 试水</div></td>
+        </tr>
+        <tr class="row-total">
+          <td>Total</td>
+          <td class="cell"><div class="cell-val">418</div><div class="cell-sub">56% 总占比</div></td>
+          <td class="cell"><div class="cell-val">168</div><div class="cell-sub">23% 总占比</div></td>
+          <td class="cell"><div class="cell-val">100</div><div class="cell-sub">13% 总占比</div></td>
+          <td class="cell"><div class="cell-val">60</div><div class="cell-sub">8% 总占比</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LEGEND + DOTS 非对称 8fr/4fr -->
+  <div class="legend">
+    <div class="legend-fill">
+      <span class="legend-title">Fill Depth · 填充深度四级编码</span>
+      <div class="legend-items">
+        <div class="legend-item"><span class="legend-swatch primary"></span><span class="legend-text">Primary · 主力</span></div>
+        <div class="legend-item"><span class="legend-swatch secondary"></span><span class="legend-text">Secondary · 协同</span></div>
+        <div class="legend-item"><span class="legend-swatch tertiary"></span><span class="legend-text">Tertiary · 试水</span></div>
+        <div class="legend-item"><span class="legend-swatch empty"></span><span class="legend-text">Empty · 未覆盖</span></div>
+      </div>
+    </div>
+    <div class="legend-dots">
+      <span class="legend-title">Markers · 产线状态标注</span>
+      <div class="legend-dot-item"><span class="legend-dot yellow"></span><span class="legend-text">合规标杆产线</span></div>
+      <div class="legend-dot-item"><span class="legend-dot orange"></span><span class="legend-text">预警产线</span></div>
+    </div>
+  </div>
+
+  <!-- RANK 条形 第二形态 -->
+  <div class="rank-section">
+    <div class="rank-title">Supplier Rank · 供应商总坐席排名</div>
+    <div class="rank-list">
+      <div class="rank-row">
+        <span class="rank-no">01</span>
+        <span class="rank-name">毅航</span>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:100%"></div></div>
+        <span class="rank-val">165 席</span>
+      </div>
+      <div class="rank-row">
+        <span class="rank-no">02</span>
+        <span class="rank-name">翰锐</span>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:95.8%"></div></div>
+        <span class="rank-val">158 席</span>
+      </div>
+      <div class="rank-row">
+        <span class="rank-no">03</span>
+        <span class="rank-name">伽玛</span>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:89.7%"></div></div>
+        <span class="rank-val">148 席</span>
+      </div>
+      <div class="rank-row">
+        <span class="rank-no">04</span>
+        <span class="rank-name">毛毛虫</span>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:72.7%"></div></div>
+        <span class="rank-val">120 席</span>
+      </div>
+      <div class="rank-row">
+        <span class="rank-no">05</span>
+        <span class="rank-name">岐力</span>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:51.5%"></div></div>
+        <span class="rank-val">85 席</span>
+      </div>
+      <div class="rank-row">
+        <span class="rank-no">06</span>
+        <span class="rank-name">赛维斯</span>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:42.4%"></div></div>
+        <span class="rank-val">70 席</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVIDENCE FOOTER 非对称 8fr/4fr -->
+  <div class="evidence">
+    <div class="evidence-list">
+      <span class="evidence-item"><strong>E01 ·</strong> 数据口径：在岗坐席数（含外包 BPO），截止 2026-06-15 排班系统快照</span>
+      <span class="evidence-item"><strong>E02 ·</strong> 占比分母：单产线内供应商坐席 / 该产线总坐席；总占比为该产线 / 746 全量</span>
+      <span class="evidence-item"><strong>E03 ·</strong> 填充深度编码：Primary 主力 olive · Secondary 协同 darkgray · Tertiary 试水 raised · Empty 未覆盖虚线</span>
+      <span class="evidence-item"><strong>E04 ·</strong> 圆点标注：Yellow 合规标杆产线金条达标 · Orange 预警产线财富产能不足</span>
+    </div>
+    <div class="evidence-meta">
+      数据周期 2026 Q2<br>
+      快照 06-15 09:00<br>
+      746 seats · 4 lines
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

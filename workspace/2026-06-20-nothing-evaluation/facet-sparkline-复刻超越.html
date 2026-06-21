@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>分面条形 · 趋势线 — 供应商全景评估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --darkgray:#2C2C2C; --olive:#4A5D3A; --earth:#8B7355;
+  --yellow:#FFD100; --orange:#E55B2B;
+  --glacier:#2A4A5A; --rock:#808080;
+  --bg:#FAFAF8; --surface:#FFFFFF; --surface-raised:#F5F5F0;
+  --border:#E5E5E0; --border-strong:#C0C0B8;
+  --success:#2E7D32; --warning:#F9A825; --error:#C62828;
+  --text-display:#2C2C2C; --text-primary:#1A1A1A;
+  --text-secondary:#6B6B6B; --text-disabled:#A0A0A0;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+  --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+  --s-3xs:1px; --s-2xs:2px; --s-xs:4px; --s-sm:8px;
+  --s-md:16px; --s-lg:24px; --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px;
+  --c-max:1120px; --pad:32px; --gap:24px;
+  --r-0:0; --r-xs:2px; --r-sm:4px; --r-md:8px; --r-lg:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);line-height:1.6;font-size:15px;min-height:100vh;overflow-x:hidden}
+
+/* ===== GHOST WATERMARK ===== */
+.ghost{position:fixed;top:-40px;right:-20px;font-family:Georgia,serif;font-style:italic;font-size:320px;line-height:1;color:var(--text-primary);opacity:0.035;pointer-events:none;z-index:0;user-select:none;letter-spacing:-0.06em}
+
+/* ===== PAGE ===== */
+.page{position:relative;z-index:1;max-width:var(--c-max);margin:0 auto;padding:var(--s-xl) var(--pad) var(--s-2xl)}
+
+/* ===== HEADER ===== */
+.hero{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:var(--s-3xl);padding-bottom:var(--s-lg);border-bottom:1px solid var(--border)}
+.hero-left{display:flex;align-items:baseline;gap:var(--s-md)}
+.hero-num{font-family:var(--font-display);font-size:48px;font-weight:700;line-height:1;color:var(--olive);letter-spacing:-0.03em}
+.hero-label-group{display:flex;flex-direction:column}
+.hero-label{font-family:var(--font-data);font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary)}
+.hero-label-detail{font-family:var(--font-data);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-disabled)}
+.hero-title{font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--text-primary)}
+
+/* ===== FACETS (3 字号: 15 / 13 / 11) ===== */
+.facets{display:grid;gap:var(--s-xl)}
+.facet{position:relative}
+.facet-header{display:flex;align-items:baseline;gap:var(--s-md);margin-bottom:var(--s-sm);padding-bottom:var(--s-xs);border-bottom:1px solid var(--border)}
+.facet-name{font-size:15px;font-weight:600;color:var(--text-primary);line-height:1.4}
+.facet-name.gap-highlight{color:var(--orange)}
+.facet-label{font-family:var(--font-data);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);margin-left:var(--s-xs)}
+.facet-best{font-family:var(--font-data);font-size:11px;font-weight:500;color:var(--olive);margin-left:auto;white-space:nowrap}
+.facet-best.gap-highlight{color:var(--orange)}
+
+.bar-row{display:grid;grid-template-columns:84px 1fr 40px;gap:var(--s-sm);align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.bar-row:last-child{border-bottom:none}
+.bar-name{font-size:13px;font-weight:400;color:var(--text-secondary);line-height:1.3}
+.bar-name.rank-1{font-weight:600;color:var(--olive)}
+.bar-name.rank-2{color:var(--earth)}
+.bar-name.rank-3{color:var(--rock)}
+.bar-track{height:20px;background:var(--border);border-radius:var(--r-xs);overflow:hidden}
+.bar-fill{height:100%;border-radius:var(--r-xs);transition:width 0.4s ease-out}
+.bar-fill.rank-1{background:var(--olive)}
+.bar-fill.rank-2{background:var(--earth)}
+.bar-fill.rank-3{background:var(--rock);opacity:0.45}
+.bar-val{font-family:var(--font-data);font-size:13px;font-weight:500;color:var(--text-primary);text-align:right}
+.bar-val.rank-1{color:var(--olive)}
+.bar-val.rank-2{color:var(--earth)}
+.bar-val.rank-3{color:var(--rock)}
+
+.facet-insight{display:flex;align-items:center;gap:var(--s-sm);margin-top:var(--s-sm);padding-left:var(--s-md);padding-top:var(--s-xs)}
+.facet-insight-bar{width:3px;min-height:14px;background:var(--orange);border-radius:2px;flex-shrink:0}
+.facet-insight-text{font-size:13px;color:var(--text-secondary);line-height:1.5;font-style:italic}
+.facet-insight-text strong{color:var(--orange);font-weight:600}
+
+/* ===== BREATHING ===== */
+.breath{position:relative;margin:var(--s-3xl) 0;padding:var(--s-2xl) 0;text-align:center;overflow:hidden}
+.breath::before,.breath::after{content:'';display:block;height:1px;background:var(--border);margin:var(--s-lg) auto 0;width:60% auto}
+.breath::after{margin-top:0}
+.breath-inner{max-width:680px;margin:var(--s-xl) auto 0;position:relative}
+.breath-text{font-family:var(--font-display);font-size:20px;font-style:italic;line-height:1.7;color:var(--text-display);opacity:0.7}
+.breath-text::before{content:'\201C';font-size:48px;color:var(--earth);opacity:0.35;display:block;margin-bottom:-16px;font-style:normal;line-height:1}
+.breath-sub{font-family:var(--font-data);font-size:11px;letter-spacing:0.04em;color:var(--text-disabled);margin-top:var(--s-md)}
+
+/* ===== SPARKLINE SECTION (3 字号: 24 / 15 / 11) ===== */
+.spark-section{margin-top:var(--s-2xl)}
+.spark-header{display:flex;align-items:baseline;gap:var(--s-md);margin-bottom:var(--s-lg);padding-bottom:var(--s-sm);border-bottom:1px solid var(--border)}
+.spark-header-num{font-family:var(--font-display);font-size:24px;font-weight:700;line-height:1;color:var(--olive)}
+.spark-header-title{font-size:15px;font-weight:600;color:var(--text-primary)}
+.spark-header-label{font-family:var(--font-data);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-secondary);margin-left:auto}
+
+.spark-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-md)}
+.spark-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:var(--s-lg) var(--s-md);transition:border-color 0.2s;display:flex;flex-direction:column}
+.spark-card:hover{border-color:var(--border-strong)}
+.spark-card-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--s-sm)}
+.spark-card-name{font-size:15px;font-weight:600;color:var(--text-primary)}
+.spark-card-val{font-family:var(--font-display);font-size:24px;font-weight:700;line-height:1.2}
+.spark-card-val.up{color:var(--olive)}
+.spark-card-val.stable{color:var(--rock)}
+.spark-card-val.down{color:var(--orange)}
+.spark-card-svg{width:100%;height:36px;margin:var(--s-xs) 0}
+.spark-card-footer{display:flex;justify-content:space-between;align-items:baseline;margin-top:auto;padding-top:var(--s-sm)}
+.spark-card-change{font-family:var(--font-data);font-size:11px;font-weight:500}
+.spark-card-change.up{color:var(--olive)}
+.spark-card-change.stable{color:var(--text-disabled)}
+.spark-card-change.down{color:var(--orange)}
+.spark-card-period{font-family:var(--font-data);font-size:11px;letter-spacing:0.04em;color:var(--text-disabled)}
+
+/* ===== KEY INSIGHT ===== */
+.insight-block{margin-top:var(--s-2xl);padding:var(--s-lg) var(--s-xl);background:var(--surface-raised);border-left:3px solid var(--olive)}
+.insight-block-title{font-family:var(--font-data);font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--olive);margin-bottom:var(--s-sm)}
+.insight-block-text{font-size:15px;color:var(--text-primary);line-height:1.7}
+.insight-block-text strong{color:var(--orange);font-weight:600}
+
+/* ===== FOOTER ===== */
+.footer{margin-top:var(--s-2xl);padding-top:var(--s-md);border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer-text{font-family:var(--font-data);font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-disabled)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .spark-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .page{padding:var(--s-lg) var(--s-md)}
+  .hero{flex-direction:column;align-items:flex-start;gap:var(--s-sm)}
+  .hero-title{margin-left:0}
+  .ghost{font-size:180px;top:-20px;right:-10px}
+  .bar-row{grid-template-columns:70px 1fr 36px;gap:var(--s-xs)}
+  .spark-grid{grid-template-columns:1fr}
+  .facet-header{flex-wrap:wrap;gap:var(--s-xs)}
+  .facet-best{margin-left:0;width:100%}
+  .insight-block{padding:var(--s-md)}
+}
+</style>
+</head>
+<body>
+
+<div class="ghost">观</div>
+
+<div class="page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-num">6</div>
+      <div class="hero-label-group">
+        <div class="hero-label">Dimensions · 3 Suppliers</div>
+        <div class="hero-label-detail">六维能力 · 三家头部供应商</div>
+      </div>
+    </div>
+    <div class="hero-title">供应商能力评估与趋势全景</div>
+  </div>
+
+  <!-- ===== FACETS ===== -->
+  <div class="facets">
+
+    <!-- FACET 1: 转化率 -->
+    <div class="facet">
+      <div class="facet-header">
+        <span class="facet-name">转化率</span>
+        <span class="facet-label">CONVERSION</span>
+        <span class="facet-best">Best 毛毛虫 90</span>
+      </div>
+      <div class="bar-row"><span class="bar-name rank-1">毛毛虫</span><div class="bar-track"><div class="bar-fill rank-1" style="width:90%"></div></div><span class="bar-val rank-1">90</span></div>
+      <div class="bar-row"><span class="bar-name rank-2">毅航</span><div class="bar-track"><div class="bar-fill rank-2" style="width:85%"></div></div><span class="bar-val rank-2">85</span></div>
+      <div class="bar-row"><span class="bar-name rank-3">伽玛</span><div class="bar-track"><div class="bar-fill rank-3" style="width:72%"></div></div><span class="bar-val rank-3">72</span></div>
+      <div class="facet-insight">
+        <div class="facet-insight-bar"></div>
+        <div class="facet-insight-text">毛毛虫转化率领先毅航 <strong>5 分</strong>，伽玛差距明显，有 18 分的追赶空间</div>
+      </div>
+    </div>
+
+    <!-- FACET 2: 人效 -->
+    <div class="facet">
+      <div class="facet-header">
+        <span class="facet-name">人效</span>
+        <span class="facet-label">EFFICIENCY</span>
+        <span class="facet-best">Best 毅航 90</span>
+      </div>
+      <div class="bar-row"><span class="bar-name rank-1">毅航</span><div class="bar-track"><div class="bar-fill rank-1" style="width:90%"></div></div><span class="bar-val rank-1">90</span></div>
+      <div class="bar-row"><span class="bar-name rank-2">伽玛</span><div class="bar-track"><div class="bar-fill rank-2" style="width:78%"></div></div><span class="bar-val rank-2">78</span></div>
+      <div class="bar-row"><span class="bar-name rank-3">毛毛虫</span><div class="bar-track"><div class="bar-fill rank-3" style="width:68%"></div></div><span class="bar-val rank-3">68</span></div>
+      <div class="facet-insight">
+        <div class="facet-insight-bar"></div>
+        <div class="facet-insight-text">毅航人效 <strong>90 分</strong>领跑，高出毛毛虫 22 分——人员规模 vs 产出效率差距最大</div>
+      </div>
+    </div>
+
+    <!-- FACET 3: 合规质检 -->
+    <div class="facet">
+      <div class="facet-header">
+        <span class="facet-name gap-highlight">合规质检</span>
+        <span class="facet-label">COMPLIANCE · 差距最大</span>
+        <span class="facet-best gap-highlight">Best 伽玛 95</span>
+      </div>
+      <div class="bar-row"><span class="bar-name rank-1">伽玛</span><div class="bar-track"><div class="bar-fill rank-1" style="width:95%"></div></div><span class="bar-val rank-1">95</span></div>
+      <div class="bar-row"><span class="bar-name rank-2">毅航</span><div class="bar-track"><div class="bar-fill rank-2" style="width:78%"></div></div><span class="bar-val rank-2">78</span></div>
+      <div class="bar-row"><span class="bar-name rank-3">毛毛虫</span><div class="bar-track"><div class="bar-fill rank-3" style="width:60%"></div></div><span class="bar-val rank-3">60</span></div>
+      <div class="facet-insight">
+        <div class="facet-insight-bar"></div>
+        <div class="facet-insight-text">合规维度最大差距 <strong>35 分</strong>——伽玛体系化优势突出，毛毛虫需重点关注</div>
+      </div>
+    </div>
+
+    <!-- FACET 4: 产能稳定性 -->
+    <div class="facet">
+      <div class="facet-header">
+        <span class="facet-name">产能稳定性</span>
+        <span class="facet-label">STABILITY</span>
+        <span class="facet-best">Best 毅航 88</span>
+      </div>
+      <div class="bar-row"><span class="bar-name rank-1">毅航</span><div class="bar-track"><div class="bar-fill rank-1" style="width:88%"></div></div><span class="bar-val rank-1">88</span></div>
+      <div class="bar-row"><span class="bar-name rank-2">毛毛虫</span><div class="bar-track"><div class="bar-fill rank-2" style="width:75%"></div></div><span class="bar-val rank-2">75</span></div>
+      <div class="bar-row"><span class="bar-name rank-3">伽玛</span><div class="bar-track"><div class="bar-fill rank-3" style="width:70%"></div></div><span class="bar-val rank-3">70</span></div>
+      <div class="facet-insight">
+        <div class="facet-insight-bar"></div>
+        <div class="facet-insight-text">毅航稳定性最强，伽玛波动较大——灵活型供应商的代价</div>
+      </div>
+    </div>
+
+    <!-- FACET 5: 策略配合度 -->
+    <div class="facet">
+      <div class="facet-header">
+        <span class="facet-name">策略配合度</span>
+        <span class="facet-label">COOPERATION</span>
+        <span class="facet-best">Best 伽玛 88</span>
+      </div>
+      <div class="bar-row"><span class="bar-name rank-1">伽玛</span><div class="bar-track"><div class="bar-fill rank-1" style="width:88%"></div></div><span class="bar-val rank-1">88</span></div>
+      <div class="bar-row"><span class="bar-name rank-2">毅航</span><div class="bar-track"><div class="bar-fill rank-2" style="width:82%"></div></div><span class="bar-val rank-2">82</span></div>
+      <div class="bar-row"><span class="bar-name rank-3">毛毛虫</span><div class="bar-track"><div class="bar-fill rank-3" style="width:72%"></div></div><span class="bar-val rank-3">72</span></div>
+      <div class="facet-insight">
+        <div class="facet-insight-bar"></div>
+        <div class="facet-insight-text">伽玛配合度第一，三家差距可控——协作层面没有断裂风险</div>
+      </div>
+    </div>
+
+    <!-- FACET 6: 人员留存 -->
+    <div class="facet">
+      <div class="facet-header">
+        <span class="facet-name">人员留存</span>
+        <span class="facet-label">RETENTION</span>
+        <span class="facet-best">Best 毛毛虫 90</span>
+      </div>
+      <div class="bar-row"><span class="bar-name rank-1">毛毛虫</span><div class="bar-track"><div class="bar-fill rank-1" style="width:90%"></div></div><span class="bar-val rank-1">90</span></div>
+      <div class="bar-row"><span class="bar-name rank-2">伽玛</span><div class="bar-track"><div class="bar-fill rank-2" style="width:82%"></div></div><span class="bar-val rank-2">82</span></div>
+      <div class="bar-row"><span class="bar-name rank-3">毅航</span><div class="bar-track"><div class="bar-fill rank-3" style="width:75%"></div></div><span class="bar-val rank-3">75</span></div>
+      <div class="facet-insight">
+        <div class="facet-insight-bar"></div>
+        <div class="facet-insight-text">毛毛虫留存 <strong>90 分</strong>领先，毅航 75 分最低——规模化运营的团队管理挑战</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BREATHING ===== -->
+  <div class="breath">
+    <div class="breath-inner">
+      <div class="breath-text">
+        六维能力勾勒出三家供应商迥异的基因图谱——没有全能者，但每个维度都有明确的领跑者。数据之下，是模式。
+      </div>
+      <div class="breath-sub">/  供应商能力基线已清晰，趋势说明方向  /</div>
+    </div>
+  </div>
+
+  <!-- ===== SPARKLINE SECTION ===== -->
+  <div class="spark-section">
+    <div class="spark-header">
+      <div class="spark-header-num">6</div>
+      <div class="spark-header-title">供应商趋势线</div>
+      <span class="spark-header-label">12-Month Trend · Sparkline Inline</span>
+    </div>
+
+    <div class="spark-grid">
+
+      <!-- 毅航 — 上升 -->
+      <div class="spark-card">
+        <div class="spark-card-header">
+          <span class="spark-card-name">毅航</span>
+          <span class="spark-card-val up">108%</span>
+        </div>
+        <svg class="spark-card-svg" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,30 16,26 33,28 50,22 66,20 83,16 100,18 116,12 133,10 150,8 166,6 183,4 200,3" fill="none" stroke="#4A5D3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="3" r="3" fill="#4A5D3A"/>
+        </svg>
+        <div class="spark-card-footer">
+          <span class="spark-card-change up">+12.3% MoM</span>
+          <span class="spark-card-period">Peak Mar 118%</span>
+        </div>
+      </div>
+
+      <!-- 伽玛 — 稳定上升 -->
+      <div class="spark-card">
+        <div class="spark-card-header">
+          <span class="spark-card-name">伽玛</span>
+          <span class="spark-card-val up">94%</span>
+        </div>
+        <svg class="spark-card-svg" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,18 16,16 33,20 50,14 66,16 83,12 100,14 116,10 133,12 150,8 166,10 183,8 200,6" fill="none" stroke="#4A5D3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="6" r="3" fill="#4A5D3A"/>
+        </svg>
+        <div class="spark-card-footer">
+          <span class="spark-card-change up">+3.1% MoM</span>
+          <span class="spark-card-period">Peak Oct 97%</span>
+        </div>
+      </div>
+
+      <!-- 毛毛虫 — 平 -->
+      <div class="spark-card">
+        <div class="spark-card-header">
+          <span class="spark-card-name">毛毛虫</span>
+          <span class="spark-card-val stable">82%</span>
+        </div>
+        <svg class="spark-card-svg" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,13 16,15 33,11 50,17 66,13 83,15 100,17 116,19 133,17 150,19 166,17 183,19 200,16" fill="none" stroke="#808080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="16" r="3" fill="#808080"/>
+        </svg>
+        <div class="spark-card-footer">
+          <span class="spark-card-change stable">-0.8% MoM</span>
+          <span class="spark-card-period">Peak Apr 89%</span>
+        </div>
+      </div>
+
+      <!-- 翰锐 — 微降 -->
+      <div class="spark-card">
+        <div class="spark-card-header">
+          <span class="spark-card-name">翰锐</span>
+          <span class="spark-card-val stable">76%</span>
+        </div>
+        <svg class="spark-card-svg" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,10 16,12 33,14 50,12 66,16 83,18 100,20 116,18 133,20 150,18 166,20 183,22 200,20" fill="none" stroke="#808080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="20" r="3" fill="#808080"/>
+        </svg>
+        <div class="spark-card-footer">
+          <span class="spark-card-change stable">-1.2% MoM</span>
+          <span class="spark-card-period">Peak Jan 84%</span>
+        </div>
+      </div>
+
+      <!-- 赛维斯 — 预警 -->
+      <div class="spark-card">
+        <div class="spark-card-header">
+          <span class="spark-card-name">赛维斯</span>
+          <span class="spark-card-val down">68%</span>
+        </div>
+        <svg class="spark-card-svg" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,8 16,10 33,12 50,14 66,16 83,18 100,20 116,22 133,24 150,26 166,28 183,26 200,24" fill="none" stroke="#E55B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="24" r="3" fill="#E55B2B"/>
+        </svg>
+        <div class="spark-card-footer">
+          <span class="spark-card-change down">-4.5% MoM</span>
+          <span class="spark-card-period">Peak Jan 82%</span>
+        </div>
+      </div>
+
+      <!-- 岐力 — 下降 -->
+      <div class="spark-card">
+        <div class="spark-card-header">
+          <span class="spark-card-name">岐力</span>
+          <span class="spark-card-val down">55%</span>
+        </div>
+        <svg class="spark-card-svg" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,6 16,8 33,10 50,12 66,14 83,16 100,20 116,22 133,24 150,26 166,30 183,32 200,32" fill="none" stroke="#E55B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="32" r="3" fill="#E55B2B"/>
+        </svg>
+        <div class="spark-card-footer">
+          <span class="spark-card-change down">-8.7% MoM</span>
+          <span class="spark-card-period">Peak Jan 72%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== KEY INSIGHT ===== -->
+  <div class="insight-block">
+    <div class="insight-block-title">Key Insight</div>
+    <div class="insight-block-text">
+      三家核心供应商各有所长：<strong>毅航</strong> 人效与稳定性领先，且趋势持续上升；<strong>伽玛</strong> 合规与配合度第一，趋势稳健；<strong>毛毛虫</strong> 转化率和留存最高但趋势持平。合规维度 35 分差距是结构性风险——优化顺序应从短板开始。趋势数据进一步佐证：上升者持续上升，下降者尚未触底。
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <div class="footer">
+    <span class="footer-text">分面条形 · 趋势线 — 供应商全景评估</span>
+    <span class="footer-text">nian-design · olive/orange · warm data</span>
+  </div>
+
+</div>
+</body>
+</html>

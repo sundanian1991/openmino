@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>转化漏斗 · nian 版 v2（真图形编码）</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --darkgray:#2C2C2C; --olive:#4A5D3A; --earth:#8B7355;
+  --yellow:#FFD100; --orange:#E55B2B;
+  --glacier:#2A4A5A; --rock:#808080;
+  --bg:#FAFAF8; --surface:#FFFFFF; --surface-raised:#F5F5F0;
+  --border:#E5E5E0; --border-strong:#C0C0B8;
+  --success:#2E7D32; --warning:#F9A825; --error:#C62828;
+  --text-display:#2C2C2C; --text-primary:#1A1A1A;
+  --text-secondary:#6B6B6B; --text-disabled:#A0A0A0;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-data:'JetBrains Mono',monospace;
+  --c-max:1120px;
+  --r-sm:4px; --r-md:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+.hero{min-height:64vh;display:grid;grid-template-columns:7fr 5fr;align-items:center;padding:88px 72px;position:relative;overflow:hidden;max-width:var(--c-max);margin:0 auto}
+.hero__ghost{position:absolute;right:-3vw;bottom:-8vw;font-family:var(--font-display);font-size:34vw;font-weight:700;color:var(--text-display);opacity:0.04;line-height:0.8;pointer-events:none}
+.hero__left{position:relative;z-index:1;max-width:540px}
+.hero__tag{font-family:var(--font-data);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--olive);margin-bottom:32px}
+.hero__title{font-family:var(--font-display);font-size:clamp(40px,5.4vw,76px);font-weight:500;line-height:1.04;letter-spacing:-0.02em;color:var(--text-display);margin-bottom:24px}
+.hero__title em{font-style:italic;color:var(--olive);font-weight:400}
+.hero__deck{font-size:16px;line-height:1.75;color:var(--text-secondary);max-width:460px}
+.hero__right{position:relative;z-index:1;text-align:center}
+.hero__conv{font-family:var(--font-display);font-size:clamp(80px,11vw,140px);font-weight:500;color:var(--olive);line-height:0.9;letter-spacing:-0.03em}
+.hero__conv .pct{font-size:0.4em;font-weight:400;color:var(--text-secondary);vertical-align:super}
+.hero__conv-l{font-family:var(--font-data);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-secondary);margin-top:12px}
+
+section{padding:88px 72px;max-width:var(--c-max);margin:0 auto}
+.sec-label{font-family:var(--font-data);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:18px}
+.sec-title{font-family:var(--font-display);font-size:clamp(28px,3.4vw,42px);font-weight:400;line-height:1.18;letter-spacing:-0.01em;max-width:680px;margin-bottom:16px;color:var(--text-display)}
+.sec-title strong{font-weight:600;color:var(--olive)}
+.sec-sub{font-size:16px;color:var(--text-secondary);line-height:1.7;max-width:600px;margin-bottom:40px}
+
+/* ═══ 核心：SVG 渐缩流图（宽度按真实数据比例）═══ */
+.funnel-svg-wrap{width:100%;overflow-x:auto}
+.funnel-svg-wrap svg{display:block;width:100%;max-width:880px;height:auto;margin:0 auto}
+/* hover 交互 */
+.funnel-svg-wrap .stage-bar{transition:opacity 150ms ease-out;cursor:pointer}
+.funnel-svg-wrap:hover .stage-bar{opacity:0.35}
+.funnel-svg-wrap .stage-bar:hover{opacity:1}
+.funnel-svg-wrap .loss-band{transition:opacity 150ms ease-out}
+
+/* 图例 */
+.legend{display:flex;gap:24px;justify-content:center;margin-top:32px;flex-wrap:wrap}
+.legend__item{display:flex;align-items:center;gap:8px;font-family:var(--font-data);font-size:11px;letter-spacing:0.05em;color:var(--text-secondary)}
+.legend__swatch{width:14px;height:14px;border-radius:2px}
+
+/* 呼吸 */
+.breath{text-align:center;max-width:640px;margin:0 auto}
+.breath__txt{font-family:var(--font-display);font-size:clamp(22px,3vw,34px);font-weight:300;font-style:italic;line-height:1.45;color:var(--text-display)}
+.breath__txt strong{font-style:normal;font-weight:600;color:var(--olive)}
+
+/* 每步详情（配合图形，文字补充叙事）*/
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:28px 24px;position:relative;overflow:hidden}
+.step-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px}
+.step-card--loss::before{background:var(--orange)}
+.step-card--win::before{background:var(--olive)}
+.step-card--act::before{background:var(--glacier)}
+.step-card__tag{font-family:var(--font-data);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:14px}
+.step-card--loss .step-card__tag{color:var(--orange)}
+.step-card--win .step-card__tag{color:var(--olive)}
+.step-card--act .step-card__tag{color:var(--glacier)}
+.step-card__h{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text-display);margin-bottom:10px;line-height:1.3}
+.step-card__t{font-size:13.5px;color:var(--text-secondary);line-height:1.65}
+.step-card__t strong{color:var(--text-primary);font-weight:600}
+
+.close{background:var(--darkgray);color:#fff;padding:88px 72px;max-width:none;margin:0}
+.close__inner{max-width:820px;margin:0 auto}
+.close__lbl{font-family:var(--font-data);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:24px}
+.close__txt{font-family:var(--font-display);font-size:clamp(22px,2.6vw,30px);font-weight:400;line-height:1.4}
+.close__txt strong{color:var(--yellow);font-weight:600}
+
+.footer{padding:28px 72px;display:flex;justify-content:space-between;font-family:var(--font-data);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-disabled);background:var(--darkgray);border-top:1px solid rgba(255,255,255,0.06)}
+
+@media(max-width:1100px){
+  .hero{grid-template-columns:1fr;gap:32px;padding:64px 40px}
+  section{padding:72px 40px}
+  .steps{grid-template-columns:1fr}
+  .close{padding:72px 40px}
+}
+@media(max-width:640px){
+  .hero{padding:48px 24px}
+  section{padding:56px 24px}
+  .close{padding:56px 24px}
+  .footer{padding:20px 24px;flex-direction:column;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero__ghost">2.8%</div>
+  <div class="hero__left">
+    <div class="hero__tag">FUNNEL · 转化漏斗 v2（真图形）</div>
+    <h1 class="hero__title">10 万线索,<br>剩<em>2.8%</em>走到放款。</h1>
+    <p class="hero__deck">v1 错在用文字描述数据。这版用图形诚实编码——每级宽度严格按真实比例,一眼看到 35:1 的落差。olive 是留存,orange 是流失,图形不说谎。</p>
+  </div>
+  <div class="hero__right">
+    <div class="hero__conv">2.8<span class="pct">%</span></div>
+    <div class="hero__conv-l">最终转化率</div>
+  </div>
+</section>
+
+<!-- ═══ 01 · SVG 渐缩流图（核心可视化）═══ -->
+<section>
+  <div class="sec-label">01 · FUNNEL · 渐缩流图</div>
+  <div class="sec-title">宽度就是<strong>量级</strong>,颜色就是<strong>去留</strong>。</div>
+  <div class="sec-sub">每级 olive 条的宽度严格按真实数据比例（10万=100%宽 → 2800=2.8%宽）。orange 三角是流失区。一眼看到第一级到第二级的断崖,以及最后一级只剩一条细缝。</div>
+  <div class="funnel-svg-wrap">
+    <!--
+      数据: 100000 / 42000 / 18500 / 8200 / 4100 / 2800
+      最大宽 800px (100000), 按比例: 800/336/148/65.6/32.8/22.4
+      每级垂直间距 70px, 起始 y=30
+      条高 40px, 居中
+    -->
+    <svg viewBox="0 0 880 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="六级转化漏斗渐缩流图,宽度按真实数据比例">
+      <!-- 流失连接带 (orange 三角, 从上一级宽度收窄到下一级) -->
+      <polygon class="loss-band" points="40,50 840,50 588,120 292,120" fill="#E55B2B" opacity="0.12"/>
+      <polygon class="loss-band" points="272,160 588,160 434,230 376,230" fill="#E55B2B" opacity="0.12"/>
+      <polygon class="loss-band" points="366,270 444,270 420,340 408,340" fill="#E55B2B" opacity="0.12"/>
+      <polygon class="loss-band" points="404,380 424,380 417,450 412,450" fill="#E55B2B" opacity="0.12"/>
+      <polygon class="loss-band" points="411,490 418,490 416,510 415,510" fill="#E55B2B" opacity="0.10"/>
+
+      <!-- 第1级: 线索池 100000 (满宽 800px) -->
+      <rect class="stage-bar" x="40" y="30" width="800" height="40" fill="#4A5D3A" rx="2"/>
+      <text x="440" y="55" text-anchor="middle" font-family="Georgia" font-size="16" font-weight="500" fill="#FFFFFF">线索池 · 100,000</text>
+
+      <!-- 流失标注 1→2 -->
+      <text x="440" y="100" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="500" fill="#E55B2B">−58%</text>
+
+      <!-- 第2级: 有效触达 42000 (宽 336px, 居中) -->
+      <rect class="stage-bar" x="272" y="140" width="336" height="40" fill="#4A5D3A" rx="2"/>
+      <text x="440" y="165" text-anchor="middle" font-family="Georgia" font-size="14" font-weight="500" fill="#FFFFFF">有效触达 · 42,000</text>
+
+      <!-- 流失标注 2→3 -->
+      <text x="440" y="210" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="500" fill="#E55B2B">−56%</text>
+
+      <!-- 第3级: 意向客户 18500 (宽 148px) -->
+      <rect class="stage-bar" x="366" y="250" width="148" height="40" fill="#4A5D3A" rx="2"/>
+      <text x="440" y="275" text-anchor="middle" font-family="Georgia" font-size="13" font-weight="500" fill="#FFFFFF">意向 · 18,500</text>
+
+      <!-- 流失标注 3→4 -->
+      <text x="440" y="320" text-anchor="middle" font-family="JetBrains Mono" font-size="12" font-weight="500" fill="#E55B2B">−56%</text>
+
+      <!-- 第4级: 授信通过 8200 (宽 65.6px) -->
+      <rect class="stage-bar" x="407" y="360" width="66" height="40" fill="#4A5D3A" rx="2"/>
+      <text x="440" y="385" text-anchor="middle" font-family="Georgia" font-size="11" font-weight="500" fill="#FFFFFF">8,200</text>
+      <text x="500" y="385" text-anchor="start" font-family="JetBrains Mono" font-size="10" fill="#6B6B6B">授信通过</text>
+
+      <!-- 流失标注 4→5 -->
+      <text x="440" y="430" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#E55B2B">−50%</text>
+
+      <!-- 第5级: 提款 4100 (宽 32.8px) -->
+      <rect class="stage-bar" x="424" y="440" width="33" height="36" fill="#8B7355" rx="2"/>
+      <text x="480" y="463" text-anchor="start" font-family="JetBrains Mono" font-size="10" fill="#6B6B6B">提款 4,100</text>
+
+      <!-- 流失标注 5→6 -->
+      <text x="440" y="498" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="#E55B2B">−32%</text>
+
+      <!-- 第6级: 放款 2800 (宽 22.4px) - olive 高亮终点 -->
+      <rect class="stage-bar" x="429" y="505" width="22" height="32" fill="#FFD100" rx="2"/>
+      <text x="470" y="525" text-anchor="start" font-family="Georgia" font-size="11" font-weight="600" fill="#4A5D3A">放款 2,800</text>
+    </svg>
+  </div>
+  <div class="legend">
+    <div class="legend__item"><div class="legend__swatch" style="background:#4A5D3A"></div>留存（olive）</div>
+    <div class="legend__item"><div class="legend__swatch" style="background:#E55B2B;opacity:0.3"></div>流失区（orange）</div>
+    <div class="legend__item"><div class="legend__swatch" style="background:#8B7355"></div>衰减（earth）</div>
+    <div class="legend__item"><div class="legend__swatch" style="background:#FFD100"></div>终点（yellow）</div>
+  </div>
+</section>
+
+<!-- ═══ 02 · 呼吸 ═══ -->
+<section style="background:var(--surface-raised)">
+  <div class="breath">
+    <p class="breath__txt">第一级的<strong>断崖</strong>,<br>比任何文字都直白。</p>
+  </div>
+</section>
+
+<!-- ═══ 03 · 图形读出来的三个判断 ═══ -->
+<section>
+  <div class="sec-label">02 · INSIGHT · 图形告诉我们的</div>
+  <div class="sec-title">不用读数字,<strong>看形状就知道</strong>。</div>
+  <div class="steps">
+    <div class="step-card step-card--loss">
+      <div class="step-card__tag">断崖在第 1→2 步</div>
+      <div class="step-card__h">线索质量是瓶颈</div>
+      <p class="step-card__t">图形上第一级到第二级的收窄最剧烈——<strong>800px 砍到 336px</strong>。58% 的线索根本触达不到。来的不是对的人,后面每步都在为低质线索买单。</p>
+    </div>
+    <div class="step-card step-card--win">
+      <div class="step-card__tag">第 3→4 步收窄变缓</div>
+      <div class="step-card__h">授信是优势环节</div>
+      <p class="step-card__t">意向到授信的收窄比前两步温和——<strong>通过率 45%</strong>,高于行业。图形上 148px→66px 的比例优于 336px→148px。能到这步的客户质量好。</p>
+    </div>
+    <div class="step-card step-card--act">
+      <div class="step-card__tag">第 4→5 步又出现陡降</div>
+      <div class="step-card__h">提款意愿可干预</div>
+      <p class="step-card__t">授信通过后<strong>50% 不提款</strong>——图形上 66px→33px 又是一次腰斩。意愿冷却是可干预的:通过后 24h 跟进,预计提款率 +8pp。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 04 · 收束 ═══ -->
+<section class="close">
+  <div class="close__inner">
+    <div class="close__lbl">CLOSING · 图形诚实</div>
+    <div class="close__txt">数据可视化第一原则:<strong>图形要诚实编码量级</strong>。10 万和 2800 的差距是 35 倍——图形必须让你<strong>看到</strong>这个 35 倍,而不是用文字告诉你。</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>FUNNEL v2 · 真图形编码</span>
+  <span>nian · olive/orange · 2026-06-20</span>
+</footer>
+
+</body>
+</html>

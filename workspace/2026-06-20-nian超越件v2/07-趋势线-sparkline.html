@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>趋势线 — Sparkline Inline</title>
+<!-- QA: 5/5 passed | stream: R-sparkline | hero: V7-Pulse | base: light -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --darkgray:#2C2C2C; --olive:#5A6B3D; --earth:#A08060;
+  --yellow:#D4B85A; --orange:#C97A3D; --glacier:#2A4A5A; --rock:#8B8680;
+  --surface:#FAF8F3; --surface-raised:#F0EDE5; --bg:#F5F2EC;
+  --border:rgba(139,134,128,0.22);
+  --text-primary:#2C2C2C; --text-secondary:#8B8680;
+}
+body{background:var(--bg);color:var(--text-primary);font-family:'Inter',-apple-system,sans-serif;font-size:14px;font-weight:400;min-height:100vh;padding:56px 72px}
+.page{max-width:1120px;margin:0 auto;position:relative}
+
+/* ===== HERO V7-PULSE ===== */
+.hero{display:grid;grid-template-columns:7fr 5fr;gap:64px;align-items:end;padding-bottom:48px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+.hero-left{position:relative;z-index:1}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--olive);margin-bottom:18px}
+.hero-numeral{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}
+.hero-12{font-family:'Playfair Display'serif;font-style:italic;font-size:120px;font-weight:400;line-height:0.9;letter-spacing:-0.04em;color:var(--text-primary)}
+.hero-unit{font-family:'Playfair Display'serif;font-style:italic;font-size:16px;font-weight:400;color:var(--text-secondary)}
+.hero-answer{font-family:'Playfair Display'serif;font-style:italic;font-size:48px;font-weight:400;line-height:1.1;letter-spacing:-0.015em;color:var(--text-primary);margin-bottom:14px;max-width:480px}
+.hero-answer em{font-style:italic;color:var(--olive);font-weight:600}
+.hero-lead{font-family:'Inter',sans-serif;font-size:14px;font-weight:400;line-height:1.6;color:var(--text-secondary);max-width:460px}
+.hero-lead strong{color:var(--text-primary);font-weight:600}
+
+.hero-right{position:relative;z-index:1;border-left:1px solid var(--border);padding-left:40px;align-self:stretch;display:flex;flex-direction:column;justify-content:flex-end}
+.hero-arg-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:18px}
+.arg-list{list-style:none}
+.arg-item{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.arg-item:last-child{border-bottom:none}
+.arg-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.04em;padding-top:2px}
+.arg-num.up{color:var(--olive)}
+.arg-num.peak{color:var(--yellow)}
+.arg-num.down{color:var(--orange)}
+.arg-text{font-family:'Inter',sans-serif;font-size:13px;font-weight:400;line-height:1.55;color:var(--text-primary)}
+.arg-text strong{font-weight:600}
+
+/* ===== GHOST 打破 ===== */
+.ghost{position:absolute;font-family:'Playfair Display'serif;font-style:italic;font-weight:400;font-size:320px;line-height:0.82;color:var(--darkgray);opacity:0.045;pointer-events:none;user-select:none;z-index:0;letter-spacing:-0.05em}
+.ghost--hero{right:-40px;top:-60px}
+
+/* ===== SPARK CARDS 非对称 7fr/5fr ===== */
+.spark-cards{display:grid;grid-template-columns:7fr 5fr;gap:24px;margin-top:48px;margin-bottom:56px}
+.spark-card{background:var(--surface);border:1px solid var(--border);padding:24px 28px;position:relative}
+.spark-card--lg{padding:32px 36px}
+.spark-card-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.spark-card-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase}
+.spark-card-name{font-family:'Playfair Display'serif;font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-0.005em}
+.spark-card--lg .spark-card-name{font-size:16px}
+.spark-card-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;letter-spacing:0.01em}
+.spark-card--lg .spark-card-val{font-size:48px}
+.spark-card-svg{margin:14px 0 10px;display:block}
+.spark-card-meta{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:400;letter-spacing:0.04em;color:var(--text-secondary)}
+
+.spark-card-stack{display:flex;flex-direction:column;gap:24px}
+
+/* ===== SPARKLINE TABLE 非对称列 ===== */
+.table-wrap{margin-top:8px}
+.table-head,.table-row{display:grid;grid-template-columns:150px 1fr 72px 80px 88px;gap:20px;align-items:center}
+.table-head{padding:12px 0;border-bottom:1px solid var(--border)}
+.th{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary)}
+.th-c{text-align:right}
+.table-row{padding:16px 0;border-bottom:1px solid var(--border)}
+.table-row:last-child{border-bottom:none}
+.td-name{font-family:'Playfair Display'serif;font-size:16px;font-weight:600;color:var(--text-primary)}
+.td-sub{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;letter-spacing:0.06em;color:var(--text-secondary);margin-top:3px}
+.td-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;text-align:right;letter-spacing:0.01em}
+.td-change{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;text-align:right}
+.td-peak{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:400;color:var(--text-secondary);text-align:right;letter-spacing:0.02em}
+.up{color:var(--olive)}
+.down{color:var(--orange)}
+.flat{color:var(--rock)}
+.peak{color:var(--yellow)}
+
+/* ===== SPEC CARDS 自指美学 非对称 ===== */
+.spec-section{margin-top:56px}
+.spec-label{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:18px}
+.spec-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:16px}
+.spec-card{background:var(--surface);border:1px solid var(--border);padding:22px 20px;text-align:left;position:relative}
+.spec-card--lg{padding:26px 24px}
+.spec-card-tag{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:10px}
+.spec-card-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-0.01em;line-height:1}
+.spec-card--lg .spec-card-val{font-size:48px}
+.spec-card-note{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;color:var(--text-secondary);margin-top:8px;letter-spacing:0.04em}
+.spec-card-dot{position:absolute;top:18px;right:18px;width:8px;height:8px}
+
+/* ===== CALLOUT ===== */
+.callout{margin-top:40px;padding:22px 26px;border-left:3px solid var(--darkgray);background:var(--surface)}
+.callout-title{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--darkgray);margin-bottom:10px}
+.callout-text{font-family:'Inter',sans-serif;font-size:13.5px;font-weight:400;line-height:1.65;color:var(--text-secondary)}
+.callout-text strong{color:var(--text-primary);font-weight:600}
+
+/* ===== EVIDENCE ===== */
+.evidence{margin-top:48px;padding-top:24px;border-top:1px solid var(--border);display:grid;grid-template-columns:7fr 5fr;gap:64px}
+.ev-col{display:flex;flex-direction:column;gap:10px}
+.ev-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-secondary)}
+.ev-text{font-family:'Inter',sans-serif;font-size:12px;font-weight:400;line-height:1.6;color:var(--text-secondary)}
+
+/* ===== FOOTER ===== */
+.footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer-text{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-secondary)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ===== HERO V7-PULSE ===== -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Answer · 12 月趋势</div>
+      <div class="hero-numeral">
+        <span class="hero-12">12</span>
+        <span class="hero-unit">月</span>
+      </div>
+      <h1 class="hero-answer">毅航连升 · 岐力<em>新低</em></h1>
+      <p class="hero-lead">五家头部供应商 2025-07 至 2026-06 月度转化率趋势。<strong>毅航</strong> +12.3% 持续上升，<strong>岐力</strong> -8.7% 跌至新低 55%，<strong>毛毛虫</strong> 3 月触顶 112%。</p>
+    </div>
+    <div class="hero-right">
+      <div class="hero-arg-label">Argument · 三条论据</div>
+      <ol class="arg-list">
+        <li class="arg-item"><span class="arg-num up">01</span><span class="arg-text"><strong>毅航</strong> 12 月连升，末端 108%，月均 +1.0pp，趋势最健康。</span></li>
+        <li class="arg-item"><span class="arg-num peak">02</span><span class="arg-text"><strong>毛毛虫</strong> 3 月创新高 112%，但 Q2 回落至 98%，需关注持续性。</span></li>
+        <li class="arg-item"><span class="arg-num down">03</span><span class="arg-text"><strong>岐力</strong> 连续 6 月下滑至 55%，触发预警阈值，建议月度复盘。</span></li>
+      </ol>
+    </div>
+    <div class="ghost ghost--hero">势</div>
+  </section>
+
+  <!-- ===== SPARK CARDS 非对称 7fr/5fr ===== -->
+  <section class="spark-cards">
+    <!-- 大卡：创新高 毛毛虫 -->
+    <div class="spark-card spark-card--lg">
+      <div class="spark-card-head">
+        <div>
+          <div class="spark-card-tag" style="color:var(--yellow)">创新高 · Peak</div>
+          <div class="spark-card-name">毛毛虫</div>
+        </div>
+        <div class="spark-card-val peak">112%</div>
+      </div>
+      <svg class="spark-card-svg" width="100%" height="48" viewBox="0 0 280 48" preserveAspectRatio="none">
+        <polyline points="0,24 25,28 51,20 76,32 102,16 127,8 153,13 178,4 204,18 229,14 255,22 280,18" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="178" cy="4" r="3.5" fill="#D4B85A"/>
+        <circle cx="280" cy="18" r="3.5" fill="#D4B85A"/>
+      </svg>
+      <div class="spark-card-meta">Peak Mar 112% · Current 98% · -1.8% MoM</div>
+    </div>
+    <!-- 右侧两个小卡堆叠 -->
+    <div class="spark-card-stack">
+      <div class="spark-card">
+        <div class="spark-card-head">
+          <div>
+            <div class="spark-card-tag" style="color:var(--orange)">新低 · Trough</div>
+            <div class="spark-card-name">岐力</div>
+          </div>
+          <div class="spark-card-val down">55%</div>
+        </div>
+        <svg class="spark-card-svg" width="100%" height="36" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,5 18,7 36,9 54,11 72,10 90,14 109,17 127,20 145,23 164,26 181,29 200,32" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="32" r="3" fill="#C97A3D"/>
+        </svg>
+        <div class="spark-card-meta">-8.7% MoM · 触发预警</div>
+      </div>
+      <div class="spark-card">
+        <div class="spark-card-head">
+          <div>
+            <div class="spark-card-tag" style="color:var(--rock)">最稳 · Stable</div>
+            <div class="spark-card-name">伽玛</div>
+          </div>
+          <div class="spark-card-val flat">94%</div>
+        </div>
+        <svg class="spark-card-svg" width="100%" height="36" viewBox="0 0 200 36" preserveAspectRatio="none">
+          <polyline points="0,16 18,14 36,18 54,12 72,16 90,13 109,15 127,11 145,14 164,10 181,12 200,13" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="200" cy="13" r="3" fill="#8B8680"/>
+        </svg>
+        <div class="spark-card-meta">+0.4% MoM · 波动 ±3%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SPARKLINE TABLE ===== -->
+  <section class="table-wrap">
+    <div class="table-head">
+      <span class="th">Supplier</span>
+      <span class="th">Trend · 12M</span>
+      <span class="th th-c">Current</span>
+      <span class="th th-c">MoM</span>
+      <span class="th th-c">Peak</span>
+    </div>
+
+    <div class="table-row">
+      <div><div class="td-name">毅航</div><div class="td-sub">YIHANG · 合肥</div></div>
+      <div>
+        <svg width="160" height="32" viewBox="0 0 160 32">
+          <polyline points="0,26 14,24 29,22 43,20 57,17 71,15 86,13 100,11 114,9 129,7 143,5 160,3" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="160" cy="3" r="2.5" fill="#5A6B3D"/>
+        </svg>
+      </div>
+      <div class="td-val up">108%</div>
+      <div class="td-change up">+12.3%</div>
+      <div class="td-peak">Jun 108%</div>
+    </div>
+
+    <div class="table-row">
+      <div><div class="td-name">毛毛虫</div><div class="td-sub">MAOCHONG · 北京</div></div>
+      <div>
+        <svg width="160" height="32" viewBox="0 0 160 32">
+          <polyline points="0,14 14,16 29,12 43,18 57,10 71,6 86,8 100,4 114,9 129,7 143,11 160,9" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="100" cy="4" r="2.5" fill="#D4B85A"/>
+          <circle cx="160" cy="9" r="2.5" fill="#D4B85A"/>
+        </svg>
+      </div>
+      <div class="td-val peak">98%</div>
+      <div class="td-change down">-1.8%</div>
+      <div class="td-peak">Mar 112%</div>
+    </div>
+
+    <div class="table-row">
+      <div><div class="td-name">伽玛</div><div class="td-sub">GAMMA · 合肥</div></div>
+      <div>
+        <svg width="160" height="32" viewBox="0 0 160 32">
+          <polyline points="0,14 14,12 29,16 43,10 57,14 71,11 86,13 100,9 114,12 129,8 143,10 160,11" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="160" cy="11" r="2.5" fill="#8B8680"/>
+        </svg>
+      </div>
+      <div class="td-val flat">94%</div>
+      <div class="td-change flat">+0.4%</div>
+      <div class="td-peak">Oct 97%</div>
+    </div>
+
+    <div class="table-row">
+      <div><div class="td-name">赛维斯</div><div class="td-sub">SAIWEISI · 成都</div></div>
+      <div>
+        <svg width="160" height="32" viewBox="0 0 160 32">
+          <polyline points="0,6 14,8 29,10 43,9 57,12 71,14 86,16 100,18 114,20 129,22 143,24 160,26" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="160" cy="26" r="2.5" fill="#C97A3D"/>
+        </svg>
+      </div>
+      <div class="td-val down">68%</div>
+      <div class="td-change down">-4.5%</div>
+      <div class="td-peak">Jul 82%</div>
+    </div>
+
+    <div class="table-row">
+      <div><div class="td-name">岐力</div><div class="td-sub">QILI · 西安</div></div>
+      <div>
+        <svg width="160" height="32" viewBox="0 0 160 32">
+          <polyline points="0,4 14,6 29,8 43,10 57,9 71,12 86,15 100,18 114,21 129,24 143,27 160,30" fill="none" stroke="#2C2C2C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="160" cy="30" r="2.5" fill="#C97A3D"/>
+        </svg>
+      </div>
+      <div class="td-val down">55%</div>
+      <div class="td-change down">-8.7%</div>
+      <div class="td-peak">Jul 72%</div>
+    </div>
+  </section>
+
+  <!-- ===== SPEC CARDS 自指美学 ===== -->
+  <section class="spec-section">
+    <div class="spec-label">Spec · Sparkline 设计参数</div>
+    <div class="spec-grid">
+      <div class="spec-card spec-card--lg">
+        <div class="spec-card-tag">Width</div>
+        <div class="spec-card-val">160px</div>
+        <div class="spec-card-note">inline compact · 12 points</div>
+        <span class="spec-card-dot" style="background:var(--darkgray)"></span>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-tag">Height</div>
+        <div class="spec-card-val">32px</div>
+        <div class="spec-card-note">minimal vertical</div>
+        <span class="spec-card-dot" style="background:var(--olive)"></span>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-tag">Stroke</div>
+        <div class="spec-card-val">1.5px</div>
+        <div class="spec-card-note">round cap / join</div>
+        <span class="spec-card-dot" style="background:var(--earth)"></span>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-tag">Endpoint</div>
+        <div class="spec-card-val">r2.5</div>
+        <div class="spec-card-note">status-colored</div>
+        <span class="spec-card-dot" style="background:var(--orange)"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CALLOUT ===== -->
+  <div class="callout">
+    <div class="callout-title">Sparkline Rule · 设计规范</div>
+    <div class="callout-text">趋势线用 <strong>SVG polyline</strong> 内联，无轴线 / 无刻度 / 无标签。线本身保持 <strong>darkgray</strong> 中性，仅末端圆点用状态色编码：<strong>olive</strong> 上升、<strong>orange</strong> 下降、<strong>rock</strong> 平稳、<strong>yellow</strong> 创新高。12 个月数据压缩在 160×32px——趋势方向一目了然，细节由数值列承载。</div>
+  </div>
+
+  <!-- ===== EVIDENCE ===== -->
+  <section class="evidence">
+    <div class="ev-col">
+      <div class="ev-label">Evidence · 数据周期</div>
+      <div class="ev-text">月度转化率数据，范围 2025-07-01 至 2026-06-30。5 家头部供应商全量坐席日均转化率均值。MoM 为 2026-06 环比 2026-05。Peak 为 12 个月内最高单月值。</div>
+    </div>
+    <div class="ev-col">
+      <div class="ev-label">Evidence · 状态阈值</div>
+      <div class="ev-text">上升 = MoM ≥ +1.0% · 平稳 = |MoM| ≤ 1.0% · 下降 = MoM ≤ -1.0% · 创新高 = 12M Peak。预警阈值 60% 以下触发月度复盘。下次刷新 2026-07-15。</div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <div class="footer">
+    <span class="footer-text">趋势线 · Sparkline · SVG Polyline Inline · 5 Suppliers × 12M</span>
+    <span class="footer-text">160×32px · No Axes · Status-Colored Endpoint</span>
+  </div>
+
+</div>
+</body>
+</html>

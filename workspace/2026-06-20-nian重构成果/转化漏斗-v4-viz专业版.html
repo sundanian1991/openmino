@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>转化漏斗 · v4 viz 专业版（端到端验证）</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --darkgray:#2C2C2C; --olive:#4A5D3A; --earth:#8B7355;
+  --yellow:#FFD100; --orange:#E55B2B;
+  --glacier:#2A4A5A; --rock:#808080;
+  --bg:#FAFAF8; --surface:#FFFFFF; --surface-raised:#F5F5F0;
+  --border:#E5E5E0; --border-strong:#C0C0B8;
+  --success:#2E7D32; --warning:#F9A825; --error:#C62828;
+  --text-display:#2C2C2C; --text-primary:#1A1A1A;
+  --text-secondary:#6B6B6B; --text-disabled:#A0A0A0;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,sans-serif;
+  --font-data:'JetBrains Mono',monospace;
+  --c-max:1120px;
+  --r-sm:4px; --r-md:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);line-height:1.6;-webkit-font-smoothing:antialiased}
+
+.hero{min-height:56vh;display:grid;grid-template-columns:7fr 5fr;align-items:center;padding:80px 72px;max-width:var(--c-max);margin:0 auto;position:relative;overflow:hidden}
+.hero__ghost{position:absolute;right:-3vw;bottom:-8vw;font-family:var(--font-display);font-size:34vw;font-weight:700;color:var(--text-display);opacity:0.04;line-height:0.8;pointer-events:none}
+.hero__left{position:relative;z-index:1;max-width:540px}
+.hero__tag{font-family:var(--font-data);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--olive);margin-bottom:28px}
+.hero__title{font-family:var(--font-display);font-size:clamp(36px,4.8vw,64px);font-weight:500;line-height:1.06;letter-spacing:-0.02em;color:var(--text-display);margin-bottom:20px}
+.hero__title em{font-style:italic;color:var(--olive);font-weight:400}
+.hero__deck{font-size:16px;line-height:1.75;color:var(--text-secondary);max-width:460px}
+.hero__right{position:relative;z-index:1;text-align:center}
+.hero__conv{font-family:var(--font-display);font-size:clamp(64px,9vw,112px);font-weight:500;color:var(--olive);line-height:0.9;letter-spacing:-0.03em}
+.hero__conv .pct{font-size:0.4em;font-weight:400;color:var(--text-secondary);vertical-align:super}
+.hero__conv-l{font-family:var(--font-data);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-secondary);margin-top:10px}
+
+section{padding:80px 72px;max-width:var(--c-max);margin:0 auto}
+.sec-label{font-family:var(--font-data);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:16px}
+.sec-title{font-family:var(--font-display);font-size:clamp(26px,3.2vw,38px);font-weight:500;line-height:1.2;letter-spacing:-0.01em;max-width:680px;margin-bottom:14px;color:var(--text-display)}
+.sec-title em{font-style:italic;color:var(--olive);font-weight:400}
+.sec-sub{font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:600px;margin-bottom:36px}
+
+/* ═══ viz 专业图表嵌入区 ═══ */
+.chart-frame{width:100%;max-width:760px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:32px;position:relative}
+.chart-frame__badge{position:absolute;top:-12px;left:24px;background:var(--olive);color:#fff;font-family:var(--font-data);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;padding:4px 12px;border-radius:2px}
+.chart-frame img{width:100%;height:auto;display:block;border-radius:var(--r-sm)}
+.chart-cap{margin-top:16px;font-family:var(--font-data);font-size:11px;color:var(--text-secondary);letter-spacing:0.04em}
+
+/* 流程标注 */
+.pipeline-info{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:760px;margin:32px auto 0}
+.pinfo{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--r-sm);padding:18px 16px}
+.pinfo__step{font-family:var(--font-data);font-size:10px;letter-spacing:0.15em;color:var(--text-disabled);margin-bottom:8px}
+.pinfo__h{font-family:var(--font-display);font-size:15px;font-weight:500;color:var(--text-display);margin-bottom:6px}
+.pinfo__t{font-size:12.5px;color:var(--text-secondary);line-height:1.55}
+
+.breath{text-align:center;max-width:600px;margin:0 auto}
+.breath__txt{font-family:var(--font-display);font-size:clamp(22px,3vw,34px);font-weight:300;font-style:italic;line-height:1.45;color:var(--text-display)}
+.breath__txt strong{font-style:normal;font-weight:600;color:var(--olive)}
+
+.close{background:var(--darkgray);color:#fff;padding:80px 72px;max-width:none;margin:0}
+.close__inner{max-width:820px;margin:0 auto}
+.close__lbl{font-family:var(--font-data);font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.close__txt{font-family:var(--font-display);font-size:clamp(22px,2.6vw,30px);font-weight:400;line-height:1.4}
+.close__txt strong{color:var(--yellow);font-weight:600}
+.close__meta{margin-top:24px;font-family:var(--font-data);font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:0.05em}
+
+.footer{padding:24px 72px;display:flex;justify-content:space-between;font-family:var(--font-data);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-disabled);background:var(--darkgray);border-top:1px solid rgba(255,255,255,0.06)}
+
+@media(max-width:1100px){
+  .hero{grid-template-columns:1fr;gap:28px;padding:60px 40px}
+  section{padding:64px 40px}
+  .pipeline-info{grid-template-columns:1fr}
+  .close{padding:64px 40px}
+}
+@media(max-width:640px){
+  .hero{padding:48px 24px}
+  section{padding:48px 24px}
+  .close{padding:48px 24px}
+  .footer{padding:20px 24px;flex-direction:column;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero__ghost">viz</div>
+  <div class="hero__left">
+    <div class="hero__tag">FUNNEL v4 · viz 专业版</div>
+    <h1 class="hero__title">图表交给<em>专业的人</em>,<br>页面交给<em>nian</em>。</h1>
+    <p class="hero__deck">这版的漏斗图由 viz-data-storytelling 选型 + viz-chart-visualization 渲染（专业图表引擎），nian 只负责嵌入和配色同步。对比 v3（nian 自画），图表精度和专业度完全不同。</p>
+  </div>
+  <div class="hero__right">
+    <div class="hero__conv">2.8<span class="pct">%</span></div>
+    <div class="hero__conv-l">整体转化率</div>
+  </div>
+</section>
+
+<!-- ═══ viz 专业漏斗图（嵌入）═══ -->
+<section>
+  <div class="sec-label">图 1 · 专业漏斗 · viz-chart-visualization 渲染</div>
+  <div class="sec-title">引擎画的漏斗,<em>比手画准</em>。</div>
+  <div class="sec-sub">这张图由 viz-chart-visualization 的 generate_funnel_chart 生成（AntV 图表引擎），nian 用模式 A 预同步配色（olive 渐变 + yellow 终点）后嵌入。比例精确、标签自动、无需手算坐标。</div>
+  <div class="chart-frame">
+    <div class="chart-frame__badge">VIZ ENGINE</div>
+    <img src="https://mdn.alipayobjects.com/one_clip/afts/img/V-xqTb5czlQAAAAAR1AAAAgAoEACAQFr/original" alt="线索到放款六级转化漏斗图，olive渐变配色" loading="lazy">
+    <p class="chart-cap">数据源:与 nothing 因果瀑布完全相同 · 配色:nian olive 渐变（模式 A 预同步）· 引擎:AntV generate_funnel_chart</p>
+  </div>
+  <div class="pipeline-info">
+    <div class="pinfo">
+      <div class="pinfo__step">配合流程 ①</div>
+      <div class="pinfo__h">viz-data-storytelling</div>
+      <div class="pinfo__t">出叙事大纲：选漏斗图、高亮第一步、行动标题"第一步流失占60%"</div>
+    </div>
+    <div class="pinfo">
+      <div class="pinfo__step">配合流程 ②</div>
+      <div class="pinfo__h">viz-chart-visualization</div>
+      <div class="pinfo__t">generate_funnel_chart 渲染，传入 nian olive 配色（模式 A 预同步）</div>
+    </div>
+    <div class="pinfo">
+      <div class="pinfo__step">配合流程 ③</div>
+      <div class="pinfo__h">nian-design 嵌入</div>
+      <div class="pinfo__t">img 嵌入 + chart-frame 包裹 + caption 标注来源，整页气质整合</div>
+    </div>
+  </div>
+</section>
+
+<!-- 呼吸 -->
+<section style="background:var(--surface-raised)">
+  <div class="breath">
+    <p class="breath__txt">专业的人画专业的图,<br>nian 做<strong>最擅长的整合</strong>。</p>
+  </div>
+</section>
+
+<section class="close">
+  <div class="close__inner">
+    <div class="close__lbl">CLOSING · 端到端验证</div>
+    <div class="close__txt">从 v1（文字描述）到 v2（自创图形）到 v3（方法论自画）到 <strong>v4（专业引擎）</strong>——四版迭代证明：数据可视化必须走 viz 家族，nian 的价值在<strong>气质整合和节制层</strong>，不在图表本身。</div>
+    <p class="close__meta">viz-data-storytelling → viz-chart-visualization → nian-design · 三技能配合链路验证通过</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>FUNNEL v4 · viz 专业版</span>
+  <span>nian × viz 配合验证 · 2026-06-20</span>
+</footer>
+
+</body>
+</html>

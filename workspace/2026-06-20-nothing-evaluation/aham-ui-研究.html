@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aham UI — 供 AI 消费的设计系统</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== Aham UI: Single Source of Truth (from tokens.json) ===== */
+:root {
+  /* Surfaces — three-layer flat */
+  --bg-content: #FFFFFF;
+  --bg-panel:   #F3F3F3;
+  --bg-line:    #E7E7E7;
+
+  /* Text — four levels */
+  --ink-primary:    #262626;
+  --ink-secondary:  #6E6E6E;
+  --ink-tertiary:   #9B9B9B;
+  --ink-quaternary: #C4C4C4;
+
+  /* Single blue */
+  --blue:       #336EE8;
+  --blue-hover: #5C8BED;
+  --blue-press: #164EC3;
+  --blue-bg:    #EDF0F7;
+  --blue-line:  #C8D3EA;
+
+  /* Semantic (weak, only for real risk) */
+  --green:  #5A7A60;
+  --amber:  #8A7333;
+  --red:    #9E3D31;
+
+  /* Interactive fills */
+  --fill-hover: rgba(20,20,20,.04);
+  --fill-active: rgba(20,20,20,.08);
+
+  /* Fonts — single sans, no serif */
+  --font-display: 'Inter Display', 'Inter', system-ui, sans-serif;
+  --font-body:    'Inter', -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Spacing — 4-based */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-5: 24px; --space-6: 32px;
+  --space-7: 48px; --space-8: 64px; --space-9: 96px;
+
+  /* Radius */
+  --r-xs: 4px; --r-sm: 6px; --r-md: 8px;
+  --r-lg: 12px; --r-xl: 16px; --r-pill: 999px;
+
+  /* Layout */
+  --c-max: 1120px;
+  --pad: 32px;
+  --gap: 24px;
+
+  /* Shadows — overlays only */
+  --shadow-menu:    0 2px 8px rgba(0,0,0,.05);
+  --shadow-popover: 0 4px 16px rgba(0,0,0,.06);
+  --shadow-modal:   0 8px 32px rgba(0,0,0,.10);
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-panel);
+  color: var(--ink-primary);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Text Style System (.text-display ... .text-caption) ===== */
+.text-display { font-family: var(--font-display); font-size: 44px; line-height: 1.15; font-weight: 600; color: var(--ink-primary); }
+.text-title   { font-family: var(--font-display); font-size: 32px; line-height: 1.2;  font-weight: 600; }
+.text-heading { font-family: var(--font-display); font-size: 24px; line-height: 1.25; font-weight: 600; }
+.text-subheading { font-family: var(--font-display); font-size: 20px; line-height: 1.3; font-weight: 600; }
+.text-body    { font-family: var(--font-body); font-size: 14px; line-height: 1.55; font-weight: 400; }
+.text-callout { font-family: var(--font-body); font-size: 15px; line-height: 1.45; font-weight: 400; }
+.text-subhead { font-family: var(--font-body); font-size: 13px; line-height: 1.4;  font-weight: 500; }
+.text-footnote { font-family: var(--font-body); font-size: 13px; line-height: 1.45; font-weight: 400; }
+.text-caption { font-family: var(--font-body); font-size: 12px; line-height: 1.4;  font-weight: 400; }
+.text-mono    { font-family: var(--font-mono); }
+
+/* ===== Container ===== */
+.container { max-width: var(--c-max); margin: 0 auto; padding: 0 var(--pad); }
+
+/* ===== Hero ===== */
+.hero {
+  background: var(--bg-content);
+  padding: var(--space-8) 0 var(--space-7);
+  position: relative;
+  overflow: hidden;
+}
+.hero__inner { max-width: var(--c-max); margin: 0 auto; padding: 0 var(--pad); }
+.hero__tag {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  color: var(--blue); margin-bottom: var(--space-5);
+}
+.hero__tag::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--blue); flex-shrink: 0;
+}
+.hero__caption {
+  font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  color: var(--ink-secondary); margin-top: var(--space-4);
+  max-width: 600px;
+}
+
+/* ===== Section ===== */
+.section { padding: var(--space-7) 0; border-bottom: 1px solid var(--bg-line); }
+.section:last-of-type { border-bottom: none; }
+.section__inner { max-width: var(--c-max); margin: 0 auto; padding: 0 var(--pad); }
+.section__label {
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-tertiary); margin-bottom: var(--space-4);
+}
+.section__desc {
+  font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  color: var(--ink-secondary); max-width: 600px;
+  margin-top: var(--space-3);
+}
+
+/* ===== Card (flat, no border, no shadow) ===== */
+.card { background: var(--bg-content); }
+.card--sel { background: var(--bg-line); }
+.card-grid {
+  display: grid; gap: var(--space-4);
+  background: var(--bg-panel);
+}
+.card-grid--2 { grid-template-columns: 1fr 1fr; }
+.card-grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+.card-grid--4 { grid-template-columns: repeat(4, 1fr); }
+.card__body { padding: var(--space-5); }
+.card__body--compact { padding: var(--space-4); }
+.card__tag {
+  display: inline-block;
+  font-family: var(--font-body); font-size: 12px; font-weight: 400;
+  color: var(--ink-tertiary); margin-bottom: var(--space-2);
+}
+.card__num {
+  font-family: var(--font-mono); font-size: 28px; font-weight: 500;
+  color: var(--ink-primary); line-height: 1;
+}
+.card__num .blue { color: var(--blue); }
+.card__title {
+  font-family: var(--font-body); font-size: 15px; font-weight: 600;
+  color: var(--ink-primary); margin-bottom: var(--space-2); line-height: 1.3;
+}
+.card__desc {
+  font-family: var(--font-body); font-size: 13px; line-height: 1.5;
+  color: var(--ink-secondary);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* ===== Metric ===== */
+.metric { display: inline-flex; flex-direction: column; gap: var(--space-1); }
+.metric__value { font-family: var(--font-mono); font-size: 20px; font-weight: 500; color: var(--ink-primary); line-height: 1; }
+.metric__value .blue { color: var(--blue); }
+.metric__label { font-family: var(--font-body); font-size: 12px; color: var(--ink-tertiary); }
+
+/* ===== Table (horizontal lines only) ===== */
+.doc-table { width: 100%; border-collapse: collapse; }
+.doc-table th {
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  color: var(--ink-tertiary); text-transform: uppercase; letter-spacing: 0.06em;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--bg-line);
+  text-align: left; font-weight: 600;
+}
+.doc-table td {
+  padding: var(--space-3) var(--space-3);
+  border-bottom: 1px solid var(--bg-line);
+  font-size: 14px; color: var(--ink-primary); vertical-align: top;
+}
+.doc-table tr:last-child td { border-bottom: none; }
+.doc-table td.sub { color: var(--ink-secondary); font-size: 13px; }
+.doc-table td.mono { font-family: var(--font-mono); font-size: 13px; }
+.doc-table td.ok { color: var(--green); }
+.doc-table td.tag {
+  display: inline-block;
+  font-family: var(--font-body); font-size: 12px; font-weight: 500;
+  padding: 1px 8px; border-radius: var(--r-xs);
+}
+.doc-table td.tag.blue { background: var(--blue-bg); color: var(--blue); }
+
+/* ===== Timeline ===== */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item {
+  display: grid; grid-template-columns: 24px 1fr;
+  gap: var(--space-4); padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--bg-line);
+}
+.tl-item:last-child { border-bottom: none; }
+.tl-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); margin-top: 6px; }
+.tl-h { font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink-primary); margin-bottom: 2px; }
+.tl-t { font-family: var(--font-body); font-size: 13px; line-height: 1.5; color: var(--ink-secondary); }
+
+/* ===== Lockup ===== */
+.lockup { display: flex; align-items: center; gap: var(--space-3); }
+.lockup__icon { width: 32px; height: 32px; border-radius: var(--r-sm); flex-shrink: 0; }
+.lockup__title { font-size: 14px; font-weight: 600; color: var(--ink-primary); }
+.lockup__sub { font-size: 12px; color: var(--ink-tertiary); }
+
+/* ===== Tag (neutral) ===== */
+.tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: var(--r-xs); color: var(--ink-secondary); background: var(--bg-panel); }
+
+/* ===== Status ===== */
+.status { display: inline-flex; align-items: center; gap: var(--space-1); }
+.status__dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.status__dot.blue { background: var(--blue); }
+.status__dot.green { background: var(--green); }
+.status__dot.amber { background: var(--amber); }
+.status__dot.red { background: var(--red); }
+.status__text { font-size: 12px; color: var(--ink-secondary); }
+
+/* ===== Iron Rule Callout ===== */
+.iron-rule {
+  background: var(--blue-bg);
+  border: none;
+  padding: var(--space-6);
+  border-radius: var(--r-lg);
+  margin: var(--space-6) 0;
+}
+.iron-rule__label {
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--blue); margin-bottom: var(--space-3);
+}
+.iron-rule__text {
+  font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  color: var(--ink-primary);
+}
+.iron-rule__text strong { color: var(--blue); }
+
+/* ===== Segmented steps ===== */
+.seg-steps { display: flex; gap: var(--space-3); margin: var(--space-5) 0; }
+.seg-step {
+  flex: 1; padding: var(--space-4);
+  border-radius: var(--r-md);
+  text-align: center;
+}
+.seg-step--on { background: var(--bg-content); }
+.seg-step--off { background: transparent; }
+.seg-step__n { font-family: var(--font-mono); font-size: 20px; font-weight: 500; color: var(--blue); }
+.seg-step__n.off { color: var(--ink-quaternary); }
+.seg-step__lbl { font-size: 13px; font-weight: 500; margin-top: var(--space-1); }
+.seg-step__lbl.on { color: var(--ink-primary); }
+.seg-step__lbl.off { color: var(--ink-tertiary); }
+
+/* ===== Footer ===== */
+.footer {
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--bg-line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer__text { font-size: 12px; color: var(--ink-tertiary); }
+
+/* ===== Reduce Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 860px) {
+  .card-grid--2, .card-grid--3, .card-grid--4 { grid-template-columns: 1fr; }
+  .seg-steps { flex-direction: column; }
+  .doc-table { font-size: 13px; }
+}
+@media (max-width: 380px) {
+  :root { --pad: 16px; }
+  .text-display { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__tag">Design System · v5.1</div>
+    <h1 class="text-display" style="max-width:720px">Aham UI<br>给 AI 消费的设计系统</h1>
+    <p class="hero__caption">写一次规范，AI 产出处处一致。Aham 系列（Voice / Survey / PPT）的设计地基。单蓝、三层灰、扁平克制、冷色的纸。</p>
+    <div class="card-grid card-grid--4" style="margin-top: var(--space-6);background:transparent">
+      <div class="card" style="border-radius:var(--r-md)"><div class="card__body card__body--compact"><div class="card__num">1</div><div style="font-size:12px;color:var(--ink-secondary);margin-top:2px">条铁律</div></div></div>
+      <div class="card" style="border-radius:var(--r-md)"><div class="card__body card__body--compact"><div class="card__num">4</div><div style="font-size:12px;color:var(--ink-secondary);margin-top:2px">步线性消费</div></div></div>
+      <div class="card" style="border-radius:var(--r-md)"><div class="card__body card__body--compact"><div class="card__num">1</div><div style="font-size:12px;color:var(--ink-secondary);margin-top:2px">个 JSON 真相源</div></div></div>
+      <div class="card" style="border-radius:var(--r-md)"><div class="card__body card__body--compact"><div class="card__num">7</div><div style="font-size:12px;color:var(--ink-secondary);margin-top:2px">层规范</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 01: 概念 ===== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label">01 · 概念</div>
+    <h2 class="text-title" style="max-width:600px">设计系统不是给设计师看的，<br>是给 AI 读的。</h2>
+    <p class="section__desc">Aham 系列（Voice — 录音转写、Survey — 现场调研、PPT — 幻灯片制作）共享同一套本地优先 macOS AI 工具的设计地基。每个工具各自做一件事，但看起来像同一家公司的产品——靠的不是设计师手调，是 AI 消费同一套规范。</p>
+    <p class="section__desc" style="margin-top:var(--space-2)">规范 = 一把尺子（tokens.json）+ 七层规则（DESIGN.md）+ 参考实现（aham-ui.css）。AI 从 token 取值、按规则组装、对照成品确认，不需要"问设计师这个间距用多少"。</p>
+
+    <div class="card-grid card-grid--3" style="margin-top:var(--space-5);background:transparent">
+      <div class="card" style="border-radius:var(--r-md)">
+        <div class="card__body card__body--compact">
+          <div class="card__title">Aham Voice</div>
+          <div class="card__desc">录音转写与会议纪要。录一段会，纪要已经写好。</div>
+          <span class="tag" style="margin-top:8px">macOS · local-first</span>
+        </div>
+      </div>
+      <div class="card" style="border-radius:var(--r-md)">
+        <div class="card__body card__body--compact">
+          <div class="card__title">Aham Survey</div>
+          <div class="card__desc">现场调研工具。聊一圈，调研结果自己长出来。</div>
+          <span class="tag" style="margin-top:8px">macOS · local-first</span>
+        </div>
+      </div>
+      <div class="card" style="border-radius:var(--r-md)">
+        <div class="card__body card__body--compact">
+          <div class="card__title">Aham PPT</div>
+          <div class="card__desc">咨询级 AI PPT 制作。丢一堆素材，幻灯片出来了。</div>
+          <span class="tag" style="margin-top:8px">AI 驱动</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02: 一条铁律 ===== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label">02 · 一条铁律</div>
+    <h2 class="text-title">比八条规则有效</h2>
+    <p class="section__desc">AGENTS.md 没有写 8 条规则、没有 13 项校验、没有 Step 1-2-3。只有一句话。因为最常见的产出不一致不是 AI 违背了某条具体规则，是 AI 在不确定时发明了一个新值——新颜色、新字号、新间距。一条铁律覆盖所有情况。</p>
+
+    <div class="iron-rule">
+      <div class="iron-rule__label">Iron Rule</div>
+      <div class="iron-rule__text"><strong>值只从 <code style="color:var(--ink-primary)">tokens.json</code> 取</strong>，颜色只用调色板，字体只用两族（Inter / Inter Display + JetBrains Mono），间距/圆角/控件尺寸只用既定档位——<strong>绝不自创值、自创组件、加装饰</strong>。拿不准就回到 tokens.json 看一眼，不要猜。</div>
+    </div>
+
+    <div class="card-grid card-grid--2" style="background:transparent">
+      <div class="card" style="border-radius:var(--r-md)">
+        <div class="card__body card__body--compact">
+          <div class="text-subhead" style="margin-bottom:var(--space-3)">这样做</div>
+          <div style="font-size:13px;color:var(--ink-secondary);line-height:1.6">
+            <span class="status"><span class="status__dot blue"></span><span class="status__text">token 取值</span></span><br>
+            <code style="font-family:var(--font-mono);font-size:12px;color:var(--ink-primary)">var(--blue) = #336EE8</code>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="border-radius:var(--r-md)">
+        <div class="card__body card__body--compact">
+          <div class="text-subhead" style="margin-bottom:var(--space-3)">不这样做</div>
+          <div style="font-size:13px;color:var(--ink-secondary);line-height:1.6">
+            <span class="status"><span class="status__dot red"></span><span class="status__text">自由发挥</span></span><br>
+            <code style="font-family:var(--font-mono);font-size:12px;color:var(--red)">color: #4A90D9</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03: 七层结构 ===== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label">03 · 七层规范</div>
+    <h2 class="text-title">从原则到落地，<br>每层解决一个问题</h2>
+
+    <table class="doc-table" style="margin-top:var(--space-5)">
+      <thead>
+        <tr><th style="width:60px">层</th><th>内容</th><th style="width:100px" class="text-mono">文件</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="mono">0</td><td><strong>设计原则</strong> — 清晰、克制、层次。铁规：无边框卡片、单蓝、状态=6px点+文字</td><td><span class="tag">DESIGN.md</span></td></tr>
+        <tr><td class="mono">1</td><td><strong>基础</strong> — 色彩(亮+暗两套)、文本样式体系(11样式)、布局间距(4基)、圆角、图标、动效、无障碍、文案</td><td><span class="tag">DESIGN.md</span></td></tr>
+        <tr><td class="mono">2</td><td><strong>组件</strong> — 动作/录入/导航/数据/可视化/反馈/浮层/容器，8组带全状态</td><td><span class="tag">aham-ui.css</span></td></tr>
+        <tr><td class="mono">3</td><td><strong>组合规则</strong> — 同心圆角、对齐网格、动作主次、间距贯穿</td><td><span class="tag">DESIGN.md</span></td></tr>
+        <tr><td class="mono">4</td><td><strong>模式</strong> — 页型：表单/列表/详情/仪表盘/对话/三态</td><td><span class="tag">examples/</span></td></tr>
+        <tr><td class="mono">5</td><td><strong>介质</strong> — 网页CSS / 桌面macOS / Office(Word/PPT/Excel)</td><td><span class="tag">aham-ui-office.md</span></td></tr>
+        <tr><td class="mono">6</td><td><strong>输入</strong> — 指针映射、标准快捷键、焦点行为</td><td><span class="tag">aham-ui.js</span></td></tr>
+        <tr><td class="mono">7</td><td><strong>系统支撑</strong> — token 命名三层、校验、治理管线</td><td><span class="tag">AGENTS.md</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 04: 线性消费 ===== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label">04 · 线性消费</div>
+    <h2 class="text-title">AI 的消费顺序，<br>不是"如果就"，是"先→再→然后"</h2>
+    <p class="section__desc" style="margin-bottom:var(--space-3)">Aham UI 没有条件分支。AI 始终按同一个顺序消费：先取值，再读规则，再看成品。不需要做路径选择。</p>
+
+    <div class="seg-steps">
+      <div class="seg-step seg-step--on">
+        <div class="seg-step__n">1</div>
+        <div class="seg-step__lbl on">tokens.json<br><span class="text-footnote" style="color:var(--ink-tertiary)">取值</span></div>
+      </div>
+      <div class="seg-step seg-step--on">
+        <div class="seg-step__n blue">→</div>
+        <div class="seg-step__lbl on" style="visibility:hidden">—</div>
+      </div>
+      <div class="seg-step seg-step--on">
+        <div class="seg-step__n">2</div>
+        <div class="seg-step__lbl on">DESIGN.md<br><span class="text-footnote" style="color:var(--ink-tertiary)">取规则</span></div>
+      </div>
+      <div class="seg-step seg-step--on">
+        <div class="seg-step__n blue">→</div>
+        <div class="seg-step__lbl on" style="visibility:hidden">—</div>
+      </div>
+      <div class="seg-step seg-step--on">
+        <div class="seg-step__n">3</div>
+        <div class="seg-step__lbl on">aham-ui.css<br><span class="text-footnote" style="color:var(--ink-tertiary)">拼界面</span></div>
+      </div>
+      <div class="seg-step seg-step--on">
+        <div class="seg-step__n blue">→</div>
+        <div class="seg-step__lbl on" style="visibility:hidden">—</div>
+      </div>
+      <div class="seg-step seg-step--on">
+        <div class="seg-step__n">4</div>
+        <div class="seg-step__lbl on">examples/<br><span class="text-footnote" style="color:var(--ink-tertiary)">看成例</span></div>
+      </div>
+    </div>
+
+    <p class="section__desc" style="margin-top:var(--space-4)">对比 nian-design 的 Step 2（2A 命中变体 / 2B 组件替换 / 2C 注入参数 / 2D 灵感嫁接）——AI 需要不断判断"当前在哪条路径"。Aham 的线性顺序意味着 AI 从不需要问"我该走哪条路"，只需要按顺序执行。</p>
+  </div>
+</section>
+
+<!-- ===== 05: 文件体系 ===== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label">05 · 文件体系</div>
+    <h2 class="text-title">每个文件只管一件事</h2>
+
+    <table class="doc-table" style="margin-top:var(--space-5)">
+      <thead>
+        <tr><th>文件</th><th>用途</th><th>AI 消费时</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code style="font-family:var(--font-mono)">AGENTS.md</code></td><td>AI 入口，铁律+消费顺序</td><td class="sub">先读这页，再干活</td></tr>
+        <tr><td><code style="font-family:var(--font-mono)">tokens.json</code></td><td>单一事实源，机读值</td><td class="sub">直接引用，不改不近似</td></tr>
+        <tr><td><code style="font-family:var(--font-mono)">DESIGN.md</code></td><td>七层完整规范</td><td class="sub">读规则，理解为什么</td></tr>
+        <tr><td><code style="font-family:var(--font-mono)">aham-ui.css</code></td><td>组件+文本样式类+暗色</td><td class="sub">引用 class，不重写</td></tr>
+        <tr><td><code style="font-family:var(--font-mono)">aham-ui.js</code></td><td>交互契约</td><td class="sub">了解行为，不调代码</td></tr>
+        <tr><td><code style="font-family:var(--font-mono)">examples/</code></td><td>成品示范</td><td class="sub">看完再动手</td></tr>
+        <tr><td><code style="font-family:var(--font-mono)">aham-ui-office.md</code></td><td>Office 落地映射</td><td class="sub">做文档时才读</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== 06: 关键设计决策 ===== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label">06 · 设计决策</div>
+    <h2 class="text-title">四个为什么</h2>
+
+    <div class="timeline" style="margin-top:var(--space-5)">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-h">为什么是单蓝？</div>
+          <div class="tl-t">克制系统的极致测试——"如果只能用一个颜色，你的设计还成立吗？" 单蓝意味着你无法靠颜色区分信息层级，必须靠字号/间距/位置。这在单色体系中是一种纪律训练。</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-h">为什么不用 Apple 的取值？</div>
+          <div class="tl-t">"框架/方法/比例参照 Apple HIG，但取值全部自定。" 版权是表层原因，深层原因是 Apple 的 SF 字体和 8pt 基线网格不适合 Inter 和 4px 基自定体系。学方法不抄答案。</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-h">为什么 AGENTS.md 只有一页？</div>
+          <div class="tl-t">AI 的阅读成本很高。如果入口文件太长，AI 会选择性跳过。一页 + 一条铁律 + 四步顺序，AI 消化完再深入 DESIGN.md 或 css 文件。分层消费比全量加载高效。</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div>
+          <div class="tl-h">为什么状态是"6px 点+文字"不是徽章？</div>
+          <div class="tl-t">pill/徽章/色块/红黄绿灯是多色系统的表达方式。单蓝体系中状态只需要"存在/不存在"和"正常/异常"两个信号。6px 点 + 文字是目前最小的视觉负担。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 07: 对本项目的启发 ===== -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__label">07 · 启发</div>
+    <h2 class="text-title">三样可以拿走的东西</h2>
+
+    <table class="doc-table" style="margin-top:var(--space-5)">
+      <thead>
+        <tr><th>Aham 的做法</th><th>nian 能借什么</th><th>优先级</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>线性消费顺序</strong><br><span class="sub">不是条件分支，是一条路走到底</span></td>
+          <td>Step 2 的 2A-2D 四段分支合并为一段。换组件和嫁接灵感降级为例外处理，不出现主流程中。80% 场景下取变体→填内容→校验即可。</td>
+          <td><span class="tag" style="background:var(--blue-bg);color:var(--blue)">P0</span></td>
+        </tr>
+        <tr>
+          <td><strong>一条铁律覆盖最常犯的错</strong><br><span class="sub">"值只从 tokens.json 取"</span></td>
+          <td>加一条"值只从 token-root.css 的 :root 取，不自创新值。拿不准就打开 token-root.css 看一眼。" 覆盖 AI 不确定时自由发挥颜色的 80% 场景。</td>
+          <td><span class="tag" style="background:var(--blue-bg);color:var(--blue)">P1</span></td>
+        </tr>
+        <tr>
+          <td><strong>继承说明说清楚框架来源</strong><br><span class="sub">"框架参考 Apple HIG，取值自定"</span></td>
+          <td>在 CRAFT-RULES 开头写：规则框架借鉴 Nothing Design（工业审美+瑞士排版），但所有值（7 色 DNA、几何间距、8:1 字号）为原创。AI 知道边界后不会回去抄 Nothing 的值。</td>
+          <td><span class="tag">P2</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:var(--space-6);padding:var(--space-5);background:var(--bg-panel);border-radius:var(--r-lg)">
+      <div class="text-subhead" style="margin-bottom:var(--space-3)">核心差异总结</div>
+      <div style="font-size:13px;line-height:1.7;color:var(--ink-secondary)">
+        Aham 和 nian 都是"供 AI 消费的设计系统"，但解决的问题域不同：Aham 是控件级（按钮/表格/输入框），nian 是整页级（报告/品牌/数据页/策展）。所以 nian 不能照搬 Aham 的"一条铁律就够"方案——但你刚才看到的三个借用点（线性顺序、铁律兜底、继承说明）是领域无关的，可以直接拿。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<section style="padding:var(--space-5) 0;background:var(--bg-content)">
+  <div class="container">
+    <div class="footer">
+      <span class="footer__text">Aham UI · v5.1</span>
+      <span class="footer__text">aham-ui.css · 本页即用 Aham 设计系统呈现</span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

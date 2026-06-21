@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nian — 区位矩阵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --darkgray:#2C2C2C;--olive:#4A5D3A;--earth:#8B7355;--yellow:#FFD100;--orange:#E55B2B;--glacier:#2A4A5A;--rock:#808080;
+  --bg:#FAFAF8;--surface:#FFFFFF;--surface-raised:#F5F5F0;--border:#E5E5E0;--border-strong:#C0C0B8;
+  --text-display:#2d3142;--text-primary:#222222;--text-secondary:#8A7D6E;--text-muted:#b0a898;
+  --error:#C62828;--success:#2E7D32;--warning:#F9A825;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'Inter',-apple-system,'Helvetica Neue',Arial,sans-serif;--font-data:'JetBrains Mono','Courier New',monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding:48px 64px}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-size:256px 256px;pointer-events:none;z-index:0}
+.page{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+
+/* HEADER */
+.header{display:flex;align-items:baseline;gap:16px;margin-bottom:64px;border-bottom:1px solid var(--border);padding-bottom:32px}
+.hero-num{font-family:var(--font-display);font-size:64px;font-weight:300;line-height:1;color:var(--text-display);letter-spacing:-0.03em}
+.hero-label{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+.hero-title{font-family:var(--font-body);font-size:16px;font-weight:600;color:var(--text-display);margin-left:auto}
+
+/* NAMEPLATE */
+.nameplate{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border:1px solid var(--border-strong);border-radius:2px;margin-bottom:24px}
+.nameplate-dot{width:4px;height:4px;border-radius:50%;background:var(--olive)}
+.nameplate-text{font-family:var(--font-data);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted)}
+
+/* MATRIX */
+.matrix-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.matrix-header{display:grid;grid-template-columns:140px repeat(4,1fr);border-bottom:1px solid var(--border-strong)}
+.matrix-header-cell{
+  font-family:var(--font-data);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--text-muted);padding:12px 16px;text-align:center;
+}
+.matrix-header-cell:first-child{text-align:left;color:var(--text-secondary)}
+.matrix-row{display:grid;grid-template-columns:140px repeat(4,1fr);border-bottom:1px solid var(--border)}
+.matrix-row:last-child{border-bottom:none}
+.matrix-row:hover{background:var(--surface-raised)}
+.matrix-label{
+  padding:16px;font-size:13px;font-weight:500;color:var(--text-primary);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.matrix-label-sub{font-family:var(--font-data);font-size:9px;color:var(--text-muted);margin-top:2px;letter-spacing:0.04em}
+.matrix-cell{
+  padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-left:1px solid var(--border);position:relative;
+}
+.matrix-cell-val{
+  font-family:var(--font-data);font-size:18px;font-weight:500;line-height:1;
+  letter-spacing:-0.02em;
+}
+.matrix-cell-label{
+  font-family:var(--font-data);font-size:8px;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text-muted);margin-top:4px;
+}
+/* Fill depth = business weight */
+.matrix-cell--full{background:rgba(74,93,58,0.08)}
+.matrix-cell--full .matrix-cell-val{color:var(--olive)}
+.matrix-cell--high{background:rgba(74,93,58,0.04)}
+.matrix-cell--high .matrix-cell-val{color:var(--darkgray)}
+.matrix-cell--mid .matrix-cell-val{color:var(--text-secondary)}
+.matrix-cell--low .matrix-cell-val{color:var(--text-muted)}
+.matrix-cell--alert{background:rgba(230,91,43,0.04)}
+.matrix-cell--alert .matrix-cell-val{color:var(--orange)}
+
+/* SEAM */
+.seam{height:1px;background:linear-gradient(90deg,transparent,var(--border-strong),transparent);margin:48px 0}
+
+/* CALLOUT */
+.callout{margin-top:32px;padding:16px 20px;border-left:2px solid var(--olive);background:var(--surface)}
+.callout-title{font-family:var(--font-data);font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--olive);margin-bottom:8px}
+.callout-text{font-size:14px;color:var(--text-secondary);line-height:1.6}
+.callout-text strong{color:var(--text-primary);font-weight:600}
+
+/* LEGEND */
+.legend{display:flex;gap:24px;margin-top:24px}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+.legend-label{font-family:var(--font-data);font-size:9px;letter-spacing:0.04em;color:var(--text-muted)}
+
+/* FOOTER */
+.footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+.footer-text{font-family:var(--font-data);font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <span class="hero-num">8</span>
+    <div><div class="hero-label">Workplaces</div></div>
+    <span class="hero-title">区位矩阵 · Location Matrix</span>
+  </div>
+
+  <div class="nameplate"><div class="nameplate-dot"></div><span class="nameplate-text">8 Workplaces × 4 Metrics · Fill Depth = Business Weight</span></div>
+
+  <div class="matrix-wrap">
+    <div class="matrix-header">
+      <div class="matrix-header-cell">职场</div>
+      <div class="matrix-header-cell">达成率</div>
+      <div class="matrix-header-cell">人力</div>
+      <div class="matrix-header-cell">合规率</div>
+      <div class="matrix-header-cell">环比</div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">毅航合肥<div class="matrix-label-sub">YIHANG · HEFEI</div></div>
+      <div class="matrix-cell matrix-cell--full"><span class="matrix-cell-val">108%</span><span class="matrix-cell-label">TOP</span></div>
+      <div class="matrix-cell matrix-cell--full"><span class="matrix-cell-val">320</span><span class="matrix-cell-label">MAX</span></div>
+      <div class="matrix-cell matrix-cell--full"><span class="matrix-cell-val">98%</span></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">+12.3%</span></div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">伽玛合肥<div class="matrix-label-sub">GAMMA · HEFEI</div></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">94%</span></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">240</span></div>
+      <div class="matrix-cell matrix-cell--full"><span class="matrix-cell-val">95%</span></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">+3.1%</span></div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">毛毛虫北京<div class="matrix-label-sub">MAOCHONG · BEIJING</div></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">82%</span></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">280</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">78%</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">-0.8%</span></div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">翰锐武汉<div class="matrix-label-sub">HANRUI · WUHAN</div></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">76%</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">180</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">72%</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">-1.2%</span></div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">赛维斯成都<div class="matrix-label-sub">SAIWEISI · CHENGDU</div></div>
+      <div class="matrix-cell matrix-cell--alert"><span class="matrix-cell-val">68%</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">150</span></div>
+      <div class="matrix-cell matrix-cell--low"><span class="matrix-cell-val">58%</span></div>
+      <div class="matrix-cell matrix-cell--alert"><span class="matrix-cell-val">-4.5%</span></div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">岐力西安<div class="matrix-label-sub">QILI · XI'AN</div></div>
+      <div class="matrix-cell matrix-cell--alert"><span class="matrix-cell-val">55%</span></div>
+      <div class="matrix-cell matrix-cell--low"><span class="matrix-cell-val">120</span></div>
+      <div class="matrix-cell matrix-cell--low"><span class="matrix-cell-val">45%</span></div>
+      <div class="matrix-cell matrix-cell--alert"><span class="matrix-cell-val">-8.7%</span></div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">伽玛郑州<div class="matrix-label-sub">GAMMA · ZHENGZHOU</div></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">88%</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">160</span></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">85%</span></div>
+      <div class="matrix-cell matrix-cell--high"><span class="matrix-cell-val">+2.4%</span></div>
+    </div>
+    <div class="matrix-row">
+      <div class="matrix-label">毛毛虫上海<div class="matrix-label-sub">MAOCHONG · SHANGHAI</div></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">79%</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">200</span></div>
+      <div class="matrix-cell matrix-cell--mid"><span class="matrix-cell-val">70%</span></div>
+      <div class="matrix-cell matrix-cell--low"><span class="matrix-cell-val">-2.1%</span></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(74,93,58,0.12)"></div><span class="legend-label">Full (Top)</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(74,93,58,0.06)"></div><span class="legend-label">High</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--border)"></div><span class="legend-label">Mid</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(230,91,43,0.06)"></div><span class="legend-label">Alert</span></div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">矩阵规则</div>
+    <div class="callout-text">区位矩阵用<strong>填充深度</strong>编码业务权重，不用气泡大小或连线粗细。olive 深底 = 达标且产能最大；orange 浅底 = 预警需要介入。每行一个职场，每列一个指标，视线自然从左上（最强）扫到右下（最弱）。<strong>非对称分布</strong>比均匀分布更有信息量——如果所有格子一样深，说明没有区分度。</div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-text">区位矩阵 · Location Matrix · Nian Design</span>
+    <span class="footer-text">8 × 4 · Fill Depth = Business Weight</span>
+  </div>
+
+</div>
+</body>
+</html>

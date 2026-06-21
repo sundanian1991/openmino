@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nian 组件库 · 56 组件可视预览</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--darkgray:#2C2C2C;--olive:#4A5D3A;--earth:#8B7355;--yellow:#FFD100;--orange:#E55B2B;--glacier:#2A4A5A;--rock:#808080;--bg:#FAFAF8;--surface:#FFFFFF;--surface-raised:#F5F5F0;--border:#E5E5E0;--border-strong:#C0C0B8;--success:#2E7D32;--warning:#F9A825;--error:#C62828;--text-display:#2C2C2C;--text-primary:#1A1A1A;--text-secondary:#6B6B6B;--text-disabled:#A0A0A0;--font-display:Georgia,'Times New Roman',serif;--font-body:'Inter',-apple-system,sans-serif;--font-data:'JetBrains Mono',monospace;--r-xs:2px;--r-sm:4px;--r-md:6px}
+.dark-stage{--bg:#1A1A1A;--surface:#2C2C2C;--surface-raised:#333333;--border:#3A3A3A;--border-strong:#4A4A4A;--text-display:#FFFFFF;--text-primary:#E0E0E0;--text-secondary:#999999;--text-disabled:#666666;--olive:#8FB368;--earth:#C9A876;--yellow:#FFD100;--orange:#E55B2B;--glacier:#6FA3B8;--success:#6FCF6F;--warning:#FFB300;--error:#FF6B6B}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:#EDEDE9;color:var(--text-primary);line-height:1.6}
+
+/* 页头 */
+.page-head{padding:56px 48px 40px;background:var(--bg);border-bottom:1px solid var(--border)}
+.page-head .sub{font-family:var(--font-data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--olive);margin-bottom:12px}
+.page-head h1{font-family:var(--font-display);font-size:36px;font-weight:400;color:var(--text-display);letter-spacing:-.01em;margin-bottom:10px}
+.page-head p{font-size:14px;color:var(--text-secondary);max-width:720px;line-height:1.7}
+.page-head .stats{display:flex;gap:32px;margin-top:20px;flex-wrap:wrap}
+.page-head .stat{font-family:var(--font-data);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.page-head .stat b{display:block;font-size:24px;color:var(--text-display);font-family:var(--font-display);font-weight:400;letter-spacing:0;margin-bottom:2px}
+
+/* 导航 */
+.cat-nav{position:sticky;top:0;z-index:50;display:flex;gap:0;background:var(--darkgray);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cat-nav a{padding:12px 18px;font-family:var(--font-data);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer}
+.cat-nav a:hover,.cat-nav a.on{color:#fff;border-color:var(--olive)}
+
+/* 分类 */
+.cat{padding:48px 48px;border-bottom:1px solid var(--border);background:var(--bg)}
+.cat-h{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+.cat-id{font-family:var(--font-data);font-size:12px;letter-spacing:.2em;color:var(--olive)}
+.cat-name{font-family:var(--font-display);font-size:26px;font-weight:400;color:var(--text-display)}
+.cat-meta{font-family:var(--font-data);font-size:10px;color:var(--text-disabled);letter-spacing:.1em}
+.cat-desc{font-size:13px;color:var(--text-secondary);margin-bottom:32px;max-width:680px;line-height:1.6}
+
+/* 组件卡 */
+.cmp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:20px}
+.cmp{background:#fff;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden}
+.cmp-h{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:var(--surface-raised);border-bottom:1px solid var(--border)}
+.cmp-id{font-family:var(--font-data);font-size:11px;font-weight:600;color:var(--text-primary)}
+.cmp-src{font-family:var(--font-data);font-size:8px;color:var(--text-disabled);margin-left:6px}
+.cmp-badge{font-family:var(--font-data);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:3px;font-weight:600}
+.b-p0{background:var(--olive);color:#fff}
+.b-p1{background:var(--earth);color:#fff}
+.b-p2{background:#E8E8E3;color:var(--text-secondary)}
+.b-freq{font-size:8px;margin-left:4px;opacity:.7}
+/* 渲染舞台 */
+.stages{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border)}
+.stage{padding:24px 20px;min-height:130px;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text-primary)}
+.stage--dark{background:#1A1A1A;color:#E0E0E0}
+.stage-lbl{position:absolute;font-family:var(--font-data);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-disabled);top:6px;left:8px;opacity:.5}
+.stage{position:relative}
+.cmp-note{padding:8px 16px;font-size:11px;color:var(--text-secondary);line-height:1.5;background:var(--surface-raised);border-top:1px solid var(--border)}
+
+/* ═══ 组件 CSS（从 MASTER 移植）═══ */
+/* A01 Card */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;width:100%;max-width:200px}
+.card__tag{font-family:var(--font-data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:4px}
+.card__num{font-family:var(--font-data);font-size:30px;font-weight:500;color:var(--text-display);line-height:1}
+.card__lbl{font-family:var(--font-data);font-size:10px;color:var(--text-secondary);margin-top:3px}
+.card--raised{background:var(--surface-raised);border:none}
+.stage--dark .card{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .card__num{color:#fff}.stage--dark .card--raised{background:#333}
+
+/* A02 List */
+.list{display:flex;flex-direction:column;width:100%;max-width:220px}
+.list-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.list-row:last-child{border-bottom:none}
+.list-row--hl{background:var(--surface-raised);margin:0 -8px;padding:10px 8px;border-radius:var(--r-sm);border-bottom:none}
+.list-row__lbl{font-family:var(--font-data);font-size:10px;color:var(--text-secondary);min-width:80px}
+.list-row__val{font-family:var(--font-data);font-size:15px;font-weight:500;color:var(--text-display);margin-left:auto}
+.stage--dark .list-row{border-color:#3A3A3A}.stage--dark .list-row__val{color:#fff}.stage--dark .list-row--hl{background:#333}
+
+/* A03 Table */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;max-width:280px}
+.tbl th{font-family:var(--font-data);font-size:9px;color:var(--text-secondary);padding:6px 8px;text-align:left;font-weight:400;border-bottom:1px solid var(--border)}
+.tbl td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text-primary)}
+.tbl__num{text-align:right}
+.tbl th.tbl__num{text-align:right}
+.tbl__row--a{background:var(--surface-raised)}
+.tbl__row--a td:first-child{border-left:2px solid var(--olive)}
+.stage--dark .tbl th{color:#999;border-color:#3A3A3A}.stage--dark .tbl td{color:#E0E0E0;border-color:#3A3A3A}.stage--dark .tbl__row--a{background:#333}
+
+/* A04 Bento */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(50px,auto);gap:6px;width:100%;max-width:240px}
+.bento__c{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;display:flex;flex-direction:column;justify-content:center}
+.bento__c--lg{grid-row:span 2;padding:16px;background:var(--olive);color:#fff;border:none}
+.bento__tag{font-family:var(--font-data);font-size:8px;color:var(--text-disabled);margin-bottom:2px}
+.bento__c--lg .bento__tag{color:rgba(255,255,255,.6)}
+.bento__num{font-family:var(--font-data);font-size:20px;font-weight:500;color:var(--text-display)}
+.bento__c--lg .bento__num{color:#fff;font-size:24px}
+.bento__lbl{font-family:var(--font-data);font-size:8px;color:var(--text-secondary)}
+.bento__c--lg .bento__lbl{color:rgba(255,255,255,.7)}
+.stage--dark .bento__c{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .bento__num{color:#fff}
+
+/* A05 Three-Col */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:260px}
+.tri__c{position:relative;border:1px solid var(--border);padding:18px 12px 12px;overflow:hidden}
+.tri__n{position:absolute;top:-8px;right:-4px;font-family:var(--font-display);font-size:48px;font-weight:700;color:var(--text-display);opacity:.04;line-height:1}
+.tri__t{font-size:12px;font-weight:500;color:var(--text-display);margin-bottom:3px;position:relative}
+.tri__d{font-size:10px;color:var(--text-secondary);line-height:1.4;position:relative}
+.stage--dark .tri__c{border-color:#3A3A3A;background:#2C2C2C}.stage--dark .tri__n{color:#fff}.stage--dark .tri__t{color:#fff}
+
+/* A06 Detail */
+.detail{position:relative;padding:18px;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);width:100%;max-width:220px}
+.detail__n{position:absolute;top:-14px;right:-6px;font-family:var(--font-display);font-size:72px;font-weight:700;color:var(--orange);opacity:.08;line-height:1}
+.detail__l{font-family:var(--font-data);font-size:9px;color:var(--text-disabled);margin-bottom:5px;position:relative}
+.detail__t{font-size:14px;font-weight:500;color:var(--text-display);margin-bottom:6px;position:relative}
+.detail__d{font-size:11px;color:var(--text-secondary);line-height:1.5;position:relative}
+.stage--dark .detail{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .detail__t{color:#fff}
+
+/* A07 Flip / A08 Stack (简版示意) */
+.mini-demo{font-family:var(--font-data);font-size:11px;color:var(--text-secondary);text-align:center;line-height:1.8}
+.flip-demo,.stack-demo{width:80px;height:100px;border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:10px;color:var(--text-disabled);background:var(--surface)}
+.stack-demo{position:relative}
+.stack-demo::after{content:'';position:absolute;inset:4px -4px -4px 4px;border:1px solid var(--border);border-radius:var(--r-sm);z-index:-1;background:var(--surface-raised)}
+.stage--dark .flip-demo,.stage--dark .stack-demo{border-color:#3A3A3A;background:#2C2C2C}
+
+/* B01 SegProgress */
+.sbar{max-width:220px;width:100%}
+.sbar__h{display:flex;justify-content:space-between;margin-bottom:5px}
+.sbar__lbl{font-family:var(--font-data);font-size:10px;color:var(--text-secondary)}
+.sbar__val{font-family:var(--font-data);font-size:13px;font-weight:500;color:var(--text-display)}
+.sbar__track{display:flex;gap:2px;height:8px}
+.sbar__s{flex:1;background:var(--border);border-radius:1px}
+.sbar__s--f{background:var(--text-display)}.sbar__s--h{background:var(--olive)}.sbar__s--o{background:var(--orange)}
+.stage--dark .sbar__s{background:#3A3A3A}.stage--dark .sbar__s--f{background:#fff}
+
+/* B02 Mini Bar */
+.minibar{display:flex;gap:3px;align-items:flex-end;height:70px;width:100%;max-width:180px}
+.minibar__col{flex:1;background:var(--border);border-radius:1px;position:relative}
+.minibar__col--f{background:var(--text-display)}
+.minibar__lbl{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-family:var(--font-data);font-size:8px;color:var(--text-disabled)}
+.stage--dark .minibar__col{background:#3A3A3A}.stage--dark .minibar__col--f{background:#fff}
+
+/* B03 Sparkline */
+.spark{display:block;width:100%;max-width:200px;height:32px}
+
+/* B04 Gauge */
+.gauge-svg{display:block}
+
+/* B05 Dot Grid */
+.dotg{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;width:100%;max-width:120px}
+.dotg__d{width:100%;aspect-ratio:1;border-radius:50%;background:var(--border)}
+.dotg__d--f{background:var(--text-display)}.dotg__d--h{background:var(--olive)}
+.stage--dark .dotg__d{background:#3A3A3A}.stage--dark .dotg__d--f{background:#fff}
+
+/* B06 Quarter */
+.quarters{display:flex;gap:4px;align-items:flex-end;height:90px;width:100%;max-width:200px}
+.quarters__item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.quarters__label{font-family:var(--font-data);font-size:10px;color:var(--text-disabled)}
+.quarters__bar{width:100%;background:var(--surface-raised);border-radius:var(--r-sm) var(--r-sm) 0 0}
+.quarters__item--active .quarters__bar{background:var(--olive)}
+.quarters__item--active .quarters__label{color:var(--olive)}
+.stage--dark .quarters__bar{background:#333}.stage--dark .quarters__item--active .quarters__bar{background:var(--glacier)}.stage--dark .quarters__item--active .quarters__label{color:var(--glacier)}
+
+/* B07 Pyramid */
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;max-width:200px}
+.pyr-layer{height:32px;display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:11px;font-weight:500;border-radius:var(--r-sm)}
+.pyr-1{width:38%;background:var(--olive);color:#fff}
+.pyr-2{width:54%;background:var(--surface-raised);color:var(--text-primary)}
+.pyr-3{width:70%;background:var(--surface-raised);color:var(--text-primary)}
+.pyr-4{width:100%;background:var(--surface-raised);color:var(--text-primary)}
+.stage--dark .pyr-2,.stage--dark .pyr-3,.stage--dark .pyr-4{background:#333;color:#E0E0E0}
+
+/* B08 Radial */
+.radial__circle{width:90px;height:90px;border-radius:50%;background:var(--olive);display:flex;align-items:center;justify-content:center}
+.radial__value{font-family:var(--font-data);font-size:24px;font-weight:500;color:#fff}
+.stage--dark .radial__circle{background:var(--glacier)}
+
+/* B09 Waffle */
+.waffle{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:100%;max-width:120px}
+.waffle__cell{width:100%;aspect-ratio:1;background:var(--surface-raised);border-radius:1px}
+.waffle__cell--on{background:var(--olive)}
+.stage--dark .waffle__cell{background:#3A3A3A}.stage--dark .waffle__cell--on{background:var(--olive)}
+
+/* B10 Bullet */
+.bullet{max-width:240px;width:100%}
+.bullet__lbl{display:flex;justify-content:space-between;font-family:var(--font-data);font-size:9px;color:var(--text-secondary);margin-bottom:5px}
+.bullet__track{position:relative;height:12px;background:var(--surface-raised);border-radius:var(--r-sm);overflow:hidden}
+.bullet__range--low{position:absolute;left:0;width:33%;height:100%;background:rgba(229,91,43,.12)}
+.bullet__range--mid{position:absolute;left:33%;width:34%;height:100%;background:rgba(229,91,43,.2)}
+.bullet__range--high{position:absolute;left:67%;width:33%;height:100%;background:rgba(74,93,58,.15)}
+.bullet__bar{position:absolute;top:3px;height:6px;background:var(--text-display);border-radius:1px;z-index:2}
+.bullet__mark{position:absolute;top:-2px;width:2px;height:16px;background:var(--orange);z-index:3}
+.stage--dark .bullet__track{background:#333}.stage--dark .bullet__bar{background:#fff}
+
+/* C01 Flow */
+.pipe{display:flex;align-items:center;gap:0;width:100%;max-width:240px;justify-content:center}
+.pipe__s{display:flex;flex-direction:column;gap:2px;padding:6px 10px;align-items:center}
+.pipe__l{font-family:var(--font-data);font-size:8px;color:var(--text-disabled)}
+.pipe__v{font-size:12px;color:var(--text-secondary)}
+.pipe__s--d .pipe__v{color:var(--olive)}
+.pipe__s--a .pipe__v{color:var(--text-primary);font-weight:500}
+.pipe__a{font-size:14px;color:var(--text-disabled)}
+.stage--dark .pipe__v{color:#999}.stage--dark .pipe__s--a .pipe__v{color:#fff}
+
+/* C02 Timeline */
+.tl{display:flex;flex-direction:column;position:relative;padding-left:20px;width:100%;max-width:220px}
+.tl::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:var(--border)}
+.tl__item{position:relative;padding:10px 0 10px 18px;border-bottom:1px solid var(--border)}
+.tl__item:last-child{border-bottom:none}
+.tl__dot{position:absolute;left:-17px;top:14px;width:7px;height:7px;border-radius:50%;background:var(--olive);border:2px solid var(--bg);z-index:1}
+.tl__date{font-family:var(--font-data);font-size:9px;color:var(--text-secondary);margin-bottom:2px}
+.tl__title{font-size:12px;font-weight:600;color:var(--text-display);margin-bottom:2px}
+.tl__desc{font-size:10px;color:var(--text-secondary)}
+.stage--dark .tl::before{background:#3A3A3A}.stage--dark .tl__dot{background:var(--olive);border-color:#1A1A1A}.stage--dark .tl__item{border-color:#3A3A3A}.stage--dark .tl__title{color:#fff}
+
+/* C03/C04 Tree */
+.tree{font-family:var(--font-data);font-size:11px;color:var(--text-secondary);line-height:1.9;width:100%;max-width:200px}
+.tree__root{color:var(--text-display);font-weight:500}
+.tree__branch{color:var(--text-primary)}
+.tree__leaf{padding-left:14px;color:var(--text-disabled)}
+
+/* C05 Nav */
+.nav-bar{display:flex;align-items:center;gap:20px;width:100%;max-width:260px;padding:6px 0;border-bottom:1px solid var(--border)}
+.nav-bar__brand{font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--text-display)}
+.nav-lnk{font-family:var(--font-data);font-size:9px;color:var(--text-secondary);margin-right:12px}
+.nav-lnk--a{color:var(--text-display);border-bottom:1px solid var(--olive)}
+.stage--dark .nav-bar{border-color:#3A3A3A}.stage--dark .nav-bar__brand{color:#fff}
+
+/* C06 Tag */
+.tag{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--border);border-radius:999px;padding:3px 10px;color:var(--text-secondary);display:inline-flex;white-space:nowrap}
+.tag--a{border-color:var(--text-display);background:var(--text-display);color:var(--bg)}
+.tag--olive{border-color:var(--olive);color:var(--olive)}
+.tag--orange{border-color:var(--orange);color:var(--orange)}
+.tag-wrap{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.stage--dark .tag{border-color:#3A3A3A;color:#999}.stage--dark .tag--a{border-color:#fff;background:#fff;color:#1A1A1A}.stage--dark .tag--olive{border-color:var(--olive);color:var(--olive)}
+
+/* C07 Segmented */
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden}
+.seg__item{padding:6px 12px;font-family:var(--font-data);font-size:9px;color:var(--text-secondary)}
+.seg__item--a{background:var(--text-display);color:var(--bg)}
+.stage--dark .seg{border-color:#3A3A3A}.stage--dark .seg__item--a{background:#fff;color:#1A1A1A}
+
+/* C08 DateNav */
+.datenav{display:flex;align-items:center;gap:8px}
+.datenav__btn{font-family:var(--font-data);font-size:11px;color:var(--text-disabled);padding:3px 7px;border:1px solid var(--border);border-radius:var(--r-sm)}
+.datenav__cur{font-family:var(--font-data);font-size:12px;font-weight:500;color:var(--text-display)}
+.stage--dark .datenav__btn{border-color:#3A3A3A;color:#666}.stage--dark .datenav__cur{color:#fff}
+
+/* D01 DoDont */
+.cmpare{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;max-width:240px}
+.cmpare__col{border:1px solid var(--border);padding:10px}
+.cmpare__h{display:flex;align-items:center;gap:5px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.cmpare__m{font-size:12px}
+.cmpare__col--x .cmpare__m{color:var(--error)}
+.cmpare__col--v .cmpare__m{color:var(--olive)}
+.cmpare__t{font-family:var(--font-data);font-size:8px;color:var(--text-secondary)}
+.cmpare__r{display:flex;gap:5px;font-size:10px;color:var(--text-primary);padding:3px 0}
+.stage--dark .cmpare__col{border-color:#3A3A3A}.stage--dark .cmpare__h{border-color:#3A3A3A}.stage--dark .cmpare__r{color:#E0E0E0}
+
+/* D02 Asymmetric */
+.asym{display:grid;grid-template-columns:.4fr 1fr;gap:16px;width:100%;max-width:260px;align-items:start}
+.asym__bg{font-family:var(--font-data);font-size:32px;font-weight:700;color:var(--text-display);opacity:.06;line-height:.85;display:block}
+.asym__t{font-size:12px;font-weight:500;color:var(--text-display)}
+.asym__row{display:grid;grid-template-columns:16px 1fr 1fr;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)}
+.asym__rn{font-family:var(--font-data);font-size:14px;color:var(--text-disabled)}
+.asym__cl{font-family:var(--font-data);font-size:7px;color:var(--text-disabled)}
+.asym__cv{font-size:10px;color:var(--text-primary)}
+.stage--dark .asym__t{color:#fff}.stage--dark .asym__row{border-color:#3A3A3A}.stage--dark .asym__cv{color:#E0E0E0}
+
+/* D03 Tab */
+.tabp__nav{display:flex;border-bottom:1px solid var(--border);width:100%;max-width:220px}
+.tabp__tab{padding:6px 10px;font-family:var(--font-data);font-size:9px;color:var(--text-secondary);border-bottom:2px solid transparent}
+.tabp__tab--a{color:var(--text-display);border-color:var(--olive)}
+.tabp__body{padding:10px 0;font-size:11px;color:var(--text-secondary)}
+.stage--dark .tabp__nav{border-color:#3A3A3A}.stage--dark .tabp__tab--a{color:#fff}
+
+/* D04 Accordion */
+.acc{border-top:1px solid var(--border);width:100%;max-width:220px}
+.acc__item{border-bottom:1px solid var(--border)}
+.acc__tog{width:100%;display:flex;justify-content:space-between;padding:10px 0;background:transparent;border:none;cursor:pointer;text-align:left}
+.acc__lbl{font-size:12px;font-weight:500;color:var(--text-primary)}
+.acc__ico{font-family:var(--font-data);font-size:13px;color:var(--text-disabled)}
+.acc__item--o .acc__ico{color:var(--text-display)}
+.acc__b{padding:0 0 10px;font-size:10px;color:var(--text-secondary)}
+.acc__item:not(.acc__item--o) .acc__b{display:none}
+.stage--dark .acc{border-color:#3A3A3A}.stage--dark .acc__item{border-color:#3A3A3A}.stage--dark .acc__lbl{color:#fff}
+
+/* D05 Checklist */
+.chk{display:flex;flex-direction:column;gap:6px;width:100%;max-width:200px}
+.chk__item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-primary)}
+.chk__box{font-family:var(--font-data);font-size:10px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:var(--r-xs);color:var(--text-disabled)}
+.chk__item--ok .chk__box{background:var(--olive);color:#fff;border-color:var(--olive)}
+.chk__item--ok .chk__lbl{color:var(--text-secondary);text-decoration:line-through}
+.chk__item--pend .chk__box{border-color:var(--orange);color:var(--orange)}
+.stage--dark .chk__lbl{color:#fff}.stage--dark .chk__box{border-color:#3A3A3A}
+
+/* D06 Button */
+.btn{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border:none;border-radius:var(--r-sm);cursor:pointer}
+.btn--primary{background:var(--text-display);color:var(--bg)}
+.btn--secondary{background:transparent;border:1px solid var(--border);color:var(--text-primary)}
+.btn--ghost{background:transparent;border:none;color:var(--text-secondary)}
+.btn--accent{background:var(--orange);color:#fff}
+.btn-wrap{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.stage--dark .btn--primary{background:#fff;color:#1A1A1A}.stage--dark .btn--secondary{border-color:#3A3A3A;color:#E0E0E0}
+
+/* D07 Input */
+.field__lbl{font-family:var(--font-data);font-size:8px;color:var(--text-secondary);margin-bottom:3px;display:block}
+.field__inp{width:100%;max-width:180px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:11px;color:var(--text-primary);background:var(--surface)}
+.stage--dark .field__inp{background:#2C2C2C;border-color:#3A3A3A;color:#fff}
+
+/* D08 Toggle */
+.tgl{display:inline-flex;align-items:center;gap:7px}
+.tgl__track{width:30px;height:17px;background:var(--border);border-radius:999px;position:relative}
+.tgl__thumb{position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#fff}
+.tgl--on .tgl__track{background:var(--text-display)}
+.tgl--on .tgl__thumb{transform:translateX(13px)}
+.tgl__lbl{font-family:var(--font-data);font-size:9px;color:var(--text-secondary)}
+.stage--dark .tgl__track{background:#3A3A3A}.stage--dark .tgl--on .tgl__track{background:#fff}
+
+/* D09 Widget */
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:18px;display:flex;flex-direction:column;width:100%;max-width:180px}
+.widget--accent .widget__hero{color:var(--orange)}
+.widget__cat{font-family:var(--font-data);font-size:8px;color:var(--text-disabled);margin-bottom:6px}
+.widget__hero{font-family:var(--font-data);font-size:28px;font-weight:500;color:var(--text-display);line-height:1}
+.widget__unit{font-family:var(--font-data);font-size:9px;color:var(--text-secondary)}
+.stage--dark .widget{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .widget__hero{color:#fff}
+
+/* D10 Overlay (示意) */
+
+/* E01-E03 State */
+.state{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.state__ico{font-family:var(--font-data);font-size:24px;color:var(--text-disabled)}
+.state--err .state__ico{color:var(--error)}
+.state__t{font-size:13px;font-weight:500;color:var(--text-primary)}
+.state__d{font-size:10px;color:var(--text-secondary)}
+.stage--dark .state__t{color:#fff}
+
+/* E04 Toast */
+.toast{background:var(--darkgray);color:#fff;padding:8px 14px;border-radius:var(--r-sm);font-size:11px;border-left:3px solid var(--olive)}
+.toast-inline{font-family:var(--font-data);font-size:9px;padding:2px 6px;border-radius:var(--r-xs)}
+.toast-inline--ok{color:var(--olive)}.toast-inline--err{color:var(--error)}
+
+/* E05 DecoNumber */
+.deco{position:relative;padding:16px;overflow:hidden;width:100%;max-width:180px}
+.deco__n{position:absolute;top:-14px;right:-6px;font-family:var(--font-display);font-size:64px;font-weight:700;color:var(--orange);opacity:.08;line-height:1}
+.deco__l{font-family:var(--font-data);font-size:8px;color:var(--text-disabled);display:block;margin-bottom:3px;position:relative}
+.deco__t{font-size:14px;font-weight:500;color:var(--text-display);position:relative}
+.stage--dark .deco__t{color:#fff}
+
+/* F01 Prose (示意) */
+.prose-mini h3{font-family:var(--font-display);font-size:16px;font-weight:400;color:var(--text-display);margin-bottom:6px}
+.prose-mini p{font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:6px;max-width:220px}
+.prose-mini strong{color:var(--text-primary)}
+.prose-mini blockquote{border-left:2px solid var(--olive);padding:2px 0 2px 12px;margin:8px 0;font-family:var(--font-display);font-style:italic;color:var(--text-primary);font-size:13px}
+.stage--dark .prose-mini h3{color:#fff}.stage--dark .prose-mini p{color:#999}
+
+/* F02 ArticleList */
+.art-list__row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);width:100%;max-width:240px}
+.art-list__row:last-child{border-bottom:none}
+.art-list__title{font-family:var(--font-display);font-size:13px;color:var(--text-display);margin-bottom:2px}
+.art-list__meta{font-family:var(--font-data);font-size:8px;color:var(--text-disabled)}
+.stage--dark .art-list__row{border-color:#3A3A3A}.stage--dark .art-list__title{color:#fff}
+
+/* F03 Quote */
+.quote--minimal{border-left:2px solid var(--olive);padding:4px 0 4px 14px;font-family:var(--font-display);font-style:italic;color:var(--text-primary);font-size:14px;max-width:200px}
+.quote--highlight{background:rgba(255,209,0,.15);padding:8px 12px;font-family:var(--font-display);font-size:14px;color:var(--text-primary);border-radius:var(--r-sm);border-left:3px solid var(--yellow);max-width:200px}
+.stage--dark .quote--minimal{color:#fff}
+
+/* F04 Code */
+.code--macos{background:var(--darkgray);border-radius:var(--r-sm);overflow:hidden;width:100%;max-width:200px}
+.code__bar{display:flex;align-items:center;gap:4px;padding:6px 10px;background:rgba(255,255,255,.05)}
+.code__dot{width:8px;height:8px;border-radius:50%}
+.code__dot:nth-child(1){background:#FF5F57}.code__dot:nth-child(2){background:#FFBD2E}.code__dot:nth-child(3){background:#28C941}
+.code__body{font-family:var(--font-data);font-size:10px;color:#E0E0E0;padding:8px 12px;line-height:1.5}
+
+/* F05 Tension */
+.tension-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:var(--r-sm);overflow:hidden;width:100%;max-width:240px}
+.tension-item{background:var(--darkgray);color:#fff;padding:14px;display:flex;flex-direction:column;gap:6px}
+.tension-item__num{font-family:var(--font-data);font-size:9px;color:rgba(255,255,255,.4)}
+.tension-item__side{font-family:var(--font-display);font-size:15px;line-height:1.2}
+.tension-item__side strong{color:var(--orange);font-style:italic}
+.tension-item__desc{font-size:10px;color:rgba(255,255,255,.6)}
+
+/* F06 Cluster */
+.cluster{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:minmax(40px,auto);gap:5px;width:100%;max-width:200px}
+.cluster__c{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-secondary)}
+.cluster__c--lg{grid-column:span 2;grid-row:span 2;background:var(--olive);color:#fff;border:none}
+.stage--dark .cluster__c{background:#2C2C2C;border-color:#3A3A3A}
+
+/* F07 Newspaper */
+.news{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:16px;width:100%;max-width:280px}
+.news__head{font-family:var(--font-display);font-size:13px;font-weight:700;text-align:center;border-top:2px solid var(--text-display);border-bottom:1px solid var(--text-display);padding:5px 0;margin-bottom:10px}
+.news__grid{display:grid;grid-template-columns:1fr 1px 1fr;gap:10px}
+.news__sep{background:var(--border)}
+.news__h{font-family:var(--font-display);font-size:11px;font-weight:600;color:var(--text-display);margin-bottom:5px}
+.news__p{font-size:9px;color:var(--text-secondary);line-height:1.5;margin-bottom:4px}
+.news__note{font-family:var(--font-data);font-size:8px;color:var(--orange)}
+.stage--dark .news{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .news__head{border-color:#fff;color:#fff}.stage--dark .news__h{color:#fff}
+
+/* F08 DotTable */
+.dottbl{display:flex;flex-direction:column;width:100%;max-width:240px}
+.dottbl__row{display:grid;grid-template-columns:80px 1fr 1fr;gap:10px;padding:8px 0;align-items:baseline}
+.dottbl__dim{font-family:var(--font-data);font-size:9px;font-weight:500;color:var(--text-secondary);position:relative;padding-left:14px;text-transform:uppercase}
+.dottbl__dim::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--olive)}
+.dottbl__row:nth-child(2n) .dottbl__dim::before{background:var(--earth)}
+.dottbl__row:nth-child(3n) .dottbl__dim::before{background:var(--orange)}
+.dottbl__val{font-family:var(--font-data);font-size:11px;color:var(--text-primary)}
+.dottbl__val:last-child{color:var(--olive);font-weight:500}
+
+/* F09 NumberedGrid */
+.numgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;max-width:240px}
+.numgrid__c{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;position:relative;overflow:hidden}
+.numgrid__c::before{content:attr(data-num);position:absolute;top:-8px;right:8px;font-family:var(--font-display);font-size:40px;font-weight:700;color:var(--text-display);opacity:.05;line-height:1}
+.numgrid__c h4{font-size:11px;font-weight:600;color:var(--text-display);margin-bottom:3px;position:relative}
+.numgrid__c p{font-size:9px;color:var(--text-secondary);line-height:1.4;position:relative}
+.numgrid__c--full{grid-column:1/-1}
+.stage--dark .numgrid__c{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .numgrid__c::before{color:#fff}.stage--dark .numgrid__c h4{color:#fff}
+
+/* F10 DarkQuote */
+.darkquote{background:var(--darkgray);color:#fff;padding:20px;border-radius:var(--r-md);text-align:center;width:100%;max-width:240px}
+.darkquote__txt{font-family:var(--font-display);font-size:14px;font-weight:400;line-height:1.5}
+.darkquote__txt em{color:var(--yellow);font-style:normal;font-weight:600}
+.darkquote__attr{margin-top:10px;font-family:var(--font-data);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+
+/* F11 MagazineCards */
+.magcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px}
+.magcards__c{position:relative;padding:12px 0}
+.magcards__c::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--text-display);opacity:.1}
+.magcards__num{font-family:var(--font-display);font-size:10px;font-style:italic;color:var(--text-disabled);margin-bottom:5px}
+.magcards__c h3{font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--text-display);line-height:1.2;margin-bottom:5px}
+.magcards__c p{font-size:9px;color:var(--text-secondary);line-height:1.5}
+.magcards__tag{display:block;margin-top:6px;font-family:var(--font-data);font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--olive)}
+.stage--dark .magcards__c h3{color:#fff}
+
+/* F12 CompareTable */
+.cmptbl{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;width:100%;max-width:240px}
+.cmptbl__head{display:grid;grid-template-columns:1fr 50px 50px;background:var(--darkgray);padding:7px 12px}
+.cmptbl__head span{font-family:var(--font-data);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.cmptbl__head span:not(:first-child){text-align:center}
+.cmptbl__row{display:grid;grid-template-columns:1fr 50px 50px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border);align-items:center}
+.cmptbl__row:last-child{border-bottom:none}
+.cmptbl__p{font-size:10px;color:var(--text-primary)}
+.cmptbl__s{text-align:center;font-family:var(--font-data);font-size:9px;color:var(--text-disabled)}
+.cmptbl__s--x{color:var(--error)}.cmptbl__s--v{color:var(--olive);font-weight:500}
+.stage--dark .cmptbl__row{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .cmptbl__p{color:#E0E0E0}
+
+/* F13 PullQuote */
+.pullquote{padding:20px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r-md);position:relative;width:100%;max-width:240px}
+.pullquote::before{content:'"';font-family:var(--font-display);font-size:48px;color:var(--olive);position:absolute;top:-4px;left:12px;opacity:.25;line-height:1}
+.pullquote p{font-family:var(--font-display);font-size:13px;font-weight:400;line-height:1.5;color:var(--text-display);position:relative}
+.stage--dark .pullquote{background:#2C2C2C;border-color:var(--border-strong)}.stage--dark .pullquote p{color:#fff}
+
+/* F14 SplitQA */
+.splitqa{display:grid;grid-template-columns:1.2fr 1fr;gap:14px;width:100%;max-width:280px;align-items:start}
+.splitqa__left h2{font-family:var(--font-display);font-size:13px;font-weight:400;color:var(--text-display);margin-bottom:8px}
+.splitqa__item{display:flex;gap:7px;margin-bottom:7px;align-items:flex-start}
+.splitqa__num{width:18px;height:18px;border-radius:50%;background:var(--olive);color:#fff;font-family:var(--font-data);font-size:9px;font-weight:500;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.splitqa__item p{font-size:9px;color:var(--text-secondary);line-height:1.4}
+.splitqa__right{background:var(--surface-raised);border-radius:var(--r-md);padding:12px;border-left:2px solid var(--olive)}
+.splitqa__right h3{font-family:var(--font-data);font-size:8px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--olive);margin-bottom:8px}
+.splitqa__flow{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.splitqa__step{background:var(--surface);padding:3px 8px;border-radius:999px;font-family:var(--font-data);font-size:8px;color:var(--text-primary);border:1px solid var(--border)}
+.splitqa__arrow{font-size:8px;color:var(--text-disabled)}
+.stage--dark .splitqa__left h2{color:#fff}.stage--dark .splitqa__right{background:#333}.stage--dark .splitqa__step{background:#2C2C2C;border-color:#3A3A3A}
+
+/* G01 Chat */
+.chat__bubble{padding:7px 11px;border-radius:var(--r-sm);font-size:11px;max-width:75%;margin-bottom:5px}
+.chat__bubble--user{background:var(--surface-raised);color:var(--text-primary);align-self:flex-end;margin-left:auto;border-bottom-right-radius:var(--r-xs)}
+.chat__bubble--ai{background:var(--darkgray);color:#fff;border-bottom-left-radius:var(--r-xs)}
+.stage--dark .chat__bubble--user{background:#333}
+
+/* G02 Filter */
+.filter-bar{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.filter-tag{font-family:var(--font-data);font-size:9px;padding:4px 9px;border:1px solid var(--border);border-radius:999px;color:var(--text-secondary)}
+.filter-tag--on{background:var(--text-display);color:var(--bg);border-color:var(--text-display)}
+.stage--dark .filter-tag{border-color:#3A3A3A;color:#999}.stage--dark .filter-tag--on{background:#fff;color:#1A1A1A}
+
+/* G03 HScroll */
+.hscroll{display:flex;gap:6px;overflow:hidden;width:100%;max-width:200px}
+.hscroll__card{flex:0 0 70px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px;font-size:9px;color:var(--text-secondary);text-align:center}
+.stage--dark .hscroll__card{background:#2C2C2C;border-color:#3A3A3A}
+
+/* G04 Calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;width:100%;max-width:160px}
+.cal__cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:9px;color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--r-xs)}
+.cal__cell--done{background:var(--olive);color:#fff;border-color:var(--olive)}
+.stage--dark .cal__cell{border-color:#3A3A3A;color:#999}
+
+/* G05 Carousel */
+.carousel{position:relative;display:flex;align-items:center;gap:8px}
+.carousel__slide{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:20px;text-align:center;font-size:11px;color:var(--text-secondary);min-width:80px}
+.carousel__arrow{border:1px solid var(--border);border-radius:50%;width:24px;height:24px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;justify-content:center}
+.stage--dark .carousel__slide{background:#2C2C2C;border-color:#3A3A3A}.stage--dark .carousel__arrow{border-color:#3A3A3A}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="sub">Nian Design System · 权威组件库</div>
+  <h1>56 组件可视预览</h1>
+  <p>三套历史体系合并 + mino 内容组件吸收。每个组件亮色/深色并排渲染，标注优先级。P0=高频首选(绿) · P1=次选(棕) · P2=低频特殊(灰)。纯亮色独立种类数（深色不计）。</p>
+  <div class="stats">
+    <div class="stat"><b>56</b>组件总数</div>
+    <div class="stat"><b>19</b>P0 首选</div>
+    <div class="stat"><b>22</b>P1 次选</div>
+    <div class="stat"><b>15</b>P2 特殊</div>
+    <div class="stat"><b>7</b>大类</div>
+  </div>
+</div>
+
+<nav class="cat-nav" id="nav">
+  <a class="on" onclick="go('catA')">A 容器</a>
+  <a onclick="go('catB')">B 数据</a>
+  <a onclick="go('catC')">C 流程</a>
+  <a onclick="go('catD')">D 交互</a>
+  <a onclick="go('catE')">E 状态</a>
+  <a onclick="go('catF')">F 内容</a>
+  <a onclick="go('catG')">G mino</a>
+</nav>
+
+<!-- ═══ A 类 ═══ -->
+<div class="cat" id="catA">
+  <div class="cat-h"><span class="cat-id">A 类</span><span class="cat-name">基础容器</span><span class="cat-meta">8 个 · 块面感核心</span></div>
+  <p class="cat-desc">你最偏爱的族——建筑感、块面感的基底。Bento/Table/Detail 是 P0 首选。</p>
+  <div class="cmp-grid">
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A01</span><span class="cmp-src">Card</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="card card--raised"><div class="card__tag">LABEL</div><div class="card__num">4/27</div><div class="card__lbl">留存率</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="card card--raised"><div class="card__tag">LABEL</div><div class="card__num">4/27</div><div class="card__lbl">留存率</div></div></div></div>
+      <div class="cmp-note">Raised 无边框块面感最强（你首选）。变体：Standard/Compact/Dark</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A02</span><span class="cmp-src">List</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="list"><div class="list-row"><span class="list-row__lbl">社科</span><span class="list-row__val">17</span></div><div class="list-row list-row--hl"><span class="list-row__lbl">商业</span><span class="list-row__val">7</span></div><div class="list-row"><span class="list-row__lbl">技术</span><span class="list-row__val">3</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="list"><div class="list-row"><span class="list-row__lbl">社科</span><span class="list-row__val">17</span></div><div class="list-row list-row--hl"><span class="list-row__lbl">商业</span><span class="list-row__val">7</span></div></div></div></div>
+      <div class="cmp-note">Highlight 高亮行焦点。变体：Standard/Highlight</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A03</span><span class="cmp-src">Table</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><table class="tbl"><tr><th>类别</th><th class="tbl__num">数量</th></tr><tr><td>社科</td><td class="tbl__num">17</td></tr><tr class="tbl__row--a"><td>商业</td><td class="tbl__num">7</td></tr><tr><td>技术</td><td class="tbl__num">3</td></tr></table></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><table class="tbl"><tr><th>类别</th><th class="tbl__num">数量</th></tr><tr><td>社科</td><td class="tbl__num">17</td></tr><tr class="tbl__row--a"><td>商业</td><td class="tbl__num">7</td></tr></table></div></div>
+      <div class="cmp-note">Active 行左 olive 线焦点。已修表头对齐 bug</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A04</span><span class="cmp-src">Bento</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="bento"><div class="bento__c bento__c--lg"><div class="bento__tag">PRIMARY</div><div class="bento__num">4/27</div><div class="bento__lbl">留存</div></div><div class="bento__c"><div class="bento__tag">总</div><div class="bento__num">27</div></div><div class="bento__c"><div class="bento__tag">用</div><div class="bento__num">4</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="bento"><div class="bento__c bento__c--lg"><div class="bento__tag">PRIMARY</div><div class="bento__num">4/27</div><div class="bento__lbl">留存</div></div><div class="bento__c"><div class="bento__tag">总</div><div class="bento__num">27</div></div><div class="bento__c"><div class="bento__tag">用</div><div class="bento__num">4</div></div></div></div></div>
+      <div class="cmp-note">★ 你容器族首选。1大+2小主次分明</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A05</span><span class="cmp-src">Three-Col</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="tri"><div class="tri__c"><span class="tri__n">01</span><div class="tri__t">读完即用</div><div class="tri__d">一周内</div></div><div class="tri__c"><span class="tri__n">02</span><div class="tri__t">锚点</div><div class="tri__d">提炼框架</div></div><div class="tri__c"><span class="tri__n">03</span><div class="tri__t">设限</div><div class="tri__d">每月2本</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="tri"><div class="tri__c"><span class="tri__n">01</span><div class="tri__t">读完即用</div><div class="tri__d">一周内</div></div><div class="tri__c"><span class="tri__n">02</span><div class="tri__t">锚点</div></div><div class="tri__c"><span class="tri__n">03</span><div class="tri__t">设限</div></div></div></div></div>
+      <div class="cmp-note">变体：Bordered/No-border(推荐)</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A06</span><span class="cmp-src">Detail</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="detail"><span class="detail__n">03</span><span class="detail__l">SECTION</span><div class="detail__t">例外 · 那4本</div><div class="detail__d">读完当天就用上了。</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="detail"><span class="detail__n">03</span><span class="detail__l">SECTION</span><div class="detail__t">例外 · 那4本</div><div class="detail__d">读完当天就用上了。</div></div></div></div>
+      <div class="cmp-note">Accent 橙色透明数字=一处打破</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A07</span><span class="cmp-src">Flip</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="flip-demo">正/反</div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="flip-demo">正/反</div></div></div>
+      <div class="cmp-note">几乎不用。点击翻转（step-end 机械感）</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">A08</span><span class="cmp-src">Stacked</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="stack-demo">堆叠</div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="stack-demo">堆叠</div></div></div>
+      <div class="cmp-note">几乎不用。图片集场景</div></div>
+
+  </div>
+</div>
+
+<!-- ═══ B 类 ═══ -->
+<div class="cat" id="catB">
+  <div class="cat-h"><span class="cat-id">B 类</span><span class="cat-name">数据与进度</span><span class="cat-meta">10 个 · 结构化优先</span></div>
+  <p class="cat-desc">你"结构化>图形化"偏好最该验证处。SegProgress/Quarter/Pyramid 是 P0；Sparkline/Gauge/DotGrid 是 P2 后置。Waffle/Bullet 是从 haglofs 精选吸收的新组件。</p>
+  <div class="cmp-grid">
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B01</span><span class="cmp-src">SegProgress</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="sbar"><div class="sbar__h"><span class="sbar__lbl">留存</span><span class="sbar__val">15%</span></div><div class="sbar__track"><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--h"></div><div class="sbar__s sbar__s--o"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="sbar"><div class="sbar__h"><span class="sbar__lbl">留存</span><span class="sbar__val">15%</span></div><div class="sbar__track"><div class="sbar__s sbar__s--f"></div><div class="sbar__s sbar__s--f"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div><div class="sbar__s"></div></div></div></div></div>
+      <div class="cmp-note">★ 达成率首选。多色分段最清晰</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B02</span><span class="cmp-src">MiniBar</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="minibar"><div class="minibar__col minibar__col--f" style="height:90%"></div><div class="minibar__col" style="height:37%"></div><div class="minibar__col" style="height:16%"></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="minibar"><div class="minibar__col minibar__col--f" style="height:90%"></div><div class="minibar__col" style="height:37%"></div><div class="minibar__col" style="height:16%"></div></div></div></div>
+      <div class="cmp-note">竖向排名，高度=量级</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B03</span><span class="cmp-src">Sparkline</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><svg class="spark" viewBox="0 0 180 32"><polyline fill="none" stroke="#E55B2B" stroke-width="1.5" points="0,8 45,14 90,18 135,22 180,26"/><polyline fill="none" stroke="#E5E5E0" stroke-width="1" stroke-dasharray="3 3" points="0,16 180,16"/></svg></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><svg class="spark" viewBox="0 0 180 32"><polyline fill="none" stroke="#E55B2B" stroke-width="1.5" points="0,8 45,14 90,18 135,22 180,26"/></svg></div></div>
+      <div class="cmp-note">你评价"质感稍差"，后置</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B04</span><span class="cmp-src">Gauge</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><svg class="gauge-svg" width="120" height="75" viewBox="0 0 200 120"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#E5E5E0" stroke-width="8" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 60 30" fill="none" stroke="#4A5D3A" stroke-width="8" stroke-linecap="round"/><line x1="100" y1="100" x2="60" y2="40" stroke="#2C2C2C" stroke-width="2"/><circle cx="100" cy="100" r="4" fill="#2C2C2C"/></svg></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><svg class="gauge-svg" width="120" height="75" viewBox="0 0 200 120"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#3A3A3A" stroke-width="8" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 60 30" fill="none" stroke="#8FB368" stroke-width="8" stroke-linecap="round"/><line x1="100" y1="100" x2="60" y2="40" stroke="#fff" stroke-width="2"/><circle cx="100" cy="100" r="4" fill="#fff"/></svg></div></div>
+      <div class="cmp-note">你明确"不如环形"，后置</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B05</span><span class="cmp-src">DotGrid</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="dotg" id="dg1"></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="dotg" id="dg2"></div></div></div>
+      <div class="cmp-note">特殊场景才用</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B06</span><span class="cmp-src">Quarter</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="quarters"><div class="quarters__item"><div class="quarters__bar" style="height:50px"></div><div class="quarters__label">Q1</div></div><div class="quarters__item quarters__item--active"><div class="quarters__bar" style="height:65px"></div><div class="quarters__label">Q2</div></div><div class="quarters__item"><div class="quarters__bar" style="height:35px"></div><div class="quarters__label">Q3</div></div><div class="quarters__item"><div class="quarters__bar" style="height:25px"></div><div class="quarters__label">Q4</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="quarters"><div class="quarters__item"><div class="quarters__bar" style="height:50px"></div><div class="quarters__label">Q1</div></div><div class="quarters__item quarters__item--active"><div class="quarters__bar" style="height:65px"></div><div class="quarters__label">Q2</div></div><div class="quarters__item"><div class="quarters__bar" style="height:35px"></div><div class="quarters__label">Q3</div></div></div></div></div>
+      <div class="cmp-note">★ 趋势类首选。色温变化讲故事</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B07</span><span class="cmp-src">Pyramid</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="pyramid"><div class="pyr-layer pyr-1">复盘</div><div class="pyr-layer pyr-2">应用</div><div class="pyr-layer pyr-3">精读</div><div class="pyr-layer pyr-4">选书</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="pyramid"><div class="pyr-layer pyr-1">复盘</div><div class="pyr-layer pyr-2">应用</div><div class="pyr-layer pyr-3">精读</div><div class="pyr-layer pyr-4">选书</div></div></div></div>
+      <div class="cmp-note">★ 阶段类并列首选。顶层 olive/orange</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B08</span><span class="cmp-src">Radial</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="radial__circle"><span class="radial__value">15%</span></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="radial__circle" style="background:#6FA3B8"><span class="radial__value">15%</span></div></div></div>
+      <div class="cmp-note">你"环形>弧形"</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B09</span><span class="cmp-src">Waffle ★</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="waffle" id="wf1"></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="waffle" id="wf2"></div></div></div>
+      <div class="cmp-note">★ 新吸收。块面感占比，比点阵更结构化</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">B10</span><span class="cmp-src">Bullet ★</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="bullet"><div class="bullet__lbl"><span>留存率</span><span>目标 30%</span></div><div class="bullet__track"><div class="bullet__range--low"></div><div class="bullet__range--mid"></div><div class="bullet__range--high"></div><div class="bullet__bar" style="width:15%"></div><div class="bullet__mark" style="left:30%"></div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="bullet"><div class="bullet__lbl"><span>留存率</span><span>目标 30%</span></div><div class="bullet__track"><div class="bullet__range--low"></div><div class="bullet__range--mid"></div><div class="bullet__range--high"></div><div class="bullet__bar" style="width:15%"></div><div class="bullet__mark" style="left:30%"></div></div></div></div></div>
+      <div class="cmp-note">★ 新吸收。值/目标/区间三层对比</div></div>
+
+  </div>
+</div>
+
+<!-- ═══ C 类 ═══ -->
+<div class="cat" id="catC">
+  <div class="cat-h"><span class="cat-id">C 类</span><span class="cat-name">流程与导航</span><span class="cat-meta">8 个</span></div>
+  <p class="cat-desc">Timeline/Tag/Segmented 是 P0；Flow Pipeline 排最后（信息薄）。</p>
+  <div class="cmp-grid">
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C01</span><span class="cmp-src">Flow</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="pipe"><div class="pipe__s pipe__s--d"><span class="pipe__l">01</span><span class="pipe__v">选书</span></div><span class="pipe__a">›</span><div class="pipe__s pipe__s--a"><span class="pipe__l">02</span><span class="pipe__v">精读</span></div><span class="pipe__a">›</span><div class="pipe__s"><span class="pipe__l">03</span><span class="pipe__v">应用</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="pipe"><div class="pipe__s pipe__s--d"><span class="pipe__l">01</span><span class="pipe__v">选书</span></div><span class="pipe__a">›</span><div class="pipe__s pipe__s--a"><span class="pipe__l">02</span><span class="pipe__v">精读</span></div></div></div></div>
+      <div class="cmp-note">你排最后，信息薄</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C02</span><span class="cmp-src">Timeline</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="tl"><div class="tl__item"><div class="tl__dot"></div><div class="tl__date">STEP 01</div><div class="tl__title">选书</div><div class="tl__desc">每月2本</div></div><div class="tl__item"><div class="tl__dot"></div><div class="tl__date">STEP 02</div><div class="tl__title">精读</div><div class="tl__desc">提炼框架</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="tl"><div class="tl__item"><div class="tl__dot"></div><div class="tl__date">STEP 01</div><div class="tl__title">选书</div></div><div class="tl__item"><div class="tl__dot"></div><div class="tl__date">STEP 02</div><div class="tl__title">精读</div></div></div></div></div>
+      <div class="cmp-note">★ 阶段类排第三。竖轴引导力强</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C03</span><span class="cmp-src">FlowTree</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="tree"><div class="tree__root">复盘</div><div class="tree__branch">├ 数量</div><div class="tree__leaf">└ 27本</div><div class="tree__branch">└ 质量</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="tree" style="color:#999"><div class="tree__root" style="color:#fff">复盘</div><div class="tree__branch">├ 数量</div><div class="tree__leaf">└ 27本</div></div></div></div>
+      <div class="cmp-note">决策树/分支</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C04</span><span class="cmp-src">TreeArch</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="tree"><div class="tree__root">系统</div><div class="tree__branch">├ 前端</div><div class="tree__leaf">└ UI</div><div class="tree__branch">└ 后端</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="tree" style="color:#999"><div class="tree__root" style="color:#fff">系统</div><div class="tree__branch">├ 前端</div></div></div></div>
+      <div class="cmp-note">架构层级</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C05</span><span class="cmp-src">Nav</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="nav-bar"><span class="nav-bar__brand">Nian</span><div><span class="nav-lnk nav-lnk--a">数据</span><span class="nav-lnk">背离</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="nav-bar"><span class="nav-bar__brand">Nian</span><div><span class="nav-lnk nav-lnk--a">数据</span><span class="nav-lnk">背离</span></div></div></div></div>
+      <div class="cmp-note">active 项 olive 底线</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C06</span><span class="cmp-src">Tag</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="tag-wrap"><span class="tag">默认</span><span class="tag tag--a">激活</span><span class="tag tag--olive">留存</span><span class="tag tag--orange">警示</span></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="tag-wrap"><span class="tag">默认</span><span class="tag tag--a">激活</span><span class="tag tag--olive">留存</span><span class="tag tag--orange">警示</span></div></div></div>
+      <div class="cmp-note">无填充背景（active 除外）</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C07</span><span class="cmp-src">Segmented</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="seg"><span class="seg__item seg__item--a">月</span><span class="seg__item">季</span><span class="seg__item">年</span></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="seg"><span class="seg__item seg__item--a">月</span><span class="seg__item">季</span><span class="seg__item">年</span></div></div></div>
+      <div class="cmp-note">Pill 圆角推荐</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">C08</span><span class="cmp-src">DateNav</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="datenav"><span class="datenav__btn">‹</span><span class="datenav__cur">2026上半年</span><span class="datenav__btn">›</span></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="datenav"><span class="datenav__btn">‹</span><span class="datenav__cur">2026上半年</span><span class="datenav__btn">›</span></div></div></div>
+      <div class="cmp-note">日期区间</div></div>
+
+  </div>
+</div>
+
+<!-- ═══ D 类 ═══ -->
+<div class="cat" id="catD">
+  <div class="cat-h"><span class="cat-id">D 类</span><span class="cat-name">对比与交互</span><span class="cat-meta">10 个</span></div>
+  <p class="cat-desc">Asymmetric/Widget 是 P0；Do/Dont/Tab 是 P1。</p>
+  <div class="cmp-grid">
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D01</span><span class="cmp-src">DoDont</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="cmpare"><div class="cmpare__col cmpare__col--x"><div class="cmpare__h"><span class="cmpare__m">×</span><span class="cmpare__t">AVOID</span></div><div class="cmpare__r"><span class="cmpare__m">×</span>追求数量</div></div><div class="cmpare__col cmpare__col--v"><div class="cmpare__h"><span class="cmpare__m">·</span><span class="cmpare__t">PREFER</span></div><div class="cmpare__r"><span class="cmpare__m">·</span>追求留存</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="cmpare"><div class="cmpare__col cmpare__col--x"><div class="cmpare__h"><span class="cmpare__m">×</span><span class="cmpare__t">AVOID</span></div></div><div class="cmpare__col cmpare__col--v"><div class="cmpare__h"><span class="cmpare__m">·</span><span class="cmpare__t">PREFER</span></div></div></div></div></div>
+      <div class="cmp-note">×红 / ·绿 区分</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D02</span><span class="cmp-src">Asymmetric</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="asym"><div><span class="asym__bg">VS</span><div class="asym__t">新旧对比</div></div><div><div class="asym__row"><span class="asym__rn">01</span><div><span class="asym__cl">旧</span><span class="asym__cv">27本</span></div><div><span class="asym__cl">新</span><span class="asym__cv">12本</span></div></div><div class="asym__row"><span class="asym__rn">02</span><div><span class="asym__cl">旧</span><span class="asym__cv">15%</span></div><div><span class="asym__cl">新</span><span class="asym__cv">60%</span></div></div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="asym"><div><span class="asym__bg">VS</span><div class="asym__t">新旧</div></div><div><div class="asym__row"><span class="asym__rn">01</span><div><span class="asym__cl">旧</span><span class="asym__cv">27</span></div><div><span class="asym__cl">新</span><span class="asym__cv">12</span></div></div></div></div></div></div>
+      <div class="cmp-note">★ 数据型对比首选</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D03</span><span class="cmp-src">Tab</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div><div class="tabp__nav"><span class="tabp__tab tabp__tab--a">数量</span><span class="tabp__tab">质量</span></div><div class="tabp__body">上半年 27 本。</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div><div class="tabp__nav"><span class="tabp__tab tabp__tab--a">数量</span><span class="tabp__tab">质量</span></div><div class="tabp__body">上半年 27 本。</div></div></div></div>
+      <div class="cmp-note">分类切换</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D04</span><span class="cmp-src">Accordion</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="acc"><div class="acc__item"><div class="acc__tog"><span class="acc__lbl">为什么12本？</span><span class="acc__ico">+</span></div></div><div class="acc__item acc__item--o"><div class="acc__tog"><span class="acc__lbl">留存怎么算？</span><span class="acc__ico">−</span></div><div class="acc__b">一周后能复用的占比。</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="acc"><div class="acc__item"><div class="acc__tog"><span class="acc__lbl">为什么12本？</span><span class="acc__ico">+</span></div></div><div class="acc__item acc__item--o"><div class="acc__tog"><span class="acc__lbl">留存？</span><span class="acc__ico">−</span></div><div class="acc__b">一周后能复用。</div></div></div></div></div>
+      <div class="cmp-note">无动画即时展开</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D05</span><span class="cmp-src">Checklist</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="chk"><div class="chk__item chk__item--ok"><span class="chk__box">✓</span><span class="chk__lbl">已完成</span></div><div class="chk__item chk__item--pend"><span class="chk__box">○</span><span class="chk__lbl">待处理</span></div><div class="chk__item"><span class="chk__box">·</span><span class="chk__lbl">未开始</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="chk"><div class="chk__item chk__item--ok"><span class="chk__box">✓</span><span class="chk__lbl">已完成</span></div><div class="chk__item chk__item--pend"><span class="chk__box">○</span><span class="chk__lbl">待处理</span></div></div></div></div>
+      <div class="cmp-note">OK/Pending/Not-started</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D06</span><span class="cmp-src">Button</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="btn-wrap"><button class="btn btn--primary">主要</button><button class="btn btn--secondary">次要</button><button class="btn btn--accent">强调</button></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="btn-wrap"><button class="btn btn--primary">主要</button><button class="btn btn--secondary">次要</button><button class="btn btn--accent">强调</button></div></div></div>
+      <div class="cmp-note">primary/secondary/ghost/accent</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D07</span><span class="cmp-src">Input</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div><label class="field__lbl">书名</label><input class="field__inp" placeholder="输入..."></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div><label class="field__lbl">书名</label><input class="field__inp" placeholder="输入..."></div></div></div>
+      <div class="cmp-note">focus 态 olive</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D08</span><span class="cmp-src">Toggle</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div><div class="tgl"><div class="tgl__track"><div class="tgl__thumb"></div></div><span class="tgl__lbl">OFF</span></div><div class="tgl tgl--on" style="margin-top:8px"><div class="tgl__track"><div class="tgl__thumb"></div></div><span class="tgl__lbl">ON</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div><div class="tgl tgl--on"><div class="tgl__track"><div class="tgl__thumb"></div></div><span class="tgl__lbl">ON</span></div></div></div></div>
+      <div class="cmp-note">二元开关</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D09</span><span class="cmp-src">Widget</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="widget widget--accent"><span class="widget__cat">RETENTION</span><span class="widget__hero">4/27</span><span class="widget__unit">留存</span></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="widget widget--accent"><span class="widget__cat">RETENTION</span><span class="widget__hero">4/27</span><span class="widget__unit">留存</span></div></div></div>
+      <div class="cmp-note">★ KPI 卡。Accent 加颜色</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">D10</span><span class="cmp-src">Overlay</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="mini-demo">Modal / Sheet<br>Dropdown / Toast<br><span style="color:var(--orange)">需点击触发</span></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="mini-demo">Modal / Sheet<br>Dropdown</div></div></div>
+      <div class="cmp-note">浮层套件</div></div>
+
+  </div>
+</div>
+
+<!-- ═══ E 类 ═══ -->
+<div class="cat" id="catE">
+  <div class="cat-h"><span class="cat-id">E 类</span><span class="cat-name">状态与反馈</span><span class="cat-meta">5 个</span></div>
+  <p class="cat-desc">错误/空/加载/提示/装饰数字。除 DecoNumber 外都是 P2 特殊场景。</p>
+  <div class="cmp-grid">
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">E01</span><span class="cmp-src">Error</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="state state--err"><div class="state__ico">×</div><div class="state__t">加载失败</div><div class="state__d">请检查网络</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="state state--err"><div class="state__ico">×</div><div class="state__t">加载失败</div></div></div></div>
+      <div class="cmp-note">错误态</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">E02</span><span class="cmp-src">Empty</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="state"><div class="state__ico">○</div><div class="state__t">暂无数据</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="state"><div class="state__ico">○</div><div class="state__t">暂无数据</div></div></div></div>
+      <div class="cmp-note">空态</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">E03</span><span class="cmp-src">Loading</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="state"><div class="sbar sbar__track" style="max-width:80px;height:6px;display:flex;gap:2px"><div class="sbar__s sbar__s--f" style="flex:1;background:#2C2C2C"></div><div class="sbar__s sbar__s--f" style="flex:1;background:#2C2C2C"></div><div style="flex:1;background:#E5E5E0"></div><div style="flex:1;background:#E5E5E0"></div></div><div class="state__d" style="margin-top:6px">加载中...</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="state"><div style="max-width:80px;height:6px;display:flex;gap:2px"><div style="flex:1;background:#fff"></div><div style="flex:1;background:#fff"></div><div style="flex:1;background:#3A3A3A"></div><div style="flex:1;background:#3A3A3A"></div></div><div class="state__d" style="margin-top:6px">加载中...</div></div></div></div>
+      <div class="cmp-note">骨架屏</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">E04</span><span class="cmp-src">Toast</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div><div class="toast">已保存</div><div style="margin-top:8px"><span class="toast-inline toast-inline--ok">[SAVED]</span> <span class="toast-inline toast-inline--err">[ERROR]</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div><div class="toast">已保存</div></div></div></div>
+      <div class="cmp-note">Floating + Inline</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">E05</span><span class="cmp-src">DecoNumber</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="deco"><span class="deco__n">03</span><span class="deco__l">SECTION</span><div class="deco__t">例外 · 那4本</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="deco"><span class="deco__n">03</span><span class="deco__l">SECTION</span><div class="deco__t">例外 · 那4本</div></div></div></div>
+      <div class="cmp-note">Accent 橙色打破。每页最多一次</div></div>
+
+  </div>
+</div>
+
+<!-- ═══ F 类 ═══ -->
+<div class="cat" id="catF">
+  <div class="cat-h"><span class="cat-id">F 类</span><span class="cat-name">内容排版</span><span class="cat-meta">14 个 · nian 独特 + mino 吸收</span></div>
+  <p class="cat-desc">从 6 个扩充到 14 个——吸收了 mino 8 个高价值内容组件（nian token 重写）。ArticleList/Quote/Tension/Newspaper/DotTable/DarkQuote 是 P0。</p>
+  <div class="cmp-grid">
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F01</span><span class="cmp-src">Prose ★nian</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="prose-mini"><h3>数据 · 27本</h3><p>读完 <strong>27本</strong>，但只留下4本。</p><blockquote>阅读量是伪指标。</blockquote></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="prose-mini"><h3>数据</h3><p>读完 <strong>27本</strong>。</p><blockquote>伪指标。</blockquote></div></div></div>
+      <div class="cmp-note">★ nian 独特。三体混排正文</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F02</span><span class="cmp-src">ArticleList ★nian</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div><div class="art-list__row"><div><div class="art-list__title">读得多不如读得深</div><div class="art-list__meta">06-20 · 复盘</div></div><span class="tag tag--olive">已发</span></div><div class="art-list__row"><div><div class="art-list__title">组件库合并</div><div class="art-list__meta">06-20 · 技术</div></div><span class="tag tag--orange">草稿</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div><div class="art-list__row"><div><div class="art-list__title">读得多不如读得深</div><div class="art-list__meta">06-20</div></div><span class="tag tag--olive">已发</span></div></div></div></div>
+      <div class="cmp-note">hover translateX + badge</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F03</span><span class="cmp-src">Quote [mino]</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div style="display:flex;flex-direction:column;gap:10px"><blockquote class="quote--minimal">阅读量是伪指标。</blockquote><blockquote class="quote--highlight">少读，让每本发生。</blockquote></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><blockquote class="quote--minimal">阅读量是伪指标。</blockquote></div></div>
+      <div class="cmp-note">★ 4变体：minimal/highlight/editorial/terminal</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F04</span><span class="cmp-src">Code [mino]</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="code--macos"><div class="code__bar"><span class="code__dot"></span><span class="code__dot"></span><span class="code__dot"></span></div><pre class="code__body">const books = 27;</pre></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="code--macos"><div class="code__bar"><span class="code__dot"></span><span class="code__dot"></span><span class="code__dot"></span></div><pre class="code__body">const books = 27;</pre></div></div></div>
+      <div class="cmp-note">macOS 窗口 / 极简白底</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F05</span><span class="cmp-src">Tension ★nian</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="tension-grid"><div class="tension-item"><div class="tension-item__num">01</div><div class="tension-item__side">Brand <strong>vs</strong> Function</div></div><div class="tension-item"><div class="tension-item__num">02</div><div class="tension-item__side">Depth <strong>vs</strong> Breadth</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="tension-grid"><div class="tension-item"><div class="tension-item__num">01</div><div class="tension-item__side">Brand <strong>vs</strong> Function</div></div></div></div></div>
+      <div class="cmp-note">nian 独特。2×2 张力对叙事</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F06</span><span class="cmp-src">Cluster ★nian</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="cluster"><div class="cluster__c cluster__c--lg">大</div><div class="cluster__c">小</div><div class="cluster__c">小</div><div class="cluster__c">小</div><div class="cluster__c">小</div><div class="cluster__c">小</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="cluster"><div class="cluster__c cluster__c--lg">大</div><div class="cluster__c">小</div><div class="cluster__c">小</div></div></div></div>
+      <div class="cmp-note">nian 独特。不规则拼贴</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F07</span><span class="cmp-src">Newspaper ★mino</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="news"><div class="news__head">THE DAILY BRIEF</div><div class="news__grid"><div class="news__col"><div class="news__h">数量层</div><p class="news__p">27本，社科17/商业7/技术3。</p><p class="news__note">↑ 占比失衡</p></div><div class="news__sep"></div><div class="news__col"><div class="news__h">质量层</div><p class="news__p">留存仅4/27。</p></div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="news"><div class="news__head">BRIEF</div><div class="news__grid"><div class="news__col"><div class="news__h">数量</div><p class="news__p">27本</p></div><div class="news__sep"></div><div class="news__col"><div class="news__h">质量</div><p class="news__p">4/27</p></div></div></div></div></div>
+      <div class="cmp-note">★ mino吸收。多栏分隔+报头，高密度科普</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F08</span><span class="cmp-src">DotTable ★mino</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="dottbl"><div class="dottbl__row"><div class="dottbl__dim">数量</div><div class="dottbl__val">27本</div><div class="dottbl__val">12本</div></div><div class="dottbl__row"><div class="dottbl__dim">留存</div><div class="dottbl__val">15%</div><div class="dottbl__val">60%</div></div><div class="dottbl__row"><div class="dottbl__dim">应用</div><div class="dottbl__val">4次</div><div class="dottbl__val">12次</div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="dottbl"><div class="dottbl__row"><div class="dottbl__dim">数量</div><div class="dottbl__val">27</div><div class="dottbl__val">12</div></div><div class="dottbl__row"><div class="dottbl__dim">留存</div><div class="dottbl__val">15%</div><div class="dottbl__val">60%</div></div></div></div></div>
+      <div class="cmp-note">★ mino吸收。圆点分层，右列olive强调推荐</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F09</span><span class="cmp-src">NumGrid ★mino</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="numgrid"><div class="numgrid__c" data-num="01"><h4>读完即用</h4><p>一周内用上</p></div><div class="numgrid__c" data-num="02"><h4>锚点</h4><p>提炼框架</p></div><div class="numgrid__c numgrid__c--full" data-num="03"><h4>主动设限</h4><p>每月2本</p></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="numgrid"><div class="numgrid__c" data-num="01"><h4>读完即用</h4><p>一周内</p></div><div class="numgrid__c numgrid__c--full" data-num="02"><h4>设限</h4><p>每月2本</p></div></div></div></div>
+      <div class="cmp-note">mino吸收。attr装饰编号+横跨卡</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F10</span><span class="cmp-src">DarkQuote ★mino</span></div><div><span class="cmp-badge b-p0">P0</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="darkquote"><p class="darkquote__txt">衡量阅读的不是<em>数字</em>，而是<em>决策</em>。</p><p class="darkquote__attr">— 2026 复盘</p></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="darkquote"><p class="darkquote__txt">不是<em>数字</em>，是<em>决策</em>。</p><p class="darkquote__attr">— 复盘</p></div></div></div>
+      <div class="cmp-note">★ mino吸收。深色块面金句，契合你的深色审美</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F11</span><span class="cmp-src">MagCards ★mino</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="magcards"><div class="magcards__c"><div class="magcards__num">i.</div><h3>读完即用</h3><p>一周内应用</p><span class="magcards__tag">METHOD</span></div><div class="magcards__c"><div class="magcards__num">ii.</div><h3>锚点</h3><p>提炼框架</p><span class="magcards__tag">METHOD</span></div><div class="magcards__c"><div class="magcards__num">iii.</div><h3>设限</h3><p>每月2本</p><span class="magcards__tag">METHOD</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="magcards"><div class="magcards__c"><div class="magcards__num">i.</div><h3>读完即用</h3><p>一周内</p></div><div class="magcards__c"><div class="magcards__num">ii.</div><h3>锚点</h3></div></div></div></div>
+      <div class="cmp-note">mino吸收。罗马数字+底线，编辑感并列</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F12</span><span class="cmp-src">CmpTable ★mino</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="cmptbl"><div class="cmptbl__head"><span>实践</span><span>旧</span><span>新</span></div><div class="cmptbl__row"><span class="cmptbl__p">追求数量</span><span class="cmptbl__s cmptbl__s--x">27</span><span class="cmptbl__s"></span></div><div class="cmptbl__row"><span class="cmptbl__p">追求留存</span><span class="cmptbl__s"></span><span class="cmptbl__s cmptbl__s--v">60%</span></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="cmptbl"><div class="cmptbl__head"><span>实践</span><span>旧</span><span>新</span></div><div class="cmptbl__row"><span class="cmptbl__p">追求数量</span><span class="cmptbl__s cmptbl__s--x">27</span><span class="cmptbl__s"></span></div></div></div></div>
+      <div class="cmp-note">mino吸收。Do/Don't表格变体，×红/·绿</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F13</span><span class="cmp-src">PullQuote ★mino</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="pullquote"><p>阅读量是最诚实的伪指标。</p></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="pullquote"><p>阅读量是伪指标。</p></div></div></div>
+      <div class="cmp-note">mino吸收。大字+装饰引号+边框，海报感</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">F14</span><span class="cmp-src">SplitQA ★mino</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="splitqa"><div class="splitqa__left"><h2>自检三问</h2><div class="splitqa__item"><span class="splitqa__num">1</span><p>核心结论？</p></div><div class="splitqa__item"><span class="splitqa__num">2</span><p>改变了什么？</p></div></div><div class="splitqa__right"><h3>消化路径</h3><div class="splitqa__flow"><span class="splitqa__step">选书</span><span class="splitqa__arrow">→</span><span class="splitqa__step">应用</span></div></div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="splitqa"><div class="splitqa__left"><h2>自检</h2><div class="splitqa__item"><span class="splitqa__num">1</span><p>结论？</p></div></div><div class="splitqa__right"><h3>路径</h3><div class="splitqa__flow"><span class="splitqa__step">选书</span><span class="splitqa__arrow">→</span><span class="splitqa__step">应用</span></div></div></div></div></div>
+      <div class="cmp-note">mino吸收。左问题+右辅助流程</div></div>
+
+  </div>
+</div>
+
+<!-- ═══ G 类 ═══ -->
+<div class="cat" id="catG">
+  <div class="cat-h"><span class="cat-id">G 类</span><span class="cat-name">mino 内容工具</span><span class="cat-meta">5 个 [mino]</span></div>
+  <p class="cat-desc">产品交互类，内容展示场景按需使用。Filter 是 P1，其余 P2。</p>
+  <div class="cmp-grid">
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">G01</span><span class="cmp-src">Chat [mino]</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div style="display:flex;flex-direction:column;max-width:180px"><div class="chat__bubble chat__bubble--user">帮我总结</div><div class="chat__bubble chat__bubble--ai">核心论点：阅读量是伪指标...</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div style="display:flex;flex-direction:column;max-width:180px"><div class="chat__bubble chat__bubble--user">帮我总结</div><div class="chat__bubble chat__bubble--ai">核心论点...</div></div></div></div>
+      <div class="cmp-note">对话气泡</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">G02</span><span class="cmp-src">Filter [mino]</span></div><div><span class="cmp-badge b-p1">P1</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="filter-bar"><span class="filter-tag filter-tag--on">社科</span><span class="filter-tag filter-tag--on">商业</span><span class="filter-tag">技术</span><span class="filter-tag">全部</span></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="filter-bar"><span class="filter-tag filter-tag--on">社科</span><span class="filter-tag filter-tag--on">商业</span><span class="filter-tag">技术</span></div></div></div>
+      <div class="cmp-note">多选交互（区别于 Tag 单选）</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">G03</span><span class="cmp-src">HScroll [mino]</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="hscroll"><div class="hscroll__card">书1</div><div class="hscroll__card">书2</div><div class="hscroll__card">书3</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="hscroll"><div class="hscroll__card">书1</div><div class="hscroll__card">书2</div></div></div></div>
+      <div class="cmp-note">横滑卡片</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">G04</span><span class="cmp-src">Calendar [mino]</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="cal"><div class="cal__cell cal__cell--done">1</div><div class="cal__cell cal__cell--done">2</div><div class="cal__cell">3</div><div class="cal__cell cal__cell--done">4</div><div class="cal__cell">5</div><div class="cal__cell cal__cell--done">6</div><div class="cal__cell">7</div><div class="cal__cell cal__cell--done">8</div><div class="cal__cell">9</div><div class="cal__cell">10</div><div class="cal__cell cal__cell--done">11</div><div class="cal__cell">12</div><div class="cal__cell">13</div><div class="cal__cell">14</div></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="cal"><div class="cal__cell cal__cell--done">1</div><div class="cal__cell cal__cell--done">2</div><div class="cal__cell">3</div><div class="cal__cell">4</div><div class="cal__cell">5</div><div class="cal__cell">6</div><div class="cal__cell">7</div></div></div></div>
+      <div class="cmp-note">打卡/追踪网格</div></div>
+
+    <div class="cmp"><div class="cmp-h"><div><span class="cmp-id">G05</span><span class="cmp-src">Carousel [mino]</span></div><div><span class="cmp-badge b-p2">P2</span></div></div>
+      <div class="stages"><div class="stage"><span class="stage-lbl">亮</span><div class="carousel"><button class="carousel__arrow">‹</button><div class="carousel__slide">第1张</div><button class="carousel__arrow">›</button></div></div>
+      <div class="stage stage--dark"><span class="stage-lbl">深</span><div class="carousel"><button class="carousel__arrow">‹</button><div class="carousel__slide">第1张</div><button class="carousel__arrow">›</button></div></div></div>
+      <div class="cmp-note">轮播</div></div>
+
+  </div>
+</div>
+
+<div style="padding:40px 48px 64px;text-align:center;background:var(--bg)">
+  <div style="font-family:var(--font-data);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:8px">56 组件 · 7 大类 · 三套体系合并 + mino 内容吸收</div>
+  <div style="font-size:12px;color:var(--text-secondary)">权威定义见 COMPONENTS-MASTER.md · 本页为可视化预览</div>
+</div>
+
+<script>
+// 渲染点阵和华夫图
+function fillGrid(id,total,on,tag){const el=document.getElementById(id);if(!el)return;for(let i=0;i<total;i++){const d=document.createElement(tag);d.className=(i<on?'dotg__d--f ':'')+(tag==='span'?'waffle__cell':'dotg__d');if(tag==='span')d.className='waffle__cell'+(i<on?' waffle__cell--on':'');el.appendChild(d)}}
+// 点阵 30 格 5 实心
+['dg1','dg2'].forEach(id=>{const el=document.getElementById(id);if(!el)return;for(let i=0;i<30;i++){const d=document.createElement('span');d.className='dotg__d'+(i<5?' dotg__d--f':'');el.appendChild(d)}});
+// 华夫 100 格 15 实心
+['wf1','wf2'].forEach(id=>{const el=document.getElementById(id);if(!el)return;for(let i=0;i<100;i++){const d=document.createElement('span');d.className='waffle__cell'+(i<15?' waffle__cell--on':'');el.appendChild(d)}});
+// 导航高亮
+const navLinks=document.querySelectorAll('.cat-nav a');
+const cats=document.querySelectorAll('.cat');
+const obs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){navLinks.forEach(a=>a.classList.remove('on'));const link=document.querySelector(`.cat-nav a[onclick="go('${e.target.id}')"]`);if(link)link.classList.add('on')}})},{rootMargin:'-20% 0px -70% 0px'});
+cats.forEach(c=>obs.observe(c));
+function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+</script>
+</body>
+</html>
