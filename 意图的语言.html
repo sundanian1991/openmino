@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>世界上只有一种语言：意图的语言</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,400&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   VIEWPORT BASE — 强制固定 16:9 舞台 (必须完整保留)
+   幻灯片以 1920×1080 创作，整体缩放适配视口
+   =========================================== */
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--stage-bg,#1a1a1a)}
+.deck-viewport{position:fixed;inset:0;overflow:hidden;background:var(--stage-bg,#1a1a1a)}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:var(--slide-bg,#faf9f7)}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none;background:var(--slide-bg,#faf9f7)}
+.slide.active,.slide.visible{visibility:visible;opacity:1;pointer-events:auto;z-index:1}
+img,video,canvas,svg{max-width:100%;max-height:100%}
+.deck-controls{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:1000}
+@media print{html,body{width:1920px;height:auto;overflow:visible;background:#fff}.deck-viewport{position:static;overflow:visible;background:#fff}.deck-stage{position:static;width:auto;height:auto;transform:none!important;background:none}.slide{position:relative;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;width:1920px;height:1080px;break-after:page;page-break-after:always}.slide:last-child{break-after:auto;page-break-after:auto}.deck-controls{display:none!important}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.2s!important}}
+
+/* ===========================================
+   主题变量 — PAPER & INK
+   暖米纸 + 深红强调 + 衬线编辑部
+   =========================================== */
+:root{
+  --stage-bg:#16140f;
+  --slide-bg:#faf9f7;
+  --cream:#faf9f7;
+  --cream-2:#f1eee5;
+  --cream-3:#e8e3d8;
+  --ink:#1a1a1a;
+  --ink-soft:#4a4a45;
+  --ink-faint:#9a958e;
+  --crimson:#c41e3a;
+  --crimson-soft:#d4606f;
+  --rule:rgba(26,26,26,0.12);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --serif:"Cormorant Garamond","Noto Serif SC",Georgia,serif;
+  --body:"Source Serif 4","Noto Serif SC",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ===========================================
+   通用页面骨架 — 四角细线框 + 顶/底 chrome
+   =========================================== */
+.slide{
+  font-family:var(--body);
+  color:var(--ink);
+  background:radial-gradient(120% 90% at 80% 6%, #ffffff 0%, var(--cream) 45%, var(--cream-2) 100%);
+  position:relative;
+}
+/* 四角细线框 */
+.frame{position:absolute;inset:84px 120px;border:1px solid var(--rule);pointer-events:none}
+/* 四角 L 形红色装饰 */
+.fc{position:absolute;width:24px;height:24px;pointer-events:none}
+.fc.tl{top:78px;left:114px;border-top:1.5px solid var(--crimson);border-left:1.5px solid var(--crimson)}
+.fc.tr{top:78px;right:114px;border-top:1.5px solid var(--crimson);border-right:1.5px solid var(--crimson)}
+.fc.bl{bottom:78px;left:114px;border-bottom:1.5px solid var(--crimson);border-left:1.5px solid var(--crimson)}
+.fc.br{bottom:78px;right:114px;border-bottom:1.5px solid var(--crimson);border-right:1.5px solid var(--crimson)}
+
+/* 顶部 chrome */
+.top{position:absolute;top:108px;left:150px;right:150px;display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:14px;letter-spacing:0.24em;text-transform:uppercase;color:var(--ink-soft)}
+.top .dot{display:inline-block;width:6px;height:6px;background:var(--crimson);border-radius:50%;margin:0 14px;vertical-align:middle}
+.top .crimson{color:var(--crimson)}
+
+/* 底部 chrome */
+.bottom{position:absolute;bottom:108px;left:150px;right:150px;display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:13px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-faint)}
+.bottom .pg{font-family:var(--serif);font-size:22px;letter-spacing:0.04em;color:var(--ink);text-transform:none;font-weight:500}
+.bottom .pg b{color:var(--crimson);font-weight:600}
+
+/* 内容区 */
+.content{position:absolute;top:188px;left:150px;right:150px;bottom:168px;display:flex;flex-direction:column}
+
+/* ===========================================
+   排版组件
+   =========================================== */
+.kicker{font-family:var(--mono);font-size:14px;letter-spacing:0.32em;text-transform:uppercase;color:var(--crimson);font-weight:500}
+.h2{font-family:var(--serif);font-weight:600;font-size:58px;line-height:1.08;letter-spacing:-0.01em;color:var(--ink)}
+.h2 em{font-style:italic;color:var(--crimson);font-weight:600}
+.h3{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.2;color:var(--ink)}
+.lead{font-family:var(--body);font-style:italic;font-weight:400;font-size:27px;line-height:1.55;color:var(--ink-soft);max-width:1000px}
+.body{font-family:var(--body);font-size:23px;line-height:1.68;color:var(--ink-soft)}
+.body b{color:var(--ink);font-weight:600}
+.body .red{color:var(--crimson);font-weight:600}
+.rule{height:2px;background:var(--crimson);width:96px;flex-shrink:0}
+.rule.thin{height:1px;background:var(--rule);width:100%}
+
+/* 首字下沉 */
+.dropcap::first-letter{font-family:var(--serif);font-weight:600;font-size:84px;float:left;line-height:0.82;margin:6px 14px 0 0;color:var(--crimson)}
+
+/* 引文块 */
+.pullquote{position:relative;padding:8px 0 8px 32px;font-family:var(--serif);font-style:italic;font-size:30px;line-height:1.5;color:var(--ink);font-weight:500}
+.pullquote::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:2px;background:var(--crimson)}
+.pullquote small{display:block;margin-top:14px;font-family:var(--mono);font-style:normal;font-size:14px;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-faint);font-weight:400}
+
+/* 信息卡 */
+.card{border:1px solid var(--rule);border-left:3px solid var(--crimson);padding:26px 28px;background:rgba(255,255,255,0.4)}
+.card .ch{font-family:var(--mono);font-size:13px;letter-spacing:0.26em;text-transform:uppercase;color:var(--crimson);margin-bottom:12px;font-weight:500}
+.card .ct{font-family:var(--serif);font-weight:600;font-size:27px;line-height:1.18;color:var(--ink);margin-bottom:12px}
+.card .cb{font-family:var(--body);font-size:20px;line-height:1.6;color:var(--ink-soft)}
+
+/* 对比表 */
+.ctable{width:100%;border-collapse:collapse;font-family:var(--body)}
+.ctable th{font-family:var(--mono);font-size:14px;letter-spacing:0.2em;text-transform:uppercase;color:var(--crimson);text-align:left;padding:14px 18px;border-bottom:1.5px solid var(--crimson);font-weight:500}
+.ctable td{font-size:21px;line-height:1.5;color:var(--ink-soft);padding:16px 18px;border-bottom:1px solid var(--rule);vertical-align:top}
+.ctable td b{color:var(--ink);font-weight:600}
+.ctable td.lab{font-family:var(--serif);font-style:italic;color:var(--ink);font-weight:600;font-size:22px;width:24%}
+.ctable tr:last-child td{border-bottom:none}
+
+/* 层级链 */
+.chain{display:flex;align-items:stretch;gap:0}
+.chain .step{flex:1;padding:18px 16px;border:1px solid var(--rule);border-right:none;position:relative;background:rgba(255,255,255,0.35)}
+.chain .step:last-child{border-right:1px solid var(--rule);border-left:3px solid var(--crimson)}
+.chain .step .n{font-family:var(--mono);font-size:12px;letter-spacing:0.2em;color:var(--ink-faint);margin-bottom:8px}
+.chain .step .t{font-family:var(--serif);font-weight:600;font-size:21px;color:var(--ink);line-height:1.2}
+.chain .arrow{display:flex;align-items:center;color:var(--crimson);font-size:22px;padding:0 6px;font-weight:600}
+
+/* 标签 */
+.tag{display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:0.22em;text-transform:uppercase;color:var(--crimson);border:1px solid var(--crimson);padding:6px 14px;font-weight:500}
+
+/* 索引项 */
+.idx{display:flex;gap:18px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--rule)}
+.idx .nn{font-family:var(--mono);font-size:14px;color:var(--crimson);width:48px;flex-shrink:0;letter-spacing:0.1em}
+.idx .tt{font-family:var(--serif);font-weight:600;font-size:22px;color:var(--ink)}
+.idx .dd{font-family:var(--body);font-size:18px;color:var(--ink-faint);margin-left:auto;text-align:right;max-width:560px;line-height:1.4}
+.idx:last-child{border-bottom:none}
+
+/* 数字大标 */
+.bignum{font-family:var(--serif);font-weight:600;font-size:96px;line-height:0.9;color:var(--crimson);font-style:italic}
+
+/* ===========================================
+   动画 — .reveal 在 .slide.visible 时触发
+   =========================================== */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity 0.7s var(--ease),transform 0.7s var(--ease)}
+.slide.visible .reveal{opacity:1;transform:translateY(0)}
+.reveal.d1{transition-delay:0.10s}.reveal.d2{transition-delay:0.20s}.reveal.d3{transition-delay:0.30s}
+.reveal.d4{transition-delay:0.40s}.reveal.d5{transition-delay:0.50s}.reveal.d6{transition-delay:0.60s}
+.reveal.d7{transition-delay:0.70s}.reveal.d8{transition-delay:0.80s}
+.reveal.line{transform:scaleX(0);transform-origin:left;transition:transform 0.9s var(--ease)}
+.slide.visible .reveal.line{transform:scaleX(1)}
+
+/* ===========================================
+   封面页
+   =========================================== */
+.cover .top{color:var(--ink-soft)}
+.cover-main{position:absolute;left:200px;top:284px;right:380px}
+.cover-title{font-family:var(--serif);font-weight:600;line-height:1.02;letter-spacing:-0.01em;margin:0}
+.cover-title .l1{display:block;font-size:118px;color:var(--ink)}
+.cover-title .l2{display:block;font-size:96px;color:var(--crimson);font-style:italic;font-weight:600}
+.cover-index{position:absolute;right:140px;top:320px;writing-mode:vertical-rl;font-family:var(--mono);font-size:13px;letter-spacing:0.36em;text-transform:uppercase;color:var(--ink-faint);display:flex;gap:30px}
+.cover-index span:nth-child(3){color:var(--crimson)}
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+
+<!-- ============ SLIDE 01 · 封面 ============ -->
+<section class="slide cover active visible">
+  <div class="frame"></div>
+  <div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+  <div class="top reveal d1">
+    <span>ESSAY<span class="dot"></span>语言哲学</span>
+    <span>2026 · 序章</span>
+  </div>
+  <div class="cover-main">
+    <div class="kicker reveal d2" style="margin-bottom:38px">AN ESSAY ON INTENTIONALITY</div>
+    <h1 class="cover-title">
+      <span class="l1 reveal d3">世界上只有一种语言</span>
+      <span class="l2 reveal d4">意图的语言</span>
+    </h1>
+    <div class="rule reveal line d5" style="margin:56px 0 34px"></div>
+    <p class="lead reveal d6">从建筑的物理结构，到语言的意图结构——一场关于「语言凭什么成立」的追问。</p>
+  </div>
+  <div class="cover-index reveal d7">
+    <span>INTENTIONALITY</span><span>GRICE</span><span>RSA</span><span>TOMASELLO</span>
+  </div>
+  <div class="bottom reveal d8">
+    <span>FROM ARCHITECTURE TO LANGUAGE</span>
+    <span class="pg"><b>01</b></span>
+    <span>ONTOLOGY · 结构层级</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 02 · 全文地图 ============ -->
+<section class="slide">
+  <div class="frame"></div>
+  <div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+  <div class="top reveal d1">
+    <span class="crimson">CONTENTS<span class="dot"></span>全文地图</span>
+    <span>两部分 · 二十七页</span>
+  </div>
+  <div class="content">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:30px">
+      <div>
+        <div class="kicker reveal d2" style="margin-bottom:14px">TABLE OF CONTENTS</div>
+        <h2 class="h2 reveal d3">这场追问，<em>分两段</em>走完</h2>
+      </div>
+      <p class="lead reveal d4" style="max-width:520px;font-size:22px">前半篇立论：语言的本体是意图可识别；后半篇落地：一个产品如何据此颠覆。</p>
+    </div>
+    <div class="rule reveal line d3" style="margin-bottom:30px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;flex:1">
+      <div class="reveal d4">
+        <div class="tag" style="margin-bottom:18px">PART I · 语言哲学</div>
+        <div class="idx"><span class="nn">03—06</span><span class="tt">立论</span><span class="dd">语言凭什么成立 · 建筑与语言的底层</span></div>
+        <div class="idx"><span class="nn">07—11</span><span class="tt">意图三层</span><span class="dd">意向性 · 交际意图 · 共享意向性</span></div>
+        <div class="idx"><span class="nn">12—17</span><span class="tt">历史转向</span><span class="dd">六次转向 + RSA 可计算模型</span></div>
+        <div class="idx"><span class="nn">18—22</span><span class="tt">差异与结构</span><span class="dd">差异四维 · 语言全结构七步</span></div>
+      </div>
+      <div class="reveal d5">
+        <div class="tag" style="margin-bottom:18px">PART II · 产品分析</div>
+        <div class="idx"><span class="nn">23—24</span><span class="tt">颠覆核心</span><span class="dd">空气小猪重新定义语言学习起点</span></div>
+        <div class="idx"><span class="nn">25</span><span class="tt">路径对比</span><span class="dd">传统路径 vs 意图生成路径</span></div>
+        <div class="idx"><span class="nn">26</span><span class="tt">竞品地图</span><span class="dd">六家工具 vs 空气小猪</span></div>
+        <div class="idx"><span class="nn">27</span><span class="tt">五个升级</span><span class="dd">从知识对象到交际事件</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom reveal d6">
+    <span>CONTENTS · 全文地图</span>
+    <span class="pg"><b>02</b></span>
+    <span>两部分 / 二十七页</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 03 · 核心命题 ============ -->
+<section class="slide">
+  <div class="frame"></div>
+  <div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+  <div class="top reveal d1">
+    <span class="crimson">THESIS<span class="dot"></span>核心命题</span>
+    <span>一句话立论</span>
+  </div>
+  <div class="content" style="justify-content:center">
+    <div class="kicker reveal d2" style="margin-bottom:28px">THE THESIS</div>
+    <h2 class="h2 reveal d3" style="font-size:50px;line-height:1.18;max-width:1500px">
+      建筑的本体条件是<em>物理稳定</em>；<br>语言的本体条件是<em>意图可识别</em>。<br>风格，都在底层之上发生。
+    </h2>
+    <div class="rule reveal line d4" style="margin:42px 0"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;max-width:1500px">
+      <div class="reveal d5">
+        <div class="tag" style="margin-bottom:14px">建筑</div>
+        <p class="body">世界上有许多建筑风格，但只有一种建筑成立条件：<b>结构必须能够稳定承载</b>。没有物理结构，建筑不存在。</p>
+      </div>
+      <div class="reveal d6">
+        <div class="tag" style="margin-bottom:14px">语言</div>
+        <p class="body">世界上有许多语言形式，但只有一种语言成立条件：<b>意图必须能够被识别</b>。没有意图识别，语言不存在。</p>
+      </div>
+    </div>
+  </div>
+  <div class="bottom reveal d7">
+    <span>THESIS · 核心命题</span>
+    <span class="pg"><b>03</b></span>
+    <span>ONTOLOGY · 本体条件</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 04 · 语言凭什么成立 ============ -->
+<section class="slide">
+  <div class="frame"></div>
+  <div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+  <div class="top reveal d1">
+    <span class="crimson">§ 一<span class="dot"></span>真正的问题</span>
+    <span>不是有多少种，是凭什么成立</span>
+  </div>
+  <div class="content">
+    <div class="kicker reveal d2" style="margin-bottom:14px">CHAPTER ONE</div>
+    <h2 class="h2 reveal d3">语言凭什么<em>成立</em>？</h2>
+    <div class="rule reveal line d3" style="margin:26px 0 30px"></div>
+    <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:56px;flex:1">
+      <div class="reveal d4">
+        <p class="body dropcap" style="font-size:22px">Ethnologue 目前列出 <b>7,170 种</b>仍在使用的语言；WALS 把世界语言在语音、语法、词汇上的差异系统记录下来。建筑也一样：哥特式向上，中式院落向内，现代主义强调功能，伊斯兰建筑强调几何与光影——它们都不同。</p>
+        <div class="pullquote reveal d6" style="margin-top:30px;font-size:26px">
+          它们之所以都属于建筑，不是因为共享同一种外观，而是共享一个更底层的存在条件：必须在物理世界中成立。
+        </div>
+      </div>
+      <div class="reveal d5" style="display:flex;flex-direction:column;gap:22px">
+        <div class="card">
+          <div class="ch">建筑的最低条件</div>
+          <div class="ct">服从重力 · 承重 · 材料强度 · 结构稳定</div>
+          <div class="cb">不是风格，不是装饰，甚至不首先是「居住功能」——没有这个底层物理条件，建筑不存在。</div>
+        </div>
+        <div class="card">
+          <div class="ch">语言的最低条件</div>
+          <div class="ct">意图能被识别、推断和回应</div>
+          <div class="cb">没有这个条件，声音只是声音，文字只是图形，词汇只是符号，语法只是排列。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom reveal d7">
+    <span>§ ONE · 真正的问题</span>
+    <span class="pg"><b>04</b></span>
+    <span>7,170 LANGUAGES · ONE CONDITION</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 05 · 建筑存在底层 ============ -->
+<section class="slide">
+  <div class="frame"></div>
+  <div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+  <div class="top reveal d1">
+    <span class="crimson">§ 二<span class="dot"></span>建筑的底层</span>
+    <span>物理规律先于风格和功能</span>
+  </div>
+  <div class="content">
+    <div class="kicker reveal d2" style="margin-bottom:14px">CHAPTER TWO · ARCHITECTURE</div>
+    <h2 class="h2 reveal d3">建筑首先面对的，<em>是物理规律</em></h2>
+    <div class="rule reveal line d3" style="margin:26px 0 24px"></div>
+    <p class="lead reveal d4" style="font-size:24px;margin-bottom:28px">功能和风格都不是建筑最底层的存在条件。建筑不是先有风格再勉强站起来——<b style="color:var(--crimson);font-style:normal">它必须先站得住，然后才可能成为哥特式、中式或现代主义。</b></p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;flex:1">
+      <div class="card reveal d5">
+        <div class="ch">哥特式 · 向上生长</div>
+        <div class="cb" style="font-size:19px">不只是宗教想象——<b>尖拱、肋架拱顶、飞扶壁</b>把重量导向外部支撑，才使向上成为可能。</div>
+      </div>
+      <div class="card reveal d6">
+        <div class="ch">中式木构 · 向内组织</div>
+        <div class="cb" style="font-size:19px"><b>柱网、斗拱、院落、屋顶</b>体系，与木材传统、礼制秩序、气候和家族生活共同成形。</div>
+      </div>
+      <div class="card reveal d7">
+        <div class="ch">现代主义 · 开放平面</div>
+        <div class="cb" style="font-size:19px">玻璃幕墙、开放平面、高层结构，依赖<b>钢筋、混凝土、电梯</b>与工业生产、城市化。</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom reveal d8">
+    <span>§ TWO · 建筑的底层</span>
+    <span class="pg"><b>05</b></span>
+    <span>PHYSICS BEFORE STYLE</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 06 · 建筑层级链 ============ -->
+<section class="slide">
+  <div class="frame"></div>
+  <div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+  <div class="top reveal d1">
+    <span class="crimson">§ 二<span class="dot"></span>层级链</span>
+    <span>从物理到审美，顺序不可逆</span>
+  </div>
+  <div class="content" style="justify-content:center">
+    <div class="kicker reveal d2" style="margin-bottom:14px">THE LADDER OF ARCHITECTURE</div>
+    <h2 class="h2 reveal d3">建筑的层级，<em>自下而上</em></h2>
+    <div class="rule reveal line d3" style="margin:30px 0 40px"></div>
+    <div class="chain reveal d4" style="margin-bottom:40px">
+      <div class="step"><div class="n">L1 · 最底层</div><div class="t">物理规律</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">L2</div><div class="t">材料技术</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">L3</div><div class="t">功能需求</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">L4</div><div class="t">社会制度</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">L5</div><div class="t">文化风格</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">L6 · 表层</div><div class="t">审美表达</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;max-width:1500px">
+      <p class="body reveal d5" style="font-size:22px">这是<b>自下而上</b>的链：物理规律托住材料技术，材料技术托住功能需求，一路向上到文化风格与审美表达。<span class="red">不是反过来。</span></p>
+      <p class="body reveal d6" style="font-size:22px">语言也是同样的结构——下一页起，我们把这条链<span class="red">原样平移到语言</span>：意图识别，就是语言的「重力」。</p>
+    </div>
+  </div>
+  <div class="bottom reveal d7">
+    <span>§ TWO · 层级链</span>
+    <span class="pg"><b>06</b></span>
+    <span>BOTTOM-UP · 不可逆</span>
+  </div>
+</section>
+
