@@ -1,52 +1,54 @@
 # Nian Design System — Components
 
-> 26 个组件族，亮色+深色双模式。对标 Nothing Design 品质标准。
+> 38 个组件族，亮色+深色双模式。对标 Nothing Design 品质标准。
 > 字体：Playfair Display（Display）/ Inter（Body）/ JetBrains Mono（Data）
 
 ---
 
 ## 色彩系统
 
-> 亮色值对应 `tokens/colors.css` 中的标准变量。
-> 深色模式值（加 -d 后缀）为 nian 扩展，当前 token 文件中未定义。
+> 色板**唯一信源**为 `tokens/colors.css`。亮色与深色值均在其中定义，**下方表格仅为查阅便利，以 colors.css 为准**。
+> 深色模式值（-d 后缀）已在 colors.css 的 `.dark / [data-mode="dark"]` 块中定义，组件加 `.dark` 类即生效。
 
 ### Light Mode（对应 tokens/colors.css）
 ```
---bg:             #FAFAF8    主背景
---surface:        #FFFFFF    卡片/组件背景
---surface-raised: #F5F5F0    次级背景/交替
---border:         #E5E5E0    默认边框
---border-strongtrong:  #C0C0B8    高可见边框
+--bg:             #F5F2EC    主背景
+--surface:        #FAF8F3    卡片/组件背景
+--surface-raised: #F0EDE5    次级背景/交替
+--border:         #E5E2DC    默认边框
+--border-strong:  #D4D0C8    高可见边框
 --text-display:   #2C2C2C    Hero 标题
 --text-primary:   #1A1A1A    正文
 --text-secondary: #6B6B6B    说明文字
 --text-disabled:  #A0A0A0    禁用态
---olive:          #4A5D3A    Brand 主色
---orange:         #E55B2B    强调色
---earth:          #8B7355    辅助色
+--olive:          #5A6B3D    Brand 主色
+--orange:         #C97A3D    强调色
+--earth:          #A08060    辅助色
 --glacier:        #2A4A5A    冷调色
---error:          #C62828    错误状态
---success:        #2E7D32    成功状态
---warning:        #F9A825    警告状态
+--error:          #C97A3D    错误状态
+--success:        #5A6B3D    成功状态
+--warning:        #C97A3D    警告状态
 ```
 
-### Dark Mode（nian 扩展，加 -d 后缀）
+### Dark Mode（对应 tokens/colors.css `.dark` 块）
 ```
 --bg-d:             #1A1A1A
 --surface-d:        #2C2C2C
 --surface-raised-d: #333333
 --border-d:         #3A3A3A
---border-strongtrong-d:  #4A4A4A
+--border-strong-d:  #4A4A4A
 --text-display-d:   #FFFFFF
 --text-primary-d:   #E0E0E0
 --text-secondary-d: #999999
 --text-disabled-d:  #666666
---olive-d:          #6A9A5A
+--olive-d:          #8FB368
 --orange-d:         #E55B2B
---earth-d:          #A08060
---glacier-d:        #4A7A9A
---error-d:          #FF5252
---success-d:        #4CAF50
+--earth-d:          #C9A876
+--yellow-d:         #FFD100
+--glacier-d:        #6FA3B8
+--rock-d:           #B0B0B0
+--error-d:          #FF6B6B
+--success-d:        #6FCF6F
 --warning-d:        #FFB300
 ```
 
@@ -1798,5 +1800,260 @@ Signature 数据可视化组件。离散方块——机械感、仪器感。
 
 ---
 
-*32 个组件族 · 亮色+深色双模式 · Nian Design System · 对齐 Nothing Design 品质标准*
-*最后更新：2026-06-14*
+
+---
+
+## 33. ASSOCIATION MATRIX（关联矩阵）
+
+> 吸收 Nothing 手法，nian 升维：填充深度四级用**自然色**（olive/darkgray/surface-raised/bg）替代灰度，色彩本身承载业务语义。
+
+**HTML:**
+```html
+<table class="assoc-matrix">
+  <thead><tr><th>供应商</th><th>金条</th><th>企金</th><th>信用卡</th><th>财富</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="am-city">毅航</td>
+      <td class="am-cell primary"><span class="am-val">42</span><span class="am-sub">35%</span></td>
+      <td class="am-cell secondary"><span class="am-val">18</span><span class="am-sub">15%</span></td>
+      <td class="am-cell tertiary"><span class="am-val">6</span><span class="am-sub">5%</span></td>
+      <td class="am-cell empty"><span class="am-dot warn"></span></td>
+    </tr>
+  </tbody>
+  <tfoot><tr><td>Total</td><td>120</td><td>48</td><td>20</td><td>8</td></tr></tfoot>
+</table>
+```
+
+**CSS:**
+```css
+.assoc-matrix { width:100%; border-collapse:collapse; background:var(--surface); }
+.assoc-matrix th { font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-secondary); font-weight:400; padding:14px 12px; border-bottom:1px solid var(--border-strong); background:var(--surface-raised); text-align:center; }
+.assoc-matrix th:first-child, .am-city { text-align:left; }
+.am-city { font-family:var(--font-display); font-weight:600; font-size:15px; color:var(--text-primary); padding:14px 12px; border-bottom:1px solid var(--border); }
+.am-cell { padding:14px 12px; text-align:center; border-bottom:1px solid var(--border); }
+.am-val { font-family:var(--font-mono); font-size:13px; font-weight:600; display:block; }
+.am-sub { font-family:var(--font-mono); font-size:9px; text-transform:uppercase; color:var(--text-disabled); }
+.am-cell.primary { background:var(--olive); } .am-cell.primary .am-val, .am-cell.primary .am-sub { color:#fff; }
+.am-cell.secondary { background:var(--darkgray); } .am-cell.secondary .am-val, .am-cell.secondary .am-sub { color:#fff; }
+.am-cell.tertiary { background:var(--surface-raised); } .am-cell.tertiary .am-val { color:var(--text-primary); }
+.am-cell.empty { background:var(--bg); border:1px dashed var(--border-strong); }
+.am-dot { display:inline-block; width:6px; height:6px; border-radius:50%; }
+.am-dot.warn { background:var(--orange); } .am-dot.ok { background:var(--yellow); }
+tfoot td { padding:14px 12px; border-top:2px solid var(--olive); font-family:var(--font-mono); font-size:11px; font-weight:600; text-transform:uppercase; }
+.dark .assoc-matrix { background:var(--surface-d); } .dark .am-cell.tertiary { background:var(--surface-raised-d); }
+```
+
+**变体:** 四级填充可调（primary/secondary/tertiary/empty），圆点状态可换 yellow（合规标杆）/orange（预警）。
+**用途:** 供应商×产线覆盖、能力矩阵、责任分工矩阵。超越 Nothing 灰度编码——色彩承载语义。
+
+---
+
+## 34. LOCATION MATRIX（区位矩阵）
+
+> 每格内嵌 4px mini bar，表格变微型仪表盘；mini bar 用 olive/earth/glacier 三色分档；best/worst 只染圆点不染背景。
+
+**HTML:**
+```html
+<table class="loc-matrix">
+  <thead><tr><th>城市</th><th>达成率</th><th>坐席数</th></tr></thead>
+  <tbody>
+    <tr class="active">
+      <td class="lm-city"><span class="lm-dot best"></span>合肥</td>
+      <td><div class="lm-cell"><span class="lm-val">95%</span><span class="lm-bar"><span class="lm-fill" style="width:95%"></span></span></div></td>
+      <td><div class="lm-cell"><span class="lm-val">186</span><span class="lm-bar"><span class="lm-fill" style="width:93%"></span></span></div></td>
+    </tr>
+    <tr>
+      <td class="lm-city">长沙</td>
+      <td><div class="lm-cell"><span class="lm-val">78%</span><span class="lm-bar"><span class="lm-fill glacier" style="width:78%"></span></span></div></td>
+    </tr>
+  </tbody>
+</table>
+```
+
+**CSS:**
+```css
+.loc-matrix { width:100%; border-collapse:collapse; background:var(--surface); }
+.loc-matrix th { font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-secondary); font-weight:400; padding:14px 12px; border-bottom:1px solid var(--border-strong); background:var(--surface-raised); text-align:center; }
+.loc-matrix th:first-child, .lm-city { text-align:left; }
+.lm-city { font-family:var(--font-display); font-weight:600; font-size:15px; padding:14px 12px; border-bottom:1px solid var(--border); white-space:nowrap; }
+.lm-dot { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:8px; vertical-align:middle; }
+.lm-dot.best { background:var(--olive); } .lm-dot.worst { background:var(--orange); }
+.lm-cell { display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 12px; }
+.lm-val { font-family:var(--font-mono); font-size:13px; font-weight:600; }
+.lm-bar { width:56px; height:4px; background:var(--border); position:relative; overflow:hidden; }
+.lm-fill { height:100%; background:var(--olive); }
+.lm-fill.earth { background:var(--earth); } .lm-fill.glacier { background:var(--glacier); }
+tr.active td { background:rgba(90,107,61,.03); }
+/* 分档阈值：olive ≥90% · earth 80-89% · glacier <80% */
+```
+
+**变体:** mini bar 三色分档阈值可调，best/worst 圆点可加 callout 标签。
+**用途:** 城市/职场×指标热力、区域产能对比、多维度微型仪表盘。
+
+---
+
+## 35. FACET BAR（分面条形）
+
+> rank 三级用自然色（olive/darkgray/earth）替代灰度；"最大差异维度"整组染 orange 作故事重点；gap-callout 左边框总结。
+
+**HTML:**
+```html
+<div class="facet-group worst">
+  <div class="facet-head">
+    <span class="facet-name">合规质检</span>
+    <span class="facet-tag">最大差距</span>
+  </div>
+  <div class="facet-bars">
+    <div class="fb-row"><span class="fb-name">毅航</span><div class="fb-track"><div class="fb-fill r1" style="width:92%"></div></div><span class="fb-val">92</span></div>
+    <div class="fb-row"><span class="fb-name">伽玛</span><div class="fb-track"><div class="fb-fill r2" style="width:81%"></div></div><span class="fb-val">81</span></div>
+    <div class="fb-row"><span class="fb-name">赛维斯</span><div class="fb-track"><div class="fb-fill r3" style="width:78%"></div></div><span class="fb-val">78</span></div>
+  </div>
+</div>
+<div class="gap-callout"><span class="gap-num">14</span><span class="gap-txt">分差距 · 毅航领先赛维斯</span></div>
+```
+
+**CSS:**
+```css
+.facet-group { padding:20px; background:var(--surface); border-left:2px solid var(--border); }
+.facet-group.worst { border-left-color:var(--orange); }
+.facet-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; }
+.facet-name { font-family:var(--font-display); font-style:italic; font-weight:600; font-size:15px; }
+.facet-group.worst .facet-name { color:var(--orange); }
+.facet-tag { font-family:var(--font-mono); font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--text-disabled); }
+.fb-row { display:grid; grid-template-columns:72px 1fr 40px; align-items:center; gap:12px; padding:6px 0; }
+.fb-name { font-size:13px; color:var(--text-secondary); }
+.fb-track { height:20px; background:var(--surface-raised); position:relative; }
+.fb-fill { height:100%; } .fb-fill.r1 { background:var(--olive); } .fb-fill.r2 { background:var(--darkgray); } .fb-fill.r3 { background:var(--earth); }
+.fb-val { font-family:var(--font-mono); font-size:13px; font-weight:600; text-align:right; }
+.gap-callout { display:flex; align-items:baseline; gap:12px; padding:16px 20px; margin-top:12px; border-left:2px solid var(--orange); background:var(--surface); }
+.gap-num { font-family:var(--font-display); font-style:italic; font-weight:600; font-size:32px; color:var(--orange); }
+.gap-txt { font-size:13px; color:var(--text-secondary); }
+```
+
+**变体:** rank 三级色可调，worst 维度可换 best 维度（olive 染色）。
+**用途:** 多维度供应商能力对比、替代雷达图、最大差异维度高亮。
+
+---
+
+## 36. SPARKLINE TABLE（趋势线表格）
+
+> 线中性 darkgray，仅末端圆点用四态色（olive 升/orange 降/rock 稳/yellow 新高）；spec 卡把设计参数做成展示物。
+
+**HTML:**
+```html
+<table class="spark-table">
+  <thead><tr><th>供应商</th><th>趋势</th><th>当前</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr>
+      <td class="st-name">毅航</td>
+      <td><svg class="spark" viewBox="0 0 160 32" preserveAspectRatio="none"><polyline points="0,20 16,18 32,14 48,16 64,12 80,10 96,8 112,9 128,6 144,4 160,2" fill="none" stroke="var(--darkgray)" stroke-width="1.5"/><circle cx="160" cy="2" r="2.5" fill="var(--olive)"/></svg></td>
+      <td class="st-val">4.2%</td>
+      <td><span class="st-dot up"></span></td>
+    </tr>
+  </tbody>
+</table>
+```
+
+**CSS:**
+```css
+.spark-table { width:100%; border-collapse:collapse; background:var(--surface); }
+.spark-table th { font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--text-secondary); font-weight:400; padding:14px 12px; border-bottom:1px solid var(--border-strong); background:var(--surface-raised); text-align:left; }
+.st-name { font-family:var(--font-display); font-weight:600; font-size:15px; padding:14px 12px; border-bottom:1px solid var(--border); }
+.spark { width:160px; height:32px; display:block; }
+.st-val { font-family:var(--font-mono); font-size:14px; font-weight:600; padding:14px 12px; border-bottom:1px solid var(--border); }
+.st-dot { display:inline-block; width:8px; height:8px; border-radius:50%; }
+.st-dot.up { background:var(--olive); } .st-dot.down { background:var(--orange); } .st-dot.flat { background:var(--rock); } .st-dot.peak { background:var(--yellow); }
+/* 线中性 #2C2C2C，仅末端点+数值用状态色。spec 卡自指：160×32 / stroke 1.5 / r2.5 */
+```
+
+**变体:** 末端四态色可调，sparkline 尺寸固定 160×32 / stroke 1.5px / endpoint r2.5。
+**用途:** 多供应商月度趋势、内联示波器、紧凑趋势对比。
+
+---
+
+## 37. SYMMETRY COMPARISON（对称/非对称对照）
+
+> 2fr/1fr 偏置（bad 小/good 大），禁 1fr/1fr；三手法命名（大小悬殊/权重不均/留白偏置）。
+
+**HTML:**
+```html
+<div class="sym-compare">
+  <div class="sc-bad">
+    <span class="sc-tag">对称 · 无重心</span>
+    <div class="sc-demo bad"><div></div><div></div></div>
+    <p class="sc-note">50/50 平分，没有东西重要</p>
+  </div>
+  <div class="sc-good">
+    <span class="sc-tag">非对称 · 有重心</span>
+    <div class="sc-demo good"><div class="big"></div><div class="sm"></div></div>
+    <p class="sc-note">大小悬殊 8:1，重心明确</p>
+  </div>
+</div>
+```
+
+**CSS:**
+```css
+.sym-compare { display:grid; grid-template-columns:2fr 1fr; gap:24px; }
+.sc-bad, .sc-good { padding:20px; background:var(--surface); border-top:2px solid var(--border); }
+.sc-good { border-top-color:var(--olive); }
+.sc-tag { font-family:var(--font-mono); font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-disabled); }
+.sc-demo { display:grid; gap:8px; margin:14px 0; }
+.sc-demo.bad { grid-template-columns:1fr 1fr; } /* 反例：对称 */
+.sc-demo.bad div { height:40px; background:var(--surface-raised); }
+.sc-demo.good { grid-template-columns:8fr 1fr; } /* 正例：大小悬殊 */
+.sc-demo.good .big { height:40px; background:var(--olive); }
+.sc-demo.good .sm { height:40px; background:var(--surface-raised); }
+.sc-note { font-size:12px; color:var(--text-secondary); }
+/* 注意：sc-demo.bad 故意用 1fr 1fr 展示反例，主布局 sym-compare 用 2fr 1fr 非对称 */
+```
+
+**变体:** 三手法可替换（大小悬殊 8:1 / 权重不均 2:1 / 留白偏置）。
+**用途:** 设计教学、对比展示、方法论说明。bad 反例可临时用 1fr 1fr，主布局必须非对称。
+
+---
+
+## 38. GAUGE DIAL（半圆仪表盘）
+
+> 半圆 olive 描边 + 刻度线 + 指针 + 圆心；深色模式下状态色微发光（text-shadow 0 0 8px）。
+
+**HTML:**
+```html
+<div class="gauge-dial">
+  <svg class="gauge-svg" viewBox="0 0 200 120">
+    <path d="M 20 110 A 90 90 0 0 1 180 110" fill="none" stroke="var(--surface-raised)" stroke-width="8"/>
+    <path d="M 20 110 A 90 90 0 0 1 167 51" fill="none" stroke="var(--olive)" stroke-width="8"/>
+    <line x1="20" y1="110" x2="28" y2="106" stroke="var(--text-disabled)" stroke-width="1"/>
+    <line x1="65" y1="40" x2="70" y2="48" stroke="var(--text-disabled)" stroke-width="1"/>
+    <line x1="100" y1="20" x2="100" y2="30" stroke="var(--text-disabled)" stroke-width="1"/>
+    <line x1="135" y1="40" x2="130" y2="48" stroke="var(--text-disabled)" stroke-width="1"/>
+    <line x1="180" y1="110" x2="172" y2="106" stroke="var(--text-disabled)" stroke-width="1"/>
+    <line x1="100" y1="110" x2="167" y2="51" stroke="var(--text-primary)" stroke-width="2"/>
+    <circle cx="100" cy="110" r="4" fill="var(--text-primary)"/>
+  </svg>
+  <div class="gauge-readout">
+    <span class="gauge-num">86<sup>%</sup></span>
+    <span class="gauge-label">达成率</span>
+  </div>
+</div>
+```
+
+**CSS:**
+```css
+.gauge-dial { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.gauge-svg { width:200px; height:120px; }
+.gauge-readout { text-align:center; }
+.gauge-num { font-family:var(--font-display); font-style:italic; font-weight:600; font-size:48px; color:var(--olive); line-height:1; }
+.gauge-num sup { font-size:16px; font-style:normal; }
+.gauge-label { display:block; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-disabled); margin-top:4px; }
+.dark .gauge-num { color:var(--olive); text-shadow:0 0 8px rgba(90,107,61,.5); }
+.dark .gauge-svg path[stroke="var(--olive)"] { filter:drop-shadow(0 0 4px rgba(90,107,61,.4)); }
+```
+
+**变体:** 刻度数可调（3/5/7 根），描边色可换 earth/glacier，深色发光强度可调。
+**用途:** 达成率、健康度、配额进度。深色模式下作 LED 替代——Playfair italic 数字 + olive 发光。
+
+---
+
+*33-38 高级形态组件族 · 2026-06-20 追加 · 提炼自 nian 8 件 nothing 对标超越件*
+*总 38 个组件族（32 基础 + 6 高级形态）· 亮色+深色双模式 · Nian Design System*
+*最后更新：2026-06-20*

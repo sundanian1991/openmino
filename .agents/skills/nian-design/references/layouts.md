@@ -9,8 +9,8 @@
 
 ### 版式锁定
 
-- 每个 `<section>` **必须**写 `data-layout="S01"` ~ `"S20"`
-- **不允许**临时发明 S01-S20 之外的骨架
+- 每个 `<section>` **必须**写 `data-layout="S01"` ~ `"S28"`
+- **不允许**临时发明 S01-S28 之外的骨架
 - 如需微调，在骨架内用 inline style 修改，不改骨架结构
 - 交付前运行 `node scripts/validate-nian-deck.mjs output.html`
 
@@ -19,7 +19,7 @@
 | 规则 | 约束 |
 |------|------|
 | 8:1 字号 | Hero 字号 ÷ 正文 ≥ 8:1 |
-| 字体四工 | Playfair = Hero / Inter = Body / JetBrains = Data / Doto = 装饰 |
+| 字体三工+装饰 | Playfair = Hero / Inter = Body / JetBrains = Data / Doto = 装饰（可选·限Hero/ghost） |
 | 一处打破 | 每页恰好 1 处不守规则的元素 |
 | 单一场景色 | 同一 section 只用一个场景色（Olive/Glacier/Rock） |
 | 禁止项 | 渐变/阴影/圆角>8px/emoji（深色模式可用，见 components.md 双模式色板） |

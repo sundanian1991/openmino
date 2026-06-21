@@ -27,7 +27,7 @@
 |------|------|
 | `template-index.json` | **85 个模板**统一元数据（nian-templates + templates-30 + scene + style-reference） |
 | `showcase-index.json` | **107 个 showcase**索引（R 精选 + H 素材池） |
-| `template-catalog.md` | 36 模板矩阵速查（场景×深度×气质） |
+| `template-catalog.md` | 4 套模板库总索引（速配/工程/场景/历史） |
 | `style-reference/_index.md` | 19 个风格参考按色调分组 |
 | `nian-templates/INDEX.md` | 30 个主力模板三维检索（气质×场景×组件） |
 

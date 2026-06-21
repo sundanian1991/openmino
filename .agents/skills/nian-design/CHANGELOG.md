@@ -17,3 +17,4 @@
 ---
 
 *最后更新：2026-06-11 — Peg 学习重构：Token CSS 化 + Guideline Card + SKILL.md 精简 + 模板优先工作流*
+| 2026-06-21 | Doto 禁令解除：SKILL.md 原"禁 Doto"改为"可选·装饰点阵"；模板库合并：templates-30 归入 nian-templates 体系；Guideline Card 嵌入 Step 2；components.md 色值同步 colors.css；layouts.md S20→S28 | 统一修复 |

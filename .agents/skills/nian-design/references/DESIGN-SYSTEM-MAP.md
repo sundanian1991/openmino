@@ -23,7 +23,7 @@
 │  → references/layouts.md                                    │
 ├─────────────────────────────────────────────────────────────┤
 │  Layer 2 · Components (组件)                                 │
-│  32 组件族（单文件，含亮/暗双模式色板）                       │
+│  38 组件族（单文件，含亮/暗双模式色板）                       │
 │  → references/components.md                                 │
 ├─────────────────────────────────────────────────────────────┤
 │  Layer 1 · Tokens (CSS 变量)                                 │
@@ -52,7 +52,7 @@
 
 ### Layer 2 · Components
 
-**是什么**：可独立复用的视觉单元，共 32 组件族
+**是什么**：可独立复用的视觉单元，共 38 组件族
 **包含**（见 `components.md` 单文件，含亮/暗双模式色板）：
 - 01-03 基础：Cards / Buttons / Inputs
 - 04-05 数据行：Lists / Tables
@@ -62,6 +62,7 @@
 - 15-17 结构：State / Flow Pipeline / Do-Don't
 - 18-26 布局型：Tab / Accordion / 对比表 / Detail / Checklist / 数字标题 / 三列网格 / Flip / 堆叠图卡
 - 27-32 扩展：Gantt / Pyramid Stack / Radial Data / Quarter Bar / Flow Diagram Tree / Tree Architecture
+- 33-38 矩阵与对照：Association Matrix / Location Matrix / Facet Bar / Sparkline Table / Symmetry Comparison / Gauge Dial
 
 **施工方职责**：按决策卡的 `components` 字段调组件，**不发明新组件**。
 
@@ -164,7 +165,7 @@ nian-design/
 │   ├── philosophy.md                # 设计哲学全文
 │   ├── CRAFT-RULES.md               # 5 条硬规则（Step 4 必读）
 │   ├── VISUAL-STREAMS.md            # 9 种气质（Step 2 选气质）
-│   ├── components.md                # 32 组件族（Step 3 选组件，单文件含双模式色板）
+│   ├── components.md                # 38 组件族（Step 3 选组件，单文件含双模式色板）
 │   ├── layouts.md                   # S01-S28 骨架（Step 2 选骨架）
 │   ├── checklist.md                 # 详细自检清单 P0-P4（CRAFT-RULES 的细化补充）
 │   ├── tokens.md                    # token 设计意图（字体/色板选择理由）
@@ -188,4 +189,4 @@ nian-design/
 
 ---
 
-*最后更新：2026-06-19 — 对齐 components.md 32 族 / layouts.md S01-S28，修正元数据漂移*
+*最后更新：2026-06-21 — Layer 2 描述补齐 33-38 族（修正 06-20 仅改 footer 未改正文的假对齐）*

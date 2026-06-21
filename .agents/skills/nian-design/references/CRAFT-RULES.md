@@ -43,30 +43,34 @@
 
 ### 规则
 
-每屏（每个 `<section>`）字体的**预算**：
+每屏（每个 `<section>`）字体的**预算**——管的是**层级数**，不是 px 值数：
 
-- **字号 ≤ 3 种**（一个大、一个小、一个标签）
-- **字重 ≤ 2 种**（Regular + 一个，通常 Light 或 Medium）
-- **字体家族 ≤ 2 种**（Playfair + Inter；JetBrains Mono 仅用于数据；Doto 偶用于装饰）
+- **字号层级 ≤ 3 层**（display 大标题 / body 正文 / meta 标签），层内 px 可微调（如 display 层 hero 96px + section 标题 24px 同属一层），靠 spacing+color 区分层级，不靠堆 px 值
+- **字重 ≤ 2 种**（Regular 400 + 一个，通常 600 Semibold）
+- **字体家族 ≤ 2 种**（Playfair serif + Inter/Mono sans；JetBrains Mono 归 sans 体系用于数据；**禁 Doto**，装饰数字用 Playfair italic 替代）
+
+> **为什么不是"字号 ≤ 3 个 px 值"**：nothing 落地页用 3 size，但它的设计系统页用 7 size——rich page 不可能只 3 档 px。真正的纪律是**3 层级**（display/body/meta），层内微调自由。看 nothing 的"号"：层级靠字重+颜色+间距拉开，不是靠堆字号数。把"≤3 个 px"当硬门禁会导致规则 100% 被违反、自检章变橡皮图章。
 
 ### 自检方法
 
-数一数这个 section 用了多少种字号、字重、字体：
+数一数这个 section 用了几个**层级**、几种字重、几种字体：
 
 ```
-.section h1: Playfair 56px Light
-.section h2: Playfair 32px Light
-.section p:  Inter 15px Regular
-.section .label: JetBrains 10px Medium
+.section h1:     Playfair 56px 400    ← display 层
+.section h2:     Playfair 32px 400    ← display 层（同层，px 微调）
+.section p:      Inter 15px 400       ← body 层
+.section .label: JetBrains 10px 600   ← meta 层
 ```
 
-→ 字号 3 种（56/32/15/10 → 实际 4 种 = 超出预算）
+→ 层级 3 层（display/body/meta）✓ / 字重 2 种（400+600）✓ / 字体 2 族（Playfair + Inter/Mono）✓ = **预算内**
+
+若再多一档 700 字重、或塞入 Doto → 字重超 2 或字体超 2 = **超预算**
 
 ### 不通过的修法
 
-- 多余字号 → 改用 spacing 或 color 区分
-- 多余字重 → 合并到 Regular + Light
-- 多余字体 → Doto 仅作 1 处装饰，多余删
+- 层级混乱 → 归并到 display/body/meta 三层，层内 px 差用 spacing/color 拉开
+- 多余字重 → 合并到 400 + 600
+- 多余字体 → 删 Doto（装饰数字改 Playfair italic），多余 sans 合并到 Inter
 
 ---
 
@@ -103,7 +107,7 @@
 每屏**恰好 1 处**不守规则。多了叫失控，少了叫平庸。
 
 允许的"打破"形态：
-- Ghost 大字（Playfair italic 或 Doto，opacity 0.04-0.10）
+- Ghost 大字（Playfair italic，opacity 0.03-0.06，推荐 0.045；禁 Doto）
 - 出血图片（1 张，跨过 section 边界）
 - 异色强调（--yellow 或 --orange 一处使用）
 - 异形元素（圆/斜/异尺寸）

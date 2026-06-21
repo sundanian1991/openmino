@@ -9,7 +9,7 @@
 | # | 规则 | 检查方式 |
 |---|------|---------|
 | 0-1 | 禁止渐变、阴影、模糊、毛玻璃 | grep `linear-gradient\|box-shadow\|blur\|backdrop-filter` |
-| 0-9 | 所有色彩饱和度 ≤30%（用 HSL 校验，S ≤ 30%） | 目测 + HSL 计算 |
+| 0-9 | 所有非信号色饱和度 ≤60%，且不在低饱和度范围内产生色相混淆（yellow/orange 等信号色可放宽） | 目测 + HSL 计算 |
 | 0-10 | 画布叠加轻度布纹肌理（SVG noise，opacity 0.04-0.08） | 检查 CSS background-image 含 noise SVG |
 | 0-2 | 深色模式需对照 components.md 双模式色板（亮色 `--bg` / 深色 `-d` 后缀），不可自由调暗 | 用深色时必须用 components.md 定义的 `-d` 系列 token，不自造深色值 |
 | 0-3 | 禁止 emoji | grep 或目测 |

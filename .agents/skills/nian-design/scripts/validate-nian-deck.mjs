@@ -183,6 +183,17 @@ const allowedHex = new Set([
   'a0a0a0',  // --text-disabled
   // Common
   '000', '000000'
+
+  // colors.css 实际值（2026-06-21 同步）
+  '5a6b3d',  // --olive (new)
+  'a08060',  // --earth (new)
+  'd4b85a',  // --yellow (new)
+  'c97a3d',  // --orange (new)
+  'f5f2ec',  // --bg (new)
+  'faf8f3',  // --surface (new)
+  'f0ede5',  // --surface-raised (new)
+  'e5e2dc',  // --border (new)
+  'd4d0c8',  // --border-strong (new)
 ]);
 let hardcodedHex = 0;
 while ((match = hexRegex.exec(html)) !== null) {
