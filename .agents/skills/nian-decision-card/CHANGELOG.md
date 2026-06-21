@@ -18,7 +18,7 @@
 ### 修正（nian-design 侧 14 处元数据漂移）
 
 - SKILL.md 6 处：26→32，S01-S29→S01-S28
-- DESIGN-SYSTEM-MAP.md 5 处：同上 + 补 27-32 组件清单
+- DESIGN-SYSTEM-MAP.md 5 处：同上 + 补 27-38 组件清单
 - checklist.md 2 处：S01-S21→S01-S28，S01-S12→S01-S28
 - showcase-index.md 1 处：S01-S21→S01-S28
 - templates-v2/ 2 文件 5 处：26→32

@@ -66,7 +66,7 @@
 | 流程/路径 | 16 Flow Pipeline |
 | 元数据/导航 | 06 Navigation / 07 Tags |
 
-**原则**：组件从 nian-design 32族选，不发明。每个组件标注 purpose（用在哪）。
+**原则**：组件从 nian-design 38族选，不发明。每个组件标注 purpose（用在哪）。
 
 ### Hero + 打破（决策C之二、三）
 

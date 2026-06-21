@@ -15,7 +15,7 @@
   4. structuralStream ∈ {S1-黑条书签, S2-长文导航, null}
   5. layoutSequence 非空，每项 layout ∈ layouts.md S01-S28（动态解析）
   6. heroType 与 visualStream 映射一致（见 schema 气质→Hero 表）
-  7. components 非空，每项 id ∈ components.md 32 族（含 12a/12b/12c/12d 子编号，动态解析）
+  7. components 非空，每项 id ∈ components.md 38 族（含 12a/12b/12c/12d 子编号，动态解析）
   8. breakPoint 恰好 1 处，method ∈ {ghost水印, 超大数字, accent色, 异形元素}
   9. palette.primary ∈ {darkgray, olive, earth}
  10. palette.accent ∈ {yellow, orange}
@@ -70,7 +70,7 @@ def parse_layouts() -> set[str]:
 
 
 def parse_components() -> set[str]:
-    """从 components.md 解析组件族编号（01-32 + 12a/12b/12c/12d）。"""
+    """从 components.md 解析组件族编号（01-38 + 12a/12b/12c/12d）。"""
     src = (NIAN_DESIGN_REF / "components.md").read_text(encoding="utf-8")
     ids = set(re.findall(r"^## (\d{2})\. ", src, re.MULTILINE))
     subs = set(re.findall(r"^### (\d{2}[a-d])\. ", src, re.MULTILINE))
@@ -153,7 +153,7 @@ def validate(card: dict, layouts: set[str], components: set[str]) -> list[Issue]
                                     f"{cid!r} 无法解析编号"))
             elif m.group(1) not in components:
                 issues.append(Issue("ERROR", f"components[{i}].id",
-                                    f"编号 {m.group(1)!r} 不在 components.md 32 族"))
+                                    f"编号 {m.group(1)!r} 不在 components.md 38 族"))
 
     # 8. breakPoint 恰好 1 处
     bp = card.get("breakPoint")
@@ -276,6 +276,10 @@ def _scan_metadata_drift(text: str, comp_count: int, max_layout: str) -> list[Is
         line_start = text.rfind("\n", 0, m.start()) + 1
         line = text[line_start:text.find("\n", m.end())]
         if "Nothing Design" in line or "原始 26" in line:
+            continue
+        # 跳过字体族语境（"字体 2 族""字重 2 族"指 typeface，非组件族）
+        pre = text[max(0, m.start() - 6):m.start()]
+        if re.search(r"字体|字重|字体家族\s*≤?\s*", pre):
             continue
         n = int(m.group(1))
         if n != comp_count:

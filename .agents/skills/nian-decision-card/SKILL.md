@@ -40,7 +40,7 @@ description: |
 
 | 决策项 | 为什么上游给不了 | 我怎么定 |
 |---|---|---|
-| **组件清单** | 策展给视觉原则、viz 给图表，都不选 UI 组件 | 从 nian-design 32 组件族按气质+骨架选 |
+| **组件清单** | 策展给视觉原则、viz 给图表，都不选 UI 组件 | 从 nian-design 38 组件族按气质+骨架选 |
 | **Hero 类型** | 上游没有"Hero"概念 | 由气质决定（见气质→Hero 映射表） |
 | **打破位置** | 策展隐含节奏但不点明位置 | 基于骨架+气质，指定"第 N 屏何处打破" |
 
@@ -88,7 +88,7 @@ description: |
 **决策 C · 选组件 + Hero + 打破**
 
 - **Hero 类型**：由决策 A 的气质直接决定（见下表）
-- **组件清单**：按骨架需要从 components.md 32 族选
+- **组件清单**：按骨架需要从 components.md 38 族选
 - **打破位置**：指定"第 N 屏的某处"用 ghost 水印 / 超大数字 / accent 色
 
 **气质 → Hero 映射表**（来自 VISUAL-STREAMS.md，不自行发明）：
@@ -130,7 +130,7 @@ layoutSequence:                    # 每个 section 的骨架序列
 
 # ── 组件 + Hero + 打破（决策C）──
 heroType: V4-Statement             # 由气质决定，见映射表
-components:                        # 从 components.md 32族选，每项含用途
+components:                        # 从 components.md 38族选，每项含用途
   - { id: "03 TABLES", purpose: 供应商业绩排名 }
   - { id: "16 FLOW PIPELINE", purpose: 准入流程 }
   - { id: "12a Bar Chart", purpose: 月度趋势 }
@@ -190,7 +190,7 @@ nian-lenses 的 supplier-alliance-decision-trace.json 可作为本技能 schema 
 | `references/intake-data.md` | 如何吃 viz-data-storytelling + viz-design 产物 |
 | `../nian-design/references/VISUAL-STREAMS.md` | 9种气质定义（选气质必读） |
 | `../nian-design/references/layouts.md` | S01-S28 骨架（选骨架必读） |
-| `../nian-design/references/components.md` | 32 组件族（选组件必读） |
+| `../nian-design/references/components.md` | 38 组件族（选组件必读） |
 | `references/failure-modes.md` | 失败模式库（施工踩坑规则化） |
 | `references/contract-reconciliation.md` | 契约对账（与 nian-design 双向对齐记录） |
 | `scripts/validate-decision-card.py` | 硬校验脚本（产出必跑） |

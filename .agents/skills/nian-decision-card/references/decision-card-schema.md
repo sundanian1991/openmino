@@ -13,7 +13,7 @@
 | `structuralStream` | enum/null | | 结构型气质，叠加用，null 则不用 |
 | `layoutSequence` | array | ✓ | 每个 section 的骨架序列 |
 | `heroType` | enum | ✓ | Hero 类型，由气质决定 |
-| `components` | array | ✓ | 从32组件族选 |
+| `components` | array | ✓ | 从38组件族选 |
 | `breakPoint` | object | ✓ | 打破位置，恰好1处 |
 | `palette` | object | ✓ | 配色角色 |
 | `dataCharts` | array/null | | 数据分支才填 |
@@ -85,7 +85,7 @@ layoutSequence:
 
 ## `components` 结构
 
-数组，每项从 components.md 32族选：
+数组，每项从 components.md 38族选：
 
 ```yaml
 components:
@@ -93,7 +93,7 @@ components:
     purpose: 供应商业绩排名     # 这个组件用在哪
 ```
 
-32 族速查（实际枚举以 `components.md` 为准，校验脚本动态解析）：01 Cards / 02 Buttons / 03 Inputs / 04 Lists / 05 Tables / 06 Navigation / 07 Tags / 08 Segmented / 09 Date / 10 Toggles / 11 Progress / 12 Mini Charts（含 12a Bar / 12b Sparkline / 12c Gauge / 12d Dot Grid）/ 13 Widgets / 14 Overlays / 15 State / 16 Flow Pipeline / 17 Do-Don't / 18 Tab / 19 Accordion / 20 Asymmetric Comparison / 21 Detail / 22 Checklist / 23 Decorative Number Header / 24 Three-Column Numbered Grid / 25 Flip Card / 26 Stacked Image Cards / 27 Gantt / 28 Pyramid Stack / 29 Radial Data / 30 Quarter Bar / 31 Flow Diagram Tree / 32 Tree Architecture
+38 族速查（实际枚举以 `components.md` 为准，校验脚本动态解析）：01 Cards / 02 Buttons / 03 Inputs / 04 Lists / 05 Tables / 06 Navigation / 07 Tags / 08 Segmented / 09 Date / 10 Toggles / 11 Progress / 12 Mini Charts（含 12a Bar / 12b Sparkline / 12c Gauge / 12d Dot Grid）/ 13 Widgets / 14 Overlays / 15 State / 16 Flow Pipeline / 17 Do-Don't / 18 Tab / 19 Accordion / 20 Asymmetric Comparison / 21 Detail / 22 Checklist / 23 Decorative Number Header / 24 Three-Column Numbered Grid / 25 Flip Card / 26 Stacked Image Cards / 27 Gantt / 28 Pyramid Stack / 29 Radial Data / 30 Quarter Bar / 31 Flow Diagram Tree / 32 Tree Architecture / 33 Association Matrix / 34 Location Matrix / 35 Facet Bar / 36 Sparkline Table / 37 Symmetry Comparison / 38 Gauge Dial
 
 ---
 
