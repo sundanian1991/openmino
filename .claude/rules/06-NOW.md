@@ -19,6 +19,35 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
+## Session Log 规则
+
+长时间任务结束前或 context window 即将压缩时，必须写 Session Log 到 `memory/sessions/YYYY-MM-DD-<主题>.md`。
+
+格式：
+```markdown
+# YYYY-MM-DD <主题>
+## goal
+这轮要做什么
+## decisions
+做了哪些决策，为什么
+## alternatives
+否决了哪些选项
+## artifacts
+改了哪些文件、跑了什么命令
+## blockers
+什么坏了
+## next actions
+- [x] 已完成
+- [ ] 确定的下一步
+- [ ] 推断的（标注）
+## open questions
+未解决的问题
+```
+
+**不写 transcript dump**。只记脉络：发生了什么、为什么、还剩什么。
+
+---
+
 ## 最近事件
 
 详见 `memory/events/` | 任务地图和定期提醒见 `memory/context/`
@@ -29,4 +58,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-06-18 — 规则体系再精简 + 活跃项目更新*
+*最后更新：2026-06-25 — 新增 Session Log 规则（Agent Memory 日记法）*

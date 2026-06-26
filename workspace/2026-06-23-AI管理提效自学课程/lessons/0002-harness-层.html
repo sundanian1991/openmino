@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第 2 课 · Harness 层：你已经在做的，升级为方法论</title>
+<link rel="stylesheet" href="../assets/shared.css">
+</head>
+<body>
+
+<div class="lesson-meta">第 2 课 · Harness 层（空间四层之第 3 层）</div>
+<h1>Harness 层：你已经在做的，升级为方法论</h1>
+<p class="subtitle">从 Tool Call Repair Layer 出发，看清整个 harness 的九个构件，以及你在哪、缺哪。</p>
+
+<div class="byline">
+课程：AI 管理与提效 · 第 2/7 层　|　预计 15 分钟　|　<a href="../MISSION.md">使命</a> · <a href="../RESOURCES.md">资源</a> · <a href="0001-智力密度标尺.html">← 上一课</a>
+</div>
+
+<h2>从一个你已解决的痛点开始</h2>
+
+<p>你 06-22 写过一个修复器，解决了一个具体问题：开源模型（DeepSeek / Qwen / GLM）调用工具时反复失败。你的 <code>tool-call-repair.md</code> 开头有一句关键判断——</p>
+
+<blockquote>
+开源模型工具调用失败 90% 可归因于 4 类可修复模式，<strong>而非模型能力问题</strong>。
+</blockquote>
+
+<p>这句话之所以重要，是因为它<strong>把"模型笨"的诊断，重定向到了"harness 没接住"</strong>。这正是整个 Harness 层的核心心智模型，也是前沿正名运动的方向。</p>
+
+<div class="principle">
+  <span class="label">核心命题</span>
+  <strong>Model + Harness = Agent。</strong> 模型负责提议，harness 负责执行、校验、修复。多数"模型不行"其实是"harness 没搭好"。Anthropic 正推动用 <em>harness</em> 替代被滥用的 <em>agent</em> 一词。
+</div>
+
+<h2>Harness 的九个构件（前沿共识）</h2>
+
+<p>综合 Anthropic 论文、Augment Code 指南、Claude Code 模式提炼，一个完整的 harness 有九个职能构件。我用你在 <code>lib/tool-input-repair.ts</code> 里已有的代码，<strong>逐个标注你已经覆盖了哪几个</strong>：</p>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>构件</th><th>职能</th><th>你的现状</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>工具设计</td>
+      <td>工具的颗粒度、返回结构</td>
+      <td style="color:var(--ink-faint);">部分（AGENTS.md 工具配置表）</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>工具调用修复</td>
+      <td>修复格式噪声，避免无谓重试</td>
+      <td style="color:var(--win);"><strong>✓ 完整（Repair Layer）</strong></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>质量门</td>
+      <td>硬规则校验，拦截明显错误</td>
+      <td style="color:var(--win);"><strong>✓ Git/可视化规范</strong></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>PEV 校验回路</td>
+      <td>Propose→Execute→Verify 循环</td>
+      <td style="color:var(--ink-faint);">部分（主代理决策）</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>短期记忆</td>
+      <td>当前任务的上下文状态</td>
+      <td style="color:var(--ink-faint);">靠 context window</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>长期记忆</td>
+      <td>跨会话的知识沉淀</td>
+      <td style="color:var(--win);"><strong>✓ memory/ 三级</strong></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>权限护栏</td>
+      <td>危险操作确认</td>
+      <td style="color:var(--win);"><strong>✓ subagent 原则</strong></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>成本约束</td>
+      <td>token 预算控制</td>
+      <td style="color:var(--ink-faint);">靠直觉（第 7 层课会深讲）</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>反馈结构化</td>
+      <td>工具返回结构化结果，供下一轮判断</td>
+      <td style="color:var(--ink-faint);">部分</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>数一下：你<strong>已经完整覆盖 4 个（第 2/3/6/7）</strong>，部分覆盖 3 个。剩下需要补强的主要是 <strong>第 4 个 PEV 校验回路</strong> 和 <strong>第 9 个反馈结构化</strong>。</p>
+
+<div class="win">
+  <span class="label">这不是新手课</span>
+  你不是在学一个新概念——你是在<strong>给已有实践命名、归位、找缺口</strong>。你 06-22 写下的那句"修复而非拒绝，对可恢复噪声保持宽容"，就是 harness 工程的设计哲学原话。前沿工业界正在追上你半年前的判断。
+</div>
+
+<h2>PEV Loop：harness 的动态骨架</h2>
+
+<p>九个构件里，最值得你现在补的是 <strong>PEV Loop</strong>（Propose → Execute → Verify）。它是把九个静态构件串成动态系统的那根线：</p>
+
+<table>
+  <thead><tr><th>阶段</th><th>谁做</th><th>你的对应</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>P</strong>ropose（提议）</td>
+      <td>模型</td>
+      <td>模型输出工具调用 / 方案</td>
+    </tr>
+    <tr>
+      <td><strong>E</strong>xecute（执行）</td>
+      <td>harness</td>
+      <td>你的 <code>repairToolInput</code> 在这步修复后执行</td>
+    </tr>
+    <tr>
+      <td><strong>V</strong>erify（校验）</td>
+      <td>harness（独立于模型）</td>
+      <td><strong style="color:var(--accent);">这是你当前的缺口</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>关键洞察：<strong>校验必须独立于提议的模型</strong>。如果让同一个模型既提议又校验，它会倾向于认为自己对——这是 harness 设计的常见反模式。</p>
+
+<p>你的 Repair Layer 是 <strong>E（执行）阶段的杰出实践</strong>。但 V（校验）阶段，你目前主要靠"主代理决策"的软规则，缺一个<strong>结构化的、独立于模型的校验层</strong>。</p>
+
+<h2>用智力密度重审你的 Repair Layer</h2>
+
+<p>现在用第 1 课的标尺，量一下你的 Repair Layer 到底值不值：</p>
+
+<table>
+  <thead><tr><th>维度</th><th>没有 Repair Layer 时</th><th>有了之后</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>token 消耗</td>
+      <td>失败 → 重试 → 再失败 → 再重试<br><strong>低密度多 token（最差象限）</strong></td>
+      <td>失败 → 修复 → 成功<br><strong>高密度（该花的钱花到位）</strong></td>
+    </tr>
+    <tr>
+      <td>失败模式</td>
+      <td>4 类格式噪声反复触发</td>
+      <td>结构性错误在入口处归零</td>
+    </tr>
+    <tr>
+      <td>ROI</td>
+      <td>每次重试 = 整段 context 重新过模型</td>
+      <td>一次轻量修复，省下整次模型重跑</td>
+    </td>
+  </tbody>
+</table>
+
+<div class="principle">
+  <span class="label">用标尺得出的结论</span>
+  你的 Repair Layer 不是"锦上添花"，而是<strong>把"低密度多 token"陷阱直接堵死</strong>的高 ROI 构件。这是 harness 层存在的根本理由——它是 token 经济的第一道防线。
+</div>
+
+<h2>你的代码里藏着的三个设计原则</h2>
+
+<p>回读你的 <code>lib/tool-input-repair.ts</code>，里面有三个选择，每一个都暗合前沿共识：</p>
+
+<h3>① 宽容而非严格（第 81 行）</h3>
+<p>你在 schema 校验<strong>之前</strong>修复，而不是校验失败后拒绝。这对应前沿的 <em>"model proposes — harness executes"</em> 原则：harness 的职责是让模型的提议能落地，而不是当裁判判它错。</p>
+
+<h3>② 有 Schema 时更精准（第 82 行）</h3>
+<p>你传 schema 时只修复已知类型的字段，无 schema 时全局扫描。这暗合 <em>progressive disclosure</em>——给 harness 的信息越完整，它能帮的越精准。</p>
+
+<h3>③ 执行顺序有讲究（第 83 行）</h3>
+<p>你的 <code>REPAIRS</code> 数组按固定顺序 reduce，JSON 字符串解析在裸字符串包装之前。这是<strong>修复器的依赖管理</strong>——先还原结构，再补形状，避免后序修复破坏前序结果。</p>
+
+<div class="self-check">
+  <span class="label">本课的标尺（请记住）</span>
+  <p class="question">问自己：<strong>这个失败是模型笨，还是我的 harness 没接住？90% 是后者。</strong></p>
+</div>
+
+<h2>小测一下</h2>
+
+<div class="quiz">
+  <div class="quiz-label">检查理解</div>
+  <p class="question-text">下面哪个做法，违反了 PEV Loop 的核心原则？</p>
+  <ul class="options" id="q1">
+    <li data-correct="false">让主代理决策、子代理执行</li>
+    <li data-correct="false">在 schema 校验前修复工具调用参数</li>
+    <li data-correct="true">让同一个模型既提议方案又校验自己</li>
+    <li data-correct="false">工具返回结构化结果供下一轮判断</li>
+  </ul>
+  <div class="feedback incorrect" id="q1-fb-wrong">
+    再想想。提示：PEV 的哪个阶段<strong>必须独立于提议者</strong>？
+  </div>
+  <div class="feedback correct" id="q1-fb-right">
+    ✓ 对。Verify（校验）阶段必须独立于 Propose（提议）的模型。让模型自己校验自己，它会倾向认为自己对——这是 PEV 的核心约束，也是你当前 harness 的主要缺口。
+  </div>
+</div>
+
+<h2>练习：给你的 harness 做一次九构件体检</h2>
+
+<div class="exercise">
+  <span class="label">本课练习 · 10 分钟</span>
+  <p>拿出上面那张九构件表，对着你实际的 AI 协作流程，回答三个问题：</p>
+  <ol>
+    <li><strong>哪个构件你已完整覆盖？</strong>（如 Repair Layer、memory 三级）——记下来，这是你的系统性优势。</li>
+    <li><strong>哪个构件你部分覆盖、但靠"主代理决策"软规则撑着？</strong>（如 PEV 的 V 阶段）——这是最该结构化的下一个靶点。</li>
+    <li><strong>哪个构件你完全没做？</strong>（如成本约束、反馈结构化）——这是后续课程（Cost 层、Loop 层）要补的。</li>
+  </ol>
+  <p style="color:var(--ink-soft);font-size:0.92rem;margin-top:0.8rem;">目的不是打分，是<strong>把"我的 harness 哪里强、哪里弱"从模糊感觉变成明确清单</strong>。这份清单会成为第 6 课（Eval 层）的评估对象。</p>
+</div>
+
+<footer>
+  <div class="source">
+    <strong>推荐一手源（建议课后读）：</strong><br>
+    <a href="https://www.augmentcode.com/guides/harness-engineering-ai-coding-agents" target="_blank">Harness Engineering for AI Coding Agents — Augment Code</a> —— 重点读 "PEV Loop" 和 "Quality Gates" 两节。这是把你的 Repair Layer 往上下游延伸的实操指南。<br><br>
+    <a href="https://www.epsilla.com/blogs/2026-04-18-deep-dive-12-reusable-agentic-harness-design-patte" target="_blank">12 Reusable Agentic Harness Design Patterns — Epsilla</a> —— 从 Claude Code 提炼的 12 种模式，可对照自己的 harness 找借鉴。
+  </div>
+  <div class="next">
+    <strong>下一课：</strong>第 3 课 · Context 层 —— "Context Window as RAM"。从你成熟的 memory/ 三级体系出发，补上"主动驱逐低价值信息"的前沿实践。<br>
+    <span style="color:var(--ink-faint);">（课程结构详见 <a href="../COURSE-SKELETON.md">COURSE-SKELETON.md</a>）</span>
+  </div>
+  <div class="ask">
+    <strong>有疑问？问你的 agent。</strong><br>
+    这节课哪里没说透？比如：PEV 的 V 阶段具体怎么搭？你的某个具体失败案例该归到哪个构件？九构件里哪个对你最该优先补？<strong>把问题甩过来</strong>，agent 是你的老师，随时接。
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.quiz').forEach(quiz => {
+  const options = quiz.querySelectorAll('.options li');
+  const fbRight = quiz.querySelector('.feedback.correct');
+  const fbWrong = quiz.querySelector('.feedback.incorrect');
+  options.forEach(opt => {
+    opt.addEventListener('click', () => {
+      options.forEach(o => o.classList.remove('correct', 'incorrect'));
+      if (opt.dataset.correct === 'true') {
+        opt.classList.add('correct');
+        fbRight.classList.add('shown');
+        fbWrong.classList.remove('shown');
+      } else {
+        opt.classList.add('incorrect');
+        fbWrong.classList.add('shown');
+        fbRight.classList.remove('shown');
+      }
+    });
+  });
+});
+</script>
+
+</body>
+</html>

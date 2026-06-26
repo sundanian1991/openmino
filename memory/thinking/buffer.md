@@ -210,3 +210,13 @@
 - 2026-06-09 05:49 | [原话] "你自己仔细看看，看怎么处理"——拒绝替AI做分类决策，要求AI自行判断
 - 2026-06-09 07:30 | [决策] 批准最终清理方案：删除 mino-design-system（空壳文件）、nian-6skins v1 归档、nian-6skins-v2 和 nian-skeleton-10 保留为活跃资产
 - 2026-06-09 07:30 | [偏好] 通过"可以"两字批准执行，确认后不再追问细节——对AI判断力有基本信任，不微管理
+
+## 2026-06-22 — Tool Call Repair Layer 落地
+
+- 2026-06-22 17:52 | [决策] 采纳 Ahmad Awais 的 Tool Input Repair Layer 方案，认定"开源模型工具调用失败 90% 是 Harness 层 Schema 太严格，而非模型能力问题"
+- 2026-06-22 17:52 | [具体值] 4 类高频错误：可选字段传 null / 数组序列化为 JSON 字符串 / {} 占位 / 裸字符串替代数组；第 5 类 Markdown 链接路径为模型 RL 阶段条件分布泄露
+- 2026-06-22 17:52 | [决策] 代码落地在 `lib/tool-input-repair.ts`（30-100 行级修复层），参考文档在 `.Codex/reference/tool-call-repair.md`（含 System Prompt 注入片段）
+- 2026-06-22 17:52 | [偏好] 使用方式分三层：①写 Skill 时在 SKILL.md 注入 5 条格式约束；②派发子代理时注入 System Prompt；③自己写工具代码时 import repairToolInput/withRepair
+- 2026-06-22 17:52 | [原话] "你记得要这么去用。看看怎么记录" — 要求将此方法论固化为长期记忆
+- 2026-06-22 18:25 | [技能bug·已修 2026-06-23] nian-decision-card 校验脚本 validate-decision-card.py 跑不通:找 components.md 但已改名 COMPONENTS-MASTER.md,编号从"01-38"迁移到"A01-H11"(63族)。已修:①脚本文件名+正则改 `[A-H]\d{2} ·` ②schema 同步63族清单+palette枚举(darkgray/olive→forest/slate/steel/charcoal, yellow/orange→signal-orange/signal-yellow) ③24个variants补齐28 token(--font-decorative+14色+--accent别名)。校验脚本现 PASS。
+- 2026-06-23 21:40 | [技能重构·三轨制根治] nian-design token 三轨制(v1 tokens.json / v2 token-root.css / 变体杂交)根治完成:①tokens.json 归档到 _archive/legacy-tokens/(0引用孤儿) ②24个变体中性灰阶+语义色 v1 hex → var(--color-*) 指向v2(消除全部hex硬编码警告) ③8个 base 底座 :root 整段升级到v2 token-root体系(--olive→--color-forest 等) ④validator 组件计数逻辑修复:从宽泛关键词匹配改为BEM block层容器去重(sec2/sec5/sec6 从17/36/17→1/1/1),连带修了规则5数据段计数的同类bug。全量回归:测试HTML PASS(14项/1真实警告),变体/底座 token全过、hex清零。新增2个可复用脚本:patch-variant-tokens.py(补token/迁移灰阶 双模式)、migrate-base-to-v2.py(底座升级)。
