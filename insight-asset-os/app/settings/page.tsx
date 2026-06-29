@@ -153,8 +153,8 @@ export default function SettingsPage() {
           <h2 className="text-sm font-medium">本地 Embedding 引擎</h2>
         </div>
         <p className="text-xs text-fg-secondary leading-relaxed">
-          使用 transformers.js + bge-small-zh-v1.5 模型（~100MB，首次自动下载），在本地为文本生成语义向量，用于自动聚类和语义搜索。
-          无需 API Key，纯本地计算。
+          使用 node-llama-cpp + Qwen3-Embedding-0.6B GGUF 模型（~610MB），在本地为文本生成语义向量，用于自动聚类和语义搜索。
+          模型已随 linkly-ai 预装，无需联网下载，纯本地计算。
         </p>
         <div className="flex items-center gap-3 pt-1">
           <button

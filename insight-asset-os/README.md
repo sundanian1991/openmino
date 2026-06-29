@@ -14,7 +14,7 @@
 | 写作输出 | `/output` | 主题 → 风格 → AI 骨架生成 |
 | 设置 | `/settings` | LLM / Vault / Kernel 配置 |
 
-**语义搜索与智能聚类**：设置页可运行「智能聚类」（本地 transformers.js + bge-small-zh-v1.5 模型，首次下载 ~100MB），自动为资产生成 embedding → K-means 聚类发现主题分组。资产库搜索支持关键词 / 语义两种模式。
+**语义搜索与智能聚类**：设置页可运行「智能聚类」（node-llama-cpp + Qwen3-Embedding-0.6B GGUF，模型随 linkly-ai 预装，无需联网下载），自动为资产生成 embedding → K-means 聚类发现主题分组。资产库搜索支持关键词 / 语义两种模式。
 
 **三步业务循环**：采集 → 整理 → 输出。Insight Kernel 自动注入所有 LLM 调用，输出保持个人判断风格。
 
@@ -45,4 +45,4 @@ npm run build    # 生产构建
 
 ## 技术栈
 
-Next.js 15 · React 19 · TypeScript · Tailwind CSS · `node:sqlite` · OpenAI 兼容 LLM
+Next.js 15 · React 19 · TypeScript · Tailwind CSS · better-sqlite3 · node-llama-cpp · OpenAI 兼容 LLM

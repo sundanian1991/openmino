@@ -105,7 +105,7 @@ export async function batchProcess(
       clusters: 0,
       topicsCreated: 0,
       assigned: 0,
-      errors: ["Embedding 模型依赖未安装（@huggingface/transformers）"],
+      errors: ["Embedding 模型 GGUF 文件未找到（需要 Qwen3-Embedding-0.6B-Q8_0.gguf）"],
       error: "Embedding 不可用",
     };
   }
