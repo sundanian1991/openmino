@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jdme-local-tools — 京 ME 本地数据读取技能</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --slate-dark:#141413; --slate-medium:#262624; --slate-light:#3D3D3A;
+  --cloud-dark:#73726C; --cloud-medium:#87867F; --cloud-light:#C2C0B6;
+  --ivory-dark:#D1CFC5; --ivory-medium:#F0EEE6; --ivory-light:#FAF9F5;
+  --book-cloth:#D97757; --kraft:#D9775780; --manilla:#E3DACC;
+  --focus:#2C84DB; --error:#BF4D43; --good:#788C5D;
+  --ink:var(--slate-dark); --ink-light:var(--slate-light); --ink-faint:var(--cloud-dark);
+  --accent:var(--book-cloth); --bg:var(--ivory-light); --bg-dark:var(--ivory-medium);
+  --border:var(--ivory-dark); --border-visible:var(--cloud-light);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans SC',-apple-system,'PingFang SC','Helvetica Neue',sans-serif;font-size:16px;line-height:1.7;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent);color:var(--bg)}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+
+/* ===== NAV ===== */
+nav{position:sticky;top:0;z-index:100;padding:14px clamp(20px,4vw,48px);background:rgba(250,249,245,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(20,20,19,.06);display:flex;align-items:center;justify-content:space-between;transition:box-shadow .3s}
+nav.scrolled{box-shadow:0 2px 24px rgba(0,0,0,.05)}
+.nav-brand{font-family:'Fraunces',serif;font-style:italic;font-weight:700;font-size:1rem;color:var(--ink)}
+.nav-brand span{color:var(--accent)}
+.nav-series{font-family:'Fira Code',monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+
+/* ===== HERO ===== */
+.hero{padding:clamp(60px,11vh,120px) 0 clamp(40px,7vh,80px);position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:clamp(32px,5vw,72px);align-items:end}
+.eyebrow{font-family:'Fira Code',monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:1.25rem}
+.eyebrow::before{content:"";display:inline-block;width:28px;height:1.5px;background:var(--accent);vertical-align:middle;margin-right:12px;transform:translateY(-2px)}
+h1{font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(2.4rem,5.5vw,4.2rem);line-height:1.08;letter-spacing:-.015em;color:var(--ink)}
+h1 .alt{font-family:'Fraunces',serif;font-style:italic;font-weight:700;color:var(--accent)}
+.lede{font-size:1.08rem;color:var(--ink-light);margin-top:1.5rem;max-width:560px;line-height:1.65}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:1.75rem}
+.pill{font-family:'Fira Code',monospace;font-size:.7rem;padding:4px 11px;border-radius:100px;border:1px solid var(--border);color:var(--ink-light);background:var(--bg)}
+.pill--accent{background:var(--manilla);border-color:var(--kraft);color:#8a4a2e}
+/* hero stat block */
+.hero-stat{display:flex;flex-direction:column;gap:2px;padding-left:clamp(20px,3vw,32px);border-left:2px solid var(--accent)}
+.hero-stat .big{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(3.2rem,7vw,5.5rem);line-height:.9;color:var(--ink);letter-spacing:-.03em}
+.hero-stat .big .unit{font-size:.32em;color:var(--ink-faint);font-style:italic;font-weight:700;margin-left:4px;letter-spacing:0}
+.hero-stat .lab{font-family:'Fira Code',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:10px}
+.hero-stat .lab b{color:var(--accent);font-weight:500}
+/* decorative ghost number */
+.ghost-no{position:absolute;top:-30px;right:-10px;font-family:'Fraunces',serif;font-style:italic;font-weight:900;font-size:clamp(8rem,18vw,16rem);line-height:1;color:var(--accent);opacity:.05;pointer-events:none;z-index:0}
+
+/* ===== SECTION ===== */
+section{padding:clamp(56px,9vh,104px) 0}
+.sec--alt{background:var(--bg-dark)}
+.sec-head{margin-bottom:clamp(28px,4vw,52px);max-width:760px}
+.sec-no{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1.3rem,2.6vw,1.9rem);color:var(--accent);opacity:.45;display:block;margin-bottom:.15rem}
+.sec-title{font-family:'Noto Serif SC',serif;font-weight:900;font-size:clamp(1.5rem,3.2vw,2.3rem);line-height:1.2;letter-spacing:-.01em;color:var(--ink)}
+.sec-sub{font-size:1rem;color:var(--ink-light);margin-top:.85rem;max-width:640px;line-height:1.6}
+h3{font-family:'Noto Serif SC',serif;font-weight:700;font-size:1.08rem;color:var(--ink);margin:0 0 .6rem}
+p{color:var(--ink-light);margin-bottom:.85rem}
+.lead-line{font-family:'Noto Serif SC',serif;font-weight:700;font-size:1.15rem;color:var(--ink);line-height:1.7;margin-bottom:1.5rem}
+.lead-line .hl{background:linear-gradient(transparent 62%,rgba(217,119,87,.32) 62%);padding:0 3px}
+
+/* ===== CAPABILITY NUMBER CARDS ===== */
+.num-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2vw,22px)}
+.num-card{position:relative;background:var(--ivory-light);border:1px solid var(--border);border-radius:14px;padding:clamp(22px,2.4vw,32px) clamp(20px,2vw,28px) clamp(20px,2.2vw,26px);overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
+.num-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(20,20,19,.07)}
+.num-card .nno{position:absolute;top:-12px;right:8px;font-family:'Fraunces',serif;font-weight:900;font-size:clamp(3.5rem,6vw,5rem);line-height:1;color:var(--accent);opacity:.1;pointer-events:none}
+.num-card h3{position:relative;margin-bottom:.5rem}
+.num-card .ndesc{position:relative;font-size:.86rem;color:var(--ink-light);line-height:1.65}
+.num-card .ntag{position:relative;display:inline-block;margin-top:14px;font-family:'Fira Code',monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding:3px 9px;background:var(--manilla);border-radius:4px}
+
+/* ===== DATA TABLE ===== */
+.dtable{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--ivory-light)}
+.dtable .row{display:grid;grid-template-columns:1.1fr 2fr 1fr 1.4fr;gap:0}
+.dtable .row + .row{border-top:1px solid var(--border)}
+.dtable .row > div{padding:14px 16px;font-size:.88rem;color:var(--ink-light);line-height:1.5}
+.dtable .row.head{background:var(--ink)}
+.dtable .row.head > div{color:rgba(255,255,255,.62);font-family:'Fira Code',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.dtable .cell-key{font-weight:700;color:var(--ink);font-family:'Noto Serif SC',serif}
+.dtable .cell-full{color:var(--accent);font-weight:700;font-family:'Fira Code',monospace;font-size:.78rem;letter-spacing:.02em}
+
+/* ===== CALLOUT ===== */
+.callout{position:relative;padding:20px 22px 20px 26px;border-radius:10px;background:var(--bg);border:1px solid var(--border);font-size:.92rem;color:var(--ink-light);line-height:1.7}
+.callout::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;background:var(--accent);border-radius:2px}
+.callout .ct{display:block;font-family:'Noto Serif SC',serif;font-weight:700;font-size:.98rem;color:var(--ink);margin-bottom:6px}
+.callout.warn::before{background:var(--error)}
+.callout.warn{background:rgba(191,77,67,.05);border-color:rgba(191,77,67,.2)}
+.callout.warn .ct{color:var(--error)}
+.callout code{font-family:'Fira Code',monospace;font-size:.82em;background:var(--bg-dark);padding:1px 6px;border-radius:3px;color:var(--ink)}
+.callout strong{color:var(--ink)}
+
+/* ===== COMMAND BLOCKS ===== */
+.cmd-list{display:flex;flex-direction:column;gap:18px}
+.cmd{display:grid;grid-template-columns:200px 1fr;gap:clamp(16px,2.5vw,32px);align-items:start;padding:20px 0;border-top:1px solid var(--border)}
+.cmd:first-child{border-top:none;padding-top:0}
+.cmd:last-child{padding-bottom:0}
+.cmd-id .cname{font-family:'Fira Code',monospace;font-weight:500;font-size:.92rem;color:var(--accent);display:block}
+.cmd-id .cdesc{font-size:.78rem;color:var(--ink-faint);margin-top:3px;line-height:1.45}
+.cmd-body p{font-size:.88rem;color:var(--ink-light);margin-bottom:10px}
+
+/* macOS code panel */
+.code-mac{border-radius:10px;overflow:hidden;box-shadow:0 10px 36px rgba(20,20,19,.14)}
+.code-mac .bar{background:#2d2d3a;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.code-mac .dot{width:11px;height:11px;border-radius:50%}
+.code-mac .dot:nth-child(1){background:#ff5f56}
+.code-mac .dot:nth-child(2){background:#ffbd2e}
+.code-mac .dot:nth-child(3){background:#27c93f}
+.code-mac .fname{flex:1;text-align:center;font-family:'Fira Code',monospace;font-size:.68rem;color:rgba(255,255,255,.45)}
+.code-mac pre{background:#1a1b26;padding:18px 20px;font-family:'Fira Code',monospace;font-size:.8rem;line-height:1.95;color:#a9b1d6;margin:0;overflow-x:auto}
+.code-mac .kw{color:#bb9af7}
+.code-mac .str{color:#9ece6a}
+.code-mac .cm{color:#565f89}
+.code-mac .fn{color:#7aa2f7}
+
+/* ===== PLATFORM TWO-COL ===== */
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,24px)}
+.pf-col{background:var(--ivory-light);border:1px solid var(--border);border-radius:12px;padding:clamp(20px,2.4vw,28px)}
+.pf-col h4{font-family:'Fira Code',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;font-weight:500}
+.pf-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.pf-list li{font-family:'Fira Code',monospace;font-size:.76rem;color:var(--ink-light);line-height:1.55;padding-left:16px;position:relative}
+.pf-list li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.55}
+
+/* ===== RISK TABLE ===== */
+.risk-tbl{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--ivory-light)}
+.risk-tbl .r{display:grid;grid-template-columns:1fr 2.2fr;gap:0}
+.risk-tbl .r + .r{border-top:1px solid var(--border)}
+.risk-tbl .r > div{padding:13px 16px;font-size:.86rem;color:var(--ink-light);line-height:1.55}
+.risk-tbl .r.head{background:var(--ink)}
+.risk-tbl .r.head > div{color:rgba(255,255,255,.62);font-family:'Fira Code',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase}
+.risk-tbl .rkey{font-weight:700;color:var(--ink);font-family:'Noto Serif SC',serif;background:var(--bg-dark)}
+.risk-tbl .r.muted .rkey{color:var(--good)}
+
+/* ===== BULLET LIST ===== */
+.b-list{list-style:none;display:flex;flex-direction:column;gap:11px}
+.b-list li{font-size:.92rem;color:var(--ink-light);line-height:1.6;padding-left:22px;position:relative}
+.b-list li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:1.5px;background:var(--accent)}
+.b-list b{color:var(--ink);font-weight:700}
+
+/* ===== DARK ROLE SECTION ===== */
+.role-sec{background:var(--slate-dark);color:var(--ivory-light);position:relative;overflow:hidden}
+.role-sec .ghost-no{color:var(--book-cloth);opacity:.08}
+.role-sec .sec-title{color:var(--ivory-light)}
+.role-sec .sec-sub{color:rgba(240,238,230,.7)}
+.role-sec .sec-no{color:var(--book-cloth);opacity:.6}
+.role-body{font-size:1.02rem;color:rgba(240,238,230,.78);line-height:1.8;max-width:680px;margin-bottom:2rem}
+.role-body b{color:var(--book-cloth);font-weight:600}
+.unlock{display:flex;flex-wrap:wrap;gap:10px}
+.unlock .u{font-family:'Fira Code',monospace;font-size:.72rem;padding:7px 13px;border-radius:100px;background:rgba(217,119,87,.16);border:1px solid rgba(217,119,87,.4);color:var(--book-cloth);font-weight:500}
+.unlock .u.feed{background:rgba(120,140,93,.14);border-color:rgba(120,140,93,.4);color:#9fb380}
+
+/* ===== FOOTER ===== */
+footer{padding:clamp(36px,6vh,60px) 0;text-align:center;border-top:1px solid var(--border)}
+footer p{font-family:'Fira Code',monospace;font-size:.74rem;color:var(--ink-faint);letter-spacing:.04em}
+
+/* ===== REVEAL ===== */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}.reveal-d3{transition-delay:.24s}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:32px}
+  .hero-stat{border-left:none;border-top:2px solid var(--accent);padding-left:0;padding-top:18px}
+  .num-grid{grid-template-columns:1fr}
+  .pf-grid{grid-template-columns:1fr}
+  .cmd{grid-template-columns:1fr;gap:8px}
+  .dtable .row{grid-template-columns:1fr}
+  .dtable .row > div{padding:6px 16px}
+  .dtable .cell-key{padding-top:14px!important}
+  .dtable .row:not(.head) div:last-child{padding-bottom:14px}
+  .dtable .row.head{display:none}
+  .risk-tbl .r{grid-template-columns:1fr}
+  .risk-tbl .rkey{padding-top:14px!important}
+  .risk-tbl .r.head{display:none}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <span class="nav-brand">技能梳理 · <span>jdme-local-tools</span></span>
+  <span class="nav-series">01 / 05</span>
+</nav>
+
+<div class="wrap">
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="ghost-no">01</div>
+    <div class="hero-grid">
+      <div class="reveal">
+        <div class="eyebrow">SKILL 01 · 京东 ME 本地数据读取</div>
+        <h1>把聊天的<span class="alt">原文</span><br>从加密库里取出来</h1>
+        <p class="lede">只读访问京东 ME / 京 ME 本地数据——直接解密 SQLCipher 加密的 chat.data，拿到聊天消息的 msg_json 原文，而不是摘要。覆盖 macOS 与 Windows 双平台。</p>
+        <div class="hero-meta">
+          <span class="pill pill--accent">只读 · 不修改应用</span>
+          <span class="pill">SQLCipher 直读</span>
+          <span class="pill">JSON Lines 输出</span>
+          <span class="pill">跨平台</span>
+          <span class="pill">v1.0.1</span>
+        </div>
+      </div>
+      <div class="hero-stat reveal reveal-d2">
+        <span class="big">⭐⭐⭐⭐⭐</span>
+        <span class="lab">数据深度 · <b>完整数据库访问</b></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 能力速览 ===== -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="sec-no">i.</span>
+      <h2 class="sec-title">能力速览</h2>
+    </div>
+    <div class="num-grid">
+      <div class="num-card reveal"><span class="nno">01</span><h3>聊天原文直读</h3><p class="ndesc">从 chat.data 解密 chat_message 表，拿到 msg_json 完整结构——含正文、mentions、reply 链、card_msg。</p><span class="ntag">msg_json 全量</span></div>
+      <div class="num-card reveal reveal-d1"><span class="nno">02</span><h3>会话元数据</h3><p class="ndesc">读取 session.data 的 session_info 表，列出全部会话（私聊 kind=0 / 群聊 kind=512）。</p><span class="ntag">session_info</span></div>
+      <div class="num-card reveal reveal-d2"><span class="nno">03</span><h3>跨会话检索</h3><p class="ndesc">chat-search 一次扫描所有会话的 msg_json，按关键词定位历史消息，多关键词 OR。</p><span class="ntag">全库扫描</span></div>
+      <div class="num-card reveal"><span class="nno">04</span><h3>@我 检测</h3><p class="ndesc">扫描 mentions 列表与文本中的 @pin 标记，识别需要本人响应的消息。</p><span class="ntag">mentions + @pin</span></div>
+      <div class="num-card reveal reveal-d1"><span class="nno">05</span><h3>实时监听</h3><p class="ndesc">chat-watch 轮询数据库，watch 监听日志，新消息实时推送 JSON Lines。</p><span class="ntag">polling + tail</span></div>
+      <div class="num-card reveal reveal-d2"><span class="nno">06</span><h3>日志降级恢复</h3><p class="ndesc">SQLCipher 不可用时，从 sdk-event.log / renderer.log 恢复明文消息，容错解析损坏 JSON。</p><span class="ntag">fallback 路径</span></div>
+    </div>
+  </section>
+
+  <!-- ===== 数据源与完整度 ===== -->
+  <section class="sec--alt">
+    <div class="sec-head reveal">
+      <span class="sec-no">ii.</span>
+      <h2 class="sec-title">数据源与完整度</h2>
+      <p class="sec-sub">这是技能的核心价值——对比只能拿摘要的 MCP 工具，它拿到的是<strong style="color:var(--ink)">原文</strong>。</p>
+    </div>
+    <div class="reveal reveal-d1">
+      <div class="dtable">
+        <div class="row head">
+          <div>数据类型</div><div>能拿到什么</div><div>完整度</div><div>来源</div>
+        </div>
+        <div class="row">
+          <div class="cell-key">聊天消息</div>
+          <div>uuid / mid / session_id / sender / timestamp / <strong style="color:var(--accent)">完整 msg_json</strong> / 解析后 text</div>
+          <div class="cell-full">全文正文</div>
+          <div>chat.data · chat_message 表</div>
+        </div>
+        <div class="row">
+          <div class="cell-key">会话列表</div>
+          <div>id / name / kind / type / option</div>
+          <div class="cell-full">完整</div>
+          <div>session.data · session_info 表</div>
+        </div>
+        <div class="row">
+          <div class="cell-key">实时 IM 事件</div>
+          <div>insertMessages / openChatResult / loadMoreResult / chatNotify</div>
+          <div class="cell-full">明文恢复</div>
+          <div>sdk-event.log</div>
+        </div>
+        <div class="row">
+          <div class="cell-key">渲染层快照</div>
+          <div>消息推送 / 会话更新 / 选中会话详情</div>
+          <div class="cell-full">快照级</div>
+          <div>renderer.log</div>
+        </div>
+        <div class="row">
+          <div class="cell-key">导出文本</div>
+          <div>用户手动导出的 .txt</div>
+          <div class="cell-full">取决于用户</div>
+          <div>data/ee/&lt;account&gt;/file/*.txt</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout reveal reveal-d2" style="margin-top:24px">
+      <span class="ct">关键区别</span>
+      msg_json 包含 <code>content</code>、<code>mentions</code>、<code>reply_mid</code>、<code>card_msg</code> 结构——供应商沟通里的承诺、问题、链接都能看到原文，不是摘要。
+    </div>
+  </section>
+
+  <!-- ===== 命令清单 ===== -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="sec-no">iii.</span>
+      <h2 class="sec-title">命令清单</h2>
+      <p class="sec-sub">单入口 <code style="font-family:'Fira Code',monospace;background:var(--bg-dark);padding:1px 6px;border-radius:3px;font-size:.84em">scripts/jd_me_tool.py</code>，转发到 core 逻辑。所有命令输出 JSON Lines。</p>
+    </div>
+    <div class="cmd-list reveal reveal-d1">
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">discover</span><span class="cdesc">发现路径与账户</span></div>
+        <div class="cmd-body">
+          <p>报告 app 根、ME 二进制、support roots、Electron roots、log roots、SQLCipher 候选、DLL 诊断、数据账户，以及 <code style="font-family:'Fira Code',monospace;font-size:.82em;background:var(--bg-dark);padding:1px 5px;border-radius:3px">--auto</code> 推荐账户（含评分明细）。最先跑，便宜且平台感知。</p>
+          <div class="code-mac"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">terminal</span></div><pre>python3 scripts/jd_me_tool.py discover</pre></div>
+        </div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">sessions</span><span class="cdesc">列出会话</span></div>
+        <div class="cmd-body">
+          <p>从 session_info 表列出会话，支持按名称、类型过滤。用于解析 session_id。</p>
+          <div class="code-mac"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">terminal</span></div><pre>python3 scripts/jd_me_tool.py sessions <span class="kw">--auto</span> --name-contains Relay --kind 512</pre></div>
+        </div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">chat-history</span><span class="cdesc">SQLCipher 直读历史</span></div>
+        <div class="cmd-body">
+          <p>按 session / sender / msg_type / 时间范围过滤，从 chat.data 直读。拿完整 msg_json。</p>
+          <div class="code-mac"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">terminal</span></div><pre>python3 scripts/jd_me_tool.py chat-history <span class="kw">--auto</span> \
+  --session erp1:ee:erp2:ee --limit 50</pre></div>
+        </div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">chat-search</span><span class="cdesc">跨会话关键词检索</span></div>
+        <div class="cmd-body">
+          <p>在 msg_json 和 search 列做子串搜索，多关键词 OR。一次扫所有会话。</p>
+          <div class="code-mac"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">terminal</span></div><pre>python3 scripts/jd_me_tool.py chat-search <span class="kw">--auto</span> --keyword 上线 --limit 20</pre></div>
+        </div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">chat-watch</span><span class="cdesc">数据库轮询监听</span></div>
+        <div class="cmd-body">
+          <p>轮询 chat.data，按关键词 / @我 / sender / session 实时过滤新消息。常驻进程。</p>
+          <div class="code-mac"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">terminal</span></div><pre>python3 scripts/jd_me_tool.py chat-watch <span class="kw">--auto</span> \
+  --keyword 上线 --at-me --timeout 60</pre></div>
+        </div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">messages</span><span class="cdesc">日志明文恢复（降级）</span></div>
+        <div class="cmd-body">
+          <p>SQLCipher 不可用时使用。从 sdk-event.log 和 renderer.log 恢复明文，容错解析损坏的 JSON 转义。Windows 默认扫 renderer.log。</p>
+          <div class="code-mac"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">terminal</span></div><pre>python3 scripts/jd_me_tool.py messages <span class="kw">--auto</span> --contact fanbaolin3 \
+  --rotations 3 --limit 100
+python3 scripts/jd_me_tool.py messages <span class="kw">--auto</span> --keyword 上线 --at-me</pre></div>
+        </div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">summary</span><span class="cdesc">为 LLM 摘要设计</span></div>
+        <div class="cmd-body">
+          <p>join chat_message 与 session_info，标记 private / named_group / at_me_other 三类，默认包含 Relay|Zero|基础服务 群、排除告警/robot 群。直接喂 LLM 做日/周报。</p>
+          <div class="code-mac"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">terminal</span></div><pre>python3 scripts/jd_me_tool.py summary <span class="kw">--auto</span> --since 2026-05-14</pre></div>
+        </div>
+      </div>
+      <div class="cmd">
+        <div class="cmd-id"><span class="cname">watch · history · query</span><span class="cdesc">辅助诊断</span></div>
+        <div class="cmd-body">
+          <p><b>watch</b> tail renderer.log + sdk-event.log 实时解析事件流为稳定 JSON，支持 --keyword / --at-me / --session；<b>history</b> 报告导出文件与数据库状态；<b>query</b> 在导出文本/日志中搜索 ERP（凭据自动 redact）。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 平台覆盖 ===== -->
+  <section class="sec--alt">
+    <div class="sec-head reveal">
+      <span class="sec-no">iv.</span>
+      <h2 class="sec-title">平台覆盖</h2>
+    </div>
+    <div class="pf-grid reveal reveal-d1">
+      <div class="pf-col">
+        <h4>macOS</h4>
+        <ul class="pf-list">
+          <li>/Applications/ME.app</li>
+          <li>~/Library/Application Support/com.jd.me</li>
+          <li>~/Library/Application Support/ME</li>
+          <li>~/Library/Logs/ME</li>
+          <li>SQLCipher: JD ME 自带二进制 Contents/Resources/app/.../dd_sqlite3/bin/sqlcipher</li>
+        </ul>
+      </div>
+      <div class="pf-col">
+        <h4>Windows</h4>
+        <ul class="pf-list">
+          <li>~/Documents/JD/ME（数据）</li>
+          <li>%APPDATA%/ME/logs（日志）</li>
+          <li>%APPDATA%/ME（Electron 用户数据）</li>
+          <li>%APPDATA%/com.jd.me（备用 support）</li>
+          <li>SQLCipher: 自带 sqlcipher.exe 或 sqlcipher64.dll（ctypes ABI fallback）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout reveal reveal-d2" style="margin-top:22px">
+      <span class="ct">Windows DLL fallback</span>
+      CLI 不可用时，用 ctypes 直接调用 <code>sqlite3_open_v2</code> / <code>sqlite3_exec</code> / <code>sqlite3_prepare_v2</code> 等 ABI，只读模式打开加密库。<strong>不需要 pysqlcipher3</strong>。
+    </div>
+  </section>
+
+  <!-- ===== 技术实现要点 ===== -->
+  <section>
+    <div class="sec-head reveal">
+      <span class="sec-no">v.</span>
+      <h2 class="sec-title">技术实现要点</h2>
+    </div>
+    <div class="reveal reveal-d1" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(20px,3vw,36px)">
+      <div>
+        <h3>密钥派生</h3>
+        <p>SQLCipher 密钥 = <code style="font-family:'Fira Code',monospace;font-size:.82em;background:var(--bg-dark);padding:1px 5px;border-radius:3px">md5(account_pin).hexdigest()</code>，与 JD ME 自身的 db-helper 一致。pin 通常等于 ERP 账号但不绝对——代码注释明确写的是 account_pin。</p>
+      </div>
+      <div>
+        <h3>降级路径</h3>
+        <p>数据库访问失败（如 <code style="font-family:'Fira Code',monospace;font-size:.82em;background:var(--bg-dark);padding:1px 5px;border-radius:3px">file is not a database</code>）时，<strong style="color:var(--ink)">不</strong>重试 dump 进程内存或提取凭据，而是报告失败路径 + 所用 pin + SQLCipher 候选，fallback 到 messages 日志恢复。</p>
+      </div>
+      <div>
+        <h3>--auto 账户选择</h3>
+        <p>先读 <code style="font-family:'Fira Code',monospace;font-size:.82em;background:var(--bg-dark);padding:1px 5px;border-radius:3px">~/.jd_me_account</code>，再按 chat.data / session.data / 日志 / 最新修改时间加权推荐。仅在推荐错误或歧义时才传 <code style="font-family:'Fira Code',monospace;font-size:.82em;background:var(--bg-dark);padding:1px 5px;border-radius:3px">--account &lt;pin&gt;</code>。</p>
+      </div>
+    </div>
+    <h3 style="margin-top:36px">常用过滤器</h3>
+    <div class="code-mac reveal reveal-d2"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="fname">filters · messages / chat-history 通用</span></div><pre><span class="cm"># messages / chat-history 通用</span>
+--contact &lt;erp-or-name&gt;      <span class="cm"># 匹配 sessionId / senderPin / receiverPin / 内容</span>
+--session &lt;session-id&gt;       <span class="cm"># 精确会话过滤，可重复</span>
+--keyword &lt;text&gt;             <span class="cm"># 内容子串，可重复</span>
+--at-me --self-pin &lt;pin&gt;     <span class="cm"># @我 过滤</span>
+--since &lt;date&gt; --until &lt;date&gt; <span class="cm"># 时间窗口</span>
+--limit &lt;N&gt;                  <span class="cm"># 保留最近 N 条</span>
+--no-renderer                <span class="cm"># Windows：不扫 renderer 日志</span></pre></div>
+  </section>
+
+  <!-- ===== 边界与局限 ===== -->
+  <section class="sec--alt">
+    <div class="sec-head reveal">
+      <span class="sec-no">vi.</span>
+      <h2 class="sec-title">边界与局限</h2>
+    </div>
+    <div class="callout warn reveal reveal-d1">
+      <span class="ct">硬边界（绝对不做）</span>
+      修改 JD ME 应用包/安装目录 · 注入 Electron · 从运行进程内存 dump 密钥 · 写入聊天数据库 · 提取凭据。这是本地只读助手，只操作用户已有访问权限的文件。
+    </div>
+    <h3 style="margin-top:32px">读不到什么</h3>
+    <ul class="b-list reveal reveal-d2">
+      <li>超出 JD ME 本地保留期的旧消息——只能读本地缓存，服务器端已清理的拿不到</li>
+      <li>邮件、会议、日程、通讯录、文件附件内容——本工具只覆盖 IM 聊天</li>
+      <li>附件文件本身——只看到 msg_json 里的引用，不下载附件二进制</li>
+      <li>非 JD ME 平台的供应商沟通（微信、企微、电话）不在能力范围</li>
+    </ul>
+    <h3 style="margin-top:32px">风险点</h3>
+    <div class="risk-tbl reveal reveal-d2" style="margin-top:8px">
+      <div class="r head"><div>风险</div><div>说明</div></div>
+      <div class="r"><div class="rkey">密钥派生算法公开</div><div>md5(pin) 一旦 pin 泄露，任何拿到 chat.data 的人都能解密。加密强度依赖 pin 保密</div></div>
+      <div class="r"><div class="rkey">凭据 redaction 不彻底</div><div>REDACTION_PATTERNS 只在 snippet/导出文本做正则替换，chat-history 返回的完整 msg_json 不过滤——可能含密码、token、合同金额</div></div>
+      <div class="r"><div class="rkey">合规边界</div><div>虽是用户本地数据，但供应商沟通涉及多方隐私，喂云端 LLM 做摘要时需注意数据外溢</div></div>
+      <div class="r muted"><div class="rkey">SQL 注入（已缓解）</div><div>session_id/sender 用 replace("'","''") 转义，非参数化查询</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 角色（深色） ===== -->
+  <section class="role-sec">
+    <div class="ghost-no">★</div>
+    <div class="wrap" style="padding:0">
+      <div class="sec-head reveal">
+        <span class="sec-no">vii.</span>
+        <h2 class="sec-title">在 AI 转型中的角色</h2>
+      </div>
+      <p class="role-body reveal reveal-d1">
+        这是「全文采集层」的基石。把散落在京 ME 私聊和群里、原本只能靠<b>人脑记忆和零星截图</b>的供应商沟通、问题反馈、承诺记录，变成可全文检索、可按时间/对象筛选、可直接喂 LLM 做复盘和周报的结构化数据。
+      </p>
+      <div class="unlock reveal reveal-d2">
+        <span class="u">解锁 /日简报</span>
+        <span class="u">解锁 /人员异动跟踪</span>
+        <span class="u">解锁 /供应商沟通准备</span>
+        <span class="u">解锁 /案例检索</span>
+        <span class="u feed">喂养 库3 经验案例库</span>
+        <span class="u feed">喂养 库5 商务沟通库</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>jdme-local-tools · SKILL.md v1.0.1 · 梳理生成于 2026-06-27</p>
+  </footer>
+
+</div>
+
+<script>
+  const nav=document.getElementById('nav');
+  const onScroll=()=>nav.classList.toggle('scrolled',window.scrollY>10);
+  onScroll();window.addEventListener('scroll',onScroll,{passive:true});
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

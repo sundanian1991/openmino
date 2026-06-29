@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>read-email 技能说明</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    background: #FAFAF8;
+    color: #2D2D2D;
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+  .header {
+    border-bottom: 2px solid #2D2D2D;
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2D2D2D;
+    margin-bottom: 8px;
+    font-family: "JetBrains Mono", "SF Mono", monospace;
+  }
+  .header .meta {
+    display: flex;
+    gap: 24px;
+    font-size: 14px;
+    color: #6B6B6B;
+  }
+  .capability-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  .capability-card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #4A6741;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .capability-card h2::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 18px;
+    background: #4A6741;
+  }
+  .capability-card p {
+    font-size: 15px;
+    color: #3D3D3D;
+    margin-bottom: 16px;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .tag {
+    font-size: 12px;
+    padding: 4px 10px;
+    font-weight: 500;
+    font-family: "JetBrains Mono", "SF Mono", monospace;
+  }
+  .tag-green { background: #E8F0E6; color: #4A6741; }
+  .tag-gray { background: #F0F0F0; color: #5B6B7A; }
+  .tag-blue { background: #E6EFF8; color: #3C7AE8; }
+  .tag-orange { background: #FFF0E6; color: #E87A3C; }
+  .depth-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .depth-bar { display: flex; gap: 3px; }
+  .depth-segment {
+    width: 24px;
+    height: 8px;
+    background: #E5E5E5;
+  }
+  .depth-segment.active { background: #4A6741; }
+  .depth-label {
+    font-size: 13px;
+    color: #6B6B6B;
+  }
+  section { margin-bottom: 40px; }
+  section h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2D2D2D;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #E5E5E5;
+  }
+  section h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #3D3D3D;
+    margin: 20px 0 10px;
+  }
+  .cmd-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+  }
+  .cmd-table th, .cmd-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #E5E5E5;
+    font-size: 14px;
+  }
+  .cmd-table th {
+    background: #F5F5F3;
+    font-weight: 600;
+    color: #3D3D3D;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .cmd-table td:first-child {
+    font-family: "JetBrains Mono", "SF Mono", monospace;
+    color: #5B6B7A;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .code-block {
+    background: #F5F5F3;
+    border: 1px solid #E5E5E5;
+    padding: 16px;
+    margin: 12px 0;
+    font-family: "JetBrains Mono", "SF Mono", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+  .code-block .comment { color: #7A8B9B; }
+  .code-block .cmd { color: #4A6741; }
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .flow-arrow {
+    color: #7A8B9B;
+    padding: 0 8px;
+    font-size: 18px;
+  }
+  .features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    color: #3D3D3D;
+  }
+  .feature::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #4A6741;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .auth-chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .auth-step {
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .auth-step .label {
+    font-size: 11px;
+    color: #7A8B9B;
+  }
+  .auth-arrow {
+    color: #7A8B9B;
+    padding: 0 6px;
+    font-size: 14px;
+  }
+  .safety-box {
+    background: #FFF8F0;
+    border: 1px solid #E8D8C8;
+    padding: 16px;
+    margin: 16px 0;
+  }
+  .safety-box h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #E87A3C;
+    margin-bottom: 8px;
+  }
+  .safety-box ul {
+    list-style: none;
+    font-size: 14px;
+    color: #3D3D3D;
+  }
+  .safety-box li {
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .safety-box li::before {
+    content: "!";
+    color: #E87A3C;
+    font-weight: 700;
+    font-size: 12px;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #E87A3C;
+  }
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .filter-item {
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    padding: 10px;
+    font-size: 13px;
+  }
+  .filter-item code {
+    font-family: "JetBrains Mono", "SF Mono", monospace;
+    color: #5B6B7A;
+    font-size: 12px;
+  }
+  .note {
+    font-size: 13px;
+    color: #6B6B6B;
+    font-style: italic;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>read-email</h1>
+    <div class="meta">
+      <span>Version 1.0.1</span>
+      <span>Python + SOAP</span>
+      <span>macOS / Windows</span>
+    </div>
+  </div>
+
+  <div class="capability-card">
+    <h2>核心能力</h2>
+    <p>突破"只能读标题"限制，通过 SOAP 协议直接访问京东邮件系统，获取完整的邮件正文、附件信息、文件夹结构。支持搜索、回复、转发、批量操作等全功能邮件管理。</p>
+    
+    <div class="tags">
+      <span class="tag tag-green">完整邮件访问</span>
+      <span class="tag tag-gray">SOAP 协议</span>
+      <span class="tag tag-blue">批量操作</span>
+      <span class="tag tag-orange">智能启发式</span>
+    </div>
+    
+    <div class="depth-indicator">
+      <span class="depth-label">数据深度</span>
+      <div class="depth-bar">
+        <div class="depth-segment active"></div>
+        <div class="depth-segment active"></div>
+        <div class="depth-segment active"></div>
+        <div class="depth-segment active"></div>
+        <div class="depth-segment active"></div>
+      </div>
+      <span class="depth-label">完整邮件</span>
+    </div>
+  </div>
+
+  <section>
+    <h2>技术架构</h2>
+    
+    <div class="flow">
+      <div class="flow-step">获取 Token</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">SOAP 请求</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">解析响应</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step">Markdown 渲染</div>
+    </div>
+
+    <h3>文件结构</h3>
+    <div class="code-block">
+read-email/
+├── SKILL.md                    <span class="comment"># 技能定义 (730行)</span>
+├── references/
+│   └── query-recipes.md        <span class="comment"># 查询配方</span>
+└── scripts/
+    ├── run.sh                  <span class="comment"># 入口脚本</span>
+    ├── get_mailtoken.py        <span class="comment"># Token 获取</span>
+    ├── soap_mail.py            <span class="comment"># 核心实现 (2374行)</span>
+    └── soap_mail_cli.py        <span class="comment"># CLI 接口 (1143行)</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>认证链</h2>
+    
+    <div class="auth-chain">
+      <div class="auth-step">
+        <span class="label">优先级 1</span>
+        SSO_TOKEN
+      </div>
+      <span class="auth-arrow">→</span>
+      <div class="auth-step">
+        <span class="label">优先级 2</span>
+        ME_TOKEN
+      </div>
+      <span class="auth-arrow">→</span>
+      <div class="auth-step">
+        <span class="label">优先级 3</span>
+        SO_TOKEN
+      </div>
+      <span class="auth-arrow">→</span>
+      <div class="auth-step">
+        <span class="label">优先级 4</span>
+        openclaw.json
+      </div>
+      <span class="auth-arrow">→</span>
+      <div class="auth-step">
+        <span class="label">优先级 5</span>
+        Relay Cookie
+      </div>
+    </div>
+
+    <h3>Token 获取方式</h3>
+    <div class="features">
+      <div class="feature">clawJwtLogin: JWT 登录获取</div>
+      <div class="feature">Color Gateway: ME_TOKEN 转换</div>
+      <div class="feature">Cookie DB: 本地数据库读取</div>
+      <div class="feature">自动缓存和刷新机制</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>完整命令</h2>
+    
+    <table class="cmd-table">
+      <thead>
+        <tr>
+          <th>命令</th>
+          <th>说明</th>
+          <th>用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>folders</td>
+          <td>列出文件夹</td>
+          <td>获取邮件文件夹结构（收件箱、已发送、草稿等）</td>
+        </tr>
+        <tr>
+          <td>create-folder</td>
+          <td>创建文件夹</td>
+          <td>新建邮件分类文件夹</td>
+        </tr>
+        <tr>
+          <td>search</td>
+          <td>搜索邮件</td>
+          <td>按发件人/收件人/主题/关键词/时间等条件搜索</td>
+        </tr>
+        <tr>
+          <td>detail</td>
+          <td>邮件详情</td>
+          <td>获取单封邮件的完整正文和附件信息</td>
+        </tr>
+        <tr>
+          <td>daily-stats</td>
+          <td>每日统计</td>
+          <td>获取指定日期的邮件收发统计</td>
+        </tr>
+        <tr>
+          <td>summarize</td>
+          <td>邮件摘要</td>
+          <td>生成邮件内容摘要</td>
+        </tr>
+        <tr>
+          <td>reply</td>
+          <td>回复邮件</td>
+          <td>回复指定邮件（需确认）</td>
+        </tr>
+        <tr>
+          <td>send</td>
+          <td>发送邮件</td>
+          <td>发送新邮件（需确认）</td>
+        </tr>
+        <tr>
+          <td>forward</td>
+          <td>转发邮件</td>
+          <td>转发邮件给其他人（需确认）</td>
+        </tr>
+        <tr>
+          <td>lookup-recipient</td>
+          <td>查找收件人</td>
+          <td>根据 ERP 账号或姓名查找邮箱地址</td>
+        </tr>
+        <tr>
+          <td>pending-important</td>
+          <td>待处理重要</td>
+          <td>启发式查找最近未回复的重要邮件</td>
+        </tr>
+        <tr>
+          <td>person-unhandled</td>
+          <td>个人未处理</td>
+          <td>查找来自特定人的未处理邮件</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>批量操作</h2>
+    
+    <table class="cmd-table">
+      <thead>
+        <tr>
+          <th>命令</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>batch-mark-read</td>
+          <td>批量标记已读</td>
+        </tr>
+        <tr>
+          <td>batch-mark-unread</td>
+          <td>批量标记未读</td>
+        </tr>
+        <tr>
+          <td>batch-add-category</td>
+          <td>批量添加分类</td>
+        </tr>
+        <tr>
+          <td>batch-move</td>
+          <td>批量移动文件夹</td>
+        </tr>
+        <tr>
+          <td>batch-delete</td>
+          <td>批量删除（需确认）</td>
+        </tr>
+        <tr>
+          <td>flag / unflag</td>
+          <td>标记/取消标记</td>
+        </tr>
+        <tr>
+          <td>batch-flag / batch-unflag</td>
+          <td>批量标记/取消标记</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>搜索过滤器</h2>
+    
+    <div class="filter-grid">
+      <div class="filter-item">
+        <code>sender</code><br>
+        发件人
+      </div>
+      <div class="filter-item">
+        <code>recipient</code><br>
+        收件人
+      </div>
+      <div class="filter-item">
+        <code>subject</code><br>
+        主题关键词
+      </div>
+      <div class="filter-item">
+        <code>body_keyword</code><br>
+        正文关键词
+      </div>
+      <div class="filter-item">
+        <code>after / before</code><br>
+        时间范围
+      </div>
+      <div class="filter-item">
+        <code>unread_only</code><br>
+        仅未读
+      </div>
+      <div class="filter-item">
+        <code>has_attachments</code><br>
+        有附件
+      </div>
+      <div class="filter-item">
+        <code>category</code><br>
+        分类标签
+      </div>
+      <div class="filter-item">
+        <code>importance</code><br>
+        重要性
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>智能启发式</h2>
+    
+    <div class="capability-card">
+      <h2>pending-important</h2>
+      <p>自动识别"最近收到但未回复的重要邮件"，基于以下启发式规则：</p>
+      <div class="features">
+        <div class="feature">时间衰减：越近的邮件权重越高</div>
+        <div class="feature">重要性标记：高优先级邮件加权</div>
+        <div class="feature">回复状态：未回复的优先展示</div>
+        <div class="feature">发件人权重：上级/重要联系人加权</div>
+      </div>
+    </div>
+
+    <div class="capability-card">
+      <h2>person-unhandled</h2>
+      <p>查找来自特定人的未处理邮件，用于"某人找我但我还没回复"的场景：</p>
+      <div class="features">
+        <div class="feature">按发件人筛选</div>
+        <div class="feature">仅展示未回复邮件</div>
+        <div class="feature">按时间倒序排列</div>
+        <div class="feature">包含邮件摘要</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>使用示例</h2>
+    
+    <div class="code-block">
+<span class="comment"># 查看文件夹结构</span>
+<span class="cmd">bash scripts/run.sh folders</span>
+
+<span class="comment"># 搜索最近1天的邮件</span>
+<span class="cmd">bash scripts/run.sh search --after 2026-06-24</span>
+
+<span class="comment"># 查看邮件详情</span>
+<span class="cmd">bash scripts/run.sh detail --id "邮件ID"</span>
+
+<span class="comment"># 查找待处理重要邮件</span>
+<span class="cmd">bash scripts/run.sh pending-important</span>
+
+<span class="comment"># 查找某人的未处理邮件</span>
+<span class="cmd">bash scripts/run.sh person-unhandled --person "张三"</span>
+
+<span class="comment"># 回复邮件（需交互确认）</span>
+<span class="cmd">bash scripts/run.sh reply --id "邮件ID" --content "回复内容"</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>安全规则</h2>
+    
+    <div class="safety-box">
+      <h4>交互确认规则</h4>
+      <ul>
+        <li>所有状态修改操作需要交互确认</li>
+        <li>回复/发送/转发前必须预览内容</li>
+        <li>批量删除前必须确认影响范围</li>
+        <li>不自动执行任何写操作</li>
+      </ul>
+    </div>
+
+    <h3>执行规则</h3>
+    <div class="features">
+      <div class="feature">结果优先，不展示实现细节</div>
+      <div class="feature">默认时间范围：最近1天</div>
+      <div class="feature">使用本地脚本执行</div>
+      <div class="feature">端点：mail-skill.jd.com</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>关键突破</h2>
+    
+    <div class="capability-card">
+      <h2>突破"只能读标题"限制</h2>
+      <p>京东邮件系统默认界面只展示邮件列表，本技能通过 SOAP 协议获取完整邮件数据：</p>
+      <div class="features">
+        <div class="feature">完整邮件正文（HTML/纯文本）</div>
+        <div class="feature">附件列表和大小信息</div>
+        <div class="feature">邮件头信息（CC/BCC/Reply-To）</div>
+        <div class="feature">完整的文件夹层级结构</div>
+      </div>
+    </div>
+  </section>
+
+  <p class="note">Endpoint: https://mail-skill.jd.com/mail/api/clawmail/mailpost</p>
+
+</div>
+</body>
+</html>
