@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>read-joymeeting — 慧记会议记录获取技能</title>
+<style>
+:root{
+  --bg:#ffffff; --card-bg:#f5f5f7; --text:#1d1d1f; --text-secondary:#86868b;
+  --border:#d2d2d7; --accent:#0071e3;
+  --terminal-bg:#1d1d1f; --terminal-text:#f5f5f7;
+  --warn:#bf4800; --danger:#a32d2d; --success:#0f6e56;
+  --font:-apple-system,'SF Pro Display','Helvetica Neue','PingFang SC',sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+.container{max-width:980px;margin:0 auto;padding:0 24px}
+.hero{padding:80px 0 56px;border-bottom:1px solid var(--border)}
+.hero .badge{display:inline-block;font-size:13px;font-weight:600;color:var(--accent);background:rgba(0,113,227,.08);padding:6px 12px;border-radius:980px;margin-bottom:20px}
+.hero h1{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-bottom:14px}
+.hero .subtitle{font-size:21px;color:var(--text-secondary);font-weight:400;line-height:1.4;max-width:760px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:32px;margin-top:28px;font-size:13px;color:var(--text-secondary)}
+.hero .meta strong{color:var(--text);font-weight:600}
+.summary{padding:40px 0;border-bottom:1px solid var(--border)}
+.summary .lead{border-left:3px solid var(--accent);padding-left:16px;font-size:18px;line-height:1.6}
+.summary .lead strong{color:var(--accent)}
+section{padding:64px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:28px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+h2 .num{color:var(--text-secondary);font-weight:500;font-family:var(--mono);font-size:20px;margin-right:10px}
+.h2-sub{color:var(--text-secondary);font-size:16px;margin-bottom:32px}
+h3{font-size:21px;font-weight:600;margin:36px 0 16px}
+p{margin-bottom:16px}
+p:last-child{margin-bottom:0}
+.card{background:var(--card-bg);border-radius:16px;padding:28px;margin-bottom:20px}
+.card h4{font-size:17px;font-weight:600;margin-bottom:10px}
+.card p{font-size:15px;color:#444}
+.term{background:var(--terminal-bg);border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.7;color:var(--terminal-text);overflow-x:auto;margin:14px 0}
+.term .cmt{color:#737373}
+.term .var{color:#64d2ff}
+.term .flag{color:#ffd60a}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:14px 0}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border)}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}
+td code{font-family:var(--mono);font-size:13px;color:var(--accent);background:rgba(0,113,227,.06);padding:2px 6px;border-radius:4px}
+.callout{border-radius:12px;padding:16px 18px;margin:16px 0;font-size:15px;line-height:1.55}
+.callout-warn{background:rgba(191,72,0,.08);border-left:3px solid var(--warn)}
+.callout-danger{background:rgba(163,45,45,.06);border-left:3px solid var(--danger)}
+.callout-info{background:rgba(0,113,227,.06);border-left:3px solid var(--accent)}
+.callout strong{display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.callout-warn strong{color:var(--warn)}
+.callout-danger strong{color:var(--danger)}
+.callout-info strong{color:var(--accent)}
+
+/* flow */
+.flow{display:flex;align-items:stretch;gap:0;margin:24px 0;flex-wrap:wrap}
+.flow-step{flex:1;min-width:160px;background:var(--card-bg);border-radius:12px;padding:20px;position:relative}
+.flow-step:not(:last-child){margin-right:24px}
+.flow-step:not(:last-child)::after{content:"→";position:absolute;right:-18px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:20px;font-weight:300}
+.flow-num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;margin-bottom:6px}
+.flow-step h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.flow-step p{font-size:13px;color:var(--text-secondary);margin:0}
+
+/* JSON viewer */
+.json{background:var(--terminal-bg);border-radius:12px;padding:22px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--terminal-text);overflow-x:auto;margin:16px 0}
+.json .k{color:#64d2ff}
+.json .s{color:#30d158}
+.json .n{color:#ffd60a}
+.json .cmt{color:#737373}
+
+.browsers{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}
+.b{background:var(--card-bg);border-radius:10px;padding:14px;text-align:center;font-size:13px;font-weight:600}
+.b .prio{display:block;font-size:11px;color:var(--text-secondary);font-weight:500;margin-top:2px}
+.b.first{background:rgba(0,113,227,.08);color:var(--accent)}
+
+footer{padding:48px 0 64px;text-align:center;color:var(--text-secondary);font-size:13px}
+@media(max-width:640px){
+  .hero{padding:48px 0 40px}
+  .hero h1{font-size:34px}
+  .flow{flex-direction:column}
+  .flow-step{margin-right:0!important;margin-bottom:12px}
+  .flow-step:not(:last-child)::after{display:none}
+  .browsers{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">数据采集层 · 会议</span>
+    <h1>read-joymeeting</h1>
+    <p class="subtitle">从京东慧记（JoyMinutes, joyminutes.jd.com）提取会议记录。无头浏览器继承 ERP SSO 登录态，原生 CDP 协议直调 API，拿到会议列表、参会人、发言人占比与<strong>逐字稿（transcript 全文）</strong>。</p>
+    <div class="meta">
+      <span>版本 <strong>1.0.0</strong></span>
+      <span>语言 <strong>Node.js</strong></span>
+      <span>入口 <strong>scripts/fetch-meetings.js</strong></span>
+      <span>依赖 <strong>无（纯 CDP，免 Playwright）</strong></span>
+    </div>
+  </div>
+</header>
+
+<div class="summary">
+  <div class="container">
+    <p class="lead">五个采集技能里的<strong>会议逐字稿入口</strong>。一个脚本完成全部操作：启动无头浏览器 → 复制 profile 继承登录态 → CDP 调 JoyMinutes API → 返回数据 → 清理浏览器。重点能力是 <code>--detail</code> 模式下的 <strong>transcript 数组</strong>——每条含发言人、发言内容（已按时段合并）、起止毫秒，是真正可做决策抽取的全文，不是摘要。</p>
+  </div>
+</div>
+
+<!-- 原理 -->
+<section>
+  <div class="container">
+    <h2><span class="num">01</span>工作原理</h2>
+    <p class="h2-sub">五步全自动，用户无感知。</p>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">STEP 1</div>
+        <h4>检测浏览器</h4>
+        <p>按优先级找可用浏览器与登录态</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">STEP 2</div>
+        <h4>启动无头</h4>
+        <p>headless Chrome，完全不可见</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">STEP 3</div>
+        <h4>继承登录态</h4>
+        <p>复制浏览器 profile，免手动登录</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">STEP 4</div>
+        <h4>CDP 调 API</h4>
+        <p>在浏览器上下文直接调 JoyMinutes</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">STEP 5</div>
+        <h4>清理输出</h4>
+        <p>关浏览器进程，stdout 输出 JSON</p>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <strong>核心优势</strong>
+      无需 Playwright MCP 或任何额外依赖。原生 CDP（Chrome DevTools Protocol）直接调用，一个脚本搞定。
+    </div>
+  </div>
+</section>
+
+<!-- 浏览器优先级 -->
+<section>
+  <div class="container">
+    <h2><span class="num">02</span>浏览器优先级</h2>
+    <p class="h2-sub">需本机已装以下之一并登录过 JoyMinutes / ERP（cookie 存在 profile 中）。</p>
+
+    <div class="browsers">
+      <div class="b first">当前活跃窗口<span class="prio">最优先</span></div>
+      <div class="b">Google Chrome<span class="prio">优先级 2</span></div>
+      <div class="b">Tabbit<span class="prio">京东内部浏览器</span></div>
+      <div class="b">Edge / Chromium<span class="prio">备选</span></div>
+    </div>
+    <p>逻辑：当前活跃窗口浏览器优先 → Chrome → Tabbit（Chrome 登录失效时 fallback）→ Edge。所有浏览器登录态都失效时，自动打开登录页等用户登录后重试。</p>
+  </div>
+</section>
+
+<!-- 使用方法 -->
+<section>
+  <div class="container">
+    <h2><span class="num">03</span>使用方法</h2>
+    <p class="h2-sub">按日期范围查 / 按会议 ID 查，两种入口。</p>
+
+    <h3>按日期范围查询</h3>
+    <div class="term"><span class="cmt"># 今天的会议</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js"
+<span class="cmt"># 昨天或指定单日</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--date</span> <span class="var">yesterday</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--date</span> <span class="var">2026-06-08</span>
+<span class="cmt"># 本周 / 上周</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--date</span> <span class="var">thisweek</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--date</span> <span class="var">lastweek</span>
+<span class="cmt"># 近 N 天 / 区间</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--date</span> <span class="var">last7days</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--start</span> <span class="var">2026-06-03</span> <span class="flag">--end</span> <span class="var">2026-06-09</span>
+<span class="cmt"># 加 --detail 获取逐字稿</span>
+node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--date</span> <span class="var">thisweek</span> <span class="flag">--detail</span></div>
+
+    <h3>按会议 ID 查询</h3>
+    <p>ID 在 JoyMinutes URL 中：<code>joyminutes.jd.com/video/{id}</code>。</p>
+    <div class="term">node "$SKILL_DIR/scripts/fetch-meetings.js" <span class="flag">--id</span> <span class="var">21ac80c26e507f76</span> <span class="flag">--detail</span></div>
+  </div>
+</section>
+
+<!-- 日期参数 -->
+<section>
+  <div class="container">
+    <h2><span class="num">04</span>日期参数映射表</h2>
+    <table>
+      <tr><th>用户说法</th><th>--date 参数</th><th>说明</th></tr>
+      <tr><td>"今天" / 未指定</td><td><code>today</code>（默认）</td><td>仅今天</td></tr>
+      <tr><td>"昨天"</td><td><code>yesterday</code></td><td>仅昨天</td></tr>
+      <tr><td>"本周"</td><td><code>thisweek</code> 或 <code>week</code></td><td>本周一到今天</td></tr>
+      <tr><td>"上周"</td><td><code>lastweek</code></td><td>上周一到上周日</td></tr>
+      <tr><td>"近 N 天" / "最近 N 天"</td><td><code>lastNdays</code>（如 <code>last7days</code>）</td><td>从 N 天前到今天</td></tr>
+      <tr><td>"YYYY-MM-DD"</td><td><code>--date YYYY-MM-DD</code></td><td>指定单日</td></tr>
+      <tr><td>"X月X日到X月X日"</td><td><code>--start --end</code></td><td>指定区间</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 输出字段 -->
+<section>
+  <div class="container">
+    <h2><span class="num">05</span>输出字段</h2>
+    <p class="h2-sub">JSON 输出，成功时含 dateRange、totalInList、filteredCount、meetings 数组。</p>
+
+    <table>
+      <tr><th>字段</th><th>来源</th><th>说明</th></tr>
+      <tr><td><code>id</code></td><td>minutes.detail</td><td>会议 ID</td></tr>
+      <tr><td><code>title</code></td><td>minutes.detail</td><td>会议标题</td></tr>
+      <tr><td><code>startTime</code></td><td>detail / list</td><td>开始时间（毫秒时间戳）</td></tr>
+      <tr><td><code>duration</code></td><td>list</td><td>录制时长（毫秒）</td></tr>
+      <tr><td><code>creator</code></td><td>list.userInfo</td><td>创建者姓名</td></tr>
+      <tr><td><code>members</code></td><td>minutes.detail</td><td>参会人列表（姓名 + ERP）</td></tr>
+      <tr><td><code>speakers</code></td><td>minutes.speakers.timelines</td><td>发言人（姓名、发言占比、发言时长）</td></tr>
+      <tr><td><code>transcript</code></td><td>minutes.meetingrecord.query</td><td><strong>文字记录（需 --detail；数组格式，为 null 表示无转写）</strong></td></tr>
+      <tr><td><code>attachments</code></td><td>minutes.detail</td><td>会议附件（关联 JoySpace 文档等）</td></tr>
+      <tr><td><code>url</code></td><td>构建</td><td>会议详情页链接</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- transcript 结构（重点） -->
+<section>
+  <div class="container">
+    <h2><span class="num">06</span>transcript 结构（全文逐字稿）</h2>
+    <p class="h2-sub">这是本技能的核心价值。用 <code>--detail</code> 时 transcript 是一个数组，每条记录已按发言人按时段合并。</p>
+
+    <div class="json">{
+  <span class="k">"transcript"</span>: [
+    {
+      <span class="k">"speaker"</span>: <span class="s">"张三"</span>,
+      <span class="k">"text"</span>: <span class="s">"发言内容（该发言人该时段的所有句子已合并）"</span>,
+      <span class="k">"beginMs"</span>: <span class="n">1234567</span>,
+      <span class="k">"endMs"</span>: <span class="n">2345678</span>
+    },
+    {
+      <span class="k">"speaker"</span>: <span class="s">"李四"</span>,
+      <span class="k">"text"</span>: <span class="s">"发言内容..."</span>,
+      <span class="k">"beginMs"</span>: <span class="n">2345678</span>,
+      <span class="k">"endMs"</span>: <span class="n">3456789</span>
+    }
+  ]
+}</div>
+
+    <div class="card">
+      <h4>解析示例（合并按发言人 / 拼接全文）</h4>
+      <div class="term"><span class="cmt">// 拼成可读全文</span>
+const fullText = m.transcript
+  .map(i =&gt; <span class="s">`[${i.speaker}]: ${i.text}`</span>).join(<span class="s">'\n'</span>)
+
+<span class="cmt">// 按发言人分组统计</span>
+const bySpeaker = {}
+m.transcript.forEach(i =&gt; {
+  bySpeaker[i.speaker] = bySpeaker[i.speaker] || []
+  bySpeaker[i.speaker].push(i.text)
+})</div>
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>注意</strong>
+      若会议无转写记录，<code>transcript</code> 为 <code>null</code>——此时不要编造会议内容，按 read-joymeeting 返回状态记录原因。
+    </div>
+  </div>
+</section>
+
+<!-- 总结规范 -->
+<section>
+  <div class="container">
+    <h2><span class="num">07</span>总结输出规范</h2>
+    <p class="h2-sub">拿到数据后向用户总结的格式要求。</p>
+
+    <div class="card">
+      <h4>单日查询</h4>
+      <p>总览（会议数、主要议题）→ 每场会议（标题、时间、链接、参会人、内容概述、关键讨论、决策结论、待办）→ 综合要点。</p>
+    </div>
+    <div class="card">
+      <h4>多日 / 区间查询</h4>
+      <p>总览（区间、会议总数、主要主题）→ 按日分组，每日下列各场会议详情 → 综合要点（跨天主题归纳、持续跟进事项）。</p>
+    </div>
+
+    <div class="callout callout-danger">
+      <strong>质量硬约束</strong>
+      <ul style="padding-left:20px;margin:6px 0 0">
+        <li>每条会议都含标题与链接，可追溯</li>
+        <li>总结基于详细文字记录，不编造</li>
+        <li>缺失信息明确标注，不捏造</li>
+        <li>不输出 Cookie、Token 或登录信息</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 常见问题 -->
+<section>
+  <div class="container">
+    <h2><span class="num">08</span>常见问题</h2>
+
+    <div class="card">
+      <h4>SSO_REDIRECT 错误</h4>
+      <p>ERP SSO cookie 过期。脚本自动尝试：① 当前活跃浏览器登录态 → ② 其他浏览器（Chrome→Tabbit→Edge）→ ③ 全失效时自动开登录页，登录后重试。</p>
+    </div>
+    <div class="card">
+      <h4>会议数据为空但 totalInList &gt; 0</h4>
+      <p>日期过滤没命中。检查 <code>--start/--end</code> 是否正确或扩大范围。</p>
+    </div>
+    <div class="card">
+      <h4>"CDP not ready"</h4>
+      <p>端口占用，脚本自动在 9333–9350 范围找可用端口。</p>
+    </div>
+    <div class="card">
+      <h4>平台支持</h4>
+      <p>macOS：检测活跃窗口、运行进程、浏览器路径。Windows：检测运行进程、浏览器路径。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    技能来源：projects/claude-trace/read-joymeeting · 生成于 2026-06-27 · apple-minimal 风格
+  </div>
+</footer>
+
+</body>
+</html>

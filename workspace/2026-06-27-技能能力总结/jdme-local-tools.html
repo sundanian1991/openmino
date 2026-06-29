@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jdme-local-tools · 京ME本地工具</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+  
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --text-bright: #f0f6fc;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d2a8ff;
+    --warn: #d29922;
+    --danger: #f85149;
+    --radius: 6px;
+    --mono: 'IBM Plex Mono', 'SF Mono', 'Fira Code', monospace;
+    --serif: 'Noto Serif SC', 'Source Han Serif SC', serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    margin-bottom: 2rem;
+  }
+
+  .sidebar-header .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: var(--surface2);
+    color: var(--accent);
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    margin-bottom: 0.75rem;
+  }
+
+  .sidebar-header h1 {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    line-height: 1.4;
+  }
+
+  .sidebar-header .sub {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+  }
+
+  .sidebar-nav a {
+    display: block;
+    padding: 0.45rem 0.6rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.85rem;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+
+  .sidebar-nav a:hover,
+  .sidebar-nav a.active {
+    color: var(--text-bright);
+    background: var(--surface2);
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .sidebar-footer .stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+  }
+
+  .sidebar-footer .stat strong {
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  /* Main content */
+  .main {
+    padding: 3rem 4rem;
+    max-width: 960px;
+  }
+
+  section {
+    margin-bottom: 3.5rem;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  p {
+    margin-bottom: 0.85rem;
+    color: var(--text);
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin-right: 0.3rem;
+  }
+
+  .badge-green { background: rgba(63,185,80,0.15); color: var(--accent2); }
+  .badge-blue { background: rgba(88,166,255,0.15); color: var(--accent); }
+  .badge-purple { background: rgba(210,168,255,0.15); color: var(--accent3); }
+  .badge-yellow { background: rgba(210,153,34,0.15); color: var(--warn); }
+
+  pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+  }
+
+  p code, li code {
+    background: var(--surface2);
+    padding: 0.12em 0.4em;
+    border-radius: 3px;
+    color: var(--accent2);
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+
+  .cmd-line {
+    color: var(--accent2);
+  }
+
+  .cmd-flag {
+    color: var(--accent);
+  }
+
+  .cmd-val {
+    color: var(--accent3);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+  }
+
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    padding: 0.6rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-warn {
+    border-color: rgba(210,153,34,0.3);
+  }
+
+  .card-title {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  ul, ol {
+    padding-left: 1.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  li {
+    margin-bottom: 0.3rem;
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  .flow-step {
+    background: var(--surface2);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    color: var(--text-bright);
+    white-space: nowrap;
+  }
+
+  .flow-arrow {
+    color: var(--text-dim);
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .path-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+
+  .highlight-box {
+    background: rgba(88,166,255,0.06);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  @media (max-width: 900px) {
+    .page { grid-template-columns: 1fr; }
+    .sidebar { position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .main { padding: 2rem 1.5rem; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="tag">SKILL · v1.0.1</span>
+      <h1>jdme-local-tools</h1>
+      <p class="sub">京ME本地聊天数据只读工具</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#overview">概述</a>
+      <a href="#workflow">推荐工作流</a>
+      <a href="#commands">命令全集</a>
+      <a href="#discovery">平台发现</a>
+      <a href="#chat-records">聊天记录读取</a>
+      <a href="#other-cmds">其他命令</a>
+      <a href="#filters">过滤能力</a>
+      <a href="#architecture">架构说明</a>
+      <a href="#boundaries">安全边界</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="stat"><span>数据深度</span><strong>⭐⭐⭐⭐⭐</strong></div>
+      <div class="stat"><span>数据库访问</span><strong>完整</strong></div>
+      <div class="stat"><span>平台支持</span><strong>macOS + Windows</strong></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- 概述 -->
+    <section id="overview">
+      <h2>概述</h2>
+      <div class="highlight-box">
+        <p style="margin-bottom:0;"><strong>核心突破：</strong>突破"只能读摘要"限制，通过 SQLCipher 解密直接访问京ME本地数据库，获取完整原始聊天消息——包括消息体 JSON、会话结构、时间戳等全部字段。</p>
+      </div>
+      <p>本技能提供对京ME（JD ME）本地数据的<strong>只读</strong>检查能力。通过统一入口脚本 <code>jd_me_tool.py</code> 调用共享核心逻辑，平台相关路径发现封装在独立模块中。支持路径发现、日志文本恢复、SQLCipher 加密数据库读取、以及实时消息事件监听。</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔍 路径发现</div>
+          <p style="margin:0;font-size:0.85rem;">自动发现京ME应用根目录、支持根目录、Electron根目录、日志根目录、SQLCipher可执行文件位置、数据账户和推荐账户。</p>
+        </div>
+        <div class="card">
+          <div class="card-title">🔐 数据库解密</div>
+          <p style="margin:0;font-size:0.85rem;">通过 SQLCipher CLI 或 Windows DLL fallback（ctypes）读取加密的 <code>chat.data</code> / <code>session.data</code>。密钥为 <code>md5(account_pin)</code>。</p>
+        </div>
+        <div class="card">
+          <div class="card-title">📋 日志恢复</div>
+          <p style="margin:0;font-size:0.85rem;">从 <code>sdk-event.log</code> 和 Windows <code>renderer.log</code> 中恢复消息快照，作为数据库不可用时的后备方案。</p>
+        </div>
+        <div class="card">
+          <div class="card-title">👁️ 实时监听</div>
+          <p style="margin:0;font-size:0.85rem;">通过 <code>watch</code> 命令 tail 日志文件，将消息推送、会话更新解析为稳定 JSON 输出。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 推荐工作流 -->
+    <section id="workflow">
+      <h2>推荐工作流</h2>
+      <div class="flow">
+        <span class="flow-step">1. discover</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">2. sessions</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">3. chat-history</span>
+      </div>
+      <ol>
+        <li>先运行 <code>discover</code>——快速、跨平台，除非用户已提供精确路径。</li>
+        <li>需要完整历史时优先用数据库命令：<code>sessions --auto --name-contains &lt;群名&gt;</code> 解析会话ID，然后 <code>chat-history --auto --session &lt;id&gt; --limit &lt;N&gt;</code>。</li>
+        <li>SQLCipher 不可用或只需近期记录时，用 <code>messages --auto --contact &lt;erp&gt; --limit &lt;N&gt;</code> 从日志恢复。</li>
+        <li>Windows 上 <code>messages</code> 默认同时扫描 <code>renderer.log</code> 和 <code>sdk-event.log</code>。</li>
+        <li>默认使用 <code>--auto</code>：先检查 <code>~/.jd_me_account</code>，再扫描数据/日志根目录，选最活跃的本地账户。</li>
+      </ol>
+    </section>
+
+    <!-- 命令全集 -->
+    <section id="commands">
+      <h2>命令全集</h2>
+      <table>
+        <thead>
+          <tr><th>命令</th><th>用途</th><th>数据源</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>discover</code></td><td>发现本地京ME路径、账户、SQLCipher</td><td>文件系统</td></tr>
+          <tr><td><code>messages</code></td><td>从日志恢复消息文本（推荐首选）</td><td>sdk-event.log / renderer.log</td></tr>
+          <tr><td><code>sessions</code></td><td>列出会话列表，按名称/类型过滤</td><td>chat.data (SQLCipher)</td></tr>
+          <tr><td><code>chat-history</code></td><td>读取指定会话的完整消息历史</td><td>chat.data (SQLCipher)</td></tr>
+          <tr><td><code>chat-search</code></td><td>按关键词搜索消息</td><td>chat.data (SQLCipher)</td></tr>
+          <tr><td><code>watch</code></td><td>实时监听新消息（tail日志）</td><td>sdk-event.log / renderer.log</td></tr>
+          <tr><td><code>summary</code></td><td>生成日报/周报摘要（join chat_message + session_info）</td><td>chat.data (SQLCipher)</td></tr>
+          <tr><td><code>history</code></td><td>报告导出.txt文件和数据库候选</td><td>文件系统</td></tr>
+          <tr><td><code>query</code></td><td>搜索可读文本文件和账户日志</td><td>文本文件 + 日志</td></tr>
+          <tr><td><code>preview</code></td><td>诊断回退：尝试桥接→日志预览</td><td>桥接 / 日志</td></tr>
+        </tbody>
+      </table>
+
+      <h3>使用示例</h3>
+      <pre><span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">discover</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">messages</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--contact</span> <span class="cmd-val">fanbaolin3</span> <span class="cmd-flag">--rotations</span> <span class="cmd-val">3</span> <span class="cmd-flag">--limit</span> <span class="cmd-val">100</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">messages</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--session</span> <span class="cmd-val">erp1:ee:erp2:ee</span> <span class="cmd-flag">--limit</span> <span class="cmd-val">100</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">messages</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--keyword</span> <span class="cmd-val">上线</span> <span class="cmd-flag">--at-me</span> <span class="cmd-flag">--limit</span> <span class="cmd-val">20</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">watch</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--keyword</span> <span class="cmd-val">上线</span> <span class="cmd-flag">--at-me</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">sessions</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--name-contains</span> <span class="cmd-val">Relay</span> <span class="cmd-flag">--kind</span> <span class="cmd-val">512</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">chat-history</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--session</span> <span class="cmd-val">erp1:ee:erp2:ee</span> <span class="cmd-flag">--limit</span> <span class="cmd-val">50</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">chat-search</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--keyword</span> <span class="cmd-val">上线</span> <span class="cmd-flag">--limit</span> <span class="cmd-val">20</span>
+
+<span class="cmd-line">python3 scripts/jd_me_tool.py</span> <span class="cmd-flag">summary</span> <span class="cmd-flag">--auto</span> <span class="cmd-flag">--since</span> <span class="cmd-val">2026-05-14</span></pre>
+    </section>
+
+    <!-- 平台发现 -->
+    <section id="discovery">
+      <h2>平台发现</h2>
+      <p><code>discover</code> 命令报告以下内容：应用根目录、ME二进制、支持根目录、Electron根目录、日志根目录、SQLCipher可执行文件候选、Windows DLL诊断、已发现数据账户、日志账户、带评分的 <code>recommended_account</code>。</p>
+
+      <h3>macOS 默认路径</h3>
+      <div class="path-block">/Applications/ME.app</div>
+      <div class="path-block">~/Library/Application Support/com.jd.me</div>
+      <div class="path-block">~/Library/Application Support/ME</div>
+      <div class="path-block">~/Library/Logs/ME</div>
+
+      <h3>Windows 默认路径</h3>
+      <div class="path-block">~/Documents/JD/ME  (chat.data / session.data)</div>
+      <div class="path-block">%APPDATA%/ME/logs  (renderer.log / sdk-event.log)</div>
+      <div class="path-block">%APPDATA%/ME  (Electron用户数据)</div>
+      <div class="path-block">%APPDATA%/com.jd.me  (备用支持根目录)</div>
+      <div class="path-block">%LOCALAPPDATA%/Programs/ME  (应用安装根目录)</div>
+    </section>
+
+    <!-- 聊天记录读取 -->
+    <section id="chat-records">
+      <h2>聊天记录读取</h2>
+      <h3>messages —— 日志恢复（推荐首选）</h3>
+      <p>从以下来源恢复消息文本：</p>
+      <ul>
+        <li><code>sdk-event.log</code> 及其轮转文件 <code>sdk-event.N.log</code></li>
+        <li>Windows 渲染快照：<code>renderer.log</code>、<code>renderer.N.log</code>、<code>renderer.old.log</code></li>
+        <li>事件类型包括：<code>insertMessages</code>、<code>openChatResult</code>、<code>loadMoreResult</code>、<code>updateMsgParam</code>、<code>identifyJoyspaceDoc</code>、<code>chatNotify</code></li>
+      </ul>
+
+      <h3>过滤参数</h3>
+      <table>
+        <thead><tr><th>参数</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>--contact &lt;erp-or-name&gt;</code></td><td>匹配 sessionId / senderPin / receiverPin / 内容</td></tr>
+          <tr><td><code>--session &lt;session-id&gt;</code></td><td>精确会话过滤，可重复</td></tr>
+          <tr><td><code>--keyword &lt;text&gt;</code></td><td>内容子串匹配，可重复</td></tr>
+          <tr><td><code>--at-me</code></td><td>@我的消息过滤（需配合 <code>--self-pin</code>）</td></tr>
+          <tr><td><code>--limit &lt;N&gt;</code></td><td>保留最近 N 条</td></tr>
+          <tr><td><code>--no-renderer</code></td><td>Windows：不扫描 renderer 日志</td></tr>
+        </tbody>
+      </table>
+
+      <h3>chat-history —— 数据库完整历史</h3>
+      <p>通过 SQLCipher 解密读取完整消息。输出 JSON Lines，每行包含：<code>sessionId</code>、<code>timestamp</code>、<code>sender</code>、<code>msgType</code>、原始 <code>msgJson</code>、以及解析后的 <code>text</code>。</p>
+
+      <div class="card card-warn">
+        <div class="card-title">⚠ 数据库解密失败处理</div>
+        <p style="margin:0;">若返回 <code>file is not a database</code>，不要重试进程内存转储或凭据提取。报告失败数据库路径、密钥派生账户、发现的 SQLCipher CLI/DLL 候选，回退到 <code>messages</code> 日志恢复。</p>
+      </div>
+    </section>
+
+    <!-- 其他命令 -->
+    <section id="other-cmds">
+      <h2>其他命令详解</h2>
+
+      <h3>watch —— 实时监听</h3>
+      <p>tail <code>renderer.log</code> 和 <code>sdk-event.log</code>，将消息推送、会话更新、选中会话详情解析为稳定 JSON。支持 <code>--keyword</code>、<code>--at-me</code>、<code>--self-pin</code>、<code>--session</code>。</p>
+
+      <h3>summary —— 日报/周报摘要</h3>
+      <p>SQLCipher 可用时 join <code>chat_message</code> + <code>session_info</code>，输出增强 JSON Lines 用于日报/周报合成。默认包含 <code>Relay|Zero|基础服务</code>，排除告警/机器人/通知类群。</p>
+
+      <h3>query —— 文本搜索</h3>
+      <p>搜索可读导出文本文件和账户日志，返回片段、直接会话ID、加密数据库边界。自动脱敏凭据类值。</p>
+
+      <h3>preview —— 诊断回退</h3>
+      <p>先尝试运行中/原生京ME桥接，失败后回退到日志预览。将 <code>sdk_context_unavailable</code> 或 <code>native bridge not found</code> 视为桥接诊断，非凭据提取理由。</p>
+    </section>
+
+    <!-- 架构 -->
+    <section id="architecture">
+      <h2>架构说明</h2>
+      <table>
+        <thead><tr><th>文件</th><th>职责</th></tr></thead>
+        <tbody>
+          <tr><td><code>scripts/jd_me_tool.py</code></td><td>稳定命令入口，SKILL.md 示例统一使用此路径</td></tr>
+          <tr><td><code>scripts/jd_me_tool_core.py</code></td><td>共享数据访问、解析、CLI 行为（平台无关）</td></tr>
+          <tr><td><code>scripts/jd_me_tool_platform.py</code></td><td>OS 特定路径候选和默认二进制位置</td></tr>
+        </tbody>
+      </table>
+      <p>所有命令输出 JSON Lines（除非另有说明）。</p>
+    </section>
+
+    <!-- 安全边界 -->
+    <section id="boundaries">
+      <h2>安全边界</h2>
+      <div class="highlight-box">
+        <p style="margin-bottom:0;">本工具<strong>不得</strong>修改京ME应用包/安装目录、注入 Electron、从运行进程内存转储密钥、写入京ME聊天数据库、或尝试凭据提取。它是操作在用户已有文件上的本地只读助手。</p>
+      </div>
+      <p><code>preview</code> 在桥接可用时可能在应用 <code>data/ee/export/</code> 下创建 SDK 导出 HTML。所有 <code>chat-*</code> 数据库查询均为只读，需要用户对其账户数据的授权访问。</p>
+    </section>
+  </main>
+</div>
+</body>
+</html>

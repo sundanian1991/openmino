@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>把团队工作沉淀为AI可用的知识库</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&family=Doto:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════
+   NOTHING DESIGN TOKENS — LIGHT MODE
+   ══════════════════════════════════════════════ */
+:root {
+  --black: #000000;
+  --surface: #FFFFFF;
+  --surface-raised: #F0F0F0;
+  --border: #E8E8E8;
+  --border-visible: #CCCCCC;
+  --text-disabled: #999999;
+  --text-secondary: #666666;
+  --text-primary: #1A1A1A;
+  --text-display: #000000;
+  --accent: #D71921;
+  --accent-subtle: rgba(215,25,33,0.15);
+  --success: #4A9E5C;
+  --warning: #D4A843;
+  --interactive: #007AFF;
+
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Presentation */
+  --stage-bg: #F5F5F5;
+  --slide-bg: #FFFFFF;
+  --page-num-color: #999999;
+}
+
+/* ══════════════════════════════════════════════
+   VIEWPORT & STAGE
+   ══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--stage-bg);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.deck-viewport {
+  position: fixed; inset: 0;
+  overflow: hidden;
+  background: var(--stage-bg);
+}
+
+.deck-stage {
+  position: absolute;
+  left: 0; top: 0;
+  width: 1920px; height: 1080px;
+  overflow: hidden;
+  transform-origin: 0 0;
+  background: var(--slide-bg);
+}
+
+/* ══════════════════════════════════════════════
+   SLIDE BASE
+   ══════════════════════════════════════════════ */
+.slide {
+  position: absolute; inset: 0;
+  width: 1920px; height: 1080px;
+  overflow: hidden;
+  background: var(--slide-bg);
+  display: none;
+  padding: 0;
+}
+.slide.active { display: flex; }
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════════ */
+.progress-bar {
+  position: fixed; bottom: 0; left: 0;
+  height: 3px; background: var(--text-display);
+  z-index: 1001;
+  transition: width 0.3s ease-out;
+}
+.slide-counter {
+  position: fixed; right: 32px; bottom: 18px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px; letter-spacing: 0.08em;
+  color: var(--page-num-color);
+  z-index: 1001;
+}
+.nav-hint {
+  position: fixed; left: 32px; bottom: 18px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  z-index: 1001;
+}
+
+/* ══════════════════════════════════════════════
+   TYPOGRAPHY CLASSES
+   ══════════════════════════════════════════════ */
+.font-doto { font-family: 'Doto', 'Space Mono', monospace; }
+.font-grotesk { font-family: 'Space Grotesk', system-ui, sans-serif; }
+.font-mono { font-family: 'Space Mono', monospace; }
+
+/* Display sizes */
+.text-display-xl { font-size: 80px; line-height: 1.0; letter-spacing: -0.03em; }
+.text-display-lg { font-size: 56px; line-height: 1.05; letter-spacing: -0.02em; }
+.text-display-md { font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; }
+.text-heading { font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; font-weight: 500; }
+.text-subheading { font-size: 18px; line-height: 1.3; }
+.text-body { font-size: 16px; line-height: 1.5; }
+.text-body-sm { font-size: 14px; line-height: 1.5; letter-spacing: 0.01em; }
+.text-caption { font-size: 12px; line-height: 1.4; letter-spacing: 0.04em; }
+.text-label { font-size: 11px; line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* Colors */
+.text-display-color { color: var(--text-display); }
+.text-primary-color { color: var(--text-primary); }
+.text-secondary-color { color: var(--text-secondary); }
+.text-disabled-color { color: var(--text-disabled); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+
+/* ══════════════════════════════════════════════
+   LAYOUT UTILITIES
+   ══════════════════════════════════════════════ */
+.slide-inner {
+  width: 100%; height: 100%;
+  padding: 80px 120px;
+  display: flex; flex-direction: column;
+}
+.slide-inner-tight {
+  width: 100%; height: 100%;
+  padding: 64px 120px;
+  display: flex; flex-direction: column;
+}
+.slide-inner-bleed {
+  width: 100%; height: 100%;
+  padding: 80px 0;
+  display: flex; flex-direction: column;
+}
+
+.flex-row { display: flex; align-items: flex-start; gap: 24px; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-1 { flex: 1; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-xs { gap: var(--space-xs); }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+.gap-xl { gap: var(--space-xl); }
+.gap-2xl { gap: var(--space-2xl); }
+.gap-3xl { gap: var(--space-3xl); }
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+
+/* ══════════════════════════════════════════════
+   COMPONENT: CARDS
+   ══════════════════════════════════════════════ */
+.card {
+  border: 1px solid var(--border-visible);
+  padding: 32px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.card-surface {
+  background: var(--surface);
+  border: 1px solid var(--border-visible);
+  padding: 32px 24px;
+}
+.card-raised {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  padding: 32px 24px;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: LABELS & TAGS
+   ══════════════════════════════════════════════ */
+.label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+}
+.label-accent { color: var(--accent); }
+.label-success { color: var(--success); }
+
+.tag {
+  display: inline-flex; align-items: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border: 1px solid var(--border-visible);
+  color: var(--text-secondary);
+}
+.tag-active {
+  border-color: var(--text-display);
+  color: var(--text-display);
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: DECORATIVE NUMBER
+   ══════════════════════════════════════════════ */
+.deco-num {
+  position: absolute;
+  top: -20px; right: -10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 140px; font-weight: 700;
+  color: var(--text-display);
+  opacity: 0.04;
+  line-height: 1;
+  pointer-events: none; user-select: none;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: FLOW PIPELINE
+   ══════════════════════════════════════════════ */
+.flow-pipeline {
+  display: flex; align-items: center; gap: 0;
+}
+.flow-stage {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 8px 16px;
+}
+.flow-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em;
+  color: var(--text-disabled);
+  text-transform: uppercase;
+}
+.flow-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; color: var(--text-secondary);
+  font-weight: 500;
+}
+.flow-stage--active .flow-value { color: var(--text-display); font-weight: 500; }
+.flow-stage--active .flow-label { color: var(--text-secondary); }
+.flow-stage--done .flow-value { color: var(--success); }
+.flow-arrow {
+  font-size: 18px; color: var(--text-disabled);
+  padding: 0 4px; line-height: 1;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: STAT ROWS
+   ══════════════════════════════════════════════ */
+.stat-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-row .rl {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.stat-row .rv {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; color: var(--text-primary);
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: THREE-COLUMN GRID
+   ══════════════════════════════════════════════ */
+.trio-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.trio-card {
+  position: relative;
+  border: 1px solid var(--border-visible);
+  padding: 36px 24px 24px;
+  overflow: hidden;
+}
+.trio-num {
+  position: absolute;
+  top: -15px; right: -5px;
+  font-family: 'Space Mono', monospace;
+  font-size: 80px; font-weight: 700;
+  color: var(--text-display);
+  opacity: 0.05;
+  line-height: 1;
+  pointer-events: none; user-select: none;
+}
+.trio-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; font-weight: 500;
+  color: var(--text-display);
+  margin-bottom: 8px;
+  position: relative;
+}
+.trio-desc {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.6;
+  position: relative;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: DO/DON'T COMPARISON
+   ══════════════════════════════════════════════ */
+.compare-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+}
+.compare-col {
+  border: 1px solid var(--border-visible);
+  padding: 20px;
+}
+.compare-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.compare-marker { font-size: 16px; }
+.compare-col--avoid .compare-marker { color: var(--accent); }
+.compare-col--prefer .compare-marker { color: var(--text-display); }
+.compare-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+.compare-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 0;
+}
+.compare-row .compare-icon {
+  font-size: 10px; flex-shrink: 0; padding-top: 2px;
+}
+.compare-col--avoid .compare-icon { color: var(--accent); }
+.compare-col--prefer .compare-icon { color: var(--text-display); }
+.compare-row span:last-child {
+  font-size: 14px; color: var(--text-primary); line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: CHECKLIST
+   ══════════════════════════════════════════════ */
+.checklist {
+  display: flex; flex-direction: column;
+}
+.checklist-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.checklist-item:last-child { border-bottom: none; }
+.check-box {
+  width: 16px; height: 16px;
+  border: 1px solid var(--border-visible);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.check-box.checked {
+  background: var(--text-display); border-color: var(--text-display);
+}
+.check-box.checked::after {
+  content: ''; width: 6px; height: 2px;
+  background: var(--black); margin-top: -1px;
+}
+.check-label {
+  flex: 1; font-size: 14px; color: var(--text-primary); line-height: 1.4;
+}
+.check-status {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.08em;
+  color: var(--text-disabled);
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: CODE BLOCK
+   ══════════════════════════════════════════════ */
+.code-block {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  padding: 24px 28px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre;
+  overflow: hidden;
+}
+.code-block .dir { color: var(--text-secondary); }
+.code-block .file { color: var(--text-primary); }
+.code-block .highlight { color: var(--accent); font-weight: 700; }
+.code-block .ok { color: var(--success); font-weight: 700; }
+.code-block .dim { color: var(--text-disabled); }
+
+/* ══════════════════════════════════════════════
+   COMPONENT: DIVIDER
+   ══════════════════════════════════════════════ */
+.divider {
+  width: 100%; height: 1px;
+  background: var(--border-visible);
+  margin: 24px 0;
+}
+.divider-thin {
+  width: 100%; height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: HERO NUMBER
+   ══════════════════════════════════════════════ */
+.hero-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+}
+.hero-unit {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: SEGMENTED PROGRESS BAR
+   ══════════════════════════════════════════════ */
+.seg-bar {
+  display: flex; gap: 3px; height: 10px;
+}
+.seg-bar .seg {
+  flex: 1; background: var(--border);
+}
+.seg-bar .seg.filled { background: var(--text-display); }
+.seg-bar .seg.filled-ok { background: var(--success); }
+.seg-bar .seg.filled-warn { background: var(--warning); }
+
+/* ══════════════════════════════════════════════
+   COMPONENT: DOT GRID BACKGROUND
+   ══════════════════════════════════════════════ */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--border) 0.5px, transparent 0.5px);
+  background-size: 12px 12px;
+}
+
+/* ══════════════════════════════════════════════
+   SLIDE-SPECIFIC: HOOK
+   ══════════════════════════════════════════════ */
+.hook-slide {
+  justify-content: center; align-items: center;
+  text-align: center;
+  position: relative;
+}
+.hook-slide .hook-main {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 64px; font-weight: 500;
+  color: var(--text-display);
+  line-height: 1.2;
+  max-width: 900px;
+}
+.hook-slide .hook-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  margin-top: 32px;
+}
+.hook-slide .hook-accent {
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════════
+   SLIDE-SPECIFIC: END SLIDES
+   ══════════════════════════════════════════════ */
+.end-slide {
+  justify-content: center; align-items: center;
+  text-align: center;
+}
+.end-slide .end-main {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 48px; font-weight: 300;
+  color: var(--text-display);
+  line-height: 1.3;
+}
+.end-slide .end-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+  margin-top: 24px;
+}
+
+/* ══════════════════════════════════════════════
+   PAGE NUMBER (bottom-right per slide)
+   ══════════════════════════════════════════════ */
+.page-num {
+  position: absolute;
+  bottom: 32px; right: 48px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em;
+  color: var(--text-disabled);
+}
+
+/* ══════════════════════════════════════════════
+   SECTION INDICATOR (top-left)
+   ══════════════════════════════════════════════ */
+.section-tag {
+  position: absolute;
+  top: 32px; left: 120px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-disabled);
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: TAB PANEL
+   ══════════════════════════════════════════════ */
+.tab-bar {
+  display: flex; gap: 0;
+  border-bottom: 1px solid var(--border-visible);
+}
+.tab-item {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em;
+  padding: 12px 20px;
+  border: none; background: transparent;
+  color: var(--text-disabled);
+  cursor: pointer; position: relative;
+  text-transform: uppercase;
+}
+.tab-item.active { color: var(--text-display); }
+.tab-item.active::after {
+  content: ''; position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 2px; background: var(--text-display);
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: STAT BIG
+   ══════════════════════════════════════════════ */
+.stat-big {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: var(--text-display);
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: STAT ROW GROUP
+   ══════════════════════════════════════════════ */
+.stat-group {
+  display: flex; flex-direction: column;
+}
+.stat-group .stat-item {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stat-group .stat-item:last-child { border-bottom: none; }
+
+/* ══════════════════════════════════════════════
+   COMPONENT: NUMBERED LIST
+   ══════════════════════════════════════════════ */
+.num-list {
+  display: flex; flex-direction: column; gap: 16px;
+}
+.num-item {
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.num-marker {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em;
+  color: var(--text-disabled);
+  flex-shrink: 0;
+  padding-top: 2px;
+  min-width: 24px;
+}
+.num-content {
+  font-size: 16px; color: var(--text-primary); line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: QUOTE
+   ══════════════════════════════════════════════ */
+.quote-block {
+  border-left: 2px solid var(--border-visible);
+  padding-left: 24px;
+}
+.quote-text {
+  font-size: 20px; font-weight: 500;
+  color: var(--text-display);
+  line-height: 1.4;
+}
+.quote-attr {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 0.06em;
+  color: var(--text-disabled);
+  margin-top: 8px;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: STEP LIST (vertical)
+   ══════════════════════════════════════════════ */
+.step-list {
+  display: flex; flex-direction: column; gap: 0;
+}
+.step-item {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step-item:last-child { border-bottom: none; }
+.step-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 24px; font-weight: 700;
+  color: var(--text-disabled);
+  line-height: 1;
+  min-width: 36px;
+}
+.step-body { flex: 1; }
+.step-title {
+  font-size: 16px; font-weight: 500;
+  color: var(--text-display);
+  margin-bottom: 4px;
+}
+.step-desc {
+  font-size: 14px; color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT: ASYMMETRIC SPLIT
+   ══════════════════════════════════════════════ */
+.split-asym {
+  display: grid;
+  grid-template-columns: 0.4fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.split-side {
+  position: sticky; top: 80px;
+}
+.split-big-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 72px; font-weight: 700;
+  color: var(--text-display);
+  opacity: 0.06;
+  line-height: 0.85;
+}
+</style>
+</head>
+<body>
+
+<div class="deck-viewport">
+<div class="deck-stage" id="stage">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 01 — HOOK
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide hook-slide active" data-slide="1">
+  <div class="hook-main" style="position:relative;">
+    你们团队的知识，<span class="hook-accent">AI能用吗？</span>
+  </div>
+  <div class="hook-sub">把团队工作沉淀为AI可用的知识库</div>
+  <span class="page-num">01 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 02 — WHY
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="2">
+  <span class="section-tag">WHY</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1400px; margin:0 auto;">
+      <div class="label" style="margin-bottom:16px;">WHY</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:40px; font-weight:500; color:var(--text-display); margin-bottom:48px; line-height:1.2;">
+        现有方案：<span style="color:var(--accent);">技术门槛高</span>，没有专门支持
+      </h2>
+      <div class="grid-2" style="gap:32px;">
+        <div class="compare-grid" style="grid-template-columns:1fr;">
+          <div class="compare-col compare-col--avoid">
+            <div class="compare-header">
+              <span class="compare-marker">&times;</span>
+              <span class="compare-title">AVOID — 现状</span>
+            </div>
+            <div class="compare-row"><span class="compare-icon">&times;</span><span>Notion / 飞书文档 — 需要人工维护，AI无法结构化读取</span></div>
+            <div class="compare-row"><span class="compare-icon">&times;</span><span>Confluence — 非技术团队不会用，知识沉淀断裂</span></div>
+            <div class="compare-row"><span class="compare-icon">&times;</span><span>直接喂文件给AI — 散乱无结构，AI每次重新理解</span></div>
+            <div class="compare-row"><span class="compare-icon">&times;</span><span>Git / Markdown — 学习成本高，业务人员排斥</span></div>
+          </div>
+        </div>
+        <div class="flex-col" style="justify-content:center;">
+          <div class="quote-block">
+            <div class="quote-text">知识散落在聊天记录、邮件、Excel里。<br>每次换人，知识就断一次。</div>
+            <div class="quote-attr">— 多数团队的真实状态</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">02 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 03 — WHAT: 三层结构
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="3">
+  <span class="section-tag">WHAT</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1400px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">WHAT</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:48px;">
+        三层结构：让AI「读懂」团队知识
+      </h2>
+      <div class="trio-grid">
+        <div class="trio-card">
+          <span class="trio-num">01</span>
+          <div class="label" style="margin-bottom:8px;">RAW LAYER</div>
+          <div class="trio-title">raw/</div>
+          <div class="trio-desc" style="margin-bottom:16px;">
+            原始文档。SOP、制度、流程图、表格。<br>
+            <strong style="color:var(--text-primary);">不做任何加工</strong>，保持原貌。
+          </div>
+          <div class="divider-thin"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--text-disabled); letter-spacing:0.06em;">
+            .md / .txt / .pdf
+          </div>
+        </div>
+        <div class="trio-card">
+          <span class="trio-num">02</span>
+          <div class="label" style="margin-bottom:8px;">DISTILL LAYER</div>
+          <div class="trio-title">distill/</div>
+          <div class="trio-desc" style="margin-bottom:16px;">
+            AI提炼后的结构化知识。<br>
+            <strong style="color:var(--text-primary);">AI可直接引用</strong>的规范文档。
+          </div>
+          <div class="divider-thin"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--text-disabled); letter-spacing:0.06em;">
+            .md — 结构化Markdown
+          </div>
+        </div>
+        <div class="trio-card">
+          <span class="trio-num">03</span>
+          <div class="label" style="margin-bottom:8px;">INDEX LAYER</div>
+          <div class="trio-title">CLAUDE.md</div>
+          <div class="trio-desc" style="margin-bottom:16px;">
+            入口文件。告诉AI「这里有什么」。<br>
+            <strong style="color:var(--text-primary);">一行引用，全局可用</strong>。
+          </div>
+          <div class="divider-thin"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--text-disabled); letter-spacing:0.06em;">
+            CLAUDE.md — 知识地图
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">03 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 04 — WHAT: 三个操作
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="4">
+  <span class="section-tag">WHAT</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1200px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">WHAT</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:56px;">
+        三个操作，覆盖知识全生命周期
+      </h2>
+
+      <div class="flow-pipeline" style="justify-content:center; margin-bottom:64px;">
+        <div class="flow-stage flow-stage--done">
+          <span class="flow-label">OPERATION</span>
+          <span class="flow-value" style="font-size:20px; font-weight:500;">INGEST</span>
+        </div>
+        <span class="flow-arrow" style="font-size:24px;">&#8250;</span>
+        <div class="flow-stage flow-stage--active">
+          <span class="flow-label">OPERATION</span>
+          <span class="flow-value" style="font-size:20px; font-weight:500;">QUERY</span>
+        </div>
+        <span class="flow-arrow" style="font-size:24px;">&#8250;</span>
+        <div class="flow-stage">
+          <span class="flow-label">OPERATION</span>
+          <span class="flow-value" style="font-size:20px; font-weight:500;">LINT</span>
+        </div>
+      </div>
+
+      <div class="grid-3" style="gap:32px;">
+        <div class="card">
+          <div class="label" style="margin-bottom:12px;">INGEST</div>
+          <div style="font-size:18px; font-weight:500; color:var(--text-display); margin-bottom:8px;">收录</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+            把散乱文档收进知识库。<br>
+            AI自动识别格式，生成结构化索引。
+          </div>
+        </div>
+        <div class="card">
+          <div class="label" style="margin-bottom:12px;">QUERY</div>
+          <div style="font-size:18px; font-weight:500; color:var(--text-display); margin-bottom:8px;">检索</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+            用自然语言提问。<br>
+            AI从知识库中找到精准答案。
+          </div>
+        </div>
+        <div class="card">
+          <div class="label" style="margin-bottom:12px;">LINT</div>
+          <div style="font-size:18px; font-weight:500; color:var(--text-display); margin-bottom:8px;">体检</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+            自动检查知识库健康度。<br>
+            发现断链、过期、缺失。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">04 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 05 — WHAT: 三个技能对比
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="5">
+  <span class="section-tag">WHAT</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1400px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">WHAT</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:40px;">
+        三个技能：封装好的AI能力
+      </h2>
+
+      <div style="border:1px solid var(--border-visible);">
+        <!-- Header -->
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr 1fr; border-bottom:1px solid var(--border-visible);">
+          <div style="padding:16px 20px; border-right:1px solid var(--border);"></div>
+          <div style="padding:16px 20px; border-right:1px solid var(--border);">
+            <span class="label">SKILL</span>
+            <div style="font-size:16px; font-weight:500; color:var(--text-display); margin-top:4px;">wiki:ingest</div>
+          </div>
+          <div style="padding:16px 20px; border-right:1px solid var(--border);">
+            <span class="label">SKILL</span>
+            <div style="font-size:16px; font-weight:500; color:var(--text-display); margin-top:4px;">wiki:query</div>
+          </div>
+          <div style="padding:16px 20px;">
+            <span class="label">SKILL</span>
+            <div style="font-size:16px; font-weight:500; color:var(--text-display); margin-top:4px;">wiki:health</div>
+          </div>
+        </div>
+        <!-- Rows -->
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr 1fr; border-bottom:1px solid var(--border);">
+          <div style="padding:12px 20px; border-right:1px solid var(--border);">
+            <span class="label">输入</span>
+          </div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">散乱文档路径</div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">自然语言问题</div>
+          <div style="padding:12px 20px; font-size:14px; color:var(--text-primary);">知识库路径</div>
+        </div>
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr 1fr; border-bottom:1px solid var(--border);">
+          <div style="padding:12px 20px; border-right:1px solid var(--border);">
+            <span class="label">输出</span>
+          </div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">distill/ 结构化文档</div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">精准答案 + 来源引用</div>
+          <div style="padding:12px 20px; font-size:14px; color:var(--text-primary);">健康度报告 + 修复建议</div>
+        </div>
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr 1fr; border-bottom:1px solid var(--border);">
+          <div style="padding:12px 20px; border-right:1px solid var(--border);">
+            <span class="label">频率</span>
+          </div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">文档更新时</div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">随时</div>
+          <div style="padding:12px 20px; font-size:14px; color:var(--text-primary);">每周 / 发布前</div>
+        </div>
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr 1fr;">
+          <div style="padding:12px 20px; border-right:1px solid var(--border);">
+            <span class="label">门槛</span>
+          </div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border);">
+            <span style="font-size:14px; color:var(--text-primary);">零</span>
+            <span style="font-size:12px; color:var(--text-disabled); margin-left:8px;">会说话就行</span>
+          </div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border);">
+            <span style="font-size:14px; color:var(--text-primary);">零</span>
+            <span style="font-size:12px; color:var(--text-disabled); margin-left:8px;">自然语言提问</span>
+          </div>
+          <div style="padding:12px 20px;">
+            <span style="font-size:14px; color:var(--text-primary);">零</span>
+            <span style="font-size:12px; color:var(--text-disabled); margin-left:8px;">一键运行</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">05 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 06 — DEMO: 散乱SOP文档（整理前）
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="6">
+  <span class="section-tag">DEMO</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1200px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">DEMO</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:12px;">
+        散乱SOP文档
+      </h2>
+      <div style="font-size:16px; color:var(--text-secondary); margin-bottom:40px;">
+        <span class="tag" style="margin-right:8px;">BEFORE</span> 整理前 — 典型团队文件夹
+      </div>
+
+      <div class="grid-2" style="gap:32px;">
+        <div class="code-block"><span class="dim">📁 团队知识/</span>
+<span class="dim">├── </span><span class="file">SOP-新员工入职v2.docx</span>
+<span class="dim">├── </span><span class="file">供应商准入流程（终版）.docx</span>
+<span class="dim">├── </span><span class="file">质检标准2024更新.xlsx</span>
+<span class="dim">├── </span><span class="file">金条外呼话术-最新.pdf</span>
+<span class="dim">├── </span><span class="file">Q1业绩分析.pptx</span>
+<span class="dim">├── </span><span class="file">重要！！！看这个.txt</span>
+<span class="dim">├── </span><span class="file">王总讲话纪要-0315.docx</span>
+<span class="dim">├── </span><span class="file">副本 of 合规制度v3.docx</span>
+<span class="dim">├── </span><span class="file">test-备份-别删.md</span>
+<span class="dim">└── </span><span class="file">新建文件夹/</span>
+<span class="dim">    └── </span><span class="file">临时笔记.txt</span></div>
+        <div class="flex-col" style="justify-content:center; gap:32px;">
+          <div class="stat-group">
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">文件数</span>
+              <span style="font-size:15px; color:var(--text-primary);">10+ 散落各处</span>
+            </div>
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">格式</span>
+              <span style="font-size:15px; color:var(--text-primary);">docx / xlsx / pdf / txt 混杂</span>
+            </div>
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">命名</span>
+              <span style="font-size:15px; color:var(--accent);">无规范，版本混乱</span>
+            </div>
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">AI可读性</span>
+              <span style="font-size:15px; color:var(--accent);">零</span>
+            </div>
+          </div>
+          <div style="padding:20px; border:1px solid var(--accent); border-left:3px solid var(--accent);">
+            <div style="font-size:14px; color:var(--accent); font-weight:500; margin-bottom:4px;">核心问题</div>
+            <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+              AI面对这些文件，无法理解结构、无法判断版本、无法建立关联。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">06 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 07 — DEMO: 结构化知识（整理后）
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="7">
+  <span class="section-tag">DEMO</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1200px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">DEMO</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:12px;">
+        结构化知识
+      </h2>
+      <div style="font-size:16px; color:var(--text-secondary); margin-bottom:40px;">
+        <span class="tag tag-active" style="margin-right:8px;">AFTER</span> 整理后 — 三层结构
+      </div>
+
+      <div class="grid-2" style="gap:32px;">
+        <div class="code-block"><span class="dim">📁 供应商管理/</span>
+<span class="dim">├── </span><span class="dir">raw/</span><span class="dim">                    ← 原始文档</span>
+<span class="dim">│   ├── </span><span class="file">准入流程v3.docx</span>
+<span class="dim">│   ├── </span><span class="file">质检标准2024.xlsx</span>
+<span class="dim">│   └── </span><span class="file">合规制度.pdf</span>
+<span class="dim">├── </span><span class="dir">distill/</span><span class="dim">                 ← AI提炼</span>
+<span class="dim">│   ├── </span><span class="ok">供应商准入规范.md</span>
+<span class="dim">│   ├── </span><span class="ok">质检评分标准.md</span>
+<span class="dim">│   ├── </span><span class="ok">合规红线清单.md</span>
+<span class="dim">│   └── </span><span class="ok">岗位分工指南.md</span>
+<span class="dim">└── </span><span class="highlight">CLAUDE.md</span><span class="dim">               ← 知识地图</span>
+<span class="dim">    </span><span class="dim">引用 distill/ 下所有文档</span></div>
+        <div class="flex-col" style="justify-content:center; gap:32px;">
+          <div class="stat-group">
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">文档数</span>
+              <span style="font-size:15px; color:var(--text-primary);">44 篇结构化文档</span>
+            </div>
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">总行数</span>
+              <span style="font-size:15px; color:var(--text-primary);">5,353 行</span>
+            </div>
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">健康度</span>
+              <span style="font-size:15px; color:var(--success); font-weight:500;">100%</span>
+            </div>
+            <div class="stat-item">
+              <span style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); min-width:120px;">AI可读性</span>
+              <span style="font-size:15px; color:var(--success); font-weight:500;">100%</span>
+            </div>
+          </div>
+          <div style="padding:20px; border:1px solid var(--success); border-left:3px solid var(--success);">
+            <div style="font-size:14px; color:var(--success); font-weight:500; margin-bottom:4px;">变化</div>
+            <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+              AI现在能精准回答："供应商准入需要几步？""质检扣分项有哪些？""合规红线是什么？"
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">07 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 08 — HOW: AI提炼 vs 人写
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="8">
+  <span class="section-tag">HOW</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1200px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">HOW</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:40px;">
+        AI提炼 vs 人写：编写规范
+      </h2>
+
+      <div class="compare-grid" style="grid-template-columns:1fr 1fr; gap:32px;">
+        <div class="compare-col compare-col--avoid">
+          <div class="compare-header">
+            <span class="compare-marker">&times;</span>
+            <span class="compare-title">AVOID — 人写规范</span>
+          </div>
+          <div class="compare-row"><span class="compare-icon">&times;</span><span>花3天写一份"完美"SOP</span></div>
+          <div class="compare-row"><span class="compare-icon">&times;</span><span>写完就过时，没人维护</span></div>
+          <div class="compare-row"><span class="compare-icon">&times;</span><span>格式不统一，新人看不懂</span></div>
+          <div class="compare-row"><span class="compare-icon">&times;</span><span>写的人走了，知识也走了</span></div>
+        </div>
+        <div class="compare-col compare-col--prefer">
+          <div class="compare-header">
+            <span class="compare-marker">&middot;</span>
+            <span class="compare-title">PREFER — AI提炼</span>
+          </div>
+          <div class="compare-row"><span class="compare-icon">&middot;</span><span>把现有文档扔给AI，5分钟出结构化版本</span></div>
+          <div class="compare-row"><span class="compare-icon">&middot;</span><span>文档更新时重新跑一遍，自动同步</span></div>
+          <div class="compare-row"><span class="compare-icon">&middot;</span><span>统一格式，统一术语，统一结构</span></div>
+          <div class="compare-row"><span class="compare-icon">&middot;</span><span>知识沉淀在文件里，不随人走</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:40px; padding:24px; border:1px solid var(--border-visible); display:flex; align-items:center; gap:24px;">
+        <div style="font-family:'Space Mono',monospace; font-size:36px; font-weight:700; color:var(--text-display); line-height:1;">3天</div>
+        <div style="font-size:14px; color:var(--text-disabled);">vs</div>
+        <div style="font-family:'Space Mono',monospace; font-size:36px; font-weight:700; color:var(--success); line-height:1;">5分钟</div>
+        <div style="font-size:14px; color:var(--text-secondary); margin-left:16px;">人写一份完整SOP vs AI提炼同等质量的结构化文档</div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">08 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 09 — HOW: wiki:ingest 六步流程
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="9">
+  <span class="section-tag">HOW</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1400px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">HOW — INGEST</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:40px;">
+        wiki:ingest 六步流程
+      </h2>
+
+      <div style="display:grid; grid-template-columns:repeat(6, 1fr); gap:16px;">
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">01</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">扫描</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">识别目录下<br>所有文档</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">02</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">分类</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">按主题自动<br>归类分组</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">03</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">提炼</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">AI提取核心<br>知识点</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">04</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">结构化</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">生成统一<br>Markdown</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">05</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">索引</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">写入distill/<br>更新CLAUDE.md</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center; border-color:var(--success);">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--success); margin-bottom:12px;">06</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">验证</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">运行wiki:health<br>确认健康度</div>
+        </div>
+      </div>
+
+      <div style="margin-top:40px; padding:20px; border:1px solid var(--border-visible);">
+        <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:8px;">实际用法</div>
+        <div class="code-block" style="padding:16px 20px; font-size:14px; line-height:1.8;">
+<span class="dim">$</span> <span class="file">claude</span> <span class="dim">"把供应商管理目录下的文档整理成知识库"</span>
+<span class="ok">→ AI自动执行六步流程，输出结构化知识</span></div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">09 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 10 — HOW: wiki:query 五步流程
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="10">
+  <span class="section-tag">HOW</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1400px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">HOW — QUERY</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:40px;">
+        wiki:query 五步流程
+      </h2>
+
+      <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:16px; margin-bottom:48px;">
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">01</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">解析问题</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">理解用户<br>自然语言意图</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">02</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">路由</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">定位到相关<br>知识库文档</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">03</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">召回</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">语义搜索<br>最相关内容</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center;">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--text-disabled); margin-bottom:12px;">04</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">生成</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">基于知识<br>组织回答</div>
+        </div>
+        <div class="card" style="padding:24px 16px; text-align:center; border-color:var(--success);">
+          <div style="font-family:'Space Mono',monospace; font-size:32px; font-weight:700; color:var(--success); margin-bottom:12px;">05</div>
+          <div style="font-size:15px; font-weight:500; color:var(--text-display); margin-bottom:6px;">引用</div>
+          <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">标注来源<br>可追溯验证</div>
+        </div>
+      </div>
+
+      <div style="padding:20px; border:1px solid var(--border-visible);">
+        <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:8px;">实际用法</div>
+        <div class="code-block" style="padding:16px 20px; font-size:14px; line-height:1.8;">
+<span class="dim">></span> <span class="file">供应商准入需要哪些步骤？</span>
+<span class="ok">→ AI从 distill/供应商准入规范.md 中精准回答</span>
+<span class="dim">   并标注来源：distill/供应商准入规范.md#L42-L68</span></div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">10 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 11 — HOW: wiki:health 检查项
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="11">
+  <span class="section-tag">HOW</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1200px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">HOW — HEALTH</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:40px;">
+        wiki:health 检查项
+      </h2>
+
+      <div class="grid-2" style="gap:40px;">
+        <div>
+          <div class="checklist">
+            <div class="checklist-item">
+              <span class="check-box checked"></span>
+              <span class="check-label">CLAUDE.md 引用完整性</span>
+              <span class="check-status">OK</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-box checked"></span>
+              <span class="check-label">distill/ 文档格式一致性</span>
+              <span class="check-status">OK</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-box checked"></span>
+              <span class="check-label">内部链接有效性</span>
+              <span class="check-status">OK</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-box checked"></span>
+              <span class="check-label">raw/ 与 distill/ 同步状态</span>
+              <span class="check-status">OK</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-box checked"></span>
+              <span class="check-label">术语一致性检查</span>
+              <span class="check-status">OK</span>
+            </div>
+            <div class="checklist-item">
+              <span class="check-box checked"></span>
+              <span class="check-label">结构完整性（标题/章节/引用）</span>
+              <span class="check-status">OK</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex-col" style="justify-content:center; gap:32px;">
+          <div style="text-align:center;">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:96px; font-weight:700; color:var(--success); line-height:1;">100</div>
+            <div style="font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); margin-top:8px;">HEALTH SCORE</div>
+          </div>
+          <div class="seg-bar" style="height:12px;">
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+            <div class="seg seg filled-ok"></div>
+          </div>
+          <div style="padding:16px; border:1px solid var(--border-visible);">
+            <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+              <strong style="color:var(--text-primary);">每周运行一次</strong>，自动发现问题。<br>
+              发布前运行，确保知识库健康。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">11 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 12 — DEMO: 供应商管理知识库实例
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="12">
+  <span class="section-tag">DEMO</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1400px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">DEMO — 实例</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:40px;">
+        供应商管理知识库
+      </h2>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; margin-bottom:40px;">
+        <div class="card" style="text-align:center; padding:40px 24px;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:12px;">TOTAL LINES</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-size:56px; font-weight:700; color:var(--text-display); line-height:1;">5,353</div>
+          <div style="font-size:14px; color:var(--text-secondary); margin-top:8px;">行结构化知识</div>
+        </div>
+        <div class="card" style="text-align:center; padding:40px 24px;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:12px;">DOCUMENTS</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-size:56px; font-weight:700; color:var(--text-display); line-height:1;">44</div>
+          <div style="font-size:14px; color:var(--text-secondary); margin-top:8px;">篇结构化文档</div>
+        </div>
+        <div class="card" style="text-align:center; padding:40px 24px; border-color:var(--success);">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--success); margin-bottom:12px;">HEALTH SCORE</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-size:56px; font-weight:700; color:var(--success); line-height:1;">100%</div>
+          <div style="font-size:14px; color:var(--text-secondary); margin-top:8px;">健康度满分</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--border-visible);">
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr; border-bottom:1px solid var(--border-visible);">
+          <div style="padding:12px 20px; border-right:1px solid var(--border);"><span class="label">文档类型</span></div>
+          <div style="padding:12px 20px; border-right:1px solid var(--border);"><span class="label">数量</span></div>
+          <div style="padding:12px 20px;"><span class="label">覆盖范围</span></div>
+        </div>
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr; border-bottom:1px solid var(--border);">
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">准入规范</div>
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">8篇</div>
+          <div style="padding:10px 20px; font-size:14px; color:var(--text-secondary);">流程、标准、材料清单</div>
+        </div>
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr; border-bottom:1px solid var(--border);">
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">质检标准</div>
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">12篇</div>
+          <div style="padding:10px 20px; font-size:14px; color:var(--text-secondary);">评分规则、扣分项、红线</div>
+        </div>
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr; border-bottom:1px solid var(--border);">
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">合规制度</div>
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">10篇</div>
+          <div style="padding:10px 20px; font-size:14px; color:var(--text-secondary);">制度、红线、处罚规则</div>
+        </div>
+        <div style="display:grid; grid-template-columns:200px 1fr 1fr;">
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">岗位分工</div>
+          <div style="padding:10px 20px; border-right:1px solid var(--border); font-size:14px; color:var(--text-primary);">14篇</div>
+          <div style="padding:10px 20px; font-size:14px; color:var(--text-secondary);">职责、流程、协作规范</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">12 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 13 — HOW: 三级火箭
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="13">
+  <span class="section-tag">HOW</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1400px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">HOW — 落地路径</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:500; color:var(--text-display); margin-bottom:48px;">
+        三级火箭：从个人到团队
+      </h2>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:32px;">
+        <!-- Level 1 -->
+        <div class="card" style="padding:32px 24px; position:relative;">
+          <div style="position:absolute; top:-1px; left:0; right:0; height:3px; background:var(--text-display);"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:48px; font-weight:700; color:var(--text-disabled); margin-bottom:16px; line-height:1;">L1</div>
+          <div style="font-size:20px; font-weight:500; color:var(--text-display); margin-bottom:12px;">个人先行</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6; margin-bottom:20px;">
+            一个人先用起来。<br>
+            把自己的文档整理成知识库。<br>
+            验证效果，积累经验。
+          </div>
+          <div class="divider-thin"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--text-disabled);">
+            周期：1-2周<br>
+            门槛：零
+          </div>
+        </div>
+        <!-- Level 2 -->
+        <div class="card" style="padding:32px 24px; position:relative;">
+          <div style="position:absolute; top:-1px; left:0; right:0; height:3px; background:var(--text-secondary);"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:48px; font-weight:700; color:var(--text-disabled); margin-bottom:16px; line-height:1;">L2</div>
+          <div style="font-size:20px; font-weight:500; color:var(--text-display); margin-bottom:12px;">人工确认</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6; margin-bottom:20px;">
+            AI提炼后，人审核确认。<br>
+            确保准确性，建立信任。<br>
+            逐步形成团队规范。
+          </div>
+          <div class="divider-thin"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--text-disabled);">
+            周期：2-4周<br>
+            门槛：低
+          </div>
+        </div>
+        <!-- Level 3 -->
+        <div class="card" style="padding:32px 24px; position:relative; border-color:var(--success);">
+          <div style="position:absolute; top:-1px; left:0; right:0; height:3px; background:var(--success);"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:48px; font-weight:700; color:var(--success); margin-bottom:16px; line-height:1; opacity:0.4;">L3</div>
+          <div style="font-size:20px; font-weight:500; color:var(--text-display); margin-bottom:12px;">团队共享</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6; margin-bottom:20px;">
+            知识库成为团队基础设施。<br>
+            新人入职直接可用。<br>
+            AI成为团队知识引擎。
+          </div>
+          <div class="divider-thin"></div>
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--text-disabled);">
+            周期：1-2月<br>
+            门槛：需推动
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:40px; display:flex; align-items:center; gap:24px; padding:16px 0;">
+        <div style="flex:1; height:1px; background:var(--border-visible);"></div>
+        <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled);">关键原则</div>
+        <div style="flex:1; height:1px; background:var(--border-visible);"></div>
+      </div>
+      <div style="text-align:center; font-size:16px; color:var(--text-secondary);">
+        不追求一步到位。先跑起来，再优化。<strong style="color:var(--text-display);">个人验证 > 团队推广</strong>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">13 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 14 — TAKEAWAY
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="14">
+  <span class="section-tag">TAKEAWAY</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1000px; margin:0 auto; width:100%; text-align:center;">
+      <div class="label" style="margin-bottom:32px;">TAKEAWAY</div>
+
+      <div style="display:flex; flex-direction:column; gap:40px;">
+        <div style="padding:32px 0; border-bottom:1px solid var(--border);">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:12px;">01</div>
+          <div style="font-size:28px; font-weight:500; color:var(--text-display); line-height:1.3;">
+            知识不在聊天记录里，<span style="color:var(--accent);">在结构化文档里</span>
+          </div>
+        </div>
+        <div style="padding:32px 0; border-bottom:1px solid var(--border);">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:12px;">02</div>
+          <div style="font-size:28px; font-weight:500; color:var(--text-display); line-height:1.3;">
+            AI提炼比人写快<span style="color:var(--success);">100倍</span>，质量不差
+          </div>
+        </div>
+        <div style="padding:32px 0;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:12px;">03</div>
+          <div style="font-size:28px; font-weight:500; color:var(--text-display); line-height:1.3;">
+            一个人先跑起来，<span style="color:var(--success);">比等团队共识更重要</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">14 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 15 — PRACTICE
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide" data-slide="15">
+  <span class="section-tag">PRACTICE</span>
+  <div class="slide-inner" style="justify-content:center;">
+    <div style="max-width:1000px; margin:0 auto; width:100%;">
+      <div class="label" style="margin-bottom:16px;">PRACTICE</div>
+      <h2 style="font-family:'Space Grotesk',sans-serif; font-size:40px; font-weight:500; color:var(--text-display); margin-bottom:48px;">
+        现场体验
+      </h2>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px;">
+        <div class="card" style="padding:32px;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:16px;">STEP 1</div>
+          <div style="font-size:18px; font-weight:500; color:var(--text-display); margin-bottom:12px;">准备一份你的文档</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+            任何格式都行：Word、Excel、PDF、<br>
+            甚至聊天记录截图。<br>
+            <strong style="color:var(--text-primary);">不需要整理，原样就好。</strong>
+          </div>
+        </div>
+        <div class="card" style="padding:32px;">
+          <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:16px;">STEP 2</div>
+          <div style="font-size:18px; font-weight:500; color:var(--text-display); margin-bottom:12px;">告诉AI一句话</div>
+          <div style="font-size:14px; color:var(--text-secondary); line-height:1.6;">
+            "把这个目录下的文档整理成知识库"<br>
+            <strong style="color:var(--text-primary);">AI自动完成剩下的事。</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:48px; text-align:center; padding:24px; border:1px solid var(--border-visible);">
+        <div style="font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-disabled); margin-bottom:8px;">WIKI:INGEST</div>
+        <div style="font-size:16px; color:var(--text-secondary); line-height:1.6;">
+          准备好文档 → 打开终端 → 输入一行命令 → <strong style="color:var(--text-display);">等5分钟</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="page-num">15 / 16</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE 16 — Q&A
+     ══════════════════════════════════════════════════════════════ -->
+<div class="slide end-slide" data-slide="16">
+  <div class="end-main" style="position:relative;">
+    <span style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-disabled); display:block; margin-bottom:24px;">Q &amp; A</span>
+    有任何问题，<br>现在就问。
+  </div>
+  <div class="end-sub" style="margin-top:40px;">
+    知识库搭建咨询 · 现场演示 · 一对一指导
+  </div>
+  <span class="page-num">16 / 16</span>
+</div>
+
+</div><!-- end deck-stage -->
+</div><!-- end deck-viewport -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAVIGATION & PROGRESS
+     ══════════════════════════════════════════════════════════════ -->
+<div class="progress-bar" id="progress"></div>
+<div class="slide-counter" id="counter">01 / 16</div>
+<div class="nav-hint">&larr; &rarr; NAVIGATE</div>
+
+<script>
+(function() {
+  const stage = document.getElementById('stage');
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  const total = slides.length;
+  let current = 0;
+
+  function showSlide(idx) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[idx].classList.add('active');
+    current = idx;
+    progress.style.width = ((idx + 1) / total * 100) + '%';
+    counter.textContent = String(idx + 1).padStart(2, '0') + ' / ' + total;
+  }
+
+  function next() { if (current < total - 1) showSlide(current + 1); }
+  function prev() { if (current > 0) showSlide(current - 1); }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); showSlide(0); }
+    if (e.key === 'End') { e.preventDefault(); showSlide(total - 1); }
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) { dx < 0 ? next() : prev(); }
+  });
+
+  // Click to advance (left third = back, rest = forward)
+  stage.addEventListener('click', function(e) {
+    const rect = stage.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    if (x < rect.width * 0.3) prev(); else next();
+  });
+
+  // Viewport scaling
+  function resize() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const scaleX = vw / 1920;
+    const scaleY = vh / 1080;
+    const scale = Math.min(scaleX, scaleY);
+    stage.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  showSlide(0);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jingME — 京ME+慧记组合承诺追踪技能</title>
+<style>
+:root{
+  --bg:#ffffff; --card-bg:#f5f5f7; --text:#1d1d1f; --text-secondary:#86868b;
+  --border:#d2d2d7; --accent:#0071e3;
+  --terminal-bg:#1d1d1f; --terminal-text:#f5f5f7;
+  --warn:#bf4800; --danger:#a32d2d; --success:#0f6e56;
+  --font:-apple-system,'SF Pro Display','Helvetica Neue','PingFang SC',sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+.container{max-width:980px;margin:0 auto;padding:0 24px}
+.hero{padding:80px 0 56px;border-bottom:1px solid var(--border)}
+.hero .badge{display:inline-block;font-size:13px;font-weight:600;color:var(--accent);background:rgba(0,113,227,.08);padding:6px 12px;border-radius:980px;margin-bottom:20px}
+.hero h1{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-bottom:14px}
+.hero .subtitle{font-size:21px;color:var(--text-secondary);font-weight:400;line-height:1.4;max-width:760px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:32px;margin-top:28px;font-size:13px;color:var(--text-secondary)}
+.hero .meta strong{color:var(--text);font-weight:600}
+.summary{padding:40px 0;border-bottom:1px solid var(--border)}
+.summary .lead{border-left:3px solid var(--accent);padding-left:16px;font-size:18px;line-height:1.6}
+.summary .lead strong{color:var(--accent)}
+section{padding:64px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:28px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+h2 .num{color:var(--text-secondary);font-weight:500;font-family:var(--mono);font-size:20px;margin-right:10px}
+.h2-sub{color:var(--text-secondary);font-size:16px;margin-bottom:32px}
+h3{font-size:21px;font-weight:600;margin:36px 0 16px}
+p{margin-bottom:16px}
+p:last-child{margin-bottom:0}
+.card{background:var(--card-bg);border-radius:16px;padding:28px;margin-bottom:20px}
+.card h4{font-size:17px;font-weight:600;margin-bottom:10px}
+.card p{font-size:15px;color:#444}
+.term{background:var(--terminal-bg);border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.7;color:var(--terminal-text);overflow-x:auto;margin:14px 0}
+.term .cmt{color:#737373}
+.term .var{color:#64d2ff}
+.term .flag{color:#ffd60a}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:14px 0}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border)}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}
+td code{font-family:var(--mono);font-size:13px;color:var(--accent);background:rgba(0,113,227,.06);padding:2px 6px;border-radius:4px}
+.callout{border-radius:12px;padding:16px 18px;margin:16px 0;font-size:15px;line-height:1.55}
+.callout-warn{background:rgba(191,72,0,.08);border-left:3px solid var(--warn)}
+.callout-danger{background:rgba(163,45,45,.06);border-left:3px solid var(--danger)}
+.callout-info{background:rgba(0,113,227,.06);border-left:3px solid var(--accent)}
+.callout-success{background:rgba(15,110,86,.06);border-left:3px solid var(--success)}
+.callout strong{display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.callout-warn strong{color:var(--warn)}
+.callout-danger strong{color:var(--danger)}
+.callout-info strong{color:var(--accent)}
+.callout-success strong{color:var(--success)}
+
+/* orchestration diagram */
+.orch{margin:24px 0}
+.orch-row{display:flex;align-items:stretch;gap:0}
+.orch-src{flex:1;background:var(--card-bg);border-radius:12px;padding:20px;text-align:center}
+.orch-src .ico{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--success);margin-bottom:8px}
+.orch-src h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.orch-src p{font-size:13px;color:var(--text-secondary);margin:0}
+.orch-mid{display:flex;align-items:center;padding:0 16px;color:var(--text-secondary);font-size:24px;font-weight:200}
+.orch-target{flex:1.4;background:rgba(0,113,227,.06);border:1.5px solid var(--accent);border-radius:12px;padding:20px;text-align:center}
+.orch-target .ico{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.orch-target h4{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:4px}
+.orch-target p{font-size:13px;color:var(--text-secondary);margin:0}
+
+/* workflow steps */
+.steps{margin:24px 0;position:relative;padding-left:32px}
+.steps::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:var(--border)}
+.step{position:relative;margin-bottom:24px}
+.step::before{content:"";position:absolute;left:-27px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--bg)}
+.step .step-num{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700}
+.step h4{font-size:16px;font-weight:600;margin:2px 0 8px}
+.step p{font-size:15px;color:#444;margin:0}
+
+/* commitment cue chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{font-size:13px;padding:6px 10px;border-radius:8px;background:var(--card-bg);border:1px solid var(--border);font-family:var(--mono)}
+.chip-owner{background:rgba(0,113,227,.06);color:var(--accent);border-color:rgba(0,113,227,.2)}
+.chip-deadline{background:rgba(191,72,0,.06);color:var(--warn);border-color:rgba(191,72,0,.2)}
+.chip-deliver{background:rgba(15,110,86,.06);color:var(--success);border-color:rgba(15,110,86,.2)}
+
+/* output table */
+.out-table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}
+.out-table th{background:var(--card-bg);font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:600;padding:10px 12px;border-bottom:2px solid var(--border)}
+.out-table td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:13.5px}
+.out-table tr:hover{background:var(--card-bg)}
+
+.status{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.status-promised{background:rgba(0,113,227,.1);color:var(--accent)}
+.status-done{background:rgba(15,110,86,.1);color:var(--success)}
+.status-blocked{background:rgba(163,45,45,.1);color:var(--danger)}
+.status-unclear{background:rgba(191,72,0,.1);color:var(--warn)}
+footer{padding:48px 0 64px;text-align:center;color:var(--text-secondary);font-size:13px}
+@media(max-width:640px){
+  .hero{padding:48px 0 40px}
+  .hero h1{font-size:34px}
+  .orch-row{flex-direction:column}
+  .orch-mid{transform:rotate(90deg);padding:8px 0}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">组合层 · 承诺追踪</span>
+    <h1>jingME</h1>
+    <p class="subtitle">编排 jdme-local-tools（京ME消息）与 read-joymeeting（慧记会议）两个只读数据源，产出一张可追溯的跟进事项表——谁答应做什么、什么时候交付、来源证据、当前状态、建议提醒文案。</p>
+    <div class="meta">
+      <span>版本 <strong>0.1.0 (local-draft)</strong></span>
+      <span>状态 <strong>本地草稿</strong></span>
+      <span>性质 <strong>只读编排</strong></span>
+      <span>依赖 <strong>jdme-local-tools + read-joymeeting</strong></span>
+    </div>
+  </div>
+</header>
+
+<div class="summary">
+  <div class="container">
+    <p class="lead">五个采集技能里的<strong>第一个组合层</strong>。它本身不直接读数据，而是调度下面两个采集技能，把 IM 消息和会议逐字稿汇到一起，专门抽取"承诺/交付"信号——这是 personal-insight-summary 做<strong>日报级</strong>汇总、jingME 做<strong>事项级</strong>追踪的分工。</p>
+  </div>
+</div>
+
+<!-- 编排关系 -->
+<section>
+  <div class="container">
+    <h2><span class="num">01</span>编排关系</h2>
+    <p class="h2-sub">两个只读数据源 → 一个承诺追踪输出。</p>
+
+    <div class="orch">
+      <div class="orch-row">
+        <div class="orch-src">
+          <div class="ico">SOURCE A</div>
+          <h4>jdme-local-tools</h4>
+          <p>京ME群聊/私聊<br>全量消息</p>
+        </div>
+        <div class="orch-mid">+</div>
+        <div class="orch-src">
+          <div class="ico">SOURCE B</div>
+          <h4>read-joymeeting</h4>
+          <p>慧记会议<br>逐字稿</p>
+        </div>
+        <div class="orch-mid">→</div>
+        <div class="orch-target">
+          <div class="ico">JINGME 编排</div>
+          <h4>跟进事项表</h4>
+          <p>负责人·事项·截止·来源·状态·证据·提醒文案</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-success">
+      <strong>主要输出</strong>
+      可追溯的跟进列表：谁承诺了什么、何时交付、来源证据（京ME/慧记+原话）、当前状态、建议提醒文案。
+    </div>
+  </div>
+</section>
+
+<!-- 安全边界 -->
+<section>
+  <div class="container">
+    <h2><span class="num">02</span>安全边界</h2>
+    <div class="callout callout-danger">
+      <strong>只读硬约束</strong>
+      <ul style="padding-left:20px;margin:6px 0 0">
+        <li>不直接发京ME消息</li>
+        <li>不修改 JD ME 聊天数据库或日志</li>
+        <li>不注入 JD ME 客户端或转储进程内存</li>
+        <li>不提取凭据、cookie 或私钥</li>
+        <li>不把未验证的推断当作事实呈现</li>
+      </ul>
+    </div>
+    <div class="callout callout-warn">
+      <strong>用户要发消息时</strong>
+      生成草稿文案，并明确告知必须手动发送（除非存在官方授权的发送工具）。
+    </div>
+  </div>
+</section>
+
+<!-- 工作流 -->
+<section>
+  <div class="container">
+    <h2><span class="num">03</span>工作流（五步）</h2>
+    <p class="h2-sub">从澄清范围到产出跟进表。</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">STEP 1 · 澄清范围</div>
+        <h4>问最小必要信息</h4>
+        <p>缺失时问：人 ERP/姓名、群名或 session id、日期范围、关键词、是否含会议记录。默认范围：昨天=上一日；本周=周一到今天；最近=7 天。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 2 · 采集京ME证据</div>
+        <h4>jdme-local-tools 调度</h4>
+        <p>已知 ERP 时先试私聊 session id 模式 <code>&lt;other&gt;:ee:&lt;self&gt;:ee</code>。未知时用 <code>chat-search --auto --keyword &lt;erp&gt;</code>。按时间戳在 Python 里过滤；原始 JSON 只放临时文件；用户没明确要求时不把私聊导出存进项目。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 3 · 采集慧记证据</div>
+        <h4>read-joymeeting 调度</h4>
+        <p>取范围内会议列表，只对与主题相关的会议取详情。用 title / members / transcript / attachments。transcript 缺失时不编造结论。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 4 · 抽取承诺</div>
+        <h4>承诺线索识别与分类</h4>
+        <p>见下一节的线索词表。每条分类：负责人、事项、截止、来源、证据引用、状态、建议提醒文案。</p>
+      </div>
+      <div class="step">
+        <div class="step-num">STEP 5 · 产出</div>
+        <h4>结论 + 跟进表 + 提醒文案</h4>
+        <p>用简洁中文。敏感内容用摘要而非原始逐字稿。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 承诺线索 -->
+<section>
+  <div class="container">
+    <h2><span class="num">04</span>承诺线索词表</h2>
+    <p class="h2-sub">三类线索，从 IM 与会议全文中匹配承诺信号。</p>
+
+    <h3>① 负责人线索（谁承诺）</h3>
+    <div class="chips">
+      <span class="chip chip-owner">我来</span>
+      <span class="chip chip-owner">我跟</span>
+      <span class="chip chip-owner">我负责</span>
+      <span class="chip chip-owner">我推进</span>
+      <span class="chip chip-owner">我今天弄</span>
+      <span class="chip chip-owner">已收到</span>
+      <span class="chip chip-owner">会同步</span>
+    </div>
+
+    <h3>② 截止线索（何时交付）</h3>
+    <div class="chips">
+      <span class="chip chip-deadline">今天</span>
+      <span class="chip chip-deadline">明天</span>
+      <span class="chip chip-deadline">周五</span>
+      <span class="chip chip-deadline">下周</span>
+      <span class="chip chip-deadline">7月</span>
+      <span class="chip chip-deadline">上线前</span>
+      <span class="chip chip-deadline">明天发你</span>
+      <span class="chip chip-deadline">下周给</span>
+    </div>
+
+    <h3>③ 交付线索（交付什么）</h3>
+    <div class="chips">
+      <span class="chip chip-deliver">发你看</span>
+      <span class="chip chip-deliver">给谁过目</span>
+      <span class="chip chip-deliver">宣讲</span>
+      <span class="chip chip-deliver">提报</span>
+      <span class="chip chip-deliver">排期</span>
+      <span class="chip chip-deliver">上线</span>
+      <span class="chip chip-deliver">确认</span>
+      <span class="chip chip-deliver">补充数据</span>
+    </div>
+
+    <table style="margin-top:24px">
+      <tr><th>分类字段</th><th>取值</th></tr>
+      <tr><td>负责人</td><td>姓名 / ERP</td></tr>
+      <tr><td>事项</td><td>承诺要做的具体任务</td></tr>
+      <tr><td>截止</td><td>时间点或"待补"</td></tr>
+      <tr><td>来源</td><td>京ME / 慧记</td></tr>
+      <tr><td>证据</td><td>原话引用（短）</td></tr>
+      <tr><td>状态</td><td>promised / done / blocked / unclear</td></tr>
+      <tr><td>建议提醒文案</td><td>给该负责人的礼貌催办话术</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 输出格式 -->
+<section>
+  <div class="container">
+    <h2><span class="num">05</span>输出格式</h2>
+    <p class="h2-sub">结论 + 跟进表 + 建议提醒文案，简洁中文。</p>
+
+    <div class="card">
+      <h4>结论段</h4>
+      <div class="term">本次共识别 <span class="var">N</span> 个跟进事项，其中 <span class="var">A</span> 个有明确负责人，
+<span class="var">B</span> 个有明确时间点，<span class="var">C</span> 个需要补确认。</div>
+    </div>
+
+    <div class="card">
+      <h4>跟进事项表（示例）</h4>
+      <table class="out-table">
+        <tr><th>负责人</th><th>事项</th><th>时间点</th><th>来源</th><th>状态</th><th>证据</th></tr>
+        <tr>
+          <td>程润丰</td>
+          <td>补齐物料明细</td>
+          <td>0714 前</td>
+          <td>京ME</td>
+          <td><span class="status status-promised">promised</span></td>
+          <td>"物料我这两天补完"</td>
+        </tr>
+        <tr>
+          <td>沨姐</td>
+          <td>PMO 进度同步</td>
+          <td>周五</td>
+          <td>慧记</td>
+          <td><span class="status status-promised">promised</span></td>
+          <td>"周五同步 PMO"</td>
+        </tr>
+        <tr>
+          <td>C3</td>
+          <td>0714 功能提报</td>
+          <td>0714</td>
+          <td>京ME</td>
+          <td><span class="status status-blocked">blocked</span></td>
+          <td>"待 C3 排期"</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h4>建议提醒文案</h4>
+      <div class="term">给 程润丰：<span class="s">物料明细看这周能否给到？0714 上线前要确认</span>
+给 沨姐：<span class="s">周五 PMO 同步还按原计划吗</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 已验证环境 -->
+<section>
+  <div class="container">
+    <h2><span class="num">06</span>已验证的本地环境（2026-06-25）</h2>
+    <div class="callout callout-info">
+      <strong>JD ME 本地工具</strong>
+      账户自动选择对 <code>dengda.1</code> 可用；sqlcipher 经 Homebrew 安装、数据库访问正常；关键词搜索与 chat history 返回 JSON Lines；watch 命令可正常启动。
+    </div>
+    <div class="callout callout-info">
+      <strong>JoyMinutes 工具</strong>
+      本周会议列表可通过继承浏览器登录态获取；会议详情（如 <code>H1&H2讨论</code>）返回了 transcript 记录。
+    </div>
+  </div>
+</section>
+
+<!-- 发布说明 -->
+<section>
+  <div class="container">
+    <h2><span class="num">07</span>发布说明</h2>
+    <div class="callout callout-warn">
+      <strong>本地草稿</strong>
+      本目录可作为本地 skill 草稿使用，工作流记入项目 memory。当前 Zero CLI 未公开 <code>skill publish</code> 命令，发布到 Zero 应用/skill 市场需走官方 marketplace 上传路径或内部权限。
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    技能来源：projects/claude-trace/jingME · 生成于 2026-06-27 · apple-minimal 风格
+  </div>
+</footer>
+
+</body>
+</html>

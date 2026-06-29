@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>金条Q3定价调整方案 v3 — 重构解读</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;--bg-page:#F5F5F5;--bg-alt:#FAFAFA;
+  --fg:#000000;--fg2:#333333;--fg3:#888888;
+  --border:#E0E0E0;--border2:#F0F0F0;
+  --accent:#D71921;--accent-bg:rgba(215,25,33,0.06);
+  --green:#2E7D32;--green-bg:rgba(46,125,50,0.08);
+  --blue:#2471A3;--blue-bg:rgba(36,113,163,0.08);
+  --orange:#E65100;--orange-bg:rgba(230,81,0,0.08);
+  --tag-bg:#F0F0F0;--tag-fg:#333333;
+  --font-display:'Doto','Space Mono',monospace;
+  --font-body:'Space Grotesk',system-ui,sans-serif;
+  --font-mono:'Space Mono',monospace;
+  --slide-w:1920px;--slide-h:1080px;
+  --slide-pad-x:120px;--slide-pad-y:80px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg-page);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.stage{position:absolute;top:50%;left:50%;width:var(--slide-w);height:var(--slide-h);transform-origin:0 0;transform:translate(-50%,-50%);background:var(--bg);overflow:hidden}
+.slide{position:absolute;inset:0;width:var(--slide-w);height:var(--slide-h);padding:var(--slide-pad-y) var(--slide-pad-x);display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity 0.35s ease}
+.slide.active{opacity:1;pointer-events:auto}
+.slide-num{position:absolute;top:48px;right:80px;font-family:var(--font-mono);font-size:13px;font-weight:400;color:var(--fg3);letter-spacing:0.06em}
+.section-tag{display:inline-block;font-family:var(--font-mono);font-size:12px;font-weight:400;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg3);margin-bottom:16px}
+.slide-title{font-family:var(--font-body);font-size:48px;font-weight:500;line-height:1.2;color:var(--fg);letter-spacing:-0.02em;margin-bottom:16px}
+.slide-title em{font-style:normal;color:var(--accent);border-bottom:3px solid var(--accent);padding-bottom:2px}
+.slide-sub{font-size:18px;font-weight:400;color:var(--fg2);line-height:1.6;max-width:1100px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;align-content:start;margin-top:28px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;flex:1;align-content:start;margin-top:28px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px;flex:1;align-content:start;margin-top:28px}
+.card{border:1px solid var(--border);padding:28px 24px;background:var(--bg);position:relative}
+.card-accent{position:absolute;top:0;left:0;width:2px;height:100%;background:var(--accent)}
+.card-accent-green{position:absolute;top:0;left:0;width:2px;height:100%;background:var(--green)}
+.card-heading{font-family:var(--font-body);font-size:18px;font-weight:500;color:var(--fg);margin-bottom:8px;line-height:1.3}
+.card-desc{font-size:14px;color:var(--fg2);line-height:1.6}
+.card-num{font-family:var(--font-display);font-size:44px;font-weight:700;color:var(--fg);opacity:0.08;line-height:1;margin-bottom:8px}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:11px;font-weight:400;padding:3px 10px;background:var(--tag-bg);color:var(--tag-fg);margin-right:6px;margin-bottom:4px;letter-spacing:0.04em}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.tag-red{background:var(--accent-bg);color:var(--accent)}
+.tbl{width:100%;border-collapse:collapse;margin-top:20px;font-size:14px}
+.tbl th{text-align:left;font-family:var(--font-mono);font-size:11px;font-weight:400;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg3);padding:10px 16px;border-bottom:2px solid var(--fg)}
+.tbl td{padding:12px 16px;border-bottom:1px solid var(--border2);color:var(--fg2);vertical-align:top;line-height:1.5}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td:first-child{font-family:var(--font-mono);font-size:12px;color:var(--fg);font-weight:400;letter-spacing:0.04em}
+.tbl .num{text-align:right;font-family:var(--font-mono);font-size:13px}
+.tbl tfoot td{font-weight:700;border-top:2px solid var(--fg);background:var(--accent-bg);color:var(--accent)}
+.stat-row{display:flex;gap:20px;margin-top:24px}
+.stat-card{flex:1;padding:24px;border:1px solid var(--border);text-align:center;background:var(--bg)}
+.stat-value{font-family:var(--font-display);font-size:40px;font-weight:700;color:var(--fg);line-height:1;margin-bottom:6px}
+.stat-value.green{color:var(--green)}
+.stat-value.red{color:var(--accent)}
+.stat-label{font-family:var(--font-mono);font-size:11px;color:var(--fg3);letter-spacing:0.06em}
+.callout{padding:20px 24px;border-left:2px solid var(--accent);background:var(--bg);margin-top:20px}
+.callout-green{border-left-color:var(--green)}
+.callout-label{font-family:var(--font-mono);font-size:11px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.callout-green .callout-label{color:var(--green)}
+.callout-text{font-size:14px;color:var(--fg2);line-height:1.6}
+.flow{display:flex;align-items:flex-start;gap:0;flex:1;margin-top:28px}
+.flow-step{flex:1;padding:24px 20px;border:1px solid var(--border);position:relative;background:var(--bg)}
+.flow-step:first-child{border-radius:2px 0 0 2px}
+.flow-step:last-child{border-radius:0 2px 2px 0}
+.flow-step+.flow-step{border-left:none}
+.flow-step-num{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--fg);opacity:0.1;line-height:1;margin-bottom:8px}
+.flow-step-title{font-family:var(--font-body);font-size:15px;font-weight:500;color:var(--fg);margin-bottom:6px}
+.flow-step-desc{font-size:13px;color:var(--fg2);line-height:1.5}
+.flow-step-status{font-size:12px;font-weight:500;margin-top:8px}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity 0.4s ease,transform 0.4s ease}
+.reveal.d1{transition-delay:0.08s}.reveal.d2{transition-delay:0.16s}.reveal.d3{transition-delay:0.24s}.reveal.d4{transition-delay:0.32s}.reveal.d5{transition-delay:0.40s}
+.slide.active .reveal{opacity:1;transform:translateY(0)}
+.slide-footer{position:absolute;bottom:40px;left:var(--slide-pad-x);right:var(--slide-pad-x);display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;color:var(--fg3);letter-spacing:0.06em}
+.cover{justify-content:center;align-items:flex-start;padding:0 200px}
+.cover .slide-title{font-size:64px;margin-bottom:24px;letter-spacing:-0.03em}
+.cover .slide-sub{font-size:22px;max-width:900px}
+.cover-meta{font-family:var(--font-mono);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg3);margin-bottom:24px}
+.divider{width:60px;height:2px;background:var(--fg);margin:16px 0 0;opacity:0.15}
+.hero-dots{position:absolute;top:0;right:0;width:400px;height:100%;background-image:radial-gradient(circle,var(--border) 0.5px,transparent 0.5px);background-size:12px 12px;opacity:0.4;pointer-events:none}
+.kbd-hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:11px;color:#bbb;background:rgba(255,255,255,0.92);padding:6px 16px;border:1px solid #e5e5e5;z-index:999;transition:opacity 0.5s;letter-spacing:0.06em}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:24px}
+.col-title{font-family:var(--font-mono);font-size:12px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg3);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.summary-box{border:1px solid var(--border);padding:20px 24px;background:var(--bg);margin-top:16px}
+.summary-box-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg3);margin-bottom:8px}
+.summary-box-value{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--fg);line-height:1.2}
+.summary-box-note{font-size:13px;color:var(--fg2);margin-top:4px;line-height:1.5}
+.dir-down{color:var(--accent);font-weight:700}
+.dir-up{color:var(--green);font-weight:700}
+.dir-flat{color:var(--fg3);font-weight:500}
+.highlight-row td{background:var(--accent-bg)!important;color:var(--accent)!important;font-weight:700!important}
+.highlight-row-green td{background:var(--green-bg)!important;color:var(--green)!important;font-weight:700!important}
+.edit-hotzone{position:fixed;top:0;left:0;width:80px;height:80px;z-index:10000;cursor:pointer}
+.edit-toggle{position:fixed;top:16px;left:16px;z-index:10001;background:var(--bg);border:1px solid var(--border);padding:8px 12px;font-family:var(--font-mono);font-size:11px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.3s ease;letter-spacing:0.06em}
+.edit-banner{position:fixed;top:0;left:0;right:0;z-index:10002;background:var(--accent);color:#fff;text-align:center;padding:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+.edit-active *{outline:1px dashed var(--blue)!important}
+.edit-active [contenteditable]{outline:2px solid var(--blue)!important;background:var(--blue-bg)!important}
+.edit-toggle.show,.edit-toggle.active,.edit-banner.active{opacity:1!important;pointer-events:auto!important}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+<!-- SLIDE 01: Cover -->
+<div class="slide cover active" data-slide="1">
+  <div class="hero-dots"></div>
+  <div class="cover-meta reveal d1">金条业务 · 定价调整 · 2026 Q3</div>
+  <h1 class="slide-title reveal d2">金条Q3定价调整方案<br>v3 — 重构解读</h1>
+  <p class="slide-sub reveal d3">通过名产区间分层，重构四类业务模式的定价系数，<br>在预算范围内实现降本+结构优化。</p>
+  <div class="divider reveal d4"></div>
+  <div class="stat-row reveal d5" style="margin-top:32px;">
+    <div class="stat-card"><div class="stat-value red">-1.37%</div><div class="stat-label">整体费效降幅</div></div>
+    <div class="stat-card"><div class="stat-value green">27.5万/月</div><div class="stat-label">成本节省</div></div>
+    <div class="stat-card"><div class="stat-value">4类</div><div class="stat-label">业务模式调整</div></div>
+  </div>
+  <div class="slide-footer"><span>基于 PDF 原文重构 · 便于理解的结构化展示</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 02: 关键结论 -->
+<div class="slide" data-slide="2">
+  <span class="slide-num">02 / 12</span>
+  <div class="section-tag reveal d1">KEY TAKEAWAYS</div>
+  <h2 class="slide-title reveal d2">关键<em>结论</em></h2>
+  <p class="slide-sub reveal d3">四项核心结果，一句话概括：整体费效微降，结构大幅优化</p>
+  <div class="two-col reveal d4">
+    <div>
+      <div class="summary-box">
+        <div class="summary-box-label">① 整体费效</div>
+        <div class="summary-box-value">0.1992% → 0.1965%</div>
+        <div class="summary-box-note" style="color:var(--accent);font-weight:500;">降幅 1.37%，在预算目标范围内</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-box-label">② 成本节省</div>
+        <div class="summary-box-value">27.5万/月</div>
+        <div class="summary-box-note">在 2,932 万总盘子中降幅 0.9%</div>
+      </div>
+      <div class="summary-box">
+        <div class="summary-box-label">③ 结构调整</div>
+        <div class="summary-box-value">首贷人工 -124万</div>
+        <div class="summary-box-note">缓释首贷人机 +83万 + 复贷人机 +13.6万上涨</div>
+      </div>
+    </div>
+    <div>
+      <div class="summary-box" style="border-left:2px solid var(--green);">
+        <div class="summary-box-label">④ 模式健康</div>
+        <div class="summary-box-value" style="font-size:22px;line-height:1.5;">首贷人工降本 + 首贷人机保障模式健康生存 + 复贷人机回归健康</div>
+      </div>
+      <div class="callout callout-green" style="margin-top:16px;">
+        <div class="callout-label">v3 相比 v2 的关键迭代</div>
+        <div class="callout-text">已激活中风险 s1~s3 给人工后，人工名产提幅 &gt;30%，人机名产降幅 16%。<br>中产和一元定价系数从 v1 的 0.5% → 0.46%。<br><strong>人机定价系数较 v1/v2 不变。</strong></div>
+      </div>
+      <div class="callout" style="margin-top:12px;">
+        <div class="callout-label">v2 → v3 增量</div>
+        <div class="callout-text">已激活中产较 1.0 日均下发 +7k（3.3w→4w），注 4w 为中风险 s1~s3 给人工后可供给的名单量。</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 03: 整体费效变化汇总 -->
+<div class="slide" data-slide="3">
+  <span class="slide-num">03 / 12</span>
+  <div class="section-tag reveal d1">OVERVIEW</div>
+  <h2 class="slide-title reveal d2">整体费效<em>变化汇总</em></h2>
+  <p class="slide-sub reveal d3">调整前后核心指标对比</p>
+  <div class="reveal d4" style="flex:1;margin-top:20px;">
+    <table class="tbl">
+      <thead><tr><th style="width:100px;">类目</th><th style="width:200px;">调整前（7月若照原系数）</th><th style="width:200px;">调整后</th><th style="width:100px;">增幅</th><th style="width:140px;">增长绝对值</th></tr></thead>
+      <tbody>
+        <tr><td>首贷用户数</td><td class="num">140,453</td><td class="num">140,453</td><td class="num">0.00%</td><td class="num">-</td></tr>
+        <tr><td>GMV</td><td class="num">14,858,240,426</td><td class="num">14,925,330,426</td><td class="num">0.45%</td><td class="num">67,090,000</td></tr>
+        <tr><td>首贷结算</td><td class="num">20,825,769</td><td class="num">20,414,310</td><td class="num">-1.98%</td><td class="num" style="color:var(--accent);">-411,459</td></tr>
+        <tr><td>复贷结算</td><td class="num">8,771,946</td><td class="num">8,908,394</td><td class="num">1.56%</td><td class="num" style="color:var(--green);">136,448</td></tr>
+        <tr class="highlight-row"><td>结算费用</td><td class="num">29,597,715</td><td class="num">29,322,704</td><td class="num">-0.93%</td><td class="num">-275,011</td></tr>
+        <tr class="highlight-row"><td>费效</td><td class="num">0.1992%</td><td class="num">0.1965%</td><td class="num">-1.37%</td><td class="num">-0.003%</td></tr>
+        <tr class="highlight-row"><td>单客成本</td><td class="num">148.28</td><td class="num">145.35</td><td class="num">-1.98%</td><td class="num">-2.93</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout reveal d5" style="margin-top:16px;">
+    <div class="callout-label">结构变化</div>
+    <div class="callout-text">首贷结算下降 41 万，复贷结算上升 14 万，净节省 27.5 万/月。单客成本从 148.28 降至 145.35，降幅 2.93 元。</div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 04: 四类模式一览 -->
+<div class="slide" data-slide="4">
+  <span class="slide-num">04 / 12</span>
+  <div class="section-tag reveal d1">FOUR MODELS</div>
+  <h2 class="slide-title reveal d2">四类业务模式，<em>四种方向</em></h2>
+  <p class="slide-sub reveal d3">优化逻辑：业务模式 → 名产区间 → 定价系数 → 健康值锚定</p>
+  <div class="grid-4 reveal d4">
+    <div class="card" style="background:#FFF5F5;">
+      <div class="card-accent"></div>
+      <div class="card-heading" style="color:var(--accent);">首贷人工</div>
+      <div class="flow-step-status dir-down" style="font-size:18px;margin:8px 0;">↓ 下调</div>
+      <div class="card-desc" style="margin-bottom:12px;">按名产分三档（500-/500~1000/1000+），整体下调</div>
+      <div style="margin-top:12px;">
+        <div class="summary-box" style="margin-top:0;padding:12px 16px;"><div class="summary-box-value" style="font-size:22px;">11,132→9,643</div><div class="summary-box-note">人均结算（-13.4%）</div></div>
+        <div class="summary-box" style="margin-top:8px;padding:12px 16px;"><div class="summary-box-value" style="font-size:22px;">-124万/月</div><div class="summary-box-note">总结算变化</div></div>
+      </div>
+    </div>
+    <div class="card" style="background:#F0FFF4;">
+      <div class="card-accent-green"></div>
+      <div class="card-heading" style="color:var(--green);">首贷人机</div>
+      <div class="flow-step-status dir-up" style="font-size:18px;margin:8px 0;">↑ 上调</div>
+      <div class="card-desc" style="margin-bottom:12px;">按名产分三类（&lt;30/30~100/AI转型），整体上调</div>
+      <div style="margin-top:12px;">
+        <div class="summary-box" style="margin-top:0;padding:12px 16px;"><div class="summary-box-value" style="font-size:22px;">12,796→14,796</div><div class="summary-box-note">人均结算（+15.6%）</div></div>
+        <div class="summary-box" style="margin-top:8px;padding:12px 16px;"><div class="summary-box-value" style="font-size:22px;">+83万/月</div><div class="summary-box-note">总结算变化</div></div>
+      </div>
+    </div>
+    <div class="card" style="background:#F0FFF4;">
+      <div class="card-accent-green"></div>
+      <div class="card-heading" style="color:var(--green);">复贷人机</div>
+      <div class="flow-step-status dir-up" style="font-size:18px;margin:8px 0;">↑ 上调</div>
+      <div class="card-desc" style="margin-bottom:12px;">仅调核心批次，流失期人机占总下发91%</div>
+      <div style="margin-top:12px;">
+        <div class="summary-box" style="margin-top:0;padding:12px 16px;"><div class="summary-box-value" style="font-size:22px;">15,326→17,243</div><div class="summary-box-note">人均结算（+13%）</div></div>
+        <div class="summary-box" style="margin-top:8px;padding:12px 16px;"><div class="summary-box-value" style="font-size:22px;">+13.6万/月</div><div class="summary-box-note">总结算变化</div></div>
+      </div>
+    </div>
+    <div class="card" style="background:var(--bg-alt);">
+      <div class="card-accent" style="background:var(--fg3);"></div>
+      <div class="card-heading" style="color:var(--fg3);">复贷纯人</div>
+      <div class="flow-step-status dir-flat" style="font-size:18px;margin:8px 0;">— 不变</div>
+      <div class="card-desc" style="margin-bottom:12px;">人均 8,722 元已在健康值（8k-10k）区间</div>
+      <div style="margin-top:12px;">
+        <div class="summary-box" style="margin-top:0;padding:12px 16px;"><div class="summary-box-value" style="font-size:22px;color:var(--fg3);">8,722</div><div class="summary-box-note">不调整，系数不变</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout reveal d5" style="margin-top:16px;">
+    <div class="callout-label">定价原则</div>
+    <div class="callout-text">名产越高→系数越低（高产降本）| 名产越低→系数越高（低产补偿）<br>AI转型批次→锚定人工名产达成情况，按照对应产能折损比例（5折+激励）</div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 05: 首贷人工定价详情 -->
+<div class="slide" data-slide="5">
+  <span class="slide-num">05 / 12</span>
+  <div class="section-tag reveal d1">MODEL 1</div>
+  <h2 class="slide-title reveal d2">1. 首贷人工定价方案 — <em>下调</em></h2>
+  <div class="two-col reveal d3">
+    <div>
+      <div class="callout" style="margin-top:0;">
+        <div class="callout-label">现状问题</div>
+        <div class="callout-text">
+          <strong>① 无定价梯度：</strong>首贷人工名产 150/800/810/1042 差异 7 倍，但 CPS 系数 0.7%/0.7%/0.7%/0.4% 几乎平价，名产差异未体现在定价中<br><br>
+          <strong>② 名单做工不均：</strong>高名产批次（已中产/一元试借）结算贡献大、职场意愿高；低名产批次（未中产）名产名转提升慢
+        </div>
+      </div>
+      <div class="stat-row" style="margin-top:16px;">
+        <div class="stat-card"><div class="stat-value" style="font-size:28px;">-124万</div><div class="stat-label">预计月节省</div></div>
+        <div class="stat-card"><div class="stat-value" style="font-size:28px;">0.52%→0.41%</div><div class="stat-label">费效降幅</div></div>
+      </div>
+    </div>
+    <div>
+      <table class="tbl">
+        <thead><tr><th>名产区间</th><th>批次</th><th>原系数</th><th>Q3系数</th><th>变动</th><th>调整理由</th></tr></thead>
+        <tbody>
+          <tr><td>&lt;500</td><td>未_中产 (150)</td><td>0.70%</td><td><strong>0.70%</strong></td><td><span class="tag">不变</span></td><td style="font-size:12px;">名产在人工里已经最低，系数不变</td></tr>
+          <tr><td>500~1000</td><td>已_中产(960)+一元试借(810)</td><td>0.4%~0.7%</td><td><strong>0.46%</strong></td><td><span class="tag tag-red">+15%~-34%</span></td><td style="font-size:12px;">名产800/810相近合并，GMV占大头(70%+)。<span style="color:var(--green)">一元上调，已中产下调</span>。整体人均降低</td></tr>
+          <tr><td>&gt;1000</td><td>已_实时 (1042)</td><td>0.40%</td><td><strong>0.25%</strong></td><td><span class="tag tag-red">-37%</span></td><td style="font-size:12px;">名产最高，系数最低，调制 0.25%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 06: 首贷人机定价详情 -->
+<div class="slide" data-slide="6">
+  <span class="slide-num">06 / 12</span>
+  <div class="section-tag reveal d1">MODEL 2</div>
+  <h2 class="slide-title reveal d2">2. 首贷人机定价方案 — <em>上调</em></h2>
+  <div class="two-col reveal d3">
+    <div>
+      <div class="callout" style="margin-top:0;">
+        <div class="callout-label">现状问题</div>
+        <div class="callout-text">
+          <strong>① 人均结算持续走低：</strong>自5月起持续走低，显著低于健康值单人机组 1.6~1.8 万/人机组<br><br>
+          <strong>② 核心原因：</strong>自五月调整名单结构（前置过滤高风险名单），已激活名产提升显著，但单未激活低中风险用户意愿走低，人机拨打名单中 85% 为未激活<br><br>
+          <strong>③ 批次定价系数弱：</strong>7 个批次中 5 个系数集中在 0.40%~0.72%，但名产极低(17~97)
+        </div>
+      </div>
+      <div class="stat-row" style="margin-top:16px;">
+        <div class="stat-card"><div class="stat-value" style="font-size:28px;color:var(--green);">+83万</div><div class="stat-label">预计月增加</div></div>
+        <div class="stat-card"><div class="stat-value" style="font-size:28px;">0.53%→0.68%</div><div class="stat-label">费效变化</div></div>
+      </div>
+    </div>
+    <div>
+      <table class="tbl">
+        <thead><tr><th>名产区间</th><th>批次</th><th>原系数</th><th>Q3系数</th><th>变动</th><th>调整理由</th></tr></thead>
+        <tbody>
+          <tr><td>&lt;30</td><td>未_非中产补充(17)<br>未_ED精选(24)<br>未_JR_实时(28)</td><td>0.72%</td><td><strong>1%</strong></td><td><span class="tag tag-green">+39%</span></td><td style="font-size:12px;">下沉名单至人机提纯，占人机总名单量级30%。CPS后单批次获客成本(123,108,97)均较CPA 135更低</td></tr>
+          <tr><td>30~100</td><td>未_非中产_ivr(34)<br>已_一元精选(76)<br>已_非中产(66)</td><td>0.72%~0.4%</td><td><strong>0.8%</strong></td><td><span class="tag tag-green">+11%</span></td><td style="font-size:12px;">定价修正，基于名单结构调整后，<strong style="color:var(--accent)">将标准定价0.72%优化至0.8%</strong></td></tr>
+          <tr><td>人工转人机</td><td>未_高端_人机(80名产)</td><td>0.24%</td><td><strong>0.35%</strong></td><td><span class="tag tag-green">+46%</span></td><td style="font-size:12px;"><strong>AI转型核心试点。</strong>人机名产(80)仅为人工(150)的53%，产能存在折损。<br>定价 0.35% = 人工系数 0.70% × 5折<br><strong>Q3激励：</strong>名产达成人工80%时，解锁激励费用30万（系数上浮1.05倍估算）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 07: 复贷人机定价详情 -->
+<div class="slide" data-slide="7">
+  <span class="slide-num">07 / 12</span>
+  <div class="section-tag reveal d1">MODEL 3</div>
+  <h2 class="slide-title reveal d2">3. 复贷人机定价方案 — <em>上调</em></h2>
+  <div class="two-col reveal d3">
+    <div>
+      <div class="callout" style="margin-top:0;">
+        <div class="callout-label">现状问题</div>
+        <div class="callout-text">
+          <strong>① 人均结算持续走低：</strong>1.3w~0.95w，显著低于健康值单人机组 1.6~1.8 万/人机组<br><br>
+          <strong>② 核心原因：</strong>自4月中下旬起，将实时行为&实时提额分别推增至纯机&纯人，挤压人机名单，流失期人机名产持续走低<br><br>
+          <strong>③ 定价调整方向：</strong>流失期人机占总下发91%，是调整主力。其他3个批次占比太小(2%+7%)
+        </div>
+      </div>
+      <div class="stat-row" style="margin-top:16px;">
+        <div class="stat-card"><div class="stat-value" style="font-size:28px;color:var(--green);">+13.6万</div><div class="stat-label">预计月增加</div></div>
+        <div class="stat-card"><div class="stat-value" style="font-size:28px;">0.10%→0.09%</div><div class="stat-label">费效（反降）</div></div>
+      </div>
+    </div>
+    <div>
+      <table class="tbl">
+        <thead><tr><th>名产区间</th><th>批次</th><th>原系数</th><th>Q3系数</th><th>变动</th><th>调整理由</th></tr></thead>
+        <tbody>
+          <tr><td>人工转人机</td><td>金条存续_综合_中高价值_人机_ivr (1792)<br>金条存续_流失期_中高价值_人机_ivr (786)</td><td>0.108%</td><td><strong>0.108%</strong></td><td><span class="tag">无</span></td><td style="font-size:12px;">量级小，且是人工至人机的复贷转型名单，当前名产仅是人工的70%，定价按同类型人工6折</td></tr>
+          <tr><td>500~</td><td>金条存续_流失期_人机_ivr</td><td>0.153%</td><td><strong>0.18%</strong></td><td><span class="tag tag-green">+18%</span></td><td style="font-size:12px;">定价修正，基于名单结构调整后，<strong style="color:var(--accent)">将标准定价0.153%优化至0.18%</strong></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;">
+        <table class="tbl" style="font-size:13px;">
+          <thead><tr><th colspan="2">复贷人机 结算变化</th></tr></thead>
+          <tbody>
+            <tr><td>人均结算</td><td class="num">15,326 → 17,243 (+13%)</td></tr>
+            <tr><td>结算费用</td><td class="num">1,091,244 → 1,227,692 (+13.6万)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 08: 薪资趋势 -->
+<div class="slide" data-slide="8">
+  <span class="slide-num">08 / 12</span>
+  <div class="section-tag reveal d1">DATA SUPPLEMENT</div>
+  <h2 class="slide-title reveal d2">人均到手薪资趋势（元/人/月）</h2>
+  <p class="slide-sub reveal d3">2026年1月 ~ 6月（截至22日）</p>
+  <div class="reveal d4" style="flex:1;margin-top:20px;">
+    <table class="tbl">
+      <thead><tr><th style="width:80px;">月份</th><th>首贷人工</th><th>首贷人机</th><th>复贷人工</th><th>复贷人机</th><th>首贷人机到坐席</th><th>复贷人机到坐席</th></tr></thead>
+      <tbody>
+        <tr><td>1月</td><td class="num">9,237</td><td class="num">22,742</td><td class="num">7,986</td><td class="num">30,343</td><td class="num">14,100</td><td class="num">18,812</td></tr>
+        <tr><td>2月</td><td class="num">5,182</td><td class="num">13,211</td><td class="num">6,042</td><td class="num">25,975</td><td class="num">8,191</td><td class="num">16,104</td></tr>
+        <tr><td>3月</td><td class="num">9,039</td><td class="num">18,721</td><td class="num">9,070</td><td class="num">38,362</td><td class="num">11,607</td><td class="num">23,784</td></tr>
+        <tr><td>4月</td><td class="num">5,758</td><td class="num">16,021</td><td class="num">9,249</td><td class="num">24,341</td><td class="num">9,933</td><td class="num">15,091</td></tr>
+        <tr class="highlight-row"><td>5月</td><td class="num">11,923</td><td class="num">11,396</td><td class="num">9,368</td><td class="num">13,323</td><td class="num">7,066</td><td class="num">8,260</td></tr>
+        <tr><td>6月(至22日)</td><td class="num">7,851</td><td class="num">11,012</td><td class="num">6,828</td><td class="num">6,946</td><td class="num">6,827</td><td class="num">4,306</td></tr>
+        <tr><td>6月预估整月</td><td class="num" style="color:var(--accent);">10,706</td><td class="num" style="color:var(--green);">15,016</td><td class="num" style="color:var(--accent);">9,311</td><td class="num" style="color:var(--green);">9,472</td><td class="num">9,310</td><td class="num">5,872</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="reveal d5" style="margin-top:16px;">
+    <table class="tbl" style="font-size:13px;">
+      <thead><tr><th style="width:100px;">月份变动</th><th>首贷人工</th><th>首贷人机</th><th>复贷人工</th><th>复贷人机</th></tr></thead>
+      <tbody>
+        <tr><td>1→2月</td><td class="num">-43.9%</td><td class="num">-41.9%</td><td class="num">-24.3%</td><td class="num">-14.4%</td></tr>
+        <tr><td>2→3月</td><td class="num">74.4%</td><td class="num">41.7%</td><td class="num">50.1%</td><td class="num">47.7%</td></tr>
+        <tr><td>3→4月</td><td class="num">-36.3%</td><td class="num">-14.4%</td><td class="num">2.0%</td><td class="num">-36.5%</td></tr>
+        <tr class="highlight-row"><td>4→5月</td><td class="num">107.1%</td><td class="num">-28.9%</td><td class="num">1.3%</td><td class="num">-45.3%</td></tr>
+        <tr><td>5→6月</td><td class="num">-34.2%</td><td class="num">-3.4%</td><td class="num">-27.1%</td><td class="num">-47.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 09: 话费占比 -->
+<div class="slide" data-slide="9">
+  <span class="slide-num">09 / 12</span>
+  <div class="section-tag reveal d1">DATA SUPPLEMENT</div>
+  <h2 class="slide-title reveal d2">话费占比分析</h2>
+  <p class="slide-sub reveal d3">2026年1月~6月22日，加权合计 | 求和项:费效成本 vs 到手薪资(税后)</p>
+  <div class="reveal d4" style="flex:1;margin-top:20px;">
+    <table class="tbl">
+      <thead><tr><th style="width:80px;">行标签</th><th>求和项:费效成本</th><th>求和项:到手薪资(税后)</th><th>话费占比</th></tr></thead>
+      <tbody>
+        <tr class="highlight-row"><td><strong>复贷</strong></td><td class="num">4,671,037</td><td class="num">3,815,859</td><td class="num" style="color:var(--accent);font-weight:700;">-18.31%</td></tr>
+        <tr><td style="padding-left:32px;">纯机</td><td class="num">2,722,267</td><td class="num">1,596,695</td><td class="num" style="color:var(--green);">-41.35%</td></tr>
+        <tr><td style="padding-left:32px;">人工</td><td class="num">3,777,781</td><td class="num">3,285,362</td><td class="num" style="color:var(--accent);">-13.03%</td></tr>
+        <tr><td style="padding-left:32px;">人机</td><td class="num">621,029</td><td class="num">370,827</td><td class="num" style="color:var(--orange);">-40.29%</td></tr>
+        <tr class="highlight-row"><td><strong>首贷</strong></td><td class="num">9,381,903</td><td class="num">5,907,551</td><td class="num" style="color:var(--accent);font-weight:700;">-37.03%</td></tr>
+        <tr><td style="padding-left:32px;">纯机</td><td class="num">1,840,744</td><td class="num">393,160</td><td class="num" style="color:var(--green);">-78.64%</td></tr>
+        <tr><td style="padding-left:32px;">人工</td><td class="num">3,842,138</td><td class="num">3,372,463</td><td class="num" style="color:var(--accent);">-12.22%</td></tr>
+        <tr><td style="padding-left:32px;">人机</td><td class="num">3,699,020</td><td class="num">2,141,926</td><td class="num" style="color:var(--orange);">-42.09%</td></tr>
+        <tr class="highlight-row-green"><td><strong>总计</strong></td><td class="num">14,052,941</td><td class="num">9,723,410</td><td class="num" style="color:var(--orange);font-weight:700;">-30.81%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout reveal d5" style="margin-top:16px;">
+    <div class="callout-label">关键发现</div>
+    <div class="callout-text">
+      首贷纯机话费占比 -78.64%（绿色=正向），意味着纯机模式下话费成本远低于薪资支出。<br>
+      复贷纯机 -41.35% 同样表现良好。人工模式话费占比普遍较低（-12%~-18%），人机模式波动较大（-40%左右）。
+    </div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 10: 中风险名单人机对比 -->
+<div class="slide" data-slide="10">
+  <span class="slide-num">10 / 12</span>
+  <div class="section-tag reveal d1">DATA SUPPLEMENT</div>
+  <h2 class="slide-title reveal d2">中风险名单：人工 vs 人机表现</h2>
+  <p class="slide-sub reveal d3">2026年6月截止23日随机切量漏斗表现</p>
+  <div class="reveal d4" style="flex:1;margin-top:20px;">
+    <div class="callout callout-green" style="margin-top:0;">
+      <div class="callout-label">实验背景</div>
+      <div class="callout-text">
+        6月为平衡首贷人机结算亏损，将已激活中风险名单（s1~s6）随机切量给人工和人机。<br>
+        已激活中风险人工人机对比：<strong style="color:var(--fg);">人机名转达成人工74%，件均55%，名产达成人工41%</strong>。<br>
+        虽然人机该批次名产+27%，但从产能最大化角度，低风险s1~s3极头部名单给人工产能更大化，可通过合理的定价系数进行平衡。
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:20px;">
+      <div>
+        <div class="col-title">调整前结构</div>
+        <table class="tbl" style="font-size:13px;">
+          <tbody>
+            <tr><td>人工中风险GMV</td><td class="num">106,245,533</td></tr>
+            <tr><td>人工中风险下发用户</td><td class="num">484,610</td></tr>
+            <tr class="highlight-row"><td>综合名产</td><td class="num">219</td></tr>
+            <tr><td>人工中风险GMV（调结构后）</td><td class="num">14,563,520</td></tr>
+            <tr><td>人工中风险下发用户（调结构后）</td><td class="num">20,000</td></tr>
+            <tr class="highlight-row"><td>调整后综合名产</td><td class="num">728</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="col-title">调整后结构</div>
+        <table class="tbl" style="font-size:13px;">
+          <tbody>
+            <tr><td>人机GMV</td><td class="num">175,499,648</td></tr>
+            <tr><td>人机下发名单</td><td class="num">2,296,782</td></tr>
+            <tr class="highlight-row"><td>综合名产</td><td class="num">76</td></tr>
+            <tr><td>人机GMV（调结构后）</td><td class="num">7,240,600</td></tr>
+            <tr><td>人机下发名单（调结构后）</td><td class="num">110,000</td></tr>
+            <tr class="highlight-row"><td>调整后综合名产</td><td class="num">66 <span style="font-size:11px;color:var(--accent);">-14%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="reveal d5" style="margin-top:16px;">
+    <table class="tbl" style="font-size:13px;">
+      <thead><tr><th colspan="3">中风险结构变化汇总</th></tr></thead>
+      <tbody>
+        <tr><td>已激活中产名产800</td><td>其中中风险220，低风险1350</td><td>-</td></tr>
+        <tr class="highlight-row"><td>综合调整后</td><td>人工 1,039 | 人机 66</td><td>人工涨幅 30%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 11: 批次表现概览 -->
+<div class="slide" data-slide="11">
+  <span class="slide-num">11 / 12</span>
+  <div class="section-tag reveal d1">DATA SUPPLEMENT</div>
+  <h2 class="slide-title reveal d2">各个批次 4~6 月名转、名产表现</h2>
+  <p class="slide-sub reveal d3">完整批次数据一览（节选关键批次）</p>
+  <div class="reveal d4" style="flex:1;margin-top:16px;overflow:auto;">
+    <table class="tbl" style="font-size:11px;">
+      <thead>
+        <tr>
+          <th>分组</th><th>批次</th><th>4月下发</th><th>5月下发</th><th>6月下发</th><th>56加积下发</th>
+          <th>4月名转</th><th>5月名转</th><th>6月名转</th><th>56加积名转</th>
+          <th>4月名产</th><th>5月名产</th><th>6月名产</th><th>56加积名产</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:var(--tag-bg);"><td colspan="14" style="font-weight:700;color:var(--fg);">首贷人工</td></tr>
+        <tr><td>概次</td><td>已_20230314_实付</td><td class="num">226,072</td><td class="num">244,544</td><td class="num">203,923</td><td class="num">448,467</td><td class="num">3.86%</td><td class="num">3.68%</td><td class="num">4.04%</td><td class="num">3.95%</td><td class="num">939</td><td class="num">963.5</td><td class="num">1,037.5</td><td class="num">997.1</td></tr>
+        <tr><td></td><td>已_一元试借_20230518_人工</td><td class="num">1,278,924</td><td class="num">740,606</td><td class="num">499,275</td><td class="num">1,239,881</td><td class="num">0.74%</td><td class="num">0.93%</td><td class="num">1.20%</td><td class="num">1.04%</td><td class="num">252.1</td><td class="num">659.8</td><td class="num">1,030.6</td><td class="num">809.1</td></tr>
+        <tr><td></td><td>未_加速包_20250122_人工</td><td class="num">157,715</td><td class="num">883,125</td><td class="num">789,384</td><td class="num">1,672,509</td><td class="num">1.05%</td><td class="num">1.19%</td><td class="num">0.89%</td><td class="num">1.05%</td><td class="num">1,066.6</td><td class="num">964.3</td><td class="num">899.2</td><td class="num">799.2</td></tr>
+
+        <tr style="background:var(--tag-bg);"><td colspan="14" style="font-weight:700;color:var(--fg);">首贷人机</td></tr>
+        <tr><td>概次</td><td>已_一元精选_20260423_人机_ivr</td><td class="num">0</td><td class="num">1,166,177</td><td class="num">1,007,801</td><td class="num">2,167,978</td><td class="num">0.41%</td><td class="num">0.51%</td><td class="num">0.45%</td><td class="num">-</td><td class="num">-</td><td class="num">55.7</td><td class="num">99.1</td><td class="num">75.8</td></tr>
+        <tr><td></td><td>未_ED精选_20260618_人机_ivr</td><td class="num">4,643,809</td><td class="num">3,620,182</td><td class="num">2,627,093</td><td class="num">6,247,775</td><td class="num">0.44%</td><td class="num">0.51%</td><td class="num">0.58%</td><td class="num">0.54%</td><td class="num">84.4</td><td class="num">87</td><td class="num">111.6</td><td class="num">97.1</td></tr>
+
+        <tr style="background:var(--tag-bg);"><td colspan="14" style="font-weight:700;color:var(--fg);">复贷纯机</td></tr>
+        <tr><td>概次</td><td>20240604_钩子_人工</td><td class="num">306,733</td><td class="num">296,338</td><td class="num">204,673</td><td class="num">501,011</td><td class="num">0.71%</td><td class="num">0.86%</td><td class="num">0.89%</td><td class="num">0.87%</td><td class="num">447.3</td><td class="num">464.8</td><td class="num">591</td><td class="num">524.1</td></tr>
+        <tr><td></td><td>20241118_流失期_商价值_人工</td><td class="num">609,568</td><td class="num">534,845</td><td class="num">374,012</td><td class="num">900,857</td><td class="num">5.37%</td><td class="num">3.86%</td><td class="num">4.13%</td><td class="num">3.97%</td><td class="num">1,654.3</td><td class="num">1,184.6</td><td class="num">960</td><td class="num">1,092.3</td></tr>
+
+        <tr style="background:var(--tag-bg);"><td colspan="14" style="font-weight:700;color:var(--fg);">复贷人机</td></tr>
+        <tr><td>概次</td><td>20240830_流失期_人机_nr</td><td class="num">3,993,467</td><td class="num">4,162,717</td><td class="num">2,811,632</td><td class="num">6,974,349</td><td class="num">0.61%</td><td class="num">0.59%</td><td class="num">0.74%</td><td class="num">0.65%</td><td class="num">233.2</td><td class="num">219</td><td class="num">193.2</td><td class="num">208.9</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout reveal d5" style="margin-top:16px;">
+    <div class="callout-label">数据说明</div>
+    <div class="callout-text">完整批次数据见 PDF 原文附录。以上为各模式代表性批次的 4~6 月名转率和名产数据，展示各批次在不同月份的表现波动。</div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+<!-- SLIDE 12: 一图看懂 -->
+<div class="slide" data-slide="12">
+  <span class="slide-num">12 / 12</span>
+  <div class="section-tag reveal d1">SUMMARY</div>
+  <h2 class="slide-title reveal d2">一图<em>看懂</em></h2>
+  <p class="slide-sub reveal d3">整个方案的逻辑链条</p>
+
+  <div class="flow reveal d4" style="margin-top:24px;">
+    <div class="flow-step" style="background:#FFF5F5;">
+      <div class="flow-step-num">01</div>
+      <div class="flow-step-title">问题</div>
+      <div class="flow-step-desc">名产差异 7 倍，定价系数几乎一样；人机结算持续低于健康值</div>
+    </div>
+    <div class="flow-step" style="background:#F0FFF4;">
+      <div class="flow-step-num">02</div>
+      <div class="flow-step-title">策略</div>
+      <div class="flow-step-desc">名产越高→系数越低；名产越低→系数越高。AI转型按产能折损 5 折</div>
+    </div>
+    <div class="flow-step" style="background:#F0FFF4;">
+      <div class="flow-step-num">03</div>
+      <div class="flow-step-title">执行</div>
+      <div class="flow-step-desc">首贷人工↓ | 首贷人机↑ | 复贷人机↑ | 复贷纯人—</div>
+    </div>
+    <div class="flow-step" style="background:#F5F5FF;">
+      <div class="flow-step-num">04</div>
+      <div class="flow-step-title">结果</div>
+      <div class="flow-step-desc">费效 -1.37% | 节省 27.5万/月 | 结构更健康</div>
+    </div>
+  </div>
+
+  <div class="reveal d5" style="margin-top:24px;">
+    <table class="tbl">
+      <thead><tr><th>模式</th><th>方向</th><th>调整前人均</th><th>调整后人均</th><th>健康值</th><th>月结变化</th><th>费效变化</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--accent);font-weight:700;">首贷人工</td><td class="dir-down">↓ 下调</td><td class="num">11,132</td><td class="num">9,643</td><td>9k-11k ✓</td><td class="num" style="color:var(--accent);">-145万/月</td><td><strong>0.52%→0.44%</strong></td></tr>
+        <tr><td style="color:var(--green);font-weight:700;">首贷人机</td><td class="dir-up">↑ 上调</td><td class="num">12,796</td><td class="num">14,796</td><td>16k-18k</td><td class="num" style="color:var(--green);">+112万/月</td><td><strong>0.53%→0.68%</strong></td></tr>
+        <tr><td style="color:var(--fg3);font-weight:700;">复贷纯人</td><td class="dir-flat">— 不变</td><td class="num">8,722</td><td class="num">8,722</td><td>8k-10k ✓</td><td class="num">0</td><td>-</td></tr>
+        <tr><td style="color:var(--green);font-weight:700;">复贷人机</td><td class="dir-up">↑ 上调</td><td class="num">15,326</td><td class="num">17,243</td><td>16k-18k</td><td class="num" style="color:var(--green);">+13.6万/月</td><td>-</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-green reveal d5" style="margin-top:16px;">
+    <div class="callout-label">一句话总结</div>
+    <div class="callout-text" style="font-size:16px;">首贷人工降价 124 万，覆盖首贷人机 +83 万和复贷人机 +13.6 万的上涨，净省 27.5 万/月，整体费效控制在预算内。</div>
+  </div>
+  <div class="slide-footer"><span>金条Q3定价调整方案 v3</span><span>← → 翻页</span></div>
+</div>
+
+</div><!-- end stage -->
+
+<div class="kbd-hint" id="kbdHint">← → 翻页 · Cmd+E 编辑模式</div>
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (Cmd+E)" style="position:fixed;top:16px;left:16px;z-index:10001;background:var(--bg);border:1px solid var(--border);padding:8px 12px;font-family:var(--font-mono);font-size:11px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.3s ease;letter-spacing:0.06em;">EDIT</button>
+<div class="edit-banner" id="editBanner" style="position:fixed;top:0;left:0;right:0;z-index:10002;background:var(--accent);color:#fff;text-align:center;padding:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity 0.3s ease;">Editing Mode Active — Cmd+E to exit</div>
+
+<script>
+(function(){
+  var stage=document.querySelector('.stage'),slideW=1920,slideH=1080;
+  function rescale(){var vw=window.innerWidth,vh=window.innerHeight;var scale=Math.min(vw/slideW,vh/slideH);stage.style.transform='translate(-50%,-50%) scale('+scale+')';}
+  rescale();window.addEventListener('resize',rescale);
+  var slides=document.querySelectorAll('.slide'),total=slides.length,current=0;
+  function goTo(n){if(n<0||n>=total)return;slides[current].classList.remove('active');current=n;slides[current].classList.add('active');}
+  document.addEventListener('keydown',function(e){
+    if(editor&&editor.isActive)return;
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();goTo(current+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();goTo(current-1);}
+    else if(e.key==='Home'){e.preventDefault();goTo(0);}
+    else if(e.key==='End'){e.preventDefault();goTo(total-1);}
+  });
+  var touchStartX=0;document.addEventListener('touchstart',function(e){touchStartX=e.touches[0].clientX;});
+  document.addEventListener('touchend',function(e){
+    if(editor&&editor.isActive)return;var dx=e.changedTouches[0].clientX-touchStartX;
+    if(Math.abs(dx)>50){dx<0?goTo(current+1):goTo(current-1);}
+  });
+  setTimeout(function(){var h=document.getElementById('kbdHint');if(h)h.style.opacity='0';},5000);
+  var editor={isActive:false,
+    toggleEditMode:function(){
+      this.isActive=!this.isActive;var body=document.body,banner=document.getElementById('editBanner'),toggle=document.getElementById('editToggle');
+      if(this.isActive){body.classList.add('edit-active');banner.classList.add('active');toggle.classList.add('active');
+        document.querySelectorAll('.slide-title,.slide-sub,.card-heading,.card-desc,.body-text,.flow-step-title,.flow-step-desc,.stat-value,.stat-label,.section-tag,.slide-num,.file-tree,.compare-item,.takeaway-heading,.takeaway-desc,.next-text,.next-tag,.demo-label,.check-list li,.callout-text,.callout-label,.progress-label,.progress-val,.cover-meta,.card-heading,.summary-box-value,.summary-box-note,.tbl td,.tbl th').forEach(function(el){el.setAttribute('contenteditable','true');});
+      }else{body.classList.remove('edit-active');banner.classList.remove('active');toggle.classList.remove('active');
+        document.querySelectorAll('[contenteditable]').forEach(function(el){el.removeAttribute('contenteditable');});this.saveToLocalStorage();
+      }
+    },
+    saveToLocalStorage:function(){try{localStorage.setItem('jinqiao-q3-draft',document.getElementById('stage').innerHTML);}catch(e){}},
+    exportFile:function(){
+      var editableEls=Array.from(document.querySelectorAll('[contenteditable]'));editableEls.forEach(function(el){el.removeAttribute('contenteditable');});
+      document.body.classList.remove('edit-active');var editToggle=document.getElementById('editToggle'),editBanner=document.getElementById('editBanner');
+      editToggle&&editToggle.classList.remove('active','show');editBanner&&editBanner.classList.remove('active','show');
+      var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+      document.body.classList.add('edit-active');editableEls.forEach(function(el){el.setAttribute('contenteditable','true');});
+      editToggle&&editToggle.classList.add('active');editBanner&&editBanner.classList.add('active');
+      var blob=new Blob([html],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='jinqiao-q3-pricing.html';a.click();URL.revokeObjectURL(a.href);
+    }
+  };window.editor=editor;
+  var hotzone=document.getElementById('editHotzone'),editToggleBtn=document.getElementById('editToggle'),hideTimeout=null;
+  hotzone.addEventListener('mouseenter',function(){clearTimeout(hideTimeout);editToggleBtn.classList.add('show');});
+  hotzone.addEventListener('mouseleave',function(){hideTimeout=setTimeout(function(){if(!editor.isActive)editToggleBtn.classList.remove('show');},400);});
+  editToggleBtn.addEventListener('mouseenter',function(){clearTimeout(hideTimeout);});
+  editToggleBtn.addEventListener('mouseleave',function(){hideTimeout=setTimeout(function(){if(!editor.isActive)editToggleBtn.classList.remove('show');},400);});
+  hotzone.addEventListener('click',function(){editor.toggleEditMode();});
+  editToggleBtn.addEventListener('click',function(){editor.toggleEditMode();});
+  document.addEventListener('keydown',function(e){
+    if((e.metaKey||e.ctrlKey)&&(e.key==='e'||e.key==='E')){e.preventDefault();editor.toggleEditMode();}
+    if((e.metaKey||e.ctrlKey)&&(e.key==='s')){e.preventDefault();editor.exportFile();}
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>personal-insight-summary — 个人工作信息日报技能</title>
+<style>
+:root{
+  --bg:#ffffff; --card-bg:#f5f5f7; --text:#1d1d1f; --text-secondary:#86868b;
+  --border:#d2d2d7; --accent:#0071e3;
+  --terminal-bg:#1d1d1f; --terminal-text:#f5f5f7;
+  --warn:#bf4800; --danger:#a32d2d; --success:#0f6e56;
+  --font:-apple-system,'SF Pro Display','Helvetica Neue','PingFang SC',sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+.container{max-width:980px;margin:0 auto;padding:0 24px}
+.hero{padding:80px 0 56px;border-bottom:1px solid var(--border)}
+.hero .badge{display:inline-block;font-size:13px;font-weight:600;color:var(--accent);background:rgba(0,113,227,.08);padding:6px 12px;border-radius:980px;margin-bottom:20px}
+.hero h1{font-size:44px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-bottom:14px}
+.hero .subtitle{font-size:21px;color:var(--text-secondary);font-weight:400;line-height:1.4;max-width:780px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:32px;margin-top:28px;font-size:13px;color:var(--text-secondary)}
+.hero .meta strong{color:var(--text);font-weight:600}
+.summary{padding:40px 0;border-bottom:1px solid var(--border)}
+.summary .lead{border-left:3px solid var(--accent);padding-left:16px;font-size:18px;line-height:1.6}
+.summary .lead strong{color:var(--accent)}
+section{padding:64px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:28px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+h2 .num{color:var(--text-secondary);font-weight:500;font-family:var(--mono);font-size:20px;margin-right:10px}
+.h2-sub{color:var(--text-secondary);font-size:16px;margin-bottom:32px}
+h3{font-size:21px;font-weight:600;margin:36px 0 16px}
+p{margin-bottom:16px}
+p:last-child{margin-bottom:0}
+.card{background:var(--card-bg);border-radius:16px;padding:28px;margin-bottom:20px}
+.card h4{font-size:17px;font-weight:600;margin-bottom:10px}
+.card p{font-size:15px;color:#444}
+.term{background:var(--terminal-bg);border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.7;color:var(--terminal-text);overflow-x:auto;margin:14px 0}
+.term .cmt{color:#737373}
+.term .k{color:#64d2ff}
+.term .s{color:#30d158}
+.term .var{color:#64d2ff}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:14px 0}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border)}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}
+td code{font-family:var(--mono);font-size:13px;color:var(--accent);background:rgba(0,113,227,.06);padding:2px 6px;border-radius:4px}
+.callout{border-radius:12px;padding:16px 18px;margin:16px 0;font-size:15px;line-height:1.55}
+.callout-warn{background:rgba(191,72,0,.08);border-left:3px solid var(--warn)}
+.callout-danger{background:rgba(163,45,45,.06);border-left:3px solid var(--danger)}
+.callout-info{background:rgba(0,113,227,.06);border-left:3px solid var(--accent)}
+.callout-success{background:rgba(15,110,86,.06);border-left:3px solid var(--success)}
+.callout strong{display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.callout-warn strong{color:var(--warn)}
+.callout-danger strong{color:var(--danger)}
+.callout-info strong{color:var(--accent)}
+.callout-success strong{color:var(--success)}
+
+/* relevance levels */
+.relv{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.relv-card{border-radius:12px;padding:18px;border:1px solid var(--border)}
+.relv-card.strong{border-color:var(--accent);background:rgba(0,113,227,.04)}
+.relv-card.mid{border-color:var(--warn);background:rgba(191,72,0,.03)}
+.relv-card.weak{border-color:var(--text-secondary);background:var(--card-bg)}
+.relv-card .lvl{font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.relv-card.strong .lvl{color:var(--accent)}
+.relv-card.mid .lvl{color:var(--warn)}
+.relv-card.weak .lvl{color:var(--text-secondary)}
+.relv-card h4{font-size:15px;font-weight:600;margin-bottom:6px}
+.relv-card p{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.5}
+
+/* pipeline */
+.pipe{display:flex;align-items:stretch;gap:0;margin:24px 0;flex-wrap:wrap}
+.pipe-stage{flex:1;min-width:140px;background:var(--card-bg);border-radius:12px;padding:18px 16px;text-align:center;position:relative}
+.pipe-stage:not(:last-child){margin-right:18px}
+.pipe-stage:not(:last-child)::after{content:"→";position:absolute;right:-15px;top:50%;transform:translateY(-50%);color:var(--text-secondary);font-size:18px}
+.pipe-stage .pn{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;margin-bottom:6px}
+.pipe-stage h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.pipe-stage p{font-size:12px;color:var(--text-secondary);margin:0;line-height:1.4}
+
+/* output sections */
+.sec-grid{margin:16px 0;counter-reset:sec}
+.sec-item{background:var(--card-bg);border-radius:12px;padding:18px 22px;margin-bottom:10px;display:flex;align-items:flex-start;gap:16px}
+.sec-num{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent);background:rgba(0,113,227,.08);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-body h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.sec-body p{font-size:14px;color:var(--text-secondary);margin:0}
+
+/* JSON config */
+.json{background:var(--terminal-bg);border-radius:12px;padding:22px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--terminal-text);overflow-x:auto;margin:16px 0}
+.json .k{color:#64d2ff}
+.json .s{color:#30d158}
+
+footer{padding:48px 0 64px;text-align:center;color:var(--text-secondary);font-size:13px}
+@media(max-width:640px){
+  .hero{padding:48px 0 40px}
+  .hero h1{font-size:32px}
+  .relv{grid-template-columns:1fr}
+  .pipe{flex-direction:column}
+  .pipe-stage{margin-right:0!important;margin-bottom:12px}
+  .pipe-stage:not(:last-child)::after{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">汇总层 · 个人工作日报</span>
+    <h1>personal-insight-summary</h1>
+    <p class="subtitle">并行调度京ME、邮件、慧记三个数据源采集全文，做项目聚类、相关性分级（强/中/弱）、决策·风险·待办抽取，产出一份固定6段结构的个人工作日报——基于全文证据，不编造。</p>
+    <div class="meta">
+      <span>版本 <strong>1.0.0</strong></span>
+      <span>类型 <strong>Prompt 技能（编排上层技能）</strong></span>
+      <span>并行调用 <strong>3 个数据源</strong></span>
+      <span>输出 <strong>固定 6 段日报</strong></span>
+    </div>
+  </div>
+</header>
+
+<div class="summary">
+  <div class="container">
+    <p class="lead">五个采集技能里<strong>最上层的汇总器</strong>。它不直接读文件，而是用一个 prompt 编排下面三个采集技能并行采集，然后做<strong>前置过滤（时间·指定群·人名映射·相关性分级·证据强度）→ 整合分析（项目聚类·优先级·决策·分歧·风险·待办）→ 固定6段输出</strong>。关键设计：最终输出<strong>只保留强证据要点</strong>，中/弱只作内部分析，不输出。</p>
+  </div>
+</div>
+
+<!-- 定位 -->
+<section>
+  <div class="container">
+    <h2><span class="num">01</span>定位</h2>
+    <p class="h2-sub">个人工作信息的统一日报生成器。</p>
+
+    <div class="pipe">
+      <div class="pipe-stage">
+        <div class="pn">SOURCE 1</div>
+        <h4>jdme-local-tools</h4>
+        <p>京ME群聊/私聊<br>全量消息</p>
+      </div>
+      <div class="pipe-stage">
+        <div class="pn">SOURCE 2</div>
+        <h4>read-email</h4>
+        <p>邮件<br>全文+附件</p>
+      </div>
+      <div class="pipe-stage">
+        <div class="pn">SOURCE 3</div>
+        <h4>read-joymeeting</h4>
+        <p>慧记会议<br>逐字稿</p>
+      </div>
+      <div class="pipe-stage">
+        <div class="pn">PROCESS</div>
+        <h4>前置过滤 + 分析</h4>
+        <p>相关性分级<br>项目聚类</p>
+      </div>
+      <div class="pipe-stage">
+        <div class="pn">OUTPUT</div>
+        <h4>固定6段日报</h4>
+        <p>只含强证据<br>结论+上下文</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 输入 -->
+<section>
+  <div class="container">
+    <h2><span class="num">02</span>输入配置</h2>
+    <p class="h2-sub">JSON 配置指定数据源；不提供时用默认3源（今天0点至今）。</p>
+
+    <div class="json">{
+  <span class="k">"sources"</span>: [
+    {
+      <span class="k">"skillId"</span>: <span class="s">"jdme-local-tools"</span>,
+      <span class="k">"prompt"</span>: <span class="s">"只读取群号 10230120223、10228173601，以及群名为'体验技术 - 产品群'的今日京ME消息"</span>
+    },
+    {
+      <span class="k">"skillId"</span>: <span class="s">"read-joymeeting"</span>,
+      <span class="k">"prompt"</span>: <span class="s">"读取会议记录"</span>
+    },
+    {
+      <span class="k">"skillId"</span>: <span class="s">"read-email"</span>,
+      <span class="k">"prompt"</span>: <span class="s">"读取工作邮件"</span>
+    }
+  ]
+}</div>
+
+    <div class="callout callout-info">
+      <strong>时间范围确定规则</strong>
+      JSON 不提供 timeRange，只从各 source 的 prompt 识别（今日/昨天/本周/最近N条/最新N封）。识别不到则默认<strong>今天 0:00 至当前时间</strong>。无配置时默认采今天0:00至今的京ME+邮件+慧记3源。
+    </div>
+  </div>
+</section>
+
+<!-- 工作流 -->
+<section>
+  <div class="container">
+    <h2><span class="num">03</span>三步工作流</h2>
+
+    <div class="card">
+      <h4>第一步：收集各数据源信息</h4>
+      <p>对每个 source：确认技能可用 → 合成执行指令（prompt + 时间范围）→ 调用技能 → 记录结果与失败原因。<strong>尽可能并行调用</strong>，某源失败不影响其他源，失败时标注"该数据源未获取，原因：xxx"。</p>
+      <div class="callout callout-warn" style="margin-top:14px">
+        <strong>京ME精确会话模式</strong>
+        prompt 出现"只读取/指定群/群号/群名"等限定时进入精确会话模式：边界只能来自用户指定群，不扩大到其他群/私聊；群名需 jdme-local-tools 解析成候选会话，仅当会话名完全一致或明显同一群才用；摘要前必须按目标群号/群名二次过滤。
+      </div>
+    </div>
+
+    <div class="card">
+      <h4>第二步：整合分析（核心）</h4>
+      <p>前置处理必须在分析前完成，见下一节"前置处理五项"。然后做：项目聚类（一条只归一个项目）→ 相关事项判断（只围绕用户后续需关注/处理/决策/同步）→ 优先级判断（@我/要回复/涉风险=高优）→ 决策提取 → 分歧识别 → 风险识别 → 待办生成。</p>
+    </div>
+
+    <div class="card">
+      <h4>第三步：输出</h4>
+      <p>严格按固定6个一级小标题输出。无内容写"暂无"而非省略。直接从"昨天你主要参与了 N 个项目："开始，<strong>不输出日期行</strong>。每个要点采用"结论 + 摘要上下文"两层结构。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 前置处理 -->
+<section>
+  <div class="container">
+    <h2><span class="num">04</span>前置处理（五项，必须在分析前完成）</h2>
+
+    <div class="card">
+      <h4>① 时间过滤</h4>
+      <p>优先用户 timeRange；无则从 prompt 识别；都没有则默认昨天 0:00–24:00。京ME timestamp 是毫秒级 Unix 时间戳。</p>
+    </div>
+    <div class="card">
+      <h4>② 京ME指定群聊过滤</h4>
+      <p>prompt 指定群号/群名时，先按指定 sessionId/会话名过滤再做任何摘要。未命中指定群的消息视为不存在。</p>
+    </div>
+    <div class="card">
+      <h4>③ 人名映射表</h4>
+      <p>从所有消息提取 <code>@中文名(ERP)</code>、<code>中文名（英文名）</code>、邮件发件人，生成 ERP→中文名映射。</p>
+    </div>
+    <div class="card">
+      <h4>④ 身份解析</h4>
+      <p>私聊 sessionName 常为空，从 sessionId（<code>erp1:ee:erp2:ee</code>）提取对方 ERP，再用映射表匹配中文姓名，找不到则保留 ERP，不强行翻译。</p>
+    </div>
+    <div class="card">
+      <h4>⑤ 相关性分级 + 证据强度</h4>
+      <p>每条信息先判断相关性并标注证据强度。最终输出<strong>只列证据强度为"强"的要点</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 相关性分级 -->
+<section>
+  <div class="container">
+    <h2><span class="num">05</span>相关性分级与证据强度</h2>
+    <p class="h2-sub">决定哪些信息进入最终输出。</p>
+
+    <div class="relv">
+      <div class="relv-card strong">
+        <div class="lvl">强相关 · 强证据</div>
+        <h4>进入最终输出</h4>
+        <p>用户本人发言、被 @、私聊用户、邮件直接发给用户且需处理</p>
+      </div>
+      <div class="relv-card mid">
+        <div class="lvl">中相关 · 中证据</div>
+        <h4>仅内部分析参考</h4>
+        <p>用户所在项目群中与负责项目相关的讨论、会议中用户为参会人</p>
+      </div>
+      <div class="relv-card weak">
+        <div class="lvl">弱相关 · 弱证据</div>
+        <h4>只作背景/舍弃</h4>
+        <p>大群普通讨论、值班记录、无明确指向用户的信息</p>
+      </div>
+    </div>
+
+    <div class="callout callout-danger">
+      <strong>硬约束</strong>
+      最终输出只允许出现"强"证据的信息；"中""弱"不得输出，也不得作为独立条目。弱相关动态不能单独成章，只能作为强证据条目的摘要上下文；无对应强证据事项则直接舍弃。
+    </div>
+  </div>
+</section>
+
+<!-- 固定6段输出 -->
+<section>
+  <div class="container">
+    <h2><span class="num">06</span>固定6段输出结构</h2>
+    <p class="h2-sub">一级小标题严格使用以下6个，不能新增/删除/改名/调序。</p>
+
+    <div class="sec-grid">
+      <div class="sec-item">
+        <div class="sec-num">1</div>
+        <div class="sec-body">
+          <h4>昨天你主要参与了 N 个项目：</h4>
+          <p>项目名 + 摘要上下文（谁在哪个来源做了什么 + 用户参与证据）</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-num">2</div>
+        <div class="sec-body">
+          <h4>今天建议优先处理 N 件事：</h4>
+          <p>具体行动+原因 + 摘要上下文（当前状态）</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-num">3</div>
+        <div class="sec-body">
+          <h4>重点关注：</h4>
+          <p>值得持续关注的事项、项目进展或协作动态</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-num">4</div>
+        <div class="sec-body">
+          <h4>风险提醒：</h4>
+          <p>风险描述 + 处理建议 + 影响范围</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-num">5</div>
+        <div class="sec-body">
+          <h4>已定决策：</h4>
+          <p>来源 + 谁提出什么 + 最终结论</p>
+        </div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-num">6</div>
+        <div class="sec-body">
+          <h4>待定问题：</h4>
+          <p>未解决的问题/分歧，各方观点 + 当前状态（卡在哪/待谁确认）</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-danger">
+      <strong>禁止出现的一级标题</strong>
+      <code>关注动态</code> · <code>会议记录</code> · <code>邮件摘要</code> · <code>需要你处理</code> · <code>项目风险</code> · <code>关键决策</code> · <code>未解决分歧</code> · <code>可流转产物</code> · 日期行。会议/邮件/弱相关动态只能作为上述6段中某要点的上下文来源。
+    </div>
+  </div>
+</section>
+
+<!-- 要点结构 -->
+<section>
+  <div class="container">
+    <h2><span class="num">07</span>要点结构：结论 + 摘要上下文</h2>
+
+    <div class="card">
+      <h4>结论</h4>
+      <p>一句话提炼，让用户 3 秒内理解发生了什么、需要做什么。</p>
+    </div>
+    <div class="card">
+      <h4>摘要上下文（证据链）</h4>
+      <p>按时间顺序列出关键对话/邮件/会议片段。必须说明：谁、在什么来源、做了什么/说了什么、当前状态、为什么需用户关注。</p>
+      <div class="callout callout-warn" style="margin-top:14px">
+        <strong>摘要上下文撰写规则</strong>
+        <ul style="padding-left:20px;margin:6px 0 0">
+          <li>忠实原文：人名/项目名/数字/结论必须来自原始数据</li>
+          <li>对话脉络优先：保留"谁说了什么→谁回应→结论"的关键轮次</li>
+          <li>保留用户本人发言（用户需看到自己说了什么来回忆上下文）</li>
+          <li>标注来源：<code>——来源：{渠道}{具体位置}</code></li>
+          <li>长度控制：每要点上下文不超过 5 条 bullet</li>
+          <li>时间标注：首条标注时间（如"6/5 晚""昨天 14:30"）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 数据源筛选原则 -->
+<section>
+  <div class="container">
+    <h2><span class="num">08</span>各数据源进入日报的筛选原则</h2>
+
+    <h3>京ME消息</h3>
+    <div class="callout callout-info">
+      <strong>采集重点</strong>
+      所有 @ 用户本人的消息（最高优先级）· 项目群中的讨论/决策/待办 · 私聊中的工作请求。<strong>忽略</strong>：闲聊、表情包、系统通知、机器人消息。
+    </div>
+
+    <h3>邮件</h3>
+    <div class="callout callout-info">
+      <strong>筛选原则（黑名单法）</strong>
+      保留：直接发给用户的工作邮件、项目相关讨论、领导/关键干系人邮件、需回复处理的邮件、权限申请/审批结单等可能影响行动的系统邮件。<strong>可过滤</strong>：无关 Code Review、批量通知、营销广告、newsletter。不要一刀切过滤所有 Coding/审批邮件——与当天工作强相关就保留。
+    </div>
+
+    <h3>会议</h3>
+    <div class="callout callout-info">
+      <strong>提取重点</strong>
+      会议主题、参会人、关键讨论内容、明确决策、待办事项、分歧和未解决问题。数据为空或失败时按返回状态记录原因，<strong>不编造会议内容</strong>。
+    </div>
+  </div>
+</section>
+
+<!-- 兜底 -->
+<section>
+  <div class="container">
+    <h2><span class="num">09</span>无信息场景兜底</h2>
+    <p class="h2-sub">所有源采集完成后，若全部无数据/全失败/过滤后无工作内容，判定"无有效信息"。</p>
+
+    <div class="callout callout-warn">
+      <strong>判定细则</strong>
+      <ul style="padding-left:20px;margin:6px 0 0">
+        <li>目标是周末/节假日且无数据 → 提示"目标是{周六/周日/节假日}"</li>
+        <li>工作日无数据 → 提示"可能你在休假、出差，或数据源范围过窄"</li>
+        <li>部分源有少量非工作消息 → 仍判无有效信息，状态注明"有 N 条消息，均为非工作内容"</li>
+        <li>某些源失败而其他确实无数据 → 同时列失败原因和无数据状态，不混为一谈</li>
+      </ul>
+    </div>
+    <div class="callout callout-danger">
+      <strong>不要</strong>
+      输出空板块模板。改用兜底输出：目标时间范围内没有采集到工作相关的信息 + 逐项列出每个 source 的状态。
+    </div>
+  </div>
+</section>
+
+<!-- 约束汇总 -->
+<section>
+  <div class="container">
+    <h2><span class="num">10</span>完整约束</h2>
+    <table>
+      <tr><th>类别</th><th>约束</th></tr>
+      <tr><td>内容来源</td><td>必须来自实际采集数据，不得编造任何人名/项目名/事件</td></tr>
+      <tr><td>命名</td><td>项目名用原始叫法不重命名；人名用中文（无则 ERP）</td></tr>
+      <tr><td>数量</td><td>每板块≤7 条，超出保留高优+末尾"及其他 N 条"；"今天优先处理"≤5 条</td></tr>
+      <tr><td>输出结构</td><td>固定6段，不允许新增/改名/调序</td></tr>
+      <tr><td>证据强度</td><td>只输出"强"；"中""弱"不输出不作独立条目</td></tr>
+      <tr><td>内部字段</td><td>不输出"证据强度""强/中/弱""强证据"等内部判断字段</td></tr>
+      <tr><td>敏感信息</td><td>不输出 token/cookie/密码；失败源末尾加"⚠️ {源} 数据未获取：{原因}"</td></tr>
+      <tr><td>原文保留</td><td>摘要上下文保留原话关键词和语气，不过度书面化改写</td></tr>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    技能来源：projects/claude-trace/personal-insight-summary · 生成于 2026-06-27 · apple-minimal 风格
+  </div>
+</footer>
+
+</body>
+</html>

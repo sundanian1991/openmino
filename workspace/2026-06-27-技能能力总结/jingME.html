@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jingME · 承诺追踪与待办提取</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+  :root {
+    --bg: #fefefe;
+    --surface: #ffffff;
+    --surface2: #f7f7f5;
+    --border: #e6e6e2;
+    --text: #2c2c28;
+    --text-dim: #8c8c84;
+    --text-bright: #12120f;
+    --ink: #1a1a2e;
+    --accent: #0066cc;
+    --green: #1a8a4a;
+    --amber: #cc7000;
+    --red: #cc3333;
+    --purple: #6b3fa0;
+    --radius: 8px;
+    --serif: 'Playfair Display', 'Noto Serif SC', Georgia, serif;
+    --sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    --mono: 'Fira Code', 'SF Mono', monospace;
+    --shadow: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .header-left h1 {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .header-left .ver {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .header-nav a {
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.15s;
+  }
+
+  .header-nav a:hover { background: var(--surface2); color: var(--text-bright); }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin-bottom: 0.9rem;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 0.7rem; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.8em;
+  }
+
+  p code, li code {
+    background: var(--surface2);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  pre {
+    background: var(--ink);
+    color: #e8e6df;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  pre code { background: none; padding: 0; color: inherit; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    font-size: 0.83rem;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    padding: 0.55rem 0.85rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 0.5rem 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 100px;
+  }
+
+  .status-badge.promised { background: #e3f2fd; color: var(--accent); }
+  .status-badge.done { background: #e8f5e9; color: var(--green); }
+  .status-badge.blocked { background: #fce4ec; color: var(--red); }
+  .status-badge.unclear { background: #fff8e1; color: var(--amber); }
+
+  .cue-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .cue-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+    box-shadow: var(--shadow);
+  }
+
+  .cue-card .cue-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 0.4rem;
+  }
+
+  .cue-card .cue-items {
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .cue-card .cue-items code {
+    background: var(--surface2);
+    font-size: 0.85em;
+    color: var(--accent);
+  }
+
+  .workflow-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 0.9rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .workflow-step .step-num {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 0.3;
+    min-width: 2rem;
+    line-height: 1;
+  }
+
+  .workflow-step .step-content h3 {
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+  }
+
+  .workflow-step .step-content p {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+
+  .safety-box {
+    background: #fdf2f2;
+    border: 1px solid rgba(204,51,51,0.15);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .safety-box h3 { color: var(--red); margin-top: 0; }
+
+  ul, ol { padding-left: 1.5rem; margin-bottom: 0.7rem; }
+  li { margin-bottom: 0.2rem; }
+
+  @media (max-width: 768px) {
+    .cue-grid { grid-template-columns: 1fr; }
+    .container { padding: 1.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>jingME</h1>
+    <span class="ver">v0.1.0 · local-draft</span>
+  </div>
+  <nav class="header-nav">
+    <a href="#purpose">定位</a>
+    <a href="#safety">安全</a>
+    <a href="#workflow">工作流</a>
+    <a href="#cues">识别词</a>
+    <a href="#output">输出</a>
+  </nav>
+</div>
+
+<div class="container">
+
+  <!-- 定位 -->
+  <section id="purpose">
+    <h2>核心能力</h2>
+    <p>结合两个只读数据源——<strong>京ME本地消息</strong> + <strong>慧记会议记录</strong>——自动识别"谁承诺了什么、截止何时"，生成可追溯的跟进清单。</p>
+    <p><strong>核心突破：责任闭环追踪</strong>——不只是提取待办，而是从聊天和会议中转写中识别承诺线索（我来/我负责/明天发你……），关联截止时间、追踪状态变化、生成建议提醒文案。</p>
+  </section>
+
+  <!-- 安全边界 -->
+  <section id="safety">
+    <h2>安全边界（只读）</h2>
+    <div class="safety-box">
+      <h3>不得执行的操作</h3>
+      <ul style="margin:0;">
+        <li>发送京ME消息</li>
+        <li>修改京ME聊天数据库或日志</li>
+        <li>注入京ME客户端或转储进程内存</li>
+        <li>提取凭据、Cookie 或私钥</li>
+        <li>将未经验证的推断呈现为事实</li>
+      </ul>
+    </div>
+    <p>用户要求发送消息时，生成草稿文案并说明需手动发送。</p>
+  </section>
+
+  <!-- 工作流 -->
+  <section id="workflow">
+    <h2>五步工作流</h2>
+
+    <div class="workflow-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>明确范围</h3>
+        <p>缺失时询问最小必要信息：对象 ERP/姓名、群名/会话ID、日期范围、关键词、是否包含会议记录/京ME/两者。</p>
+        <p style="margin-top:0.3rem;font-size:0.78rem;color:var(--text-dim);">默认："昨天"=前一日；"本周"=周一至今；"最近"=过去7天。</p>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>收集京ME证据</h3>
+        <p>一对一聊天优先按 sessionId 模式匹配：<code>&lt;对方&gt;:ee:&lt;自己&gt;:ee</code>。会话未知时先用 <code>chat-search</code> 关键词搜索，再按时间戳过滤。</p>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>收集慧记证据</h3>
+        <p>获取范围内会议列表，仅对与用户主题相关的会议获取详情。使用标题、参会人、转写文本和附件。转写缺失时不编造结论。</p>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>提取承诺</h3>
+        <p>根据承诺线索词和截止时间词进行匹配识别，逐条分类为：负责人、事项、截止时间、来源、证据、状态。</p>
+      </div>
+    </div>
+
+    <div class="workflow-step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>输出跟进清单</h3>
+        <p>简洁中文表格：结论 + 详情表格 + 建议提醒文案。敏感内容做概括而非转储原始转写。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 承诺识别线索词 -->
+  <section id="cues">
+    <h2>承诺识别线索词</h2>
+
+    <div class="cue-grid">
+      <div class="cue-card">
+        <div class="cue-label">承诺线索</div>
+        <div class="cue-items">
+          <code>我来</code> · <code>我跟</code> · <code>我负责</code> · <code>我推进</code><br>
+          <code>我今天弄</code> · <code>明天发你</code> · <code>下周给</code><br>
+          <code>会同步</code> · <code>已收到</code>
+        </div>
+      </div>
+      <div class="cue-card">
+        <div class="cue-label">截止线索</div>
+        <div class="cue-items">
+          <code>今天</code> · <code>明天</code> · <code>周五</code> · <code>下周</code><br>
+          <code>7月</code> · <code>上线前</code>
+        </div>
+      </div>
+      <div class="cue-card">
+        <div class="cue-label">交付线索</div>
+        <div class="cue-items">
+          <code>发你看</code> · <code>给谁过目</code> · <code>宣讲</code><br>
+          <code>提报</code> · <code>排期</code> · <code>上线</code><br>
+          <code>确认</code> · <code>补充数据</code>
+        </div>
+      </div>
+    </div>
+
+    <h3>状态分类</h3>
+    <table>
+      <thead><tr><th>状态</th><th>含义</th><th>示例</th></tr></thead>
+      <tbody>
+        <tr><td><span class="status-badge promised">promised</span></td><td>已承诺</td><td>某人说了"我来跟进"</td></tr>
+        <tr><td><span class="status-badge done">done</span></td><td>已完成</td><td>后续消息/会议确认已完成</td></tr>
+        <tr><td><span class="status-badge blocked">blocked</span></td><td>受阻</td><td>明确提到遇到阻塞</td></tr>
+        <tr><td><span class="status-badge unclear">unclear</span></td><td>不明确</td><td>承诺存在但时间/范围不清晰</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 输出格式 -->
+  <section id="output">
+    <h2>输出格式</h2>
+    <pre>**结论**
+本次共识别 &lt;N&gt; 个跟进事项，其中 &lt;A&gt; 个有明确负责人，
+&lt;B&gt; 个有明确时间点，&lt;C&gt; 个需要补确认。
+
+| 负责人 | 事项 | 时间点 | 来源 | 状态 | 证据 |
+|---|---|---|---|---|---|
+| &lt;name/erp&gt; | &lt;task&gt; | &lt;deadline&gt; | 京ME/慧记 | &lt;status&gt; | &lt;short quote&gt; |
+
+**建议提醒文案**
+- 给 &lt;person&gt;：&lt;copy&gt;</pre>
+
+    <h3>使用示例</h3>
+    <table>
+      <thead><tr><th>用户输入</th><th>预期行为</th></tr></thead>
+      <tbody>
+        <tr><td>"帮我检查昨天跟 chengrunfeng3 的消息，看看他答应了什么"</td><td>识别私聊中的承诺，含时间戳和来源引用</td></tr>
+        <tr><td>"查本周慧记里谁答应跟进圈子话题H2规划"</td><td>获取本周会议列表→筛选H1/H2规划会议→读转写→提取负责人/任务/截止</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 已知配置 -->
+  <section>
+    <h2>已知本地配置（2026-06-25 验证）</h2>
+    <table>
+      <thead><tr><th>组件</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>账户自动选择</td><td>✅ 对 dengda.1 正常</td></tr>
+        <tr><td>SQLCipher</td><td>✅ Homebrew 安装，数据库访问正常</td></tr>
+        <tr><td>关键词搜索</td><td>✅ 返回 JSON Lines</td></tr>
+        <tr><td>聊天历史</td><td>✅ chat-history 返回 JSON Lines</td></tr>
+        <tr><td>实时监听</td><td>✅ watch 命令启动正常</td></tr>
+        <tr><td>慧记会议列表</td><td>✅ 本周列表可通过浏览器登录态获取</td></tr>
+        <tr><td>慧记会议详情</td><td>✅ 如 H1&H2讨论 返回转写记录</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>read-email · 邮件统一入口</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f5f0eb;
+    --surface: #ffffff;
+    --surface2: #faf8f5;
+    --border: #e0dbd3;
+    --text: #3b3629;
+    --text-dim: #918b7e;
+    --text-bright: #1a1712;
+    --ink: #2c5282;
+    --ink-light: #3182ce;
+    --red: #c53030;
+    --gold: #b7791f;
+    --green: #276749;
+    --radius: 6px;
+    --serif: 'Source Serif 4', 'Noto Serif SC', Georgia, serif;
+    --sans: 'Inter', -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', monospace;
+    --shadow: 0 0 0 1px rgba(0,0,0,0.03), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .masthead {
+    background: var(--text-bright);
+    color: #f5f0eb;
+    padding: 3rem 0 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom right, transparent 49%, var(--bg) 51%);
+  }
+
+  .masthead-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .masthead .tagline {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245,240,235,0.5);
+    margin-bottom: 1rem;
+  }
+
+  .masthead h1 {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .masthead .desc {
+    font-size: 1rem;
+    color: rgba(245,240,235,0.7);
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--gold);
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-bright);
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 0.7rem; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+  }
+
+  p code, li code {
+    background: var(--surface2);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  pre {
+    background: var(--text-bright);
+    color: #e8e4da;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 0.73rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  pre code { background: none; padding: 0; color: inherit; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.25rem;
+    font-size: 0.83rem;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    padding: 0.6rem 0.9rem;
+    background: var(--surface2);
+    border-bottom: 2px solid var(--border);
+  }
+
+  td {
+    padding: 0.5rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .cmd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .cmd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.15rem;
+    box-shadow: var(--shadow);
+  }
+
+  .cmd-card .name {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+  }
+
+  .cmd-card .desc {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .rule-box {
+    background: var(--surface);
+    border-left: 3px solid var(--gold);
+    padding: 0.9rem 1.15rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  .rule-box.red { border-left-color: var(--red); }
+  .rule-box.green { border-left-color: var(--green); }
+
+  ul, ol { padding-left: 1.5rem; margin-bottom: 0.7rem; }
+  li { margin-bottom: 0.25rem; }
+
+  .confirm-flow {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0.75rem 0;
+  }
+
+  .confirm-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius);
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .masthead h1 { font-size: 1.8rem; }
+    .cmd-grid { grid-template-columns: 1fr; }
+    .container { padding: 1.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-inner">
+    <div class="tagline">Skill · v1.0.1 · JoyMail 统一入口</div>
+    <h1>read-email</h1>
+    <p class="desc">邮件全文读取、查询、梳理、总结、回复、发送、转发、文件夹管理——一个 SOAP 入口覆盖所有邮件场景。</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 概述 -->
+  <section>
+    <h2>核心突破</h2>
+    <div class="rule-box green">
+      <strong>突破"只能读标题"限制</strong>——通过 EWS SOAP 协议获取邮件全文（正文 + 附件元数据 + 收发件人），支持多维度筛选和批量操作。
+    </div>
+  </section>
+
+  <!-- 命令全景 -->
+  <section>
+    <h2>命令全景</h2>
+    <div class="cmd-grid">
+      <div class="cmd-card"><div class="name">folders</div><div class="desc">浏览目录树，定位自定义文件夹</div></div>
+      <div class="cmd-card"><div class="name">create-folder</div><div class="desc">创建邮件文件夹</div></div>
+      <div class="cmd-card"><div class="name">search</div><div class="desc">在文件夹中抓取邮件列表并客户端过滤</div></div>
+      <div class="cmd-card"><div class="name">detail</div><div class="desc">按 ItemId 获取邮件全文+附件元数据</div></div>
+      <div class="cmd-card"><div class="name">daily-stats</div><div class="desc">按天统计邮件（日期+星期+总数+未读+已读）</div></div>
+      <div class="cmd-card"><div class="name">summarize</div><div class="desc">从 stdin 读取 JSON 生成 Markdown 总结</div></div>
+      <div class="cmd-card"><div class="name">reply</div><div class="desc">回复邮件（支持 reply-all、带原文、附件）</div></div>
+      <div class="cmd-card"><div class="name">send</div><div class="desc">新建邮件（收件人/抄送/密送/附件）</div></div>
+      <div class="cmd-card"><div class="name">forward</div><div class="desc">转发邮件并追加附言/附件</div></div>
+      <div class="cmd-card"><div class="name">lookup-recipient</div><div class="desc">按 ERP/姓名查收件人邮箱</div></div>
+      <div class="cmd-card"><div class="name">pending-important</div><div class="desc">启发式：最近N天待处理重要邮件</div></div>
+      <div class="cmd-card"><div class="name">person-unhandled</div><div class="desc">启发式：某发件人的未查看未处理邮件</div></div>
+      <div class="cmd-card"><div class="name">batch-mark-read</div><div class="desc">批量标记已读</div></div>
+      <div class="cmd-card"><div class="name">batch-mark-unread</div><div class="desc">批量标记未读</div></div>
+      <div class="cmd-card"><div class="name">batch-add-category</div><div class="desc">批量打标签</div></div>
+      <div class="cmd-card"><div class="name">batch-move</div><div class="desc">批量移动到指定文件夹</div></div>
+      <div class="cmd-card"><div class="name">batch-delete</div><div class="desc">批量删除</div></div>
+      <div class="cmd-card"><div class="name">flag / unflag</div><div class="desc">单封旗标 / 取消旗标</div></div>
+      <div class="cmd-card"><div class="name">batch-flag / batch-unflag</div><div class="desc">批量旗标 / 批量取消旗标</div></div>
+    </div>
+  </section>
+
+  <!-- 关键规则 -->
+  <section>
+    <h2>关键规则</h2>
+
+    <h3>默认时间规则</h3>
+    <div class="rule-box">
+      所有查询操作，用户未明确给出日期范围时，<strong>默认只查最近 1 天</strong>（按 DateTimeReceived）。
+      <code>folders</code>、<code>detail</code> 不受此限制。
+    </div>
+
+    <h3>二次确认规则</h3>
+    <div class="rule-box red">
+      所有<strong>修改邮箱状态</strong>的操作（send / reply / forward / batch-*）必须<strong>对话交互层二次确认</strong>。
+      先展示摘要（收件人/主题/正文/附件），用户明确确认后才执行。
+    </div>
+
+    <h3>收件人解析规则</h3>
+    <div class="rule-box">
+      用户给中文名或 ERP 发邮件时，<strong>必须先调用 <code>lookup-recipient</code></strong> 解析邮箱。
+      不要猜邮箱、不要跳过确认。
+    </div>
+
+    <h3>输出风格规则</h3>
+    <div class="rule-box green">
+      <strong>结果优先、过程最小化</strong>。直接给邮件结果/结论/摘要/表格，不主动展开内部实现细节。
+      "查到 3 封未读，其中 1 封高优先级"，而不是"我先调用了 search 再调用了 summarize"。
+    </div>
+  </section>
+
+  <!-- search 能力矩阵 -->
+  <section>
+    <h2>search 筛选能力</h2>
+    <table>
+      <thead><tr><th>维度</th><th>参数</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>文件夹</td><td><code>--folder</code> / <code>--folder-id</code> / <code>--folder-name</code></td><td>指定搜索范围</td></tr>
+        <tr><td>发件人</td><td><code>--sender</code></td><td>邮箱地址匹配</td></tr>
+        <tr><td>收件人</td><td><code>--recipient</code></td><td>收件人匹配</td></tr>
+        <tr><td>主题</td><td><code>--subject</code></td><td>主题关键词子串匹配</td></tr>
+        <tr><td>正文</td><td><code>--body-keyword</code></td><td>预览/正文关键词（客户端过滤）</td></tr>
+        <tr><td>时间</td><td><code>--after</code> / <code>--before</code></td><td>YYYY-MM-DD 或 YYYY-MM-DD HH:MM:SS</td></tr>
+        <tr><td>已读/未读</td><td><code>--read</code> / <code>--unread</code></td><td>读取状态过滤</td></tr>
+        <tr><td>标签</td><td><code>--category</code></td><td>分类标签过滤</td></tr>
+        <tr><td>附件</td><td><code>--has-attachments</code></td><td>仅含附件的邮件</td></tr>
+        <tr><td>重要级别</td><td><code>--importance</code></td><td>High / Normal / Low</td></tr>
+        <tr><td>翻页</td><td><code>--max-pages</code></td><td>控制扫描深度</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 使用示例 -->
+  <section>
+    <h2>常用示例</h2>
+    <pre># 查看邮箱目录
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">folders</span> <span style="color:#b7791f;">--parent</span> msgfolderroot
+
+# 查询收件箱未读邮件
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">search</span> <span style="color:#b7791f;">--folder</span> inbox <span style="color:#b7791f;">--unread</span> <span style="color:#b7791f;">--limit</span> 20
+
+# 按发件人+主题查询
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">search</span> <span style="color:#b7791f;">--folder</span> inbox <span style="color:#b7791f;">--sender</span> <span style="color:#2c5282;">"zhangsan@jd.com"</span> <span style="color:#b7791f;">--subject</span> <span style="color:#2c5282;">"周报"</span>
+
+# 获取邮件全文
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">detail</span> <span style="color:#b7791f;">--item-id</span> <span style="color:#2c5282;">"AAMkADFlNG..."</span>
+
+# 最近7天未回复的重要邮件
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">pending-important</span> <span style="color:#b7791f;">--days</span> 7
+
+# 搜索→总结 管道
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">search</span> <span style="color:#b7791f;">--folder</span> inbox <span style="color:#b7791f;">--unread</span> <span style="color:#b7791f;">--limit</span> 20 | <span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">summarize</span>
+
+# 回复邮件（带附件）
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">reply</span> \
+  <span style="color:#b7791f;">--item-id</span> <span style="color:#2c5282;">"AAMkADFlNG..."</span> \
+  <span style="color:#b7791f;">--body</span> <span style="color:#2c5282;">"收到，我今天处理完给你反馈。"</span> \
+  <span style="color:#b7791f;">--attachments</span> <span style="color:#2c5282;">"/path/to/会议纪要.docx,/path/to/排期.xlsx"</span>
+
+# 新建邮件（带抄送）
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">send</span> \
+  <span style="color:#b7791f;">--to</span> <span style="color:#2c5282;">"a@jd.com,b@jd.com"</span> \
+  <span style="color:#b7791f;">--cc</span> <span style="color:#2c5282;">"c@jd.com"</span> \
+  <span style="color:#b7791f;">--subject</span> <span style="color:#2c5282;">"项目同步"</span> \
+  <span style="color:#b7791f;">--body</span> <span style="color:#2c5282;">"大家好，项目进展如下……"</span>
+
+# 按天统计
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">daily-stats</span> <span style="color:#b7791f;">--days</span> 7
+
+# 批量标记已读
+<span style="color:#e8e4da;">bash</span> scripts/run.sh <span style="color:#3182ce;">batch-mark-read</span> <span style="color:#b7791f;">--item-ids</span> <span style="color:#2c5282;">"id1,id2,id3"</span></pre>
+  </section>
+
+  <!-- 技术说明 -->
+  <section>
+    <h2>技术架构</h2>
+    <table>
+      <thead><tr><th>组件</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>协议</td><td>EWS SOAP（Exchange Web Services）</td></tr>
+        <tr><td>版本</td><td>Exchange2016</td></tr>
+        <tr><td>入口</td><td><code>scripts/run.sh</code></td></tr>
+        <tr><td>鉴权</td><td>SSO Token → JWT Login → auth header</td></tr>
+        <tr><td>Token 缓存</td><td>本地缓存 + 过期自动刷新 + 最多3次重试</td></tr>
+        <tr><td>默认端点</td><td><code>https://mail-skill.jd.com/mail/api/clawmail/mailpost</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+</body>
+</html>

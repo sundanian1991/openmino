@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>把团队工作沉淀为AI可用的知识库 · Knowledge as Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0a0b;
+    --ink-rgb:10,10,11;
+    --paper:#f1efea;
+    --paper-rgb:241,239,234;
+    --paper-tint:#e8e5de;
+    --ink-tint:#18181a;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --serif-en:"Playfair Display","Source Serif 4",Georgia,serif;
+    --serif-body-en:"Source Serif 4",Georgia,serif;
+    --serif-zh:"Noto Serif SC",source-han-serif-sc,serif;
+    --sans-zh:"Noto Sans SC",source-han-sans-sc,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);color:var(--paper);font-family:var(--sans-zh);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+  canvas.bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;transition:opacity 1.2s ease}
+  canvas#bg-light{opacity:0}
+  canvas#bg-dark{opacity:1}
+  body.light-bg canvas#bg-light{opacity:1}
+  body.light-bg canvas#bg-dark{opacity:0}
+  body.low-power canvas.bg{display:none!important}
+
+  #deck{position:fixed;inset:0;width:10000vw;height:100vh;display:flex;flex-wrap:nowrap;transition:transform .9s cubic-bezier(.77,0,.175,1);z-index:10;will-change:transform}
+  .slide{width:100vw;height:100vh;flex:0 0 100vw;position:relative;padding:6vh 6vw 10vh 6vw;display:flex;flex-direction:column;overflow:hidden}
+  .slide.light{color:var(--ink);background:var(--paper)}
+  .slide.dark{color:var(--paper);background:var(--ink)}
+
+  .slide::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;transition:background .7s ease}
+  .slide.light::before{background:rgba(var(--paper-rgb),.78);backdrop-filter:blur(3px)}
+  .slide.dark::before{background:rgba(var(--ink-rgb),.78);backdrop-filter:blur(3px)}
+  .slide.hero.light::before{background:rgba(var(--paper-rgb),.16);backdrop-filter:none}
+  .slide.hero.dark::before{background:rgba(var(--ink-rgb),.12);backdrop-filter:none}
+  .slide.hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none}
+  .slide.hero.light::after{background:linear-gradient(180deg,rgba(var(--paper-rgb),.28) 0%,rgba(var(--paper-rgb),0) 14%,rgba(var(--paper-rgb),0) 86%,rgba(var(--paper-rgb),.28) 100%)}
+  .slide.hero.dark::after{background:linear-gradient(180deg,rgba(var(--ink-rgb),.32) 0%,rgba(var(--ink-rgb),0) 14%,rgba(var(--ink-rgb),0) 86%,rgba(var(--ink-rgb),.32) 100%)}
+
+  .chrome{display:flex;justify-content:space-between;align-items:flex-start;font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.7}
+  .chrome .left,.chrome .right{display:flex;gap:2.4em;align-items:center}
+  .chrome .sep{width:40px;height:1px;background:currentColor;opacity:.4}
+  .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+  .foot .title{font-family:var(--serif-zh);font-weight:400;letter-spacing:.05em;text-transform:none;opacity:.75;font-size:13px}
+
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;padding:6px 14px;border:1px solid currentColor;opacity:.85}
+  .rule{width:100%;height:1px;background:currentColor;opacity:.25;margin:3vh 0}
+
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;margin-bottom:2.6vh}
+  .h-hero{font-family:var(--serif-zh);font-weight:900;font-size:10vw;line-height:.96;letter-spacing:-.02em}
+  .h-xl{font-family:var(--serif-zh);font-weight:700;font-size:6.2vw;line-height:1.08;letter-spacing:-.01em}
+  .h-sub{font-family:var(--serif-zh);font-weight:500;font-size:3.1vw;line-height:1.25;letter-spacing:0;opacity:.7}
+  .h-md{font-family:var(--serif-zh);font-weight:600;font-size:2.3vw;line-height:1.3}
+  .lead{font-family:var(--serif-zh);font-weight:400;font-size:1.75vw;line-height:1.5;opacity:.86}
+  .meta-row{display:flex;gap:1.2em;align-items:baseline;flex-wrap:wrap;font-family:var(--mono);font-size:max(12px,.92vw);letter-spacing:.16em;text-transform:uppercase;opacity:.6}
+
+  .stat-card{display:flex;flex-direction:column;gap:.8vh;align-items:flex-start;padding-top:1.6vh;border-top:1px solid currentColor;border-color:rgba(127,127,127,.3)}
+  .stat-card .stat-label{font-family:var(--mono);font-size:max(10px,.78vw);letter-spacing:.24em;text-transform:uppercase;opacity:.55}
+  .stat-card .stat-nb{font-family:var(--serif-en);font-weight:800;font-size:5.8vw;line-height:.9;letter-spacing:-.03em;font-feature-settings:"tnum";margin-top:.4vh}
+  .stat-card .stat-nb .stat-unit{font-family:var(--serif-zh);font-weight:500;font-size:.38em;letter-spacing:0;opacity:.72;margin-left:.14em}
+  .stat-card .stat-note{font-family:var(--sans-zh);font-weight:400;font-size:max(13px,1.05vw);line-height:1.5;opacity:.72;margin-top:.6vh}
+
+  .pipeline-section{margin-top:4.4vh;padding-top:2.8vh;border-top:1px dashed rgba(127,127,127,.32)}
+  .pipeline-section:first-of-type{border-top:0;padding-top:0;margin-top:3vh}
+  .pipeline-label{font-family:var(--mono);font-size:max(11px,.85vw);letter-spacing:.24em;text-transform:uppercase;opacity:.62;margin-bottom:2.2vh}
+  .pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2vw}
+  .pipeline[data-cols="3"]{grid-template-columns:repeat(3,1fr)}
+  .pipeline[data-cols="4"]{grid-template-columns:repeat(4,1fr)}
+  .pipeline[data-cols="6"]{grid-template-columns:repeat(6,1fr)}
+  .step{display:flex;flex-direction:column;gap:.8vh;padding-top:1.4vh;border-top:1px solid currentColor;border-color:rgba(127,127,127,.35)}
+  .step-nb{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:1.15vw;opacity:.45}
+  .step-title{font-family:var(--sans-zh);font-weight:700;font-size:1.55vw;letter-spacing:.01em;line-height:1.2}
+  .step-desc{font-family:var(--sans-zh);font-weight:400;font-size:max(12px,.95vw);line-height:1.45;opacity:.72}
+
+  .frame{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+  .frame.grid-2-7-5,.frame.grid-2-6-6,.frame.grid-2-8-4,.frame.grid-3-3,.frame.grid-6{display:grid}
+
+  .grid-6{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:4vw 6vw;flex:1;align-content:center;padding:2vh 0}
+  .grid-4{display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);gap:4vh 6vw;flex:1;align-content:center}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:4vw;flex:1;align-content:center}
+
+  .grid-2-7-5{display:grid;grid-template-columns:7fr 5fr;gap:3vw 4vh;align-items:start}
+  .grid-2-6-6{display:grid;grid-template-columns:1fr 1fr;gap:3vw 4vh;align-items:start}
+  .grid-2-8-4{display:grid;grid-template-columns:8fr 4fr;gap:3vw 4vh;align-items:start}
+  .grid-3-3{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:minmax(0,1fr);gap:2.4vh 2vw}
+
+  .callout{padding:3vh 2.4vw;border-left:3px solid currentColor;position:relative;font-family:var(--serif-zh);font-size:max(15px,1.2vw);line-height:1.55;opacity:.92}
+  .slide.light .callout{background:rgba(var(--ink-rgb),.05)}
+  .slide.dark .callout{background:rgba(var(--paper-rgb),.06)}
+  .callout-src{display:block;margin-top:1.6vh;font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6}
+
+  figure.frame-img{margin:0;display:flex;flex-direction:column;min-width:0}
+  .frame-img{overflow:hidden;position:relative;background:rgba(0,0,0,.04);box-sizing:border-box;width:100%;border-radius:4px}
+  .slide.dark .frame-img{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.12)}
+  .frame-img > img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+  .frame-img.fit-contain > img{object-fit:contain;object-position:center center}
+  .frame-img.r-16x9{aspect-ratio:16/9;max-height:64vh}
+  .frame-img.r-16x10{aspect-ratio:16/10;max-height:56vh}
+  .frame-img.r-4x3{aspect-ratio:4/3;max-height:56vh}
+  .frame-img.r-3x2{aspect-ratio:3/2;max-height:46vh}
+  .frame-img.r-3x4{aspect-ratio:3/4;max-height:60vh}
+  .frame-img.r-1x1{aspect-ratio:1/1;max-height:50vh}
+  .img-cap{display:block;margin-top:.8vh;font-family:var(--mono);font-size:max(10px,.8vw);letter-spacing:.22em;text-transform:uppercase;opacity:.6}
+
+  #nav{position:fixed;left:50%;bottom:2.6vh;transform:translateX(-50%);z-index:30;display:flex;gap:10px;padding:8px 14px;border-radius:999px;background:rgba(0,0,0,.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  #nav .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s ease;border:0;padding:0}
+  #nav .dot:hover{background:rgba(255,255,255,.5);transform:scale(1.15)}
+  #nav .dot.active{background:rgba(255,255,255,.95);width:22px;border-radius:999px}
+  body.light-bg #nav{background:rgba(255,255,255,.25)}
+  body.light-bg #nav .dot{background:rgba(var(--ink-rgb),.25)}
+  body.light-bg #nav .dot.active{background:rgba(var(--ink-rgb),.9)}
+  #hint{position:fixed;bottom:3vh;right:3vw;z-index:30;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.4;mix-blend-mode:difference;color:#aaa}
+  body.low-power #hint{opacity:.72;color:var(--paper);mix-blend-mode:normal}
+  body.light-bg.low-power #hint{color:var(--ink)}
+
+  [data-anim]{opacity:1}
+  body.motion-ready [data-anim]{opacity:0}
+  body.motion-ready [data-anim="left"]{transform:translateX(-24px)}
+  body.motion-ready [data-anim="right"]{transform:translateX(24px)}
+  body.motion-ready [data-anim="line"]{opacity:0;transform:translateY(10px)}
+  body.motion-ready [data-animate="pipeline"] [data-anim]{opacity:.15}
+  body.low-power #deck{transition:none!important}
+  body.low-power *,body.low-power *::before,body.low-power *::after{animation:none!important;transition:none!important}
+  body.low-power.motion-ready [data-anim],body.low-power [data-anim]{opacity:1!important;transform:none!important}
+
+  @media (max-width:900px){
+    .h-hero{font-size:14vw}
+    .h-xl{font-size:9vw}
+    .pipeline{grid-template-columns:repeat(2,1fr)}
+    .grid-2-7-5,.grid-2-6-6,.grid-2-8-4{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<script>
+  (function(){
+    const KEY = 'guizang-ppt-low-power';
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stored = localStorage.getItem(KEY);
+    window.__lowPowerMode = stored === '1' || (stored === null && reduced);
+    function updateHint(){
+      const hint = document.getElementById('hint');
+      if(hint) hint.textContent = '← → 翻页 · B ' + (window.__lowPowerMode ? '动态' : '静态') + ' · ESC 索引';
+    }
+    window.__setLowPowerMode = function(on, opts={}){
+      window.__lowPowerMode = !!on;
+      document.body.classList.toggle('low-power', window.__lowPowerMode);
+      if(opts.persist !== false) localStorage.setItem(KEY, window.__lowPowerMode ? '1' : '0');
+      if(window.__lowPowerMode && document.getAnimations){
+        document.getAnimations().forEach(a=>a.cancel());
+      }
+      updateHint();
+      dispatchEvent(new CustomEvent('ppt-low-power-change', {detail:{on:window.__lowPowerMode}}));
+      if(window.__playSlide) window.__playSlide(window.__currentSlideIndex || 0);
+    };
+    document.body.classList.toggle('low-power', window.__lowPowerMode);
+    addEventListener('DOMContentLoaded', updateHint, {once:true});
+  })();
+</script>
+
+<canvas id="bg-dark" class="bg"></canvas>
+<canvas id="bg-light" class="bg"></canvas>
+<div id="hint">← → 翻页 · B 静态 · ESC 索引</div>
+
+<div id="deck">
+
+<!-- ========== P01 · 封面 · Hero Cover ========== -->
+<section class="slide hero dark">
+  <div class="chrome">
+    <div>AI + Knowledge · 2026.06.28</div>
+    <div>Vol.01</div>
+  </div>
+  <div class="frame" style="display:grid; gap:4vh; align-content:center; min-height:80vh">
+    <div class="kicker" data-anim>跨部门方案分享</div>
+    <h1 class="h-hero" data-anim>把团队工作沉淀为<br>AI 可用的知识库</h1>
+    <p class="lead" style="max-width:60vw" data-anim>
+      一套可复制的方法论——让散落在京me、JoySpace、个人笔记里的经验，变成 AI 随时能检索、整理、更新的结构化知识。
+    </p>
+    <div class="meta-row" data-anim>
+      <span>Knowledge as Code</span><span>·</span><span>2026</span>
+    </div>
+  </div>
+  <div class="foot">
+    <div>把经验变成资产 · From Work to Knowledge</div>
+    <div>— 2026 —</div>
+  </div>
+</section>
+
+<!-- ========== P02 · 痛点 · Three Pain Points ========== -->
+<section class="slide light">
+  <div class="chrome">
+    <div>现状 · Problem</div>
+    <div>Act I · 02 / 19</div>
+  </div>
+  <div class="frame" style="padding-top:6vh">
+    <div class="kicker" data-anim>Before · 现状</div>
+    <h2 class="h-xl" data-anim>现有文档管理的 3 个痛点</h2>
+    <p class="lead" style="margin-bottom:5vh" data-anim>散落、过时、不可检索——团队经验正在流失。</p>
+
+    <div class="grid-3" style="margin-top:4vh">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">01 · 散落</div>
+        <div class="stat-nb" style="font-size:4.2vw; font-family:var(--serif-zh)">找不到</div>
+        <div class="stat-note">SOP 在京me消息、JoySpace文档、个人笔记里各存一份。新人入职，要问 5 个人才能拼出完整流程。</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">02 · 过时</div>
+        <div class="stat-nb" style="font-size:4.2vw; font-family:var(--serif-zh)">不敢用</div>
+        <div class="stat-note">文档写完就没人更新。制度变了、流程改了、人员换了，旧文档比没有更危险——因为它在，但错了。</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">03 · 不可检索</div>
+        <div class="stat-nb" style="font-size:4.2vw; font-family:var(--serif-zh)">用不上</div>
+        <div class="stat-note">AI 时代，信息存在 ≠ 信息可用。传统文档格式让 AI 无法理解、无法提取、无法在对话中直接引用。</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 02 · 痛点分析</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P03 · 方案概述 · Act Divider ========== -->
+<section class="slide hero light">
+  <div class="chrome">
+    <div>方案 · Solution</div>
+    <div>Act II · 03 / 19</div>
+  </div>
+  <div class="frame" style="display:grid; gap:6vh; align-content:center; min-height:80vh">
+    <div class="kicker" data-anim>Act II</div>
+    <h1 class="h-hero" style="font-size:8.5vw" data-anim>一套可复制的方法论</h1>
+    <p class="lead" style="max-width:55vw" data-anim>
+      三个技能、一套规范、一条路径。从"散落在各处"到"AI 随取随用"。
+    </p>
+  </div>
+  <div class="foot">
+    <div>方法论概述</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P04 · 三个操作 · Three Operations ========== -->
+<section class="slide dark">
+  <div class="chrome">
+    <div>操作 · Operations</div>
+    <div>Act II · 04 / 19</div>
+  </div>
+  <div class="frame" style="padding-top:6vh">
+    <div class="kicker" data-anim>Three Pillars</div>
+    <h2 class="h-xl" data-anim>摄取 · 查询 · 体检</h2>
+    <p class="lead" style="margin-bottom:5vh" data-anim>三个操作覆盖知识的全生命周期。</p>
+
+    <div class="grid-3" style="margin-top:4vh">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Ingest</div>
+        <div class="stat-nb" style="font-size:4.2vw; font-family:var(--serif-zh)">摄取</div>
+        <div class="stat-note">把散落的文档、SOP、制度、经验，按统一规范整理成 AI 可读的结构化知识文件。</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Query</div>
+        <div class="stat-nb" style="font-size:4.2vw; font-family:var(--serif-zh)">查询</div>
+        <div class="stat-note">自然语言提问，AI 从知识库中检索最相关的条目，给出精准答案并标注来源。</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Health</div>
+        <div class="stat-nb" style="font-size:4.2vw; font-family:var(--serif-zh)">体检</div>
+        <div class="stat-note">定期检查知识库健康度：哪些过时了、哪些缺失、哪些需要更新，自动生成体检报告。</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 04 · 三个操作</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P05 · Before / After · 旧模式 vs 新模式 ========== -->
+<section class="slide light" data-animate="directional">
+  <div class="chrome">
+    <div>对比 · Before / After</div>
+    <div>Act II · 05 / 19</div>
+  </div>
+  <div class="frame" style="padding-top:5vh">
+    <div class="kicker" data-anim>范式转变</div>
+    <h2 class="h-xl" style="margin-bottom:4vh" data-anim>从散乱到结构</h2>
+
+    <div class="grid-2-6-6" style="gap:5vw 4vh">
+      <div data-anim="left" style="padding:3vh 2vw; border-left:3px solid currentColor; opacity:.55">
+        <div class="kicker" style="opacity:.9">Before · 旧模式</div>
+        <h3 class="h-md" style="margin-top:2vh">散乱文档 · 人找信息</h3>
+        <ul style="margin-top:3vh; padding-left:1.2em; display:flex; flex-direction:column; gap:1.4vh; font-family:var(--sans-zh); font-size:max(14px,1.1vw); line-height:1.55">
+          <li>文档散落在京me、JoySpace、群聊</li>
+          <li>新人靠口口相传学流程</li>
+          <li>制度更新了但没人知道</li>
+          <li>重复劳动：每次有人问都要重新解释</li>
+          <li>AI 完全无法触达这些知识</li>
+        </ul>
+      </div>
+      <div data-anim="right" style="padding:3vh 2vw; border-left:3px solid currentColor">
+        <div class="kicker" style="opacity:.9">After · 新模式</div>
+        <h3 class="h-md" style="margin-top:2vh">结构化知识 · 信息找人</h3>
+        <ul style="margin-top:3vh; padding-left:1.2em; display:flex; flex-direction:column; gap:1.4vh; font-family:var(--sans-zh); font-size:max(14px,1.1vw); line-height:1.55">
+          <li>统一知识库，一处更新全局生效</li>
+          <li>AI 自动检索，秒级响应</li>
+          <li>体检机制保证内容新鲜度</li>
+          <li>知识沉淀不依赖个人记忆</li>
+          <li>AI 在对话中直接引用知识条目</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 05 · 范式转变</div>
+    <div>Before / After</div>
+  </div>
+</section>
+
+<!-- ========== P06 · 痛点案例 · 散乱 SOP ========== -->
+<section class="slide hero dark">
+  <div class="chrome">
+    <div>案例 · Case Study</div>
+    <div>Act III · 06 / 19</div>
+  </div>
+  <div class="frame" style="display:grid; gap:8vh; align-content:center; min-height:80vh">
+    <div class="kicker" data-anim>真实场景</div>
+    <h1 class="h-hero" style="font-size:7vw; line-height:1.15">
+      <span data-anim style="display:block">同一个供应商准入流程，</span>
+      <span data-anim style="display:block">散落在 7 个地方。</span>
+    </h1>
+    <p class="lead" style="max-width:50vw" data-anim>
+      JoySpace文档有总纲，京me消息里有审批记录，群聊里有口头确认，个人笔记里有实操经验——没有一处是完整的。
+    </p>
+  </div>
+  <div class="foot">
+    <div>Page 06 · 真实痛点</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P07 · 整理后 · 结构化知识 ========== -->
+<section class="slide light">
+  <div class="chrome">
+    <div>案例 · After</div>
+    <div>Act III · 07 / 19</div>
+  </div>
+  <div class="frame grid-2-7-5" style="padding-top:6vh">
+    <div style="display:flex; flex-direction:column; justify-content:space-between; gap:3vh">
+      <div>
+        <div class="kicker" data-anim>整理后</div>
+        <h2 class="h-xl" style="white-space:nowrap; font-size:7.2vw" data-anim>
+          结构化知识
+        </h2>
+        <p class="lead" style="margin-top:3vh" data-anim>
+          同一个流程，现在沉淀为一份 AI 可读的 Markdown 文件：流程步骤、审批节点、所需材料、常见问题，一个文件全覆盖。
+        </p>
+      </div>
+      <div class="callout" data-anim>
+        "AI 不是不知道，是知识没有被正确地喂给它。"
+        <div class="callout-src">— 核心洞察</div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:2vh; padding:3vh 0">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Before</div>
+        <div class="stat-nb" style="font-size:4vw">7 <span class="stat-unit">处</span></div>
+        <div class="stat-note">信息分散在 7 个位置</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">After</div>
+        <div class="stat-nb" style="font-size:4vw">1 <span class="stat-unit">处</span></div>
+        <div class="stat-note">统一知识库，一处维护</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Retrieval</div>
+        <div class="stat-nb" style="font-size:4vw">3 <span class="stat-unit">秒</span></div>
+        <div class="stat-note">AI 检索到精准答案</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 07 · 整理后效果</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P08 · 编写规范 · AI 提炼 vs 人写 ========== -->
+<section class="slide dark" data-animate="directional">
+  <div class="chrome">
+    <div>规范 · Writing Standard</div>
+    <div>Act III · 08 / 19</div>
+  </div>
+  <div class="frame" style="padding-top:5vh">
+    <div class="kicker" data-anim>编写规范</div>
+    <h2 class="h-xl" style="margin-bottom:4vh" data-anim>AI 提炼 vs 人写</h2>
+
+    <div class="grid-2-6-6" style="gap:5vw 4vh">
+      <div data-anim="left" style="padding:3vh 2vw; border-left:3px solid currentColor; opacity:.55">
+        <div class="kicker" style="opacity:.9">人写 · 传统方式</div>
+        <h3 class="h-md" style="margin-top:2vh">逐字撰写</h3>
+        <ul style="margin-top:3vh; padding-left:1.2em; display:flex; flex-direction:column; gap:1.4vh; font-family:var(--sans-zh); font-size:max(14px,1.1vw); line-height:1.55">
+          <li>耗时长：一篇 SOP 可能需要半天</li>
+          <li>格式不统一，每人写法不同</li>
+          <li>写完没人看，更新更难</li>
+          <li>信息密度低，大量铺垫和废话</li>
+        </ul>
+      </div>
+      <div data-anim="right" style="padding:3vh 2vw; border-left:3px solid currentColor">
+        <div class="kicker" style="opacity:.9">AI 提炼 · 新方式</div>
+        <h3 class="h-md" style="margin-top:2vh">结构化提取</h3>
+        <ul style="margin-top:3vh; padding-left:1.2em; display:flex; flex-direction:column; gap:1.4vh; font-family:var(--sans-zh); font-size:max(14px,1.1vw); line-height:1.55">
+          <li>从散乱文档中自动提取结构</li>
+          <li>统一格式：frontmatter + 正文 + 引用</li>
+          <li>人审核确认，保证准确性</li>
+          <li>AI 生成初稿，人把关质量</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 08 · 编写规范</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P09 · wiki:ingest 流程 ========== -->
+<section class="slide light" data-animate="pipeline">
+  <div class="chrome">
+    <div>流程 · Ingest</div>
+    <div>Act IV · 09 / 19</div>
+  </div>
+  <div class="frame">
+    <div class="kicker">wiki:ingest · 摄取流程</div>
+    <h2 class="h-xl">六步摄取</h2>
+
+    <div class="pipeline-section">
+      <div class="pipeline-label">Ingest Pipeline · 从散乱到结构</div>
+      <div class="pipeline" data-cols="6">
+        <div class="step" data-anim="step">
+          <div class="step-nb">01</div>
+          <div class="step-title">扫描</div>
+          <div class="step-desc">识别散落的文档位置和类型</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">02</div>
+          <div class="step-title">提取</div>
+          <div class="step-desc">从原始文档中抽取关键信息</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">03</div>
+          <div class="step-title">结构化</div>
+          <div class="step-desc">按统一模板整理为 Markdown</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">04</div>
+          <div class="step-title">标注</div>
+          <div class="step-desc">添加 frontmatter 元数据标签</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">05</div>
+          <div class="step-title">审核</div>
+          <div class="step-desc">人工确认准确性和完整性</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">06</div>
+          <div class="step-title">入库</div>
+          <div class="step-desc">提交到知识库，建立索引</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 09 · 摄取流程</div>
+    <div>Ingest</div>
+  </div>
+</section>
+
+<!-- ========== P10 · wiki:query 流程 ========== -->
+<section class="slide dark" data-animate="pipeline">
+  <div class="chrome">
+    <div>流程 · Query</div>
+    <div>Act IV · 10 / 19</div>
+  </div>
+  <div class="frame">
+    <div class="kicker">wiki:query · 查询流程</div>
+    <h2 class="h-xl">五步查询</h2>
+
+    <div class="pipeline-section">
+      <div class="pipeline-label">Query Pipeline · 从问题到答案</div>
+      <div class="pipeline" data-cols="5">
+        <div class="step" data-anim="step">
+          <div class="step-nb">01</div>
+          <div class="step-title">理解</div>
+          <div class="step-desc">解析用户自然语言问题</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">02</div>
+          <div class="step-title">检索</div>
+          <div class="step-desc">语义搜索知识库条目</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">03</div>
+          <div class="step-title">排序</div>
+          <div class="step-desc">按相关度排序候选结果</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">04</div>
+          <div class="step-title">生成</div>
+          <div class="step-desc">基于检索结果生成回答</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">05</div>
+          <div class="step-title">溯源</div>
+          <div class="step-desc">标注答案来源，可追溯验证</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 10 · 查询流程</div>
+    <div>Query</div>
+  </div>
+</section>
+
+<!-- ========== P11 · wiki:health 流程 ========== -->
+<section class="slide hero light">
+  <div class="chrome">
+    <div>流程 · Health</div>
+    <div>Act IV · 11 / 19</div>
+  </div>
+  <div class="frame" style="display:grid; gap:6vh; align-content:center; min-height:80vh">
+    <div class="kicker" data-anim>Act IV</div>
+    <h1 class="h-hero" style="font-size:8.5vw" data-anim>知识库体检</h1>
+    <p class="lead" style="max-width:55vw" data-anim>
+      知识库不是一劳永逸的。定期体检，才能保证它始终可用、准确、新鲜。
+    </p>
+  </div>
+  <div class="foot">
+    <div>体检机制</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P12 · 体检六项 ========== -->
+<section class="slide light">
+  <div class="chrome">
+    <div>体检 · Six Checks</div>
+    <div>Act IV · 12 / 19</div>
+  </div>
+  <div class="frame" style="padding-top:6vh">
+    <div class="kicker" data-anim>wiki:health</div>
+    <h2 class="h-xl" data-anim>六项体检指标</h2>
+    <p class="lead" style="margin-bottom:4vh" data-anim>每次体检自动检查这六个维度，生成健康报告。</p>
+
+    <div class="grid-6" style="margin-top:4vh">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">01 · 新鲜度</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">过时检测</div>
+        <div class="stat-note">标记超过 90 天未更新的条目</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">02 · 完整度</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">缺失扫描</div>
+        <div class="stat-note">识别应该有但没有的知识条目</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">03 · 一致性</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">冲突排查</div>
+        <div class="stat-note">发现不同条目间的矛盾信息</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">04 · 可读性</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">格式审查</div>
+        <div class="stat-note">检查是否符合统一编写规范</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">05 · 覆盖率</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">领域映射</div>
+        <div class="stat-note">知识库对业务领域的覆盖程度</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">06 · 引用率</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">热度统计</div>
+        <div class="stat-note">哪些条目被频繁查询，哪些无人问津</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 12 · 六项体检指标</div>
+    <div>Health Check</div>
+  </div>
+</section>
+
+<!-- ========== P13 · 落地实例 · 供应商管理知识库 ========== -->
+<section class="slide dark">
+  <div class="chrome">
+    <div>落地 · Implementation</div>
+    <div>Act V · 13 / 19</div>
+  </div>
+  <div class="frame" style="padding-top:6vh">
+    <div class="kicker" data-anim>真实数据</div>
+    <h2 class="h-xl" data-anim>供应商管理知识库</h2>
+    <p class="lead" style="margin-bottom:5vh" data-anim>我们已经在做的——从散乱到结构化的实际成果。</p>
+
+    <div class="grid-6" style="margin-top:4vh">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Knowledge Base</div>
+        <div class="stat-nb">6 <span class="stat-unit">家</span></div>
+        <div class="stat-note">重点供应商全覆盖</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Documents</div>
+        <div class="stat-nb">15+</div>
+        <div class="stat-note">制度、SOP、规范文件</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Templates</div>
+        <div class="stat-nb">16 <span class="stat-unit">套</span></div>
+        <div class="stat-note">可复用的模板体系</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Skills</div>
+        <div class="stat-nb">3 <span class="stat-unit">个</span></div>
+        <div class="stat-note">摄取 / 查询 / 体检</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Coverage</div>
+        <div class="stat-nb">85<span class="stat-unit">%</span></div>
+        <div class="stat-note">核心业务领域覆盖</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Retrieval</div>
+        <div class="stat-nb">3 <span class="stat-unit">秒</span></div>
+        <div class="stat-note">从提问到答案</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 13 · 落地数据</div>
+    <div>Implementation</div>
+  </div>
+</section>
+
+<!-- ========== P14 · 落地路径 ========== -->
+<section class="slide light">
+  <div class="chrome">
+    <div>路径 · Roadmap</div>
+    <div>Act V · 14 / 19</div>
+  </div>
+  <div class="frame grid-2-8-4" style="padding-top:6vh">
+    <div>
+      <div class="kicker" data-anim>落地路径</div>
+      <h2 class="h-xl" style="margin-top:1vh; margin-bottom:3vh" data-anim>三步走</h2>
+
+      <p class="lead" style="margin-bottom:3vh" data-anim>
+        不需要一步到位。先跑通最小闭环，再逐步扩展。
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:3vh; margin-top:2vh">
+        <div class="callout" data-anim>
+          <span class="q-big">第一步 · 个人先行</span>
+          <br>一个人先把自己的知识整理入库，跑通摄取→查询→体检的完整流程。
+          <div class="callout-src">周期：1-2 周</div>
+        </div>
+        <div class="callout" data-anim>
+          <span class="q-big">第二步 · 人工确认</span>
+          <br>AI 生成的结构化内容由人工审核确认，保证准确性。建立质量标准。
+          <div class="callout-src">周期：2-4 周</div>
+        </div>
+        <div class="callout" data-anim>
+          <span class="q-big">第三步 · 团队共享</span>
+          <br>知识库开放给团队，建立查询习惯。定期体检保证质量。
+          <div class="callout-src">周期：持续迭代</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:3vh; padding:3vh 0">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Phase 1</div>
+        <div class="stat-nb" style="font-size:4vw; font-family:var(--serif-zh)">个人先行</div>
+        <div class="stat-note">跑通最小闭环</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Phase 2</div>
+        <div class="stat-nb" style="font-size:4vw; font-family:var(--serif-zh)">人工确认</div>
+        <div class="stat-note">建立质量标准</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Phase 3</div>
+        <div class="stat-nb" style="font-size:4vw; font-family:var(--serif-zh)">团队共享</div>
+        <div class="stat-note">持续迭代扩展</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 14 · 落地路径</div>
+    <div>Roadmap</div>
+  </div>
+</section>
+
+<!-- ========== P15 · KaaS 知识库中台 ========== -->
+<section class="slide dark">
+  <div class="chrome">
+    <div>平台 · KaaS Platform</div>
+    <div>Act V · 15 / 19</div>
+  </div>
+  <div class="frame grid-2-8-4" style="padding-top:6vh">
+    <div>
+      <div class="kicker" data-anim>Knowledge as a Service</div>
+      <h2 class="h-xl" style="margin-top:1vh; margin-bottom:3vh" data-anim>事业群级知识库中台</h2>
+      <p class="lead" style="margin-bottom:3vh" data-anim>
+        把散落在各团队的 PRD、实现文档、测试用例、架构说明，沉淀到一个统一的地方。
+      </p>
+      <div style="display:flex; flex-direction:column; gap:2.4vh; margin-top:2vh">
+        <div class="callout" data-anim>
+          <span class="q-big">Web 管理台</span>
+          <br>人用 — 浏览、编辑、管理知识库内容
+          <div class="callout-src">ai-kaas.pre-apps.jd.com</div>
+        </div>
+        <div class="callout" data-anim>
+          <span class="q-big">MCP 服务</span>
+          <br>AI Agent 用 — 程序化检索、打包、读取
+          <div class="callout-src">ai-analysis-api.jd.com/mcp/</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:2.4vh; padding:3vh 0">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Projects</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">4+</div>
+        <div class="stat-note">rental-3c / payment-basic / aipay / voiceprint</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Access</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">双通道</div>
+        <div class="stat-note">管理台 + MCP 接口并行</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Scope</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">事业群级</div>
+        <div class="stat-note">跨团队统一知识底座</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 15 · KaaS 概览</div>
+    <div>Platform</div>
+  </div>
+</section>
+
+<!-- ========== P16 · KaaS 核心概念 ========== -->
+<section class="slide light">
+  <div class="chrome">
+    <div>概念 · Core Concepts</div>
+    <div>Act V · 16 / 19</div>
+  </div>
+  <div class="frame grid-2-6-6" style="padding-top:6vh">
+    <div>
+      <div class="kicker" data-anim>核心概念</div>
+      <h2 class="h-xl" style="margin-bottom:4vh" data-anim>三层组织结构</h2>
+      <p class="lead" data-anim>
+        一级域 → 项目 → 知识库，逐层聚焦，逐层细化。
+      </p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:2.8vh">
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Level 1 · 一级域 L1</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">业务大块</div>
+        <div class="stat-note">事业群下的业务领域划分。如 payment、enterprise-finance、risk-management</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Level 2 · 项目 Topic</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">业务主题</div>
+        <div class="stat-note">一级域下的具体业务主题。如 voiceprint（声纹）、aipay（快捷支付）</div>
+      </div>
+      <div class="stat-card" data-anim>
+        <div class="stat-label">Level 3 · 知识库 KB</div>
+        <div class="stat-nb" style="font-size:3.8vw; font-family:var(--serif-zh)">独立配置</div>
+        <div class="stat-note">项目下可独立配置召回策略的库，每个 KB 有自己的 template、wiki、docs</div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:1.6vh; font-family:var(--mono); font-size:max(11px,.85vw); line-height:1.6; opacity:.72; padding-top:2vh">
+      <div data-anim>domains/</div>
+      <div data-anim style="padding-left:1.2em">├── payment/</div>
+      <div data-anim style="padding-left:2.4em">├── voiceprint/</div>
+      <div data-anim style="padding-left:3.6em">│ ├── template/</div>
+      <div data-anim style="padding-left:3.6em">│ ├── wiki/</div>
+      <div data-anim style="padding-left:3.6em">│ ├── docs/</div>
+      <div data-anim style="padding-left:3.6em">│ └── artifacts/</div>
+      <div data-anim style="padding-left:2.4em">└── aipay/</div>
+      <div data-anim style="padding-left:2.4em">&nbsp;&nbsp;&nbsp;&nbsp;├── template/</div>
+      <div data-anim style="padding-left:2.4em">&nbsp;&nbsp;&nbsp;&nbsp;├── wiki/</div>
+      <div data-anim style="padding-left:2.4em">&nbsp;&nbsp;&nbsp;&nbsp;├── docs/</div>
+      <div data-anim style="padding-left:2.4em">&nbsp;&nbsp;&nbsp;&nbsp;└── artifacts/</div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 16 · 核心概念</div>
+    <div>Concepts</div>
+  </div>
+</section>
+
+<!-- ========== P17 · AI 如何调用 KaaS ========== -->
+<section class="slide hero dark">
+  <div class="chrome">
+    <div>工作流 · AI Workflow</div>
+    <div>Act V · 17 / 19</div>
+  </div>
+  <div class="frame" style="display:grid; gap:5vh; align-content:start; min-height:80vh; padding-top:4vh">
+    <div>
+      <div class="kicker" data-anim>MCP 工作流</div>
+      <h2 class="h-xl" data-anim>AI 如何调用 KaaS</h2>
+      <p class="lead" style="max-width:65vw; margin-bottom:1vh" data-anim>写 PRD / 改代码前，先走 KaaS 拿全量。六个 MCP 工具，一条强制工作流。</p>
+    </div>
+
+    <div class="pipeline-section">
+      <div class="pipeline-label">强制工作流 · MANDATORY WORKFLOW</div>
+      <div class="pipeline" data-cols="4">
+        <div class="step" data-anim="step">
+          <div class="step-nb">01</div>
+          <div class="step-title">kb_search</div>
+          <div class="step-desc">输入需求关键词，定位命中哪个项目</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">02</div>
+          <div class="step-title">kb_pack</div>
+          <div class="step-desc">一次性拿到模板 + 角色 wiki + 历史全文</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">03</div>
+          <div class="step-title">基于模板起草</div>
+          <div class="step-desc">按 template 章节顺序生成内容</div>
+        </div>
+        <div class="step" data-anim="step">
+          <div class="step-nb">04</div>
+          <div class="step-title">kb_get_artifacts</div>
+          <div class="step-desc">有缺口时补齐特定文档全文</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" data-anim style="max-width:70vw; margin-top:1vh">
+      "写 PRD 前必须先 kb_pack 拿全量。没有例外。"
+      <div class="callout-src">— 铁律</div>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 17 · AI 工作流</div>
+    <div>Workflow</div>
+  </div>
+</section>
+
+<!-- ========== P18 · Takeaway · 三句话 ========== -->
+<section class="slide light" data-animate="quote">
+  <div class="chrome">
+    <div>Takeaway · 核心要点</div>
+    <div>18 / 19</div>
+  </div>
+  <div class="frame" style="display:grid; gap:5vh; align-content:center; min-height:80vh">
+    <div class="kicker" data-anim>三句话</div>
+    <blockquote style="font-family:var(--serif-zh); font-weight:700; font-size:4.8vw; line-height:1.2; letter-spacing:-.01em; max-width:72vw">
+      <span data-anim="line" style="display:block">"散落的经验不是资产，</span>
+      <span data-anim="line" style="display:block">结构化的知识才是。"</span>
+    </blockquote>
+    <p class="lead" style="max-width:55vw; opacity:.85" data-anim>
+      三个技能（摄取 / 查询 / 体检）+ 一套规范 + 一条渐进路径 = 团队知识的 AI 可用化。
+    </p>
+    <p class="lead" style="max-width:55vw; opacity:.65; margin-top:1vh" data-anim>
+      不需要大投入，不需要技术背景。先从一个人的一份 SOP 开始。
+    </p>
+  </div>
+  <div class="foot">
+    <div>Page 18 · Takeaway</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+<!-- ========== P19 · Q&A ========== -->
+<section class="slide hero dark">
+  <div class="chrome">
+    <div>Q&A · 交流</div>
+    <div>19 / 19</div>
+  </div>
+  <div class="frame" style="display:grid; gap:6vh; align-content:center; min-height:80vh">
+    <div class="kicker" data-anim>Questions & Answers</div>
+    <h1 class="h-hero" style="font-size:9vw" data-anim>Q & A</h1>
+    <p class="lead" style="max-width:50vw" data-anim>
+      有任何问题或想法，欢迎交流。
+    </p>
+    <div class="meta-row" data-anim>
+      <span>Knowledge as Code</span><span>·</span><span>2026</span>
+    </div>
+  </div>
+  <div class="foot">
+    <div>Page 19 · Q&A</div>
+    <div>— · —</div>
+  </div>
+</section>
+
+</div>
+
+<div id="nav"></div>
+
+<script>
+const VS = `attribute vec2 position;void main(){gl_Position=vec4(position,0.0,1.0);}`;
+const FS_DARK = `precision highp float;
+uniform vec2 u_resolution;uniform float u_time;uniform vec2 u_mouse;
+vec3 palette(float t,vec3 a,vec3 b,vec3 c,vec3 d){return a+b*cos(6.28318*(c*t+d));}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_resolution.xy;
+  vec2 p=uv*2.0-1.0;p.x*=u_resolution.x/u_resolution.y;
+  vec2 m=u_mouse*2.0-1.0;m.x*=u_resolution.x/u_resolution.y;
+  float md=length(p-m);
+  float mr=sin(md*15.0-u_time*4.0)*exp(-md*3.0);p+=mr*0.08;
+  vec2 p0=p;
+  for(float i=1.0;i<4.0;i++){
+    p.x+=0.1/i*sin(i*3.0*p.y+u_time*0.4)+0.05;
+    p.y+=0.1/i*cos(i*2.0*p.x+u_time*0.3)-0.05;
+  }
+  float r=length(p);float ang=atan(p.y,p.x);
+  vec3 a=vec3(0.12,0.12,0.13);
+  vec3 b=vec3(0.03,0.04,0.05);
+  vec3 c=vec3(1.0,1.0,1.0);
+  vec3 d=vec3(0.1,0.2,0.4);
+  vec3 col=palette(r*1.5+p0.x*0.5+u_time*0.1,a,b,c,d);
+  float disp=sin(r*25.0-u_time*1.5+ang*2.0)*0.5+0.5;
+  col+=vec3(disp*0.015,disp*0.01,disp*0.02);
+  float hi=pow(sin(p.x*4.0+p.y*3.0+u_time)*0.5+0.5,8.0);
+  col+=hi*0.08;
+  vec3 base=vec3(0.05,0.05,0.06);
+  col=mix(base,col,0.85);
+  gl_FragColor=vec4(col,1.0);
+}`;
+const FS_LIGHT = `precision highp float;
+uniform vec2 u_resolution;uniform float u_time;uniform vec2 u_mouse;
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){
+  vec2 i=floor(p),f=fract(p);
+  float a=hash(i),b=hash(i+vec2(1,0));
+  float c=hash(i+vec2(0,1)),d=hash(i+vec2(1,1));
+  vec2 u=f*f*(3.0-2.0*f);
+  return mix(a,b,u.x)+(c-a)*u.y*(1.0-u.x)+(d-b)*u.x*u.y;
+}
+float fbm(vec2 p){
+  float v=0.0,a=0.5;
+  mat2 m=mat2(0.80,0.60,-0.60,0.80);
+  for(int i=0;i<5;i++){v+=a*noise(p);p=m*p*2.02;a*=0.5;}
+  return v;
+}
+void main(){
+  vec2 uv=gl_FragCoord.xy/u_resolution.xy;
+  vec2 p=uv;p.x*=u_resolution.x/u_resolution.y;
+  vec2 m=u_mouse;m.x*=u_resolution.x/u_resolution.y;
+  vec2 md=p-m;float dl=length(md);
+  p+=normalize(md+vec2(0.0001))*exp(-dl*5.0)*0.03;
+  vec2 q=vec2(fbm(p*1.8+u_time*0.07),fbm(p*1.8+vec2(5.2,1.3)+u_time*0.06));
+  vec2 r=vec2(fbm(p*2.0+q*1.3+vec2(1.7,9.2)+u_time*0.05),
+              fbm(p*2.0+q*1.3+vec2(8.3,2.8)+u_time*0.04));
+  float f=fbm(p*2.2+r*1.5);
+  vec3 silverDark=vec3(0.86,0.85,0.84);
+  vec3 paper=vec3(0.955,0.945,0.925);
+  vec3 col=mix(silverDark,paper,f);
+  float ph=r.x*2.2+u_time*0.35;
+  col+=vec3(0.78,0.62,0.92)*sin(ph)*0.055;
+  col+=vec3(0.55,0.72,0.95)*sin(ph*0.8+2.0)*0.05;
+  float hl=smoothstep(0.48,0.92,f);
+  col+=hl*0.06;
+  gl_FragColor=vec4(col,1.0);
+}`;
+
+const mouse={x:0.5,y:0.5};
+addEventListener('mousemove',e=>{mouse.x=e.clientX/innerWidth;mouse.y=e.clientY/innerHeight});
+
+function bootGL(canvasId, fsSrc){
+  const canvas=document.getElementById(canvasId);
+  const gl=canvas.getContext('webgl',{alpha:false,antialias:true});
+  if(!gl) return ()=>false;
+  const mk=(t,s)=>{const sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);return sh};
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mk(gl.VERTEX_SHADER,VS));
+  gl.attachShader(prog,mk(gl.FRAGMENT_SHADER,fsSrc));
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const pos=gl.getAttribLocation(prog,'position');
+  gl.enableVertexAttribArray(pos);gl.vertexAttribPointer(pos,2,gl.FLOAT,false,0,0);
+  const lRes=gl.getUniformLocation(prog,'u_resolution');
+  const lT=gl.getUniformLocation(prog,'u_time');
+  const lM=gl.getUniformLocation(prog,'u_mouse');
+  const resize=()=>{
+    const d=Math.min(window.devicePixelRatio||1,2);
+    canvas.width=innerWidth*d;canvas.height=innerHeight*d;
+    gl.viewport(0,0,canvas.width,canvas.height);
+  };
+  addEventListener('resize',resize);resize();
+  return (tSec)=>{
+    gl.uniform2f(lRes,canvas.width,canvas.height);
+    gl.uniform1f(lT,tSec);
+    gl.uniform2f(lM,mouse.x,1-mouse.y);
+    gl.drawArrays(gl.TRIANGLES,0,6);
+    return true;
+  };
+}
+let drawDark=null, drawLight=null, glRAF=0, glT0=Date.now();
+function startGL(){
+  if(window.__lowPowerMode || glRAF) return;
+  if(!drawDark) drawDark=bootGL('bg-dark',FS_DARK);
+  if(!drawLight) drawLight=bootGL('bg-light',FS_LIGHT);
+  glT0=Date.now();
+  function loop(){
+    if(window.__lowPowerMode){glRAF=0;return;}
+    const t=(Date.now()-glT0)/1000;
+    drawDark(t);drawLight(t);
+    glRAF=requestAnimationFrame(loop);
+  }
+  glRAF=requestAnimationFrame(loop);
+}
+function stopGL(){
+  if(glRAF) cancelAnimationFrame(glRAF);
+  glRAF=0;
+}
+startGL();
+addEventListener('ppt-low-power-change', e=>{e.detail.on ? stopGL() : startGL();});
+
+const deck=document.getElementById('deck');
+const slides=deck.querySelectorAll('.slide');
+const nav=document.getElementById('nav');
+let idx=0,total=slides.length,lock=false;
+
+deck.style.width=(total*100)+'vw';
+
+slides.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='dot';b.dataset.i=i;b.setAttribute('aria-label','Page '+(i+1));
+  b.onclick=()=>go(i);
+  nav.appendChild(b);
+});
+
+function go(n){
+  if(lock)return;
+  idx=Math.max(0,Math.min(total-1,n));
+  window.__currentSlideIndex = idx;
+  deck.style.transform=`translateX(${-idx*100}vw)`;
+  nav.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  const el=slides[idx];
+  const th=el.dataset.theme || (el.classList.contains('light')?'light':(el.classList.contains('dark')?'dark':'dark'));
+  document.body.classList.toggle('light-bg',th==='light');
+  if(window.__playSlide) setTimeout(()=>window.__playSlide(idx), 450);
+  lock=true;setTimeout(()=>lock=false,700);
+}
+
+let overviewOn=false;
+const ov=document.createElement('div');
+ov.id='overview';
+ov.style.cssText='position:fixed;inset:0;z-index:100;background:rgba(var(--ink-rgb),.92);backdrop-filter:blur(12px);display:none;overflow-y:auto;padding:4vh 4vw';
+document.body.appendChild(ov);
+
+function buildOverview(){
+  ov.innerHTML='';
+  const grid=document.createElement('div');
+  grid.style.cssText='display:grid;grid-template-columns:repeat(4,1fr);gap:2vh 1.6vw;max-width:90vw;margin:0 auto';
+  slides.forEach((s,i)=>{
+    const card=document.createElement('div');
+    card.style.cssText='cursor:pointer;border-radius:6px;overflow:hidden;border:2px solid '+(i===idx?'rgba(var(--paper-rgb),.8)':'rgba(var(--paper-rgb),.15)')+';transition:border-color .2s';
+    card.onmouseenter=()=>card.style.borderColor='rgba(var(--paper-rgb),.6)';
+    card.onmouseleave=()=>card.style.borderColor=i===idx?'rgba(var(--paper-rgb),.8)':'rgba(var(--paper-rgb),.15)';
+    const wrap=document.createElement('div');
+    wrap.style.cssText='width:100%;aspect-ratio:16/9;overflow:hidden;position:relative;pointer-events:none;background:'+(s.classList.contains('light')?'var(--paper)':'var(--ink)');
+    const clone=s.cloneNode(true);
+    clone.style.cssText='width:100vw;height:100vh;transform:scale('+(1/4.5)+');transform-origin:top left;position:absolute;top:0;left:0;pointer-events:none';
+    wrap.appendChild(clone);
+    const label=document.createElement('div');
+    label.style.cssText='padding:6px 10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper);opacity:.7';
+    label.textContent=(i+1)+' / '+total;
+    card.appendChild(wrap);
+    card.appendChild(label);
+    card.onclick=()=>{toggleOverview();go(i)};
+    grid.appendChild(card);
+  });
+  ov.appendChild(grid);
+}
+
+function toggleOverview(){
+  overviewOn=!overviewOn;
+  if(overviewOn){buildOverview();ov.style.display='block';}
+  else{ov.style.display='none';}
+}
+
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){e.preventDefault();toggleOverview();return;}
+  if(e.key && e.key.toLowerCase()==='b' && !e.metaKey && !e.ctrlKey && !e.altKey){
+    e.preventDefault();
+    window.__setLowPowerMode(!window.__lowPowerMode);
+    return;
+  }
+  if(overviewOn)return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '||e.key==='ArrowDown'){
+    if(window.__pipeAdvance && window.__pipeAdvance()) return;
+    go(idx+1);
+    return;
+  }
+  if(e.key==='ArrowLeft'||e.key==='PageUp'||e.key==='ArrowUp')go(idx-1);
+  if(e.key==='Home')go(0);
+  if(e.key==='End')go(total-1);
+});
+
+let wheelTO=null,wheelAcc=0;
+addEventListener('wheel',e=>{
+  wheelAcc+=e.deltaY+e.deltaX;
+  if(Math.abs(wheelAcc)>50){
+    if(wheelAcc>0 && window.__pipeAdvance && window.__pipeAdvance()){
+      wheelAcc=0;
+    }else{
+      go(idx+(wheelAcc>0?1:-1));wheelAcc=0;
+    }
+  }
+  clearTimeout(wheelTO);wheelTO=setTimeout(()=>wheelAcc=0,150);
+},{passive:true});
+
+let tx=0,ty=0;
+addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+addEventListener('touchend',e=>{
+  const dx=(e.changedTouches[0].clientX-tx);
+  const dy=(e.changedTouches[0].clientY-ty);
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)){
+    if(dx<0 && window.__pipeAdvance && window.__pipeAdvance()) return;
+    go(idx+(dx<0?1:-1));
+  }
+},{passive:true});
+
+go(0);
+</script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>lucide.createIcons();</script>
+
+<script type="module">
+let motion;
+try {
+  motion = await import('./assets/motion.min.js');
+} catch(e1) {
+  try {
+    motion = await import('https://cdn.jsdelivr.net/npm/motion@11.11.17/+esm');
+  } catch(e2) {
+    console.warn('[motion] local + CDN both failed, disabling animations', e1, e2);
+    document.querySelectorAll('[data-anim]').forEach(el=>{el.style.opacity='1';el.style.transform='none'});
+    document.querySelectorAll('[data-animate="pipeline"] [data-anim]').forEach(el=>el.style.opacity='1');
+  }
+}
+
+if(motion){
+  const { animate, stagger } = motion;
+  document.body.classList.add('motion-ready');
+  const EASE = [.22, 1, .36, 1];
+  const slides = [...document.querySelectorAll('.slide')];
+  let pipeStep = -1;
+  let lastIdx = -1;
+
+  function resetAnims(slide){
+    slide.querySelectorAll('[data-anim]').forEach(el=>{
+      el.style.opacity='';
+      el.style.transform='';
+    });
+  }
+
+  function revealStatic(slide){
+    resetAnims(slide);
+    document.getAnimations?.().forEach(a=>a.cancel());
+    slide.querySelectorAll('[data-anim]').forEach(el=>{
+      el.style.opacity='1';
+      el.style.transform='none';
+    });
+  }
+
+  function playSlide(i){
+    const slide = slides[i];
+    if(!slide) return;
+    lastIdx = i;
+    const recipe = slide.dataset.animate || (slide.classList.contains('hero') ? 'hero' : 'cascade');
+
+    if(window.__lowPowerMode){
+      revealStatic(slide);
+      return;
+    }
+
+    if(recipe === 'pipeline'){
+      pipeStep = -1;
+      slide.querySelectorAll('[data-anim]').forEach(el=>{
+        el.style.opacity='0.15';
+        el.style.transform='none';
+      });
+      return;
+    }
+
+    resetAnims(slide);
+    const all = [...slide.querySelectorAll('[data-anim]')];
+    if(!all.length) return;
+
+    if(recipe === 'directional'){
+      const lefts  = all.filter(el=>el.dataset.anim==='left');
+      const divs   = all.filter(el=>el.dataset.anim==='divider');
+      const rights = all.filter(el=>el.dataset.anim==='right');
+      const others = all.filter(el=>!['left','right','divider'].includes(el.dataset.anim));
+      if(others.length) animate(others, {opacity:[0,1], y:[12,0]}, {duration:.6, delay:stagger(.1, {start:.15}), easing:EASE});
+      if(lefts.length)  animate(lefts,  {opacity:[0,1], x:[-24,0]}, {duration:.8, delay:.35, easing:EASE});
+      if(divs.length)   animate(divs,   {opacity:[0,.25]},          {duration:.5, delay:.9});
+      if(rights.length) animate(rights, {opacity:[0,1], x:[24,0]},  {duration:.8, delay:1.0, easing:EASE});
+      return;
+    }
+
+    if(recipe === 'quote'){
+      const lines = all.filter(el=>el.dataset.anim==='line');
+      const others = all.filter(el=>el.dataset.anim!=='line');
+      if(others.length) animate(others, {opacity:[0,1], y:[8,0]},    {duration:.6, delay:stagger(.12, {start:.2}), easing:EASE});
+      if(lines.length)  animate(lines,  {opacity:[.35,1], y:[10,0]}, {duration:.8, delay:stagger(.55, {start:.5}), easing:EASE});
+      return;
+    }
+
+    if(recipe === 'hero'){
+      animate(all, {opacity:[0,1], y:[14,0]}, {duration:.9, delay:stagger(.16, {start:.2}), easing:EASE});
+      return;
+    }
+
+    animate(all, {opacity:[0,1], y:[16,0]}, {duration:.75, delay:stagger(.1, {start:.15}), easing:EASE});
+  }
+
+  function pipeAdvance(){
+    if(window.__lowPowerMode) return false;
+    const slide = slides[lastIdx];
+    if(!slide || slide.dataset.animate !== 'pipeline') return false;
+    const steps  = [...slide.querySelectorAll('[data-anim="step"]')];
+    const arrows = [...slide.querySelectorAll('[data-anim="arrow"]')];
+    if(pipeStep >= steps.length - 1) return false;
+    pipeStep++;
+    animate(steps[pipeStep], {opacity:[0.15,1], y:[8,0]}, {duration:.5, easing:EASE});
+    if(pipeStep > 0 && arrows[pipeStep-1]){
+      animate(arrows[pipeStep-1], {opacity:[0.15,.7]}, {duration:.3, delay:.15});
+    }
+    return true;
+  }
+
+  window.__playSlide = playSlide;
+  window.__pipeAdvance = pipeAdvance;
+
+  playSlide(0);
+}
+</script>
+</body>
+</html>

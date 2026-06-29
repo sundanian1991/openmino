@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>read-email — 邮件统一读取技能</title>
+<style>
+:root{
+  --bg:#ffffff; --card-bg:#f5f5f7; --text:#1d1d1f; --text-secondary:#86868b;
+  --border:#d2d2d7; --accent:#0071e3; --accent-hover:#0077ed;
+  --terminal-bg:#1d1d1f; --terminal-text:#f5f5f7;
+  --warn:#bf4800; --danger:#a32d2d; --success:#0f6e56;
+  --font:-apple-system,'SF Pro Display','Helvetica Neue','PingFang SC',sans-serif;
+  --mono:ui-monospace,'SF Mono',Menlo,Monaco,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+.container{max-width:980px;margin:0 auto;padding:0 24px}
+.hero{padding:80px 0 56px;border-bottom:1px solid var(--border)}
+.hero .badge{display:inline-block;font-size:13px;font-weight:600;color:var(--accent);background:rgba(0,113,227,.08);padding:6px 12px;border-radius:980px;margin-bottom:20px}
+.hero h1{font-size:48px;font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-bottom:14px}
+.hero .subtitle{font-size:21px;color:var(--text-secondary);font-weight:400;line-height:1.4;max-width:760px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:32px;margin-top:28px;font-size:13px;color:var(--text-secondary)}
+.hero .meta strong{color:var(--text);font-weight:600}
+.summary{padding:40px 0;border-bottom:1px solid var(--border)}
+.summary .lead{border-left:3px solid var(--accent);padding-left:16px;font-size:18px;line-height:1.6}
+.summary .lead strong{color:var(--accent)}
+section{padding:64px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{font-size:28px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+h2 .num{color:var(--text-secondary);font-weight:500;font-family:var(--mono);font-size:20px;margin-right:10px}
+.h2-sub{color:var(--text-secondary);font-size:16px;margin-bottom:32px}
+h3{font-size:21px;font-weight:600;margin:36px 0 16px}
+p{margin-bottom:16px}
+p:last-child{margin-bottom:0}
+.card{background:var(--card-bg);border-radius:16px;padding:28px;margin-bottom:20px}
+.card h4{font-size:17px;font-weight:600;margin-bottom:10px}
+.card p{font-size:15px;color:#444}
+.cmd{background:var(--card-bg);border-radius:14px;margin-bottom:14px;overflow:hidden;border:1px solid transparent;transition:border-color .2s}
+.cmd:hover{border-color:var(--border)}
+.cmd summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:14px}
+.cmd summary::-webkit-details-marker{display:none}
+.cmd summary .chev{width:10px;height:10px;border-right:2px solid var(--text-secondary);border-bottom:2px solid var(--text-secondary);transform:rotate(-45deg);transition:transform .2s;flex-shrink:0;margin-top:-3px}
+.cmd[open] summary .chev{transform:rotate(45deg);margin-top:2px}
+.cmd summary .cmd-name{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--accent)}
+.cmd summary .cmd-desc{color:var(--text-secondary);font-size:14px;margin-left:auto;text-align:right}
+.cmd .body{padding:0 22px 22px}
+.cmd .body p{font-size:15px}
+.term{background:var(--terminal-bg);border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:13.5px;line-height:1.7;color:var(--terminal-text);overflow-x:auto;margin:14px 0}
+.term .cmt{color:#737373}
+.term .var{color:#64d2ff}
+.term .flag{color:#ffd60a}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:14px 0}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-secondary);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border)}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top}
+td code{font-family:var(--mono);font-size:13px;color:var(--accent);background:rgba(0,113,227,.06);padding:2px 6px;border-radius:4px}
+.callout{border-radius:12px;padding:16px 18px;margin:16px 0;font-size:15px;line-height:1.55}
+.callout-warn{background:rgba(191,72,0,.08);border-left:3px solid var(--warn)}
+.callout-danger{background:rgba(163,45,45,.06);border-left:3px solid var(--danger)}
+.callout-info{background:rgba(0,113,227,.06);border-left:3px solid var(--accent)}
+.callout strong{display:block;margin-bottom:4px;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.callout-warn strong{color:var(--warn)}
+.callout-danger strong{color:var(--danger)}
+.callout-info strong{color:var(--accent)}
+.cat-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+.cat{font-size:12px;font-weight:600;padding:6px 12px;border-radius:980px;background:var(--card-bg);color:var(--text-secondary);border:1px solid var(--border)}
+.cat-readonly{background:rgba(15,110,86,.08);color:var(--success);border-color:rgba(15,110,86,.2)}
+.cat-write{background:rgba(191,72,0,.08);color:var(--warn);border-color:rgba(191,72,0,.2)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0}
+.cap{background:var(--card-bg);border-radius:12px;padding:20px}
+.cap .cap-ico{font-size:12px;font-weight:700;color:var(--success);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+.cap .cap-ico.write{color:var(--warn)}
+.cap h4{font-size:16px;font-weight:600;margin-bottom:6px}
+.cap p{font-size:14px;color:var(--text-secondary);margin:0}
+footer{padding:48px 0 64px;text-align:center;color:var(--text-secondary);font-size:13px}
+@media(max-width:640px){
+  .hero{padding:48px 0 40px}
+  .hero h1{font-size:34px}
+  .grid{grid-template-columns:1fr}
+  .cmd summary{flex-wrap:wrap}
+  .cmd summary .cmd-desc{margin-left:0;width:100%;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">数据采集层 · 邮件</span>
+    <h1>read-email</h1>
+    <p class="subtitle">京东 JoyMail 邮件统一入口。读邮件、查邮件、总结邮件、回复转发、批量处理——通过 SOAP/EWS 接口拿邮件全文、附件、收发件人详情，覆盖文件夹管理、收件人解析、旗标分类。</p>
+    <div class="meta">
+      <span>版本 <strong>1.0.1</strong></span>
+      <span>协议 <strong>EWS SOAP (Exchange 2016)</strong></span>
+      <span>入口 <strong>scripts/run.sh</strong></span>
+      <span>鉴权 <strong>SSO + clawJwtLogin</strong></span>
+    </div>
+  </div>
+</header>
+
+<div class="summary">
+  <div class="container">
+    <p class="lead">五个采集技能里的<strong>邮件全文入口</strong>。它通过 SOAP 网关调用 EWS（FindFolder / FindItem / GetItem），能拿到<strong>邮件正文、附件元数据、已读未读状态、会话线程、分类标签</strong>——不是预览摘要，是全文。<code>detail</code> 拿正文、<code>search</code> 多维筛选、<code>summarize</code> 把结果转成结构化表格。</p>
+  </div>
+</div>
+
+<!-- 定位 -->
+<section>
+  <div class="container">
+    <h2><span class="num">01</span>定位与能力分区</h2>
+    <p class="h2-sub">21 个命令分两类：只读查询（默认优先）与修改操作（必须二次确认）。</p>
+
+    <div class="cat-tabs">
+      <span class="cat cat-readonly">folders</span>
+      <span class="cat cat-readonly">search</span>
+      <span class="cat cat-readonly">detail</span>
+      <span class="cat cat-readonly">daily-stats</span>
+      <span class="cat cat-readonly">pending-important</span>
+      <span class="cat cat-readonly">person-unhandled</span>
+      <span class="cat cat-readonly">summarize</span>
+      <span class="cat cat-readonly">lookup-recipient</span>
+      <span class="cat cat-write">create-folder</span>
+      <span class="cat cat-write">reply</span>
+      <span class="cat cat-write">send</span>
+      <span class="cat cat-write">forward</span>
+      <span class="cat cat-write">batch-mark-read / unread</span>
+      <span class="cat cat-write">batch-add-category</span>
+      <span class="cat cat-write">batch-move</span>
+      <span class="cat cat-write">batch-delete</span>
+      <span class="cat cat-write">flag / unflag</span>
+      <span class="cat cat-write">batch-flag / batch-unflag</span>
+    </div>
+
+    <div class="grid">
+      <div class="cap">
+        <div class="cap-ico">只读</div>
+        <h4>查询 / 总结</h4>
+        <p>8 个命令：浏览目录、多维搜索、读全文、统计、待办识别、收件人查询、结果汇总。</p>
+      </div>
+      <div class="cap">
+        <div class="cap-ico write">修改</div>
+        <h4>发送 / 批量操作</h4>
+        <p>13 个命令：回复/转发/新建、批量已读未读/打标签/移动/删除/旗标。全部强制对话层二次确认。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 关键规则 -->
+<section>
+  <div class="container">
+    <h2><span class="num">02</span>四条关键规则</h2>
+
+    <div class="card">
+      <h4>① 默认时间规则</h4>
+      <p>用户没明确给日期/时间范围时，<code>search</code> / <code>pending-important</code> / <code>person-unhandled</code> 默认只查<strong>最近 1 天</strong>（按 DateTimeReceived 客户端过滤，不下推服务端）。用户说"今天/昨天/本周/最近 7 天"时严格按用户范围，不再套默认值。</p>
+    </div>
+    <div class="card">
+      <h4>② 修改操作必须二次确认</h4>
+      <p>send / reply / forward / 所有 batch-* 操作，<strong>必须先在对话层展示摘要再执行</strong>，不靠命令参数确认。发送类展示收件人/抄送/密送/主题/正文摘要/附件；批量类展示操作类型/影响数量/关键对象。</p>
+    </div>
+    <div class="card">
+      <h4>③ 收件人必须解析</h4>
+      <p>用户给中文名或 ERP 而非邮箱时，<strong>不得直接发送</strong>，必须先 <code>lookup-recipient</code> 调 <code>queryByErp</code> 解析，展示列表让用户选定，再执行。优先从最近邮件发件人/收件人匹配，回退 HR 接口。</p>
+    </div>
+    <div class="card">
+      <h4>④ 结果优先、过程最小化</h4>
+      <p>对用户输出默认给结果/结论/表格/建议动作，不主动展开脚本名、SOAP 字段、鉴权链路、请求头。除非用户明确追问"怎么查的"，否则不展示底层调用逻辑。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 只读命令 -->
+<section>
+  <div class="container">
+    <h2><span class="num">03</span>只读命令（查询 / 总结）</h2>
+    <p class="h2-sub">点击展开用法与示例。统一入口 <code>bash scripts/run.sh ...</code>。</p>
+
+    <details class="cmd" open>
+      <summary><span class="chev"></span><span class="cmd-name">search</span><span class="cmd-desc">多维邮件搜索</span></summary>
+      <div class="body">
+        <p>在单个文件夹抓取列表并做客户端过滤。这是读邮件的主入口。</p>
+        <table>
+          <tr><th>参数</th><th>筛选维度</th></tr>
+          <tr><td><code>--folder / --folder-id / --folder-name</code></td><td>文件夹定位（三种方式）</td></tr>
+          <tr><td><code>--sender / --recipient</code></td><td>发件人 / 收件人</td></tr>
+          <tr><td><code>--subject / --body-keyword</code></td><td>主题关键词 / 正文预览关键词</td></tr>
+          <tr><td><code>--after / --before</code></td><td>时间范围（YYYY-MM-DD 或加 HH:MM:SS）</td></tr>
+          <tr><td><code>--read / --unread</code></td><td>已读 / 未读</td></tr>
+          <tr><td><code>--category</code></td><td>标签 / 分类</td></tr>
+          <tr><td><code>--has-attachments</code></td><td>是否带附件</td></tr>
+          <tr><td><code>--importance High|Normal|Low</code></td><td>重要级别</td></tr>
+          <tr><td><code>--max-pages</code></td><td>翻页深度（查较早邮件时调高）</td></tr>
+        </table>
+        <div class="term">bash scripts/run.sh search --folder inbox --sender <span class="var">zhangsan@jd.com</span> --subject <span class="var">周报</span>
+bash scripts/run.sh search --folder inbox --unread --limit <span class="var">20</span></div>
+        <div class="callout callout-warn">
+          <strong>使用要点</strong>
+          自定义文件夹先 <code>folders</code> 查目录；只给显示名直接用 <code>--folder-name</code>；查较早日期务必提高 <code>--max-pages</code>；要看全文先 <code>search</code> 拿 item_id 再 <code>detail</code>。
+        </div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">detail</span><span class="cmd-desc">按 ItemId 读邮件全文</span></summary>
+      <div class="body">
+        <p>取完整正文、收发件人、附件元数据。默认 Markdown 展示附"附件列表"（文件名/大小/类型）。</p>
+        <div class="term">bash scripts/run.sh detail --item-id <span class="var">AAMkADFlNG...</span></div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">folders</span><span class="cmd-desc">浏览目录树</span></summary>
+      <div class="body">
+        <div class="term">bash scripts/run.sh folders --parent <span class="var">msgfolderroot</span>
+bash scripts/run.sh folders --parent <span class="var">inbox</span> --traversal <span class="var">Shallow</span></div>
+        <p>返回文件夹 id、display_name、unread_count 等。</p>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">daily-stats</span><span class="cmd-desc">按天统计邮件</span></summary>
+      <div class="body">
+        <p>输出每天：日期、星期（Python weekday 规则 0=周一/6=周日）、总数、未读数、已读数。没给范围默认最近 7 天。</p>
+        <div class="term">bash scripts/run.sh daily-stats --days <span class="var">7</span>
+bash scripts/run.sh daily-stats --after <span class="var">2026-03-24</span> --before <span class="var">2026-03-28</span></div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">pending-important</span><span class="cmd-desc">未回复重要邮件</span></summary>
+      <div class="body">
+        <p>启发式：收件箱最近 N 天 + importance=High 或分类含 important/重要/urgent/待办 + 同一 ConversationId 下没有更晚的已发邮件。没给范围默认最近 1 天。</p>
+        <div class="term">bash scripts/run.sh pending-important --days <span class="var">7</span></div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">person-unhandled</span><span class="cmd-desc">某人发来的未处理邮件</span></summary>
+      <div class="body">
+        <p>启发式：发件人匹配目标人 + 邮件未读 + 同 ConversationId 下没有更晚的已发邮件。</p>
+        <div class="term">bash scripts/run.sh person-unhandled --sender <span class="var">zhangsan@jd.com</span> --days <span class="var">14</span></div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">summarize</span><span class="cmd-desc">把 JSON 转成结构化总结</span></summary>
+      <div class="body">
+        <p>从 stdin 读 search / pending-important / person-unhandled / detail 的 JSON 输出，生成核心统计 + 总览表格 + 建议优先处理表 + 简要观察 + 状态图标。</p>
+        <div class="term">bash scripts/run.sh search --folder inbox --unread --limit <span class="var">20</span> \
+  | bash scripts/run.sh summarize</div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">lookup-recipient</span><span class="cmd-desc">按 ERP / 姓名解析收件人</span></summary>
+      <div class="body">
+        <p>调 <code>POST http://joymail-skill.jd.com/hr/user/queryByErp</code>。返回后展示 ERP / 真实姓名 / 部门 / 邮箱让用户确认。<code>--condition</code> / <code>--name</code> / <code>--erp</code> 底层都映射到同一字段。</p>
+        <div class="term">bash scripts/run.sh lookup-recipient --erp <span class="var">hansongyan3</span> --page-no <span class="var">1</span> --page-size <span class="var">10</span></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- 修改命令 -->
+<section>
+  <div class="container">
+    <h2><span class="num">04</span>修改命令（发送 / 批量操作）</h2>
+    <p class="h2-sub">全部强制对话层二次确认。展示拟执行摘要 → 用户明确确认 → 才执行。</p>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">send</span><span class="cmd-desc">新建邮件</span></summary>
+      <div class="body">
+        <p>支持 <code>--to/--cc/--bcc</code>（逗号分隔）、<code>--subject</code>、<code>--body</code>、<code>--body-type</code>、<code>--importance</code>、<code>--attachments</code>（逗号分隔路径）。</p>
+        <div class="term">bash scripts/run.sh send --to <span class="var">a@jd.com,b@jd.com</span> --cc <span class="var">c@jd.com</span> \
+  --subject <span class="var">项目同步</span> --body <span class="var">项目进展如下……</span> \
+  --attachments <span class="var">/path/to/周报.pdf</span></div>
+        <div class="callout callout-danger">
+          <strong>确认要点</strong>
+          收件人是 ERP/姓名而非邮箱时，<strong>不得直接发</strong>，先 lookup-recipient。
+        </div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">reply</span><span class="cmd-desc">回复原邮件</span></summary>
+      <div class="body">
+        <p>默认用原发件人作收件人、自动 Re: 主题。可选 <code>--reply-all</code>、<code>--include-original</code>（带原文）、<code>--attachments</code>。底层 CreateItem + ReplyToItem/ReplyAllToItem。</p>
+        <div class="term">bash scripts/run.sh reply --item-id <span class="var">AAMkADFlNG...</span> \
+  --body <span class="var">收到，我今天处理完给你反馈。</span> --reply-all --include-original</div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">forward</span><span class="cmd-desc">转发邮件</span></summary>
+      <div class="body">
+        <div class="term">bash scripts/run.sh forward --item-id <span class="var">AAMkADFlNG...</span> \
+  --to <span class="var">a@jd.com</span> --body <span class="var">请参考这封邮件。</span></div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">create-folder</span><span class="cmd-desc">创建邮件文件夹</span></summary>
+      <div class="body">
+        <div class="term">bash scripts/run.sh create-folder --display-name <span class="var">项目归档</span>
+bash scripts/run.sh create-folder --display-name <span class="var">客户A</span> --parent-folder-name <span class="var">项目归档</span></div>
+      </div>
+    </details>
+
+    <details class="cmd">
+      <summary><span class="chev"></span><span class="cmd-name">batch-* 系列</span><span class="cmd-desc">批量已读/未读/标签/移动/删除/旗标</span></summary>
+      <div class="body">
+        <p>统一用逗号分隔多个 item_id。面向用户时仍应先确认再执行。</p>
+        <div class="term"><span class="cmt"># 批量已读</span>
+bash scripts/run.sh batch-mark-read --item-ids <span class="var">id1,id2,id3</span>
+<span class="cmt"># 批量打标签</span>
+bash scripts/run.sh batch-add-category --item-ids <span class="var">id1,id2</span> --category <span class="var">待跟进</span>
+<span class="cmt"># 批量移动</span>
+bash scripts/run.sh batch-move --item-ids <span class="var">id1,id2</span> --target-folder-id <span class="var">folder-id</span>
+<span class="cmt"># 批量删除</span>
+bash scripts/run.sh batch-delete --item-ids <span class="var">id1,id2,id3</span>
+<span class="cmt"># 旗标 / 取消 / 批量</span>
+bash scripts/run.sh flag --item-id <span class="var">id1</span>
+bash scripts/run.sh batch-unflag --item-ids <span class="var">id1,id2</span></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- 鉴权 -->
+<section>
+  <div class="container">
+    <h2><span class="num">05</span>鉴权链路</h2>
+    <p class="h2-sub">默认 endpoint <code>https://mail-skill.jd.com/mail/api/clawmail/mailpost</code>，EWS 版本 Exchange2016。</p>
+
+    <div class="card">
+      <h4>策略优先级</h4>
+      <ol style="padding-left:20px;margin:8px 0">
+        <li>设了 <code>JOYMAIL_SOAP_AUTH_TOKEN</code> → 直接用</li>
+        <li>否则取 sso_token（优先 <code>SSO_TOKEN</code>，其次 <code>ME_TOKEN</code>/<code>SO_TOKEN</code>，再从 <code>~/.joyclaw/openclaw.json</code> 提取）</li>
+        <li><code>POST http://joymail-skill.jd.com/sso/clawJwtLogin</code>，请求头带 <code>Cookie: sso.jd.com=&lt;sso_token&gt;</code></li>
+        <li>读本地 token 缓存，过期才重调 clawJwtLogin</li>
+        <li>取返回 <code>data.token</code> 放请求头 <code>auth: &lt;token&gt;</code></li>
+        <li>mailpost 返回 401 或外层 500 含下游 401 → 自动刷新 token，最多重试 3 次</li>
+      </ol>
+    </div>
+    <div class="callout callout-info">
+      <strong>默认请求头</strong>
+      Content-Type: application/json · Accept: text/xml, application/xml, application/json · auth: &lt;token&gt; · Authorization: Bearer &lt;token&gt;
+    </div>
+  </div>
+</section>
+
+<!-- 当前限制 -->
+<section>
+  <div class="container">
+    <h2><span class="num">06</span>当前限制</h2>
+    <div class="callout callout-warn">
+      <strong>已知边界</strong>
+      <ul style="padding-left:20px;margin:6px 0 0">
+        <li>第一版主要依赖 FindFolder / FindItem / GetItem</li>
+        <li><code>body-keyword</code> 匹配 preview/text body，不保证等价服务端全文检索</li>
+        <li>自定义"已处理"通过"是否有后续发件回复"近似判断</li>
+        <li>若邮箱侧后续提供更准的 SOAP 字段/过滤语法/状态语义，可逐步把客户端过滤下推到服务端</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    技能来源：projects/claude-trace/read-email · 生成于 2026-06-27 · apple-minimal 风格
+  </div>
+</footer>
+
+</body>
+</html>

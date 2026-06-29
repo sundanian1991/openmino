@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>把团队工作沉淀为AI可用的知识库</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper: #FAFAF8;
+  --ink: #1A1A1A;
+  --ink-secondary: #666666;
+  --ink-light: #999999;
+  --accent: #2D5A7B;
+  --accent-warm: #C75B39;
+  --divider: #E8E4DE;
+  --surface: #F0EDE8;
+  --font-display: 'Noto Serif SC', 'Songti SC', serif;
+  --font-body: 'Noto Sans SC', 'PingFang SC', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: #000;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== Section Base ===== */
+deck-stage > section {
+  background: var(--paper);
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  text-wrap: pretty;
+}
+
+deck-stage > section:not(.active) {
+  display: none !important;
+}
+
+deck-stage > section.active {
+  display: flex;
+}
+
+/* Dark variant */
+section.dark {
+  background: var(--ink);
+  color: #F0EDE8;
+}
+
+/* ===== Typography ===== */
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.t-display-sm {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.t-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.75;
+}
+
+.t-caption {
+  font-family: var(--font-body);
+  font-weight: 300;
+  color: var(--ink-secondary);
+  line-height: 1.6;
+}
+
+.t-kicker {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.dark .t-kicker { color: var(--accent-warm); }
+
+.t-number {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* ===== Layout Helpers ===== */
+.slide-pad {
+  padding: 80px 120px;
+}
+
+.slide-pad-lg {
+  padding: 80px 160px;
+}
+
+.section-line {
+  width: 48px;
+  height: 3px;
+  background: var(--accent);
+  margin: 24px 0;
+}
+
+.dark .section-line {
+  background: var(--accent-warm);
+}
+
+/* Page footer */
+.slide-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  padding: 0 120px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink-light);
+  font-family: var(--font-body);
+  border-top: 1px solid var(--divider);
+}
+
+.dark .slide-footer {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.35);
+}
+
+/* ===== Slide-specific Styles ===== */
+
+/* --- Slide 1: Hero --- */
+.hero-slide {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 200px;
+}
+.hero-slide .hero-title {
+  font-size: 72px;
+  margin-bottom: 32px;
+  max-width: 1200px;
+}
+.hero-slide .hero-sub {
+  font-size: 24px;
+  color: var(--ink-secondary);
+  max-width: 720px;
+  line-height: 1.8;
+}
+.hero-slide .hero-meta {
+  margin-top: 48px;
+  font-size: 15px;
+  color: var(--ink-light);
+  letter-spacing: 0.15em;
+}
+
+/* --- Slide 2: Problem --- */
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 40px;
+  flex: 1;
+  align-items: start;
+  padding-top: 24px;
+}
+.problem-card {
+  padding: 40px 36px;
+  background: var(--surface);
+  position: relative;
+}
+.problem-num {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--accent-warm);
+  line-height: 1;
+  margin-bottom: 20px;
+}
+.problem-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+.problem-desc {
+  font-size: 18px;
+  color: var(--ink-secondary);
+  line-height: 1.8;
+}
+
+/* --- Slide 3: Solution --- */
+.solution-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 240px;
+}
+.solution-title {
+  font-size: 56px;
+  margin-bottom: 28px;
+}
+.solution-desc {
+  font-size: 22px;
+  color: var(--ink-secondary);
+  line-height: 1.9;
+  max-width: 900px;
+}
+
+/* --- Slide 4: Three Operations --- */
+.ops-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 48px;
+  flex: 1;
+  align-items: start;
+  padding-top: 20px;
+}
+.ops-card {
+  text-align: center;
+  padding: 48px 32px;
+}
+.ops-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 auto 28px;
+  font-family: var(--font-display);
+}
+.ops-name {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.ops-en {
+  font-size: 15px;
+  color: var(--ink-light);
+  margin-bottom: 20px;
+  letter-spacing: 0.1em;
+}
+.ops-desc {
+  font-size: 17px;
+  color: var(--ink-secondary);
+  line-height: 1.8;
+  text-align: left;
+}
+
+/* --- Slide 5: Comparison Table --- */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+  font-size: 18px;
+}
+.compare-table th {
+  text-align: left;
+  padding: 20px 28px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+}
+.compare-table th:first-child {
+  width: 200px;
+}
+.compare-table td {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--divider);
+  vertical-align: top;
+  line-height: 1.7;
+}
+.compare-table tr:nth-child(even) td {
+  background: rgba(0,0,0,0.02);
+}
+.compare-table .cell-label {
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 4px;
+}
+.compare-table .cell-detail {
+  color: var(--ink-secondary);
+  font-size: 15px;
+}
+
+/* --- Slide 6-7: Before/After --- */
+.before-after {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  gap: 0;
+  flex: 1;
+  align-items: stretch;
+}
+.ba-panel {
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+}
+.ba-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: var(--accent);
+}
+.ba-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  padding: 6px 16px;
+  display: inline-block;
+  width: fit-content;
+}
+.ba-label.before {
+  color: var(--accent-warm);
+  background: rgba(199, 91, 57, 0.08);
+}
+.ba-label.after {
+  color: var(--accent);
+  background: rgba(45, 90, 123, 0.08);
+}
+.ba-content {
+  flex: 1;
+}
+.ba-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--divider);
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+}
+.ba-item:last-child { border-bottom: none; }
+.ba-key {
+  font-size: 14px;
+  color: var(--ink-light);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+.ba-val {
+  font-size: 17px;
+  line-height: 1.7;
+}
+.ba-before .ba-val { color: var(--ink-secondary); }
+.ba-after .ba-val { color: var(--ink); font-weight: 500; }
+
+/* --- Slide 8: AI vs Human --- */
+.vs-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  flex: 1;
+  align-items: start;
+  padding-top: 20px;
+}
+.vs-col h3 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--divider);
+}
+.vs-col.ai-col h3 { color: var(--accent); border-color: var(--accent); }
+.vs-col.human-col h3 { color: var(--accent-warm); border-color: var(--accent-warm); }
+.vs-item {
+  padding: 14px 0;
+  font-size: 18px;
+  line-height: 1.7;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+.vs-item:last-child { border-bottom: none; }
+.vs-item strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.vs-item span {
+  color: var(--ink-secondary);
+  font-size: 16px;
+}
+
+/* --- Slide 9-11: Flow Steps --- */
+.flow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  justify-content: center;
+}
+.flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  padding: 18px 0;
+}
+.flow-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.flow-text {
+  flex: 1;
+}
+.flow-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.flow-desc {
+  font-size: 16px;
+  color: var(--ink-secondary);
+  line-height: 1.7;
+}
+
+/* Health slide: 2-column */
+.health-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 64px;
+  flex: 1;
+  align-items: start;
+  padding-top: 12px;
+}
+
+/* --- Slide 12: Data showcase --- */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  margin-top: 24px;
+}
+.data-card {
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--surface);
+}
+.data-num {
+  font-family: var(--font-mono);
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.data-label {
+  font-size: 16px;
+  color: var(--ink-secondary);
+}
+
+/* --- Slide 13: Path --- */
+.path-timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  flex: 1;
+  padding-top: 32px;
+}
+.path-phase {
+  flex: 1;
+  text-align: center;
+  padding: 0 24px;
+  position: relative;
+}
+.path-phase:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 32px;
+  right: -24px;
+  width: 48px;
+  height: 2px;
+  background: var(--divider);
+}
+.path-dot {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.path-phase.active .path-dot {
+  background: var(--accent);
+  color: #fff;
+}
+.path-phase-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.path-phase-desc {
+  font-size: 16px;
+  color: var(--ink-secondary);
+  line-height: 1.7;
+}
+
+/* --- Slide 14: Next Steps --- */
+.next-list {
+  list-style: none;
+  margin-top: 24px;
+}
+.next-item {
+  display: flex;
+  gap: 20px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--divider);
+  align-items: baseline;
+}
+.next-item:last-child { border-bottom: none; }
+.next-num {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 36px;
+}
+.next-text {
+  font-size: 20px;
+  line-height: 1.7;
+}
+.next-text strong {
+  font-weight: 600;
+}
+.next-text span {
+  color: var(--ink-secondary);
+  display: block;
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+/* --- Slide 15: Takeaway --- */
+.takeaway-slide {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 240px;
+}
+.takeaway-item {
+  margin-bottom: 56px;
+}
+.takeaway-item:last-child { margin-bottom: 0; }
+.takeaway-num {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent-warm);
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+.takeaway-text {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.takeaway-text em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+/* --- Slide 16: Q&A --- */
+.qa-slide {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.qa-title {
+  font-size: 96px;
+  margin-bottom: 24px;
+  letter-spacing: -0.03em;
+}
+.qa-sub {
+  font-size: 22px;
+  color: rgba(240,237,232,0.6);
+}
+</style>
+</head>
+<body>
+
+<deck-stage>
+<!-- ============ SLIDE 01: Hero ============ -->
+<section class="dark hero-slide" data-screen-label="01 封面">
+  <div class="t-kicker" style="margin-bottom: 32px;">跨部门方案分享</div>
+  <h1 class="t-display hero-title">把团队工作<br>沉淀为AI可用的知识库</h1>
+  <p class="hero-sub">从散落的文档到结构化的知识资产<br>让AI真正理解你的业务</p>
+  <div class="hero-meta">2026年6月</div>
+  <div class="slide-footer">
+    <span></span>
+    <span></span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 02: Problem ============ -->
+<section class="slide-pad" data-screen-label="02 问题">
+  <div class="t-kicker">现状</div>
+  <h2 class="t-display-sm" style="font-size: 44px; margin-top: 16px;">现有文档管理的三个痛点</h2>
+  <div class="section-line"></div>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-num">01</div>
+      <div class="problem-title">散落无结构</div>
+      <div class="problem-desc">文档散落在京me、JoySpace、邮件、本地文件夹。找一份制度文件要翻遍5个地方，新同事入职根本不知道去哪找。</div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-num">02</div>
+      <div class="problem-title">更新不及时</div>
+      <div class="problem-desc">制度改了、流程变了，旧文档还在。版本混乱导致执行偏差，有人按旧版操作，出了问题才发现文档没更新。</div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-num">03</div>
+      <div class="problem-title">AI无法使用</div>
+      <div class="problem-desc">即使有文档，AI也读不懂。格式混乱、缺少上下文、没有结构化索引。喂给AI大段文字，得到的回答似是而非。</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>02 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 03: Solution ============ -->
+<section class="slide-pad-lg solution-center" data-screen-label="03 方案">
+  <div class="t-kicker" style="margin-bottom: 24px;">核心方案</div>
+  <h2 class="t-display solution-title">一套可复制的方法论</h2>
+  <div class="section-line" style="margin: 0 auto 28px;"></div>
+  <p class="solution-desc">不是买一套软件，不是搭一个平台。<br>而是一套<strong>操作规范 + 三个标准化技能</strong>，<br>让任何团队都能把工作沉淀为AI可用的知识。</p>
+  <div style="margin-top: 48px; display: flex; gap: 64px; justify-content: center;">
+    <div style="text-align: center;">
+      <div class="t-number" style="font-size: 48px; color: var(--accent);">3</div>
+      <div style="font-size: 16px; color: var(--ink-secondary); margin-top: 8px;">标准化技能</div>
+    </div>
+    <div style="text-align: center;">
+      <div class="t-number" style="font-size: 48px; color: var(--accent);">N</div>
+      <div style="font-size: 16px; color: var(--ink-secondary); margin-top: 8px;">可复制到任意团队</div>
+    </div>
+    <div style="text-align: center;">
+      <div class="t-number" style="font-size: 48px; color: var(--accent);">0</div>
+      <div style="font-size: 16px; color: var(--ink-secondary); margin-top: 8px;">额外硬件投入</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>03 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 04: Three Operations ============ -->
+<section class="slide-pad" data-screen-label="04 三个操作">
+  <div class="t-kicker">核心操作</div>
+  <h2 class="t-display-sm" style="font-size: 44px; margin-top: 16px;">三个技能，覆盖知识全生命周期</h2>
+  <div class="section-line"></div>
+  <div class="ops-grid">
+    <div class="ops-card">
+      <div class="ops-icon">摄</div>
+      <div class="ops-name">wiki:ingest</div>
+      <div class="ops-en">摄取</div>
+      <div class="ops-desc">把散落的文档、制度、流程、经验，按统一规范整理成结构化知识条目，建立索引和分类。</div>
+    </div>
+    <div class="ops-card">
+      <div class="ops-icon">查</div>
+      <div class="ops-name">wiki:query</div>
+      <div class="ops-en">查询</div>
+      <div class="ops-desc">用自然语言提问，AI基于知识库精准回答。不再翻文件夹、不再问老员工、不再凭记忆操作。</div>
+    </div>
+    <div class="ops-card">
+      <div class="ops-icon">检</div>
+      <div class="ops-name">wiki:health</div>
+      <div class="ops-en">体检</div>
+      <div class="ops-desc">定期检查知识库健康度：哪些过期了、哪些缺失、哪些需要更新。保证知识库始终准确可用。</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>04 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 05: Comparison Table ============ -->
+<section class="slide-pad" data-screen-label="05 技能对比">
+  <div class="t-kicker">对比</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">三个技能的能力边界</h2>
+  <div class="section-line"></div>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>wiki:ingest 摄取</th>
+        <th>wiki:query 查询</th>
+        <th>wiki:health 体检</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="cell-label">做什么</span></td>
+        <td>将原始文档转化为结构化知识条目</td>
+        <td>基于知识库回答自然语言问题</td>
+        <td>扫描知识库，发现过期/缺失/冲突</td>
+      </tr>
+      <tr>
+        <td><span class="cell-label">输入</span></td>
+        <td>Word/PDF/Markdown/聊天记录</td>
+        <td>用户的自然语言问题</td>
+        <td>整个知识库目录</td>
+      </tr>
+      <tr>
+        <td><span class="cell-label">输出</span></td>
+        <td>标准化知识条目 + 元数据</td>
+        <td>精准回答 + 引用来源</td>
+        <td>健康报告 + 待办清单</td>
+      </tr>
+      <tr>
+        <td><span class="cell-label">频率</span></td>
+        <td>新增/变更时触发</td>
+        <td>随时使用</td>
+        <td>月度/季度执行</td>
+      </tr>
+      <tr>
+        <td><span class="cell-label">门槛</span></td>
+        <td>需要了解业务上下文的人确认</td>
+        <td>零门槛，直接问</td>
+        <td>需要管理员权限</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>05 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 06: Before ============ -->
+<section class="slide-pad" data-screen-label="06 整理前">
+  <div class="t-kicker">案例</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">整理前：供应商管理知识现状</h2>
+  <div class="section-line"></div>
+  <div class="before-after" style="margin-top: 16px;">
+    <div class="ba-panel ba-before" style="background: rgba(199,91,57,0.04);">
+      <div class="ba-label before">整理前</div>
+      <div class="ba-content">
+        <div class="ba-item">
+          <div class="ba-key">制度文件</div>
+          <div class="ba-val">散落在共享盘3个文件夹，版本从v1.0到v3.2共7个版本，不知道哪个是最新的</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">流程文档</div>
+          <div class="ba-val">准入流程在邮件审批记录里，清退流程在老员工脑子里，没有书面版本</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">业务数据</div>
+          <div class="ba-val">月度排名在Excel里，分析报告在PPT里，历史数据找不到</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">协作经验</div>
+          <div class="ba-val">跟供应商沟通的技巧、踩过的坑、谈判策略，全在个人记忆里</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">查找效率</div>
+          <div class="ba-val">新同事入职，问一个制度问题平均要问3个人、翻5个文件夹，耗时30分钟以上</div>
+        </div>
+      </div>
+    </div>
+    <div class="ba-arrow">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M8 18h20M20 10l8 8-8 8" stroke="#2D5A7B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="ba-panel" style="background: rgba(45,90,123,0.03); opacity: 0.4;">
+      <div class="ba-label after">整理后</div>
+      <div class="ba-content" style="display: flex; align-items: center; justify-content: center; min-height: 300px;">
+        <div style="text-align: center; color: var(--ink-light);">
+          <div style="font-size: 48px; margin-bottom: 16px;">?</div>
+          <div style="font-size: 18px;">下一页揭晓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>06 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 07: After ============ -->
+<section class="slide-pad" data-screen-label="07 整理后">
+  <div class="t-kicker">案例</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">整理后：结构化知识库</h2>
+  <div class="section-line"></div>
+  <div class="before-after" style="margin-top: 16px;">
+    <div class="ba-panel" style="background: rgba(199,91,57,0.03); opacity: 0.4;">
+      <div class="ba-label before">整理前</div>
+      <div class="ba-content" style="display: flex; align-items: center; justify-content: center; min-height: 300px;">
+        <div style="text-align: center; color: var(--ink-light);">
+          <div style="font-size: 18px;">散落、混乱、不可检索</div>
+        </div>
+      </div>
+    </div>
+    <div class="ba-arrow">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M8 18h20M20 10l8 8-8 8" stroke="#2D5A7B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="ba-panel ba-after" style="background: rgba(45,90,123,0.04);">
+      <div class="ba-label after">整理后</div>
+      <div class="ba-content">
+        <div class="ba-item">
+          <div class="ba-key">制度库</div>
+          <div class="ba-val">最新版本 v3.2，自动标记生效日期，旧版本归档可查</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">流程库</div>
+          <div class="ba-val">准入/清退/分工 全流程标准化，每步有负责人和时限</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">数据资产</div>
+          <div class="ba-val">月度排名、业绩趋势、供应商画像，结构化存储可追溯</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">经验库</div>
+          <div class="ba-val">谈判案例、沟通模板、常见问题FAQ，新人可自学</div>
+        </div>
+        <div class="ba-item">
+          <div class="ba-key">查询效率</div>
+          <div class="ba-val">自然语言提问，3秒返回答案 + 原文引用，零学习成本</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>07 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 08: AI vs Human ============ -->
+<section class="slide-pad" data-screen-label="08 编写规范">
+  <div class="t-kicker">关键原则</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">AI提炼 vs 人写：各司其职</h2>
+  <div class="section-line"></div>
+  <div class="vs-layout">
+    <div class="vs-col ai-col">
+      <h3>AI 做什么</h3>
+      <div class="vs-item">
+        <strong>格式标准化</strong>
+        <span>把散乱的文本统一为结构化条目，自动添加元数据</span>
+      </div>
+      <div class="vs-item">
+        <strong>信息提取</strong>
+        <span>从长文档中提取关键规则、流程步骤、决策条件</span>
+      </div>
+      <div class="vs-item">
+        <strong>关联索引</strong>
+        <span>自动建立知识条目间的引用关系，生成分类标签</span>
+      </div>
+      <div class="vs-item">
+        <strong>一致性检查</strong>
+        <span>发现不同文档中的矛盾表述和过期信息</span>
+      </div>
+    </div>
+    <div class="vs-col human-col">
+      <h3>人 做什么</h3>
+      <div class="vs-item">
+        <strong>业务判断</strong>
+        <span>确认AI提取的信息是否准确，补充隐性知识</span>
+      </div>
+      <div class="vs-item">
+        <strong>经验注入</strong>
+        <span>把"老员工才知道"的潜规则、踩坑经验写成条目</span>
+      </div>
+      <div class="vs-item">
+        <strong>质量把关</strong>
+        <span>审核AI生成的索引和分类是否符合实际业务逻辑</span>
+      </div>
+      <div class="vs-item">
+        <strong>持续更新</strong>
+        <span>业务变化时主动触发更新，而不是等AI自己发现</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>08 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 09: wiki:ingest Flow ============ -->
+<section class="slide-pad" data-screen-label="09 摄取流程">
+  <div class="t-kicker">wiki:ingest</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">摄取六步：从文档到知识</h2>
+  <div class="section-line"></div>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-text">
+        <div class="flow-title">收集原始材料</div>
+        <div class="flow-desc">把相关文档集中到一个目录：制度文件、流程说明、聊天记录、会议纪要</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-text">
+        <div class="flow-title">AI预处理</div>
+        <div class="flow-desc">AI自动识别文档类型、提取标题和关键段落、生成初步结构</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-text">
+        <div class="flow-title">人工审核补充</div>
+        <div class="flow-desc">业务人员确认AI提取是否准确，补充遗漏的上下文和隐性知识</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-text">
+        <div class="flow-title">标准化入库</div>
+        <div class="flow-desc">按统一模板生成知识条目：标题、正文、标签、关联条目、生效日期</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-text">
+        <div class="flow-title">建立索引</div>
+        <div class="flow-desc">AI自动生成分类索引和语义搜索向量，支持自然语言检索</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">6</div>
+      <div class="flow-text">
+        <div class="flow-title">验证可用</div>
+        <div class="flow-desc">用典型问题测试查询，确认AI能准确回答并引用正确来源</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>09 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: wiki:query Flow ============ -->
+<section class="slide-pad" data-screen-label="10 查询流程">
+  <div class="t-kicker">wiki:query</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">查询五步：从问题到答案</h2>
+  <div class="section-line"></div>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-text">
+        <div class="flow-title">自然语言提问</div>
+        <div class="flow-desc">用日常语言描述问题，不需要知道文档在哪里、叫什么名字</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-text">
+        <div class="flow-title">语义检索</div>
+        <div class="flow-desc">AI理解问题含义，在知识库中匹配最相关的条目，而非简单关键词匹配</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-text">
+        <div class="flow-title">多源聚合</div>
+        <div class="flow-desc">综合多个知识条目，交叉验证，给出完整答案而非片面信息</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-text">
+        <div class="flow-title">标注来源</div>
+        <div class="flow-desc">每个回答附带引用来源，可以追溯到原始文档，确保可验证</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-text">
+        <div class="flow-title">反馈闭环</div>
+        <div class="flow-desc">回答不准确时标记反馈，驱动知识库持续优化</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>10 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: wiki:health Flow ============ -->
+<section class="slide-pad" data-screen-label="11 体检流程">
+  <div class="t-kicker">wiki:health</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">体检六项：知识库健康检查</h2>
+  <div class="section-line"></div>
+  <div class="health-grid">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-text">
+        <div class="flow-title">过期检测</div>
+        <div class="flow-desc">扫描所有条目，标记超过N天未更新的，按风险等级排序</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-text">
+        <div class="flow-title">完整性检查</div>
+        <div class="flow-desc">检测必填字段缺失、分类标签不完整、关联关系断裂的条目</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-text">
+        <div class="flow-title">一致性校验</div>
+        <div class="flow-desc">发现同一主题在不同条目中的矛盾表述，提示人工确认</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-text">
+        <div class="flow-title">使用率分析</div>
+        <div class="flow-desc">统计哪些条目被高频查询、哪些从未被使用，优化知识结构</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-text">
+        <div class="flow-title">质量评分</div>
+        <div class="flow-desc">对每个条目打分：准确度、完整度、可用性，生成健康报告</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">6</div>
+      <div class="flow-text">
+        <div class="flow-title">待办生成</div>
+        <div class="flow-desc">自动生成更新任务清单，按优先级排列，可直接分配给负责人</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>11 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: Data Showcase ============ -->
+<section class="slide-pad" data-screen-label="12 落地数据">
+  <div class="t-kicker">落地实例</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">供应商管理知识库：实际数据</h2>
+  <div class="section-line"></div>
+  <div class="data-grid">
+    <div class="data-card">
+      <div class="data-num">127</div>
+      <div class="data-label">知识条目</div>
+    </div>
+    <div class="data-card">
+      <div class="data-num">6</div>
+      <div class="data-label">核心分类</div>
+    </div>
+    <div class="data-card">
+      <div class="data-num">89%</div>
+      <div class="data-label">查询准确率</div>
+    </div>
+    <div class="data-card">
+      <div class="data-num">3s</div>
+      <div class="data-label">平均响应时间</div>
+    </div>
+  </div>
+  <div style="margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+    <div style="padding: 32px; background: var(--surface);">
+      <div style="font-size: 14px; color: var(--ink-light); letter-spacing: 0.1em; margin-bottom: 12px;">知识分类</div>
+      <div style="font-size: 18px; line-height: 2;">
+        制度规范 &middot; 准入流程 &middot; 清退机制<br>
+        分工规则 &middot; 业绩数据 &middot; 协作经验
+      </div>
+    </div>
+    <div style="padding: 32px; background: var(--surface);">
+      <div style="font-size: 14px; color: var(--ink-light); letter-spacing: 0.1em; margin-bottom: 12px;">覆盖供应商</div>
+      <div style="font-size: 18px; line-height: 2;">
+        毅航 &middot; 毛毛虫 &middot; 伽玛<br>
+        赛维斯 &middot; 岐力 &middot; 翰锐
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>12 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: Path ============ -->
+<section class="slide-pad" data-screen-label="13 落地路径">
+  <div class="t-kicker">落地路径</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">三步走：从个人到团队</h2>
+  <div class="section-line"></div>
+  <div class="path-timeline">
+    <div class="path-phase active">
+      <div class="path-dot">1</div>
+      <div class="path-phase-title">个人先行</div>
+      <div class="path-phase-desc">一个人先用起来，整理自己负责的业务知识。验证方法可行、工具好用、产出有价值。<br><br><strong>周期：2-4周</strong><br>产出：个人知识库 + 使用体验报告</div>
+    </div>
+    <div class="path-phase">
+      <div class="path-dot">2</div>
+      <div class="path-phase-title">人工确认</div>
+      <div class="path-phase-desc">邀请1-2位同事试用，收集反馈。重点确认：回答是否准确、操作是否简便、有没有遗漏的场景。<br><br><strong>周期：2-3周</strong><br>产出：优化后的知识库 + 团队反馈</div>
+    </div>
+    <div class="path-phase">
+      <div class="path-dot">3</div>
+      <div class="path-phase-title">团队共享</div>
+      <div class="path-phase-desc">形成标准操作规范，纳入团队日常工作流。新成员入职时直接使用知识库，不再依赖口口相传。<br><br><strong>周期：持续推进</strong><br>产出：团队知识资产 + 标准流程</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>13 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: KaaS 是什么 ============ -->
+<section class="slide-pad" data-screen-label="14 KaaS中台">
+  <div class="t-kicker">知识库中台</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">KaaS：事业群级的知识库中台</h2>
+  <div class="section-line"></div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 32px; flex: 1; align-items: start;">
+    <div>
+      <div style="font-size: 20px; line-height: 1.9; color: var(--ink-secondary); margin-bottom: 36px;">
+        把散落在各团队的 PRD、实现文档、测试用例、架构说明，沉淀到一个统一的地方。<br><br>
+        不是另一个 Wiki，是<strong style="color: var(--ink);">给 AI 用的知识基础设施</strong>。
+      </div>
+      <div style="padding: 28px 32px; background: var(--surface); margin-bottom: 16px;">
+        <div style="font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; margin-bottom: 8px;">管理台（人用）</div>
+        <div style="font-family: var(--font-mono); font-size: 16px; color: var(--accent);">ai-kaas.pre-apps.jd.com</div>
+      </div>
+      <div style="padding: 28px 32px; background: var(--surface);">
+        <div style="font-size: 13px; color: var(--ink-light); letter-spacing: 0.1em; margin-bottom: 8px;">MCP 接口（AI Agent 用）</div>
+        <div style="font-family: var(--font-mono); font-size: 16px; color: var(--accent);">ai-analysis-api.jd.com/mcp/</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size: 14px; color: var(--ink-light); letter-spacing: 0.1em; margin-bottom: 20px;">已收录项目</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div style="padding: 24px; background: var(--surface); border-left: 3px solid var(--accent);">
+          <div style="font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 6px;">rental-3c</div>
+          <div style="font-size: 14px; color: var(--ink-secondary);">租赁3C业务</div>
+        </div>
+        <div style="padding: 24px; background: var(--surface); border-left: 3px solid var(--accent);">
+          <div style="font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 6px;">payment-basic</div>
+          <div style="font-size: 14px; color: var(--ink-secondary);">支付基础</div>
+        </div>
+        <div style="padding: 24px; background: var(--surface); border-left: 3px solid var(--accent);">
+          <div style="font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 6px;">aipay</div>
+          <div style="font-size: 14px; color: var(--ink-secondary);">支付宝接入</div>
+        </div>
+        <div style="padding: 24px; background: var(--surface); border-left: 3px solid var(--accent);">
+          <div style="font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 6px;">voiceprint</div>
+          <div style="font-size: 14px; color: var(--ink-secondary);">声纹识别</div>
+        </div>
+      </div>
+      <div style="margin-top: 20px; padding: 20px 24px; background: var(--surface); text-align: center; font-size: 16px; color: var(--ink-secondary);">
+        + 更多项目持续接入中
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>14 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: KaaS 核心概念 ============ -->
+<section class="slide-pad" data-screen-label="15 核心概念">
+  <div class="t-kicker">核心概念</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">三层结构：一级域 - 项目 - 知识库</h2>
+  <div class="section-line"></div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 36px; margin-top: 32px; flex: 1; align-items: start;">
+    <div style="padding: 40px 32px; background: var(--surface); text-align: center;">
+      <div class="t-number" style="font-size: 48px; color: var(--accent); margin-bottom: 16px;">L1</div>
+      <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 12px;">一级域</div>
+      <div style="font-size: 16px; color: var(--ink-secondary); line-height: 1.8; margin-bottom: 20px;">事业群下的业务大块</div>
+      <div style="border-top: 1px solid var(--divider); padding-top: 16px; font-size: 15px; color: var(--ink-secondary); line-height: 2;">
+        <span style="font-family: var(--font-mono); color: var(--accent);">payment</span><br>
+        <span style="font-family: var(--font-mono); color: var(--accent);">enterprise-finance</span><br>
+        <span style="font-family: var(--font-mono); color: var(--accent);">rental</span>
+      </div>
+    </div>
+    <div style="padding: 40px 32px; background: var(--surface); text-align: center;">
+      <div class="t-number" style="font-size: 48px; color: var(--accent); margin-bottom: 16px;">L2</div>
+      <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 12px;">项目（Topic）</div>
+      <div style="font-size: 16px; color: var(--ink-secondary); line-height: 1.8; margin-bottom: 20px;">一级域下的具体业务主题</div>
+      <div style="border-top: 1px solid var(--divider); padding-top: 16px; font-size: 15px; color: var(--ink-secondary); line-height: 2;">
+        <span style="font-family: var(--font-mono); color: var(--accent);">voiceprint</span><br>
+        <span style="font-family: var(--font-mono); color: var(--accent);">aipay</span><br>
+        <span style="font-family: var(--font-mono); color: var(--accent);">3c-rental</span>
+      </div>
+    </div>
+    <div style="padding: 40px 32px; background: var(--surface); text-align: center;">
+      <div class="t-number" style="font-size: 48px; color: var(--accent); margin-bottom: 16px;">L3</div>
+      <div style="font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 12px;">知识库（KB）</div>
+      <div style="font-size: 16px; color: var(--ink-secondary); line-height: 1.8; margin-bottom: 20px;">可独立配置召回策略的库</div>
+      <div style="border-top: 1px solid var(--divider); padding-top: 16px; font-size: 15px; color: var(--ink-secondary); line-height: 2;">
+        每个 Topic 下可有<br>多个 KB，各自配置<br>不同的召回参数
+      </div>
+    </div>
+  </div>
+  <div style="margin-top: 28px; padding: 24px 32px; background: var(--surface); display: flex; gap: 48px; align-items: center;">
+    <div style="font-size: 14px; color: var(--ink-light); letter-spacing: 0.1em; white-space: nowrap;">仓库目录</div>
+    <div style="font-family: var(--font-mono); font-size: 17px; color: var(--ink-secondary);">
+      domains / <span style="color: var(--accent);">一级域</span> / <span style="color: var(--accent-warm);">项目</span> / template / wiki / docs / artifacts
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>15 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: AI 调用 KaaS ============ -->
+<section class="slide-pad" data-screen-label="16 AI调用流程">
+  <div class="t-kicker">工作流</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">AI 如何调用 KaaS：强制工作流</h2>
+  <div class="section-line"></div>
+  <div style="display: grid; grid-template-columns: 380px 1fr; gap: 48px; margin-top: 24px; flex: 1; align-items: start;">
+    <div>
+      <div style="font-size: 14px; color: var(--ink-light); letter-spacing: 0.1em; margin-bottom: 16px;">MCP 六个工具</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="padding: 14px 20px; background: var(--surface); display: flex; gap: 12px; align-items: baseline;">
+          <span style="font-family: var(--font-mono); font-size: 15px; color: var(--accent); min-width: 160px;">kb_describe</span>
+          <span style="font-size: 14px; color: var(--ink-secondary);">查看能力清单</span>
+        </div>
+        <div style="padding: 14px 20px; background: var(--surface); display: flex; gap: 12px; align-items: baseline;">
+          <span style="font-family: var(--font-mono); font-size: 15px; color: var(--accent); min-width: 160px;">kb_search</span>
+          <span style="font-size: 14px; color: var(--ink-secondary);">语义检索片段</span>
+        </div>
+        <div style="padding: 14px 20px; background: var(--surface); display: flex; gap: 12px; align-items: baseline;">
+          <span style="font-family: var(--font-mono); font-size: 15px; color: var(--accent); min-width: 160px;">kb_resolve</span>
+          <span style="font-size: 14px; color: var(--ink-secondary);">路由到具体项目</span>
+        </div>
+        <div style="padding: 14px 20px; background: var(--surface); display: flex; gap: 12px; align-items: baseline;">
+          <span style="font-family: var(--font-mono); font-size: 15px; color: var(--accent); min-width: 160px;">kb_pack</span>
+          <span style="font-size: 14px; color: var(--ink-secondary);">一次性拿全量</span>
+        </div>
+        <div style="padding: 14px 20px; background: var(--surface); display: flex; gap: 12px; align-items: baseline;">
+          <span style="font-family: var(--font-mono); font-size: 15px; color: var(--accent); min-width: 160px;">kb_get_artifact</span>
+          <span style="font-size: 14px; color: var(--ink-secondary);">读取单文件正文</span>
+        </div>
+        <div style="padding: 14px 20px; background: var(--surface); display: flex; gap: 12px; align-items: baseline;">
+          <span style="font-family: var(--font-mono); font-size: 15px; color: var(--accent); min-width: 160px;">kb_get_artifacts</span>
+          <span style="font-size: 14px; color: var(--ink-secondary);">批量读取多文件</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size: 14px; color: var(--ink-light); letter-spacing: 0.1em; margin-bottom: 16px;">写 PRD / 改代码前必走</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-text">
+            <div class="flow-title">kb_search</div>
+            <div class="flow-desc">用需求关键词检索，看命中哪个项目、哪些历史文档</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-text">
+            <div class="flow-title">kb_pack</div>
+            <div class="flow-desc">传入 topic + role + intent，一次性拿到模板 + 角色 wiki + 历史全文</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-text">
+            <div class="flow-title">基于模板起草</div>
+            <div class="flow-desc">按 pack 返回的 template 章节顺序，填充内容起草文档</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-text">
+            <div class="flow-title">缺口补齐</div>
+            <div class="flow-desc">有信息缺口时，用 kb_get_artifacts 批量拉取相关文件正文</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 16px; padding: 16px 24px; background: rgba(199,91,57,0.06); border-left: 3px solid var(--accent-warm);">
+        <div style="font-size: 15px; color: var(--accent-warm); font-weight: 600;">铁律：写 PRD 前必须先 kb_pack 拿全量</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>16 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: Next Steps ============ -->
+<section class="slide-pad" data-screen-label="17 下一步">
+  <div class="t-kicker">下一步</div>
+  <h2 class="t-display-sm" style="font-size: 40px; margin-top: 16px;">建议的行动项</h2>
+  <div class="section-line"></div>
+  <ul class="next-list">
+    <li class="next-item">
+      <div class="next-num">01</div>
+      <div class="next-text">
+        <strong>选定一个试点领域</strong>
+        <span>从一个团队、一个业务场景开始，不要试图一步到位覆盖全部</span>
+      </div>
+    </li>
+    <li class="next-item">
+      <div class="next-num">02</div>
+      <div class="next-text">
+        <strong>指定一位知识负责人</strong>
+        <span>每个试点领域需要一个人对知识库的质量负责，定期维护更新</span>
+      </div>
+    </li>
+    <li class="next-item">
+      <div class="next-num">03</div>
+      <div class="next-text">
+        <strong>安排一次小范围试用</strong>
+        <span>用实际业务问题测试知识库，看AI回答是否靠谱，收集真实反馈</span>
+      </div>
+    </li>
+    <li class="next-item">
+      <div class="next-num">04</div>
+      <div class="next-text">
+        <strong>建立更新机制</strong>
+        <span>制度变更、流程调整时，同步更新知识库，避免信息过期</span>
+      </div>
+    </li>
+  </ul>
+  <div class="slide-footer">
+    <span>团队知识库方案</span>
+    <span>17 / 19</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18: Takeaway ============ -->
+<section class="dark slide-pad-lg takeaway-slide" data-screen-label="18 总结">
+  <div class="takeaway-item">
+    <div class="takeaway-num">01</div>
+    <div class="takeaway-text">知识不是没有，是<em>散落了</em></div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">02</div>
+    <div class="takeaway-text">三个技能，让知识<em>可检索、可验证、可持续</em></div>
+  </div>
+  <div class="takeaway-item">
+    <div class="takeaway-num">03</div>
+    <div class="takeaway-text">先一个人用起来，<em>比讨论一年有用</em></div>
+  </div>
+  <div class="slide-footer">
+    <span></span>
+    <span></span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 19: Q&A ============ -->
+<section class="dark qa-slide" data-screen-label="19 Q&A">
+  <div class="t-display qa-title">Q&A</div>
+  <p class="qa-sub" style="font-size: 22px; color: rgba(240,237,232,0.5);">欢迎提问和讨论</p>
+  <div class="slide-footer">
+    <span></span>
+    <span></span>
+  </div>
+</section>
+
+</deck-stage>
+
+<!-- deck_stage.js — inline -->
+<script>
+(function() {
+  const STORAGE_KEY_PREFIX = 'deck-stage-slide-';
+
+  class DeckStage extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: 'open' });
+      this._currentSlide = 0;
+      this._slides = [];
+      this._storageKey = STORAGE_KEY_PREFIX + (location.pathname || 'default');
+    }
+
+    connectedCallback() {
+      this._width = parseInt(this.getAttribute('width')) || 1920;
+      this._height = parseInt(this.getAttribute('height')) || 1080;
+      this._render();
+
+      const init = () => {
+        this._collectSlides();
+        this._setupEventListeners();
+        this._restoreSlide();
+        this._updateDisplay();
+        this._setupPrintStyles();
+      };
+
+      if (this.ownerDocument.readyState === 'loading') {
+        this.ownerDocument.addEventListener('DOMContentLoaded', init, { once: true });
+      } else {
+        requestAnimationFrame(init);
+      }
+    }
+
+    _render() {
+      this.shadowRoot.innerHTML = `
+        <style>
+          :host {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: -apple-system, 'SF Pro Text', 'PingFang SC', sans-serif;
+          }
+          :host([noscale]) .stage {
+            transform: none !important;
+            top: 0 !important;
+            left: 0 !important;
+          }
+          .stage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: top left;
+            will-change: transform;
+            background: #fff;
+          }
+          .slide-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+          }
+          ::slotted(section) {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+          }
+          ::slotted(section.active) {
+            display: block;
+          }
+          .counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
+            z-index: 100;
+            user-select: none;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+          }
+          .counter:hover { opacity: 1; }
+          .nav-zone {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 15%;
+            cursor: pointer;
+            z-index: 50;
+          }
+          .nav-zone.left { left: 0; }
+          .nav-zone.right { right: 0; }
+          .nav-hint {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.2s;
+          }
+          .nav-zone.left .nav-hint { left: 20px; }
+          .nav-zone.right .nav-hint { right: 20px; }
+          .nav-zone:hover .nav-hint { opacity: 1; }
+          @media print {
+            :host { position: static; background: #fff; }
+            .counter, .nav-zone { display: none !important; }
+            .stage { position: static; transform: none !important; page-break-after: always; }
+            ::slotted(section) { display: block !important; position: relative !important; page-break-after: always; width: 100%; height: 100%; }
+          }
+        </style>
+        <div class="stage" id="stage" style="width: ${this._width}px; height: ${this._height}px;">
+          <div class="slide-wrapper"><slot></slot></div>
+        </div>
+        <div class="nav-zone left" id="navLeft"><div class="nav-hint">&lsaquo;</div></div>
+        <div class="nav-zone right" id="navRight"><div class="nav-hint">&rsaquo;</div></div>
+        <div class="counter" id="counter">1 / 1</div>
+      `;
+    }
+
+    _collectSlides() {
+      this._slides = Array.from(this.querySelectorAll(':scope > section'));
+      this._slides.forEach((slide, idx) => {
+        if (!slide.hasAttribute('data-screen-label')) {
+          slide.setAttribute('data-screen-label', String(idx + 1).padStart(2, '0'));
+        }
+      });
+    }
+
+    _setupEventListeners() {
+      window.addEventListener('resize', () => this._updateScale());
+      document.addEventListener('keydown', (e) => {
+        if (e.target.matches('input, textarea, [contenteditable]')) return;
+        switch (e.key) {
+          case 'ArrowRight': case ' ': case 'PageDown': e.preventDefault(); this.next(); break;
+          case 'ArrowLeft': case 'PageUp': e.preventDefault(); this.prev(); break;
+          case 'Home': e.preventDefault(); this.goTo(0); break;
+          case 'End': e.preventDefault(); this.goTo(this._slides.length - 1); break;
+        }
+      });
+      this.shadowRoot.getElementById('navLeft').addEventListener('click', () => this.prev());
+      this.shadowRoot.getElementById('navRight').addEventListener('click', () => this.next());
+      window.addEventListener('hashchange', () => this._handleHash());
+      if (location.hash) setTimeout(() => this._handleHash(), 0);
+    }
+
+    _handleHash() {
+      const match = location.hash.match(/^#slide-(\d+)$/);
+      if (match) {
+        const idx = parseInt(match[1]) - 1;
+        if (idx >= 0 && idx < this._slides.length) this.goTo(idx);
+      }
+    }
+
+    _restoreSlide() {
+      try {
+        const stored = localStorage.getItem(this._storageKey);
+        if (stored !== null) {
+          const idx = parseInt(stored);
+          if (idx >= 0 && idx < this._slides.length) this._currentSlide = idx;
+        }
+      } catch (e) {}
+    }
+
+    _saveSlide() {
+      try { localStorage.setItem(this._storageKey, String(this._currentSlide)); } catch (e) {}
+    }
+
+    _updateScale() {
+      if (this.hasAttribute('noscale')) {
+        const stage = this.shadowRoot.getElementById('stage');
+        stage.style.transform = 'none';
+        stage.style.top = '0';
+        stage.style.left = '0';
+        return;
+      }
+      const stage = this.shadowRoot.getElementById('stage');
+      if (!stage) return;
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const scale = Math.min(vw / this._width, vh / this._height);
+      stage.style.transform = `translate(${(vw - this._width * scale) / 2}px, ${(vh - this._height * scale) / 2}px) scale(${scale})`;
+      stage.style.top = '0';
+      stage.style.left = '0';
+    }
+
+    _updateDisplay() {
+      this._slides.forEach((s, i) => s.classList.toggle('active', i === this._currentSlide));
+      const counter = this.shadowRoot.getElementById('counter');
+      if (counter) counter.textContent = `${this._currentSlide + 1} / ${this._slides.length}`;
+      this._updateScale();
+    }
+
+    _setupPrintStyles() {
+      const ps = document.createElement('style');
+      ps.textContent = `@media print{ @page{size:${this._width}px ${this._height}px;margin:0;} body{margin:0;padding:0;} deck-stage{position:static!important;} deck-stage>section{display:block!important;position:relative!important;width:${this._width}px!important;height:${this._height}px!important;page-break-after:always;overflow:hidden;} deck-stage>section:last-child{page-break-after:auto;} }`;
+      document.head.appendChild(ps);
+    }
+
+    next() { if (this._currentSlide < this._slides.length - 1) { this._currentSlide++; this._saveSlide(); this._updateDisplay(); } }
+    prev() { if (this._currentSlide > 0) { this._currentSlide--; this._saveSlide(); this._updateDisplay(); } }
+    goTo(idx) { if (idx >= 0 && idx < this._slides.length) { this._currentSlide = idx; this._saveSlide(); this._updateDisplay(); } }
+    get currentSlide() { return this._currentSlide; }
+    get totalSlides() { return this._slides.length; }
+  }
+
+  customElements.define('deck-stage', DeckStage);
+  window.DeckStage = DeckStage;
+})();
+</script>
+</body>
+</html>

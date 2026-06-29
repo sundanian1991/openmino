@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>把团队工作沉淀为AI可用的知识库</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS — nothing-design Light Mode
+   ============================================================ */
+:root{
+  --bg:#FFFFFF;
+  --bg-page:#F5F5F5;
+  --fg:#000000;
+  --fg2:#555555;
+  --fg3:#999999;
+  --border:#E0E0E0;
+  --border2:#F0F0F0;
+  --accent:#D71921;
+  --accent-bg:rgba(215,25,33,0.06);
+  --green:#2E7D32;
+  --green-bg:rgba(46,125,50,0.08);
+  --blue:#2471A3;
+  --blue-bg:rgba(36,113,163,0.08);
+  --tag-bg:#F0F0F0;
+  --tag-fg:#333333;
+
+  --font-display:'Doto','Space Mono',monospace;
+  --font-body:'Space Grotesk',system-ui,sans-serif;
+  --font-mono:'Space Mono',monospace;
+
+  --slide-w:1920px;
+  --slide-h:1080px;
+  --slide-pad-x:120px;
+  --slide-pad-y:80px;
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:var(--bg-page);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ============================================================
+   STAGE — Fixed 16:9 with viewport scaling
+   ============================================================ */
+.stage{
+  position:absolute;
+  top:50%;left:50%;
+  width:var(--slide-w);height:var(--slide-h);
+  transform-origin:0 0;
+  transform:translate(-50%,-50%) scale(1);
+  background:var(--bg);
+  overflow:hidden;
+}
+
+/* ============================================================
+   SLIDE
+   ============================================================ */
+.slide{
+  position:absolute;
+  inset:0;
+  width:var(--slide-w);height:var(--slide-h);
+  padding:var(--slide-pad-y) var(--slide-pad-x);
+  display:flex;flex-direction:column;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.35s ease;
+}
+.slide.active{
+  opacity:1;pointer-events:auto;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.slide-num{
+  position:absolute;top:48px;right:80px;
+  font-family:var(--font-mono);
+  font-size:13px;font-weight:400;
+  color:var(--fg3);
+  letter-spacing:0.06em;
+}
+.section-tag{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:12px;font-weight:400;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--fg3);
+  margin-bottom:16px;
+}
+.slide-title{
+  font-family:var(--font-body);
+  font-size:52px;font-weight:500;
+  line-height:1.2;
+  color:var(--fg);
+  letter-spacing:-0.02em;
+  margin-bottom:20px;
+}
+.slide-title em{
+  font-style:normal;
+  color:var(--fg);
+  border-bottom:3px solid var(--accent);
+  padding-bottom:2px;
+}
+.slide-sub{
+  font-size:20px;font-weight:400;
+  color:var(--fg2);
+  line-height:1.6;
+  max-width:1000px;
+}
+.body-text{
+  font-size:17px;color:var(--fg2);
+  line-height:1.7;max-width:960px;
+}
+
+/* ============================================================
+   GRID LAYOUTS
+   ============================================================ */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;align-content:start;margin-top:28px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;flex:1;align-content:start;margin-top:28px;}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px;flex:1;align-content:start;margin-top:28px;}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card{
+  border:1px solid var(--border);
+  padding:28px 24px;
+  background:var(--bg);
+  position:relative;
+}
+.card-accent{
+  position:absolute;top:0;left:0;width:2px;height:100%;
+  background:var(--accent);
+}
+.card-label{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:400;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--fg3);
+  margin-bottom:10px;
+}
+.card-heading{
+  font-family:var(--font-body);
+  font-size:18px;font-weight:500;
+  color:var(--fg);
+  margin-bottom:8px;
+  line-height:1.3;
+}
+.card-desc{
+  font-size:14px;color:var(--fg2);
+  line-height:1.6;
+}
+.card-num{
+  font-family:var(--font-display);
+  font-size:44px;font-weight:700;
+  color:var(--fg);
+  opacity:0.08;
+  line-height:1;
+  margin-bottom:8px;
+}
+
+/* ============================================================
+   TAGS
+   ============================================================ */
+.tag{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:400;
+  padding:3px 10px;
+  background:var(--tag-bg);
+  color:var(--tag-fg);
+  margin-right:6px;
+  margin-bottom:4px;
+  letter-spacing:0.04em;
+}
+.tag-green{background:var(--green-bg);color:var(--green);}
+.tag-red{background:var(--accent-bg);color:var(--accent);}
+.tag-blue{background:var(--blue-bg);color:var(--blue);}
+
+/* ============================================================
+   FLOW / STEPS
+   ============================================================ */
+.flow{
+  display:flex;align-items:flex-start;
+  gap:0;flex:1;margin-top:28px;
+}
+.flow-step{
+  flex:1;
+  padding:24px 20px;
+  border:1px solid var(--border);
+  position:relative;
+  background:var(--bg);
+}
+.flow-step:first-child{border-radius:2px 0 0 2px;}
+.flow-step:last-child{border-radius:0 2px 2px 0;}
+.flow-step+.flow-step{border-left:none;}
+.flow-step-num{
+  font-family:var(--font-display);
+  font-size:28px;font-weight:700;
+  color:var(--fg);opacity:0.1;
+  line-height:1;margin-bottom:8px;
+}
+.flow-step-title{
+  font-family:var(--font-body);
+  font-size:15px;font-weight:500;
+  color:var(--fg);margin-bottom:6px;
+}
+.flow-step-desc{
+  font-size:13px;color:var(--fg2);
+  line-height:1.5;
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.tbl{
+  width:100%;border-collapse:collapse;
+  margin-top:24px;font-size:14px;
+}
+.tbl th{
+  text-align:left;
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:400;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--fg3);
+  padding:10px 16px;
+  border-bottom:2px solid var(--fg);
+}
+.tbl td{
+  padding:12px 16px;
+  border-bottom:1px solid var(--border2);
+  color:var(--fg2);
+  vertical-align:top;
+  line-height:1.5;
+}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl td:first-child{
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--fg);
+  font-weight:400;
+  letter-spacing:0.04em;
+}
+
+/* ============================================================
+   COMPARISON
+   ============================================================ */
+.compare{display:grid;grid-template-columns:1fr 48px 1fr;gap:0;align-items:stretch;flex:1;margin-top:28px;}
+.compare-side{padding:28px 24px;border:1px solid var(--border);}
+.compare-vs{
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);
+  font-size:12px;font-weight:700;
+  color:var(--fg3);
+  letter-spacing:0.1em;
+}
+.compare-title{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:400;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--fg3);
+  margin-bottom:16px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.compare-item{
+  font-size:14px;color:var(--fg2);
+  line-height:1.7;
+  padding:6px 0;
+  border-bottom:1px solid var(--border2);
+}
+.compare-item:last-child{border-bottom:none;}
+.compare-item strong{color:var(--fg);font-weight:500;}
+
+/* ============================================================
+   DEMO BLOCKS
+   ============================================================ */
+.demo-block{
+  border:1px solid var(--border);
+  padding:28px;
+  margin-top:20px;
+  flex:1;
+}
+.demo-label{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:400;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--fg3);
+  margin-bottom:12px;
+}
+.file-tree{
+  font-size:13px;font-family:var(--font-mono);
+  color:var(--fg2);line-height:1.8;
+}
+.file-tree .dir{color:var(--fg);font-weight:700;}
+.file-tree .file{color:var(--fg2);}
+.file-tree .meta{color:var(--fg3);font-size:11px;}
+
+/* ============================================================
+   STAT ROW
+   ============================================================ */
+.stat-row{display:flex;gap:20px;margin-top:24px;}
+.stat-card{
+  flex:1;
+  padding:24px;
+  border:1px solid var(--border);
+  text-align:center;
+  background:var(--bg);
+}
+.stat-value{
+  font-family:var(--font-display);
+  font-size:44px;font-weight:700;
+  color:var(--fg);
+  line-height:1;
+  margin-bottom:6px;
+}
+.stat-label{
+  font-family:var(--font-mono);
+  font-size:11px;color:var(--fg3);
+  letter-spacing:0.06em;
+}
+
+/* ============================================================
+   BLOCKQUOTE
+   ============================================================ */
+.quote{
+  font-size:26px;font-weight:500;
+  color:var(--fg);
+  line-height:1.5;
+  border-left:3px solid var(--fg);
+  padding-left:24px;
+  margin:24px 0;
+  max-width:860px;
+}
+
+/* ============================================================
+   LIST
+   ============================================================ */
+.check-list{list-style:none;margin-top:16px;}
+.check-list li{
+  font-size:15px;color:var(--fg2);
+  line-height:1.7;
+  padding:8px 0;
+  border-bottom:1px solid var(--border2);
+  display:flex;align-items:flex-start;gap:10px;
+}
+.check-list li::before{
+  content:"";
+  display:inline-block;
+  width:6px;height:6px;
+  background:var(--fg);
+  margin-top:8px;
+  flex-shrink:0;
+}
+
+/* ============================================================
+   HORIZONTAL RULE
+   ============================================================ */
+.divider{width:60px;height:2px;background:var(--fg);margin:16px 0 0;opacity:0.15;}
+
+/* ============================================================
+   CALLOUT
+   ============================================================ */
+.callout{
+  padding:20px 24px;
+  border-left:2px solid var(--accent);
+  background:var(--bg);
+  margin-top:20px;
+}
+.callout-label{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:400;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.callout-text{
+  font-size:14px;color:var(--fg2);
+  line-height:1.6;
+}
+
+/* ============================================================
+   PROGRESS BARS
+   ============================================================ */
+.progress-row{
+  display:grid;grid-template-columns:100px 1fr 48px;
+  gap:16px;align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid var(--border2);
+}
+.progress-row:last-child{border-bottom:none;}
+.progress-label{
+  font-family:var(--font-mono);
+  font-size:11px;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--fg2);
+}
+.progress-track{display:flex;gap:2px;height:10px;}
+.progress-seg{flex:1;background:var(--border);}
+.progress-seg.fill{background:var(--fg);}
+.progress-seg.ok{background:var(--green);}
+.progress-val{
+  font-family:var(--font-mono);
+  font-size:13px;font-weight:700;
+  color:var(--fg);text-align:right;
+}
+
+/* ============================================================
+   ANIMATION
+   ============================================================ */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity 0.4s ease,transform 0.4s ease;}
+.reveal.d1{transition-delay:0.08s;}
+.reveal.d2{transition-delay:0.16s;}
+.reveal.d3{transition-delay:0.24s;}
+.reveal.d4{transition-delay:0.32s;}
+.reveal.d5{transition-delay:0.40s;}
+.reveal.d6{transition-delay:0.48s;}
+.reveal.d7{transition-delay:0.56s;}
+.slide.active .reveal{opacity:1;transform:translateY(0);}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.slide-footer{
+  position:absolute;bottom:40px;left:var(--slide-pad-x);right:var(--slide-pad-x);
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--font-mono);
+  font-size:11px;color:var(--fg3);
+  letter-spacing:0.06em;
+}
+
+/* ============================================================
+   COVER SPECIAL
+   ============================================================ */
+.cover{justify-content:center;align-items:flex-start;padding:0 200px;}
+.cover .slide-title{font-size:68px;margin-bottom:28px;letter-spacing:-0.03em;}
+.cover .slide-sub{font-size:24px;max-width:860px;}
+
+/* ============================================================
+   CLOSING SPECIAL
+   ============================================================ */
+.closing{justify-content:center;align-items:center;text-align:center;}
+.closing .slide-title{font-size:60px;margin-bottom:36px;}
+
+/* ============================================================
+   KEYBOARD HINT
+   ============================================================ */
+.kbd-hint{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  font-family:var(--font-mono);
+  font-size:11px;color:#bbb;
+  background:rgba(255,255,255,0.92);
+  padding:6px 16px;
+  border:1px solid #e5e5e5;
+  z-index:999;
+  transition:opacity 0.5s;
+  letter-spacing:0.06em;
+}
+
+/* ============================================================
+   COVER META
+   ============================================================ */
+.cover-meta{
+  font-family:var(--font-mono);
+  font-size:11px;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--fg3);
+  margin-bottom:24px;
+}
+
+/* ============================================================
+   STEP-LIST (for wiki:ingest etc.)
+   ============================================================ */
+.step-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1;margin-top:24px;}
+.step-block{
+  border:1px solid var(--border);
+  padding:24px;
+  background:var(--bg);
+}
+.step-block-title{
+  font-family:var(--font-mono);
+  font-size:12px;font-weight:400;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--fg);
+  margin-bottom:16px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+.step-list{display:flex;flex-direction:column;gap:12px;}
+.step-item{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;}
+.step-num{
+  font-family:var(--font-display);
+  font-size:20px;font-weight:700;
+  line-height:1;color:var(--fg);
+}
+.step-text{font-size:13px;color:var(--fg2);line-height:1.5;}
+.step-text strong{color:var(--fg);font-weight:500;}
+
+/* ============================================================
+   HEALTH GRID
+   ============================================================ */
+.health-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;flex:1;margin-top:24px;}
+.health-card{
+  border:1px solid var(--border);
+  padding:20px;
+  background:var(--bg);
+}
+.health-num{
+  font-family:var(--font-display);
+  font-size:24px;font-weight:700;
+  color:var(--fg);margin-bottom:4px;
+}
+.health-title{
+  font-family:var(--font-mono);
+  font-size:11px;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--fg2);
+  margin-bottom:6px;
+}
+.health-desc{font-size:13px;color:var(--fg2);line-height:1.5;}
+
+/* ============================================================
+   TAKEAWAY ITEMS
+   ============================================================ */
+.takeaway-list{
+  flex:1;display:flex;flex-direction:column;
+  justify-content:center;gap:36px;margin-top:36px;
+}
+.takeaway-item{display:flex;align-items:flex-start;gap:24px;}
+.takeaway-num{
+  font-family:var(--font-display);
+  font-size:44px;font-weight:700;
+  color:var(--fg);opacity:0.08;
+  min-width:56px;line-height:1;
+}
+.takeaway-heading{
+  font-size:22px;font-weight:500;
+  color:var(--fg);margin-bottom:4px;
+}
+.takeaway-desc{
+  font-size:15px;color:var(--fg2);line-height:1.6;
+}
+
+/* ============================================================
+   NEXT STEPS
+   ============================================================ */
+.next-list{display:flex;flex-direction:column;gap:12px;flex:1;margin-top:24px;}
+.next-item{
+  display:grid;grid-template-columns:32px 1fr 120px;
+  gap:16px;align-items:center;
+  padding:14px 20px;
+  border:1px solid var(--border);
+  background:var(--bg);
+}
+.next-num{
+  font-family:var(--font-display);
+  font-size:20px;font-weight:700;
+  line-height:1;color:var(--fg);
+}
+.next-text{font-size:14px;color:var(--fg2);}
+.next-tag{
+  font-family:var(--font-mono);
+  font-size:11px;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--fg3);
+  text-align:right;
+}
+
+/* ============================================================
+   DOTOT GRID (Hero decorative)
+   ============================================================ */
+.hero-dots{
+  position:absolute;
+  top:0;right:0;
+  width:400px;height:100%;
+  background-image:radial-gradient(circle,var(--border) 0.5px,transparent 0.5px);
+  background-size:12px 12px;
+  opacity:0.4;
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 01: Hook -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide cover active" data-slide="1">
+  <div class="hero-dots"></div>
+  <div class="cover-meta reveal d1">跨部门分享 / 2026.06</div>
+  <h1 class="slide-title reveal d2">你们团队的知识，<br>AI能用吗？</h1>
+  <p class="slide-sub reveal d3">把散乱文档变成AI可用的知识库</p>
+  <div class="divider reveal d4"></div>
+  <div class="slide-footer">
+    <span>45分钟 · 含10分钟互动</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 02: 三个痛点 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="2">
+  <span class="slide-num">02 / 16</span>
+  <div class="section-tag reveal d1">PROBLEM</div>
+  <h2 class="slide-title reveal d2">现有文档管理，<em>三个痛点</em></h2>
+  <p class="slide-sub reveal d3">团队每天都在生产信息，但AI根本用不起来</p>
+  <div class="grid-3 reveal d4" style="flex:1;align-content:start;">
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="card-num">01</div>
+      <div class="card-heading">散落各处</div>
+      <div class="card-desc">
+        同一份制度在邮件、钉钉群、个人笔记里各有一份。<br>
+        AI不知道哪个是最新版，检索时返回矛盾信息。<br>
+        <strong style="color:var(--fg);">找不到 = 不存在。</strong>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="card-num">02</div>
+      <div class="card-heading">格式混乱</div>
+      <div class="card-desc">
+        Word、Excel、PPT、Markdown、截图混在一起。<br>
+        AI需要纯文本才能有效检索，格式噪声直接降低召回质量。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-accent"></div>
+      <div class="card-num">03</div>
+      <div class="card-heading">更新滞后</div>
+      <div class="card-desc">
+        制度改了，文档没跟上。<br>
+        AI引用过期信息给出错误建议，<strong style="color:var(--accent);">比没有知识库更危险</strong>——因为它看起来很权威。
+      </div>
+    </div>
+  </div>
+  <div class="stat-row reveal d5" style="margin-top:20px;">
+    <div class="stat-card"><div class="stat-value">87%</div><div class="stat-label">知识仅存在于个人脑中</div></div>
+    <div class="stat-card"><div class="stat-value">3.2h</div><div class="stat-label">新人每周问问题时间</div></div>
+    <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">个团队有AI可读知识库</div></div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 03: 三层结构 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="3">
+  <span class="slide-num">03 / 16</span>
+  <div class="section-tag reveal d1">SOLUTION</div>
+  <h2 class="slide-title reveal d2">一套可复制的<em>三层结构</em></h2>
+  <p class="slide-sub reveal d3">知识从原始文档到AI可用，经过三层提炼</p>
+  <div class="flow reveal d4">
+    <div class="flow-step" style="background:#fafafa;">
+      <div class="flow-step-num">01</div>
+      <div class="flow-step-title">raw/ — 原文层</div>
+      <div class="flow-step-desc">
+        原始文档的忠实副本<br>
+        制度原文、操作手册、会议纪要<br>
+        <span style="color:var(--fg3);font-size:11px;">不加工，原样存放，可追溯</span>
+      </div>
+    </div>
+    <div class="flow-step" style="background:#f5f5f5;">
+      <div class="flow-step-num">02</div>
+      <div class="flow-step-title">distill/ — 提炼层</div>
+      <div class="flow-step-desc">
+        AI忠实压缩的精华版<br>
+        保留所有数字、条件、例外<br>
+        <span style="color:var(--fg3);font-size:11px;">高信息密度，AI检索主力</span>
+      </div>
+    </div>
+    <div class="flow-step" style="background:#f0f0f0;">
+      <div class="flow-step-num">03</div>
+      <div class="flow-step-title">CLAUDE.md — Schema层</div>
+      <div class="flow-step-desc">
+        知识的骨架和索引<br>
+        文档关系、分类体系、元数据<br>
+        <span style="color:var(--fg3);font-size:11px;">告诉AI怎么用这些知识</span>
+      </div>
+    </div>
+  </div>
+  <div class="callout reveal d5">
+    <div class="callout-label">关键原则</div>
+    <div class="callout-text">不是买一个工具，而是建立架构。任何团队都能照搬，从个人先行到团队共享。三层结构保证知识可追溯、可检索、可进化。</div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 04: 三个操作 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="4">
+  <span class="slide-num">04 / 16</span>
+  <div class="section-tag reveal d1">OPERATIONS</div>
+  <h2 class="slide-title reveal d2">三个操作：<em>Ingest / Query / Health</em></h2>
+  <p class="slide-sub reveal d3">喂进去、查出来、保持健康——知识库的完整生命周期</p>
+  <div class="grid-3 reveal d4" style="flex:1;align-content:start;margin-top:32px;">
+    <div class="card">
+      <div class="card-num">I</div>
+      <div class="card-heading">摄取 Ingest</div>
+      <div class="card-desc" style="margin-bottom:12px;">
+        把原始文档喂进知识库。<br>
+        自动转格式、提取元数据、生成AI友好的摘要。<br>
+        一次摄取，永久可用。
+      </div>
+      <div><span class="tag">批量导入</span><span class="tag">自动分类</span></div>
+    </div>
+    <div class="card">
+      <div class="card-num">Q</div>
+      <div class="card-heading">查询 Query</div>
+      <div class="card-desc" style="margin-bottom:12px;">
+        用自然语言问知识库问题。<br>
+        AI从结构化知识中精准召回，<br>
+        给出有出处、有版本的答案。
+      </div>
+      <div><span class="tag">语义搜索</span><span class="tag">精准定位</span></div>
+    </div>
+    <div class="card">
+      <div class="card-num">H</div>
+      <div class="card-heading">体检 Health</div>
+      <div class="card-desc" style="margin-bottom:12px;">
+        定期扫描知识库健康度。<br>
+        发现过期内容、缺失文档、孤立节点。<br>
+        知识库和人一样，需要定期体检。
+      </div>
+      <div><span class="tag">质量扫描</span><span class="tag">修复建议</span></div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 05: 三个技能对比 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="5">
+  <span class="slide-num">05 / 16</span>
+  <div class="section-tag reveal d1">SKILLS</div>
+  <h2 class="slide-title reveal d2">三个技能，<em>各司其职</em></h2>
+  <div class="reveal d3" style="flex:1;margin-top:24px;">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th style="width:160px;">维度</th>
+          <th>wiki:ingest</th>
+          <th>wiki:query</th>
+          <th>wiki:health</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>触发场景</td>
+          <td>有新文档要入库</td>
+          <td>要查某个制度/流程/数据</td>
+          <td>定期维护 / 推广前检查</td>
+        </tr>
+        <tr>
+          <td>输入</td>
+          <td>飞书链接 / 本地文件 / 粘贴文本</td>
+          <td>自然语言问题</td>
+          <td>知识库目录</td>
+        </tr>
+        <tr>
+          <td>处理</td>
+          <td>格式转换 + 元数据提取 + 双层写入</td>
+          <td>语义检索 + 上下文组装 + 来源标注</td>
+          <td>完整性扫描 + 时效检查 + 质量评分</td>
+        </tr>
+        <tr>
+          <td>输出</td>
+          <td><span class="tag">raw/</span><span class="tag">distill/</span> + 摘要</td>
+          <td>有出处的答案 + 引用链接</td>
+          <td>健康度报告 + 修复建议</td>
+        </tr>
+        <tr>
+          <td>频率</td>
+          <td>按需（新文档入库时）</td>
+          <td>随时（日常查询）</td>
+          <td>每周/每月定期</td>
+        </tr>
+        <tr>
+          <td>难度</td>
+          <td><span class="tag tag-green">低</span></td>
+          <td><span class="tag tag-green">低</span></td>
+          <td><span class="tag tag-blue">中</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 06: 整理前 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="6">
+  <span class="slide-num">06 / 16</span>
+  <div class="section-tag reveal d1">DEMO</div>
+  <h2 class="slide-title reveal d2">散乱SOP文档，<em>整理前</em></h2>
+  <p class="slide-sub reveal d3">你团队的知识，大概长这样</p>
+  <div class="grid-2 reveal d4" style="flex:1;margin-top:28px;">
+    <div class="demo-block" style="background:#fafafa;">
+      <div class="demo-label">文件系统现状</div>
+      <div class="file-tree">
+        <div class="dir">桌面/</div>
+        <div class="file" style="padding-left:20px;">供应商准入流程v3(最新).docx</div>
+        <div class="file" style="padding-left:20px;">供应商准入流程.doc</div>
+        <div class="file" style="padding-left:20px;">准入流程-更新版-0601.docx</div>
+        <div class="dir" style="padding-left:20px;">飞书文档/</div>
+        <div class="file" style="padding-left:40px;">供应商日常管理SOP</div>
+        <div class="file" style="padding-left:40px;">【已废弃】供应商管理办法</div>
+        <div class="dir" style="padding-left:20px;">群聊记录/</div>
+        <div class="file" style="padding-left:40px;">金条供应商分工说明（截图）</div>
+        <div class="file" style="padding-left:40px;">新人入职必看.md</div>
+        <div class="dir" style="padding-left:20px;">个人笔记/</div>
+        <div class="file" style="padding-left:40px;">我的操作备忘.txt</div>
+        <div class="file" style="padding-left:40px;">待整理.docx</div>
+      </div>
+    </div>
+    <div>
+      <div class="demo-block">
+        <div class="demo-label">问题</div>
+        <ul class="check-list">
+          <li>同一文档 3 个版本，不知哪个是最新的</li>
+          <li>废弃文档和有效文档混在一起</li>
+          <li>知识在聊天截图里，AI 读不到</li>
+          <li>新人问"准入流程"，要翻 5 个地方</li>
+          <li>没有任何结构，无法被程序化处理</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 07: 整理后 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="7">
+  <span class="slide-num">07 / 16</span>
+  <div class="section-tag reveal d1">DEMO</div>
+  <h2 class="slide-title reveal d2">结构化知识，<em>整理后</em></h2>
+  <p class="slide-sub reveal d3">同样的内容，AI 能理解和使用</p>
+  <div class="grid-2 reveal d4" style="flex:1;margin-top:28px;">
+    <div class="demo-block" style="background:#fafafa;">
+      <div class="demo-label">知识库目录结构</div>
+      <div class="file-tree">
+        <div class="dir">raw/</div>
+        <div class="file" style="padding-left:20px;">供应商准入流程.md</div>
+        <div class="file" style="padding-left:20px;">供应商日常管理SOP.md</div>
+        <div class="file" style="padding-left:20px;">金条供应商分工.md</div>
+        <div class="file" style="padding-left:20px;">质检标准.md</div>
+        <div class="dir" style="padding-left:20px;">distill/</div>
+        <div class="file" style="padding-left:40px;">供应商管理-总览.md</div>
+        <div class="file" style="padding-left:40px;">准入流程-操作手册.md</div>
+        <div class="file" style="padding-left:40px;">日常配合-检查清单.md</div>
+        <div class="dir" style="padding-left:20px;">CLAUDE.md</div>
+        <div class="file" style="padding-left:40px;"><span class="meta">（知识索引和AI行为规范）</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="demo-block">
+        <div class="demo-label">AI 能做什么</div>
+        <ul class="check-list">
+          <li>"供应商准入需要几步？" — 5秒给出完整流程</li>
+          <li>"毅航最近表现怎么样？" — 自动关联多源数据</li>
+          <li>"新人来了第一周干什么？" — 输出完整 SOP</li>
+          <li>"哪些供应商可能被清退？" — 基于规则自动判断</li>
+          <li>所有回答都带来源引用，可追溯</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 08: AI提炼 vs 人写 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="8">
+  <span class="slide-num">08 / 16</span>
+  <div class="section-tag reveal d1">GUIDELINES</div>
+  <h2 class="slide-title reveal d2"><em>AI 提炼</em> vs 人写</h2>
+  <p class="slide-sub reveal d3">不是替代，是分工</p>
+  <div class="compare reveal d4">
+    <div class="compare-side" style="background:#fafafa;">
+      <div class="compare-title" style="color:var(--green);">AI 提炼（推荐）</div>
+      <div class="compare-item"><strong>速度</strong> — 10分钟处理50页文档</div>
+      <div class="compare-item"><strong>一致性</strong> — 同一模板，结构统一</div>
+      <div class="compare-item"><strong>覆盖面</strong> — 不遗漏细节，保留所有数字</div>
+      <div class="compare-item"><strong>适合</strong> — SOP、操作手册、流程文档</div>
+      <div class="compare-item"><strong>质量</strong> — 需要人工审核确认</div>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-side">
+      <div class="compare-title">人写</div>
+      <div class="compare-item"><strong>速度</strong> — 一天写不完一篇</div>
+      <div class="compare-item"><strong>一致性</strong> — 每人风格不同</div>
+      <div class="compare-item"><strong>覆盖面</strong> — 容易遗漏隐性知识</div>
+      <div class="compare-item"><strong>适合</strong> — 战略判断、经验总结</div>
+      <div class="compare-item"><strong>质量</strong> — 天然高质量</div>
+    </div>
+  </div>
+  <div class="callout reveal d5">
+    <div class="callout-label">分工原则</div>
+    <div class="callout-text">AI 做 0→0.7 的体力活，人做 0.7→1 的判断。AI提炼 = 忠实压缩，不是重新创作。保留所有数字、条件、例外。丢掉的是格式噪声，不是信息本身。</div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 09: wiki:ingest 六步 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="9">
+  <span class="slide-num">09 / 16</span>
+  <div class="section-tag reveal d1">WORKFLOW</div>
+  <h2 class="slide-title reveal d2">wiki:ingest <em>六步流程</em></h2>
+  <div class="flow reveal d3" style="margin-top:36px;">
+    <div class="flow-step">
+      <div class="flow-step-num">01</div>
+      <div class="flow-step-title">识别来源</div>
+      <div class="flow-step-desc">确认文档位置<br>本地/URL/知识库</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">02</div>
+      <div class="flow-step-title">格式转换</div>
+      <div class="flow-step-desc">docx/pdf/ppt<br>统一转 Markdown</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">03</div>
+      <div class="flow-step-title">元数据提取</div>
+      <div class="flow-step-desc">标题/版本/日期<br>责任人/适用范围</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">04</div>
+      <div class="flow-step-title">双层写入</div>
+      <div class="flow-step-desc">raw/ 存原文<br>distill/ 存提炼</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">05</div>
+      <div class="flow-step-title">关联建立</div>
+      <div class="flow-step-desc">与已有文档<br>建立引用关系</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">06</div>
+      <div class="flow-step-title">入库确认</div>
+      <div class="flow-step-desc">生成摘要<br>人工确认后生效</div>
+    </div>
+  </div>
+  <div class="callout reveal d4" style="margin-top:24px;">
+    <div class="callout-label">关键原则</div>
+    <div class="callout-text">AI 做 0→0.7 的体力活，人做 0.7→1 的判断。每篇文档都经过人工审核，确保准确性。</div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 10: wiki:query 五步 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="10">
+  <span class="slide-num">10 / 16</span>
+  <div class="section-tag reveal d1">WORKFLOW</div>
+  <h2 class="slide-title reveal d2">wiki:query <em>五步流程</em></h2>
+  <div class="flow reveal d3" style="margin-top:36px;">
+    <div class="flow-step">
+      <div class="flow-step-num">01</div>
+      <div class="flow-step-title">理解问题</div>
+      <div class="flow-step-desc">自然语言<br>意图解析</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">02</div>
+      <div class="flow-step-title">语义检索</div>
+      <div class="flow-step-desc">在 distill/ 和 raw/<br>并行搜索</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">03</div>
+      <div class="flow-step-title">上下文组装</div>
+      <div class="flow-step-desc">按相关度排序<br>组装上下文窗口</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">04</div>
+      <div class="flow-step-title">生成回答</div>
+      <div class="flow-step-desc">基于检索结果<br>组织有出处答案</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-step-num">05</div>
+      <div class="flow-step-title">来源标注</div>
+      <div class="flow-step-desc">文档名+版本+行号<br>可追溯验证</div>
+    </div>
+  </div>
+  <div class="demo-block reveal d4" style="margin-top:24px;background:#fafafa;">
+    <div class="demo-label">示例</div>
+    <div style="font-size:15px;line-height:1.8;">
+      <div style="color:var(--fg3);font-size:12px;margin-bottom:4px;font-family:var(--font-mono);letter-spacing:0.06em;">问题</div>
+      <div style="color:var(--fg);font-weight:500;margin-bottom:12px;">"供应商准入需要哪些材料？"</div>
+      <div style="color:var(--fg3);font-size:12px;margin-bottom:4px;font-family:var(--font-mono);letter-spacing:0.06em;">答案（来自知识库）</div>
+      <div style="color:var(--fg2);">
+        根据《供应商准入流程》文档，准入需要提交：<br>
+        1. 营业执照副本 &nbsp; 2. 近3年财务报表 &nbsp; 3. 信息安全认证材料 &nbsp; 4. 团队架构及核心人员简历<br>
+        <span style="color:var(--fg3);font-size:12px;">来源：raw/供应商准入流程.md → distill/准入流程-操作手册.md</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 11: wiki:health 六项 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="11">
+  <span class="slide-num">11 / 16</span>
+  <div class="section-tag reveal d1">WORKFLOW</div>
+  <h2 class="slide-title reveal d2">wiki:health <em>六项检查</em></h2>
+  <p class="slide-sub reveal d3">知识库不是建完就完了，要持续维护</p>
+  <div class="health-grid reveal d4">
+    <div class="health-card">
+      <div class="health-num">01</div>
+      <div class="health-title">完整性</div>
+      <div class="health-desc">是否有缺失的文档？raw和distill是否配对？CLAUDE.md索引是否覆盖所有文档？</div>
+    </div>
+    <div class="health-card">
+      <div class="health-num">02</div>
+      <div class="health-title">时效性</div>
+      <div class="health-desc">文档最后更新时间？是否过期？版本是否最新？</div>
+    </div>
+    <div class="health-card">
+      <div class="health-num">03</div>
+      <div class="health-title">一致性</div>
+      <div class="health-desc">同一主题是否有矛盾信息？跨文档引用是否一致？术语使用是否统一？</div>
+    </div>
+    <div class="health-card">
+      <div class="health-num">04</div>
+      <div class="health-title">可达性</div>
+      <div class="health-desc">引用关系是否完整？能否从摘要追溯到原文？目录层级是否合理？</div>
+    </div>
+    <div class="health-card">
+      <div class="health-num">05</div>
+      <div class="health-title">质量</div>
+      <div class="health-desc">distill是否保留了关键数据？信息量是否足够？流程步骤是否可执行？</div>
+    </div>
+    <div class="health-card">
+      <div class="health-num">06</div>
+      <div class="health-title">覆盖率</div>
+      <div class="health-desc">团队核心业务文档有多少已入库？缺口在哪？</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 12: 落地实例 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="12">
+  <span class="slide-num">12 / 16</span>
+  <div class="section-tag reveal d1">LANDING</div>
+  <h2 class="slide-title reveal d2">供应商管理知识库，<em>实例</em></h2>
+  <div class="stat-row reveal d3">
+    <div class="stat-card"><div class="stat-value">5,353</div><div class="stat-label">总行数</div></div>
+    <div class="stat-card"><div class="stat-value">44</div><div class="stat-label">文档数</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--green);">100</div><div class="stat-label">健康度评分</div></div>
+    <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">架构完整度</div></div>
+  </div>
+  <div class="grid-2 reveal d4" style="flex:1;margin-top:20px;">
+    <div class="demo-block" style="background:#fafafa;">
+      <div class="demo-label">知识库覆盖范围</div>
+      <div class="file-tree">
+        <div class="dir">供应商管理知识库/</div>
+        <div class="file" style="padding-left:20px;">准入流程与标准</div>
+        <div class="file" style="padding-left:20px;">日常配合管理机制</div>
+        <div class="file" style="padding-left:20px;">质检标准与扣分规则</div>
+        <div class="file" style="padding-left:20px;">业绩排名与分析</div>
+        <div class="file" style="padding-left:20px;">分工策略与调整规则</div>
+        <div class="file" style="padding-left:20px;">清退机制与触发条件</div>
+        <div class="file" style="padding-left:20px;">6家重点供应商画像</div>
+        <div class="file" style="padding-left:20px;">月度运营报告模板</div>
+      </div>
+    </div>
+    <div>
+      <div style="margin-bottom:16px;">
+        <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--fg3);margin-bottom:12px;">健康度分项</div>
+        <div class="progress-row"><div class="progress-label">完整性</div><div class="progress-track"><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div></div><div class="progress-val">100</div></div>
+        <div class="progress-row"><div class="progress-label">时效性</div><div class="progress-track"><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div></div><div class="progress-val">100</div></div>
+        <div class="progress-row"><div class="progress-label">一致性</div><div class="progress-track"><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div></div><div class="progress-val">100</div></div>
+        <div class="progress-row"><div class="progress-label">可达性</div><div class="progress-track"><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div></div><div class="progress-val">100</div></div>
+        <div class="progress-row"><div class="progress-label">质量</div><div class="progress-track"><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div><div class="progress-seg ok"></div></div><div class="progress-val">100</div></div>
+      </div>
+      <div class="card" style="padding:16px 20px;">
+        <div class="card-label">实际效果</div>
+        <div class="card-heading" style="font-size:16px;">回答准确率 > 95%</div>
+        <div class="card-desc">基于真实文档的检索和生成，所有回答带来源引用。新人上手时间减少60%。</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 13: 落地路径 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="13">
+  <span class="slide-num">13 / 16</span>
+  <div class="section-tag reveal d1">PATH</div>
+  <h2 class="slide-title reveal d2">三级火箭：<em>逐步推进</em></h2>
+  <p class="slide-sub reveal d3">不要一步到位，分阶段验证价值</p>
+  <div class="flow reveal d4" style="margin-top:36px;">
+    <div class="flow-step" style="background:#fafafa;">
+      <div class="flow-step-num">L1</div>
+      <div class="flow-step-title">个人先行</div>
+      <div class="flow-step-desc">
+        自己的知识库，自己用<br>
+        验证工具链，积累经验<br>
+        <span style="color:var(--green);font-size:11px;font-weight:500;">风险最低，立即可做</span>
+      </div>
+    </div>
+    <div class="flow-step" style="background:#f5f5f5;">
+      <div class="flow-step-num">L2</div>
+      <div class="flow-step-title">人工确认</div>
+      <div class="flow-step-desc">
+        AI 生成 → 人审核 → 再入库<br>
+        确保质量，建立信任<br>
+        <span style="color:var(--blue);font-size:11px;font-weight:500;">质量兜底，逐步放量</span>
+      </div>
+    </div>
+    <div class="flow-step" style="background:#f0f0f0;">
+      <div class="flow-step-num">L3</div>
+      <div class="flow-step-title">团队共享</div>
+      <div class="flow-step-desc">
+        知识库共享，多人协作<br>
+        标准化流程，持续更新<br>
+        <span style="color:var(--fg);font-size:11px;font-weight:500;">规模化，形成飞轮</span>
+      </div>
+    </div>
+  </div>
+  <div class="callout reveal d5" style="margin-top:24px;">
+    <div class="callout-label">核心逻辑</div>
+    <div class="callout-text">每级都产出价值，不依赖下一级。L1 今天就能开始，L3 是终局但不急。</div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 14: 下一步建议 -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="14">
+  <span class="slide-num">14 / 16</span>
+  <div class="section-tag reveal d1">NEXT STEPS</div>
+  <h2 class="slide-title reveal d2">下一步<em>建议</em></h2>
+  <div class="next-list reveal d3">
+    <div class="next-item">
+      <div class="next-num">1</div>
+      <div class="next-text">选一组文档集（建议从制度类开始，结构清晰、复用率高）</div>
+      <div class="next-tag">本周</div>
+    </div>
+    <div class="next-item">
+      <div class="next-num">2</div>
+      <div class="next-text">用 wiki:ingest 完成首轮摄取，跑通双层写入</div>
+      <div class="next-tag">本周</div>
+    </div>
+    <div class="next-item">
+      <div class="next-num">3</div>
+      <div class="next-text">试用一周，每天用 wiki:query 查3-5个实际问题</div>
+      <div class="next-tag">下周</div>
+    </div>
+    <div class="next-item">
+      <div class="next-num">4</div>
+      <div class="next-text">跑一次 wiki:health，看健康度评分，修复发现的问题</div>
+      <div class="next-tag">下周末</div>
+    </div>
+    <div class="next-item">
+      <div class="next-num">5</div>
+      <div class="next-text">整理效果报告，向团队推广</div>
+      <div class="next-tag">第三周</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 15: Takeaway -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide" data-slide="15">
+  <span class="slide-num">15 / 16</span>
+  <div class="section-tag reveal d1">TAKEAWAY</div>
+  <h2 class="slide-title reveal d2">三句话，<em>带走</em></h2>
+  <div class="takeaway-list">
+    <div class="takeaway-item reveal d3">
+      <div class="takeaway-num">01</div>
+      <div>
+        <div class="takeaway-heading">知识库不是"写文档"</div>
+        <div class="takeaway-desc">是把已有文档喂进去、结构化、让AI能检索和使用。你不需要从零写任何东西。</div>
+      </div>
+    </div>
+    <div class="takeaway-item reveal d4">
+      <div class="takeaway-num">02</div>
+      <div>
+        <div class="takeaway-heading">AI 做 0→0.7，人做 0.7→1</div>
+        <div class="takeaway-desc">AI 负责体力活（提取、分类、结构化），人负责判断（审核、修正、补充隐性知识）。</div>
+      </div>
+    </div>
+    <div class="takeaway-item reveal d5">
+      <div class="takeaway-num">03</div>
+      <div>
+        <div class="takeaway-heading">今天就能开始，从自己的知识库做起</div>
+        <div class="takeaway-desc">不需要等团队统一，不需要技术背景。选 3 篇文档，用 wiki:ingest 喂进去，5分钟后就能用 wiki:query 问问题。</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>把团队工作沉淀为AI可用的知识库</span>
+    <span>← → 翻页</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SLIDE 16: Q&A -->
+<!-- ═══════════════════════════════════════ -->
+<div class="slide closing" data-slide="16">
+  <div class="hero-dots" style="width:100%;opacity:0.2;"></div>
+  <div class="section-tag reveal d1">Q&A</div>
+  <h1 class="slide-title reveal d2">答疑</h1>
+  <p class="slide-sub reveal d3" style="max-width:680px;text-align:center;">
+    有问题尽管问。<br>
+    没问题的话，回去找一篇文档，开始你的第一个知识库。
+  </p>
+  <div class="divider reveal d4" style="margin:28px auto 0;"></div>
+  <div class="slide-footer" style="justify-content:center;">
+    <span>把团队工作沉淀为AI可用的知识库 · 2026</span>
+  </div>
+</div>
+
+</div><!-- end stage -->
+
+<!-- ═══ KEYBOARD HINT ═══ -->
+<div class="kbd-hint" id="kbdHint">← → 翻页 · Cmd+E 编辑模式</div>
+
+<!-- ═══ EDIT HOTZONE + TOGGLE ═══ -->
+<div class="edit-hotzone" id="editHotzone" style="position:fixed;top:0;left:0;width:80px;height:80px;z-index:10000;cursor:pointer;"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (Cmd+E)" style="position:fixed;top:16px;left:16px;z-index:10001;background:var(--bg);border:1px solid var(--border);padding:8px 12px;font-family:var(--font-mono);font-size:11px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity 0.3s ease;letter-spacing:0.06em;">EDIT</button>
+<div class="edit-banner" id="editBanner" style="position:fixed;top:0;left:0;right:0;z-index:10002;background:var(--accent);color:#fff;text-align:center;padding:6px;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity 0.3s ease;">Editing Mode Active — Cmd+E to exit</div>
+
+<script>
+(function(){
+  /* ===========================================
+     VIEWPORT SCALING
+     =========================================== */
+  var stage = document.querySelector('.stage');
+  var slideW = 1920;
+  var slideH = 1080;
+
+  function rescale(){
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var scale = Math.min(vw / slideW, vh / slideH);
+    stage.style.transform = 'translate(-50%,-50%) scale(' + scale + ')';
+  }
+
+  rescale();
+  window.addEventListener('resize', rescale);
+
+  /* ===========================================
+     SLIDE NAVIGATION
+     =========================================== */
+  var slides = document.querySelectorAll('.slide');
+  var total = slides.length;
+  var current = 0;
+
+  function goTo(n){
+    if(n<0||n>=total)return;
+    slides[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown',function(e){
+    // Skip if editing
+    if(editor && editor.isActive) return;
+
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){
+      e.preventDefault();
+      goTo(current+1);
+    }else if(e.key==='ArrowLeft'||e.key==='PageUp'){
+      e.preventDefault();
+      goTo(current-1);
+    }else if(e.key==='Home'){
+      e.preventDefault();
+      goTo(0);
+    }else if(e.key==='End'){
+      e.preventDefault();
+      goTo(total-1);
+    }
+  });
+
+  // Touch support
+  var touchStartX=0;
+  document.addEventListener('touchstart',function(e){touchStartX=e.touches[0].clientX;});
+  document.addEventListener('touchend',function(e){
+    if(editor && editor.isActive) return;
+    var dx=e.changedTouches[0].clientX-touchStartX;
+    if(Math.abs(dx)>50){
+      dx<0?goTo(current+1):goTo(current-1);
+    }
+  });
+
+  // Hide hint after 5s
+  setTimeout(function(){
+    var h=document.getElementById('kbdHint');
+    if(h)h.style.opacity='0';
+  },5000);
+
+  /* ===========================================
+     INLINE EDITOR
+     =========================================== */
+  var editor = {
+    isActive: false,
+
+    toggleEditMode: function(){
+      this.isActive = !this.isActive;
+      var body = document.body;
+      var banner = document.getElementById('editBanner');
+      var toggle = document.getElementById('editToggle');
+
+      if(this.isActive){
+        body.classList.add('edit-active');
+        banner.classList.add('active');
+        toggle.classList.add('active');
+        // Make text elements editable
+        document.querySelectorAll('.slide-title,.slide-sub,.card-heading,.card-desc,.body-text,.flow-step-title,.flow-step-desc,.stat-value,.stat-label,.section-tag,.slide-num,.file-tree,.compare-item,.takeaway-heading,.takeaway-desc,.next-text,.next-tag,.demo-label,.check-list li,.callout-text,.callout-label,.progress-label,.progress-val,.cover-meta').forEach(function(el){
+          el.setAttribute('contenteditable','true');
+        });
+      } else {
+        body.classList.remove('edit-active');
+        banner.classList.remove('active');
+        toggle.classList.remove('active');
+        document.querySelectorAll('[contenteditable]').forEach(function(el){
+          el.removeAttribute('contenteditable');
+        });
+        this.saveToLocalStorage();
+      }
+    },
+
+    saveToLocalStorage: function(){
+      try {
+        var html = document.getElementById('stage').innerHTML;
+        localStorage.setItem('ppt-slides-draft', html);
+      } catch(e){}
+    },
+
+    exportFile: function(){
+      // Strip edit state
+      var editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+      editableEls.forEach(function(el){ el.removeAttribute('contenteditable'); });
+      document.body.classList.remove('edit-active');
+      var editToggle = document.getElementById('editToggle');
+      var editBanner = document.getElementById('editBanner');
+      editToggle && editToggle.classList.remove('active','show');
+      editBanner && editBanner.classList.remove('active','show');
+
+      var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+      // Restore
+      document.body.classList.add('edit-active');
+      editableEls.forEach(function(el){ el.setAttribute('contenteditable','true'); });
+      editToggle && editToggle.classList.add('active');
+      editBanner && editBanner.classList.add('active');
+
+      var blob = new Blob([html], {type:'text/html'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ppt-frontend-slides-final.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  };
+  window.editor = editor;
+
+  // Hotzone hover
+  var hotzone = document.getElementById('editHotzone');
+  var editToggleBtn = document.getElementById('editToggle');
+  var hideTimeout = null;
+
+  hotzone.addEventListener('mouseenter',function(){
+    clearTimeout(hideTimeout);
+    editToggleBtn.classList.add('show');
+  });
+  hotzone.addEventListener('mouseleave',function(){
+    hideTimeout = setTimeout(function(){
+      if(!editor.isActive) editToggleBtn.classList.remove('show');
+    },400);
+  });
+  editToggleBtn.addEventListener('mouseenter',function(){
+    clearTimeout(hideTimeout);
+  });
+  editToggleBtn.addEventListener('mouseleave',function(){
+    hideTimeout = setTimeout(function(){
+      if(!editor.isActive) editToggleBtn.classList.remove('show');
+    },400);
+  });
+  hotzone.addEventListener('click',function(){
+    editor.toggleEditMode();
+  });
+  editToggleBtn.addEventListener('click',function(){
+    editor.toggleEditMode();
+  });
+
+  // Keyboard shortcut (Cmd+E / Ctrl+E)
+  document.addEventListener('keydown',function(e){
+    if((e.metaKey||e.ctrlKey) && (e.key==='e'||e.key==='E')){
+      e.preventDefault();
+      editor.toggleEditMode();
+    }
+    // Cmd+S to export
+    if((e.metaKey||e.ctrlKey) && (e.key==='s')){
+      e.preventDefault();
+      editor.exportFile();
+    }
+  });
+})();
+</script>
+</body>
+</html>

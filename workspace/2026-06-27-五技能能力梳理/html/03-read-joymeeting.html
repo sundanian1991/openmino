@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>read-joymeeting — 慧记会议记录</title>
+<style>
+:root{--bg:#fafaf9;--surface:#fff;--border:#e8e5e0;--text:#1c1c1c;--muted:#6b6b6b;--accent:#b8754a;--blue:#3a6d8c;--green:#5a7a5a;--gold:#b8973a;--rose:#a05555;--teal:#4a7a7a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:"SF Pro Display","SF Pro Text","PingFang SC","Noto Sans SC",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+.hero{background:linear-gradient(135deg,#1c1c1c 0%,#2a2520 100%);color:#fff;padding:56px 40px 44px;text-align:center}
+.hero h1{font-size:32px;font-weight:700;letter-spacing:-0.02em;margin-bottom:6px}
+.hero .sub{font-size:15px;color:#a0a0a0;margin-bottom:32px}
+.stats-row{display:flex;justify-content:center;gap:40px;margin:0 auto;max-width:800px}
+.stat-item{text-align:center}
+.stat-item .num{font-size:42px;font-weight:700;color:#fff;line-height:1}
+.stat-item .label{font-size:13px;color:#888;margin-top:6px}
+.container{max-width:960px;margin:0 auto;padding:40px 24px 60px}
+h2{font-size:20px;font-weight:600;color:var(--text);margin:32px 0 16px}
+h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:20px}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+thead th{background:#f7f5f2;font-weight:600;font-size:13px;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:2px solid var(--border)}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+pre{background:#f7f5f2;border:1px solid var(--border);border-radius:8px;padding:16px;font-size:13px;font-family:"SF Mono","Menlo",monospace;overflow-x:auto;line-height:1.5;margin:12px 0}
+ul{margin:8px 0 0 20px;font-size:14px;color:var(--muted)}li{margin-bottom:6px}
+.date-table{background:#f7f5f2;border-radius:8px;padding:16px;font-size:13px;margin:12px 0}
+.date-table td{padding:6px 14px;border-bottom:none;font-size:13px}
+@media(max-width:768px){.grid2,.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>read-joymeeting</h1>
+  <p class="sub">慧记会议记录 · JoyMinutes 完整会议 + 逐字稿转写 · 自动继承 ERP SSO 登录态</p>
+  <div class="stats-row">
+    <div class="stat-item"><div class="num">9</div><div class="label">日期参数</div></div>
+    <div class="stat-item"><div class="num">★★★★★</div><div class="label">数据深度</div></div>
+    <div class="stat-item"><div class="num">1</div><div class="label">脚本全流程</div></div>
+  </div>
+</div>
+<div class="container">
+
+<div class="card"><h3>定位</h3><p style="font-size:14px">从京东 JoyMinutes 平台提取用户参与的会议记录。采用 headless 浏览器 + 原生 CDP 协议的方式，一个脚本完成全部操作：启动浏览器 → 继承登录态 → 调用 API → 返回数据 → 清理浏览器。无需 Playwright MCP 或任何额外依赖。</p></div>
+
+<h2>核心能力（★★★★★ 数据深度）</h2>
+<div class="grid2">
+  <div class="card" style="border-left:3px solid var(--blue)"><p style="font-size:13px;color:var(--muted)"><strong style="color:var(--blue)">完整会议记录 + 逐字稿转写文本</strong><br>突破"只能看摘要"限制，拿到完整会议全文</p></div>
+  <div class="card" style="border-left:3px solid var(--accent)"><p style="font-size:13px;color:var(--muted)"><strong style="color:var(--accent)">Headless Chrome 自动继承 ERP SSO 登录态</strong><br>无需手动登录，原生 CDP 协议直接调用 JoyMinutes API</p></div>
+</div>
+
+<h2>日期参数解析规则</h2>
+<table>
+<thead><tr><th>用户说法</th><th>--date 参数</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>"今天" / 未指定</td><td>today（默认）</td><td>仅今天</td></tr>
+<tr><td>"昨天"</td><td>yesterday</td><td>仅昨天</td></tr>
+<tr><td>"本周"</td><td>thisweek 或 week</td><td>本周一到今天</td></tr>
+<tr><td>"上周"</td><td>lastweek</td><td>上周一到上周日</td></tr>
+<tr><td>"近 N 天" / "最近 N 天"</td><td>lastNdays（如 last7days）</td><td>从 N 天前到今天</td></tr>
+<tr><td>"YYYY-MM-DD"</td><td>--date YYYY-MM-DD</td><td>指定单日</td></tr>
+<tr><td>"X 月 X 日到 X 月 X 日"</td><td>--start YYYY-MM-DD --end YYYY-MM-DD</td><td>指定区间</td></tr>
+</tbody>
+</table>
+
+<h2>核心命令</h2>
+<pre>node fetch-meetings.js                                     # 今天的会议
+node fetch-meetings.js --date yesterday                     # 昨天的会议
+node fetch-meetings.js --date thisweek                      # 本周的会议
+node fetch-meetings.js --date lastweek                      # 上周的会议
+node fetch-meetings.js --date 2026-06-08                   # 指定单日
+node fetch-meetings.js --date last7days                     # 近 7 天
+node fetch-meetings.js --start 2026-06-03 --end 2026-06-09  # 日期区间
+node fetch-meetings.js --date thisweek --detail             # 本周会议 + 逐字稿
+node fetch-meetings.js --id 21ac80c26e507f76 --detail      # 按会议 ID 查询</pre>
+
+<h2>返回字段</h2>
+<table>
+<thead><tr><th>字段</th><th>来源</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>title</td><td>minutes.detail</td><td>会议标题</td></tr>
+<tr><td>startTime</td><td>minutes.detail / list</td><td>会议开始时间（毫秒时间戳）</td></tr>
+<tr><td>duration</td><td>list</td><td>会议录制时长（毫秒）</td></tr>
+<tr><td>creator</td><td>list.userInfo</td><td>创建者姓名</td></tr>
+<tr><td>members</td><td>minutes.detail</td><td>参会人列表（姓名+ERP 账号）</td></tr>
+<tr><td>speakers</td><td>minutes.speakers.timelines</td><td>发言人列表（姓名、发言占比、发言时长）</td></tr>
+<tr><td>transcript</td><td>minutes.meetingrecord.query</td><td>文字记录（需 --detail；数组格式，每项含 speaker/text/beginMs/endMs；为 null 表示无转写）</td></tr>
+<tr><td>attachments</td><td>minutes.detail</td><td>会议附件（关联的 JoySpace 文档等）</td></tr>
+</tbody>
+</table>
+
+<h2>transcript 字段解析</h2>
+<pre>if (m.transcript && Array.isArray(m.transcript) && m.transcript.length > 0) {
+  const fullText = m.transcript.map((item) => `[${item.speaker}]: ${item.text}`).join('\n')
+  // 或按发言人分组统计
+  const bySpeaker = {}
+  m.transcript.forEach((item) => {
+    if (!bySpeaker[item.speaker]) bySpeaker[item.speaker] = []
+    bySpeaker[item.speaker].push(item.text)
+  })
+}</pre>
+
+<h2>浏览器优先级</h2>
+<div class="grid2">
+  <div class="card" style="border-left:3px solid var(--blue)"><strong style="color:var(--blue)">macOS</strong><p style="font-size:13px;color:var(--muted);margin-top:8px">检测活跃窗口、运行进程、浏览器路径。优先级：当前活跃窗口的浏览器 → Chrome → Tabbit → Edge。</p></div>
+  <div class="card" style="border-left:3px solid var(--accent)"><strong style="color:var(--accent)">Windows</strong><p style="font-size:13px;color:var(--muted);margin-top:8px">检测运行进程、浏览器路径。优先级：Chrome → Tabbit → Edge。</p></div>
+</div>
+
+<h2>常见问题处理</h2>
+<ul>
+  <li><strong>SSO_REDIRECT</strong>：自动尝试当前活跃浏览器 → fallback 到其他浏览器 → 自动打开登录页</li>
+  <li><strong>会议数据为空但 totalInList > 0</strong>：日期过滤没有匹配到会议，检查日期或扩大范围</li>
+  <li><strong>CDP not ready</strong>：端口被占用，脚本自动在 9333-9350 范围内查找可用端口</li>
+</ul>
+
+<h2>总结输出规范</h2>
+<div class="grid2">
+  <div class="card" style="border-left:3px solid var(--blue)"><strong style="color:var(--blue)">单日查询</strong><p style="font-size:13px;color:var(--muted);margin-top:8px">总览（会议数、主要议题）+ 每场会议（标题、时间、链接、参会人、内容概述、关键讨论、决策结论、待办）+ 综合要点</p></div>
+  <div class="card" style="border-left:3px solid var(--green)"><strong style="color:var(--green)">多日/区间查询</strong><p style="font-size:13px;color:var(--muted);margin-top:8px">总览（区间、会议总数、主要主题）+ 按日分组 + 综合要点（跨天主题归纳、持续跟进事项）</p></div>
+</div>
+
+<h2>在 AI 转型方案中的位置</h2>
+<div class="grid3">
+  <div class="card" style="border-left:3px solid var(--blue)"><strong>Phase 1 · 数据底座</strong><p style="font-size:13px;color:var(--muted);margin-top:8px">群聊机器人技术上可行吗？不需要，本工具直接搞定</p></div>
+  <div class="card" style="border-left:3px solid var(--accent)"><strong>Phase 2 · 巡检支持</strong><p style="font-size:13px;color:var(--muted);margin-top:8px">"巡检记录"：历史会议记录可查</p></div>
+  <div class="card" style="border-left:3px solid var(--green)"><strong>Phase 3 · 数字人全模式</strong><p style="font-size:13px;color:var(--muted);margin-top:8px">被动+主动+群聊全开：会议数据源已就位</p></div>
+</div>
+
+</div></body></html>
