@@ -16,6 +16,8 @@
 
 **语义搜索与智能聚类**：设置页可运行「智能聚类」（node-llama-cpp + Qwen3-Embedding-0.6B GGUF，模型随 linkly-ai 预装，无需联网下载），自动为资产生成 embedding → K-means 聚类发现主题分组。资产库搜索支持关键词 / 语义两种模式。
 
+**图片 OCR**：采集时支持 png/jpg/webp/bmp 图片文件，通过本地 PP-OCRv6 引擎（ppu-paddle-ocr + onnxruntime-node）自动提取文字，无需联网。
+
 **三步业务循环**：采集 → 整理 → 输出。Insight Kernel 自动注入所有 LLM 调用，输出保持个人判断风格。
 
 ## 开发
@@ -45,4 +47,4 @@ npm run build    # 生产构建
 
 ## 技术栈
 
-Next.js 15 · React 19 · TypeScript · Tailwind CSS · better-sqlite3 · node-llama-cpp · OpenAI 兼容 LLM
+Next.js 15 · React 19 · TypeScript · Tailwind CSS · better-sqlite3 · node-llama-cpp · ppu-paddle-ocr · OpenAI 兼容 LLM

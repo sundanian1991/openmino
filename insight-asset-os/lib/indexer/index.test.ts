@@ -15,7 +15,7 @@ afterEach(() => {
 });
 
 describe("detectType", () => {
-  it("识别 md/txt/pdf/docx/html", () => {
+  it("识别 md/txt/pdf/docx/html/image", () => {
     expect(detectType("a.md")).toBe("md");
     expect(detectType("a.markdown")).toBe("md");
     expect(detectType("a.txt")).toBe("txt");
@@ -23,6 +23,11 @@ describe("detectType", () => {
     expect(detectType("a.docx")).toBe("docx");
     expect(detectType("a.html")).toBe("html");
     expect(detectType("a.htm")).toBe("html");
+    expect(detectType("a.png")).toBe("image");
+    expect(detectType("a.jpg")).toBe("image");
+    expect(detectType("a.jpeg")).toBe("image");
+    expect(detectType("a.webp")).toBe("image");
+    expect(detectType("a.bmp")).toBe("image");
   });
 
   it("不支持的类型返回 null", () => {
@@ -34,6 +39,7 @@ describe("detectType", () => {
   it("大小写不敏感", () => {
     expect(detectType("A.PDF")).toBe("pdf");
     expect(detectType("A.MD")).toBe("md");
+    expect(detectType("A.PNG")).toBe("image");
   });
 });
 

@@ -21,10 +21,11 @@ describe("scanDirectory", () => {
     fs.writeFileSync(path.join(tmpDir, "c.pdf"), "x");
     fs.writeFileSync(path.join(tmpDir, "d.docx"), "x");
     fs.writeFileSync(path.join(tmpDir, "e.html"), "x");
+    fs.writeFileSync(path.join(tmpDir, "f.png"), "x");
     const files = scanDirectory(tmpDir);
-    expect(files).toHaveLength(5);
+    expect(files).toHaveLength(6);
     const types = files.map((f) => f.type).sort();
-    expect(types).toEqual(["docx", "html", "md", "pdf", "txt"]);
+    expect(types).toEqual(["docx", "html", "image", "md", "pdf", "txt"]);
   });
 
   it("忽略不支持的类型", () => {
