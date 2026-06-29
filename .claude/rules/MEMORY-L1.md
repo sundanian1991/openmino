@@ -45,9 +45,11 @@ pos: .claude/rules/MEMORY-L1.md
 
 ## 会话启动
 
-**心跳**：读本文件 + `memory/state.json`
-**完整启动**：+ todo.md + events 最近3天（详见 [06-NOW.md](06-NOW.md)）
-**截断恢复**：读 `workspace/*/对话总结-*.md`
+**默认直接干活**，不走启动仪式。仅以下情况读取记忆：
+
+- 涉及过去工作/待办/日期/决策 → 读 `memory/state.json` + `memory/context/todo.md`
+- 需要近期事件背景 → 读 `memory/events/` 最近3天（详见 [06-NOW.md](06-NOW.md)）
+- context 被压缩后恢复 → 读 `workspace/*/对话总结-*.md`
 
 ---
 
