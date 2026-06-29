@@ -75,7 +75,21 @@ async function parsePdf(buf: Buffer): Promise<string> {
     default: (buf: Buffer) => Promise<{ text: string }>;
   };
   const data = await pdfParse(buf);
-  return data.text;
+  const text = data.text.trim();
+
+  // pdf-parse 返回空 → 可能是图片型 PDF（扫描件），回退到 OCR
+  if (text) return text;
+
+  const { ocrImage } = await import("../ocr");
+  // 先把 PDF 渲染为图片再 OCR：用 pdfjs-dist + @napi-rs/canvas
+  const { pdfToImages } = await import("./pdf-render");
+  const images = await pdfToImages(buf);
+  const lines: string[] = [];
+  for (const img of images) {
+    const result = await ocrImage(img);
+    if (result?.trim()) lines.push(result.trim());
+  }
+  return lines.join("\n\n");
 }
 
 async function parseDocx(buf: Buffer): Promise<string> {

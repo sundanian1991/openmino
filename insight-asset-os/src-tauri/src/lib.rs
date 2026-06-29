@@ -56,15 +56,20 @@ pub fn run() {
           let state = app.state::<ServerState>();
           *state.0.lock().unwrap() = Some(child);
 
-          // 后台等待服务器就绪
-          thread::spawn(|| {
+          // 后台等待服务器就绪后导航窗口
+          let app_handle = app.handle().clone();
+          thread::spawn(move || {
             let client = reqwest::blocking::Client::builder()
               .timeout(Duration::from_secs(2))
               .build()
               .unwrap();
-            for _ in 0..30 {
+            for _ in 0..60 {
               if client.get("http://localhost:3456").send().is_ok() {
-                log::info!("Next.js server is ready");
+                log::info!("Next.js server is ready, navigating window");
+                // 在主线程上执行导航
+                if let Some(window) = app_handle.get_webview_window("main") {
+                  let _ = window.eval("window.location.href = 'http://localhost:3456'");
+                }
                 break;
               }
               thread::sleep(Duration::from_millis(500));
