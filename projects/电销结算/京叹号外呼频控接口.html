@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>京叹号 · 外呼频控接口</title>
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+:root {
+  --black: #F5F5F5;
+  --surface: #FFFFFF;
+  --surface-raised: #F0F0F0;
+  --border: #E8E8E8;
+  --border-visible: #CCCCCC;
+  --text-disabled: #999;
+  --text-secondary: #666;
+  --text-primary: #1A1A1A;
+  --text-display: #000;
+  --accent: #D71921;
+  --success: #4A9E5C;
+  --warning: #D4A843;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:var(--black);
+  color:var(--text-primary);
+  font-family:'Space Grotesk', sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:var(--space-xl);
+}
+.dashboard {
+  max-width:1080px;
+  width:100%;
+  background:var(--surface);
+  position:relative;
+  padding:var(--space-2xl) var(--space-3xl);
+}
+.dot-grid {
+  position:absolute;
+  inset:0;
+  background-image:radial-gradient(circle,var(--border) .5px,transparent .5px);
+  background-size:14px 14px;
+  pointer-events:none;
+}
+.content { position:relative; z-index:1; }
+
+/* Header */
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:var(--space-2xl);
+}
+.header-left h1 {
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:300;
+  font-size:26px;
+  color:var(--text-display);
+  letter-spacing:-.02em;
+}
+.header-left .sub {
+  font-family:'Space Mono', monospace;
+  font-size:10px;
+  color:var(--text-disabled);
+  letter-spacing:.06em;
+  margin-top:2px;
+}
+.header-right {
+  font-family:'Space Mono', monospace;
+  font-size:10px;
+  color:var(--text-secondary);
+  letter-spacing:.08em;
+  text-align:right;
+  line-height:1.6;
+}
+
+/* Process Flow */
+.flow-section {
+  margin-bottom:var(--space-2xl);
+  padding-bottom:var(--space-2xl);
+  border-bottom:1px solid var(--border);
+}
+.flow-label {
+  font-family:'Space Mono', monospace;
+  font-size:10px;
+  color:var(--text-disabled);
+  letter-spacing:.08em;
+  margin-bottom:var(--space-lg);
+}
+.flow-row {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+}
+.flow-node {
+  flex:1;
+  max-width:260px;
+  text-align:center;
+  padding:var(--space-lg) var(--space-md);
+  border:1px solid var(--border-visible);
+  position:relative;
+}
+.flow-node .icon {
+  font-family:'Space Mono', monospace;
+  font-size:10px;
+  color:var(--text-disabled);
+  letter-spacing:.06em;
+  margin-bottom:var(--space-sm);
+}
+.flow-node .title {
+  font-family:'Space Grotesk', sans-serif;
+  font-size:18px;
+  font-weight:500;
+  color:var(--text-display);
+  margin-bottom:var(--space-sm);
+}
+.flow-node .stat {
+  font-family:'Space Mono', monospace;
+  font-size:28px;
+  font-weight:700;
+  color:var(--text-display);
+  letter-spacing:-.02em;
+}
+.flow-node .stat-sub {
+  font-family:'Space Mono', monospace;
+  font-size:10px;
+  color:var(--text-secondary);
+  letter-spacing:.04em;
+  margin-top:var(--space-xs);
+}
+.flow-node .note {
+  font-family:'Space Grotesk', sans-serif;
+  font-size:12px;
+  color:var(--text-secondary);
+  margin-top:var(--space-sm);
+  line-height:1.4;
+}
+.flow-arrow {
+  flex:0 0 48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--border-visible);
+  font-size:20px;
+}
+
+/* Metric Grid */
+.metrics-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:var(--space-xl);
+  margin-bottom:var(--space-2xl);
+  padding-bottom:var(--space-2xl);
+  border-bottom:1px solid var(--border);
+}
+.metrics-left {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:var(--space-md);
+}
+.metric-card {
+  border:1px solid var(--border);
+  padding:var(--space-md);
+  text-align:center;
+}
+.metric-card .value {
+  font-family:'Space Mono', monospace;
+  font-size:22px;
+  font-weight:700;
+  color:var(--text-display);
+  letter-spacing:-.02em;
+}
+.metric-card .value.green { color:var(--success); }
+.metric-card .label {
+  font-family:'Space Mono', monospace;
+  font-size:9px;
+  color:var(--text-secondary);
+  letter-spacing:.08em;
+  margin-top:var(--space-xs);
+}
+.metric-card .desc {
+  font-family:'Space Grotesk', sans-serif;
+  font-size:10px;
+  color:var(--text-disabled);
+  margin-top:2px;
+}
+
+/* Rules panel */
+.rules-panel {
+  border:1px solid var(--border);
+  padding:var(--space-md);
+}
+.rules-panel .r-title {
+  font-family:'Space Mono', monospace;
+  font-size:10px;
+  color:var(--text-disabled);
+  letter-spacing:.08em;
+  margin-bottom:var(--space-sm);
+}
+.rule-row {
+  display:flex;
+  justify-content:space-between;
+  padding:4px 0;
+  font-family:'Space Mono', monospace;
+  font-size:11px;
+  border-bottom:1px solid var(--border);
+}
+.rule-row:last-child { border-bottom:none; }
+.rule-row .k { color:var(--text-secondary); letter-spacing:.04em; }
+.rule-row .v { color:var(--text-primary); font-weight:500; }
+.rule-row .v.accent { color:var(--accent); }
+
+/* 1-call definitions */
+.call-def {
+  margin-top:var(--space-sm);
+  padding-top:var(--space-sm);
+  border-top:1px solid var(--border);
+}
+.call-def .cd-title {
+  font-family:'Space Mono', monospace;
+  font-size:9px;
+  color:var(--text-disabled);
+  letter-spacing:.06em;
+  margin-bottom:var(--space-xs);
+}
+.cd-tags {
+  display:flex;
+  gap:var(--space-xs);
+  flex-wrap:wrap;
+}
+.cd-tag {
+  font-family:'Space Mono', monospace;
+  font-size:9px;
+  color:var(--text-secondary);
+  border:1px solid var(--border);
+  padding:2px 6px;
+  letter-spacing:.04em;
+}
+
+/* Business lines */
+.biz-section {}
+.biz-section .sec-label {
+  font-family:'Space Mono', monospace;
+  font-size:10px;
+  color:var(--text-disabled);
+  letter-spacing:.08em;
+  margin-bottom:var(--space-md);
+}
+.biz-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:var(--space-md);
+}
+.biz-col .col-header {
+  font-family:'Space Mono', monospace;
+  font-size:9px;
+  letter-spacing:.06em;
+  padding-bottom:var(--space-sm);
+  margin-bottom:var(--space-sm);
+  border-bottom:1px solid var(--border);
+}
+.biz-col .col-header.active { color:var(--success); }
+.biz-col .col-header.inactive { color:var(--text-disabled); }
+.biz-item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:5px 0;
+  border-bottom:1px solid var(--border);
+  font-size:12px;
+}
+.biz-item:last-child { border-bottom:none; }
+.biz-item .name {
+  font-family:'Space Grotesk', sans-serif;
+  color:var(--text-primary);
+}
+.biz-item .app-id {
+  font-family:'Space Mono', monospace;
+  font-size:9px;
+  color:var(--text-disabled);
+  letter-spacing:.02em;
+  max-width:180px;
+  text-align:right;
+  word-break:break-all;
+}
+.biz-item .status-dot {
+  display:inline-block;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  margin-right:var(--space-sm);
+  flex-shrink:0;
+}
+.biz-item .status-dot.on { background:var(--success); }
+.biz-item .status-dot.off { background:var(--border-visible); }
+
+/* Footer */
+.footer {
+  margin-top:var(--space-xl);
+  padding-top:var(--space-md);
+  border-top:1px solid var(--border);
+  text-align:center;
+}
+.footer span {
+  font-family:'Space Mono', monospace;
+  font-size:9px;
+  color:var(--text-disabled);
+  letter-spacing:.06em;
+}
+</style>
+</head>
+<body>
+<div class="dashboard">
+<div class="dot-grid"></div>
+<div class="content">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1 data-edit>京叹号&ensp;外呼频控接口</h1>
+      <div class="sub" data-edit>OUTBOUND CALL FREQUENCY CONTROL INTERFACE</div>
+    </div>
+    <div class="header-right">
+      <div data-edit>黑名单 → 频控规则 → 返回结果</div>
+      <div style="color:var(--text-disabled);margin-top:2px;" data-edit>2026年3月 · 接口状态总览</div>
+    </div>
+  </div>
+
+  <!-- Flow -->
+  <div class="flow-section">
+    <div class="flow-label" data-edit>核心流程 CORE FLOW</div>
+    <div class="flow-row">
+      <div class="flow-node">
+        <div class="icon" data-edit>STAGE 01</div>
+        <div class="title" data-edit>黑名单</div>
+        <div class="stat" data-edit>334.8W</div>
+        <div class="stat-sub" data-edit>主站 292.3W + 客服 42.5W（每日更新）</div>
+        <div class="note" data-edit>主站关闭营销电话用户<br>客服收集敏感用户</div>
+      </div>
+      <div class="flow-arrow">
+        <svg width="32" height="12" viewBox="0 0 32 12" fill="none">
+          <line x1="0" y1="6" x2="26" y2="6" stroke="#CCCCCC" stroke-width="1"/>
+          <polygon points="26,2 32,6 26,10" fill="#CCCCCC"/>
+        </svg>
+      </div>
+      <div class="flow-node">
+        <div class="icon" data-edit>STAGE 02</div>
+        <div class="title" data-edit>频控规则</div>
+        <div class="stat" style="font-size:20px;" data-edit>日常 → 7d/1通·14d/2通</div>
+        <div class="stat-sub" style="font-size:10px;color:var(--accent);" data-edit>大促 → 7d/2通·14d/3通</div>
+        <div class="note" data-edit=""><span style="display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--accent);vertical-align:middle;margin-right:4px;"></span>独占1小时 · 1通=接通/未接3次/拒接</div>
+      </div>
+      <div class="flow-arrow">
+        <svg width="32" height="12" viewBox="0 0 32 12" fill="none">
+          <line x1="0" y1="6" x2="26" y2="6" stroke="#CCCCCC" stroke-width="1"/>
+          <polygon points="26,2 32,6 26,10" fill="#CCCCCC"/>
+        </svg>
+      </div>
+      <div class="flow-node">
+        <div class="icon" data-edit>STAGE 03</div>
+        <div class="title" data-edit>返回结果</div>
+        <div class="stat" style="font-size:24px;" data-edit>放行 / 拦截</div>
+        <div class="note" data-edit>8种未接通状态 + 拒接<br>逐层判定</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics + Rules -->
+  <div class="metrics-grid">
+    <div class="metrics-left">
+      <div class="metric-card">
+        <div class="value" data-edit>27ms</div>
+        <div class="label" data-edit>TP99</div>
+        <div class="desc" data-edit>当前性能</div>
+      </div>
+      <div class="metric-card">
+        <div class="value" data-edit>270ms</div>
+        <div class="label" data-edit>TP999</div>
+        <div class="desc" data-edit>当前性能</div>
+      </div>
+      <div class="metric-card">
+        <div class="value" data-edit>40K</div>
+        <div class="label" data-edit>峰值 /s</div>
+        <div class="desc" data-edit>大促保障请求量</div>
+      </div>
+      <div class="metric-card" style="grid-column:1/3">
+        <div style="display:flex;justify-content:center;gap:var(--space-xl);">
+          <div>
+            <div class="value" style="font-size:18px;color:var(--text-secondary)" data-edit>35亿/日</div>
+            <div class="label" style="margin-top:0" data-edit>大促日调用</div>
+          </div>
+          <div>
+            <div class="value" style="font-size:18px;color:var(--text-secondary)" data-edit>17.5亿/日</div>
+            <div class="label" style="margin-top:0" data-edit>日常日调用</div>
+          </div>
+        </div>
+        <div class="label" style="margin-top:var(--space-xs)" data-edit>基于 4W req/s 峰值估算</div>
+      </div>
+      <div class="metric-card">
+        <div class="value" style="font-size:18px" data-edit>2W/s</div>
+        <div class="label" data-edit>日常请求量</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rules-panel">
+        <div class="r-title" data-edit>频控规则 FREQUENCY RULES</div>
+        <div class="rule-row">
+          <span class="k">日常</span>
+          <span class="v" data-edit>7天内 ≤1通 · 14天内 ≤2通</span>
+        </div>
+        <div class="rule-row">
+          <span class="k">大促</span>
+          <span class="v accent" data-edit>7天内 ≤2通 · 14天内 ≤3通</span>
+        </div>
+        <div class="rule-row">
+          <span class="k">独占</span>
+          <span class="v" data-edit>1小时独占，收到结果后解除</span>
+        </div>
+        <div class="call-def">
+          <div class="cd-title" data-edit>1通 定义</div>
+          <div class="cd-tags">
+            <span class="cd-tag" data-edit>接通1次</span>
+            <span class="cd-tag" data-edit>未接通3次/天</span>
+            <span class="cd-tag" data-edit>拒接1次</span>
+          </div>
+          <div style="margin-top:var(--space-sm);padding-top:var(--space-sm);border-top:1px solid var(--border);">
+            <div class="cd-title" data-edit>未接通状态码 (8种)</div>
+            <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--text-disabled);line-height:1.8;letter-spacing:.02em;margin-top:4px;">
+              NO_ANSWER · BUSY · POWER_OFF · OUT_OF_SERVICE · VACANT_NUMBER · CAN_NOT_CONNECT · FROM_PHONE_ERROR · SYSTEM_ERROR
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Business Lines -->
+  <div class="biz-section">
+    <div class="sec-label" data-edit>已对接业务线 INTEGRATED BUSINESS LINES</div>
+    <div class="biz-grid">
+      <div class="biz-col">
+        <div class="col-header active" data-edit>● 近期有调用</div>
+        <div class="biz-item">
+          <span><span class="status-dot on"></span><span class="name" data-edit>京小智</span></span>
+          <span class="app-id">jdos_xz-jimi3-ire</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot on"></span><span class="name" data-edit>言犀</span></span>
+          <span class="app-id">yanxi-project-worker / yanxi-hcc-rmc</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot on"></span><span class="name" data-edit>京佰通</span></span>
+          <span class="app-id">jdos_aicc-csm（待研发给到3C外呼）</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot on"></span><span class="name" data-edit>睿联</span></span>
+          <span class="app-id">jdos_eem-firefly-data</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot on"></span><span class="name" data-edit>小能-京赢家</span></span>
+          <span class="app-id">jdos_xn-jyj-data</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot on"></span><span class="name" data-edit>yanxi-mall</span></span>
+          <span class="app-id">jdos_yanxi-mall-saas / yanxi-mall-service</span>
+        </div>
+      </div>
+      <div class="biz-col">
+        <div class="col-header inactive" data-edit>○ 近期无调用 / 待确认</div>
+        <div class="biz-item">
+          <span><span class="status-dot off"></span><span class="name" data-edit>来客京东抽奖</span></span>
+          <span class="app-id">jdos_jdchoujiang-boss</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot off"></span><span class="name" data-edit>云鼎</span></span>
+          <span class="app-id">jdos_sms-openapi-service</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot off"></span><span class="name" data-edit>未知业务线</span></span>
+          <span class="app-id">jdos_outboundcall（历史原因）</span>
+        </div>
+        <div class="biz-item">
+          <span><span class="status-dot off"></span><span class="name" data-edit>data-trans</span></span>
+          <span class="app-id">jdos_data-trans-interface</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span data-edit>京叹号运营后台 · 频控规则于 2025年2月更新</span>
+  </div>
+
+</div>
+</div>
+
+<!-- Nothing Editor -->
+<style id="ne-styles">
+.ne-toolbar{position:fixed;top:16px;right:16px;z-index:9999;display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--surface);border:1px solid var(--border-visible);border-radius:999px;font-family:'Space Mono',monospace;font-size:11px}
+.ne-toolbar button{border:none;background:transparent;color:var(--text-secondary);cursor:pointer;font-family:inherit;font-size:inherit;letter-spacing:.06em;padding:4px 10px;border-radius:999px;transition:all .15s}
+.ne-toolbar button:hover{color:var(--text-primary);background:var(--surface-raised)}
+.ne-toolbar button.ne-active{color:var(--accent);background:rgba(215,25,33,.1)}
+.ne-sep{width:1px;height:14px;background:var(--border);margin:0 2px}
+.ne-mode-label{position:fixed;bottom:16px;right:16px;z-index:9999;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--text-disabled)}
+.ne-toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;padding:6px 16px;background:var(--text-display);color:var(--surface);border-radius:999px;opacity:0;transition:opacity .3s}
+.ne-toast.show{opacity:1}
+body.editing{outline:2px solid var(--accent);outline-offset:-2px}
+body.editing [data-edit]{outline:1px dashed transparent;cursor:text;transition:outline .15s}
+body.editing [data-edit]:hover{outline-color:rgba(0,0,0,.15)}
+body.editing [data-edit]:focus{outline-color:var(--accent);caret-color:var(--accent)}
+</style>
+<div class="ne-toolbar" id="ne-toolbar">
+  <button id="ne-toggle">编辑</button>
+  <span class="ne-sep"></span>
+  <button id="ne-undo" disabled>撤销</button>
+  <button id="ne-redo" disabled>重做</button>
+  <span class="ne-sep"></span>
+  <button id="ne-export">导出</button>
+</div>
+<div class="ne-mode-label" id="ne-mode">浏览</div>
+<div class="ne-toast" id="ne-toast"></div>
+<script>
+(function(){
+  const toggle=document.getElementById('ne-toggle');
+  const undoBtn=document.getElementById('ne-undo');
+  const redoBtn=document.getElementById('ne-redo');
+  const exportBtn=document.getElementById('ne-export');
+  const modeLabel=document.getElementById('ne-mode');
+  const toast=document.getElementById('ne-toast');
+  let editing=false;
+  let undoStack=[];
+  let redoStack=[];
+  let snapTimer=null;
+
+  function snap(){undoStack.push(document.body.innerHTML);if(undoStack.length>50)undoStack.shift();redoStack=[];updateButtons()}
+  function updateButtons(){undoBtn.disabled=undoStack.length===0;redoBtn.disabled=redoStack.length===0}
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1200)}
+
+  toggle.addEventListener('click',()=>{
+    editing=!editing;
+    document.body.classList.toggle('editing',editing);
+    toggle.textContent=editing?'编辑中':'编辑';
+    toggle.classList.toggle('ne-active',editing);
+    modeLabel.textContent=editing?'编辑':'浏览';
+    if(editing){
+      document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable='true');
+      snap();
+    }else{
+      document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable='false');
+    }
+  });
+
+  undoBtn.addEventListener('click',()=>{
+    if(!undoStack.length)return;
+    redoStack.push(document.body.innerHTML);
+    document.body.innerHTML=undoStack.pop();
+    updateButtons();
+    if(document.body.classList.contains('editing'))
+      document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable='true');
+    showToast('[已撤销]');
+  });
+
+  redoBtn.addEventListener('click',()=>{
+    if(!redoStack.length)return;
+    undoStack.push(document.body.innerHTML);
+    document.body.innerHTML=redoStack.pop();
+    updateButtons();
+    if(document.body.classList.contains('editing'))
+      document.querySelectorAll('[data-edit]').forEach(el=>el.contentEditable='true');
+    showToast('[已重做]');
+  });
+
+  exportBtn.addEventListener('click',()=>{
+    const clone=document.body.cloneNode(true);
+    clone.querySelectorAll('[data-edit]').forEach(el=>el.removeAttribute('contentEditable'));
+    clone.querySelector('#ne-toolbar')?.remove();
+    clone.querySelector('#ne-mode')?.remove();
+    clone.querySelector('#ne-toast')?.remove();
+    clone.querySelector('#ne-styles')?.remove();
+    const html='<!DOCTYPE html>\n<html lang="zh-CN">\n<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>京叹号-外呼频控接口</title><link href="fonts/fonts.css" rel="stylesheet">'+document.querySelector('style').outerHTML+'</head>\n<body>'+clone.innerHTML+'</body>\n</html>';
+    const blob=new Blob([html],{type:'text/html'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='京叹号-外呼频控接口.html';a.click();
+    URL.revokeObjectURL(a.href);
+    showToast('[已导出]');
+  });
+
+  document.addEventListener('keydown',e=>{
+    if(!editing)return;
+    if(e.key==='Enter'||e.key==='Escape'){
+      if(document.activeElement&&document.activeElement.hasAttribute('data-edit')){document.activeElement.blur();e.preventDefault()}
+    }
+    if(e.key==='z'&&(e.metaKey||e.ctrlKey)){e.shiftKey?redoBtn.click():undoBtn.click();e.preventDefault()}
+  });
+
+  new MutationObserver(()=>{
+    if(!editing)return;
+    clearTimeout(snapTimer);
+    snapTimer=setTimeout(snap,500);
+  }).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+</script>
+</body>
+</html>

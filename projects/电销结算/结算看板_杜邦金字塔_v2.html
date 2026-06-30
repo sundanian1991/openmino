@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商结算 · 杜邦金字塔</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa;color:#1a1a2e;padding:20px;max-width:1200px;margin:0 auto}
+.header{background:#fff;border-radius:12px;padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.header h1{font-size:18px;font-weight:700}
+.header h1 span{color:#64748b;font-weight:400;font-size:13px;margin-left:6px}
+.hint{font-size:12px;color:#94a3b8;margin-top:2px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.controls select{padding:5px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;background:#fff;cursor:pointer;min-width:150px}
+.controls select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+.pyramid{background:#fff;border-radius:12px;padding:18px 16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tab-bar{display:flex;gap:0;margin-bottom:14px;background:#f1f5f9;border-radius:8px;overflow:hidden}
+.tab-btn{padding:8px 18px;font-size:12px;font-weight:500;border:none;background:transparent;cursor:pointer;color:#64748b;transition:all .2s;flex:1;text-align:center}
+.tab-btn.active{background:#2563eb;color:#fff}
+.tab-btn:hover:not(.active){background:#e2e8f0}
+.layer-toggle{display:none;position:relative}
+.layer-toggle.active{display:block}
+.layer-switch{text-align:center;color:#94a3b8;font-size:14px;margin:8px 0}
+.layer-grid{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.l0-card{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:12px;padding:14px 32px;text-align:center;cursor:pointer;transition:transform .2s;display:inline-block}
+.l0-card:hover{transform:translateY(-2px)}
+.l0-card .l{font-size:11px;opacity:.8}
+.l0-card .v{font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1.3}
+.l0-card .u{font-size:11px;opacity:.7}
+.l0-card .s{font-size:11px;opacity:.55;margin-top:4px}
+.l1-card{background:#f8fafc;border:1px solid #bfdbfe;border-radius:10px;padding:12px 14px;text-align:center;cursor:pointer;transition:all .2s;flex:1;min-width:120px;max-width:180px}
+.l1-card:hover{transform:translateY(-2px);box-shadow:0 3px 10px rgba(0,0,0,.08);border-color:#2563eb}
+.l1-card.active{border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+.l1-card .l{font-size:11px;color:#64748b;margin-bottom:2px}
+.l1-card .v{font-size:17px;font-weight:700}
+.l1-card .u{font-size:10px;color:#94a3b8}
+.l1-card .rank{font-size:10px;margin-top:4px;padding:1px 6px;border-radius:4px;display:inline-block}
+.rank-h{background:#dcfce7;color:#16a34a}
+.rank-m{background:#fef9c3;color:#a16207}
+.rank-l{background:#fef2f2;color:#dc2626}
+.op{color:#94a3b8;font-size:16px;font-weight:300;display:flex;align-items:center;padding:0 2px}
+.l2-section{background:#fafafa;border-radius:10px;padding:12px;margin-bottom:8px}
+.l2-section .st{font-size:12px;font-weight:600;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.l2-grid{display:flex;gap:8px;flex-wrap:wrap}
+.l2-card{background:#fff;border:1px dashed #cbd5e1;border-radius:8px;padding:8px 12px;text-align:center;flex:1;min-width:90px}
+.l2-card .l{font-size:10px;color:#94a3b8;margin-bottom:2px}
+.l2-card .v{font-size:13px;font-weight:600}
+.l2-card .u{font-size:10px;color:#94a3b8}
+.detail-panel{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:none}
+.detail-panel.visible{display:block}
+.detail-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.detail-hdr h2{font-size:15px;font-weight:600}
+.detail-hdr .close{background:none;border:none;font-size:18px;cursor:pointer;color:#94a3b8;padding:2px 8px;border-radius:4px}
+.detail-hdr .close:hover{background:#f1f5f9}
+.detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.dc{background:#f8fafc;border-radius:8px;padding:10px 12px}
+.dc .l{font-size:11px;color:#64748b}
+.dc .v{font-size:16px;font-weight:700}
+.dc .h{font-size:11px;color:#64748b;margin-top:2px}
+.chart-wrap{height:220px;margin-top:10px}
+.rank-wrap{margin-top:14px}
+.rank-wrap h3{font-size:13px;font-weight:600;margin-bottom:8px;color:#475569}
+.rank-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.rank-tbl th{text-align:left;padding:6px 10px;background:#f8fafc;color:#64748b;font-weight:500;border-bottom:2px solid #e2e8f0}
+.rank-tbl td{padding:6px 10px;border-bottom:1px solid #f1f5f9}
+.rank-tbl tr:hover{background:#f8fafc}
+.rn{display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:5px;font-size:10px;font-weight:600}
+.r1{background:#fef9c3;color:#a16207}
+.r2{background:#f1f5f9;color:#475569}
+.r3{background:#fef2f2;color:#dc2626}
+.bar-wrap{height:5px;border-radius:3px;background:#e2e8f0;overflow:hidden;margin-top:3px}
+.bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.bg-g{background:#22c55e}
+.bg-b{background:#2563eb}
+.bg-r{background:#ef4444}
+#trendSection .chart-wrap{height:250px}
+.trend-checks{display:flex;gap:10px;flex-wrap:wrap;font-size:11px;margin-bottom:10px}
+.trend-checks label{display:flex;align-items:center;gap:4px;cursor:pointer}
+@media(max-width:640px){.l1-card{min-width:70px;max-width:100%}.detail-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>供应商结算 · 杜邦金字塔 <span>2026-06</span></h1>
+    <div class="hint">L0 总结算价值 → L1 人均因子 → L2 因子拆解 · 点击卡片查看详情</div>
+  </div>
+  <div class="controls">
+    <label style="font-size:12px;color:#64748b">职场</label>
+    <select id="wpSelect"></select>
+  </div>
+</div>
+
+<div class="pyramid">
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" data-layer="l0">L0 · 顶层</button>
+    <button class="tab-btn" data-layer="l1">L1 · 人均因子</button>
+    <button class="tab-btn" data-layer="l2">L2 · 因子拆解</button>
+  </div>
+
+  <!-- L0: 顶层 -->
+  <div class="layer-toggle active" id="layerL0">
+    <div style="text-align:center">
+      <div class="l0-card" onclick="showDetail('L0')">
+        <div class="l">总结算价值</div>
+        <div class="v" id="vL0">—</div>
+        <div class="u">元（税后到手薪资总额）</div>
+        <div class="s" id="sL0">▼ 点击查看排名</div>
+      </div>
+    </div>
+    <div class="layer-switch">= 人均到手薪资 × 数据人力</div>
+    <div class="layer-grid" style="gap:12px">
+      <div style="background:#f0f9ff;border-radius:8px;padding:10px 24px;text-align:center">
+        <div style="font-size:11px;color:#64748b">人均到手薪资</div>
+        <div style="font-size:15px;font-weight:700;color:#0369a1" id="vL0_p1">—</div>
+      </div>
+      <div style="color:#94a3b8;display:flex;align-items:center;font-size:16px">×</div>
+      <div style="background:#f0f9ff;border-radius:8px;padding:10px 24px;text-align:center">
+        <div style="font-size:11px;color:#64748b">数据人力</div>
+        <div style="font-size:15px;font-weight:700;color:#0369a1" id="vL0_p2">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- L1: 人均因子 -->
+  <div class="layer-toggle" id="layerL1">
+    <div class="layer-grid" id="l1Cards"></div>
+    <div class="layer-switch" style="margin-top:10px">人均到手薪资 = 人均资源规模 × 转化效率 × 客单价 × 净值率</div>
+  </div>
+
+  <!-- L2: 因子拆解 -->
+  <div class="layer-toggle" id="layerL2">
+    <div class="l2-section">
+      <div class="st"><span style="background:#2563eb;color:#fff;padding:1px 6px;border-radius:3px;font-size:10px">拆</span> 转化效率 → 首/复贷转化率</div>
+      <div class="l2-grid" id="l2Conv"></div>
+      <div class="st" style="margin-top:8px"><span style="background:#2563eb;color:#fff;padding:1px 6px;border-radius:3px;font-size:10px">拆</span> 客单价 → 首/复贷客单价</div>
+      <div class="l2-grid" id="l2Ticket"></div>
+      <div class="st" style="margin-top:8px"><span style="background:#f59e0b;color:#fff;padding:1px 6px;border-radius:3px;font-size:10px">拆</span> 费率 → 净值率四因子</div>
+      <div class="l2-grid" id="l2Rate"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 详情面板 -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-hdr">
+    <h2 id="dTitle">详情</h2>
+    <button class="close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-grid" id="dGrid"></div>
+  <div class="chart-wrap"><canvas id="dChart"></canvas></div>
+  <div class="rank-wrap"><h3 id="rankTitle">排名</h3>
+    <table class="rank-tbl"><thead><tr><th>#</th><th>职场</th><th>值</th><th>对比</th></tr></thead>
+      <tbody id="rankBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 趋势 -->
+<div class="pyramid" id="trendSection">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <h2 style="font-size:14px;font-weight:600">毅航合肥 · 月度趋势</h2>
+    <div class="trend-checks">
+      <label><input type="checkbox" data-k="r5" checked> 人均到手薪资</label>
+      <label><input type="checkbox" data-k="r2"> 转化效率</label>
+      <label><input type="checkbox" data-k="r3"> 客单价</label>
+      <label><input type="checkbox" data-k="r4"> 净值率</label>
+      <label><input type="checkbox" data-k="d6"> 费率</label>
+      <label><input type="checkbox" data-k="d7"> 净到手率</label>
+    </div>
+  </div>
+  <div class="chart-wrap"><canvas id="tChart"></canvas></div>
+</div>
+
+<script>
+// ====== 数据 ======
+const D = {
+"w":[{"n":"管户金条-人和职场","L0":25952,"r1":289,"r2":4.23,"r3":35439,"r4":0.15,"r5":649,"d1":0.88,"d2":6.79,"d3":67395,"d4":32272,"d5":9.0,"d6":0.171,"d7":87.8,"d8":0.43,"d9":6.21,"d10":0.936},{"n":"管户金条-伽玛职场","L0":91189,"r1":191,"r2":5.01,"r3":29657,"r4":0.144,"r5":411,"d1":0.95,"d2":7.8,"d3":55014,"d4":27539,"d5":7.7,"d6":0.166,"d7":87.3,"d8":0.79,"d9":6.81,"d10":0.936},{"n":"管户金条-华啸职场","L0":27646,"r1":182,"r2":7.26,"r3":29758,"r4":0.11,"r5":432,"d1":0.75,"d2":7.84,"d3":71086,"d4":29414,"d5":0.8,"d6":0.124,"d7":88.3,"d8":0.43,"d9":5.68,"d10":0.936},{"n":"管户金条-博岳石家庄职场","L0":63571,"r1":316,"r2":4.07,"r3":30486,"r4":0.173,"r5":676,"d1":0.89,"d2":6.81,"d3":69159,"d4":26142,"d5":10.1,"d6":0.195,"d7":88.4,"d8":0.43,"d9":5.56,"d10":0.936},{"n":"管户金条-宿迁兆科职场","L0":33277,"r1":2236,"r2":0.8,"r3":20968,"r4":0.211,"r5":792,"d1":0.5,"d2":6.47,"d3":16252,"d4":27971,"d5":59.8,"d6":0.327,"d7":64.4,"d8":0.5,"d9":31.24,"d10":0.936},{"n":"管户金条-岐力职场","L0":38447,"r1":183,"r2":6.85,"r3":25378,"r4":0.102,"r5":326,"d1":0.89,"d2":7.25,"d3":20058,"d4":25422,"d5":0.8,"d6":0.12,"d7":85.6,"d8":0.43,"d9":8.55,"d10":0.936},{"n":"管户金条-广达陕西职场","L0":23724,"r1":161,"r2":4.16,"r3":27965,"r4":0.144,"r5":270,"d1":0.57,"d2":7.64,"d3":62945,"d4":25412,"d5":6.8,"d6":0.168,"d7":85.7,"d8":0.86,"d9":8.46,"d10":0.936},{"n":"管户金条-毅航合肥职场","L0":365400,"r1":363,"r2":4.52,"r3":34449,"r4":0.195,"r5":1101,"d1":1.36,"d2":8.02,"d3":62731,"d4":29119,"d5":15.9,"d6":0.22,"d7":88.7,"d8":0.43,"d9":5.22,"d10":0.936},{"n":"管户金条-毛毛虫职场","L0":207783,"r1":592,"r2":3.11,"r3":37848,"r4":0.245,"r5":1703,"d1":1.21,"d2":7.84,"d3":63585,"d4":27929,"d5":27.8,"d6":0.274,"d7":89.3,"d8":0.43,"d9":4.65,"d10":0.936},{"n":"管户金条-汇讯职场","L0":63445,"r1":380,"r2":2.88,"r3":33482,"r4":0.222,"r5":813,"d1":1.01,"d2":7.56,"d3":56242,"d4":25931,"d5":24.9,"d6":0.254,"d7":87.2,"d8":0.79,"d9":6.82,"d10":0.936},{"n":"管户金条-翰锐曲靖职场","L0":46110,"r1":236,"r2":5.72,"r3":30709,"r4":0.121,"r5":501,"d1":0.78,"d2":7.63,"d3":43860,"d4":30193,"d5":3.8,"d6":0.138,"d7":87.6,"d8":0.43,"d9":6.42,"d10":0.936},{"n":"管户金条-赛维斯机器人职场","L0":28063,"r1":8597,"r2":0.65,"r3":22782,"r4":0.085,"r5":1079,"d1":0.37,"d2":1.22,"d3":13944,"d4":28119,"d5":37.6,"d6":0.178,"d7":47.5,"d8":0.43,"d9":49.27,"d10":0.936},{"n":"管户金条-赛维斯职场","L0":98214,"r1":276,"r2":4.96,"r3":26374,"r4":0.156,"r5":564,"d1":1.03,"d2":7.39,"d3":53396,"d4":24034,"d5":8.0,"d6":0.178,"d7":87.9,"d8":0.43,"d9":6.09,"d10":0.936},{"n":"管户金条-零犀伽玛机器人职场","L0":18762,"r1":4979,"r2":0.33,"r3":14826,"r4":0.316,"r5":782,"d1":0.33,"d2":0.0,"d3":14826,"d4":0,"d5":100.0,"d6":0.538,"d7":58.7,"d8":0.07,"d9":37.25,"d10":0.936},{"n":"管户金条-零犀岐力机器人职场","L0":4453,"r1":1424,"r2":1.14,"r3":30868,"r4":0.034,"r5":171,"d1":0.0,"d2":1.14,"d3":0,"d4":30868,"d5":0.0,"d6":0.069,"d7":49.4,"d8":0.72,"d9":47.29,"d10":0.936},{"n":"管户金条-零犀机器人职场","L0":218963,"r1":39341,"r2":0.77,"r3":22867,"r4":0.061,"r5":4211,"d1":0.22,"d2":4.41,"d3":14443,"d4":25597,"d5":24.5,"d6":0.132,"d7":46.0,"d8":0.86,"d9":50.88,"d10":0.936},{"n":"管户金条-零犀毅航机器人职场","L0":58052,"r1":6962,"r2":0.37,"r3":16452,"r4":0.32,"r5":1350,"d1":0.37,"d2":0.0,"d3":16452,"d4":0,"d5":100.0,"d6":0.535,"d7":59.7,"d8":0.07,"d9":36.22,"d10":0.936},{"n":"管户金条-零犀毛毛虫机器人职场","L0":21830,"r1":6018,"r2":0.35,"r3":13945,"r4":0.324,"r5":949,"d1":0.35,"d2":0.0,"d3":13945,"d4":0,"d5":100.0,"d6":0.527,"d7":61.5,"d8":0.07,"d9":34.32,"d10":0.936},{"n":"管户金条-零犀赛维斯机器人职场","L0":8770,"r1":6200,"r2":0.32,"r3":12050,"r4":0.201,"r5":487,"d1":0.32,"d2":0.0,"d3":12050,"d4":0,"d5":100.0,"d6":0.542,"d7":37.1,"d8":0.07,"d9":60.35,"d10":0.936}],
+"avg":{"L0":72926.95,"r1":4154,"r2":2.92,"r3":26002.85,"r4":0.166,"r5":908.79,"d1":0.677,"d2":6.46,"d3":38733.53,"d4":27573.06,"d5":34.01,"d6":0.246,"d7":70.3,"d8":0.437,"d9":24.9,"d10":0.936},
+"t":{"m":["2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],"r5":[7765,7229,4841,8059,4606,7088,1101],"r2":[2.77,2.99,2.94,2.69,3.02,3.52,4.52],"r3":[38453,40756,41800,49762,43333,46205,34449],"r4":[0.198,0.189,0.175,0.176,0.156,0.211,0.195],"d6":[0.227,0.215,0.199,0.2,0.181,0.237,0.22],"d7":[87.4,88.0,87.7,87.9,86.7,89.1,88.7],"d9":[6.71,6.06,6.29,6.12,7.43,4.8,5.22]}
+};
+
+// ====== 因子元信息 ======
+const L1_META = [
+  {k:"r1",l:"人均资源规模",u:"人",d:"每人分配用户数",f:v=>Math.round(v)},
+  {k:"r2",l:"转化效率",u:"%",d:"下发→贷款转化率",f:v=>v.toFixed(2)},
+  {k:"r3",l:"客单价",u:"元",d:"每笔平均贷款额",f:v=>v.toLocaleString()},
+  {k:"r4",l:"净值率",u:"%",d:"每元贷款到手占比",f:v=>v.toFixed(3)}
+];
+
+const L2_CONV = [
+  {k:"d1",l:"首贷转化率",u:"%",d:"首贷下发→贷款转化率"},
+  {k:"d2",l:"复贷转化率",u:"%",d:"复贷下发→贷款转化率"},
+  {k:"d5",l:"首贷户占比",u:"%",d:"首贷贷款户占总户数比"}
+];
+const L2_TICKET = [
+  {k:"d3",l:"首贷客单价",u:"元",d:"首贷户均贷款额"},
+  {k:"d4",l:"复贷客单价",u:"元",d:"复贷户均贷款额"}
+];
+const L2_RATE = [
+  {k:"d6",l:"费率",u:"%",d:"费效成本÷贷款金额","c":"#f59e0b"},
+  {k:"d7",l:"净到手率",u:"%",d:"到手薪资÷费效成本","c":"#f59e0b"},
+  {k:"d8",l:"还款系数",u:"",d:"回款调整因子","c":"#f59e0b"},
+  {k:"d9",l:"线路费率",u:"%",d:"线路费÷费效成本","c":"#f59e0b"}
+];
+
+let curWP = "管户金条-毅航合肥职场";
+let dChartInst = null;
+let tChartInst = null;
+
+function getWP(name){return D.w.find(w=>w.n===name)}
+function rankAll(k){return [...D.w].filter(w=>w[k]!=null).sort((a,b)=>b[k]-a[k])}
+function getRank(wp,k){let r=rankAll(k);let i=r.findIndex(w=>w.n===wp.n);return i>=0?i+1:r.length}
+function fmtL1(meta,wp){let v=wp[meta.k];return meta.f?meta.f(v):v}
+
+// ====== L1 卡片渲染 ======
+function renderL1(wpName){
+  let wp=getWP(wpName);
+  if(!wp)return;
+  let c=document.getElementById('l1Cards');c.innerHTML='';
+  L1_META.forEach((m,i)=>{
+    let v=wp[m.k],rk=getRank(wp,m.k),tl=D.w.length;
+    let rkC=rk<=5?'rank-h':rk>=tl-4?'rank-l':'rank-m';
+    let card=document.createElement('div');
+    card.className='l1-card';card.onclick=()=>showDetail(m.k,wpName);
+    card.innerHTML=`<div class="l">${m.l}</div><div class="v">${fmtL1(m,wp)}</div><div class="u">${m.u}</div><div class="rank ${rkC}">${rk<=5?'▲':rk>=tl-4?'▼':''} 第${rk}/${tl}</div>`;
+    c.appendChild(card);
+    if(i<L1_META.length-1){let op=document.createElement('div');op.className='op';op.textContent='×';c.appendChild(op)}
+  });
+}
+
+// ====== L2 渲染 ======
+function renderL2(wpName){
+  let wp=getWP(wpName);if(!wp)return;
+  let conv=document.getElementById('l2Conv');conv.innerHTML='';
+  L2_CONV.forEach(m=>{
+    let v=wp[m.k];let cls=m.k==='d5'?'rank-'+ (v>50?'h':v>20?'m':'l'):'';
+    conv.innerHTML+=`<div class="l2-card"><div class="l">${m.l}</div><div class="v">${v}${m.u?' <span style="font-size:10px;color:#94a3b8">'+m.u+'</span>':''}</div><div class="u">${m.d}</div></div>`;
+  });
+  let t=document.getElementById('l2Ticket');t.innerHTML='';
+  L2_TICKET.forEach(m=>{
+    t.innerHTML+=`<div class="l2-card"><div class="l">${m.l}</div><div class="v">${m.k==='d3'||m.k==='d4'?Math.round(v).toLocaleString():v} <span style="font-size:10px;color:#94a3b8">${m.u}</span></div><div class="u">${m.d}</div></div>`;
+  });
+  let r=document.getElementById('l2Rate');r.innerHTML='';
+  L2_RATE.forEach(m=>{
+    let v=wp[m.k];let fmt=m.k==='d6'||m.k==='d9'?v.toFixed(2):m.k==='d8'?v.toFixed(3):v;
+    r.innerHTML+=`<div class="l2-card" style="border-color:#fde68a"><div class="l">${m.l}</div><div class="v">${fmt}<span style="font-size:10px;color:#94a3b8">${m.u}</span></div><div class="u">${m.d}</div></div>`;
+  });
+}
+
+// ====== L0 渲染 ======
+function renderL0(wpName){
+  let wp=getWP(wpName);if(!wp)return;
+  document.getElementById('vL0').textContent=wp.L0.toLocaleString();
+  document.getElementById('vL0_p1').textContent=wp.r5.toLocaleString()+' 元/人';
+  document.getElementById('vL0_p2').textContent=Math.round(wp.r5>0?wp.L0/wp.r5:0).toLocaleString()+' 人';
+  let rk=getRank(wp,'L0');let tl=D.w.length;
+  document.getElementById('sL0').textContent=`排名 ${rk}/${tl} · 高于均值 ${wp.L0>D.avg.L0?'+'+Math.round((wp.L0-D.avg.L0)/D.avg.L0*100):Math.round((wp.L0-D.avg.L0)/D.avg.L0*100)}%`;
+}
+
+// ====== Tab ======
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    document.querySelectorAll('.layer-toggle').forEach(l=>l.classList.remove('active'));
+    document.getElementById('layer'+this.dataset.layer.toUpperCase()).classList.add('active');
+    closeDetail();
+  });
+});
+
+// ====== 初始化选择器 ======
+let sel=document.getElementById('wpSelect');
+D.w.forEach(w=>{
+  let o=document.createElement('option');o.value=w.n;o.textContent=w.n.replace('管户金条-','');sel.appendChild(o);
+});
+sel.value=curWP;
+sel.onchange=function(){
+  curWP=this.value;renderL0(curWP);renderL1(curWP);renderL2(curWP);closeDetail();
+};
+
+// ====== 详情面板 ======
+function showDetail(key,wpName){
+  let wp=getWP(wpName);if(!wp)return;
+  let meta=[...L1_META,...L2_CONV,...L2_TICKET,...L2_RATE].find(m=>m.k===key);
+  if(!meta){showDetail('L0');return}
+  let v=wp[key],avg=D.avg[key],rk=getRank(wp,key),sorted=rankAll(key);
+  let maxV=sorted[0][key],minV=sorted[sorted.length-1][key];
+  let maxW=sorted[0].n,minW=sorted[sorted.length-1].n;
+  let pct=maxV>0?(v/maxV*100).toFixed(1):0;
+  document.getElementById('dTitle').textContent=meta.l+' · 详细分析';
+  let fmtV=meta.f?meta.f(v):(v.toLocaleString?.()||v);
+  let fmtMax=meta.f?meta.f(maxV):(maxV.toLocaleString?.()||maxV);
+  let fmtMin=meta.f?meta.f(minV):(minV.toLocaleString?.()||minV);
+  let pctVsAvg=v>avg?'+'+((v-avg)/avg*100).toFixed(1)+'%':((v-avg)/avg*100).toFixed(1)+'%';
+  document.getElementById('dGrid').innerHTML=`
+    <div class="dc"><div class="l">当前值</div><div class="v">${fmtV}</div><div class="h">排名 ${rk}/${sorted.length}</div></div>
+    <div class="dc"><div class="l">全部均值</div><div class="v">${fmtV===fmtMax?'—':(avg.toFixed?avg.toFixed(3):avg.toLocaleString())}</div><div class="h">vs 均值 ${pctVsAvg}</div></div>
+    <div class="dc"><div class="l">最优</div><div class="v">${fmtMax}</div><div class="h">${maxW.replace('管户金条-','')} · 达最优 ${pct}%</div></div>
+    <div class="dc"><div class="l">最低</div><div class="v">${fmtMin}</div><div class="h">${minW.replace('管户金条-','')}</div></div>
+  `;
+  let body=document.getElementById('rankBody');body.innerHTML='';
+  sorted.forEach((w,i)=>{
+    let rc=i===0?'r1':i===1?'r2':i===sorted.length-1?'r3':'';
+    let p=maxV>0?(w[key]/maxV*100).toFixed(0):0;
+    let sel=w.n===wpName;
+    body.innerHTML+=`<tr${sel?' style="background:#eff6ff;font-weight:600"':''}><td><span class="rn ${rc}">${i+1}</span></td><td>${w.n.replace('管户金条-','')}</td><td>${meta.f?meta.f(w[key]):w[key]}</td><td><div class="bar-wrap"><div class="bar-fill ${i<3?'bg-g':i>sorted.length-4?'bg-r':'bg-b'}" style="width:${p}%"></div></div></td></tr>`;
+  });
+  let ctx=document.getElementById('dChart').getContext('2d');
+  if(dChartInst)dChartInst.destroy();
+  let labels=sorted.map(w=>w.n.replace('管户金条-',''));
+  let vals=sorted.map(w=>w[key]);
+  let colors=vals.map((v,i)=>v===wp[key]?'#2563eb':(i<3?'#22c55e':i>sorted.length-4?'#ef4444':'#e2e8f0'));
+  dChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:meta.l,data:vals,backgroundColor:colors,borderWidth:0,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y.toLocaleString()}}},scales:{y:{grid:{color:'#f1f5f9'},beginAtZero:false},x:{ticks:{font:{size:9},maxRotation:45}}}}});
+  document.getElementById('detailPanel').classList.add('visible');
+  document.getElementById('detailPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeDetail(){document.getElementById('detailPanel').classList.remove('visible');}
+
+// ====== 趋势图 ======
+function renderTrend(){
+  let t=D.t;if(!t)return;
+  let ctx=document.getElementById('tChart').getContext('2d');
+  let checked=[...document.querySelectorAll('input[data-k]:checked')].map(el=>el.dataset.k);
+  let colors={'r5':'#2563eb','r2':'#16a34a','r3':'#f59e0b','r4':'#ef4444','d6':'#8b5cf6','d7':'#ec4899'} ;
+  let labels={r5:'人均到手薪资',r2:'转化效率',r3:'客单价',r4:'净值率',d6:'费率',d7:'净到手率'};
+  if(tChartInst)tChartInst.destroy();
+  let datasets=checked.map(k=>({label:labels[k]||k,data:t[k],borderColor:colors[k]||'#2563eb',backgroundColor:colors[k]||'#2563eb',yAxisID:'y',tension:0.3,borderWidth:2,pointRadius:3,pointHoverRadius:5}));
+  tChartInst=new Chart(ctx,{type:'line',data:{labels:t.m,datasets},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},scales:{y:{type:'linear',display:true,position:'left',grid:{color:'#f1f5f9'},ticks:{font:{size:10}}}}}});
+}
+
+document.querySelectorAll('input[data-k]').forEach(el=>el.addEventListener('change',renderTrend));
+
+// ====== 启动 ======
+renderL0(curWP);renderL1(curWP);renderL2(curWP);renderTrend();
+</script>
+</body>
+</html>

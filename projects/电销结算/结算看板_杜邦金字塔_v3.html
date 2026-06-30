@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>供应商结算 · 杜邦金字塔</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f7fa;color:#1a1a2e;padding:20px;max-width:1000px;margin:0 auto;font-size:14px}
+.hdr{background:#fff;border-radius:12px;padding:16px 20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr h1{font-size:17px;font-weight:700}
+.hdr h1 span{color:#64748b;font-weight:400;font-size:12px;margin-left:6px}
+.ctl select{padding:5px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;min-width:160px}
+.card{background:#fff;border-radius:12px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card h3{font-size:14px;margin-bottom:12px}
+.l0-card{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:12px;padding:16px 36px;display:inline-block;cursor:pointer;min-width:280px;text-align:center}
+.l0-card .v{font-size:30px;font-weight:700}
+.l1-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.l1-card{background:#f8fafc;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;text-align:center;cursor:pointer;flex:1;min-width:110px;max-width:180px}
+.l1-card:hover{border-color:#2563eb}
+.l1-card .v{font-size:18px;font-weight:700;margin:4px 0}
+.l2-card{background:#fff;border:1px dashed #cbd5e1;border-radius:8px;padding:8px 14px;text-align:center;flex:1;min-width:80px}
+.l2-card .v{font-size:13px;font-weight:600}
+.l2-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.l2-row:last-child{margin-bottom:0}
+.dp{display:none}.dp.show{display:block}
+.dg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.dc{background:#f8fafc;border-radius:8px;padding:10px 14px}
+.dc .v{font-size:17px;font-weight:700}
+.rt{width:100%;border-collapse:collapse;font-size:12px}
+.rt td,.rt th{padding:6px 10px;border-bottom:1px solid #f1f5f9}
+.chk label{font-size:11px;cursor:pointer;margin-right:12px}
+.small{font-size:11px;color:#64748b}
+.gap{margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="hdr"><h1>供应商结算 · 杜邦金字塔 <span>2026-06</span></h1><select class="ctl" id="wpSel"></select></div>
+
+<div class="card">
+<h3>L0 · 总结算价值</h3>
+<div style="text-align:center;padding:16px 0">
+<div class="l0-card" id="l0Card">
+<div class="small">总结算价值（税后到手薪资总额）</div>
+<div class="v" id="vL0">—</div>
+<div class="small gap" id="sL0"></div>
+</div></div>
+<div style="display:flex;justify-content:center;align-items:center;gap:16px">
+<div style="background:#f0f9ff;border-radius:8px;padding:8px 20px;text-align:center"><div class="small">人均到手薪资</div><div style="font-weight:700;color:#0369a1;font-size:16px" id="vP1">—</div></div>
+<div style="color:#94a3b8;font-size:18px">×</div>
+<div style="background:#f0f9ff;border-radius:8px;padding:8px 20px;text-align:center"><div class="small">数据人力</div><div style="font-weight:700;color:#0369a1;font-size:16px" id="vP2">—</div></div>
+</div></div>
+
+<div class="card">
+<h3>L1 · 人均到手薪资 <span style="color:#94a3b8;font-weight:400;font-size:12px">= 人均资源规模 × 转化效率 × 客单价 × 净值率</span></h3>
+<div class="l1-row" id="l1Cards"></div>
+</div>
+
+<div class="card">
+<h3>L2 · 因子拆解</h3>
+<div style="color:#2563eb;font-size:12px;font-weight:600;margin-bottom:6px">▶ 转化效率 → 首贷转化率 / 复贷转化率 / 首贷户占比</div>
+<div class="l2-row" id="l2Conv"></div>
+<div style="color:#2563eb;font-size:12px;font-weight:600;margin-bottom:6px">▶ 客单价 → 首贷户均 / 复贷户均</div>
+<div class="l2-row" id="l2Ticket"></div>
+<div style="color:#f59e0b;font-size:12px;font-weight:600;margin-bottom:6px">▶ 净值率 → 费率 × 净到手率 × 还款系数 × 线路费率</div>
+<div class="l2-row" id="l2Rate"></div>
+</div>
+
+<div class="card dp" id="dp">
+<div style="display:flex;justify-content:space-between"><h3 id="dTitle"></h3><button onclick="clsD()" class="ctl" style="border:none;font-size:16px;cursor:pointer">✕</button></div>
+<div class="dg" id="dGrid"></div>
+<div style="height:200px"><canvas id="dChart"></canvas></div>
+<div style="margin-top:14px"><h3>全部职场排名</h3><table class="rt"><thead><tr><th>#</th><th>职场</th><th>值</th><th>对比</th></tr></thead><tbody id="rankB"></tbody></table></div>
+</div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+<h3>毅航合肥 · 月度趋势</h3>
+<div class="chk">
+<label><input type="checkbox" data-k="r5" checked> 人均到手薪资</label>
+<label><input type="checkbox" data-k="r2"> 转化效率</label>
+<label><input type="checkbox" data-k="r3"> 客单价</label>
+<label><input type="checkbox" data-k="r4"> 净值率</label>
+<label><input type="checkbox" data-k="d6"> 费率</label>
+<label><input type="checkbox" data-k="d7"> 净到手率</label>
+</div></div>
+<div style="height:240px"><canvas id="tChart"></canvas></div>
+</div>
+
+<script id="dupont-data" type="application/json">
+{"wp": [{"n": "管户金条-人和职场", "L0": 25952, "hr": 40, "r1": 289, "r2": 4.23, "r3": 35439, "r4": 0.15, "r5": 649, "d6": 0.171, "d7": 87.8, "d1": 0.88, "d2": 6.79, "d3": 67395, "d4": 32272, "d5": 9.0, "d8": 0.43, "d9": 6.21, "d10": 0.936}, {"n": "管户金条-伽玛职场", "L0": 91189, "hr": 222, "r1": 191, "r2": 5.01, "r3": 29657, "r4": 0.144, "r5": 411, "d6": 0.166, "d7": 87.3, "d1": 0.95, "d2": 7.8, "d3": 55014, "d4": 27539, "d5": 7.7, "d8": 0.79, "d9": 6.81, "d10": 0.936}, {"n": "管户金条-华啸职场", "L0": 27646, "hr": 64, "r1": 182, "r2": 7.26, "r3": 29758, "r4": 0.11, "r5": 432, "d6": 0.124, "d7": 88.3, "d1": 0.75, "d2": 7.84, "d3": 71086, "d4": 29414, "d5": 0.8, "d8": 0.43, "d9": 5.68, "d10": 0.936}, {"n": "管户金条-博岳石家庄职场", "L0": 63571, "hr": 94, "r1": 316, "r2": 4.07, "r3": 30486, "r4": 0.173, "r5": 676, "d6": 0.195, "d7": 88.4, "d1": 0.89, "d2": 6.81, "d3": 69159, "d4": 26142, "d5": 10.1, "d8": 0.43, "d9": 5.56, "d10": 0.936}, {"n": "管户金条-宿迁兆科职场", "L0": 33277, "hr": 42, "r1": 2236, "r2": 0.8, "r3": 20968, "r4": 0.211, "r5": 792, "d6": 0.327, "d7": 64.4, "d1": 0.5, "d2": 6.47, "d3": 16252, "d4": 27971, "d5": 59.8, "d8": 0.5, "d9": 31.24, "d10": 0.936}, {"n": "管户金条-岐力职场", "L0": 38447, "hr": 118, "r1": 183, "r2": 6.85, "r3": 25378, "r4": 0.102, "r5": 326, "d6": 0.12, "d7": 85.6, "d1": 0.89, "d2": 7.25, "d3": 20058, "d4": 25422, "d5": 0.8, "d8": 0.43, "d9": 8.55, "d10": 0.936}, {"n": "管户金条-广达陕西职场", "L0": 23724, "hr": 88, "r1": 161, "r2": 4.16, "r3": 27965, "r4": 0.144, "r5": 270, "d6": 0.168, "d7": 85.7, "d1": 0.57, "d2": 7.64, "d3": 62945, "d4": 25412, "d5": 6.8, "d8": 0.86, "d9": 8.46, "d10": 0.936}, {"n": "管户金条-毅航合肥职场", "L0": 365400, "hr": 332, "r1": 363, "r2": 4.52, "r3": 34449, "r4": 0.195, "r5": 1101, "d6": 0.22, "d7": 88.7, "d1": 1.36, "d2": 8.02, "d3": 62731, "d4": 29119, "d5": 15.9, "d8": 0.43, "d9": 5.22, "d10": 0.936}, {"n": "管户金条-毛毛虫职场", "L0": 207783, "hr": 122, "r1": 592, "r2": 3.11, "r3": 37848, "r4": 0.245, "r5": 1703, "d6": 0.274, "d7": 89.3, "d1": 1.21, "d2": 7.84, "d3": 63585, "d4": 27929, "d5": 27.8, "d8": 0.43, "d9": 4.65, "d10": 0.936}, {"n": "管户金条-汇讯职场", "L0": 63445, "hr": 78, "r1": 380, "r2": 2.88, "r3": 33482, "r4": 0.222, "r5": 813, "d6": 0.254, "d7": 87.2, "d1": 1.01, "d2": 7.56, "d3": 56242, "d4": 25931, "d5": 24.9, "d8": 0.79, "d9": 6.82, "d10": 0.936}, {"n": "管户金条-翰锐曲靖职场", "L0": 46110, "hr": 92, "r1": 236, "r2": 5.72, "r3": 30709, "r4": 0.121, "r5": 501, "d6": 0.138, "d7": 87.6, "d1": 0.78, "d2": 7.63, "d3": 43860, "d4": 30193, "d5": 3.8, "d8": 0.43, "d9": 6.42, "d10": 0.936}, {"n": "管户金条-言犀赛夫机器人职场", "L0": 14888, "hr": 0, "r1": 0, "r2": 0.95, "r3": 23754, "r4": 0.012, "r5": 0, "d6": 0.066, "d7": 18.0, "d1": 0.09, "d2": 7.55, "d3": 8554, "d4": 25207, "d5": 8.7, "d8": 0.43, "d9": 80.8, "d10": 0.936}, {"n": "管户金条-赛维斯机器人职场", "L0": 28063, "hr": 26, "r1": 8597, "r2": 0.65, "r3": 22782, "r4": 0.085, "r5": 1079, "d6": 0.178, "d7": 47.5, "d1": 0.37, "d2": 1.22, "d3": 13944, "d4": 28119, "d5": 37.6, "d8": 0.43, "d9": 49.27, "d10": 0.936}, {"n": "管户金条-赛维斯职场", "L0": 98214, "hr": 174, "r1": 276, "r2": 4.96, "r3": 26374, "r4": 0.156, "r5": 564, "d6": 0.178, "d7": 87.9, "d1": 1.03, "d2": 7.39, "d3": 53396, "d4": 24034, "d5": 8.0, "d8": 0.43, "d9": 6.09, "d10": 0.936}, {"n": "管户金条-零犀伽玛机器人职场", "L0": 18762, "hr": 24, "r1": 4979, "r2": 0.33, "r3": 14826, "r4": 0.316, "r5": 782, "d6": 0.538, "d7": 58.7, "d1": 0, "d2": 0, "d3": 0, "d4": 0, "d5": 0, "d8": 0.07, "d9": 37.25, "d10": 0.936}, {"n": "管户金条-零犀岐力机器人职场", "L0": 4453, "hr": 26, "r1": 1424, "r2": 1.14, "r3": 30868, "r4": 0.034, "r5": 171, "d6": 0.069, "d7": 49.4, "d1": 0, "d2": 0, "d3": 0, "d4": 0, "d5": 0, "d8": 0.72, "d9": 47.29, "d10": 0.936}, {"n": "管户金条-零犀机器人职场", "L0": 218963, "hr": 52, "r1": 39341, "r2": 0.77, "r3": 22867, "r4": 0.061, "r5": 4211, "d6": 0.132, "d7": 46.0, "d1": 0.22, "d2": 4.41, "d3": 14443, "d4": 25597, "d5": 24.5, "d8": 0.86, "d9": 50.88, "d10": 0.936}, {"n": "管户金条-零犀毅航机器人职场", "L0": 58052, "hr": 43, "r1": 6962, "r2": 0.37, "r3": 16452, "r4": 0.32, "r5": 1350, "d6": 0.535, "d7": 59.7, "d1": 0, "d2": 0, "d3": 0, "d4": 0, "d5": 0, "d8": 0.07, "d9": 36.22, "d10": 0.936}, {"n": "管户金条-零犀毛毛虫机器人职场", "L0": 21830, "hr": 23, "r1": 6018, "r2": 0.35, "r3": 13945, "r4": 0.324, "r5": 949, "d6": 0.527, "d7": 61.5, "d1": 0, "d2": 0, "d3": 0, "d4": 0, "d5": 0, "d8": 0.07, "d9": 34.32, "d10": 0.936}, {"n": "管户金条-零犀赛维斯机器人职场", "L0": 8770, "hr": 18, "r1": 6200, "r2": 0.32, "r3": 12050, "r4": 0.201, "r5": 487, "d6": 0.542, "d7": 37.1, "d1": 0, "d2": 0, "d3": 0, "d4": 0, "d5": 0, "d8": 0.07, "d9": 60.35, "d10": 0.936}, {"n": "管户金条外场-毅航合肥", "L0": 0, "hr": 0, "r1": 0, "r2": 0.0, "r3": 0, "r4": 0.0, "r5": 0, "d6": 0.0, "d7": 0.0, "d1": 0, "d2": 0, "d3": 0, "d4": 0, "d5": 0, "d8": 0.07, "d9": 0.0, "d10": 0.936}], "avg": {"L0": 72926.95, "r1": 4154.0, "r2": 2.9225000000000003, "r3": 26002.85, "r4": 0.16629999999999998, "r5": 908.7894736842105, "d1": 0.7666666666666665, "d2": 6.814666666666666, "d3": 45244.26666666667, "d4": 27353.4, "d5": 16.413333333333334, "d6": 0.24609999999999999, "d7": 70.30499999999999, "d8": 0.43666666666666676, "d9": 24.9045, "d10": 0.9360000000000002}, "t": {"m": ["2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"], "r5": [7765, 7229, 4841, 8059, 4606, 7088, 1101], "r2": [2.77, 2.99, 2.94, 2.69, 3.02, 3.52, 4.52], "r3": [38453, 40756, 41800, 49762, 43333, 46205, 34449], "r4": [0.1979, 0.1893, 0.1747, 0.1761, 0.1565, 0.2109, 0.1951], "d6": [0.227, 0.215, 0.199, 0.2, 0.181, 0.237, 0.22], "d7": [87.4, 88.0, 87.7, 87.9, 86.7, 89.1, 88.7]}}
+</script>
+
+<script>
+var D = JSON.parse(document.getElementById('dupont-data').textContent);
+var cur = "管户金条-毅航合肥职场";
+var dc = null, tc = null;
+
+function gw(n){for(var i=0;i<D.wp.length;i++){if(D.wp[i].n===n)return D.wp[i];}return null;}
+function rk(k){var a=[];for(var i=0;i<D.wp.length;i++){if(D.wp[i][k])a.push(D.wp[i]);}a.sort(function(x,y){return y[k]-x[k];});return a;}
+function gr(w,k){var s=rk(k);for(var i=0;i<s.length;i++){if(s[i].n===w.n)return i+1;}return s.length;}
+
+function fmt(k,v){
+  if(v===null||v===undefined)return"0";
+  if(k==="r1"||k==="r3"||k==="r5"||k==="L0"||k==="d3"||k==="d4"||k==="hr")return Math.round(v).toLocaleString();
+  if(k==="r2"||k==="d1"||k==="d2"||k==="d5")return v.toFixed(2);
+  if(k==="r4"||k==="d6")return v.toFixed(3);
+  if(k==="d7"||k==="d9")return v.toFixed(1);
+  if(k==="d8")return v.toFixed(3);
+  return String(v);
+}
+
+function rL0(n){
+  var w=gw(n);if(!w)return;
+  document.getElementById("vL0").textContent=w.L0.toLocaleString();
+  document.getElementById("vP1").textContent=fmt("r5",w.r5)+" 元/人";
+  document.getElementById("vP2").textContent=w.hr.toLocaleString()+" 人";
+  var p=w.L0>D.avg.L0?"+"+((w.L0-D.avg.L0)/D.avg.L0*100).toFixed(1):((w.L0-D.avg.L0)/D.avg.L0*100).toFixed(1);
+  document.getElementById("sL0").textContent="排名 "+gr(w,"L0")+"/"+D.wp.length+"  vs 均值 "+p+"%";
+}
+
+function rL1(n){
+  var w=gw(n);if(!w)return;
+  var c=document.getElementById("l1Cards");c.innerHTML="";
+  var ms=[{k:"r1",l:"人均资源规模",u:"元"},{k:"r2",l:"转化效率",u:"%"},{k:"r3",l:"客单价",u:"元"},{k:"r4",l:"净值率",u:"%"}];
+  for(var i=0;i<ms.length;i++){
+    var m=ms[i];var v=w[m.k];var r=gr(w,m.k);var t=D.wp.length;
+    var d=document.createElement("div");d.className="l1-card";
+    d.innerHTML="<div class=\"small\">"+m.l+"</div><div class=\"v\">"+fmt(m.k,v)+"</div><div class=\"small\">"+m.u+" &middot; 第"+r+"/"+t+"</div>";
+    d.onclick=(function(kk){return function(){showD(kk,n);};})(m.k);
+    c.appendChild(d);
+    if(i<ms.length-1){var op=document.createElement("span");op.style.cssText="color:#94a3b8;font-size:18px;display:flex;align-items:center;padding:0 4px";op.textContent="×";c.appendChild(op);}
+  }
+}
+
+function rL2(n){
+  var w=gw(n);if(!w)return;
+  document.getElementById("l2Conv").innerHTML="<div class=\"l2-card\"><div class=\"small\">首贷转化率</div><div class=\"v\">"+fmt("r2",w.d1)+"%</div></div><div class=\"l2-card\"><div class=\"small\">复贷转化率</div><div class=\"v\">"+fmt("r2",w.d2)+"%</div></div><div class=\"l2-card\"><div class=\"small\">首贷户占比</div><div class=\"v\">"+fmt("r2",w.d5)+"%</div></div>";
+  document.getElementById("l2Ticket").innerHTML="<div class=\"l2-card\"><div class=\"small\">首贷客单价</div><div class=\"v\">"+fmt("d3",w.d3)+" 元</div></div><div class=\"l2-card\"><div class=\"small\">复贷客单价</div><div class=\"v\">"+fmt("d4",w.d4)+" 元</div></div>";
+  document.getElementById("l2Rate").innerHTML="<div class=\"l2-card\" style=\"border-color:#fde68a\"><div class=\"small\">费率</div><div class=\"v\">"+fmt("d6",w.d6)+"%</div></div><div class=\"l2-card\" style=\"border-color:#fde68a\"><div class=\"small\">净到手率</div><div class=\"v\">"+fmt("d7",w.d7)+"%</div></div><div class=\"l2-card\" style=\"border-color:#fde68a\"><div class=\"small\">还款系数</div><div class=\"v\">"+fmt("d8",w.d8)+"</div></div><div class=\"l2-card\" style=\"border-color:#fde68a\"><div class=\"small\">线路费率</div><div class=\"v\">"+fmt("d9",w.d9)+"%</div></div>";
+}
+
+function showD(key,n){
+  var w=gw(n);if(!w)return;
+  var ml={L0:"总结算价值",r1:"人均资源规模",r2:"转化效率",r3:"客单价",r4:"净值率",r5:"人均到手薪资",d1:"首贷转化率",d2:"复贷转化率",d3:"首贷客单价",d4:"复贷客单价",d5:"首贷户占比",d6:"费率",d7:"净到手率",d8:"还款系数",d9:"线路费率"}[key];
+  if(!ml)return;
+  document.getElementById("dTitle").textContent=ml+" · 详细分析";
+  var v=w[key],a=D.avg[key],s=rk(key),mx=s[0][key],mn=s[s.length-1][key];
+  var pct=mx>0?(v/mx*100).toFixed(1):0;
+  document.getElementById("dGrid").innerHTML="<div class=\"dc\"><div class=\"small\">当前值</div><div class=\"v\">"+fmt(key,v)+"</div><div class=\"small gap\">排名 "+gr(w,key)+"/"+s.length+"</div></div><div class=\"dc\"><div class=\"small\">全部均值</div><div class=\"v\">"+fmt(key,a)+"</div><div class=\"small gap\">"+(v>a?"+":"")+((v-a)/a*100).toFixed(1)+"% vs 均值</div></div><div class=\"dc\"><div class=\"small\">最优值</div><div class=\"v\">"+fmt(key,mx)+"</div><div class=\"small gap\">"+s[0].n.replace("管户金条-","")+" · 达最优 "+pct+"%</div></div><div class=\"dc\"><div class=\"small\">最低值</div><div class=\"v\">"+fmt(key,mn)+"</div><div class=\"small gap\">"+s[s.length-1].n.replace("管户金条-","")+"</div></div>";
+  var bd=document.getElementById("rankB");bd.innerHTML="";
+  for(var i=0;i<s.length;i++){var x=s[i];var p=mx>0?(x[key]/mx*100).toFixed(0):0;
+    bd.innerHTML+="<tr"+(x.n===n?" style=\"background:#eff6ff\"":"")+"><td>"+(i+1)+"</td><td>"+x.n.replace("管户金条-","")+"</td><td>"+fmt(key,x[key])+"</td><td><div style=\"background:#e2e8f0;height:5px;border-radius:3px\"><div style=\"background:#2563eb;height:100%;border-radius:3px;width:"+p+"%\"></div></div></td></tr>";}
+  var ctx=document.getElementById("dChart").getContext("2d");
+  if(dc){dc.destroy();dc=null;}
+  var lbs=[],vs=[],cols=[];
+  for(var i=0;i<s.length;i++){lbs.push(s[i].n.replace("管户金条-",""));vs.push(s[i][key]);cols.push(s[i][key]===w[key]?"#2563eb":"#e2e8f0");}
+  dc=new Chart(ctx,{type:"bar",data:{labels:lbs,datasets:[{label:ml,data:vs,backgroundColor:cols,borderWidth:0,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:false},x:{ticks:{font:{size:9},maxRotation:45}}}}});
+  document.getElementById("dp").classList.add("show");
+}
+
+function clsD(){document.getElementById("dp").classList.remove("show");}
+
+function rTrend(){
+  if(!D.t)return;
+  var ctx=document.getElementById("tChart").getContext("2d");
+  var cbs=document.querySelectorAll("input[data-k]:checked");var ck=[];for(var i=0;i<cbs.length;i++)ck.push(cbs[i].dataset.k);
+  var clr={r5:"#2563eb",r2:"#16a34a",r3:"#f59e0b",r4:"#ef4444",d6:"#8b5cf6",d7:"#ec4899"};
+  var lbl={r5:"人均到手薪资",r2:"转化效率",r3:"客单价",r4:"净值率",d6:"费率",d7:"净到手率"};
+  if(tc){tc.destroy();tc=null;}
+  var ds=[];for(var i=0;i<ck.length;i++){var k=ck[i];ds.push({label:lbl[k]||k,data:D.t[k],borderColor:clr[k]||"#2563eb",backgroundColor:clr[k]||"#2563eb",tension:0.3,borderWidth:2,pointRadius:3});}
+  tc=new Chart(ctx,{type:"line",data:{labels:D.t.m,datasets:ds},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"bottom"}},scales:{y:{grid:{color:"#f1f5f9"}}}}});
+}
+
+var ckEls=document.querySelectorAll("input[data-k]");for(var i=0;i<ckEls.length;i++){ckEls[i].addEventListener("change",rTrend);}
+var sel=document.getElementById("wpSel");
+for(var i=0;i<D.wp.length;i++){var o=document.createElement("option");o.value=D.wp[i].n;o.textContent=D.wp[i].n.replace("管户金条-","");sel.appendChild(o);}
+sel.value=cur;
+sel.onchange=function(){cur=this.value;rL0(cur);rL1(cur);rL2(cur);clsD();};
+rL0(cur);rL1(cur);rL2(cur);rTrend();
+</script>
+</body>
+</html>

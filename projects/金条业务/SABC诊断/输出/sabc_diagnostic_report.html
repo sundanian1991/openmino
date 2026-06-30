@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SABC 深度诊断报告</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root {
+  --bg:#FFF8F0;--card:#FFFFFF;--text:#2D3748;--muted:#718096;--light:#A0AEC0;
+  --border:#F0E6D8;--accent:#E8734A;--accent-light:#FFF0EB;--accent-dark:#C75A35;
+  --green:#48BB78;--yellow:#ECC94B;
+  --gs:#E8734A;--ga:#5A6878;--gb:#8B99A8;--gc:#B8C4D0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.8;padding:0}
+.wrap{max-width:960px;margin:0 auto;padding:48px 40px 80px}
+
+/* Header */
+h1{font-size:26px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:20px}
+.pool-badge{display:inline-block;padding:4px 14px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:20px;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent)}
+
+/* Chapter nav */
+.ch-nav{display:flex;gap:6px;margin-bottom:32px;flex-wrap:wrap}
+.ch-nav a{padding:6px 14px;border-radius:6px;font-size:12px;text-decoration:none;color:var(--muted);background:var(--card);border:1px solid var(--border);transition:all .15s}
+.ch-nav a:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-light)}
+
+/* KPI cards */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+@media(max-width:768px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--border)}
+.kpi h3{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.kr{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+.kr .lb{color:var(--muted)}.kr .vl{font-weight:700}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dg{background:var(--green)}.dy{background:var(--yellow)}.dr{background:var(--accent)}
+
+/* Chapter sections — single-column long scroll */
+.sec{margin-bottom:56px;scroll-margin-top:24px}
+.sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;padding-bottom:10px;border-bottom:2px solid var(--accent)}
+.sh h2{font-size:18px;font-weight:800;color:var(--text)}
+.sh .cn{font-size:11px;color:var(--light)}.sh .sn{font-size:11px;color:var(--muted);margin-left:auto}
+.ch-desc{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.7;padding-left:2px}
+
+/* Chart boxes — full-width single column */
+.box{background:var(--card);border-radius:12px;padding:24px 24px 20px;border:1px solid var(--border);position:relative;margin-bottom:0}
+.box .fig-id{font-size:10px;font-weight:700;color:var(--accent);display:block;margin-bottom:4px}
+.box h3{font-size:15px;font-weight:700;margin-bottom:4px}
+.box .brief{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.box .c{width:100%;height:340px}
+.box .c.tall{height:400px}
+.box .c.short{height:260px}
+.box .c.xtall{height:480px}
+
+/* Single column: no more side-by-side charts */
+.cg2{display:block}
+.cg2 .box{margin-bottom:20px}
+
+/* Small-multiples grid */
+.sm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:10px}
+.sm-item{background:var(--card);border-radius:10px;padding:14px;border:1px solid var(--border)}
+.sm-item .sm-label{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.sm-item .sm-c{width:100%;height:180px}
+
+/* Tables */
+.data-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px}
+.data-table th{background:var(--accent-light);color:var(--text);font-weight:700;padding:10px 10px;text-align:center;border:1px solid var(--border)}
+.data-table td{padding:8px 8px;text-align:center;border:1px solid var(--border)}
+.data-table tr:nth-child(even){background:#FFFAF5}
+.data-table .hl{background:rgba(232,115,74,0.08);font-weight:700}
+.data-table .num{font-weight:700;font-variant-numeric:tabular-nums}
+.badge-s{color:var(--gs);font-weight:800}.badge-a{color:var(--ga);font-weight:700}.badge-b{color:var(--gb)}.badge-c{color:var(--gc)}
+.color-up{color:var(--accent)}.color-down{color:var(--green)}
+
+/* Anomaly cards */
+.ac-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:10px}
+@media(max-width:768px){.ac-grid{grid-template-columns:1fr}}
+.ac-card{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--border);border-left:4px solid var(--accent)}
+.ac-card .ac-num{font-size:28px;font-weight:800;color:var(--accent)}
+.ac-card .ac-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.ac-card .ac-desc{font-size:11px;color:var(--light);margin-top:6px}
+
+/* Action cards */
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:10px}
+@media(max-width:768px){.acts{grid-template-columns:1fr}}
+.act{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--border);border-left:4px solid var(--accent)}
+.act.p0{border-left-color:var(--accent)}.act.p1{border-left-color:var(--yellow)}.act.p2{border-left-color:var(--green)}
+.act .pri{font-size:10px;font-weight:700;color:var(--accent);margin-bottom:3px}
+.act.p1 .pri{color:#B7950B}.act.p2 .pri{color:var(--green)}
+.act h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.act p{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* Footer */
+.ft{border-top:1px solid var(--border);padding-top:20px;margin-top:20px;font-size:11px;color:var(--light);line-height:2}
+.ft strong{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="title"></h1>
+  <p class="sub" id="subtitle"></p>
+  <span class="pool-badge" id="poolBadge"></span>
+
+  <!-- Chapter nav -->
+  <nav class="ch-nav">
+    <a href="#ch1">一、全景总览</a>
+    <a href="#ch2">二、趋势纵深</a>
+    <a href="#ch3">三、分群画像</a>
+    <a href="#ch4">四、关联归因</a>
+    <a href="#ch5">五、异常预警</a>
+    <a href="#ch6">六、诊断结论</a>
+  </nav>
+
+  <!-- KPI cards -->
+  <div class="kpis" id="kpis"></div>
+
+  <!-- ================ Chapter 1: 全景总览 ================ -->
+  <section class="sec" id="ch1">
+    <div class="sh"><h2>一、全景总览</h2><span class="cn">Overview</span><span class="sn">宏观快照 · 3秒看懂健康状况</span></div>
+    <p class="ch-desc" id="ch1Desc">一眼看清等级分布、两池差异。红色 = 需关注的信号，灰色 = 正常基线。</p>
+
+    <div class="cg2">
+      <div class="box">
+        <span class="fig-id">图1</span>
+        <h3>职场 S/A/B/C 构成</h3>
+        <p class="brief">各职场的等级堆叠——按 C 级率从高到低排序，问题优先可视化。柱高 = 参评总人数，色块 = 各等级占比。</p>
+        <div class="c" id="fig1"></div>
+      </div>
+      <div class="box">
+        <span class="fig-id">图2</span>
+        <h3 id="fig2Title">首贷 × 复贷 双池对比</h3>
+        <p class="brief" id="fig2Brief">首贷和复贷是两种业务，量级和驱动因素不同。</p>
+        <div class="c short" id="fig2"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================ Chapter 2: 趋势纵深 ================ -->
+  <section class="sec" id="ch2">
+    <div class="sh"><h2>二、趋势纵深</h2><span class="cn">Trend</span><span class="sn">团队怎么走到今天 · 时间线归因</span></div>
+    <p class="ch-desc">司龄结构、产能曲线、入职浪潮——看清当前状态的成因。</p>
+
+    <div class="cg2">
+      <div class="box">
+        <span class="fig-id">图3</span>
+        <h3>司龄 × 等级 热力图</h3>
+        <p class="brief">S 级集中在 MOB12+ 老员工，C 级集中在 MOB1-3 新人。颜色越深 = 人数越多。</p>
+        <div class="c" id="fig3"></div>
+      </div>
+      <div class="box">
+        <span class="fig-id">图4</span>
+        <h3>司龄段绩效走势</h3>
+        <p class="brief">分维度独立对比——各司龄段在 GMV、转化率、通时三个维度上的表现。</p>
+        <div style="width:100%;height:220px" id="fig4a"></div>
+        <div style="width:100%;height:220px" id="fig4b"></div>
+        <div style="width:100%;height:220px" id="fig4c"></div>
+      </div>
+    </div>
+
+    <div class="cg2"><div class="box fw">
+      <span class="fig-id">图5</span>
+      <h3 id="fig5Title">入职趋势</h3>
+      <p class="brief"><span id="hireDesc"></span></p>
+      <div class="c tall" id="fig5"></div>
+    </div></div>
+  </section>
+
+  <!-- ================ Chapter 3: 分群画像 ================ -->
+  <section class="sec" id="ch3">
+    <div class="sh"><h2>三、分群画像</h2><span class="cn">Profile</span><span class="sn">S / A / B / C 各长什么样</span></div>
+    <p class="ch-desc">拆解四个等级的核心差异——S 级和 C 级不是"差一点"，是量级差。</p>
+
+    <div class="cg2"><div class="box fw">
+      <span class="fig-id">图6</span>
+      <h3 id="fig6Title">新人产出追踪</h3>
+      <p class="brief" id="fig6Desc">新人界定基于入职批次动态识别。四组指标独立观察，不跨组比较。</p>
+      <div class="sm-grid" id="smGrid"></div>
+    </div></div>
+
+    <div class="cg2"><div class="box fw">
+      <span class="fig-id">图7</span>
+      <h3>SABC 四档画像明细</h3>
+      <p class="brief">关键指标均值对比——S/C 倍差越大，产能断层越严重。</p>
+      <table class="data-table" id="gradeTable"><thead><tr><th>维度</th><th>S级</th><th>A级</th><th>B级</th><th>C级</th><th>S/C倍差</th></tr></thead><tbody></tbody></table>
+    </div></div>
+
+    <div class="cg2"><div class="box fw">
+      <span class="fig-id">图8</span>
+      <h3>转化率衰减路径</h3>
+      <p class="brief">从 S 级到 C 级逐级下降——中间层培养机制可能缺失。</p>
+      <div class="c tall" id="fig8"></div>
+    </div></div>
+  </section>
+
+  <!-- ================ Chapter 4: 关联归因 ================ -->
+  <section class="sec" id="ch4">
+    <div class="sh"><h2>四、关联归因</h2><span class="cn">Cause</span><span class="sn">GMV 的核心驱动因素是什么</span></div>
+    <p class="ch-desc">通话效率与转化技巧——哪个对 GMV 影响更大？每点 = 一个坐席。</p>
+
+    <div class="cg2">
+      <div class="box">
+        <span class="fig-id">图13</span>
+        <h3>ATT × 效率 分池矩阵</h3>
+        <p class="brief" id="fig13Brief">首贷与复贷的效率驱动逻辑不同，分池独立观察。</p>
+        <div style="width:100%;height:220px;margin-bottom:12px" id="fig13a"></div>
+        <div style="width:100%;height:220px" id="fig13b"></div>
+      </div>
+      <div class="box">
+        <span class="fig-id">图10</span>
+        <h3>通时 × GMV 关联分析</h3>
+        <p class="brief" id="fig10Brief">有效通时总量是 GMV 的最强预测因子。首贷与复贷的驱动逻辑不同。</p>
+        <div class="c" id="fig10"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================ Chapter 5: 异常预警 ================ -->
+  <section class="sec" id="ch5">
+    <div class="sh"><h2>五、异常预警</h2><span class="cn">Alert</span><span class="sn">哪些坐席 / 职场需要立即关注</span></div>
+    <p class="ch-desc">高 C 级率职场、零通话 / 低效坐席、异常信号扫描。</p>
+
+    <div class="cg2">
+      <div class="box">
+        <span class="fig-id">图14</span>
+        <h3>职场 C 级率排名</h3>
+        <p class="brief">红色 = C 级率 &gt; 30%（严重），黄色 &gt; 20%（关注），灰色 = 正常。</p>
+        <div class="c" id="fig14"></div>
+      </div>
+      <div class="box">
+        <span class="fig-id">图9a</span>
+        <h3>非参评群体构成</h3>
+        <p class="brief">194 人未达参评标准——零通话、低效、其他三类。</p>
+        <div class="c" id="fig9a"></div>
+      </div>
+    </div>
+
+    <div class="cg2"><div class="box fw">
+      <span class="fig-id">图9b</span>
+      <h3>非参评坐席 · 日均通时分布</h3>
+      <p class="brief">零通话坐席 <strong id="zcCount">57</strong> 人——是彻底未上线还是已离职？低效坐席（1-90min）可挽回。</p>
+      <div class="c" id="fig9b"></div>
+    </div></div>
+
+    <div class="ac-grid" id="anomalyCards"></div>
+  </section>
+
+  <!-- ================ Chapter 6: 诊断结论 ================ -->
+  <section class="sec" id="ch6">
+    <div class="sh"><h2>六、诊断结论</h2><span class="cn">Conclusion</span><span class="sn">做什么 · 怎么落地</span></div>
+    <p class="ch-desc">综合前五章发现，给出可执行的行动建议。</p>
+
+    <div class="cg2">
+      <div class="box">
+        <span class="fig-id">图12</span>
+        <h3>评分维度贡献权重</h3>
+        <p class="brief">标准化相关系数——正向 = 该维度越高评分越高，负向 = 反向贡献。R² 衡量解释力。</p>
+        <div class="c" id="fig12"></div>
+      </div>
+      <div class="box">
+        <span class="fig-id">图15</span>
+        <h3>GMV 帕累托曲线</h3>
+        <p class="brief">累计 GMV 集中度分析——头部坐席贡献占比与核心资产识别。</p>
+        <div class="c" id="fig15"></div>
+      </div>
+    </div>
+
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <div class="ft" id="footer"></div>
+</div>
+
+<script>
+var D = {"deadline": "2026-05-12", "supplier": "岐力", "sd_n": 0, "fd_n": 46, "sd_total": 0, "fd_total": 118, "sd_part": 0, "fd_part": 39.0, "sd_s": 0, "sd_a": 0, "sd_b": 0, "sd_c": 0, "sd_gd": {"S": 0, "A": 0, "B": 0, "C": 0}, "fd_gd": {"S": 7, "A": 16, "B": 13, "C": 10}, "total_n": 46, "total_s": 7, "total_a": 16, "total_b": 13, "total_c": 10, "total_gd": {"S": 7, "A": 16, "B": 13, "C": 10}, "s_conv": 7.93, "c_conv": 4.55, "s_att": 109.9, "c_att": 77.4, "s_dur": 145.6, "c_dur": 91.4, "sc_ratio": 1.7, "top20_pct": 27.5, "warning_rate": 12.2, "mob13_conc": 60.0, "wp_names": ["岐力"], "wp_matrix": [{"wp": "岐力", "S": 7, "A": 16, "B": 13, "C": 10}], "tenure_data": [{"tenure": "MOB1-3", "S": 4, "A": 9, "B": 11, "C": 6}, {"tenure": "MOB3-6", "S": 1, "A": 4, "B": 1, "C": 2}, {"tenure": "MOB6-12", "S": 2, "A": 3, "B": 1, "C": 2}], "funnel": {"S": {"connected": 19850.0, "first_loan": 0, "conv_rate": 0.0}, "A": {"connected": 44988.0, "first_loan": 0, "conv_rate": 0.0}, "B": {"connected": 41116.0, "first_loan": 0, "conv_rate": 0.0}, "C": {"connected": 29782.0, "first_loan": 0, "conv_rate": 0.0}}, "pareto": [{"pct": 6.5, "cum": 10.3}, {"pct": 13.0, "cum": 19.0}, {"pct": 19.6, "cum": 27.5}, {"pct": 26.1, "cum": 35.7}, {"pct": 32.6, "cum": 43.5}, {"pct": 39.1, "cum": 51.1}, {"pct": 45.7, "cum": 58.3}, {"pct": 52.2, "cum": 65.1}, {"pct": 58.7, "cum": 71.3}, {"pct": 65.2, "cum": 77.3}, {"pct": 71.7, "cum": 82.9}, {"pct": 78.3, "cum": 87.9}, {"pct": 84.8, "cum": 92.2}, {"pct": 91.3, "cum": 96.1}, {"pct": 97.8, "cum": 99.3}, {"pct": 100, "cum": 100.0}], "wp_c_rates": [{"wp": "岐力", "c_rate": 21.7, "c_count": 10, "total": 46}], "wp_eff_data": [{"wp": "岐力", "att": 91.2, "conv": 6.25, "c_rate": 21.7, "n": 46, "c": 10}], "sd_total_gmv": 0, "fd_total_gmv": 301373900, "combined_n": 46, "has_sd": false, "source_files": [], "hire_months": ["2025-06", "2025-07", "2025-09", "2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05"], "hire_counts": [7, 3, 2, 3, 3, 2, 5, 2, 47, 21, 23], "hire_avg": 10.7, "hire_peak": 47, "hire_hist_avg": 8.2, "burst_months": ["2026-03"], "burst_total": 47, "tenure_perf": [{"tenure": "MOB1-3", "avg_gmv": 6646500, "avg_conv": 6.2, "avg_dur": 120.0, "avg_att": 86.1, "n": 30}, {"tenure": "MOB3-6", "avg_gmv": 6234238, "avg_conv": 6.43, "avg_dur": 110.8, "avg_att": 98.9, "n": 8}, {"tenure": "MOB6-12", "avg_gmv": 6513125, "avg_conv": 6.27, "avg_dur": 125.8, "avg_att": 102.8, "n": 8}], "new_batches": {"2026-05": {"total": 23, "rated": 0, "with_gmv": 18, "avg_gmv": 357974, "avg_dur": 109.9, "avg_conv": 1.68}, "2026-04": {"total": 21, "rated": 5, "with_gmv": 18, "avg_gmv": 2638352, "avg_dur": 87.8, "avg_conv": 5.16}}, "waterfall": [{"grade": "S", "conv_rate": 7.93, "drop": 0, "n": 7}, {"grade": "A", "conv_rate": 6.71, "drop": -1.22, "n": 16}, {"grade": "B", "conv_rate": 6.1, "drop": -0.61, "n": 13}, {"grade": "C", "conv_rate": 4.55, "drop": -1.55, "n": 10}], "sd_scatter": {"att_conv": [], "dur_gmv": []}, "fd_scatter": {"att_conv": [{"att": 136.0, "conv": 8.75, "grade": "S"}, {"att": 97.3, "conv": 7.03, "grade": "S"}, {"att": 153.9, "conv": 8.52, "grade": "S"}, {"att": 93.5, "conv": 8.16, "grade": "S"}, {"att": 113.9, "conv": 6.38, "grade": "A"}, {"att": 98.8, "conv": 7.58, "grade": "S"}, {"att": 108.1, "conv": 7.04, "grade": "S"}, {"att": 81.6, "conv": 8.41, "grade": "S"}, {"att": 94.2, "conv": 6.18, "grade": "A"}, {"att": 89.6, "conv": 7.09, "grade": "A"}, {"att": 96.8, "conv": 7.38, "grade": "A"}, {"att": 115.7, "conv": 7.3, "grade": "A"}, {"att": 102.2, "conv": 7.29, "grade": "A"}, {"att": 136.2, "conv": 5.73, "grade": "A"}, {"att": 101.2, "conv": 7.29, "grade": "A"}, {"att": 74.2, "conv": 6.01, "grade": "A"}, {"att": 88.8, "conv": 7.95, "grade": "A"}, {"att": 94.1, "conv": 6.38, "grade": "A"}, {"att": 87.4, "conv": 7.0, "grade": "A"}, {"att": 91.4, "conv": 5.92, "grade": "A"}, {"att": 119.7, "conv": 5.38, "grade": "A"}, {"att": 73.6, "conv": 7.31, "grade": "A"}, {"att": 90.0, "conv": 6.81, "grade": "A"}, {"att": 71.4, "conv": 7.09, "grade": "B"}, {"att": 88.4, "conv": 6.06, "grade": "B"}, {"att": 79.1, "conv": 6.1, "grade": "B"}, {"att": 87.2, "conv": 6.2, "grade": "B"}, {"att": 85.4, "conv": 5.7, "grade": "B"}, {"att": 79.2, "conv": 6.95, "grade": "B"}, {"att": 65.4, "conv": 6.87, "grade": "B"}, {"att": 109.6, "conv": 3.65, "grade": "B"}, {"att": 74.7, "conv": 6.86, "grade": "B"}, {"att": 80.6, "conv": 5.83, "grade": "B"}, {"att": 101.1, "conv": 6.03, "grade": "B"}, {"att": 65.7, "conv": 6.06, "grade": "B"}, {"att": 95.9, "conv": 5.89, "grade": "B"}, {"att": 85.0, "conv": 6.64, "grade": "C"}, {"att": 80.4, "conv": 4.79, "grade": "C"}, {"att": 70.4, "conv": 5.99, "grade": "C"}, {"att": 74.6, "conv": 3.24, "grade": "C"}, {"att": 98.8, "conv": 2.41, "grade": "C"}, {"att": 91.6, "conv": 5.82, "grade": "C"}, {"att": 64.2, "conv": 3.61, "grade": "C"}, {"att": 71.3, "conv": 4.53, "grade": "C"}, {"att": 75.0, "conv": 3.61, "grade": "C"}, {"att": 62.5, "conv": 4.91, "grade": "C"}], "dur_gmv": [{"dur": 182.1, "gmv": 7527100, "grade": "S"}, {"dur": 167.2, "gmv": 11100000, "grade": "S"}, {"dur": 134.3, "gmv": 8867000, "grade": "S"}, {"dur": 125.5, "gmv": 8149500, "grade": "S"}, {"dur": 159.8, "gmv": 8142200, "grade": "A"}, {"dur": 111.3, "gmv": 8711800, "grade": "S"}, {"dur": 134.6, "gmv": 7820800, "grade": "S"}, {"dur": 164.1, "gmv": 7009200, "grade": "S"}, {"dur": 154.9, "gmv": 8410900, "grade": "A"}, {"dur": 141.8, "gmv": 8557900, "grade": "A"}, {"dur": 126.7, "gmv": 8491500, "grade": "A"}, {"dur": 122.0, "gmv": 7436700, "grade": "A"}, {"dur": 109.9, "gmv": 6911400, "grade": "A"}, {"dur": 151.2, "gmv": 6397000, "grade": "A"}, {"dur": 114.2, "gmv": 7583200, "grade": "A"}, {"dur": 147.9, "gmv": 9715600, "grade": "A"}, {"dur": 100.7, "gmv": 8446800, "grade": "A"}, {"dur": 104.0, "gmv": 10300000, "grade": "A"}, {"dur": 114.8, "gmv": 7566100, "grade": "A"}, {"dur": 143.0, "gmv": 6134500, "grade": "A"}, {"dur": 109.5, "gmv": 8117500, "grade": "A"}, {"dur": 127.2, "gmv": 4867900, "grade": "A"}, {"dur": 118.3, "gmv": 6534100, "grade": "A"}, {"dur": 135.9, "gmv": 4438500, "grade": "B"}, {"dur": 109.2, "gmv": 7090200, "grade": "B"}, {"dur": 128.8, "gmv": 6237700, "grade": "B"}, {"dur": 122.0, "gmv": 5618900, "grade": "B"}, {"dur": 174.1, "gmv": 5973400, "grade": "B"}, {"dur": 99.2, "gmv": 7292000, "grade": "B"}, {"dur": 121.9, "gmv": 7689300, "grade": "B"}, {"dur": 84.6, "gmv": 4665600, "grade": "B"}, {"dur": 77.4, "gmv": 8710100, "grade": "B"}, {"dur": 141.9, "gmv": 4219000, "grade": "B"}, {"dur": 110.2, "gmv": 6017400, "grade": "B"}, {"dur": 120.7, "gmv": 5945300, "grade": "B"}, {"dur": 87.5, "gmv": 5947100, "grade": "B"}, {"dur": 89.0, "gmv": 3447700, "grade": "C"}, {"dur": 122.7, "gmv": 4439000, "grade": "C"}, {"dur": 108.8, "gmv": 5489500, "grade": "C"}, {"dur": 106.6, "gmv": 4090000, "grade": "C"}, {"dur": 92.0, "gmv": 2222800, "grade": "C"}, {"dur": 95.0, "gmv": 5300900, "grade": "C"}, {"dur": 105.8, "gmv": 3354900, "grade": "C"}, {"dur": 68.9, "gmv": 4194300, "grade": "C"}, {"dur": 48.1, "gmv": 2710500, "grade": "C"}, {"dur": 77.6, "gmv": 3481100, "grade": "C"}]}, "non_rated": {"total": 72, "zero_call": 6, "low_eff": 18, "others": 48}, "non_rated_dur": [{"label": "0min", "count": 6}, {"label": "1-30min", "count": 1}, {"label": "31-60min", "count": 4}, {"label": "61-90min", "count": 13}, {"label": "90min+", "count": 48}], "dim_weights": [{"name": "T0首贷GMV", "r": 0.776}, {"name": "转化率", "r": 0.775}, {"name": "日均通时", "r": 0.697}, {"name": "件均", "r": 0.64}, {"name": "ATT", "r": 0.631}], "warned_count": 12, "offline_count": 2, "zero_gmv_count": 10, "grade_metrics": {"S": {"count": 7, "avg_att": 109.9, "avg_conv": 7.93, "avg_piece": 24426, "avg_t0_gmv": 344, "avg_daily_dur": 145.6, "avg_gmv": 8455057}, "A": {"count": 16, "avg_att": 98.1, "avg_conv": 6.71, "avg_piece": 25693, "avg_t0_gmv": 324, "avg_daily_dur": 127.9, "avg_gmv": 7725831}, "B": {"count": 13, "avg_att": 83.3, "avg_conv": 6.1, "avg_piece": 20736, "avg_t0_gmv": 162, "avg_daily_dur": 116.4, "avg_gmv": 6141885}, "C": {"count": 10, "avg_att": 77.4, "avg_conv": 4.55, "avg_piece": 18358, "avg_t0_gmv": 103, "avg_daily_dur": 91.4, "avg_gmv": 3873070}}};
+var charts = [];
+function ec(el, opt) { if(!el) return null; var c=echarts.init(el); c.setOption(opt); charts.push(c); return c; }
+window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resize(); }); });
+
+// Colors
+var _C = '#E8734A', _G = '#5A6878', _B = '#8B99A8', _W = '#B8C4D0';
+var _gr = ['S','A','B','C'];
+var _gc = { 'S':_C, 'A':_G, 'B':_B, 'C':_W };
+var _gl = { 'S':'S 级', 'A':'A 级', 'B':'B 级', 'C':'C 级' };
+var _dot = function(v,g,y){ return '<span class="dot '+(v<=g?'dg':v<=y?'dy':'dr')+'"></span>'; };
+
+// Grade colors — CORRECTED: C 级用 #5A6878 (对比色), 异常用 #E8734A
+// S(暖橙)=优秀, A(灰蓝)=正常, B(浅灰)=待提升, C(深灰)=需关注
+var gcCorr = { 'S':'#E8734A', 'A':'#5A6878', 'B':'#8B99A8', 'C':'#5A6878' };
+
+// Helper: primary pool
+var _sd = D.has_sd;
+var _poolN = _sd ? D.sd_n : D.fd_n;
+var _poolTotal = _sd ? D.sd_total : D.fd_total;
+var _poolLabel = (D.sd_n > 0 && D.fd_n > 0) ? '合计' : (_sd ? '首贷' : '复贷');
+var _useCombined = D.sd_n > 0 && D.fd_n > 0;
+var _gd = _useCombined ? (D.total_gd||{}) : (_sd ? (D.sd_gd||{}) : (D.fd_gd||{}));
+var _totalRated = D.combined_n || _poolN;
+var _totalTotal = (D.source_files && D.source_files.length > 1) ? (D.sd_total + D.fd_total) : _poolTotal;
+var _partRate = _useCombined ? Math.round(_totalRated / (D.sd_total + D.fd_total) * 1000) / 10 : (_sd ? D.sd_part : D.fd_part);
+var _cRate = _totalRated > 0 ? Math.round((_gd['C']||0)/_totalRated*100) : 0;
+var _sPct = _totalRated > 0 ? Math.round((_gd['S']||0)/_totalRated*100) : 0;
+var _totalGmv = (D.sd_total_gmv || 0) + (D.fd_total_gmv || 0);
+
+// ================================================================
+// HEADER
+// ================================================================
+document.getElementById('title').textContent = D.supplier + ' 坐席 SABC 深度诊断报告';
+var subText = '数据截止 ' + D.deadline;
+if (D.source_files && D.source_files.length > 1) subText += ' | ' + D.source_files.length + ' 文件合并';
+subText += ' | 参评 ' + _totalRated + ' 人 / 总 ' + _totalTotal + ' 人';
+document.getElementById('subtitle').textContent = subText;
+document.getElementById('poolBadge').textContent = (_useCombined ? '首贷+复贷 合并' : _poolLabel + ' 视角') + ' · ' + _totalRated + ' 人参评';
+
+// Single-pool mode: update static text that references both pools
+var _singlePool = D.sd_n === 0 || D.fd_n === 0;
+if (_singlePool) {
+  var _poolName = D.sd_n > 0 ? '首贷' : '复贷';
+  var _brief13 = document.getElementById('fig13Brief');
+  var _brief10 = document.getElementById('fig10Brief');
+  if (_brief13) _brief13.textContent = _poolName + '池 ATT 与转化率关系，点状分布呈现个体差异。';
+  if (_brief10) _brief10.textContent = '有效通时与 GMV 的正相关关系，' + _poolName + '池独立观察。';
+  // Hide empty 首贷 scatter when only 复贷 exists
+  if (D.sd_n === 0) {
+    var el13a = document.getElementById('fig13a');
+    if (el13a) el13a.style.display = 'none';
+  }
+}
+
+// ================================================================
+// KPI CARDS
+// ================================================================
+var _scR = D.sc_ratio || 0;
+var _t20 = D.top20_pct || 0;
+var _wr = D.warning_rate || 0;
+var _mConc = D.mob13_conc || 0;
+document.getElementById('kpis').innerHTML =
+  '<div class="kpi"><h3>'+_dot(_partRate,75,60)+' 人力结构</h3>'+
+    '<div class="kr"><span class="lb">参评率</span><span class="vl">'+_partRate+'%</span></div>'+
+    '<div class="kr"><span class="lb">C 级率</span><span class="vl">'+_cRate+'%</span></div>'+
+    '<div class="kr"><span class="lb">S 占比</span><span class="vl">'+_sPct+'%</span></div></div>'+
+  '<div class="kpi"><h3>'+_dot(_scR,2,3)+' 产能效率</h3>'+
+    '<div class="kr"><span class="lb">S/C 转化倍差</span><span class="vl">'+_scR+'×</span></div>'+
+    '<div class="kr"><span class="lb">S 转化率</span><span class="vl">'+D.s_conv.toFixed(1)+'%</span></div>'+
+    '<div class="kr"><span class="lb">C 转化率</span><span class="vl">'+D.c_conv.toFixed(1)+'%</span></div></div>'+
+  '<div class="kpi"><h3>'+_dot(_t20,50,60)+' 集中度</h3>'+
+    '<div class="kr"><span class="lb">Top20% GMV</span><span class="vl">'+_t20+'%</span></div>'+
+    '<div class="kr"><span class="lb">总 GMV</span><span class="vl">'+(_totalGmv/10000).toFixed(0)+'万</span></div></div>'+
+  '<div class="kpi"><h3>'+_dot(_wr,10,15)+' 问题定位</h3>'+
+    '<div class="kr"><span class="lb">预警率</span><span class="vl">'+_wr+'%</span></div>'+
+    '<div class="kr"><span class="lb">MOB1-3 C集中度</span><span class="vl">'+_mConc+'%</span></div></div>';
+
+// ================================================================
+// FIG1: 职场 S/A/B/C 构成 (stacked bar + C-rate line)
+// ================================================================
+if (D.wp_names && D.wp_names.length > 0) {
+  // Compute C-rate per WP for sorting
+  var wpSort = D.wp_matrix.map(function(r){
+    var total = (r.S||0)+(r.A||0)+(r.B||0)+(r.C||0);
+    return { wp: r.wp, cRate: total>0 ? (r.C||0)/total*100 : 0 };
+  });
+  wpSort.sort(function(a,b){ return b.cRate - a.cRate; });
+  var sortedWps = wpSort.map(function(r){ return r.wp; });
+
+  var fig1Series = _gr.map(function(g){
+    return { name: _gl[g], type: 'bar', stack: 'total', barMaxWidth: 40,
+      itemStyle: { color: gcCorr[g] },
+      data: sortedWps.map(function(wp){
+        var row = D.wp_matrix.find(function(r){ return r.wp === wp; });
+        return row ? (row[g]||0) : 0;
+      }),
+      emphasis: { focus: 'series' }
+    };
+  });
+  // Add C-rate line series on secondary Y-axis
+  var cRateData = sortedWps.map(function(wp){
+    var r = wpSort.find(function(s){ return s.wp === wp; });
+    return r ? r.cRate : 0;
+  });
+  var avgCRate = cRateData.reduce(function(s,v){ return s+v; },0) / cRateData.length;
+  fig1Series.push({
+    name: 'C 级率', type: 'line', yAxisIndex: 1, symbol: 'diamond', symbolSize: 8,
+    lineStyle: { width: 2, color: _C },
+    itemStyle: { color: _C },
+    data: cRateData,
+    label: { show: true, position: 'top', formatter: function(p){ return p.value.toFixed(0)+'%'; },
+      fontSize: 9, fontWeight: 'bold', color: _C },
+    markLine: { silent: true, symbol: 'none', data: [{
+      yAxis: avgCRate, lineStyle: { type: 'dashed', color: '#A0AEC0', width: 1 },
+      label: { formatter: '平均 C 级率 ' + avgCRate.toFixed(0) + '%', fontSize: 8, color: '#A0AEC0' }
+    }]},
+    z: 5
+  });
+  ec(document.getElementById('fig1'), {
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: function(ps){ var t='<strong>'+ps[0].axisValue+'</strong>'; var s=0; ps.forEach(function(p){ t+='<br>'+p.marker+' '+p.seriesName+': '+(typeof p.value==='number'?p.value.toFixed(1)+'%':p.value+'人'); if(p.seriesName!=='C 级率')s+=p.value; }); t+='<br><strong>合计: '+s+'人</strong>'; return t; }
+    },
+    legend: { data: _gr.map(function(g){ return _gl[g]; }).concat(['C 级率']), bottom: 0, textStyle: { fontSize: 10 } },
+    grid: { left: 70, right: 50, top: 10, bottom: 36 },
+    xAxis: { type: 'category', data: sortedWps, axisLabel: { fontSize: 9, rotate: 25 } },
+    yAxis: [
+      { type: 'value', name: '参评人数', nameTextStyle: { fontSize: 9 } },
+      { type: 'value', name: 'C 级率 (%)', nameTextStyle: { fontSize: 9 },
+        axisLabel: { formatter: function(v){ return v+'%'; } },
+        splitLine: { show: false } }
+    ],
+    series: fig1Series
+  });
+}
+
+// ================================================================
+// FIG2: 首贷×复贷 对比表 (单池模式显示概览)
+// ================================================================
+(function(){
+  var el = document.getElementById('fig2');
+  var titleEl = document.getElementById('fig2Title');
+  var briefEl = document.getElementById('fig2Brief');
+  var ch1Desc = document.getElementById('ch1Desc');
+  if (!el) return;
+
+  var hasSd = D.sd_n > 0;
+  var hasFd = D.fd_n > 0;
+
+  // Single pool mode
+  if (!hasSd || !hasFd) {
+    var pool = hasSd ? '首贷' : '复贷';
+    if (titleEl) titleEl.textContent = pool + '池概览';
+    if (briefEl) briefEl.textContent = '仅 ' + pool + ' 池数据，集中看该池核心指标。';
+    if (ch1Desc) ch1Desc.textContent = '基于 ' + pool + ' 池 ' + D.combined_n + ' 人参评数据。红色 = 需关注的信号，灰色 = 正常基线。';
+
+    var n = hasSd ? D.sd_n : D.fd_n;
+    var total = hasSd ? D.sd_total : D.fd_total;
+    var gmv = hasSd ? (D.sd_total_gmv||0) : (D.fd_total_gmv||0);
+    var part = hasSd ? (D.sd_part||0) : (D.fd_part||0);
+    var gd = hasSd ? (D.sd_gd||{}) : (D.fd_gd||{});
+    var cRate = n > 0 ? Math.round((gd.C||0)/n*100) : 0;
+    var sPct = n > 0 ? Math.round((gd.S||0)/n*100) : 0;
+    var avgConvS = (D.grade_metrics||{}).S ? (D.grade_metrics.S.avg_conv||0) : 0;
+    var avgConvC = (D.grade_metrics||{}).C ? (D.grade_metrics.C.avg_conv||0) : 0;
+
+    var rows = [
+      ['总人数', total],
+      ['参评人数', n],
+      ['参评率', part+'%'],
+      ['总 GMV', (gmv/10000).toFixed(0)+'万'],
+      ['S 级占比', sPct+'%'],
+      ['C 级率', cRate+'%'],
+      ['S 转化率', avgConvS.toFixed(1)+'%'],
+      ['C 转化率', avgConvC.toFixed(1)+'%'],
+    ];
+
+    var poolBadge = hasSd ? '首贷' : '复贷';
+    var html = '<table class="data-table"><thead><tr><th>指标</th><th>'+poolBadge+'</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      html += '<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td></tr>';
+    });
+    html += '</tbody></table>';
+    el.innerHTML = html;
+    return;
+  }
+
+  // Dual pool mode
+  if (titleEl) titleEl.textContent = '首贷 × 复贷 双池对比';
+  if (briefEl) briefEl.textContent = '首贷和复贷是两种业务，量级和驱动因素不同。';
+  if (ch1Desc) ch1Desc.textContent = '一眼看清等级分布、两池差异。红色 = 需关注的信号，灰色 = 正常基线。';
+
+  var sd_n = D.sd_n || 0;
+  var fd_n = D.fd_n || 0;
+  var sd_total = D.sd_total || 0;
+  var fd_total = D.fd_total || 0;
+  var sd_gmv = D.sd_total_gmv || 0;
+  var fd_gmv = D.fd_total_gmv || 0;
+  var sd_part = D.sd_part || 0;
+  var fd_part = D.fd_part || 0;
+  var sd_c = (D.sd_gd||{}).C || 0;
+  var fd_c = (D.fd_gd||{}).C || 0;
+  var sd_cRate = sd_n > 0 ? Math.round(sd_c/sd_n*100) : 0;
+  var fd_cRate = fd_n > 0 ? Math.round(fd_c/fd_n*100) : 0;
+
+  var rows = [
+    ['总人数', sd_total, fd_total],
+    ['参评人数', sd_n, fd_n],
+    ['参评率', sd_part+'%', fd_part+'%'],
+    ['总 GMV', (sd_gmv/10000).toFixed(0)+'万', (fd_gmv/10000).toFixed(0)+'万'],
+    ['C 级率', sd_cRate+'%', fd_cRate+'%'],
+  ];
+
+  var html = '<table class="data-table"><thead><tr><th>指标</th><th>首贷</th><th>复贷</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    html += '<tr><td>'+r[0]+'</td><td class="num">'+r[1]+'</td><td class="num">'+r[2]+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  var insight = '<p style="font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5">复贷贡献总 GMV 的 <strong>'+(fd_gmv/(sd_gmv+fd_gmv)*100).toFixed(0)+'%</strong>，但参评率与首贷接近。两池需分开管理。</p>';
+  el.innerHTML = html + insight;
+})();
+
+// ================================================================
+// FIG3: 司龄×等级 热力图
+// ================================================================
+if (D.tenure_data && D.tenure_data.length > 0) {
+  var tData = [], tNames = D.tenure_data.map(function(r){ return r.tenure; });
+  var maxT = 0, maxRi = 0, maxCi = 0;
+  D.tenure_data.forEach(function(row, ri){
+    _gr.forEach(function(g, ci){
+      var v = row[g]||0; if(v>maxT) { maxT=v; maxRi=ri; maxCi=ci; }
+      tData.push([ci, ri, v]);
+    });
+  });
+  ec(document.getElementById('fig3'), {
+    tooltip: { position: 'top', formatter: function(p){ var d=p.data; return tNames[d[1]]+' · '+_gl[_gr[d[0]]]+': <strong>'+d[2]+'人</strong>'; } },
+    grid: { left: 80, right: 30, top: 10, bottom: 40 },
+    xAxis: { type: 'category', data: _gr, axisLabel: { fontSize: 11, fontWeight: 'bold' } },
+    yAxis: { type: 'category', data: tNames, axisLabel: { fontSize: 10 } },
+    visualMap: { min: 0, max: Math.max(maxT, 1), calculable: true, orient: 'horizontal', left: 'center', bottom: 0,
+      inRange: { color: ['#FFF0EB','#E8734A','#C75A35'] }, textStyle: { fontSize: 8 } },
+    series: [{
+      type: 'heatmap', data: tData, label: { show: true, fontSize: 9 },
+      emphasis: { itemStyle: { shadowBlur: 8 } },
+      markPoint: { symbol: 'pin', symbolSize: 36, data: [{
+        coord: [_gr[maxCi], tNames[maxRi]], value: maxT,
+        itemStyle: { color: '#E8734A' },
+        label: { show: true, formatter: '最密集\n' + maxT + '人', fontSize: 8, fontWeight: 'bold', color: '#fff' }
+      }]}
+    }]
+  });
+}
+
+// ================================================================
+// FIG4: 司龄段绩效走势 — 三个独立面板 (small multiples)
+// ================================================================
+if (D.tenure_perf && D.tenure_perf.length > 0) {
+  (function(){
+    var tp = D.tenure_perf;
+    var tNames = tp.map(function(r){ return r.tenure; });
+
+    // Panel 1: 人均GMV (bar with markLine avg)
+    var gmvVals = tp.map(function(r){ return r.avg_gmv; });
+    var gmvAvg = gmvVals.reduce(function(s,v){ return s+v; },0) / gmvVals.length;
+    ec(document.getElementById('fig4a'), {
+      tooltip: { trigger: 'axis', formatter: function(ps){ return ps[0].name + '<br/>人均 GMV: <strong>' + ps[0].value.toLocaleString() + '</strong>'; } },
+      grid: { left: 60, right: 20, top: 10, bottom: 24 },
+      xAxis: { type: 'category', data: tNames, axisLabel: { fontSize: 9 } },
+      yAxis: { type: 'value', name: '人均 GMV', nameTextStyle: { fontSize: 9 }, axisLabel: { formatter: function(v){ return (v/10000).toFixed(0)+'万'; } } },
+      series: [{
+        type: 'bar', barMaxWidth: 24,
+        data: gmvVals,
+        itemStyle: { color: _C, borderRadius: [3,3,0,0] },
+        markLine: { silent: true, symbol: 'none', data: [{ yAxis: gmvAvg, lineStyle: { type: 'dashed', color: _G, width: 1 }, label: { formatter: '均值 '+(gmvAvg/10000).toFixed(1)+'万', fontSize: 8, color: _G } }] }
+      }]
+    });
+
+    // Panel 2: 转化率 (line with markLine avg)
+    var convVals = tp.map(function(r){ return r.avg_conv; });
+    var convAvg = convVals.reduce(function(s,v){ return s+v; },0) / convVals.length;
+    ec(document.getElementById('fig4b'), {
+      tooltip: { trigger: 'axis', formatter: function(ps){ return ps[0].name + '<br/>转化率: <strong>' + ps[0].value.toFixed(2) + '%</strong>'; } },
+      grid: { left: 60, right: 20, top: 10, bottom: 24 },
+      xAxis: { type: 'category', data: tNames, axisLabel: { fontSize: 9 } },
+      yAxis: { type: 'value', name: '转化率(%)', nameTextStyle: { fontSize: 9 }, axisLabel: { formatter: function(v){ return v.toFixed(1) + '%'; } } },
+      series: [{
+        type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
+        lineStyle: { width: 2.5, color: _C },
+        itemStyle: { color: _C },
+        areaStyle: { color: { type: 'linear', x:0, y:0, x2:0, y2:1, colorStops: [{offset:0,color:'rgba(232,115,74,0.12)'},{offset:1,color:'rgba(232,115,74,0.01)'}] } },
+        data: convVals,
+        markLine: { silent: true, symbol: 'none', data: [{ yAxis: convAvg, lineStyle: { type: 'dashed', color: _G, width: 1 }, label: { formatter: '均值 '+convAvg.toFixed(2)+'%', fontSize: 8, color: _G } }] }
+      }]
+    });
+
+    // Panel 3: 日均通时 (line with markLine avg)
+    var durVals = tp.map(function(r){ return r.avg_dur; });
+    var durAvg = durVals.reduce(function(s,v){ return s+v; },0) / durVals.length;
+    ec(document.getElementById('fig4c'), {
+      tooltip: { trigger: 'axis', formatter: function(ps){ return ps[0].name + '<br/>日均通时: <strong>' + ps[0].value.toFixed(0) + '秒</strong>'; } },
+      grid: { left: 60, right: 20, top: 10, bottom: 24 },
+      xAxis: { type: 'category', data: tNames, axisLabel: { fontSize: 9 } },
+      yAxis: { type: 'value', name: '日均通时(秒)', nameTextStyle: { fontSize: 9 } },
+      series: [{
+        type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
+        lineStyle: { width: 2.5, color: _C },
+        itemStyle: { color: _C },
+        data: durVals,
+        markLine: { silent: true, symbol: 'none', data: [{ yAxis: durAvg, lineStyle: { type: 'dashed', color: _G, width: 1 }, label: { formatter: '均值 '+durAvg.toFixed(0)+'s', fontSize: 8, color: _G } }] }
+      }]
+    });
+  })();
+}
+
+// ================================================================
+// FIG5: 月度入职趋势 (bar + burst markArea + hist avg line)
+// ================================================================
+if (D.hire_months && D.hire_months.length > 0) {
+  var hm = D.hire_months;
+  var hv = D.hire_counts;
+  var histAvg = D.hire_hist_avg || 5.6;
+  var burstMonths = (D.burst_months || []);
+  var burstTotal = D.burst_total || 0;
+
+  // Update title and description dynamically
+  var fig5TitleEl = document.getElementById('fig5Title');
+  var hireDescEl = document.getElementById('hireDesc');
+  if (burstMonths.length > 0) {
+    var prettyMonths = burstMonths.map(function(m){ return parseInt(m.slice(-2)) + '月'; });
+    fig5TitleEl.textContent = '入职趋势（含' + burstTotal + '人集中入职期）';
+    hireDescEl.innerHTML = prettyMonths.join('、') + ' 集中入职 <strong>' + burstTotal + '</strong> 人（历史月均 ' + histAvg.toFixed(1) + ' 人），这批人正在育成发酵期。';
+  } else {
+    fig5TitleEl.textContent = '入职趋势';
+    hireDescEl.innerHTML = '历史月均入职 ' + histAvg.toFixed(1) + ' 人。';
+  }
+
+  // Bar colors: red for burst months, gray for others
+  var fig5Colors = hv.map(function(v, i){
+    var l = hm[i];
+    if (burstMonths.indexOf(l) >= 0) return _C;
+    return '#D1C9C0';
+  });
+
+  // Mark area spanning all burst months
+  var markAreaData = [];
+  if (burstMonths.length > 0) {
+    var burstIndices = burstMonths.map(function(bm){ return hm.indexOf(bm); }).filter(function(idx){ return idx >= 0; });
+    if (burstIndices.length > 0) {
+      var minIdx = Math.min.apply(null, burstIndices);
+      var maxIdx = Math.max.apply(null, burstIndices);
+      var prevLabel = minIdx > 0 ? hm[minIdx-1] : hm[0];
+      var nextLabel = maxIdx < hm.length-1 ? hm[maxIdx+1] : hm[hm.length-1];
+      markAreaData = [[{ xAxis: prevLabel, label: { show: true, position: 'top',
+        formatter: '入职高峰\n共计'+burstTotal+'人', fontSize: 11, fontWeight: 'bold', color: _C,
+        backgroundColor: 'rgba(255,248,240,0.9)', padding: [4,8], borderRadius: 4 },
+        itemStyle: { color: 'rgba(232,115,74,0.06)' } }, { xAxis: nextLabel }]];
+    }
+  }
+
+  ec(document.getElementById('fig5'), {
+    tooltip: { trigger: 'axis', formatter: function(ps){
+      var p = ps[0]; var l = hm[p.dataIndex]; var v = p.value;
+      if (burstMonths.indexOf(l) >= 0)
+        return '<strong style="color:'+_C+'">'+l+'</strong><br/>入职: <strong>'+v+'人</strong><br/><span style="color:'+_C+'">历史均值的 '+(histAvg>0?(v/histAvg).toFixed(1):'?')+' 倍</span>';
+      return '<strong>'+l+'</strong><br/>入职: '+v+'人';
+    }},
+    grid: { left: 50, right: 100, top: 50, bottom: 60 },
+    xAxis: { type: 'category', data: hm, axisLabel: { fontSize: 8, color: '#8B99A8', rotate: 45,
+      interval: function(idx){
+        var l = hm[idx];
+        if (burstMonths.indexOf(l) >= 0 || l === '2021-11' || l === '2023-09' || l === '2024-11' || l === '2025-10' || l === '2026-02') return true;
+        return idx % 4 === 0;
+      } },
+      axisLine: { lineStyle: { color: '#E8E0D6' } } },
+    yAxis: { type: 'value', name: '入职人数', nameTextStyle: { fontSize: 9, color: '#8B99A8' },
+      axisLabel: { fontSize: 9, color: '#8B99A8' }, splitLine: { lineStyle: { color: '#F2F0EB', type: 'dashed' } }, min: 0 },
+    series: [
+      { type: 'bar', barMaxWidth: 28,
+        data: hv.map(function(v, i){ return { value: v, itemStyle: { color: fig5Colors[i], borderRadius: [3,3,0,0] } }; }),
+        label: { show: function(idx){ return burstMonths.indexOf(hm[idx]) >= 0; }, position: 'top',
+          formatter: function(p){ return p.value+'人'; }, fontSize: 11, fontWeight: 'bold', color: _C },
+        markArea: { silent: true, data: markAreaData }
+      },
+      { type: 'line', name: '历史月均 '+histAvg+'人',
+        data: hm.map(function(){ return histAvg; }), symbol: 'none',
+        lineStyle: { color: _C, width: 2, type: 'dashed' },
+        label: { show: true, formatter: '历史月均 '+histAvg+'人', position: 'end', fontSize: 10, fontWeight: 'bold', color: _C }
+      }
+    ]
+  });
+}
+
+// ================================================================
+// FIG6: 新人产出追踪 — small multiples
+// ================================================================
+(function(){
+  var nb = D.new_batches;
+  var smGrid = document.getElementById('smGrid');
+  if (!smGrid || !nb || Object.keys(nb).length === 0) {
+    if (smGrid) smGrid.innerHTML = '<p style="font-size:11px;color:var(--muted);padding:20px;text-align:center">暂无新人批次数据</p>';
+    return;
+  }
+
+  var batchKeys = Object.keys(nb).sort();
+  // Update title and description dynamically
+  var fig6Title = document.getElementById('fig6Title');
+  var fig6Desc = document.getElementById('fig6Desc');
+  if (fig6Title) fig6Title.textContent = '新人产出追踪 · ' + batchKeys.join(' vs ') + ' 批次对比';
+  if (fig6Desc) fig6Desc.textContent = '新人界定基于入职批次动态识别。四组指标独立观察，不跨组比较。';
+  var batchLabels = batchKeys.map(function(k){ return k.replace('2026-','')+'月入职'; });
+  var metrics = [
+    { key: 'avg_gmv', label: '人均 GMV', unit: '万', fmt: function(v){ return (v/10000).toFixed(1); } },
+    { key: 'avg_dur', label: '日均通时', unit: 'min', fmt: function(v){ return v.toFixed(0); } },
+    { key: 'avg_conv', label: '转化率', unit: '%', fmt: function(v){ return v.toFixed(2); } },
+    { key: 'with_gmv', label: '有GMV产出占比', unit: '%', fmt: function(v,i){
+      var total = nb[batchKeys[i]].total;
+      return total > 0 ? (v/total*100).toFixed(0) : '0';
+    }}
+  ];
+  var barColor = [_C, '#5A6878'];
+
+  metrics.forEach(function(m, mi){
+    var div = document.createElement('div');
+    div.className = 'sm-item';
+    div.innerHTML = '<div class="sm-label">'+m.label+'</div><div class="sm-c" id="sm'+mi+'"></div>';
+    smGrid.appendChild(div);
+
+    var values = batchKeys.map(function(k){ return nb[k][m.key] || 0; });
+    ec(document.getElementById('sm'+mi), {
+      tooltip: { trigger: 'axis', formatter: function(ps){
+        return ps[0].name + ': <strong>' + (m.fmt ? m.fmt(ps[0].value, ps[0].dataIndex) : ps[0].value) + m.unit + '</strong>';
+      }},
+      grid: { left: 40, right: 10, top: 6, bottom: 24 },
+      xAxis: { type: 'category', data: batchLabels, axisLabel: { fontSize: 9 } },
+      yAxis: { type: 'value', axisLabel: { fontSize: 8 }, splitLine: { lineStyle: { color: '#F2F0EB' } } },
+      series: [{
+        type: 'bar', barMaxWidth: 40,
+        data: values.map(function(v, i){ return { value: v, itemStyle: { color: barColor[i] } }; }),
+        label: { show: true, position: 'top', formatter: function(p){ return m.fmt ? m.fmt(p.value, p.dataIndex) + m.unit : p.value; }, fontSize: 9, fontWeight: 'bold' }
+      }]
+    });
+  });
+})();
+
+// ================================================================
+// FIG7: SABC 四档画像表
+// ================================================================
+(function(){
+  var gm = D.grade_metrics;
+  if (!gm || Object.keys(gm).length === 0) return;
+
+  var metrics = [
+    { key: 'count', label: '人数', fmt: function(v){ return v; }, sc: false },
+    { key: 'avg_gmv', label: '人均 GMV', fmt: function(v){ return (v|0).toLocaleString(); }, sc: true },
+    { key: 'avg_conv', label: '平均转化率', fmt: function(v){ return v+'%'; }, sc: true },
+    { key: 'avg_daily_dur', label: '日均通时', fmt: function(v){ return v+'min'; }, sc: true },
+    { key: 'avg_att', label: 'ATT', fmt: function(v){ return v+'s'; }, sc: true },
+    { key: 'avg_t0_gmv', label: 'T0首贷GMV', fmt: function(v){ return v.toLocaleString(); }, sc: true },
+  ];
+
+  var grades = ['S','A','B','C'];
+  var tbody = document.querySelector('#gradeTable tbody');
+  if (!tbody) return;
+
+  metrics.forEach(function(m){
+    var vals = grades.map(function(g){ return gm[g] ? gm[g][m.key] : (m.key==='count'?0:'-'); });
+    var sc = '';
+    if (m.sc && gm.S && gm.C) {
+      var sVal = gm.S[m.key] || 0;
+      var cVal = gm.C[m.key] || 0;
+      sc = cVal && sVal ? (typeof sVal === 'number' && typeof cVal === 'number'
+        ? (sVal / cVal).toFixed(1) + '×' : '-') : '-';
+    }
+    var row = '<tr><td style="text-align:left;font-weight:700">'+m.label+'</td>';
+    vals.forEach(function(v, i){ row += '<td class="num '+(i===0?'hl ':'')+'">'+m.fmt(v)+'</td>'; });
+    row += '<td class="num" style="color:'+_C+'">'+sc+'</td></tr>';
+    tbody.innerHTML += row;
+  });
+})();
+
+// ================================================================
+// FIG8: 转化率衰减路径 — 真瀑布图 (bar stack waterfall)
+// ================================================================
+if (D.waterfall && D.waterfall.length > 0) {
+  var wf = D.waterfall;
+  var wfLabels = wf.map(function(r){ return r.grade + '级'; });
+  var wfVals = wf.map(function(r){ return r.conv_rate; });
+
+  // Waterfall base series (transparent) and value series (visible)
+  // S: base=0, val=S_conv
+  // A: base=S_conv, val=A_conv-S_conv (negative)
+  // B: base=A_conv, val=B_conv-A_conv (negative)
+  // C: base=B_conv, val=C_conv-B_conv (negative)
+  var baseData = [0];
+  var valData = [];
+  var wfColors = ['#E8734A', '#C75A35', '#8B99A8', '#B8C4D0'];
+  for (var i = 0; i < wfVals.length; i++) {
+    if (i === 0) {
+      valData.push({ value: wfVals[i], itemStyle: { color: wfColors[i] } });
+    } else {
+      baseData.push(wfVals[i-1]);
+      var delta = wfVals[i] - wfVals[i-1];
+      valData.push({ value: delta, itemStyle: { color: wfColors[i], borderColor: '#fff', borderWidth: 0.5 } });
+    }
+  }
+
+  // Total decline from S to C
+  var totalDrop = wfVals.length > 1 ? (wfVals[0] - wfVals[wfVals.length-1]) : 0;
+  var totalDropPct = wfVals[0] > 0 ? (totalDrop / wfVals[0] * 100).toFixed(0) : 0;
+
+  ec(document.getElementById('fig8'), {
+    tooltip: { trigger: 'axis', formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var txt = '<strong>' + wfLabels[i] + '</strong><br/>转化率: ' + wfVals[i].toFixed(2) + '%';
+      if (i > 0) txt += '<br/>较上一级下降 ' + ((wfVals[i-1] - wfVals[i]) / wfVals[i-1] * 100).toFixed(1) + '%';
+      return txt;
+    }},
+    grid: { left: 60, right: 30, top: 30, bottom: 40 },
+    xAxis: { type: 'category', data: wfLabels, axisLabel: { fontSize: 11, fontWeight: 'bold' } },
+    yAxis: { type: 'value', name: '转化率(%)', nameTextStyle: { fontSize: 9 } },
+    series: [
+      {
+        name: 'base', type: 'bar', stack: 'waterfall',
+        barMaxWidth: 60,
+        data: baseData,
+        itemStyle: { color: 'transparent' },
+        emphasis: { itemStyle: { color: 'transparent' } },
+        silent: true,
+        z: 0
+      },
+      {
+        name: 'value', type: 'bar', stack: 'waterfall',
+        barMaxWidth: 60,
+        data: valData,
+        label: { show: true, position: 'top',
+          formatter: function(p) {
+            var i = p.dataIndex;
+            if (i === 0) return wfVals[i].toFixed(2) + '%';
+            var drop = ((wfVals[i] - wfVals[i-1]) / wfVals[i-1] * 100);
+            return wfVals[i].toFixed(2) + '%\n▼' + Math.abs(drop).toFixed(0) + '%';
+          },
+          fontSize: 10, fontWeight: 'bold', color: '#E8734A'
+        },
+        markLine: { silent: true, symbol: 'none', data: [
+          { yAxis: wfVals[0], name: 'S级基线',
+            lineStyle: { type: 'dashed', color: _C, width: 1.5 },
+            label: { formatter: 'S级 ' + wfVals[0].toFixed(2) + '%', fontSize: 9, color: _C }
+          },
+          { yAxis: wfVals[wfVals.length-1], name: 'C级终点',
+            lineStyle: { type: 'dashed', color: '#A0AEC0', width: 1 },
+            label: { formatter: 'C级 ' + wfVals[wfVals.length-1].toFixed(2) + '%', fontSize: 9, color: '#A0AEC0' }
+          }
+        ]}
+      }
+    ],
+    graphic: [{
+      type: 'text', left: 'center', top: 4,
+      style: {
+        text: 'S→C 累计衰减 ' + totalDropPct + '%（' + totalDrop.toFixed(2) + ' 个百分点）',
+        fontSize: 10, fontWeight: 'bold', fill: _C
+      }
+    }]
+  });
+}
+
+// ================================================================
+// FIG13: ATT × 效率 分池矩阵 — 首贷/复贷独立散点
+// ================================================================
+// Fig13a: 首贷坐席 — ATT × 转化率
+if (D.sd_scatter && D.sd_scatter.att_conv && D.sd_scatter.att_conv.length > 0) {
+  (function(){
+    var sacSd = D.sd_scatter.att_conv;
+    var avgAttSd = sacSd.reduce(function(s,r){ return s+r.att; },0) / sacSd.length;
+    var avgConvSd = sacSd.reduce(function(s,r){ return s+r.conv; },0) / sacSd.length;
+    // Correlation
+    var attValsSd = sacSd.map(function(r){ return r.att; });
+    var convValsSd = sacSd.map(function(r){ return r.conv; });
+    var nSd = sacSd.length;
+    var numSd = 0, dASd = 0, dCSd = 0;
+    var mAttSd = avgAttSd, mConvSd = avgConvSd;
+    for (var i = 0; i < nSd; i++) {
+      var da = attValsSd[i] - mAttSd, dc = convValsSd[i] - mConvSd;
+      numSd += da * dc; dASd += da * da; dCSd += dc * dc;
+    }
+    var rSd = Math.sqrt(dASd*dCSd) > 0 ? (numSd / Math.sqrt(dASd*dCSd)).toFixed(2) : '0';
+    ec(document.getElementById('fig13a'), {
+      title: { text: '首贷坐席', textStyle: { fontSize: 11, fontWeight: 'bold', color: '#5A6878' }, left: 4, top: 0 },
+      tooltip: { formatter: function(p){
+        var d = p.data;
+        return 'ATT: ' + d[0] + 's, 转化率: ' + d[1].toFixed(2) + '%<br>等级: ' + d[3];
+      }},
+      grid: { left: 60, right: 20, top: 20, bottom: 24 },
+      xAxis: { type: 'value', name: 'ATT (秒)', nameTextStyle: { fontSize: 9 }, splitLine: { lineStyle: { type: 'dashed', color: '#F2F0EB' } } },
+      yAxis: { type: 'value', name: '转化率 (%)', nameTextStyle: { fontSize: 9 } },
+      series: [{
+        type: 'scatter', symbolSize: 7,
+        data: sacSd.map(function(r){ return [r.att, r.conv, r.grade, r.grade]; }),
+        itemStyle: { color: function(d){
+          var g = d.data[2];
+          return g === 'S' ? _C : g === 'A' ? _G : g === 'B' ? _B : '#A0AEC0';
+        }},
+        emphasis: { scale: 1.5 }
+      }],
+      markLine: { symbol: 'none', data: [
+        { xAxis: avgAttSd, lineStyle: { type: 'dashed', color: '#A0AEC0', width: 1 }, label: { formatter: 'ATT均值 ' + avgAttSd.toFixed(0) + 's', fontSize: 8, color: '#A0AEC0' } },
+        { yAxis: avgConvSd, lineStyle: { type: 'dashed', color: '#A0AEC0', width: 1 }, label: { formatter: '均值 ' + avgConvSd.toFixed(2) + '%', fontSize: 8, color: '#A0AEC0' } }
+      ]},
+      graphic: [{ type: 'text', left: '5%', top: 20, style: { text: 'r = ' + rSd, fontSize: 11, fontWeight: 'bold', fill: '#718096' } }]
+    });
+  })();
+}
+
+// Fig13b: 复贷坐席 — 日均通时 × GMV
+if (D.fd_scatter && D.fd_scatter.dur_gmv && D.fd_scatter.dur_gmv.length > 0) {
+  (function(){
+    var dgFd = D.fd_scatter.dur_gmv;
+    var avgDurFd = dgFd.reduce(function(s,r){ return s+r.dur; },0) / dgFd.length;
+    var avgGmvFd = dgFd.reduce(function(s,r){ return s+r.gmv; },0) / dgFd.length;
+    var durVals = dgFd.map(function(r){ return r.dur; });
+    var gmvVals = dgFd.map(function(r){ return r.gmv; });
+    var nFd = dgFd.length;
+    var numFd = 0, dDFd = 0, dGFd = 0;
+    var mDurFd = avgDurFd, mGmvFd = avgGmvFd;
+    for (var i = 0; i < nFd; i++) {
+      var dd = durVals[i] - mDurFd, dg = gmvVals[i] - mGmvFd;
+      numFd += dd * dg; dDFd += dd * dd; dGFd += dg * dg;
+    }
+    var rFd = Math.sqrt(dDFd*dGFd) > 0 ? (numFd / Math.sqrt(dDFd*dGFd)).toFixed(2) : '0';
+    ec(document.getElementById('fig13b'), {
+      title: { text: '复贷坐席', textStyle: { fontSize: 11, fontWeight: 'bold', color: '#5A6878' }, left: 4, top: 0 },
+      tooltip: { formatter: function(p){
+        var d = p.data;
+        return '日均通时: ' + d[0].toFixed(0) + 's, GMV: ' + d[1].toLocaleString() + '<br>等级: ' + d[3];
+      }},
+      grid: { left: 60, right: 20, top: 20, bottom: 24 },
+      xAxis: { type: 'value', name: '日均通时 (秒)', nameTextStyle: { fontSize: 9 }, splitLine: { lineStyle: { type: 'dashed', color: '#F2F0EB' } } },
+      yAxis: { type: 'value', name: 'GMV', nameTextStyle: { fontSize: 9 }, axisLabel: { formatter: function(v){ return (v/10000).toFixed(0)+'万'; } } },
+      series: [{
+        type: 'scatter', symbolSize: 8,
+        data: dgFd.map(function(r){ return [r.dur, r.gmv, r.grade, r.grade]; }),
+        itemStyle: { color: function(d){
+          var g = d.data[2];
+          return g === 'S' ? _C : g === 'A' ? _G : g === 'B' ? _B : '#A0AEC0';
+        }},
+        emphasis: { scale: 1.5 }
+      }],
+      markLine: { symbol: 'none', data: [
+        { xAxis: avgDurFd, lineStyle: { type: 'dashed', color: '#A0AEC0', width: 1 }, label: { formatter: '通时均值 ' + avgDurFd.toFixed(0) + 's', fontSize: 8, color: '#A0AEC0' } },
+        { yAxis: avgGmvFd, lineStyle: { type: 'dashed', color: '#A0AEC0', width: 1 }, label: { formatter: 'GMV均值 ' + (avgGmvFd/10000).toFixed(0) + '万', fontSize: 8, color: '#A0AEC0' } }
+      ]},
+      graphic: [{ type: 'text', left: '5%', top: 20, style: { text: 'r = ' + rFd, fontSize: 11, fontWeight: 'bold', fill: '#718096' } }]
+    });
+  })();
+}
+
+// ================================================================
+// FIG10: 通时 × GMV 关联 (双池散点 + 均值线 + 相关系数)
+// ================================================================
+(function(){
+  var sdDur = (D.sd_scatter && D.sd_scatter.dur_gmv) || [];
+  var fdDur = (D.fd_scatter && D.fd_scatter.dur_gmv) || [];
+  if (sdDur.length === 0 && fdDur.length === 0) return;
+
+  // Compute per-pool correlation
+  function calcCorr(pts) {
+    if (pts.length < 3) return { r: '—', avgX: 0, avgY: 0 };
+    var mx = pts.reduce(function(s,r){ return s+r.dur; }, 0) / pts.length;
+    var my = pts.reduce(function(s,r){ return s+r.gmv; }, 0) / pts.length;
+    var num = 0, dx2 = 0, dy2 = 0;
+    pts.forEach(function(r){
+      var dx = r.dur - mx, dy = r.gmv - my;
+      num += dx * dy; dx2 += dx * dx; dy2 += dy * dy;
+    });
+    var r = Math.sqrt(dx2*dy2) > 0 ? (num / Math.sqrt(dx2*dy2)) : 0;
+    return { r: r.toFixed(2), avgX: mx, avgY: my };
+  }
+
+  var sdCorr = sdDur.length > 0 ? calcCorr(sdDur) : null;
+  var fdCorr = fdDur.length > 0 ? calcCorr(fdDur) : null;
+
+  var seriesData = [];
+  var graphicItems = [];
+
+  if (sdDur.length > 0) {
+    seriesData.push({
+      name: '首贷', type: 'scatter', symbolSize: 8,
+      data: sdDur.map(function(r){ return [r.dur, r.gmv, r.grade]; }),
+      itemStyle: { color: function(d){
+        var g = d.data[2];
+        return g === 'S' ? _C : g === 'A' ? _G : g === 'B' ? _B : '#A0AEC0';
+      }, opacity: 0.55 },
+      emphasis: { scale: 1.8, itemStyle: { opacity: 0.9 } },
+      markLine: { symbol: 'none', silent: true, data: [
+        { xAxis: sdCorr.avgX, lineStyle: { type: 'dashed', color: _C, width: 1 },
+          label: { formatter: '首贷通时均值 ' + sdCorr.avgX.toFixed(0) + 'min', fontSize: 8, color: _C } },
+        { yAxis: sdCorr.avgY, lineStyle: { type: 'dashed', color: _C, width: 1 },
+          label: { formatter: '首贷GMV均值 ' + (sdCorr.avgY/10000).toFixed(0) + '万', fontSize: 8, color: _C } }
+      ]}
+    });
+    graphicItems.push({ type: 'text', left: '5%', top: 16,
+      style: { text: '首贷 r = ' + sdCorr.r, fontSize: 10, fontWeight: 'bold', fill: _C } });
+  }
+
+  if (fdDur.length > 0) {
+    seriesData.push({
+      name: '复贷', type: 'scatter', symbolSize: 8,
+      data: fdDur.map(function(r){ return [r.dur, r.gmv, r.grade]; }),
+      itemStyle: { color: function(d){
+        var g = d.data[2];
+        return g === 'S' ? '#E8734A' : g === 'A' ? '#5A6878' : g === 'B' ? '#8B99A8' : '#A0AEC0';
+      }, opacity: 0.55 },
+      emphasis: { scale: 1.8, itemStyle: { opacity: 0.9 } },
+      markLine: { symbol: 'none', silent: true, data: [
+        { xAxis: fdCorr.avgX, lineStyle: { type: 'dashed', color: '#5A6878', width: 1 },
+          label: { formatter: '复贷通时均值 ' + fdCorr.avgX.toFixed(0) + 'min', fontSize: 8, color: '#5A6878' } },
+        { yAxis: fdCorr.avgY, lineStyle: { type: 'dashed', color: '#5A6878', width: 1 },
+          label: { formatter: '复贷GMV均值 ' + (fdCorr.avgY/10000).toFixed(0) + '万', fontSize: 8, color: '#5A6878' } }
+      ]}
+    });
+    graphicItems.push({ type: 'text', left: '55%', top: 16,
+      style: { text: '复贷 r = ' + fdCorr.r, fontSize: 10, fontWeight: 'bold', fill: '#5A6878' } });
+  }
+
+  ec(document.getElementById('fig10'), {
+    tooltip: { formatter: function(p){
+      var d = p.data;
+      return p.seriesName + '<br>通时: ' + d[0].toFixed(0) + 'min, GMV: ' + d[1].toLocaleString() + '<br>等级: ' + d[2];
+    }},
+    legend: { data: ['首贷','复贷'], bottom: 0, textStyle: { fontSize: 10 } },
+    grid: { left: 70, right: 30, top: 26, bottom: 36 },
+    xAxis: { type: 'value', name: '日均通时 (min)', nameTextStyle: { fontSize: 9 } },
+    yAxis: { type: 'value', name: 'GMV', nameTextStyle: { fontSize: 9 },
+      axisLabel: { formatter: function(v){ return (v/10000).toFixed(0)+'万'; } } },
+    series: seriesData,
+    graphic: graphicItems
+  });
+})();
+
+// ================================================================
+// FIG14: 职场 C 级率排名 (horizontal bar)
+// ================================================================
+if (D.wp_c_rates && D.wp_c_rates.length > 0) {
+  var sortedCR = D.wp_c_rates.slice(0, 8).sort(function(a,b){ return b.c_rate - a.c_rate; });
+  ec(document.getElementById('fig14'), {
+    tooltip: { trigger: 'axis', formatter: function(p){
+      var r = sortedCR[sortedCR.length - 1 - p[0].dataIndex];
+      return r.wp + ': C 级 ' + r.c_count + '/' + r.total + '人 (' + r.c_rate + '%)';
+    }},
+    grid: { left: 80, right: 40, top: 10, bottom: 10 },
+    yAxis: { type: 'category', data: sortedCR.map(function(r){ return r.wp; }).reverse(), axisLabel: { fontSize: 10 } },
+    xAxis: { type: 'value', name: 'C 级率 (%)', nameTextStyle: { fontSize: 8 }, max: 100 },
+    series: [{
+      type: 'bar', barMaxWidth: 20,
+      data: sortedCR.map(function(r){ return {
+        value: r.c_rate,
+        itemStyle: { color: r.c_rate > 30 ? _C : r.c_rate > 20 ? '#ECC94B' : _B }
+      }; }).reverse(),
+      label: { show: true, position: 'right', formatter: function(p){
+        var r = sortedCR[sortedCR.length - 1 - p.dataIndex];
+        return r.c_rate + '% (' + r.c_count + '/' + r.total + ')';
+      }, fontSize: 9 }
+    }]
+  });
+}
+
+// ================================================================
+// FIG9a: 非参评群体构成 (pie with anomaly callout)
+// ================================================================
+if (D.non_rated) {
+  var nr = D.non_rated;
+  var nrTotal = nr.zero_call + nr.low_eff + nr.others;
+  var zeroPct = nrTotal > 0 ? Math.round(nr.zero_call / nrTotal * 100) : 0;
+  var lowPct = nrTotal > 0 ? Math.round(nr.low_eff / nrTotal * 100) : 0;
+
+  ec(document.getElementById('fig9a'), {
+    tooltip: { trigger: 'item', formatter: function(p){
+      return p.name.replace(/\(.*\)/,'') + ': <strong>' + p.value + '人</strong>（' + p.percent + '%）';
+    } },
+    series: [{
+      type: 'pie', radius: ['30%', '60%'], center: ['50%', '50%'],
+      data: [
+        { name: '零通话 (' + nr.zero_call + '人)', value: nr.zero_call,
+          itemStyle: { color: _C },
+          label: { show: zeroPct > 15, formatter: zeroPct + '%', fontSize: 12, fontWeight: 'bold', color: _C } },
+        { name: '低效 (' + nr.low_eff + '人)', value: nr.low_eff,
+          itemStyle: { color: '#ECC94B' },
+          label: { show: lowPct > 15, formatter: lowPct + '%', fontSize: 12, fontWeight: 'bold', color: '#B7950B' } },
+        { name: '其他 (' + nr.others + '人)', value: nr.others,
+          itemStyle: { color: _B } }
+      ],
+      label: { fontSize: 10 },
+      emphasis: { itemStyle: { shadowBlur: 10 } },
+      labelLine: { length: 12, length2: 8 }
+    }]
+  });
+  // Annotate key insight below chart
+  var insightEl = document.createElement('p');
+  insightEl.style.cssText = 'font-size:10px;color:var(--muted);margin:8px 0 0;line-height:1.5;text-align:center';
+  if (zeroPct > 30) {
+    insightEl.innerHTML = '非参评群体中 <strong style="color:'+_C+'">零通话占比 ' + zeroPct + '%</strong>（' + nr.zero_call + ' 人），需重点关注这些坐席是否仍在职。';
+  } else if (lowPct > 30) {
+    insightEl.innerHTML = '非参评群体中 <strong style="color:#B7950B">低效坐席占比 ' + lowPct + '%</strong>（' + nr.low_eff + ' 人），建议核实其工作状态。';
+  } else {
+    insightEl.innerHTML = '非参评共 ' + nrTotal + ' 人（零通话 ' + nr.zero_call + ' 人，低效 ' + nr.low_eff + ' 人），占总结案 ' + (_totalTotal > 0 ? Math.round(nrTotal/_totalTotal*100) + '%' : '-') + '。';
+  }
+  document.getElementById('fig9a').parentNode.appendChild(insightEl);
+}
+
+// ================================================================
+// FIG9b: 非参评坐席 · 日均通时分布 (bar)
+// ================================================================
+if (D.non_rated_dur && D.non_rated_dur.length > 0) {
+  var nrd = D.non_rated_dur;
+  document.getElementById('zcCount').textContent = (nrd.find(function(d){ return d.label === '0min'; })||{}).count || 0;
+  ec(document.getElementById('fig9b'), {
+    tooltip: { trigger: 'axis', formatter: function(p){ return p[0].name + ': ' + p[0].value + '人'; } },
+    grid: { left: 50, right: 20, top: 10, bottom: 30 },
+    xAxis: { type: 'category', data: nrd.map(function(d){ return d.label; }), axisLabel: { fontSize: 9 } },
+    yAxis: { type: 'value', name: '人数', nameTextStyle: { fontSize: 9 } },
+    series: [{
+      type: 'bar', barMaxWidth: 40,
+      data: nrd.map(function(d, i){
+        return { value: d.count, itemStyle: { color: i === 0 ? _C : _B, borderRadius: [3,3,0,0] } };
+      }),
+      label: { show: true, position: 'top', formatter: function(p){ return p.value + '人'; }, fontSize: 10, fontWeight: 'bold',
+        color: function(p){ return p.dataIndex === 0 ? _C : _G; } }
+    }]
+  });
+}
+
+// ================================================================
+// ANOMALY CARDS (Chapter 5)
+// ================================================================
+(function(){
+  var acGrid = document.getElementById('anomalyCards');
+  if (!acGrid) return;
+  var ac = D.warned_count || 0;
+  var oc = D.offline_count || 0;
+  var zc = D.zero_gmv_count || 0;
+  acGrid.innerHTML =
+    '<div class="ac-card"><div class="ac-num">'+zc+'</div><div class="ac-lbl">零 GMV 坐席</div><div class="ac-desc">'+_totalRated+' 参评坐席中 GMV 为 0，需逐一确认是否仍在线</div></div>'+
+    '<div class="ac-card"><div class="ac-num">'+ac+'</div><div class="ac-lbl">3 天预警坐席</div><div class="ac-desc">连续 3 天未上线，出勤稳定性存疑，建议 BP 介入</div></div>'+
+    '<div class="ac-card"><div class="ac-num">'+oc+'</div><div class="ac-lbl">超 7 天未上线</div><div class="ac-desc">可能已离职或调岗，建议在册确认</div></div>';
+})();
+
+// ================================================================
+// FIG12: 评分维度贡献权重 (diverging bar)
+// ================================================================
+if (D.dim_weights && D.dim_weights.length > 0) {
+  var dw = D.dim_weights;
+  var dwLabels = dw.map(function(d){ return d.name; });
+  var dwVals = dw.map(function(d){ return d.r; });
+
+  ec(document.getElementById('fig12'), {
+    tooltip: { trigger: 'axis', formatter: function(p){
+      var i = p[0].dataIndex;
+      return dwLabels[i] + ': r = ' + dwVals[i].toFixed(3) + ' (' + (dwVals[i] >= 0 ? '正向贡献' : '负向贡献') + ')';
+    }},
+    grid: { left: 90, right: 40, top: 10, bottom: 10 },
+    xAxis: { type: 'value', name: '相关系数 r', nameTextStyle: { fontSize: 9 },
+      axisLabel: { fontSize: 9 } },
+    yAxis: { type: 'category', data: dwLabels, axisLabel: { fontSize: 10, fontWeight: 'bold' } },
+    series: [{
+      type: 'bar', barMaxWidth: 24,
+      data: dwVals.map(function(v){
+        return {
+          value: v,
+          itemStyle: { color: v >= 0 ? _C : _G, borderRadius: v >= 0 ? [0, 3, 3, 0] : [3, 0, 0, 3] }
+        };
+      }),
+      label: { show: true, position: function(p){ return p.value >= 0 ? 'right' : 'left'; },
+        formatter: function(p){ return p.value.toFixed(3); }, fontSize: 9, fontWeight: 'bold' }
+    }],
+    // Vertical zero line
+    visualMap: false
+  });
+}
+
+// ================================================================
+// FIG15: GMV 帕累托曲线 (交点标注 + 单 Y 轴)
+// ================================================================
+if (D.pareto && D.pareto.length > 0) {
+  (function(){
+    var pa = D.pareto;
+    var totalGmv = _totalGmv || (pa.length > 0 ? pa[pa.length-1].cum : 0);
+
+    // Find intersection indices at 50% and 80% cumulative GMV
+    var p50Idx = 0, p80Idx = 0;
+    for (var i = 0; i < pa.length; i++) {
+      if (p50Idx === 0 && pa[i].cum >= 50) p50Idx = i;
+      if (p80Idx === 0 && pa[i].cum >= 80) p80Idx = i;
+    }
+    if (p50Idx === 0) p50Idx = pa.length - 1;
+    if (p80Idx === 0) p80Idx = pa.length - 1;
+
+    // Format pct
+    var fmtPct = function(num){ return num % 1 === 0 ? num.toFixed(0) : num.toFixed(1); };
+    var keyPcts = [20, 40, 60, 80, 100];
+    // X-axis: raw percentage values, formatted display via axisLabel.formatter
+    var paRawLabels = pa.map(function(d){ return d.pct + '%'; });
+
+    // markPoint data for 50%, 80% intersections and end point
+    // Use numeric index for category axis positioning
+    var mpData = [
+      {
+        coord: [paRawLabels[p50Idx], pa[p50Idx].cum],
+        symbol: 'pin', symbolSize: 44,
+        itemStyle: { color: '#ECC94B' },
+        label: { show: true, formatter: '前' + fmtPct(pa[p50Idx].pct) + '%坐席\n贡献' + pa[p50Idx].cum.toFixed(1) + '% GMV', fontSize: 9, fontWeight: 'bold', color: '#B7950B' }
+      },
+      {
+        coord: [paRawLabels[p80Idx], pa[p80Idx].cum],
+        symbol: 'pin', symbolSize: 44,
+        itemStyle: { color: _G },
+        label: { show: true, formatter: '前' + fmtPct(pa[p80Idx].pct) + '%坐席\n贡献' + pa[p80Idx].cum.toFixed(1) + '% GMV', fontSize: 9, fontWeight: 'bold', color: '#fff' }
+      },
+      {
+        coord: [paRawLabels[pa.length - 1], pa[pa.length-1].cum],
+        symbol: 'diamond', symbolSize: 36,
+        itemStyle: { color: _C },
+        label: { show: true, formatter: '总计GMV: ' + (totalGmv/10000).toFixed(0) + ' 万', fontSize: 9, fontWeight: 'bold', color: _C }
+      }
+    ];
+
+    ec(document.getElementById('fig15'), {
+      tooltip: { trigger: 'axis', formatter: function(ps) {
+        var p = ps[0];
+        return '前' + fmtPct(pa[p.dataIndex].pct) + '%坐席<br/>累计GMV: ' + pa[p.dataIndex].cum.toFixed(1) + '%';
+      }},
+      grid: { left: 60, right: 30, top: 16, bottom: 36 },
+      xAxis: { type: 'category', data: paRawLabels, axisLabel: { fontSize: 9, formatter: function(value, idx) { var pct = parseFloat(value); if (keyPcts.indexOf(pct) >= 0 || idx === p50Idx || idx === p80Idx) return '前' + fmtPct(pct) + '%坐席'; return ''; } } },
+      yAxis: { type: 'value', max: 100, name: '累计 GMV%', nameTextStyle: { fontSize: 9 }, axisLabel: { fontSize: 9, formatter: function(v){ return v + '%'; } } },
+      series: [{
+        type: 'line', smooth: true, symbol: 'circle', symbolSize: 4,
+        lineStyle: { width: 3, color: _C },
+        areaStyle: { color: { type: 'linear', x:0, y:0, x2:0, y2:1, colorStops: [{offset:0,color:'rgba(232,115,74,0.25)'},{offset:1,color:'rgba(232,115,74,0.05)'}] } },
+        data: pa.map(function(d){ return d.cum; }),
+        markLine: { symbol: 'none', data: [
+          { yAxis: 50, lineStyle: { type: 'dashed', color: '#ECC94B', width: 1 }, label: { formatter: '50%', fontSize: 9, color: '#ECC94B' } },
+          { yAxis: 80, lineStyle: { type: 'dashed', color: _B, width: 1 }, label: { formatter: '80%', fontSize: 9, color: _B } }
+        ]},
+        markPoint: { data: mpData }
+      }]
+    });
+  })();
+}
+
+// ================================================================
+// ACTION CARDS (Chapter 6)
+// ================================================================
+(function(){
+  var acts = [];
+  var topWp = D.wp_c_rates.length > 0 ? D.wp_c_rates[0] : null;
+  if (topWp && topWp.c_rate > 20) {
+    acts.push({ pri: 'P0 紧急', cls: 'p0', title: topWp.wp + ' C 级率专项干预',
+      desc: topWp.wp + ' C 级率达 ' + topWp.c_rate + '%（' + topWp.c_count + '/' + topWp.total + '人），建议暂停优质名单投放，配 SOP + 每日通关' });
+  }
+  if (_mConc > 30) {
+    acts.push({ pri: 'P0 紧急', cls: 'p0', title: 'MOB1-3 新人前置培训',
+      desc: 'MOB1-3 中 C 级占比 ' + _mConc + '%，建议新员工 30 天设置通关门槛：日均通时 > 60min + 转化率 > 50%' });
+  }
+  if (D.s_conv > 0 && D.c_conv > 0 && _scR > 2) {
+    acts.push({ pri: 'P1 重要', cls: 'p1', title: '转化能力提升',
+      desc: 'S 级转化率 ' + D.s_conv.toFixed(1) + '% 是 C 级 ' + D.c_conv.toFixed(1) + '% 的 ' + _scR + ' 倍，核心在需求挖掘能力' });
+  }
+  if ((_gd['S']||0) > 0 && (_gd['C']||0) > 0) {
+    acts.push({ pri: 'P1 重要', cls: 'p1', title: 'S 级经验萃取',
+      desc: 'S 级 ' + _gd['S'] + ' 人，人均 GMV ' + (D.s_avg_gmv ? (D.s_avg_gmv/10000).toFixed(0)+'万' : '显著高于平均') + '，建议萃取优秀录音 + 话术手册' });
+  }
+  if (topWp && topWp.c_rate > 15) {
+    acts.push({ pri: 'P2 常规', cls: 'p2', title: '高 C 级率职场月度跟踪',
+      desc: topWp.wp + ' 纳入月度供应商管理仪表盘，连续 2 月无改善启动约谈' });
+  }
+  acts.push({ pri: 'P2 常规', cls: 'p2', title: '数据局限性',
+    desc: '单期截面数据，无法判断趋势。转化率分母为接通用户数，建议连续 3 期对比。首贷/复贷全程分拆未合并。' });
+  document.getElementById('acts').innerHTML = acts.map(function(a){
+    return '<div class="act '+a.cls+'"><div class="pri">'+a.pri+'</div><h4>'+a.title+'</h4><p>'+a.desc+'</p></div>';
+  }).join('');
+})();
+
+// ================================================================
+// FOOTER
+// ================================================================
+document.getElementById('footer').innerHTML =
+  '<p><strong>数据口径：</strong>参评 = 最近有效外呼 ≤7 天 且 外呼天数 ≥22 天（或表内"是否参评"标记）。评级：百分位排名制，结果:过程 65:35。首贷/复贷分池独立评级。</p>' +
+  '<p><strong>注意：</strong>单期截面数据，无法判断趋势和季节性。转化率分母为接通用户数而非名单下发数。入职趋势使用"金条业务首次外呼日期"。建议连续 3 期对比。</p>' +
+  '<p><strong>生成：</strong>sabc-diagnostic V4.0 叙事设计版 | ECharts 5 | ' + D.deadline + '</p>';
+</script>
+</body>
+</html>

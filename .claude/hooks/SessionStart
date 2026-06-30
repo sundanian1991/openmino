@@ -1,0 +1,43 @@
+#!/bin/bash
+# SessionStart hook: 扫描当前项目下的临时 node_modules 残渣
+# 排除规则: 有对应 package.json 且是活跃项目的不删
+
+set -euo pipefail
+
+TARGET_DIR="/Users/sundanian/Documents/projects/ai-agents/my-agent"
+
+# 白名单：这些是活跃项目，不能碰
+WHITELIST=(
+  "insight-asset-os/node_modules"       # 活跃开发
+  "insight-asset-os/dist/standalone-bundle/node_modules"  # 构建产物
+)
+
+echo "[auto-clean] 扫描临时 node_modules..."
+
+count=0
+freed=0
+while IFS= read -r -d '' dir; do
+  # 跳过白名单
+  skip=false
+  for w in "${WHITELIST[@]}"; do
+    if [[ "$dir" == *"$w"* ]]; then
+      skip=true
+      break
+    fi
+  done
+  $skip && continue
+
+  # 检查是否有 package.json 且是活跃项目（排除 workspace 临时目录）
+  parent=$(dirname "$dir")
+  if [[ "$parent" == *"/workspace/"* ]] || [[ "$parent" == *"/projects/"* ]]; then
+    size=$(du -sm "$dir" 2>/dev/null | cut -f1)
+    rm -rf "$dir"
+    rm -f "$parent/package-lock.json" 2>/dev/null
+    freed=$((freed + size))
+    count=$((count + 1))
+  fi
+done < <(find "$TARGET_DIR" -maxdepth 5 -type d -name "node_modules" -print0 2>/dev/null)
+
+if [ $count -gt 0 ]; then
+  echo "[auto-clean] 清理了 $count 个目录，释放 ${freed}MB"
+fi

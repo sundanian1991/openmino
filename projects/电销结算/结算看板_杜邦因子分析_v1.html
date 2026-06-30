@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商结算 · 杜邦因子看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f7fa;color:#1a1a2e;padding:24px;max-width:1200px;margin:0 auto}
+.header{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.header h1{font-size:20px;font-weight:700;color:#1a1a2e}
+.header h1 span{color:#64748b;font-weight:400;font-size:14px;margin-left:8px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.controls label{font-size:13px;color:#64748b}
+.controls select{padding:6px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;background:#fff;cursor:pointer;min-width:160px}
+.controls select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:500}
+.tag-up{background:#dcfce7;color:#16a34a}
+.tag-down{background:#fef2f2;color:#dc2626}
+/* 杜邦因子树 */
+.dupont-tree{background:#fff;border-radius:12px;padding:28px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tree-root{display:flex;justify-content:center;margin-bottom:20px}
+.root-card{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:14px;padding:18px 36px;text-align:center;cursor:pointer;transition:transform .2s;min-width:240px}
+.root-card:hover{transform:translateY(-2px)}
+.root-card .label{font-size:13px;opacity:.8;margin-bottom:4px}
+.root-card .value{font-size:32px;font-weight:700;letter-spacing:-.5px}
+.root-card .unit{font-size:13px;opacity:.7;margin-top:2px}
+.root-card .sub{font-size:12px;opacity:.6;margin-top:6px}
+.tree-branches{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.operator{display:flex;align-items:center;color:#94a3b8;font-size:22px;font-weight:300;padding:0 4px}
+.factor-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;text-align:center;cursor:pointer;transition:all .2s;flex:1;min-width:150px;max-width:200px}
+.factor-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08);border-color:#2563eb}
+.factor-card.active{border-color:#2563eb;box-shadow:0 0 0 2px rgba(37,99,235,.15)}
+.factor-card .label{font-size:12px;color:#64748b;margin-bottom:4px}
+.factor-card .value{font-size:20px;font-weight:700;color:#1a1a2e}
+.factor-card .unit{font-size:11px;color:#94a3b8}
+.factor-card .rank{font-size:11px;margin-top:6px;padding:2px 8px;border-radius:4px;display:inline-block}
+.factor-card .rank.high{background:#dcfce7;color:#16a34a}
+.factor-card .rank.mid{background:#fef9c3;color:#a16207}
+.factor-card .rank.low{background:#fef2f2;color:#dc2626}
+/* 连接线 */
+.connector-row{display:flex;justify-content:center;align-items:center;gap:16px;padding:4px 0;margin-bottom:8px}
+.connector-row .line{flex:1;height:2px;background:#e2e8f0;max-width:200px;position:relative}
+.connector-row .op{color:#94a3b8;font-size:18px;font-weight:300}
+/* 详情面板 */
+.detail-panel{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);display:none}
+.detail-panel.visible{display:block}
+.detail-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.detail-header h2{font-size:17px;font-weight:600}
+.detail-header .close-btn{background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8;padding:4px 8px;border-radius:6px}
+.detail-header .close-btn:hover{background:#f1f5f9;color:#475569}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.detail-card{background:#f8fafc;border-radius:10px;padding:14px 16px}
+.detail-card .l{font-size:12px;color:#64748b;margin-bottom:2px}
+.detail-card .v{font-size:18px;font-weight:700;color:#1a1a2e}
+.chart-container{height:260px;margin-top:12px}
+/* 排名表 */
+.rank-section{margin-top:16px}
+.rank-section h3{font-size:14px;font-weight:600;margin-bottom:10px;color:#475569}
+.rank-table{width:100%;border-collapse:collapse;font-size:13px}
+.rank-table th{text-align:left;padding:8px 12px;background:#f8fafc;color:#64748b;font-weight:500;border-bottom:2px solid #e2e8f0}
+.rank-table td{padding:8px 12px;border-bottom:1px solid #f1f5f9}
+.rank-table tr:hover{background:#f8fafc}
+.rank-num{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:6px;font-size:11px;font-weight:600}
+.rank-1{background:#fef9c3;color:#a16207}
+.rank-2{background:#f1f5f9;color:#475569}
+.rank-3{background:#fef2f2;color:#dc2626}
+.cmp-bar{height:6px;border-radius:3px;background:#e2e8f0;position:relative;overflow:hidden;margin-top:4px}
+.cmp-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+.bar-green{background:#22c55e}
+.bar-blue{background:#2563eb}
+.bar-red{background:#ef4444}
+/* 对比行 */
+.compare-row{display:flex;gap:16px;margin-top:16px;padding:16px;background:#f8fafc;border-radius:10px;align-items:center}
+.compare-row select{flex:1}
+/* 环比标签 */
+.change{font-size:12px;margin-left:6px;font-weight:500}
+.change.up{color:#16a34a}
+.change.down{color:#dc2626}
+@media(max-width:768px){.tree-branches{flex-direction:column;align-items:center}.factor-card{max-width:100%;width:100%}.detail-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>供应商结算 · 杜邦因子看板 <span id="monthLabel">2026-06</span></h1>
+    <div style="font-size:12px;color:#94a3b8;margin-top:2px">人均到手薪资 = 人均资源规模 × 转化效率 × 客单价 × 净值率</div>
+  </div>
+  <div class="controls">
+    <label>职场</label>
+    <select id="workplaceSelect"></select>
+    <label>对比</label>
+    <select id="compareSelect">
+      <option value="__avg__">vs 全部职场均值</option>
+      <option value="__median__">vs 中位值</option>
+      <option value="__top__">vs 最优值</option>
+    </select>
+  </div>
+</div>
+
+<!-- 杜邦因子树 -->
+<div class="dupont-tree">
+  <div class="tree-root" id="rootCard">
+    <div class="root-card">
+      <div class="label">人均到手薪资</div>
+      <div class="value" id="rootValue">—</div>
+      <div class="unit">元 / 人</div>
+      <div class="sub" id="rootSub">▼ 点击因子卡片向下钻取</div>
+    </div>
+  </div>
+  <div class="connector-row">
+    <span class="op">=</span>
+    <span class="line"></span>
+    <span class="op">×</span>
+    <span class="line"></span>
+    <span class="op">×</span>
+    <span class="line"></span>
+    <span class="op">×</span>
+  </div>
+  <div class="tree-branches" id="factorCards"></div>
+</div>
+
+<!-- 详情面板 -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <h2 id="detailTitle">因子详情</h2>
+    <button class="close-btn" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-grid" id="detailGrid"></div>
+  <div class="chart-container">
+    <canvas id="detailChart"></canvas>
+  </div>
+  <div class="rank-section" id="rankSection">
+    <h3>所有职场排名</h3>
+    <table class="rank-table" id="rankTable">
+      <thead><tr><th>#</th><th>职场</th><th>值</th><th>vs 选中职场</th></tr></thead>
+      <tbody id="rankBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 趋势图 -->
+<div class="dupont-tree" id="trendSection">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h2 style="font-size:16px;font-weight:600">毅航合肥 · 6个月趋势</h2>
+    <div style="display:flex;gap:12px;font-size:12px">
+      <label><input type="checkbox" data-factor="人均到手薪资" checked> 人均到手薪资</label>
+      <label><input type="checkbox" data-factor="转化效率_pct"> 转化效率</label>
+      <label><input type="checkbox" data-factor="客单价"> 客单价</label>
+      <label><input type="checkbox" data-factor="净值率_pct"> 净值率</label>
+    </div>
+  </div>
+  <div class="chart-container" style="height:280px">
+    <canvas id="trendChart"></canvas>
+  </div>
+</div>
+
+<script>
+// ====== 数据 ======
+const DATA = {
+  "workplaces": [
+    {"name":"管户金条-人和职场","人均资源规模":289,"转化效率_pct":4.23,"客单价":35439,"净值率_pct":0.15,"人均到手薪资":649,"人均线路费":46,"净到手率_pct":87.8},
+    {"name":"管户金条-伽玛职场","人均资源规模":191,"转化效率_pct":5.01,"客单价":29657,"净值率_pct":0.144,"人均到手薪资":411,"人均线路费":32,"净到手率_pct":87.3},
+    {"name":"管户金条-华啸职场","人均资源规模":182,"转化效率_pct":7.26,"客单价":29758,"净值率_pct":0.11,"人均到手薪资":432,"人均线路费":28,"净到手率_pct":88.3},
+    {"name":"管户金条-博岳石家庄职场","人均资源规模":316,"转化效率_pct":4.07,"客单价":30486,"净值率_pct":0.173,"人均到手薪资":676,"人均线路费":43,"净到手率_pct":88.4},
+    {"name":"管户金条-宿迁兆科职场","人均资源规模":2236,"转化效率_pct":0.8,"客单价":20968,"净值率_pct":0.211,"人均到手薪资":792,"人均线路费":385,"净到手率_pct":64.4},
+    {"name":"管户金条-岐力职场","人均资源规模":183,"转化效率_pct":6.85,"客单价":25378,"净值率_pct":0.102,"人均到手薪资":326,"人均线路费":33,"净到手率_pct":85.6},
+    {"name":"管户金条-广达陕西职场","人均资源规模":161,"转化效率_pct":4.16,"客单价":27965,"净值率_pct":0.144,"人均到手薪资":270,"人均线路费":27,"净到手率_pct":85.7},
+    {"name":"管户金条-毅航合肥职场","人均资源规模":363,"转化效率_pct":4.52,"客单价":34449,"净值率_pct":0.195,"人均到手薪资":1101,"人均线路费":65,"净到手率_pct":88.7},
+    {"name":"管户金条-毛毛虫职场","人均资源规模":592,"转化效率_pct":3.11,"客单价":37848,"净值率_pct":0.245,"人均到手薪资":1703,"人均线路费":89,"净到手率_pct":89.3},
+    {"name":"管户金条-汇讯职场","人均资源规模":380,"转化效率_pct":2.88,"客单价":33482,"净值率_pct":0.222,"人均到手薪资":813,"人均线路费":64,"净到手率_pct":87.2},
+    {"name":"管户金条-翰锐曲靖职场","人均资源规模":236,"转化效率_pct":5.72,"客单价":30709,"净值率_pct":0.121,"人均到手薪资":501,"人均线路费":37,"净到手率_pct":87.6},
+    {"name":"管户金条-赛维斯机器人职场","人均资源规模":8597,"转化效率_pct":0.65,"客单价":22782,"净值率_pct":0.085,"人均到手薪资":1079,"人均线路费":1120,"净到手率_pct":47.5},
+    {"name":"管户金条-赛维斯职场","人均资源规模":276,"转化效率_pct":4.96,"客单价":26374,"净值率_pct":0.156,"人均到手薪资":564,"人均线路费":39,"净到手率_pct":87.9},
+    {"name":"管户金条-零犀伽玛机器人职场","人均资源规模":4979,"转化效率_pct":0.33,"客单价":14826,"净值率_pct":0.316,"人均到手薪资":782,"人均线路费":496,"净到手率_pct":58.7},
+    {"name":"管户金条-零犀岐力机器人职场","人均资源规模":1424,"转化效率_pct":1.14,"客单价":30868,"净值率_pct":0.034,"人均到手薪资":171,"人均线路费":164,"净到手率_pct":49.4},
+    {"name":"管户金条-零犀机器人职场","人均资源规模":39341,"转化效率_pct":0.77,"客单价":22867,"净值率_pct":0.061,"人均到手薪资":4211,"人均线路费":4658,"净到手率_pct":46.0},
+    {"name":"管户金条-零犀毅航机器人职场","人均资源规模":6962,"转化效率_pct":0.37,"客单价":16452,"净值率_pct":0.32,"人均到手薪资":1350,"人均线路费":819,"净到手率_pct":59.7},
+    {"name":"管户金条-零犀毛毛虫机器人职场","人均资源规模":6018,"转化效率_pct":0.35,"客单价":13945,"净值率_pct":0.324,"人均到手薪资":949,"人均线路费":530,"净到手率_pct":61.5},
+    {"name":"管户金条-零犀赛维斯机器人职场","人均资源规模":6200,"转化效率_pct":0.32,"客单价":12050,"净值率_pct":0.201,"人均到手薪资":487,"人均线路费":792,"净到手率_pct":37.1}
+  ],
+  "averages": {"人均资源规模":4154,"转化效率_pct":3.03,"客单价":26121,"净值率_pct":0.174,"人均到手薪资":909,"人均线路费":498,"净到手率_pct":73.1},
+  "trend": {
+    "months":["2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],
+    "人均到手薪资":[7765,7229,4841,8059,4606,7088,1101],
+    "转化效率_pct":[2.77,2.99,2.94,2.69,3.02,3.52,4.52],
+    "客单价":[38453,40756,41800,49762,43333,46205,34449],
+    "净值率_pct":[0.198,0.189,0.175,0.176,0.156,0.211,0.195]
+  }
+};
+
+const FACTOR_META = [
+  {key:"人均资源规模",label:"人均资源规模",unit:"人",desc:"每人分配用户数",fmt:v=>Math.round(v)},
+  {key:"转化效率_pct",label:"转化效率",unit:"%",desc:"下发→贷款转化率",fmt:v=>v.toFixed(2)},
+  {key:"客单价",label:"客单价",unit:"元",desc:"每笔平均贷款额",fmt:v=>Math.round(v).toLocaleString()},
+  {key:"净值率_pct",label:"净值率",unit:"%",desc:"每元贷款到手占比",fmt:v=>v.toFixed(3)}
+];
+const FACTOR_KEYS = FACTOR_META.map(f=>f.key);
+
+let currentWorkplace = "管户金条-毅航合肥职场";
+let currentFactor = null;
+let trendChart = null;
+let detailChart = null;
+
+// 工具
+function getWP(name){return DATA.workplaces.find(w=>w.name===name)}
+
+function rankAll(key){
+  let sorted = [...DATA.workplaces].filter(w=>w[key]!=null).sort((a,b)=>b[key]-a[key]);
+  return sorted;
+}
+
+function getRank(wp, key){
+  let sorted = rankAll(key);
+  let idx = sorted.findIndex(w=>w.name===wp.name);
+  return idx>=0?idx+1:sorted.length;
+}
+
+function fmtVal(key, v){
+  let m = FACTOR_META.find(f=>f.key===key);
+  return m?m.fmt(v):v;
+}
+
+function fmtUnit(key){
+  let m = FACTOR_META.find(f=>f.key===key);
+  return m?m.unit:"";
+}
+
+// 渲染
+function renderTree(wpName){
+  let wp = getWP(wpName);
+  if(!wp) return;
+  currentWorkplace = wpName;
+
+  // 更新根节点
+  document.getElementById('rootValue').textContent = Math.round(wp['人均到手薪资']).toLocaleString();
+  let allRanked = rankAll('人均到手薪资');
+  let rIdx = allRanked.findIndex(w=>w.name===wpName);
+  let total = allRanked.length;
+  document.getElementById('rootSub').textContent = `▼ 排名 ${rIdx+1}/${total}  · 点击因子卡片向下钻取`;
+
+  // 更新因子卡片
+  let container = document.getElementById('factorCards');
+  container.innerHTML = '';
+  FACTOR_META.forEach((meta, i)=>{
+    let val = wp[meta.key];
+    let rank = getRank(wp, meta.key);
+    let total = DATA.workplaces.length;
+    let rankClass = rank<=5?'high':rank>=total-4?'low':'mid';
+    let rankLabel = rank<=5?`▲ 第${rank}`:rank>=total-4?`▼ 第${rank}`:`第${rank}`;
+
+    let card = document.createElement('div');
+    card.className = 'factor-card' + (currentFactor===meta.key?' active':'');
+    card.dataset.factor = meta.key;
+    card.onclick = ()=>{showDetail(meta.key, wpName);};
+    card.innerHTML = `
+      <div class="label">${meta.label}</div>
+      <div class="value">${fmtVal(meta.key, val)}</div>
+      <div class="unit">${meta.unit}  · ${meta.desc}</div>
+      <div class="rank ${rankClass}">${rankLabel} / ${total}</div>
+    `;
+    container.appendChild(card);
+
+    // 在非最后一个因子后加乘号
+    if(i < FACTOR_META.length - 1){
+      let op = document.createElement('div');
+      op.className = 'operator';
+      op.textContent = '×';
+      container.appendChild(op);
+    }
+  });
+}
+
+// 详情面板
+let detailChartInstance = null;
+function showDetail(factorKey, wpName){
+  currentFactor = factorKey;
+  let wp = getWP(wpName);
+  if(!wp) return;
+  let meta = FACTOR_META.find(f=>f.key===factorKey);
+  if(!meta) return;
+
+  document.getElementById('detailTitle').textContent = `${meta.label} · 详细分析`;
+  let val = wp[factorKey];
+  let avg = DATA.averages[factorKey];
+  let rank = getRank(wp, factorKey);
+  let sorted = rankAll(factorKey);
+  let total = sorted.length;
+  let maxVal = sorted[0][factorKey];
+  let minVal = sorted[total-1][factorKey];
+  let pctOfMax = maxVal>0?(val/maxVal*100).toFixed(1):0;
+
+  document.getElementById('detailGrid').innerHTML = `
+    <div class="detail-card"><div class="l">当前值</div><div class="v">${fmtVal(factorKey, val)} <span style="font-size:13px;color:#64748b">${meta.unit}</span></div><div style="font-size:12px;color:#64748b;margin-top:2px">排名 ${rank}/${total}</div></div>
+    <div class="detail-card"><div class="l">全部均值</div><div class="v">${fmtVal(factorKey, avg)} <span style="font-size:13px;color:#64748b">${meta.unit}</span></div><div style="font-size:12px;color:#64748b;margin-top:2px">${val>avg?'高于均值':val<avg?'低于均值':'等于均值'} ${val>avg?((val-avg)/avg*100).toFixed(1):avg>0?((avg-val)/avg*100).toFixed(1):'0'}%</div></div>
+    <div class="detail-card"><div class="l">最优值</div><div class="v">${fmtVal(factorKey, maxVal)}</div><div style="font-size:12px;color:#64748b;margin-top:2px">${sorted[0].name} · 达最优 ${pctOfMax}%</div></div>
+    <div class="detail-card"><div class="l">最低值</div><div class="v">${fmtVal(factorKey, minVal)}</div><div style="font-size:12px;color:#64748b;margin-top:2px">${sorted[total-1].name}</div></div>
+  `;
+
+  // 排名表
+  document.getElementById('rankBody').innerHTML = sorted.map((w,i)=>{
+    let cls = i===0?'rank-1':i===1?'rank-2':i===total-1?'rank-3':'';
+    let pct = maxVal>0?(w[factorKey]/maxVal*100).toFixed(0):0;
+    let selected = w.name===wpName;
+    return `<tr${selected?' style="background:#eff6ff;font-weight:600"':''}>
+      <td><span class="rank-num ${cls}">${i+1}</span></td>
+      <td>${w.name}</td>
+      <td>${fmtVal(factorKey, w[factorKey])}</td>
+      <td><div class="cmp-bar"><div class="cmp-bar-fill ${i<3?'bar-green':i>total-4?'bar-red':'bar-blue'}" style="width:${pct}%"></div></div></td>
+    </tr>`;
+  }).join('');
+
+  // 更新因子卡片高亮
+  document.querySelectorAll('.factor-card').forEach(c=>{
+    c.classList.toggle('active', c.dataset.factor===factorKey);
+  });
+
+  // 排名分布图（Canvas条形图）
+  let ctx = document.getElementById('detailChart').getContext('2d');
+  if(detailChartInstance) detailChartInstance.destroy();
+  let labels = sorted.map(w=>w.name.replace('管户金条-',''));
+  let values = sorted.map(w=>w[factorKey]);
+  let colors = values.map((v,i)=>v===val?'#2563eb':(i<3?'#22c55e':i>total-4?'#ef4444':'#e2e8f0'));
+  detailChartInstance = new Chart(ctx, {
+    type:'bar',
+    data:{labels, datasets:[{
+      label:meta.label,
+      data:values,
+      backgroundColor:colors,
+      borderWidth:0,
+      borderRadius:4
+    }]},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:'#f1f5f9'},beginAtZero:false},
+        x:{ticks:{font:{size:10},maxRotation:45}}
+      }
+    }
+  });
+
+  document.getElementById('detailPanel').classList.add('visible');
+  // 滚动到详情
+  document.getElementById('detailPanel').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function closeDetail(){
+  document.getElementById('detailPanel').classList.remove('visible');
+  document.querySelectorAll('.factor-card').forEach(c=>c.classList.remove('active'));
+  currentFactor = null;
+}
+
+// 趋势图
+function renderTrend(){
+  let t = DATA.trend;
+  if(!t) return;
+  let ctx = document.getElementById('trendChart').getContext('2d');
+  let checked = [...document.querySelectorAll('input[data-factor]:checked')].map(el=>el.dataset.factor);
+
+  let datasets = [];
+  let colors = {'人均到手薪资':'#2563eb','转化效率_pct':'#16a34a','客单价':'#f59e0b','净值率_pct':'#ef4444'};
+  let scales = {'人均到手薪资':'y','转化效率_pct':'y1','客单价':'y2','净值率_pct':'y3'};
+  if(trendChart) trendChart.destroy();
+
+  checked.forEach(k=>{
+    if(!t[k]) return;
+    datasets.push({
+      label: FACTOR_META.find(f=>f.key===k)?.label||k,
+      data: t[k],
+      borderColor: colors[k]||'#2563eb',
+      backgroundColor: colors[k]||'#2563eb',
+      yAxisID: 'y',
+      tension: 0.3,
+      borderWidth: 2,
+      pointRadius: 3,
+      pointHoverRadius: 5
+    });
+  });
+
+  // 多轴: 转化效率用百分比尺度
+  trendChart = new Chart(ctx, {
+    type:'line',
+    data:{labels:t.months, datasets},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom'}},
+      scales:{
+        y:{
+          type:'linear',
+          display:true,
+          position:'left',
+          grid:{color:'#f1f5f9'},
+          ticks:{font:{size:11}}
+        }
+      }
+    }
+  });
+}
+
+// 下拉框
+function initSelects(){
+  let sel = document.getElementById('workplaceSelect');
+  DATA.workplaces.forEach(w=>{
+    let o = document.createElement('option');
+    o.value = w.name;
+    o.textContent = w.name.replace('管户金条-','');
+    sel.appendChild(o);
+  });
+  sel.value = currentWorkplace;
+  sel.onchange = function(){
+    renderTree(this.value);
+    if(currentFactor) showDetail(currentFactor, this.value);
+  };
+
+  document.getElementById('compareSelect').onchange = function(){
+    if(currentFactor) showDetail(currentFactor, currentWorkplace);
+  };
+}
+
+// 趋势checkbox
+document.querySelectorAll('input[data-factor]').forEach(el=>{
+  el.addEventListener('change', renderTrend);
+});
+
+// 初始化
+initSelects();
+renderTree(currentWorkplace);
+renderTrend();
+</script>
+</body>
+</html>

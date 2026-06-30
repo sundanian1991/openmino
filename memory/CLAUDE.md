@@ -161,7 +161,7 @@ mkdir -p memory/daily/$(date +%Y-%m)
 
 **三层落盘**（详见 `.claude/rules/MEMORY-L1.md`）：
 1. **Buffer**（实时）：对话中发现触发信息时，立即追加到 `memory/thinking/buffer.md`
-2. **事件化**（自动化）：Stop Hook → `memory/.wal-queue.ndjson` → Cron 21:00 处理 → `memory/events/` + `memory/state.json`
+2. **事件化**（半自动）：Stop Hook → `memory/.wal-queue.ndjson`（producer: `wal-enqueue.py`）；drain 由 `scripts/python/wal-drain.py` 聚合成 `memory/events/_pending-extraction.json`，语义提取（→ `memory/events/YYYY-MM/YYYY-MM-DD.json` + `state.json`）由 agent 在会话中完成（见 `00-IDENTITY-PUSH.md`）
 3. **正式记忆**（定期合并）：每周记忆维护 → `memory/MEMORY.md` / `insights.md`，清空 buffer
 
 ---

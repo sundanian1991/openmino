@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>金条 Q3 定价调整方案 v3 · 可视化重构</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAF8F5;
+      --bg-elevated: #FFFFFF;
+      --text-display: #0A0A0A;
+      --text-primary: #1A1A1A;
+      --text-secondary: #666666;
+      --text-disabled: #999999;
+      --border: #E5E2DD;
+      --border-strong: #CFC9C0;
+      --accent: #D71921;
+      --accent-subtle: rgba(215, 25, 33, 0.08);
+      --success: #1A5D1A;
+      --success-subtle: rgba(26, 93, 26, 0.08);
+      --warning: #8B5A00;
+      --warning-subtle: rgba(139, 90, 0, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.55;
+      padding: 64px 48px 120px;
+    }
+
+    .meta-bar {
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 24px;
+      margin-bottom: 48px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .hero { margin-bottom: 64px; }
+    .hero h1 {
+      font-size: 72px;
+      font-weight: 500;
+      line-height: 1.02;
+      color: var(--text-display);
+      letter-spacing: -2.5px;
+      max-width: 960px;
+    }
+    .hero .subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      margin-top: 24px;
+      max-width: 720px;
+    }
+    .hero-metrics {
+      display: flex;
+      gap: 48px;
+      margin-top: 48px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+    .hero-metric {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .hero-metric .num {
+      font-family: "Space Mono", monospace;
+      font-size: 96px;
+      font-weight: 400;
+      line-height: 0.95;
+      color: var(--text-display);
+      letter-spacing: -4px;
+    }
+    .hero-metric .unit {
+      font-family: "Space Mono", monospace;
+      font-size: 24px;
+      color: var(--text-secondary);
+    }
+    .hero-metric .delta {
+      font-family: "Space Mono", monospace;
+      font-size: 18px;
+      color: var(--accent);
+      background: var(--accent-subtle);
+      padding: 6px 12px;
+      margin-left: 8px;
+    }
+    .hero-metric-secondary {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-bottom: 12px;
+    }
+    .hero-metric-secondary .label {
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+    }
+    .hero-metric-secondary .value {
+      font-family: "Space Mono", monospace;
+      font-size: 32px;
+      color: var(--text-display);
+    }
+
+    .toc {
+      position: fixed;
+      right: 48px;
+      top: 64px;
+      width: 180px;
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 10;
+    }
+    .toc a {
+      display: block;
+      margin-bottom: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      border-left: 2px solid transparent;
+      padding-left: 8px;
+      margin-left: -10px;
+    }
+    .toc a.active, .toc a:hover {
+      color: var(--text-display);
+      border-left-color: var(--accent);
+    }
+
+    .section {
+      border-top: 1px solid var(--border);
+      padding-top: 40px;
+      margin-bottom: 64px;
+      max-width: 1080px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      cursor: pointer;
+      margin-bottom: 28px;
+    }
+    .section-header h2 {
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-display);
+      letter-spacing: -0.8px;
+    }
+    .section-header .toggle {
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      background: var(--bg-elevated);
+      white-space: nowrap;
+    }
+    .section-body { max-width: 100%; }
+    .section-body > p {
+      font-size: 16px;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      max-width: 760px;
+    }
+
+    .subsection { margin-bottom: 48px; }
+    .subsection h3 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-display);
+      margin-bottom: 16px;
+      letter-spacing: -0.3px;
+    }
+    .subsection h4 {
+      font-family: "Space Mono", monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin: 32px 0;
+    }
+    .insight-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 24px;
+    }
+    .insight-card .label {
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    .insight-card .value {
+      font-family: "Space Mono", monospace;
+      font-size: 28px;
+      color: var(--text-display);
+      margin-bottom: 6px;
+    }
+    .insight-card .desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .insight-card.accent { border-color: var(--accent); background: var(--accent-subtle); }
+    .insight-card.success { border-color: var(--success); background: var(--success-subtle); }
+    .insight-card.warning { border-color: var(--warning); background: var(--warning-subtle); }
+
+    .logic-block {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1px solid var(--border);
+      margin: 28px 0;
+    }
+    .logic-step {
+      padding: 24px;
+      border-right: 1px solid var(--border);
+      background: var(--bg-elevated);
+    }
+    .logic-step:last-child { border-right: none; }
+    .logic-step .num {
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      color: var(--text-disabled);
+      margin-bottom: 8px;
+    }
+    .logic-step .title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-display);
+      margin-bottom: 6px;
+    }
+    .logic-step .desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .issue-list { margin: 24px 0 32px; }
+    .issue-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .issue-num {
+      font-family: "Space Mono", monospace;
+      font-size: 12px;
+      color: var(--text-disabled);
+    }
+    .issue-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-display);
+      margin-bottom: 6px;
+    }
+    .issue-detail {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .table-wrap { overflow-x: auto; margin: 20px 0 32px; border: 1px solid var(--border); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--bg-elevated);
+    }
+    th {
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-strong);
+      font-weight: 400;
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+      font-family: "Space Mono", monospace;
+      font-size: 13px;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    td.num { text-align: right; }
+    td.direction-down { color: var(--success); }
+    td.direction-up { color: var(--accent); }
+    td.direction-flat { color: var(--text-secondary); }
+    .table-caption {
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .findings {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 28px;
+      margin: 28px 0;
+    }
+    .findings h4 {
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .finding-item {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .finding-item:last-child { margin-bottom: 0; }
+    .finding-marker { color: var(--accent); font-weight: 500; }
+    .finding-text { font-size: 15px; color: var(--text-primary); line-height: 1.6; }
+
+    .plan-list { margin: 20px 0; }
+    .plan-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .plan-phase {
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      min-width: 80px;
+    }
+    .plan-content { font-size: 15px; color: var(--text-primary); }
+
+    .attach-note {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 12px 0 24px;
+      padding: 16px;
+      border-left: 2px solid var(--border);
+    }
+
+    .muted { color: var(--text-secondary); }
+    .small { font-size: 13px; }
+
+    /* Charts */
+    .chart { margin: 40px 0; }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
+    .chart-title {
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+    }
+    .chart-note {
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      color: var(--text-disabled);
+    }
+    .chart-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      font-family: "Space Mono", monospace;
+    }
+    .chart-axis { stroke: var(--border-strong); stroke-width: 1; }
+    .chart-grid { stroke: var(--border); stroke-width: 1; stroke-dasharray: 2 4; }
+    .chart-text { font-size: 11px; fill: var(--text-secondary); }
+    .chart-text-sm { font-size: 10px; fill: var(--text-disabled); }
+    .chart-label { font-size: 12px; fill: var(--text-primary); font-weight: 500; }
+    .chart-value { font-size: 11px; fill: var(--text-display); font-weight: 700; }
+    .bar-base { fill: var(--border); }
+    .bar-actual { fill: var(--text-display); }
+    .bar-target { fill: var(--success); }
+    .bar-up { fill: var(--accent); }
+    .bar-down { fill: var(--success); }
+    .bar-neutral { fill: var(--text-secondary); }
+    .bar-total { fill: var(--text-display); }
+    .connector { stroke: var(--text-secondary); stroke-width: 1; stroke-dasharray: 4 2; fill: none; }
+    .waterfall-positive { fill: var(--accent); }
+    .waterfall-negative { fill: var(--success); }
+    .waterfall-total { fill: var(--text-display); }
+    .sparkline { fill: none; stroke: var(--text-display); stroke-width: 2; }
+    .sparkline-dot { fill: var(--text-display); }
+    .sparkline-area { fill: rgba(10,10,10,0.04); stroke: none; }
+
+    body.editing { box-shadow: inset 0 0 0 2px var(--accent); }
+    [data-edit] {
+      outline: 1px dashed transparent;
+      outline-offset: 2px;
+      transition: outline 0.15s ease;
+    }
+    body.editing [data-edit]:hover { outline-color: rgba(0,0,0,0.15); }
+    body.editing [data-edit]:focus { outline-color: var(--accent); outline-style: solid; }
+    #ne-toolbar {
+      position: fixed;
+      top: 16px;
+      right: 220px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 6px;
+      z-index: 1000;
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+    }
+    #ne-toolbar button {
+      font-family: inherit;
+      font-size: inherit;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-primary);
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+    #ne-toolbar button:disabled { color: var(--text-disabled); cursor: not-allowed; }
+    #ne-toolbar button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    #ne-toolbar .ne-sep { width: 1px; height: 18px; background: var(--border); }
+    .ne-mode-label {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: "Space Mono", monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-secondary);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      z-index: 1000;
+      display: none;
+    }
+    body.editing .ne-mode-label { display: block; }
+    .ne-toast {
+      position: fixed;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      background: var(--text-display);
+      color: var(--bg);
+      padding: 8px 16px;
+      z-index: 1001;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+    .ne-toast.show { opacity: 1; }
+
+    @media (max-width: 1200px) {
+      .toc { display: none; }
+      #ne-toolbar { right: 16px; }
+    }
+    @media (max-width: 900px) {
+      body { padding: 32px 20px 100px; }
+      .hero h1 { font-size: 44px; letter-spacing: -1px; }
+      .hero-metrics { flex-direction: column; gap: 24px; align-items: flex-start; }
+      .hero-metric .num { font-size: 64px; }
+      .insight-grid { grid-template-columns: repeat(2, 1fr); }
+      .logic-block { grid-template-columns: 1fr; }
+      .logic-step { border-right: none; border-bottom: 1px solid var(--border); }
+      .logic-step:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="meta-bar">
+    <span data-edit>金条 · Q3 定价调整</span>
+    <span data-edit>版本 v3</span>
+    <span data-edit>2026-06-29</span>
+    <span data-edit>可视化重构</span>
+  </div>
+
+  <div class="hero">
+    <h1 data-edit>金条 Q3 定价调整方案</h1>
+    <p class="subtitle" data-edit>基于名产区间重新锚定系数，整体费效从 0.1992% 降至 0.1965%，月省 27.5 万。</p>
+    <div class="hero-metrics">
+      <div class="hero-metric">
+        <span class="num" data-edit>0.1965</span>
+        <span class="unit" data-edit>%</span>
+        <span class="delta" data-edit>▼ 1.37%</span>
+      </div>
+      <div class="hero-metric-secondary">
+        <span class="label">月度节省</span>
+        <span class="value" data-edit>27.5 万</span>
+      </div>
+      <div class="hero-metric-secondary">
+        <span class="label">总盘子</span>
+        <span class="value" data-edit>2,932 万</span>
+      </div>
+    </div>
+
+    <!-- Hero waterfall -->
+    <div class="chart">
+      <div class="chart-header">
+        <span class="chart-title">月度结算费用变化瀑布（万元）</span>
+        <span class="chart-note">首贷人工降本覆盖首贷人机、复贷人机上涨</span>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 720 240" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <pattern id="stripe" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+            <rect width="3" height="6" fill="#E5E2DD"/>
+          </pattern>
+        </defs>
+        <!-- axis -->
+        <line x1="60" y1="200" x2="680" y2="200" class="chart-axis"/>
+        <!-- base total -->
+        <rect x="80" y="40" width="80" height="160" class="bar-total"/>
+        <text x="120" y="220" text-anchor="middle" class="chart-text">原总费用</text>
+        <text x="120" y="175" text-anchor="middle" class="chart-value">2959.8</text>
+        <!-- first down: 首贷人工 -124 -->
+        <rect x="200" y="62" width="80" height="138" class="waterfall-negative"/>
+        <line x1="160" y1="120" x2="200" y2="131" class="connector"/>
+        <text x="240" y="220" text-anchor="middle" class="chart-text">首贷人工</text>
+        <text x="240" y="55" text-anchor="middle" class="chart-value" style="fill:var(--success)">-124</text>
+        <!-- second up: 首贷人机 +82.8 -->
+        <rect x="320" y="42" width="80" height="29" class="waterfall-positive"/>
+        <line x1="280" y1="131" x2="320" y2="56" class="connector"/>
+        <text x="360" y="220" text-anchor="middle" class="chart-text">首贷人机</text>
+        <text x="360" y="35" text-anchor="middle" class="chart-value" style="fill:var(--accent)">+82.8</text>
+        <!-- third up: 复贷人机 +13.6 -->
+        <rect x="440" y="34" width="80" height="14" class="waterfall-positive"/>
+        <line x1="400" y1="71" x2="440" y2="41" class="connector"/>
+        <text x="480" y="220" text-anchor="middle" class="chart-text">复贷人机</text>
+        <text x="480" y="27" text-anchor="middle" class="chart-value" style="fill:var(--accent)">+13.6</text>
+        <!-- final total -->
+        <rect x="560" y="44" width="80" height="156" class="bar-total"/>
+        <line x1="520" y1="41" x2="560" y2="122" class="connector"/>
+        <text x="600" y="220" text-anchor="middle" class="chart-text">新总费用</text>
+        <text x="600" y="180" text-anchor="middle" class="chart-value">2932.3</text>
+        <!-- net saving annotation -->
+        <line x1="640" y1="44" x2="640" y2="30" class="connector"/>
+        <text x="640" y="22" text-anchor="middle" class="chart-value" style="fill:var(--success)">净省 27.5</text>
+      </svg>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <a href="#sec1" class="active">01 背景与目标</a>
+    <a href="#sec2">02 方案设计</a>
+    <a href="#sec3">03 影响分析</a>
+    <a href="#sec4">04 风险与应对</a>
+    <a href="#sec5">05 执行计划</a>
+    <a href="#sec6">06 附件</a>
+  </nav>
+
+  <!-- Section 1 -->
+  <section class="section" id="sec1">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2 data-edit>01 · 背景与目标</h2>
+      <span class="toggle">收起 −</span>
+    </div>
+    <div class="section-body">
+      <p data-edit>上半年结算复盘显示，批次之间定价梯度待优化：名产差异未体现在系数中，部分业务场景人均结算偏离健康值。Q3 调整的核心目标是让定价回归「名产—系数—健康值」的正向循环。</p>
+
+      <div class="logic-block">
+        <div class="logic-step">
+          <div class="num">01</div>
+          <div class="title" data-edit>业务模式</div>
+          <div class="desc" data-edit>首贷人工 / 首贷人机 / 复贷人机 / 复贷纯人</div>
+        </div>
+        <div class="logic-step">
+          <div class="num">02</div>
+          <div class="title" data-edit>名产区间</div>
+          <div class="desc" data-edit>按名产高低划分定价档位</div>
+        </div>
+        <div class="logic-step">
+          <div class="num">03</div>
+          <div class="title" data-edit>定价系数</div>
+          <div class="desc" data-edit>名产越高系数越低，名产越低系数越高</div>
+        </div>
+        <div class="logic-step">
+          <div class="num">04</div>
+          <div class="title" data-edit>健康值锚定</div>
+          <div class="desc" data-edit>人均结算回归健康区间</div>
+        </div>
+      </div>
+
+      <!-- Per capita vs healthy range -->
+      <div class="chart">
+        <div class="chart-header">
+          <span class="chart-title">6 月预估人均结算 vs 健康值区间（元 / 人 / 月）</span>
+          <span class="chart-note">深色条 = 当前人均；绿色框 = 健康值区间</span>
+        </div>
+        <svg class="chart-svg" viewBox="0 0 720 220" preserveAspectRatio="xMidYMid meet">
+          <!-- grid lines -->
+          <line x1="120" y1="30" x2="680" y2="30" class="chart-grid"/>
+          <line x1="120" y1="80" x2="680" y2="80" class="chart-grid"/>
+          <line x1="120" y1="130" x2="680" y2="130" class="chart-grid"/>
+          <line x1="120" y1="180" x2="680" y2="180" class="chart-grid"/>
+          <!-- axis -->
+          <line x1="120" y1="180" x2="680" y2="180" class="chart-axis"/>
+          <!-- scale: 0 - 20000 -->
+          <text x="120" y="200" text-anchor="middle" class="chart-text">0</text>
+          <text x="248" y="200" text-anchor="middle" class="chart-text">5k</text>
+          <text x="376" y="200" text-anchor="middle" class="chart-text">10k</text>
+          <text x="504" y="200" text-anchor="middle" class="chart-text">15k</text>
+          <text x="632" y="200" text-anchor="middle" class="chart-text">20k</text>
+
+          <!-- 首贷人工: healthy 9k-11k, actual 11,132 -->
+          <rect x="120" y="38" width="246" height="14" fill="url(#stripe)"/>
+          <text x="40" y="50" text-anchor="end" class="chart-label">首贷人工</text>
+          <rect x="120" y="40" width="250" height="10" class="bar-actual"/>
+          <text x="375" y="48" class="chart-value">11,132</text>
+
+          <!-- 首贷人机: healthy 16k-18k, actual 12,796 -->
+          <rect x="408" y="88" width="72" height="14" fill="url(#stripe)"/>
+          <text x="40" y="100" text-anchor="end" class="chart-label">首贷人机</text>
+          <rect x="120" y="90" width="287" height="10" class="bar-up"/>
+          <text x="412" y="98" class="chart-value">12,796</text>
+
+          <!-- 复贷人机: healthy 16k-18k, actual 15,326 -->
+          <rect x="408" y="138" width="72" height="14" fill="url(#stripe)"/>
+          <text x="40" y="150" text-anchor="end" class="chart-label">复贷人机</text>
+          <rect x="120" y="140" width="344" height="10" class="bar-up"/>
+          <text x="470" y="148" class="chart-value">15,326</text>
+
+          <!-- 复贷纯人: healthy 8k-10k, actual 8,722 -->
+          <rect x="216" y="168" width="72" height="8" fill="url(#stripe)"/>
+          <text x="40" y="178" text-anchor="end" class="chart-label">复贷纯人</text>
+          <rect x="120" y="166" width="196" height="8" class="bar-target"/>
+          <text x="322" y="173" class="chart-value">8,722</text>
+        </svg>
+      </div>
+
+      <div class="insight-grid">
+        <div class="insight-card">
+          <div class="label">首贷人工</div>
+          <div class="value" data-edit>11,132</div>
+          <div class="desc" data-edit>人均偏高 → 下调至 9k-11k</div>
+        </div>
+        <div class="insight-card warning">
+          <div class="label">首贷人机</div>
+          <div class="value" data-edit>12,796</div>
+          <div class="desc" data-edit>人均偏低 → 上调至 16k-18k</div>
+        </div>
+        <div class="insight-card warning">
+          <div class="label">复贷人机</div>
+          <div class="value" data-edit>15,326</div>
+          <div class="desc" data-edit>人均偏低 → 上调至 16k-18k</div>
+        </div>
+        <div class="insight-card success">
+          <div class="label">复贷纯人</div>
+          <div class="value" data-edit>8,722</div>
+          <div class="desc" data-edit>已在健康值 → 不调整</div>
+        </div>
+      </div>
+
+      <div class="issue-list">
+        <div class="issue-item">
+          <span class="issue-num">01</span>
+          <div>
+            <div class="issue-title" data-edit>首贷人工：高名产批次结算成本过高</div>
+            <div class="issue-detail" data-edit>名产 150 / 800 / 810 / 1042 差异 7 倍，但 CPS 系数 0.70% / 0.70% / 0.70% / 0.40% 几乎平价，高产批次成本被低估。</div>
+          </div>
+        </div>
+        <div class="issue-item">
+          <span class="issue-num">02</span>
+          <div>
+            <div class="issue-title" data-edit>首贷人机：人均持续走低，低于健康值</div>
+            <div class="issue-detail" data-edit>5 月名单结构前置过滤高风险后，人机拨打名单中 85% 为未激活用户，7 个批次系数 0.24%-0.72%，低于单人机组健康值。</div>
+          </div>
+        </div>
+        <div class="issue-item">
+          <span class="issue-num">03</span>
+          <div>
+            <div class="issue-title" data-edit>复贷人机：名单被挤压，需补偿</div>
+            <div class="issue-detail" data-edit>4 月起实时行为 / 提额名单分流至纯机 / 纯人，人机名单从 233 降至 194，产能被稀释，人均低于健康区间。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section class="section" id="sec2">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2 data-edit>02 · 方案设计</h2>
+      <span class="toggle">收起 −</span>
+    </div>
+    <div class="section-body">
+      <p data-edit>调整方向：首贷人工下调、首贷人机上调、复贷人机上调、复贷纯人不变。各模式按名产区间拆分档位，重新设定 Q3 系数。</p>
+
+      <!-- 首贷人工 -->
+      <div class="subsection">
+        <h3 data-edit>首贷人工：按名产分三档，整体下调</h3>
+        <h4>现状问题</h4>
+        <div class="issue-list">
+          <div class="issue-item">
+            <span class="issue-num">01</span>
+            <div>
+              <div class="issue-title" data-edit>无定价梯度</div>
+              <div class="issue-detail" data-edit>名产 150 / 800 / 810 / 1042 差异 7 倍，但 CPS 系数几乎平价，名产差异未体现在定价中。</div>
+            </div>
+          </div>
+          <div class="issue-item">
+            <span class="issue-num">02</span>
+            <div>
+              <div class="issue-title" data-edit>名单做工不均</div>
+              <div class="issue-detail" data-edit>高名产批次（已中产 / 一元试借）结算贡献大，职场意愿高；低名产批次（未中产）名产名转提升慢。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart">
+          <div class="chart-header">
+            <span class="chart-title">首贷人工 · 名产区间系数对比</span>
+            <span class="chart-note">深色 = 原系数；绿色 = Q3 系数</span>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 720 180" preserveAspectRatio="xMidYMid meet">
+            <line x1="120" y1="140" x2="680" y2="140" class="chart-axis"/>
+            <text x="120" y="160" text-anchor="middle" class="chart-text">0%</text>
+            <text x="300" y="160" text-anchor="middle" class="chart-text">0.4%</text>
+            <text x="480" y="160" text-anchor="middle" class="chart-text">0.8%</text>
+            <text x="660" y="160" text-anchor="middle" class="chart-text">1.2%</text>
+
+            <!-- <500: 0.70 -> 0.70 -->
+            <text x="40" y="45" text-anchor="end" class="chart-label">名产 &lt; 500</text>
+            <rect x="120" y="30" width="330" height="16" class="bar-actual"/>
+            <rect x="120" y="50" width="330" height="16" class="bar-neutral"/>
+            <text x="460" y="42" class="chart-value">0.70%</text>
+            <text x="460" y="62" class="chart-text">0.70% · 不变</text>
+
+            <!-- 500-1000: 0.70 -> 0.46 -->
+            <text x="40" y="95" text-anchor="end" class="chart-label">名产 500-1000</text>
+            <rect x="120" y="80" width="330" height="16" class="bar-actual"/>
+            <rect x="120" y="100" width="217" height="16" class="bar-down"/>
+            <text x="460" y="92" class="chart-value">0.70%</text>
+            <text x="345" y="112" class="chart-value" style="fill:var(--success)">0.46%</text>
+
+            <!-- >1000: 0.40 -> 0.25 -->
+            <text x="40" y="135" text-anchor="end" class="chart-label">名产 &gt; 1000</text>
+            <rect x="120" y="120" width="188" height="16" class="bar-actual"/>
+            <rect x="120" y="140" width="118" height="10" class="bar-down" style="transform:translateY(-6px)"/>
+            <text x="315" y="132" class="chart-value">0.40%</text>
+            <text x="245" y="142" class="chart-value" style="fill:var(--success)">0.25%</text>
+          </svg>
+        </div>
+
+        <h4>成本变化</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>类目</th>
+                <th class="num">调整前</th>
+                <th class="num">调整后</th>
+                <th class="num">环比</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td data-edit>首贷用户数</td><td class="num" data-edit>29,175</td><td class="num" data-edit>29,175</td><td class="num" data-edit>0.00%</td></tr>
+              <tr><td data-edit>GMV</td><td class="num" data-edit>1,766,756,426</td><td class="num" data-edit>1,939,556,426</td><td class="num direction-up" data-edit>+9.78%</td></tr>
+              <tr><td data-edit>结算费用</td><td class="num" data-edit>9,265,381</td><td class="num" data-edit>8,025,873</td><td class="num direction-down" data-edit>-13.38%</td></tr>
+              <tr><td data-edit>费效</td><td class="num" data-edit>0.52%</td><td class="num" data-edit>0.41%</td><td class="num direction-down" data-edit>-21.10%</td></tr>
+              <tr><td data-edit>单客成本</td><td class="num" data-edit>317.58</td><td class="num" data-edit>275.09</td><td class="num direction-down" data-edit>-13.38%</td></tr>
+              <tr><td data-edit>人均结算</td><td class="num" data-edit>11,132</td><td class="num" data-edit>9,643</td><td class="num direction-down" data-edit>-13.38%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted" data-edit>预计成本变化：-124 万 / 月</p>
+
+        <h4>名产区间系数</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>名产区间</th>
+                <th>批次</th>
+                <th class="num">原系数</th>
+                <th class="num">Q3 系数</th>
+                <th class="num">变动</th>
+                <th>调整理由</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-edit>&lt; 500</td>
+                <td data-edit>未_中产 (150)</td>
+                <td class="num" data-edit>0.70%</td>
+                <td class="num" data-edit>0.70%</td>
+                <td class="num direction-flat" data-edit>不变</td>
+                <td data-edit>名产在人工里已是最低，定价系数不变</td>
+              </tr>
+              <tr>
+                <td data-edit>500-1000</td>
+                <td data-edit>已_中产 (960) + 一元试借 (810)</td>
+                <td class="num" data-edit>0.70%</td>
+                <td class="num" data-edit>0.46%</td>
+                <td class="num direction-down" data-edit>-34%</td>
+                <td data-edit>名产 800/810 相近合并同一系数，GMV 占大头，整体人均降低</td>
+              </tr>
+              <tr>
+                <td data-edit>&gt; 1000</td>
+                <td data-edit>已_实时 (1042)</td>
+                <td class="num" data-edit>0.40%</td>
+                <td class="num" data-edit>0.25%</td>
+                <td class="num direction-down" data-edit>-37%</td>
+                <td data-edit>名产最高，系数最低，调制 0.25%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 首贷人机 -->
+      <div class="subsection">
+        <h3 data-edit>首贷人机：按名产分三类，整体上调</h3>
+        <h4>现状问题</h4>
+        <div class="issue-list">
+          <div class="issue-item">
+            <span class="issue-num">01</span>
+            <div>
+              <div class="issue-title" data-edit>人均结算持续走低</div>
+              <div class="issue-detail" data-edit>自 5 月起显著低于健康值单人机组 1.6-1.8 万 / 人机组（剔除话费税后提前结清）。</div>
+            </div>
+          </div>
+          <div class="issue-item">
+            <span class="issue-num">02</span>
+            <div>
+              <div class="issue-title" data-edit>名单结构变化</div>
+              <div class="issue-detail" data-edit>前置过滤高风险名单后，已激活名产提升显著，但未激活低中风险用户意愿走低，人机拨打名单中 85% 为未激活。</div>
+            </div>
+          </div>
+          <div class="issue-item">
+            <span class="issue-num">03</span>
+            <div>
+              <div class="issue-title" data-edit>名产差异弱</div>
+              <div class="issue-detail" data-edit>7 个批次中 5 个系数集中在 0.40%-0.72%，但名产极低（17-97）。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart">
+          <div class="chart-header">
+            <span class="chart-title">首贷人机 · 名产区间系数对比</span>
+            <span class="chart-note">深色 = 原系数；红色 = Q3 系数（上调）</span>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 720 180" preserveAspectRatio="xMidYMid meet">
+            <line x1="120" y1="140" x2="680" y2="140" class="chart-axis"/>
+            <text x="120" y="160" text-anchor="middle" class="chart-text">0%</text>
+            <text x="300" y="160" text-anchor="middle" class="chart-text">0.5%</text>
+            <text x="480" y="160" text-anchor="middle" class="chart-text">1.0%</text>
+            <text x="660" y="160" text-anchor="middle" class="chart-text">1.5%</text>
+
+            <!-- <30: 0.72 -> 1.00 -->
+            <text x="40" y="45" text-anchor="end" class="chart-label">名产 &lt; 30</text>
+            <rect x="120" y="30" width="268" height="16" class="bar-actual"/>
+            <rect x="120" y="50" width="373" height="16" class="bar-up"/>
+            <text x="395" y="42" class="chart-value">0.72%</text>
+            <text x="500" y="62" class="chart-value" style="fill:var(--accent)">1.00%</text>
+
+            <!-- 30-100: 0.56 avg -> 0.80 -->
+            <text x="40" y="95" text-anchor="end" class="chart-label">名产 30-100</text>
+            <rect x="120" y="80" width="224" height="16" class="bar-actual"/>
+            <rect x="120" y="100" width="298" height="16" class="bar-up"/>
+            <text x="350" y="92" class="chart-value">0.56%</text>
+            <text x="425" y="112" class="chart-value" style="fill:var(--accent)">0.80%</text>
+
+            <!-- AI转型: 0.24 -> 0.35 -->
+            <text x="40" y="135" text-anchor="end" class="chart-label">AI 转型</text>
+            <rect x="120" y="120" width="89" height="16" class="bar-actual"/>
+            <rect x="120" y="140" width="131" height="10" class="bar-up" style="transform:translateY(-6px)"/>
+            <text x="216" y="132" class="chart-value">0.24%</text>
+            <text x="258" y="142" class="chart-value" style="fill:var(--accent)">0.35%</text>
+          </svg>
+        </div>
+
+        <h4>成本变化</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>类目</th><th class="num">调整前</th><th class="num">调整后</th><th class="num">环比</th></tr>
+            </thead>
+            <tbody>
+              <tr><td data-edit>首贷用户数</td><td class="num" data-edit>64,871</td><td class="num" data-edit>64,871</td><td class="num" data-edit>0.00%</td></tr>
+              <tr><td data-edit>GMV</td><td class="num" data-edit>1,002,261,000</td><td class="num" data-edit>896,551,000</td><td class="num direction-down" data-edit>-10.55%</td></tr>
+              <tr><td data-edit>结算费用</td><td class="num" data-edit>5,295,442</td><td class="num" data-edit>6,123,492</td><td class="num direction-up" data-edit>+15.64%</td></tr>
+              <tr><td data-edit>费效</td><td class="num" data-edit>0.53%</td><td class="num" data-edit>0.68%</td><td class="num direction-up" data-edit>+29.27%</td></tr>
+              <tr><td data-edit>单客成本</td><td class="num" data-edit>81.63</td><td class="num" data-edit>94.40</td><td class="num direction-up" data-edit>+15.64%</td></tr>
+              <tr><td data-edit>人均结算</td><td class="num" data-edit>12,796</td><td class="num" data-edit>14,796</td><td class="num direction-up" data-edit>+15.64%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted" data-edit>预计成本变化：+82.8 万 / 月</p>
+
+        <h4>名产区间系数</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>名产区间</th><th>批次</th><th class="num">原系数</th><th class="num">Q3 系数</th><th class="num">变动</th><th>调整理由</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-edit>&lt; 30</td>
+                <td data-edit>未_非中产补充 (17) / 未_ED精选 (24)</td>
+                <td class="num" data-edit>0.72%</td>
+                <td class="num" data-edit>1.00%</td>
+                <td class="num direction-up" data-edit>+39%</td>
+                <td data-edit>下沉名单至人机提纯，占人机总名单 30%，由 CPA 改为 CPS 后单批次获客成本更低</td>
+              </tr>
+              <tr>
+                <td data-edit>30-100</td>
+                <td data-edit>未_JR_实时 (28) / 未_非中产_ivr (34) / 已_一元精选 (76) / 已_非中产 (66) / 敏捷响应</td>
+                <td class="num" data-edit>0.40%-0.72%</td>
+                <td class="num" data-edit>0.80%</td>
+                <td class="num direction-up" data-edit>+11%</td>
+                <td data-edit>定价修正，基于名单结构调整后将标准定价 0.72% 优化至 0.8%</td>
+              </tr>
+              <tr>
+                <td data-edit>AI 转型</td>
+                <td data-edit>未_高端_人机 (80 名产)</td>
+                <td class="num" data-edit>0.24%</td>
+                <td class="num" data-edit>0.35%</td>
+                <td class="num direction-up" data-edit>+46%</td>
+                <td data-edit>人机名产仅为人工 53%，按 5 折折损定价；名产达成人工 80% 时解锁 30 万激励</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 复贷人机 -->
+      <div class="subsection">
+        <h3 data-edit>复贷人机：仅调核心批次</h3>
+        <h4>现状问题</h4>
+        <div class="issue-list">
+          <div class="issue-item">
+            <span class="issue-num">01</span>
+            <div>
+              <div class="issue-title" data-edit>人均结算走低</div>
+              <div class="issue-detail" data-edit>自 5 月起持续走低（1.3w→0.95w），显著低于健康值单人机组 1.6-1.8 万。</div>
+            </div>
+          </div>
+          <div class="issue-item">
+            <span class="issue-num">02</span>
+            <div>
+              <div class="issue-title" data-edit>名单被挤压</div>
+              <div class="issue-detail" data-edit>4 月中下旬将实时行为 & 实时提额分别增推至纯机 & 纯人，流失期人机名产持续走低。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart">
+          <div class="chart-header">
+            <span class="chart-title">复贷人机 · 名产区间系数对比</span>
+            <span class="chart-note">深色 = 原系数；红色 = Q3 系数（上调）</span>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 720 140" preserveAspectRatio="xMidYMid meet">
+            <line x1="120" y1="100" x2="680" y2="100" class="chart-axis"/>
+            <text x="120" y="120" text-anchor="middle" class="chart-text">0%</text>
+            <text x="300" y="120" text-anchor="middle" class="chart-text">0.1%</text>
+            <text x="480" y="120" text-anchor="middle" class="chart-text">0.2%</text>
+            <text x="660" y="120" text-anchor="middle" class="chart-text">0.3%</text>
+
+            <!-- 人工转人机: 0.108 -> 0.108 -->
+            <text x="40" y="45" text-anchor="end" class="chart-label">人工转人机</text>
+            <rect x="120" y="30" width="192" height="16" class="bar-actual"/>
+            <rect x="120" y="50" width="192" height="16" class="bar-neutral"/>
+            <text x="320" y="42" class="chart-value">0.108%</text>
+            <text x="320" y="62" class="chart-text">不变</text>
+
+            <!-- 500+: 0.153 -> 0.18 -->
+            <text x="40" y="95" text-anchor="end" class="chart-label">名产 500+</text>
+            <rect x="120" y="80" width="272" height="16" class="bar-actual"/>
+            <rect x="120" y="100" width="320" height="16" class="bar-up"/>
+            <text x="400" y="92" class="chart-value">0.153%</text>
+            <text x="448" y="112" class="chart-value" style="fill:var(--accent)">0.180%</text>
+          </svg>
+        </div>
+
+        <h4>成本变化</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>类目</th><th class="num">调整前</th><th class="num">调整后</th><th class="num">变化幅度</th></tr>
+            </thead>
+            <tbody>
+              <tr><td data-edit>GMV</td><td class="num" data-edit>1,280,362,000</td><td class="num" data-edit>1,280,362,000</td><td class="num" data-edit>0%</td></tr>
+              <tr><td data-edit>结算费用</td><td class="num" data-edit>1,227,692</td><td class="num" data-edit>1,091,244</td><td class="num direction-down" data-edit>-13%</td></tr>
+              <tr><td data-edit>费效</td><td class="num" data-edit>0.10%</td><td class="num" data-edit>0.09%</td><td class="num direction-down" data-edit>-13%</td></tr>
+              <tr><td data-edit>人均结算</td><td class="num" data-edit>15,326</td><td class="num" data-edit>17,243</td><td class="num direction-up" data-edit>+13%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted" data-edit>预计成本变化：+13.6 万 / 月</p>
+
+        <h4>名产区间系数</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>名产区间</th><th>批次</th><th class="num">原系数</th><th class="num">Q3 系数</th><th class="num">变动</th><th>调整理由</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-edit>人工转人机</td>
+                <td data-edit>金条存续_综合_中高价值_人机_ivr (1792)</td>
+                <td class="num" data-edit>0.108%</td>
+                <td class="num" data-edit>0.108%</td>
+                <td class="num direction-flat" data-edit>无</td>
+                <td data-edit>量级小，当前名产仅是人工 70%，按同类型人工 6 折定价</td>
+              </tr>
+              <tr>
+                <td data-edit>500+</td>
+                <td data-edit>金条存续_流失期_中高价值_人机_ivr (786)</td>
+                <td class="num" data-edit>0.153%</td>
+                <td class="num" data-edit>0.18%</td>
+                <td class="num direction-up" data-edit>+18%</td>
+                <td data-edit>流失期人机占总下发 91%，定价修正至 0.18% 与复贷纯人标准对齐</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 复贷纯人 -->
+      <div class="subsection">
+        <h3 data-edit>复贷纯人：不调整</h3>
+        <p data-edit>人均 8,722 元已在健康值区间（8k-10k），系数维持不变。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3 -->
+  <section class="section" id="sec3">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2 data-edit>03 · 影响分析</h2>
+      <span class="toggle">收起 −</span>
+    </div>
+    <div class="section-body">
+      <div class="findings">
+        <h4>关键结论</h4>
+        <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>调整后整体费效 0.1992% → 0.1965%，降幅 -1.37%，在预算目标范围内。</div></div>
+        <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>首贷人工降本 -124 万 / 月，缓释首贷人机 +83 万和复贷人机 +13.6 万的上涨。</div></div>
+        <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>成本节省 27.5 万 / 月，在 2,932 万总盘子中降幅 0.9%。</div></div>
+        <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>首贷人工降本 + 首贷人机保障模式健康生存 + 复贷人机回归健康。</div></div>
+      </div>
+
+      <div class="chart">
+        <div class="chart-header">
+          <span class="chart-title">整体费用瀑布图（万元 / 月）</span>
+          <span class="chart-note">从原总费用到调整后总费用的逐项分解</span>
+        </div>
+        <svg class="chart-svg" viewBox="0 0 720 260" preserveAspectRatio="xMidYMid meet">
+          <!-- baseline -->
+          <line x1="60" y1="220" x2="680" y2="220" class="chart-axis"/>
+          <!-- 原总费用 2959.77 -->
+          <rect x="70" y="50" width="90" height="170" class="waterfall-total"/>
+          <text x="115" y="40" text-anchor="middle" class="chart-value">2959.8</text>
+          <text x="115" y="240" text-anchor="middle" class="chart-text">原总费用</text>
+          <!-- 首贷结算变化 -41.15 -->
+          <rect x="190" y="72" width="90" height="148" class="waterfall-negative"/>
+          <line x1="160" y1="135" x2="190" y2="146" class="connector"/>
+          <text x="235" y="65" text-anchor="middle" class="chart-value" style="fill:var(--success)">-41.1</text>
+          <text x="235" y="240" text-anchor="middle" class="chart-text">首贷结算</text>
+          <!-- 复贷结算变化 +13.64 -->
+          <rect x="310" y="57" width="90" height="21" class="waterfall-positive"/>
+          <line x1="280" y1="146" x2="310" y2="68" class="connector"/>
+          <text x="355" y="50" text-anchor="middle" class="chart-value" style="fill:var(--accent)">+13.6</text>
+          <text x="355" y="240" text-anchor="middle" class="chart-text">复贷结算</text>
+          <!-- 新总费用 2932.27 -->
+          <rect x="430" y="53" width="90" height="167" class="waterfall-total"/>
+          <line x1="400" y1="68" x2="430" y2="136" class="connector"/>
+          <text x="475" y="45" text-anchor="middle" class="chart-value">2932.3</text>
+          <text x="475" y="240" text-anchor="middle" class="chart-text">新总费用</text>
+          <!-- 净省 -->
+          <line x1="520" y1="53" x2="560" y2="53" class="connector"/>
+          <text x="590" y="58" text-anchor="start" class="chart-value" style="fill:var(--success)">净省 27.5 万</text>
+          <text x="590" y="75" text-anchor="start" class="chart-text">费效 0.1992% → 0.1965%</text>
+        </svg>
+      </div>
+
+      <h4>整体费效变化</h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>类目</th><th class="num">调整前（7 月按原系数）</th><th class="num">调整后</th><th class="num">增幅</th><th class="num">增长绝对值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-edit>首贷用户数</td><td class="num" data-edit>140,453</td><td class="num" data-edit>140,453</td><td class="num" data-edit>0.00%</td><td class="num" data-edit>-</td></tr>
+            <tr><td data-edit>GMV</td><td class="num" data-edit>14,858,240,426</td><td class="num" data-edit>14,925,330,426</td><td class="num direction-up" data-edit>+0.45%</td><td class="num" data-edit>67,090,000</td></tr>
+            <tr><td data-edit>首贷结算</td><td class="num" data-edit>20,825,769</td><td class="num" data-edit>20,414,310</td><td class="num direction-down" data-edit>-1.98%</td><td class="num" data-edit>-411,459</td></tr>
+            <tr><td data-edit>复贷结算</td><td class="num" data-edit>8,771,946</td><td class="num" data-edit>8,908,394</td><td class="num direction-up" data-edit>+1.56%</td><td class="num" data-edit>136,448</td></tr>
+            <tr><td data-edit>结算费用</td><td class="num" data-edit>29,597,715</td><td class="num" data-edit>29,322,704</td><td class="num direction-down" data-edit>-0.93%</td><td class="num" data-edit>-275,011</td></tr>
+            <tr><td data-edit>费效</td><td class="num" data-edit>0.1992%</td><td class="num" data-edit>0.1965%</td><td class="num direction-down" data-edit>-1.37%</td><td class="num" data-edit>-0.003%</td></tr>
+            <tr><td data-edit>单客成本</td><td class="num" data-edit>148.28</td><td class="num" data-edit>145.35</td><td class="num direction-down" data-edit>-1.98%</td><td class="num" data-edit>-2.93</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="chart">
+        <div class="chart-header">
+          <span class="chart-title">各业务模式结算变动（万元 / 月）</span>
+          <span class="chart-note">红色 = 上涨；绿色 = 下降；灰色 = 不变</span>
+        </div>
+        <svg class="chart-svg" viewBox="0 0 720 160" preserveAspectRatio="xMidYMid meet">
+          <line x1="360" y1="30" x2="360" y2="130" class="chart-axis"/>
+          <text x="360" y="145" text-anchor="middle" class="chart-text">0</text>
+          <text x="180" y="145" text-anchor="middle" class="chart-text">-150</text>
+          <text x="540" y="145" text-anchor="middle" class="chart-text">+100</text>
+
+          <!-- 首贷人工 -124 -->
+          <text x="40" y="58" text-anchor="end" class="chart-label">首贷人工</text>
+          <rect x="120" y="45" width="240" height="18" class="bar-down"/>
+          <text x="110" y="58" text-anchor="end" class="chart-value" style="fill:var(--success)">-124</text>
+
+          <!-- 首贷人机 +82.8 -->
+          <text x="40" y="88" text-anchor="end" class="chart-label">首贷人机</text>
+          <rect x="360" y="75" width="161" height="18" class="bar-up"/>
+          <text x="531" y="88" text-anchor="start" class="chart-value" style="fill:var(--accent)">+82.8</text>
+
+          <!-- 复贷人机 +13.6 -->
+          <text x="40" y="118" text-anchor="end" class="chart-label">复贷人机</text>
+          <rect x="360" y="105" width="26" height="18" class="bar-up"/>
+          <text x="396" y="118" text-anchor="start" class="chart-value" style="fill:var(--accent)">+13.6</text>
+        </svg>
+      </div>
+
+      <h4>各业务模式结算变化汇总</h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>模式</th><th>方向</th><th class="num">6 月预估人均</th><th class="num">Q3 人均</th><th>健康值</th><th class="num">结算变动</th><th class="num">费效变动</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-edit>首贷人工</td><td class="direction-down" data-edit>下调 ▼</td><td class="num" data-edit>11,132</td><td class="num" data-edit>9,643</td><td data-edit>9k-11k ✓</td><td class="num direction-down" data-edit>-124 万 / 月</td><td class="num" data-edit>0.52% → 0.41%</td></tr>
+            <tr><td data-edit>首贷人机</td><td class="direction-up" data-edit>上调 ▲</td><td class="num" data-edit>12,796</td><td class="num" data-edit>14,796</td><td data-edit>16k-18k ✓</td><td class="num direction-up" data-edit>+82.8 万 / 月</td><td class="num" data-edit>0.53% → 0.68%</td></tr>
+            <tr><td data-edit>复贷纯人</td><td class="direction-flat" data-edit>不变 —</td><td class="num" data-edit>8,722</td><td class="num" data-edit>8,722</td><td data-edit>8k-10k ✓</td><td class="num direction-flat" data-edit>-</td><td class="num" data-edit>-</td></tr>
+            <tr><td data-edit>复贷人机</td><td class="direction-up" data-edit>上调 ▲</td><td class="num" data-edit>15,326</td><td class="num" data-edit>17,243</td><td data-edit>16k-18k ✓</td><td class="num direction-up" data-edit>+13.6 万 / 月</td><td class="num" data-edit>-</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4 -->
+  <section class="section" id="sec4">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2 data-edit>04 · 风险评估与应对</h2>
+      <span class="toggle">展开 +</span>
+    </div>
+    <div class="section-body" style="display:none">
+      <p class="muted" data-edit>原文档此章节未展开详细内容。建议补充以下常见风险项：</p>
+      <div class="issue-list">
+        <div class="issue-item">
+          <span class="issue-num">01</span>
+          <div>
+            <div class="issue-title" data-edit>首贷人机费用上涨对总盘子的挤压</div>
+            <div class="issue-detail" data-edit>需通过首贷人工降本足额覆盖，并按月监控实际人均是否回归健康值。</div>
+          </div>
+        </div>
+        <div class="issue-item">
+          <span class="issue-num">02</span>
+          <div>
+            <div class="issue-title" data-edit>名单结构继续变化导致名产漂移</div>
+            <div class="issue-detail" data-edit>建议 T+30 复盘各批次名产达成，必要时动态微调系数。</div>
+          </div>
+        </div>
+        <div class="issue-item">
+          <span class="issue-num">03</span>
+          <div>
+            <div class="issue-title" data-edit>AI 转型批次激励触发条件未达成</div>
+            <div class="issue-detail" data-edit>明确名产达成人工 80% 的核算口径与激励发放节奏。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5 -->
+  <section class="section" id="sec5">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2 data-edit>05 · 执行计划</h2>
+      <span class="toggle">展开 +</span>
+    </div>
+    <div class="section-body" style="display:none">
+      <p class="muted" data-edit>原文档此章节未展开详细内容。建议按以下节奏推进：</p>
+      <div class="plan-list">
+        <div class="plan-item"><span class="plan-phase" data-edit>T+0</span><span class="plan-content" data-edit>方案审批通过，同步各职场与供应商</span></div>
+        <div class="plan-item"><span class="plan-phase" data-edit>T+7</span><span class="plan-content" data-edit>系统系数配置上线，7 月结算按 Q3 系数执行</span></div>
+        <div class="plan-item"><span class="plan-phase" data-edit>T+30</span><span class="plan-content" data-edit>首月复盘：人均结算、费效、名产达成</span></div>
+        <div class="plan-item"><span class="plan-phase" data-edit>T+90</span><span class="plan-content" data-edit>季度评估：健康值达成率、成本节省验证</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6 -->
+  <section class="section" id="sec6">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h2 data-edit>06 · 附件</h2>
+      <span class="toggle">展开 +</span>
+    </div>
+    <div class="section-body" style="display:none">
+      <div class="subsection">
+        <h3 data-edit>v2 / v3 迭代说明</h3>
+        <div class="findings">
+          <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>v2：已激活中产较 1.0 日均下发量 +7k（3.3w → 4w）。4w 为中风险 s1-s3 给人工后可供给的名单量。</div></div>
+          <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>v3：已激活中风险 s1-s3 给人工后，人工名产提幅 &gt;30%，人机名产降幅 16%。据此优化名产：中产和一元定价系数从 v1 的 0.5% 降至 0.46%，人机定价系数较 v1/v2 不变。</div></div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 data-edit>人均到手薪资趋势（元 / 人 / 月）</h3>
+        <p class="small muted" data-edit>取 2026 年 1 月 - 6 月 22 日数据；6 月预估整月 = 截至 22 日人均 × 30/22。</p>
+
+        <div class="chart">
+          <div class="chart-header">
+            <span class="chart-title">首贷人工 / 首贷人机 / 复贷人机 薪资趋势</span>
+            <span class="chart-note">折线连接 1-6 月（含 6 月预估）</span>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 720 220" preserveAspectRatio="xMidYMid meet">
+            <!-- grid -->
+            <line x1="60" y1="40" x2="680" y2="40" class="chart-grid"/>
+            <line x1="60" y1="90" x2="680" y2="90" class="chart-grid"/>
+            <line x1="60" y1="140" x2="680" y2="140" class="chart-grid"/>
+            <line x1="60" y1="190" x2="680" y2="190" class="chart-axis"/>
+            <!-- y labels -->
+            <text x="55" y="44" text-anchor="end" class="chart-text">40k</text>
+            <text x="55" y="94" text-anchor="end" class="chart-text">20k</text>
+            <text x="55" y="194" text-anchor="end" class="chart-text">0</text>
+            <!-- x labels -->
+            <text x="110" y="210" text-anchor="middle" class="chart-text">1月</text>
+            <text x="204" y="210" text-anchor="middle" class="chart-text">2月</text>
+            <text x="298" y="210" text-anchor="middle" class="chart-text">3月</text>
+            <text x="392" y="210" text-anchor="middle" class="chart-text">4月</text>
+            <text x="486" y="210" text-anchor="middle" class="chart-text">5月</text>
+            <text x="580" y="210" text-anchor="middle" class="chart-text">6月估</text>
+            <text x="674" y="210" text-anchor="middle" class="chart-text">健康值</text>
+
+            <!-- 首贷人工: 9237, 5182, 9039, 5758, 11923, 10706 -->
+            <polyline points="110,156 204,177 298,158 392,172 486,148 580,154" class="sparkline" style="stroke:var(--text-display)"/>
+            <circle cx="110" cy="156" r="3" class="sparkline-dot"/>
+            <circle cx="204" cy="177" r="3" class="sparkline-dot"/>
+            <circle cx="298" cy="158" r="3" class="sparkline-dot"/>
+            <circle cx="392" cy="172" r="3" class="sparkline-dot"/>
+            <circle cx="486" cy="148" r="3" class="sparkline-dot"/>
+            <circle cx="580" cy="154" r="3" class="sparkline-dot"/>
+            <text x="580" y="150" text-anchor="start" class="chart-text">首贷人工</text>
+
+            <!-- 首贷人机: 22742, 13211, 18721, 16021, 11396, 15016 -->
+            <polyline points="110,87 204,124 298,96 392,110 486,133 580,115" class="sparkline" style="stroke:var(--accent)"/>
+            <circle cx="110" cy="87" r="3" class="sparkline-dot" style="fill:var(--accent)"/>
+            <circle cx="204" cy="124" r="3" class="sparkline-dot" style="fill:var(--accent)"/>
+            <circle cx="298" cy="96" r="3" class="sparkline-dot" style="fill:var(--accent)"/>
+            <circle cx="392" cy="110" r="3" class="sparkline-dot" style="fill:var(--accent)"/>
+            <circle cx="486" cy="133" r="3" class="sparkline-dot" style="fill:var(--accent)"/>
+            <circle cx="580" cy="115" r="3" class="sparkline-dot" style="fill:var(--accent)"/>
+            <text x="580" y="111" text-anchor="start" class="chart-text" style="fill:var(--accent)">首贷人机</text>
+
+            <!-- 复贷人机: 30343, 25975, 38362, 24341, 13323, 9472 -->
+            <polyline points="110,54 204,70 298,28 392,76 486,117 580,141" class="sparkline" style="stroke:var(--success)"/>
+            <circle cx="110" cy="54" r="3" class="sparkline-dot" style="fill:var(--success)"/>
+            <circle cx="204" cy="70" r="3" class="sparkline-dot" style="fill:var(--success)"/>
+            <circle cx="298" cy="28" r="3" class="sparkline-dot" style="fill:var(--success)"/>
+            <circle cx="392" cy="76" r="3" class="sparkline-dot" style="fill:var(--success)"/>
+            <circle cx="486" cy="117" r="3" class="sparkline-dot" style="fill:var(--success)"/>
+            <circle cx="580" cy="141" r="3" class="sparkline-dot" style="fill:var(--success)"/>
+            <text x="580" y="137" text-anchor="start" class="chart-text" style="fill:var(--success)">复贷人机</text>
+
+            <!-- 健康值区间 16k-18k -->
+            <rect x="60" y="82" width="620" height="16" fill="rgba(26,93,26,0.08)"/>
+            <text x="674" y="92" text-anchor="start" class="chart-text" style="fill:var(--success)">16k-18k</text>
+          </svg>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>月份</th><th class="num">首贷人工</th><th class="num">首贷人机</th><th class="num">复贷人工</th><th class="num">复贷人机</th><th class="num">首贷人机到坐席</th><th class="num">复贷人机到坐席</th></tr>
+            </thead>
+            <tbody>
+              <tr><td data-edit>1 月</td><td class="num" data-edit>9,237</td><td class="num" data-edit>22,742</td><td class="num" data-edit>7,986</td><td class="num" data-edit>30,343</td><td class="num" data-edit>14,100</td><td class="num" data-edit>18,812.66</td></tr>
+              <tr><td data-edit>2 月</td><td class="num" data-edit>5,182</td><td class="num" data-edit>13,211</td><td class="num" data-edit>6,042</td><td class="num" data-edit>25,975</td><td class="num" data-edit>8,191</td><td class="num" data-edit>16,104.50</td></tr>
+              <tr><td data-edit>3 月</td><td class="num" data-edit>9,039</td><td class="num" data-edit>18,721</td><td class="num" data-edit>9,070</td><td class="num" data-edit>38,362</td><td class="num" data-edit>11,607</td><td class="num" data-edit>23,784.44</td></tr>
+              <tr><td data-edit>4 月</td><td class="num" data-edit>5,758</td><td class="num" data-edit>16,021</td><td class="num" data-edit>9,249</td><td class="num" data-edit>24,341</td><td class="num" data-edit>9,933</td><td class="num" data-edit>15,091.42</td></tr>
+              <tr><td data-edit>5 月</td><td class="num" data-edit>11,923</td><td class="num" data-edit>11,396</td><td class="num" data-edit>9,368</td><td class="num" data-edit>13,323</td><td class="num" data-edit>7,066</td><td class="num" data-edit>8,260.26</td></tr>
+              <tr><td data-edit>6 月（截至 22 日）</td><td class="num" data-edit>7,851</td><td class="num" data-edit>11,012</td><td class="num" data-edit>6,828</td><td class="num" data-edit>6,946</td><td class="num" data-edit>6,827</td><td class="num" data-edit>4,306.52</td></tr>
+              <tr><td data-edit>6 月预估整月</td><td class="num" data-edit>10,706</td><td class="num" data-edit>15,016</td><td class="num" data-edit>9,311</td><td class="num" data-edit>9,472</td><td class="num" data-edit>9,310</td><td class="num" data-edit>5,872.64</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>薪资环比变化</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>月份变动</th><th class="num">首贷人工</th><th class="num">首贷人机</th><th class="num">复贷人工</th><th class="num">复贷人机</th></tr>
+            </thead>
+            <tbody>
+              <tr><td data-edit>1 → 2 月</td><td class="num direction-down" data-edit>-43.90%</td><td class="num direction-down" data-edit>-41.90%</td><td class="num direction-down" data-edit>-24.30%</td><td class="num direction-down" data-edit>-14.40%</td></tr>
+              <tr><td data-edit>2 → 3 月</td><td class="num direction-up" data-edit>+74.40%</td><td class="num direction-up" data-edit>+41.70%</td><td class="num direction-up" data-edit>+50.10%</td><td class="num direction-up" data-edit>+47.70%</td></tr>
+              <tr><td data-edit>3 → 4 月</td><td class="num direction-down" data-edit>-36.30%</td><td class="num direction-down" data-edit>-14.40%</td><td class="num direction-up" data-edit>+2.00%</td><td class="num direction-down" data-edit>-36.50%</td></tr>
+              <tr><td data-edit>4 → 5 月</td><td class="num direction-up" data-edit>+107.10%</td><td class="num direction-down" data-edit>-28.90%</td><td class="num direction-up" data-edit>+1.30%</td><td class="num direction-down" data-edit>-45.30%</td></tr>
+              <tr><td data-edit>5 → 6 月</td><td class="num direction-down" data-edit>-34.20%</td><td class="num direction-down" data-edit>-3.40%</td><td class="num direction-down" data-edit>-27.10%</td><td class="num direction-down" data-edit>-47.90%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 data-edit>话费占比（加权合计）</h3>
+        <p class="small muted" data-edit>取 2026 年 1 月 - 6 月 22 日数据。</p>
+
+        <div class="chart">
+          <div class="chart-header">
+            <span class="chart-title">话费占比横向对比</span>
+            <span class="chart-note">绿色条 = 话费占费效成本比例；数字 = 下降幅度</span>
+          </div>
+          <svg class="chart-svg" viewBox="0 0 720 260" preserveAspectRatio="xMidYMid meet">
+            <line x1="140" y1="230" x2="680" y2="230" class="chart-axis"/>
+            <text x="140" y="248" text-anchor="middle" class="chart-text">0%</text>
+            <text x="410" y="248" text-anchor="middle" class="chart-text">50%</text>
+            <text x="680" y="248" text-anchor="middle" class="chart-text">100%</text>
+
+            <!-- 复贷 -18.31% -->
+            <text x="20" y="30" text-anchor="end" class="chart-label">复贷</text>
+            <rect x="140" y="18" width="545" height="14" class="bar-target"/>
+            <text x="690" y="30" text-anchor="start" class="chart-value" style="fill:var(--success)">-18.31%</text>
+
+            <!-- 复贷纯机 -41.35% -->
+            <text x="20" y="55" text-anchor="end" class="chart-label">复贷 · 纯机</text>
+            <rect x="140" y="43" width="412" height="14" class="bar-target"/>
+            <text x="557" y="55" text-anchor="start" class="chart-value" style="fill:var(--success)">-41.35%</text>
+
+            <!-- 复贷人工 -13.03% -->
+            <text x="20" y="80" text-anchor="end" class="chart-label">复贷 · 人工</text>
+            <rect x="140" y="68" width="607" height="14" class="bar-target"/>
+            <text x="752" y="80" text-anchor="start" class="chart-value" style="fill:var(--success)">-13.03%</text>
+
+            <!-- 复贷人机 -40.29% -->
+            <text x="20" y="105" text-anchor="end" class="chart-label">复贷 · 人机</text>
+            <rect x="140" y="93" width="419" height="14" class="bar-target"/>
+            <text x="564" y="105" text-anchor="start" class="chart-value" style="fill:var(--success)">-40.29%</text>
+
+            <!-- 首贷 -37.03% -->
+            <text x="20" y="135" text-anchor="end" class="chart-label">首贷</text>
+            <rect x="140" y="123" width="441" height="14" class="bar-actual"/>
+            <text x="586" y="135" text-anchor="start" class="chart-value" style="fill:var(--success)">-37.03%</text>
+
+            <!-- 首贷纯机 -78.64% -->
+            <text x="20" y="160" text-anchor="end" class="chart-label">首贷 · 纯机</text>
+            <rect x="140" y="148" width="150" height="14" class="bar-actual"/>
+            <text x="295" y="160" text-anchor="start" class="chart-value" style="fill:var(--success)">-78.64%</text>
+
+            <!-- 首贷人工 -12.22% -->
+            <text x="20" y="185" text-anchor="end" class="chart-label">首贷 · 人工</text>
+            <rect x="140" y="173" width="615" height="14" class="bar-actual"/>
+            <text x="760" y="185" text-anchor="start" class="chart-value" style="fill:var(--success)">-12.22%</text>
+
+            <!-- 首贷人机 -42.09% -->
+            <text x="20" y="210" text-anchor="end" class="chart-label">首贷 · 人机</text>
+            <rect x="140" y="198" width="417" height="14" class="bar-actual"/>
+            <text x="562" y="210" text-anchor="start" class="chart-value" style="fill:var(--success)">-42.09%</text>
+          </svg>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>行标签</th><th class="num">费效成本</th><th class="num">到手薪资（税后）</th><th class="num">话费占比</th></tr>
+            </thead>
+            <tbody>
+              <tr><td data-edit>复贷</td><td class="num" data-edit>46,710,372</td><td class="num" data-edit>38,158,594</td><td class="num direction-down" data-edit>-18.31%</td></tr>
+              <tr><td data-edit>复贷 · 纯机</td><td class="num" data-edit>2,722,267</td><td class="num" data-edit>1,596,695</td><td class="num direction-down" data-edit>-41.35%</td></tr>
+              <tr><td data-edit>复贷 · 人工</td><td class="num" data-edit>37,777,813</td><td class="num" data-edit>32,853,620</td><td class="num direction-down" data-edit>-13.03%</td></tr>
+              <tr><td data-edit>复贷 · 人机</td><td class="num" data-edit>6,210,292</td><td class="num" data-edit>3,708,279</td><td class="num direction-down" data-edit>-40.29%</td></tr>
+              <tr><td data-edit>首贷</td><td class="num" data-edit>93,819,038</td><td class="num" data-edit>59,075,512</td><td class="num direction-down" data-edit>-37.03%</td></tr>
+              <tr><td data-edit>首贷 · 纯机</td><td class="num" data-edit>18,407,448</td><td class="num" data-edit>3,931,609</td><td class="num direction-down" data-edit>-78.64%</td></tr>
+              <tr><td data-edit>首贷 · 人工</td><td class="num" data-edit>38,421,382</td><td class="num" data-edit>33,724,634</td><td class="num direction-down" data-edit>-12.22%</td></tr>
+              <tr><td data-edit>首贷 · 人机</td><td class="num" data-edit>36,990,208</td><td class="num" data-edit>21,419,269</td><td class="num direction-down" data-edit>-42.09%</td></tr>
+              <tr><td data-edit>总计</td><td class="num" data-edit>140,529,410</td><td class="num" data-edit>97,234,106</td><td class="num direction-down" data-edit>-30.81%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 data-edit>已激活中风险名单随机切量表现</h3>
+        <p data-edit>6 月将已激活中风险名单（s1-s6）随机切量给人工和人机，发现：</p>
+        <div class="findings">
+          <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>人机名转达成人工 74%，件均 55%，名产达成人工 41%。</div></div>
+          <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>虽然人机该批次名产 +27%，但从产能最大化角度，低风险 s1-s3 极头部名单给人工产能更大化，可通过合理定价系数平衡。</div></div>
+          <div class="finding-item"><span class="finding-marker">›</span><div class="finding-text" data-edit>调整完结构后，人工已激活名产预估从 800 变成 1039（涨幅 30%），已非从 76 下降到 66（降幅 14%）。</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nothing Editor -->
+  <div id="ne-toolbar">
+    <button id="ne-toggle">编辑</button>
+    <span class="ne-sep"></span>
+    <button id="ne-undo" disabled>撤销</button>
+    <button id="ne-redo" disabled>重做</button>
+    <span class="ne-sep"></span>
+    <button id="ne-export">导出</button>
+  </div>
+  <div class="ne-mode-label" id="ne-mode">浏览</div>
+  <div class="ne-toast" id="ne-toast"></div>
+
+  <script>
+    // Section toggle
+    function toggleSection(header) {
+      const body = header.nextElementSibling;
+      const label = header.querySelector('.toggle');
+      if (body.style.display === 'none') {
+        body.style.display = 'block';
+        label.textContent = '收起 −';
+      } else {
+        body.style.display = 'none';
+        label.textContent = '展开 +';
+      }
+    }
+
+    // Inline editor
+    const bodyEl = document.body;
+    const toggleBtn = document.getElementById('ne-toggle');
+    const undoBtn = document.getElementById('ne-undo');
+    const redoBtn = document.getElementById('ne-redo');
+    const exportBtn = document.getElementById('ne-export');
+    const modeLabel = document.getElementById('ne-mode');
+    const toast = document.getElementById('ne-toast');
+    const editable = document.querySelectorAll('[data-edit]');
+    let editing = false;
+    let undoStack = [];
+    let redoStack = [];
+    let observer;
+    let debounceTimer;
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1200);
+    }
+
+    function snapshot() {
+      const html = Array.from(editable).map(el => el.innerHTML);
+      undoStack.push(html);
+      if (undoStack.length > 50) undoStack.shift();
+      redoStack = [];
+      updateButtons();
+    }
+
+    function updateButtons() {
+      undoBtn.disabled = undoStack.length === 0;
+      redoBtn.disabled = redoStack.length === 0;
+    }
+
+    function startObserver() {
+      if (observer) observer.disconnect();
+      observer = new MutationObserver(() => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(snapshot, 500);
+      });
+      editable.forEach(el => observer.observe(el, { childList: true, subtree: true, characterData: true }));
+    }
+
+    function stopObserver() {
+      if (observer) observer.disconnect();
+      clearTimeout(debounceTimer);
+    }
+
+    toggleBtn.addEventListener('click', () => {
+      editing = !editing;
+      bodyEl.classList.toggle('editing', editing);
+      toggleBtn.classList.toggle('active', editing);
+      toggleBtn.textContent = editing ? '编辑中' : '编辑';
+      modeLabel.textContent = editing ? '编辑模式' : '浏览';
+      editable.forEach(el => el.contentEditable = editing);
+      if (editing) {
+        snapshot();
+        startObserver();
+      } else {
+        stopObserver();
+      }
+    });
+
+    undoBtn.addEventListener('click', () => {
+      if (undoStack.length < 2) return;
+      const current = Array.from(editable).map(el => el.innerHTML);
+      redoStack.push(current);
+      undoStack.pop();
+      const prev = undoStack[undoStack.length - 1];
+      editable.forEach((el, i) => el.innerHTML = prev[i]);
+      updateButtons();
+      showToast('[已撤销]');
+    });
+
+    redoBtn.addEventListener('click', () => {
+      if (redoStack.length === 0) return;
+      const current = Array.from(editable).map(el => el.innerHTML);
+      undoStack.push(current);
+      const next = redoStack.pop();
+      editable.forEach((el, i) => el.innerHTML = next[i]);
+      updateButtons();
+      showToast('[已重做]');
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const clone = document.documentElement.cloneNode(true);
+      const toolbar = clone.querySelector('#ne-toolbar');
+      const mode = clone.querySelector('.ne-mode-label');
+      const toastEl = clone.querySelector('.ne-toast');
+      const script = clone.querySelector('script');
+      if (toolbar) toolbar.remove();
+      if (mode) mode.remove();
+      if (toastEl) toastEl.remove();
+      if (script) script.remove();
+      clone.querySelectorAll('[data-edit]').forEach(el => {
+        el.removeAttribute('data-edit');
+        el.removeAttribute('contenteditable');
+      });
+      const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '金条Q3定价调整方案v3.html';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('[已导出]');
+    });
+
+    editable.forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          el.blur();
+        }
+        if (e.key === 'Escape') {
+          el.blur();
+        }
+      });
+    });
+
+    // TOC active state
+    const tocLinks = document.querySelectorAll('.toc a');
+    const sections = document.querySelectorAll('.section');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top <= 120) current = sec.id;
+      });
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+
+</body>
+</html>
