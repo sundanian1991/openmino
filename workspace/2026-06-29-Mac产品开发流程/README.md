@@ -61,4 +61,4 @@ Explore → Validate → Build → Iterate
 - [x] Validate 模板（02-验证）
 - [x] Build 模板（03-构建）
 - [x] Iterate 模板（04-迭代）
-- [ ] 实际使用（Insight Asset OS 或其他产品）
+- [ ] 实际使用（待选定产品；Insight Asset OS 已于 2026-06-29 清退）

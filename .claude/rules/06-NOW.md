@@ -21,7 +21,7 @@ pos: .claude/rules/06-NOW.md
 
 ## Session Log 规则
 
-长时间任务结束前或 context window 即将压缩时，必须写 Session Log 到 `memory/sessions/YYYY-MM-DD-<主题>.md`。
+长时间任务结束前或 context window 即将压缩时，必须写 Session Log 到 `workspace/YYYY-MM-DD-对话摘要/对话总结-YYYY-MM-DD.md`（按 AGENTS.md 对话摘要规范，memory/sessions/ 已在 5区模型重构中删除）。
 
 格式：
 ```markdown

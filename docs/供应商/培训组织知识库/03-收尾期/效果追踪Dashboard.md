@@ -132,7 +132,7 @@
 
 ## 相关资产
 
-- 30天行动回收表 → [大额培训_事后行动回收表](file:///Users/sundanian/Documents/projects/ai-agents/my-agent/myagents_files/大额培训_事后行动回收表.md)
+- 30天行动回收表 → [大额培训_事后行动回收表](file:///Users/sundanian/Documents/projects/ai-agents/my-agent/projects/供应商培训/大额人机/大额培训_事后行动回收表.md)
 - 复盘机制 → [复盘机制](./复盘机制.md)（T+30数据进入月度复盘）
 - 反馈评分表 → [物料8-分享反馈评分表](file:///Users/sundanian/Documents/projects/ai-agents/my-agent/workspace/2026-06-10-供应商联盟方案/物料8-分享反馈评分表.md)
 

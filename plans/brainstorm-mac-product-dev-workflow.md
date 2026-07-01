@@ -6,7 +6,7 @@
 
 ## What I Heard
 
-**核心问题：** 有具体产品（Insight Asset OS）在做，但缺少可复用的产品开发全流程方法论——从产品策划到架构到 UI 到交付，而不是每次靠对话即兴堆功能。
+**核心问题：** 曾计划做具体产品（Insight Asset OS，已于 2026-06-29 清退），现在缺一个可复用的产品开发全流程方法论——从产品策划到架构到 UI 到交付，而不是每次靠对话即兴堆功能。
 
 **已有资产：**
 - Tauri 版本（更成熟，7 页面 + 14 API + SQLite + LLM + OCR + 语义搜索）
@@ -68,7 +68,7 @@
 
 核心三件事：
 1. 画一张"产品全链路 × 技能调用时机"对照表
-2. 以 Insight Asset OS 为锚点，从头走一遍 Explore → Validate → Build → Iterate 四阶段
+2. 选定一个具体产品作锚点（Insight Asset OS 已清退，待重新定方向），从头走一遍 Explore → Validate → Build → Iterate 四阶段
 3. 走完后提炼成可复用的开发流程模板
 
 ## Next Steps

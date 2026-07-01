@@ -30,26 +30,18 @@ Memory 是**核心区**，存放：
 memory/
 ├── MEMORY.md           # 记忆索引（主入口）
 ├── insights.md         # 洞察记录（长期）
+├── cognitive-contract.md  # 认知契约
+├── state.json          # 会话心跳状态
 │
 ├── context/            # 工作上下文（事务、状态、Todo）
 │   └── todo.md         # 当前待办（夜间 Cron 自动维护）
 │
-├── learnings/          # 学习记录系统（临时→定期整理）
-│   ├── LEARNINGS.md
-│   ├── ERRORS.md
-│   └── FEATURE_REQUESTS.md
+├── events/             # 事件流（WAL drain 写入，会话启动读最近3天）
 │
-├── daily/              # 日志（按月归档）
-│   ├── 2026-02/        # 11 个文件
-│   ├── 2026-03/        # 11 个文件
-│   └── 2026-04/
+├── daily/              # 日志（按月归档，仅保留近期）
+│   └── 2026-06/
 │
 ├── topics/             # 主题记忆（持续积累，按工作领域组织）
-│   ├── 01-供应商与BPO运营.md
-│   ├── 02-团队管理与汇报.md
-│   ├── 03-技术与工具探索.md
-│   ├── 04-个人成长.md
-│   ├── 05-行业认知.md
 │   ├── 工作规范/        # 规则类（保留）
 │   ├── 工作方法/        # 工作方法论（保留）
 │   ├── 年老师画像/      # 观察对象（保留）
@@ -58,30 +50,30 @@ memory/
 ├── projects/           # 项目记忆
 │   └── 关键人画像/
 │
-└── daily-letter/       # 每日书信
+└── archive/            # 历史归档（只读，5区模型重构后迁入）
+    ├── conversations-2026-01至06/   # 旧对话记录（停更）
+    ├── daily-letter-2026-04至06/    # 旧每日书信（停更）
+    ├── daily-早期/                   # 早期日志
+    ├── learnings/                    # 旧学习记录
+    ├── feedback/  opinions/  insights-archive/  logs/
+    └── 供应商画像-重复副本/
 ```
 
 ---
 
 ## 学习记录流转机制
 
-### learnings/ → 核心文件
+> 注：原 `learnings/` 已于 5区模型重构中归档至 `memory/archive/learnings/`（只读）。
+> 学习记录不再单设目录，直接沉淀到下列核心文件。
 
-| 来源 | 触发条件 | 目标 | 频率 |
-|------|----------|------|------|
-| `learnings/LEARNINGS.md` | 每周整理或满 50 条 | `insights.md` | 每周 |
-| `learnings/ERRORS.md` | 踩坑经验积累 | `.claude/reference/05-self-review.md` | 按需 |
-| `learnings/FEATURE_REQUESTS.md` | 确认要实现 | `memory/context/todo.md` | 按需 |
+### 直接写入目标
 
-### 流转执行方式
-
-**每周 `/update-memory` 时**：
-1. 读取 `learnings/LEARNINGS.md`
-2. 判断每条记录：
-   - 有长期价值 → 追加到 `insights.md`
-   - 高频模式（≥3次）→ 升级到 `MEMORY.md`
-   - 已转移 → 清空原记录
-3. 输出变更摘要
+| 学习类型 | 存放位置 | 说明 |
+|----------|----------|------|
+| 长期洞察 | `memory/insights.md` | 追加，按时间倒序 |
+| 高频模式（≥3次） | `memory/MEMORY.md` | 升级为用户画像/核心认知 |
+| 踩坑经验 | `.claude/reference/05-self-review.md` | 按需 |
+| 待办/功能请求 | `memory/context/todo.md` | 按需 |
 
 ---
 
@@ -97,11 +89,9 @@ memory/
 - **内容**：职业洞察、工作方法、人际观察
 - **更新**：每次有新洞察时追加
 
-### learnings/
-- **LEARNINGS.md**：会话中产生的学习记录（临时）
-- **ERRORS.md**：错误和失败记录
-- **FEATURE_REQUESTS.md**：功能请求
-- **维护**：由 `/update-memory` 定期整理
+### learnings（已归档）
+- 原 `learnings/` 目录已迁至 `memory/archive/learnings/`（只读）
+- 学习记录不再单设目录，直接写入 insights.md / MEMORY.md / 05-self-review.md / context/todo.md
 
 ### daily/
 - **用途**：对话日志，按月归档
@@ -129,10 +119,9 @@ memory/
 
 | 文件类型 | 存放位置 | 命名规则 |
 |---------|---------|---------|
-| 学习记录 | memory/learnings/LEARNINGS.md | 追加 |
-| 错误记录 | memory/learnings/ERRORS.md | 追加 |
-| 功能请求 | memory/learnings/FEATURE_REQUESTS.md | 追加 |
 | 洞察记录 | memory/insights.md | 追加 |
+| 错误经验 | .claude/reference/05-self-review.md | 追加 |
+| 功能请求 | memory/context/todo.md | 追加 |
 | 主题记忆 | memory/topics/ | `{主题}.md` |
 | 对话日志 | memory/daily/YYYY-MM/ | `YYYY-MM-DD.md` |
 | 项目记录 | memory/projects/{项目}/ | `{内容}.md` |

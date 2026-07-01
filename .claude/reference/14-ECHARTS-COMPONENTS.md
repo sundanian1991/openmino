@@ -1,6 +1,6 @@
 # ECharts 组件完整清单
 
-> 基于 myagents_files/echarts.js (100K 行) 源码分析 | 2026-04-25
+> 基于 .claude/assets/echarts.js (100K 行) 源码分析 | 2026-04-25
 
 ---
 
