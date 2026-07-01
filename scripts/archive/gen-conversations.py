@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-扫描 ~/.myagents/sessions/*.jsonl，按日期生成结构化对话文件到 memory/conversations/。
+[已废弃 · 2026-07-01] 一次性脚本，曾用于生成 2026-01/02 对话记录。
+产物已归档至 memory/archive/conversations-2026-01至06/，memory/conversations/ 已删除。
+保留此文件仅作历史参考，请勿运行（OUTPUT_DIR 指向已不存在的目录）。
+会话记录现统一遵循 AGENTS.md 的 workspace/YYYY-MM-DD-对话摘要/ 规范。
+
+原功能：扫描 ~/.myagents/sessions/*.jsonl，按日期生成结构化对话文件到 memory/conversations/。
 只处理 2026-01 和 2026-02 的日期。
 """
 
