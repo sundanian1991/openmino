@@ -4,7 +4,7 @@
 
 | 字段 | 值 |
 |------|-----|
-| 来源 | nothing-design-reference.pdf（33页，Anthropic 官方研究报告） |
+| 来源 | reference/design-systems/nothing-design-reference.pdf |
 | 受众 | 外部读者（行业分析师、AI从业者），信任度：中立 |
 | 载体 | 报告（自包含 HTML），亮色模式 |
 | Big Idea | AI 使用镜像经济生活节奏；自动化使用越深的人越乐观（数据驱动） |
