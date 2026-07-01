@@ -1,13 +1,61 @@
-# NOW — 2026-06-17
+---
+input: 需求
+output: 06-NOW.md
+pos: .claude/rules/06-NOW.md
+---
 
-## 当前焦点
-供应商管理知识库批量 Ingest 完成 + 后续运维
+# 06-NOW.md — 当前状态
+
+> 会话启动时读取，了解当前进度和下一步
+
+---
 
 ## 活跃项目
-- 供应商管理知识库扩展（6批次ingest完成：联盟方案、AI转型方案、站点调研框架、10大风险维度、经营分析框架、管理理念）
-- 剩余待处理：memory/ 下18个供应商画像 → 做「库2：供应商档案库」时以 entity 页形式加入
 
-## 关键决策记录
-- AI转型系列（5 concepts + 1 synthesis）和 HRBP方法论（1 concept）保留在 wiki 中
-- 供应商联盟方案是培训体系的升级版，旧页面标注引用而非删除
-- 站点调研框架与深度调研方法论互补（现场 vs 数据）
+- **kaas-kb 知识库技能（06-16）**：封装 KaaS 知识库 MCP 工具，支持自然语言检索、文档读取、项目管理、文档上传引导
+- **nian-template 正交重构（06-17）**：16 套模板体系化，区分 SEED（可直接注入）与 ADAPT（需二次适配），补齐 injection-contract 与空组合兜底规则
+- **beautiful-article 技能实践（06-18）**：长图文文章生成，标题/导语/正文/配图/排版一体化输出
+- **规则体系再精简（06-18）**：响应 Claude Code 之父"少即是多"理念，压缩重复规则，只保留硬约束 + 人格 + 用户画像
+
+---
+
+## Session Log 规则
+
+长时间任务结束前或 context window 即将压缩时，必须写 Session Log 到 `workspace/YYYY-MM-DD-对话摘要/对话总结-YYYY-MM-DD.md`（按 AGENTS.md 对话摘要规范，memory/sessions/ 已在 5区模型重构中删除）。
+
+格式：
+```markdown
+# YYYY-MM-DD <主题>
+## goal
+这轮要做什么
+## decisions
+做了哪些决策，为什么
+## alternatives
+否决了哪些选项
+## artifacts
+改了哪些文件、跑了什么命令
+## blockers
+什么坏了
+## next actions
+- [x] 已完成
+- [ ] 确定的下一步
+- [ ] 推断的（标注）
+## open questions
+未解决的问题
+```
+
+**不写 transcript dump**。只记脉络：发生了什么、为什么、还剩什么。
+
+---
+
+## 最近事件
+
+详见 `memory/events/` | 任务地图和定期提醒见 `memory/context/`
+
+**06-18 重要事件**：
+- 规则体系再精简启动：删除模型已内化、跨文件重复的条款
+- beautiful-article 技能产出落地
+
+---
+
+*最后更新：2026-06-25 — 新增 Session Log 规则（Agent Memory 日记法）*

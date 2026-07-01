@@ -1,0 +1,1 @@
+../../.codex/rules/04-HONESTY.md
