@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<!--
+=====================================================================
+  T8 冲突预检压测 · DevOps 监控平台
+  haglofs-paradigm v1.9 · 测试用例 T8（组件-深浅冲突预检）
+  ---------------------------------------------------------------------
+  压测目标：
+    1. v1.6 组件-深浅冲突预检机制（Tension Grid 铁律深底 vs 配额满）
+    2. Tension Grid 浅底变体 tension-grid--light（v1.6）
+    3. rules-content-types 技术调性适配（v1.6：冷调主导 + mono 主导）
+    4. v1.7 暗色选项 slate 冷钢（数据/SaaS 页）
+  冲突解决：Hero(Pulse深①) + Footer(black深②) = 2 段已占。
+           Tension Grid 铁律深底 → 需第 3 深段，配额紧张（剩 1 且 N4 约束）。
+           ⚠ 组件-深浅冲突 → 降级 tension-grid--light（cream 底），CP2 判 ✓。
+  铁律遵守：100vh Hero + 衬线巨标题 + tag前缀线 + 巨字水印 + var(--color-*) 引用
+  token 真源：token-root.css :root 内联（交付页 E1 自包含）
+=====================================================================
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observ · DevOps 监控平台</title>
+
+<!-- 字体配方：四字体（Playfair 标题/装饰 · Inter 正文 · JetBrains Mono 标签/数据） -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ═══════════════════════════════════════════════════════════════
+     :root · token 真源内联（E1 交付自包含）
+     来源：nian-design/references/templates/base/token-root.css
+     ═══════════════════════════════════════════════════════════════ */
+  :root{
+    /* ─── 1. Surface 中性阶梯（暖灰，户外哑光感）── */
+    --color-white:#FFFFFF;
+    --color-offwhite:#F5F3EF;   /* ★ 页面主底色 */
+    --color-cream:#E8E4DD;      /* 次级面 */
+    --color-sand:#C4B8A8;       /* 边框/装饰点 */
+    --color-stone:#8A7D6E;      /* 次要文字 */
+    --color-charcoal:#2D2A26;   /* ★ 工作中的深色 */
+    --color-black:#1A1816;      /* ★ 终局/footer */
+
+    /* ─── 2. Brand 品牌色 ── */
+    --color-forest:#4A6741;
+    --color-moss:#7A9B6D;
+    --color-slate:#5B6B7A;      /* 冷调辅色（数据/信息） */
+    --color-steel:#7A8B9B;
+
+    /* ─── 3. Signal 信号色（≤2 处） ── */
+    --color-signal-red:#E8453C;
+    --color-signal-orange:#E87A3C;
+    --color-signal-yellow:#E8B83C;
+    --color-signal-blue:#3C7AE8; /* 仅链接 */
+
+    /* ─── 4. 意图别名 ── */
+    --bg-page:var(--color-offwhite);
+    --bg-card:var(--color-white);
+    --bg-subtle:var(--color-cream);
+    --bg-hover:var(--color-cream);
+    --bg-active:var(--color-sand);
+    --bg-inverse:var(--color-black);
+    --border-rest:var(--color-sand);
+    --border-hover:var(--color-stone);
+    --border-strong:var(--color-stone);
+    --text-primary:var(--color-charcoal);
+    --text-secondary:var(--color-stone);
+    --text-decorative:#B5AC9D;
+    --text-disabled:var(--color-stone);
+    --text-inverse:var(--color-offwhite);
+    --text-inverse-2:rgba(255,255,255,.5);
+    --text-inverse-3:rgba(255,255,255,.3);
+    --delta-up:var(--color-moss);
+    --delta-down:var(--color-signal-red);
+    --primary:var(--color-forest);
+    --primary-2:var(--color-moss);
+    --accent:var(--color-signal-orange);
+    --success:var(--color-moss);
+    --warning:var(--color-signal-orange);
+    --error:var(--color-signal-red);
+    --link:var(--color-signal-blue);
+
+    /* ─── 5. Font ── */
+    --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
+    --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+    --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+
+    /* ─── 6. Type Scale ── */
+    --fs-display:clamp(56px,8vw,96px);
+    --fs-h1:clamp(36px,5vw,56px);
+    --fs-h2:clamp(24px,3vw,32px);
+    --fs-h3:18px;
+    --fs-body-lg:15px;
+    --fs-body:14px;
+    --fs-caption:12px;
+    --fs-data:11px;
+    --fw-light:300; --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+    --lh-tight:1.1; --lh-snug:1.3; --lh-body:1.65; --lh-read:1.75; --lh-data:1.4;
+    --ls-tight:-0.02em; --ls-normal:0; --ls-wide:0.06em; --ls-wider:0.2em;
+
+    /* ─── 7. Radius ── */
+    --r-xs:2px; --r-sm:4px; --r-md:6px; --r-lg:8px; --r-full:999px;
+
+    /* ─── 8. Spacing（8px base · 真源梯队） ── */
+    --s-3xs:1px; --s-2xs:2px; --s-xs:4px; --s-sm:8px; --s-md:16px; --s-lg:24px;
+    --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px; --s-5xl:120px;
+
+    /* Layout */
+    --c-max:1120px; --c-read:720px; --pad:32px; --gap:24px; --gap-lg:48px;
+
+    /* ─── 9. Motion ── */
+    --ease-out:cubic-bezier(0.16,1,0.3,1);
+    --dur-fast:150ms; --dur-base:250ms; --dur-slow:400ms;
+
+    /* ─── 10. Elevation（克制） ── */
+    --shadow-raised:0 1px 2px rgba(26,24,22,0.04);
+    --shadow-popover:0 4px 12px -2px rgba(26,24,22,0.08),0 1px 1px rgba(26,24,22,0.02);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     v1.7 暗色选项 · slate 冷钢（技术/SaaS 数据页）
+     覆盖深色变体：charcoal/black → 冷灰蓝。moss/forest 深底自动提亮。
+     配 slate/steel 冷辅色更协调（rules-color D3-扩展）。
+     ═══════════════════════════════════════════════════════════════ */
+  :root{
+    --color-charcoal:#2C3138;  /* slate 冷钢 · 替代暖灰泥土感 */
+    --color-black:#1A1D22;     /* slate 终局黑 · 偏冷 */
+  }
+  /* .dark 作用域：深底 token 覆写（提亮保对比度） */
+  .dark{
+    --bg-page:var(--color-black);
+    --bg-card:var(--color-charcoal);
+    --bg-subtle:#38332E;
+    --bg-hover:#38332E;
+    --border-rest:#3D3833;
+    --border-hover:#4D4640;
+    --text-primary:var(--color-cream);
+    --text-secondary:#9C9388;
+    --text-decorative:#6B635A;
+    --text-inverse:var(--color-offwhite);
+    --text-inverse-2:rgba(255,255,255,.5);
+    --text-inverse-3:rgba(255,255,255,.3);
+    --color-forest:#6B8B5E;
+    --color-moss:#8FAB7F;
+    --color-slate:#7A8B9B;
+  }
+
+  /* ─── 全局重置 ─── */
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    background:var(--bg-page);
+    color:var(--text-primary);
+    line-height:var(--lh-body);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     HERO · V5 Pulse（深底 · 脉动线 + MONITOR 巨字水印 + 3 格 KPI）
+     深段① · slate 冷钢底
+     ═══════════════════════════════════════════════════════════════ */
+  .hero{
+    min-height:100vh;                          /* 铁律1：100vh */
+    background:var(--color-charcoal);          /* slate 冷钢深底 */
+    color:var(--text-inverse);
+    display:flex;flex-direction:column;justify-content:center;
+    padding:var(--s-xl);
+    position:relative;overflow:hidden;
+  }
+  /* 铁律2：巨字水印（深底 opacity 0.02-0.08） */
+  .hero__watermark{
+    position:absolute;top:-0.08em;left:-0.04em;
+    font-family:var(--font-display);
+    font-size:clamp(8rem,20vw,22rem);
+    font-weight:var(--fw-bold);
+    line-height:0.8;letter-spacing:-0.06em;
+    color:var(--text-inverse);
+    opacity:0.04;
+    pointer-events:none;user-select:none;z-index:0;
+  }
+  /* 脉动线（铁律装饰）：顶部 1px，冷调 steel 呼吸（技术页不用 forest） */
+  .hero__pulse{
+    position:absolute;top:0;left:0;right:0;height:1px;
+    background:var(--color-steel);
+    opacity:0.5;
+    animation:pulse 3s ease-in-out infinite;
+    z-index:1;
+  }
+  @keyframes pulse{0%,100%{opacity:0.25}50%{opacity:0.9}}
+
+  .hero__inner{max-width:var(--c-max);margin:0 auto;width:100%;position:relative;z-index:2}
+
+  /* 铁律3：tag 前缀线（技术页 tag 染 slate 冷调） */
+  .hero__tag{
+    font-family:var(--font-data);
+    font-size:var(--fs-caption);
+    letter-spacing:0.15em;text-transform:uppercase;
+    color:var(--text-inverse-3);
+    display:flex;align-items:center;gap:var(--s-md);
+    margin-bottom:var(--s-3xl);
+  }
+  .hero__tag::before{content:'';display:inline-block;width:32px;height:1px;background:var(--text-inverse-3)}
+
+  /* 铁律4：衬线巨标题（Playfair weight 400，<strong> 染 slate） */
+  .hero__title{
+    font-family:var(--font-display);
+    font-size:clamp(3rem,6vw,5rem);
+    font-weight:var(--fw-regular);
+    line-height:1.05;letter-spacing:-0.03em;
+    color:var(--text-inverse);
+    max-width:760px;margin-bottom:var(--s-4xl);
+  }
+  .hero__title strong{font-weight:var(--fw-bold);color:var(--color-slate)}  /* 技术页用 slate 冷调替代 forest */
+
+  .hero__sub{
+    font-size:var(--fs-body-lg);line-height:var(--lh-body);
+    color:var(--text-inverse-2);
+    max-width:var(--c-read);margin-bottom:var(--s-3xl);
+  }
+
+  /* 3 格 KPI 条（铁律装饰）：底部摘要，border-top 分隔 */
+  .hero__strip{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-xl);
+    border-top:1px solid var(--text-inverse-3);
+    padding-top:var(--s-xl);
+  }
+  .kpi__lbl{
+    font-family:var(--font-data);font-size:10px;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--text-inverse-3);margin-bottom:var(--s-xs);
+  }
+  .kpi__num{
+    font-family:var(--font-data);
+    font-size:clamp(2rem,4vw,3.5rem);
+    font-weight:var(--fw-semibold);
+    line-height:1;letter-spacing:-0.03em;
+    color:var(--text-inverse);margin-bottom:var(--s-2xs);
+  }
+  .kpi__num small{font-size:1.25rem;color:var(--text-inverse-3);font-weight:var(--fw-regular)}
+  .kpi__ctx{font-size:var(--fs-caption);color:var(--text-inverse-3);line-height:1.5}
+
+  /* ═══════════════════════════════════════════════════════════════
+     SECTION 外壳（默认浅底 offwhite）
+     ═══════════════════════════════════════════════════════════════ */
+  .section{padding:var(--s-5xl) var(--pad);background:var(--bg-page);position:relative}
+  .section--cream{background:var(--bg-subtle)}
+  .section--dark{background:var(--color-charcoal);color:var(--text-inverse)}
+  .section__inner{max-width:var(--c-max);margin:0 auto;position:relative}
+
+  /* section 排版锚（tag 前缀线 + 衬线标题） */
+  .section__tag{
+    font-family:var(--font-data);font-size:var(--fs-data);font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-slate);                                   /* 技术页冷调替代 forest */
+    display:flex;align-items:center;gap:var(--s-sm);
+    margin-bottom:var(--s-xl);
+  }
+  .section__tag::before{content:'';display:inline-block;width:32px;height:1px;background:var(--color-slate)}
+  .section--dark .section__tag{color:var(--color-steel)}
+  .section--dark .section__tag::before{background:var(--color-steel)}
+
+  .section__title{
+    font-family:var(--font-display);
+    font-size:clamp(36px,5vw,56px);
+    font-weight:var(--fw-regular);
+    line-height:var(--lh-tight);letter-spacing:var(--ls-tight);
+    color:var(--text-display);
+    margin-bottom:var(--s-lg);max-width:20ch;
+  }
+  .section--dark .section__title{color:var(--text-inverse)}
+
+  .section__desc{
+    font-size:var(--fs-body-lg);line-height:var(--lh-body);
+    color:var(--text-secondary);
+    max-width:var(--c-read);margin-bottom:var(--s-3xl);
+  }
+  .section--dark .section__desc{color:var(--text-inverse-2)}
+
+  /* ═══════════════════════════════════════════════════════════════
+     §2 STATEMENT QUOTE · 概念建立（浅底居中引言）
+     N3：Hero 后第二段是概念建立，不直接跳数据
+     ═══════════════════════════════════════════════════════════════ */
+  .statement-quote{padding:var(--s-5xl) var(--pad)}
+  .statement-quote__inner{max-width:var(--c-read);margin:0 auto;text-align:center}
+  .statement-quote__mark{
+    font-family:var(--font-display);font-size:64px;font-weight:var(--fw-regular);
+    line-height:1;color:var(--color-sand);margin-bottom:var(--s-lg);
+  }
+  .statement-quote__text{
+    font-family:var(--font-display);
+    font-size:clamp(24px,3vw,36px);font-weight:var(--fw-light);
+    line-height:1.5;letter-spacing:-0.3px;
+    color:var(--text-primary);margin-bottom:var(--s-lg);
+  }
+  .statement-quote__text strong{font-weight:var(--fw-semibold);color:var(--color-slate)}
+  .statement-quote__source{
+    font-family:var(--font-body);font-size:13px;
+    color:var(--text-secondary);letter-spacing:var(--ls-wide);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     §3 DATA TABLE · 5 指标详情（浅底 offwhite）
+     指标：延迟/可用性/告警响应/部署频率/MTTR
+     ═══════════════════════════════════════════════════════════════ */
+  .data-table__wrap{
+    border:1px solid var(--border-rest);border-radius:var(--r-md);overflow:hidden;
+    margin-bottom:var(--s-xl);
+  }
+  .data-table{
+    width:100%;border-collapse:collapse;font-family:var(--font-body);
+  }
+  .data-table thead th{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-secondary);background:var(--bg-subtle);
+    padding:var(--s-md) var(--s-lg);text-align:left;font-weight:var(--fw-medium);
+    border-bottom:1px solid var(--border-rest);
+  }
+  .data-table tbody td{
+    padding:var(--s-md) var(--s-lg);
+    border-bottom:1px solid var(--border-rest);
+    color:var(--text-primary);font-size:var(--fs-body);
+    vertical-align:middle;
+  }
+  .data-table tbody tr:last-child td{border-bottom:none}
+  .data-table tbody tr:hover td{background:var(--bg-hover)}
+  .data-table__metric{font-weight:var(--fw-semibold);color:var(--text-primary)}
+  .data-table__val{font-family:var(--font-data);font-weight:var(--fw-semibold);color:var(--color-slate)}
+  .data-table__target{font-family:var(--font-data);color:var(--text-secondary)}
+
+  /* 状态 tag（CP5：状态列用 .tag 而非裸文字色） */
+  .tag{
+    display:inline-block;font-family:var(--font-data);font-size:10px;
+    letter-spacing:0.08em;text-transform:uppercase;font-weight:var(--fw-medium);
+    padding:var(--s-2xs) var(--s-sm);border-radius:var(--r-xs);
+  }
+  .tag--ok{color:var(--color-forest);border:1px solid var(--color-forest)}
+  .tag--warn{color:var(--color-signal-orange);border:1px solid var(--color-signal-orange)}
+  .tag--watch{color:var(--color-slate);border:1px solid var(--color-slate)}
+
+  /* Callout（跟在 Data Table 后做"翻译"，CP3 不孤立） */
+  .callout{
+    border-left:2px solid var(--color-slate);
+    background:var(--bg-subtle);
+    padding:var(--s-md) var(--s-lg);
+  }
+  .callout__tag{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-slate);margin-bottom:var(--s-sm);
+  }
+  .callout__body{font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--text-primary)}
+  .callout__body strong{font-weight:var(--fw-semibold);color:var(--color-slate)}
+
+  /* ═══════════════════════════════════════════════════════════════
+     §4 TENSION GRID --light · 自托管 vs SaaS（cream 底）
+     ⚠ 组件-深浅冲突解决方案：配额满 → 降级 tension-grid--light
+     保留 grid 结构（2 列 × 2）+ gap:0 无缝张力，浅底反衬减弱但结构合规
+     ═══════════════════════════════════════════════════════════════ */
+  .tension-grid--light{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+    background:var(--color-cream);            /* 浅底变体：cream 替代 charcoal */
+    color:var(--text-primary);
+    border:1px solid var(--border-rest);
+    border-radius:var(--r-md);overflow:hidden;
+  }
+  .tension-grid--light .tension-item{
+    padding:var(--s-3xl);                      /* 64px */
+    border:1px solid var(--border-rest);       /* sand 发丝线替代 rgba白 */
+  }
+  /* 移除内部重复边框，靠 gap:0 + border 切割 */
+  .tension-grid--light .tension-item:nth-child(odd){border-right:none}
+  .tension-grid--light .tension-item:nth-child(-n+2){border-bottom:none}
+  .tension-grid--light .tension-item__number{
+    font-family:var(--font-data);font-size:11px;
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-secondary);margin-bottom:var(--s-md);
+  }
+  .tension-grid--light .tension-item__side{
+    font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-regular);
+    letter-spacing:var(--ls-tight);color:var(--text-primary);margin-bottom:var(--s-2xs);
+  }
+  .tension-grid--light .tension-item__side-en{
+    font-family:var(--font-data);font-size:var(--fs-caption);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-secondary);margin-bottom:var(--s-lg);
+  }
+  .tension-grid--light .tension-item__desc{
+    font-size:var(--fs-body);line-height:var(--lh-body);
+    color:var(--text-secondary);max-width:var(--c-read);margin-bottom:var(--s-lg);
+  }
+  .tension-grid--light .tension-item__stats{
+    display:flex;gap:var(--s-xl);border-top:1px solid var(--border-rest);padding-top:var(--s-md);
+  }
+  .tension-grid--light .tension-item__stat-lbl{
+    font-family:var(--font-data);font-size:10px;letter-spacing:0.08em;
+    text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--s-2xs);
+  }
+  .tension-grid--light .tension-item__stat-val{
+    font-family:var(--font-data);font-size:var(--fs-h3);font-weight:var(--fw-semibold);
+    color:var(--color-slate);letter-spacing:-0.02em;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     §5 PIPELINE · 事件响应流程（浅底 offwhite）
+     顺序流程：检测 → 分诊 → 缓解 → 复盘（4 步）
+     ═══════════════════════════════════════════════════════════════ */
+  .pipeline__list{display:flex;flex-direction:column;gap:var(--s-xl)}
+  .pipeline__step{
+    display:grid;grid-template-columns:96px 1fr;gap:var(--s-lg);
+    border-top:1px solid var(--border-rest);padding-top:var(--s-xl);
+  }
+  .pipeline__num{
+    font-family:var(--font-display);font-size:64px;font-weight:var(--fw-light);
+    line-height:1;letter-spacing:-0.04em;color:var(--color-sand);  /* 装饰数字染 sand */
+  }
+  .pipeline__body{padding-top:var(--s-sm)}
+  .pipeline__title{
+    font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-medium);
+    line-height:var(--lh-snug);letter-spacing:var(--ls-tight);
+    color:var(--text-primary);margin-bottom:var(--s-sm);
+  }
+  .pipeline__title-en{
+    font-family:var(--font-data);font-size:var(--fs-caption);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-slate);margin-bottom:var(--s-md);
+  }
+  .pipeline__desc{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);max-width:var(--c-read)}
+
+  /* ═══════════════════════════════════════════════════════════════
+     §6 STATEMENT QUOTE · 引言呼吸（cream 底 · 过渡桥）
+     数据段→收束段的密度谷过渡（rules-narrative §6.1）
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* ═══════════════════════════════════════════════════════════════
+     §7 CHECKLIST · 可观测性纪律（浅底 offwhite）
+     ═══════════════════════════════════════════════════════════════ */
+  .checklist{
+    background:var(--bg-subtle);border:1px solid var(--border-rest);
+    border-radius:var(--r-md);padding:var(--s-2xl);
+  }
+  .checklist__title{
+    font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-tight);color:var(--text-primary);margin-bottom:var(--s-xl);
+  }
+  .checklist__item{
+    display:flex;align-items:flex-start;gap:var(--s-md);
+    border-bottom:1px solid var(--border-rest);
+    padding:var(--s-md) 0;
+  }
+  .checklist__item:last-child{border-bottom:none}
+  .checklist__box{
+    flex-shrink:0;width:16px;height:16px;margin-top:2px;
+    border:1.5px solid var(--color-stone);border-radius:var(--r-xs);
+    position:relative;
+  }
+  .checklist__box::after{
+    content:'';position:absolute;top:3px;left:3px;width:8px;height:8px;
+    background:var(--color-slate);border-radius:1px;opacity:0;  /* slate 冷调勾选 */
+  }
+  .checklist__item--done .checklist__box::after{opacity:1}
+  .checklist__sign{
+    font-family:var(--font-data);font-size:10px;letter-spacing:var(--ls-wide);
+    text-transform:uppercase;color:var(--color-slate);margin-bottom:var(--s-2xs);
+  }
+  .checklist__text{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-primary)}
+
+  /* ═══════════════════════════════════════════════════════════════
+     FOOTER · black 终局收尾（深段②）
+     ═══════════════════════════════════════════════════════════════ */
+  .footer{
+    background:var(--color-black);              /* slate 终局黑（:root 覆盖后偏冷） */
+    padding:var(--s-5xl) var(--pad) var(--s-2xl);
+  }
+  .footer__inner{max-width:var(--c-max);margin:0 auto}
+  .footer__top{
+    display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:var(--s-3xl);
+    border-bottom:1px solid var(--text-inverse-3);
+    padding-bottom:var(--s-3xl);margin-bottom:var(--s-xl);
+  }
+  .footer__wordmark{
+    font-family:var(--font-display);font-size:clamp(28px,3vw,40px);font-weight:var(--fw-regular);
+    line-height:1;letter-spacing:-0.02em;color:var(--text-inverse);margin-bottom:var(--s-sm);
+  }
+  .footer__tagline{font-size:var(--fs-body);color:var(--text-inverse-2);max-width:var(--c-read)}
+  .footer__col-title{
+    font-family:var(--font-data);font-size:var(--fs-data);font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-steel);                            /* slate 冷调替代 moss */
+    display:flex;align-items:center;gap:var(--s-sm);margin-bottom:var(--s-md);
+  }
+  .footer__col-title::before{content:'';display:inline-block;width:24px;height:1px;background:var(--color-steel)}
+  .footer__links{list-style:none}
+  .footer__links li{margin-bottom:var(--s-sm)}
+  .footer__links a{
+    font-size:var(--fs-body);color:var(--text-inverse-2);
+    text-decoration:none;transition:color var(--dur-fast) var(--ease-out);
+  }
+  .footer__links a:hover{color:var(--link)}
+  .footer__bottom{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--s-md);
+    font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);
+    text-transform:uppercase;color:var(--text-inverse-3);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     响应式（E3 双断点：1024px 平板 / 768px 手机）
+     ═══════════════════════════════════════════════════════════════ */
+  @media(max-width:1024px){
+    .section{padding:var(--s-4xl) var(--pad)}
+    .hero{padding:var(--s-3xl) var(--s-lg)}
+    .hero__title{font-size:clamp(2.5rem,7vw,4rem)}
+    .footer__top{grid-template-columns:1fr 1fr;gap:var(--s-xl)}
+  }
+  @media(max-width:768px){
+    .hero{min-height:auto;padding:var(--s-3xl) var(--s-md)}
+    .hero__title{font-size:clamp(2rem,8vw,3rem);margin-bottom:var(--s-2xl)}
+    .hero__strip{grid-template-columns:1fr;gap:var(--s-lg)}
+    .section{padding:var(--s-3xl) var(--s-md)}
+    .tension-grid--light{grid-template-columns:1fr}
+    .tension-grid--light .tension-item{border-right:none;border-bottom:1px solid var(--border-rest);padding:var(--s-xl)}
+    .tension-grid--light .tension-item:last-child{border-bottom:none}
+    .pipeline__step{grid-template-columns:64px 1fr;gap:var(--s-md)}
+    .pipeline__num{font-size:48px}
+    .footer__top{grid-template-columns:1fr;gap:var(--s-xl)}
+    .footer__bottom{flex-direction:column}
+
+    /* Data Table 移动端卡片化（v1.9 · NC-5） */
+    .data-table thead{display:none}
+    .data-table,.data-table tbody,.data-table tr,.data-table td{display:block}
+    .data-table tr{
+      border:1px solid var(--border-rest);border-radius:var(--r-sm);
+      margin-bottom:var(--s-md);padding:var(--s-md);
+    }
+    .data-table td{
+      display:flex;justify-content:space-between;gap:var(--s-md);
+      padding:var(--s-xs) 0;border:none;align-items:center;
+    }
+    .data-table td::before{
+      content:attr(data-label);
+      font-family:var(--font-data);font-size:10px;letter-spacing:0.08em;
+      text-transform:uppercase;color:var(--text-secondary);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     §1 HERO · V5 Pulse（深段① · slate 冷钢）
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="hero dark">
+  <div class="hero__watermark">MONITOR</div>
+  <div class="hero__pulse"></div>
+
+  <div class="hero__inner">
+    <div class="hero__tag">Observ · DevOps 可观测性平台</div>
+
+    <h1 class="hero__title">
+      看见每一次<br>
+      <strong>延迟的脉搏。</strong>
+    </h1>
+
+    <p class="hero__sub">
+      把延迟、可用性、告警、部署与故障恢复收进同一块面板——
+      让生产环境的每一个信号都有迹可循。
+    </p>
+
+    <!-- 3 格 KPI 数字条（封面摘要，详情留给后续区块） -->
+    <div class="hero__strip">
+      <div>
+        <div class="kpi__lbl">P99 延迟</div>
+        <div class="kpi__num">142<small>ms</small></div>
+        <div class="kpi__ctx">同比 -38% · 30 日滑动均值</div>
+      </div>
+      <div>
+        <div class="kpi__lbl">可用性 SLA</div>
+        <div class="kpi__num">99.97<small>%</small></div>
+        <div class="kpi__ctx">连续 128 日达标 · 月度窗口</div>
+      </div>
+      <div>
+        <div class="kpi__lbl">MTTR 平均恢复</div>
+        <div class="kpi__num">8.4<small>min</small></div>
+        <div class="kpi__ctx">P95 ≤ 23min · 季度趋势下行</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     §2 概念建立 · Statement Quote（浅底居中引言 · N3 第二段）
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="statement-quote">
+  <div class="statement-quote__inner">
+    <div class="statement-quote__mark">&ldquo;</div>
+    <p class="statement-quote__text">
+      监控告诉你<strong>系统出了什么问题</strong>，
+      可观测性告诉你<strong>为什么</strong>。
+    </p>
+    <p class="statement-quote__source">— Observ 平台工程原则</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     §3 DATA TABLE · 5 指标详情（浅底 offwhite）
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">SRE Metrics · 核心指标</div>
+    <h2 class="section__title">五个数字，定义<br>系统的健康。</h2>
+    <p class="section__desc">
+      延迟、可用性、告警响应、部署频率与平均恢复时间——
+      这五个指标构成 Observ 评估生产可靠性的最小完备集。
+    </p>
+
+    <div class="data-table__wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>指标</th>
+            <th>当前</th>
+            <th>目标</th>
+            <th>趋势</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-label="指标" class="data-table__metric">P99 延迟</td>
+            <td data-label="当前" class="data-table__val">142 ms</td>
+            <td data-label="目标" class="data-table__target">≤ 200 ms</td>
+            <td data-label="趋势"><span class="tag tag--ok">下行</span></td>
+            <td data-label="状态"><span class="tag tag--ok">达标</span></td>
+          </tr>
+          <tr>
+            <td data-label="指标" class="data-table__metric">可用性 SLA</td>
+            <td data-label="当前" class="data-table__val">99.97%</td>
+            <td data-label="目标" class="data-table__target">≥ 99.9%</td>
+            <td data-label="趋势"><span class="tag tag--ok">稳定</span></td>
+            <td data-label="状态"><span class="tag tag--ok">达标</span></td>
+          </tr>
+          <tr>
+            <td data-label="指标" class="data-table__metric">告警响应中位</td>
+            <td data-label="当前" class="data-table__val">2.1 min</td>
+            <td data-label="目标" class="data-table__target">≤ 5 min</td>
+            <td data-label="趋势"><span class="tag tag--ok">改善</span></td>
+            <td data-label="状态"><span class="tag tag--ok">达标</span></td>
+          </tr>
+          <tr>
+            <td data-label="指标" class="data-table__metric">部署频率</td>
+            <td data-label="当前" class="data-table__val">14 次/日</td>
+            <td data-label="目标" class="data-table__target">≥ 1 次/日</td>
+            <td data-label="趋势"><span class="tag tag--ok">增长</span></td>
+            <td data-label="状态"><span class="tag tag--ok">达标</span></td>
+          </tr>
+          <tr>
+            <td data-label="指标" class="data-table__metric">MTTR 平均恢复</td>
+            <td data-label="当前" class="data-table__val">8.4 min</td>
+            <td data-label="目标" class="data-table__target">≤ 15 min</td>
+            <td data-label="趋势"><span class="tag tag--watch">波动</span></td>
+            <td data-label="状态"><span class="tag tag--warn">观察</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Callout（CP3：跟在 Data Table 后做"翻译"，不孤立） -->
+    <div class="callout">
+      <div class="callout__tag">◆ 关键发现</div>
+      <p class="callout__body">
+        五项指标中 <strong>四项达标</strong>，仅 MTTR 因大促流量峰值出现波动——
+        建议针对故障自愈链路增加冗余降级预案。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     §4 TENSION GRID --light · 自托管 vs SaaS（cream 底）
+     ⚠ 组件-深浅冲突解决：配额满 → 降级浅底变体
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">Deployment Model · 部署模型对比</div>
+    <h2 class="section__title">自托管，还是<br>托管 SaaS？</h2>
+    <p class="section__desc">
+      两种部署模型在控制权、运维成本与合规边界上各有取舍。
+      Observ 同时支持两条路径，由团队按数据主权与规模选择。
+    </p>
+
+    <!-- tension-grid--light：浅底变体，2 列 × 2 item，gap:0 无缝张力 -->
+    <div class="tension-grid--light">
+      <div class="tension-item">
+        <div class="tension-item__number">01</div>
+        <div class="tension-item__side">自托管</div>
+        <div class="tension-item__side-en">Self-Hosted</div>
+        <p class="tension-item__desc">
+          数据落自有 VPC，审计与合规链路完全内控。
+          适合金融、医疗等强监管场景，代价是更高的运维投入。
+        </p>
+        <div class="tension-item__stats">
+          <div>
+            <div class="tension-item__stat-lbl">数据主权</div>
+            <div class="tension-item__stat-val">完全</div>
+          </div>
+          <div>
+            <div class="tension-item__stat-lbl">运维成本</div>
+            <div class="tension-item__stat-val">高</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tension-item">
+        <div class="tension-item__number">02</div>
+        <div class="tension-item__side">托管 SaaS</div>
+        <div class="tension-item__side-en">Managed SaaS</div>
+        <p class="tension-item__desc">
+          开箱即用，扩缩容与升级由平台托管。
+          适合快速增长的互联网团队，用订阅费换取工程带宽。
+        </p>
+        <div class="tension-item__stats">
+          <div>
+            <div class="tension-item__stat-lbl">上线周期</div>
+            <div class="tension-item__stat-val">分钟级</div>
+          </div>
+          <div>
+            <div class="tension-item__stat-lbl">运维成本</div>
+            <div class="tension-item__stat-val">低</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tension-item">
+        <div class="tension-item__number">03</div>
+        <div class="tension-item__side">混合编排</div>
+        <div class="tension-item__side-en">Hybrid</div>
+        <p class="tension-item__desc">
+          核心数据自托管，边缘探针走 SaaS。
+          在合规与敏捷之间取平衡，是中大型团队的主流选择。
+        </p>
+        <div class="tension-item__stats">
+          <div>
+            <div class="tension-item__stat-lbl">灵活性</div>
+            <div class="tension-item__stat-val">最高</div>
+          </div>
+          <div>
+            <div class="tension-item__stat-lbl">复杂度</div>
+            <div class="tension-item__stat-val">中</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tension-item">
+        <div class="tension-item__number">04</div>
+        <div class="tension-item__side">边缘优先</div>
+        <div class="tension-item__side-en">Edge-First</div>
+        <p class="tension-item__desc">
+          采集与聚合下沉到边缘节点，中心只存聚合视图。
+          适合全球分布的低延迟场景，单点依赖最小。
+        </p>
+        <div class="tension-item__stats">
+          <div>
+            <div class="tension-item__stat-lbl">延迟优势</div>
+            <div class="tension-item__stat-val">显著</div>
+          </div>
+          <div>
+            <div class="tension-item__stat-lbl">带宽成本</div>
+            <div class="tension-item__stat-val">低</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     §5 PIPELINE · 事件响应流程（浅底 offwhite · 4 步）
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">Incident Response · 事件响应链</div>
+    <h2 class="section__title">从信号到恢复，<br>四步闭环。</h2>
+    <p class="section__desc">
+      Observ 把告警响应拆成四个可度量的阶段，
+      每一阶段的耗时都进入 MTTR 归因，让"恢复"可被工程化改进。
+    </p>
+
+    <div class="pipeline__list">
+      <div class="pipeline__step">
+        <div class="pipeline__num">01</div>
+        <div class="pipeline__body">
+          <div class="pipeline__title-en">Detect · 检测</div>
+          <h3 class="pipeline__title">信号采集与异常识别</h3>
+          <p class="pipeline__desc">
+            指标、日志、链路三类信号统一接入，基于动态基线与 SLO 阈值触发告警，
+            避免静态阈值在流量波动期的误报风暴。
+          </p>
+        </div>
+      </div>
+
+      <div class="pipeline__step">
+        <div class="pipeline__num">02</div>
+        <div class="pipeline__body">
+          <div class="pipeline__title-en">Triage · 分诊</div>
+          <h3 class="pipeline__title">告警聚合与值班路由</h3>
+          <p class="pipeline__desc">
+            同源告警自动去重聚合，按服务拓扑与值班排班精准路由，
+            把噪声压到最低，让真正需要人工介入的事件浮到最前。
+          </p>
+        </div>
+      </div>
+
+      <div class="pipeline__step">
+        <div class="pipeline__num">03</div>
+        <div class="pipeline__body">
+          <div class="pipeline__title-en">Mitigate · 缓解</div>
+          <h3 class="pipeline__title">一键回滚与自动降级</h3>
+          <p class="pipeline__desc">
+            集成部署系统的回滚与灰度能力，对已知故障模式触发预设的自动降级预案，
+            在定位根因之前先把用户影响压住。
+          </p>
+        </div>
+      </div>
+
+      <div class="pipeline__step">
+        <div class="pipeline__num">04</div>
+        <div class="pipeline__body">
+          <div class="pipeline__title-en">Review · 复盘</div>
+          <h3 class="pipeline__title">归因分析与纪律沉淀</h3>
+          <p class="pipeline__desc">
+            事件时间线自动归档，按阶段耗时归因 MTTR，
+            复盘结论沉淀为可观测性纪律清单，进入下一轮改进闭环。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     §6 STATEMENT QUOTE · 引言呼吸（cream 底 · 过渡桥）
+     数据段→收束段的密度谷（rules-narrative §6.1）
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="statement-quote">
+  <div class="statement-quote__inner">
+    <div class="statement-quote__mark">&ldquo;</div>
+    <p class="statement-quote__text">
+      Hope is not a strategy.<br>
+      <strong>可观测性</strong>才是。
+    </p>
+    <p class="statement-quote__source">— 改编自 SRE 格言</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     §7 CHECKLIST · 可观测性纪律（浅底 offwhite · 升华收束）
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">Operational Discipline · 运维纪律</div>
+    <h2 class="section__title">七条纪律，<br>把噪声变成信号。</h2>
+    <p class="section__desc">
+      这份清单是 Observ 团队从上千次事件复盘里沉淀的工程纪律——
+      每一条都对应一个曾经的真实事故。
+    </p>
+
+    <div class="checklist">
+      <h3 class="checklist__title">可观测性交付清单</h3>
+
+      <div class="checklist__item checklist__item--done">
+        <div class="checklist__box"></div>
+        <div>
+          <div class="checklist__sign">指标</div>
+          <div class="checklist__text">三类信号（指标 / 日志 / 链路）统一关联，可通过一个 trace ID 贯穿。</div>
+        </div>
+      </div>
+
+      <div class="checklist__item checklist__item--done">
+        <div class="checklist__box"></div>
+        <div>
+          <div class="checklist__sign">告警</div>
+          <div class="checklist__text">所有告警必须绑定 Runbook，无 Runbook 的告警默认降级为只读通知。</div>
+        </div>
+      </div>
+
+      <div class="checklist__item checklist__item--done">
+        <div class="checklist__box"></div>
+        <div>
+          <div class="checklist__sign">SLO</div>
+          <div class="checklist__text">每个用户旅程定义错误预算，预算耗尽触发部署冻结而非继续叠加功能。</div>
+        </div>
+      </div>
+
+      <div class="checklist__item checklist__item--done">
+        <div class="checklist__box"></div>
+        <div>
+          <div class="checklist__sign">部署</div>
+          <div class="checklist__text">每次发布必带金丝雀阶段与一键回滚，回滚路径先于功能上线验证。</div>
+        </div>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box"></div>
+        <div>
+          <div class="checklist__sign">恢复</div>
+          <div class="checklist__text">MTTR 按四阶段（检测/分诊/缓解/复盘）分别度量，最长阶段优先改进。</div>
+        </div>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box"></div>
+        <div>
+          <div class="checklist__sign">复盘</div>
+          <div class="checklist__text">事件复盘结论必须转化为可执行条目，进入下一迭代而非归档了事。</div>
+        </div>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box"></div>
+        <div>
+          <div class="checklist__sign">噪声</div>
+          <div class="checklist__text">每周清理一次长期未触发告警，告警总量与精度同等重要。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER · black 终局收尾（深段②）
+     ═══════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div class="footer__wordmark">Observ</div>
+        <p class="footer__tagline">为生产环境的每一个信号建立可追溯的脉络。</p>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Product</div>
+        <ul class="footer__links">
+          <li><a href="#">指标监控</a></li>
+          <li><a href="#">链路追踪</a></li>
+          <li><a href="#">日志分析</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Resources</div>
+        <ul class="footer__links">
+          <li><a href="#">SRE 手册</a></li>
+          <li><a href="#">API 文档</a></li>
+          <li><a href="#">状态页</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Company</div>
+        <ul class="footer__links">
+          <li><a href="#">关于我们</a></li>
+          <li><a href="#">招聘</a></li>
+          <li><a href="#">联系</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Observ Platform</span>
+      <span>Self-Hosted · SaaS · Hybrid</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
