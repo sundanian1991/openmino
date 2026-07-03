@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OAuth 2.0 认证流程最佳实践 · Technical Reference</title>
+
+<!-- 字体配方：四字体（Playfair 标题/装饰 · Inter 正文 · JetBrains Mono 标签/代码） -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TOKEN ROOT · 内联（E1 红线：交付页必须 :root 内联，禁 <link> 引 token）
+   真源：nian-design references/templates/base/token-root.css
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  /* Surface 中性阶梯 */
+  --color-white:#FFFFFF;--color-offwhite:#F5F3EF;--color-cream:#E8E4DD;
+  --color-sand:#C4B8A8;--color-stone:#8A7D6E;--color-charcoal:#2D2A26;--color-black:#1A1816;
+  /* Brand 品牌色 */
+  --color-forest:#4A6741;--color-moss:#7A9B6D;--color-slate:#5B6B7A;--color-steel:#7A8B9B;
+  /* Signal 信号色 */
+  --color-signal-red:#E8453C;--color-signal-orange:#E87A3C;--color-signal-yellow:#E8B83C;--color-signal-blue:#3C7AE8;
+  /* 意图别名 */
+  --bg-page:var(--color-offwhite);--bg-card:var(--color-white);--bg-subtle:var(--color-cream);
+  --bg-hover:var(--color-cream);--bg-active:var(--color-sand);--bg-inverse:var(--color-black);
+  --border-rest:var(--color-sand);--border-hover:var(--color-stone);--border-strong:var(--color-stone);
+  --text-primary:var(--color-charcoal);--text-secondary:var(--color-stone);--text-decorative:#B5AC9D;
+  --text-disabled:var(--color-stone);--text-inverse:var(--color-offwhite);--text-inverse-2:rgba(255,255,255,.5);--text-inverse-3:rgba(255,255,255,.3);
+  --delta-up:var(--color-moss);--delta-down:var(--color-signal-red);
+  /* Font */
+  --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+  --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+  /* Type Scale */
+  --fs-deco:clamp(120px,16vw,200px);--fs-display:clamp(56px,8vw,96px);
+  --fs-h1:clamp(36px,5vw,56px);--fs-h2:clamp(24px,3vw,32px);--fs-h3:18px;
+  --fs-body-lg:15px;--fs-body:14px;--fs-caption:12px;--fs-data:11px;
+  --fw-light:300;--fw-regular:400;--fw-medium:500;--fw-semibold:600;--fw-bold:700;
+  --lh-tight:1.1;--lh-snug:1.3;--lh-body:1.65;--lh-read:1.75;--lh-data:1.4;
+  --ls-tight:-0.02em;--ls-normal:0;--ls-wide:0.06em;--ls-wider:0.2em;
+  /* Radius ≤8px */
+  --r-0:0;--r-xs:2px;--r-sm:4px;--r-md:6px;--r-lg:8px;--r-full:999px;
+  /* Spacing 8px base grid（真源梯队） */
+  --s-3xs:1px;--s-2xs:2px;--s-xs:4px;--s-sm:8px;--s-md:16px;--s-lg:24px;
+  --s-xl:32px;--s-2xl:48px;--s-3xl:64px;--s-4xl:96px;--s-5xl:120px;
+  --c-max:1120px;--c-read:720px;--pad:32px;--gap:24px;--gap-lg:48px;
+  /* Motion */
+  --ease-out:cubic-bezier(0.16,1,0.3,1);--dur-fast:150ms;--dur-base:250ms;--dur-slow:400ms;
+  --shadow-raised:0 1px 2px rgba(26,24,22,0.04);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  background:var(--bg-page);
+  color:var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ① HERO · Statement（浅底 offwhite · 声明主轴 · 巨字水印）
+   ═══════════════════════════════════════════════════════════════ */
+.hero{
+  min-height:100vh;                            /* H1：100vh 铁律 */
+  background:var(--color-offwhite);
+  color:var(--text-primary);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--s-5xl) var(--pad) var(--s-3xl);
+  position:relative;overflow:hidden;
+}
+.hero__watermark{                               /* H2 装饰层 · H3 浅底 0.04-0.15 */
+  position:absolute;right:var(--pad);top:50%;transform:translateY(-50%);
+  font-family:var(--font-display);
+  font-size:clamp(200px,25vw,400px);
+  font-weight:var(--fw-light);line-height:1;letter-spacing:-0.06em;
+  color:var(--color-sand);opacity:0.12;
+  pointer-events:none;user-select:none;
+}
+.hero__tag{                                     /* T3/T4 前缀线 + Mono + 大写 + 字距 */
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  font-weight:var(--fw-medium);
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  color:var(--color-forest);                    /* 品牌锚点：Hero 保留 forest 做 DNA（1处） */
+  display:flex;align-items:center;gap:var(--s-sm);
+  margin-bottom:var(--s-lg);z-index:1;
+}
+.hero__tag::before{content:'';display:inline-block;width:24px;height:1px;background:var(--color-forest)}
+.hero__title{
+  font-family:var(--font-display);             /* T2 Playfair + 负字距 + 紧行高 */
+  font-size:clamp(42px,6vw,80px);
+  font-weight:var(--fw-light);
+  line-height:1.02;letter-spacing:-2px;
+  color:var(--text-display);
+  margin-bottom:var(--s-lg);z-index:1;position:relative;max-width:16ch;
+}
+.hero__title em{font-style:italic;font-weight:var(--fw-regular)}
+.hero__sub{
+  font-family:var(--font-body);
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-body);color:var(--text-secondary);
+  max-width:520px;z-index:1;position:relative;
+}
+.hero__meta{                                     /* meta 摘要条（≤4 格定性摘要） */
+  display:flex;gap:var(--s-3xl);
+  margin-top:var(--s-4xl);
+  z-index:1;position:relative;flex-wrap:wrap;
+}
+.hero__meta-item{display:flex;flex-direction:column}
+.hero__meta-label{
+  font-family:var(--font-data);font-size:10px;
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  color:var(--text-secondary);margin-bottom:var(--s-xs);
+}
+.hero__meta-value{
+  font-family:var(--font-display);font-size:24px;color:var(--text-display);
+}
+.hero__line{position:absolute;bottom:0;left:var(--pad);right:var(--pad);height:1px;background:var(--border-rest)}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 外壳
+   ═══════════════════════════════════════════════════════════════ */
+.section{padding:var(--s-5xl) var(--pad);position:relative}       /* N2 120px 品牌页呼吸 */
+.section__inner{max-width:var(--c-max);margin:0 auto;position:relative}  /* B6 1120px */
+.section--cream{background:var(--bg-subtle)}                      /* cream 次级面 */
+.section--dark{background:var(--color-charcoal);color:var(--text-inverse)} /* charcoal 深段 */
+
+/* 技术调性适配（rules-content-types 规则1）：技术段 tag 用 slate 冷调替代 forest 暖绿 */
+.section__tag{
+  font-family:var(--font-data);font-size:var(--fs-data);
+  font-weight:var(--fw-medium);
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  color:var(--color-slate);                      /* ★ 冷调主导：slate 替代 forest */
+  display:flex;align-items:center;gap:var(--s-sm);
+  margin-bottom:var(--s-xl);
+}
+.section__tag::before{content:'';display:inline-block;width:32px;height:1px;background:var(--color-slate)}
+.section--dark .section__tag{color:var(--color-steel)}           /* 深底冷调提亮用 steel */
+.section--dark .section__tag::before{background:var(--color-steel)}
+
+.section__title{
+  font-family:var(--font-display);             /* Playfair section 标题（rules-content-types 规则2） */
+  font-size:clamp(36px,5vw,56px);
+  font-weight:var(--fw-regular);
+  line-height:var(--lh-tight);letter-spacing:var(--ls-tight);
+  color:var(--text-display);margin-bottom:var(--s-lg);max-width:20ch;
+}
+.section--dark .section__title{color:var(--text-inverse)}
+
+.section__desc{
+  font-family:var(--font-body);font-size:var(--fs-body-lg);
+  line-height:var(--lh-body);color:var(--text-secondary);
+  max-width:var(--c-read);margin-bottom:var(--s-3xl);
+}
+.section--dark .section__desc{color:var(--text-inverse-2)}
+
+/* ═══════════════════════════════════════════════════════════════
+   Statement Quote（浅底居中引言 · 概念建立 N3）
+   ═══════════════════════════════════════════════════════════════ */
+.statement-quote__inner{max-width:800px;margin:0 auto;text-align:center}
+.statement-quote__mark{
+  font-family:var(--font-display);font-size:72px;line-height:1;
+  color:var(--color-sand);margin-bottom:var(--s-xl);
+}
+.statement-quote__text{
+  font-family:var(--font-display);
+  font-size:clamp(24px,3vw,36px);
+  font-weight:var(--fw-light);line-height:1.6;letter-spacing:-0.3px;
+  color:var(--text-primary);margin-bottom:var(--s-lg);
+}
+.statement-quote__source{
+  font-family:var(--font-body);font-size:13px;color:var(--text-secondary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Code Block 组件（v1.6 新增 · 浅底/深底双变体 + token 分色）
+   直接采用 rules-components.md 登记骨架
+   ═══════════════════════════════════════════════════════════════ */
+.code-block{border-radius:var(--r-sm);overflow:hidden;margin-top:var(--s-lg)}
+/* 浅底变体 */
+.code-block--light .code-block__head{
+  background:var(--color-charcoal);             /* head 反相做锚点 */
+  color:var(--text-inverse);
+  padding:var(--s-sm) var(--s-md);
+  font-family:var(--font-data);font-size:12px;
+}
+.code-block--light .code-block__body{
+  background:var(--color-cream);
+  color:var(--text-primary);
+  font-family:var(--font-data);font-size:13px;line-height:1.6;
+  padding:var(--s-lg);overflow-x:auto;
+}
+/* 深底变体 */
+.code-block--dark .code-block__head{
+  background:var(--color-black);color:var(--text-inverse);
+  padding:var(--s-sm) var(--s-md);
+  font-family:var(--font-data);font-size:12px;
+}
+.code-block--dark .code-block__body{
+  background:var(--color-charcoal);
+  color:var(--text-inverse);
+  font-family:var(--font-data);font-size:13px;line-height:1.6;
+  padding:var(--s-lg);overflow-x:auto;
+}
+.code-block__head{display:flex;align-items:center;gap:var(--s-sm)}
+.code-block__dot--ok{background:var(--color-moss);width:6px;height:6px;border-radius:50%;display:inline-block}
+/* 语法高亮 token 分色 */
+.tok--kw{color:var(--color-forest)}              /* 关键字：浅底 forest */
+.code-block--dark .tok--kw{color:var(--color-moss)}  /* 关键字：深底提亮 moss */
+.tok--cm{color:var(--text-secondary)}            /* 注释：stone */
+.code-block--dark .tok--cm{color:var(--text-inverse-2)}
+.tok--str,.tok--val{color:var(--color-slate)}    /* 字符串/值：slate 冷调 */
+.code-block--dark .tok--str,.code-block--dark .tok--val{color:var(--color-steel)}
+.tok--mt{color:var(--color-steel)}               /* method：steel */
+.code-block--dark .tok--mt{color:var(--text-inverse)}
+
+/* ═══════════════════════════════════════════════════════════════
+   Data Table 组件（v1.8 代际债清零：Playfair 标题 + BEM 命名）
+   ═══════════════════════════════════════════════════════════════ */
+.data-table__wrap{
+  border:1px solid var(--border-rest);
+  border-radius:var(--r-sm);overflow:hidden;
+}
+.data-table{
+  width:100%;border-collapse:collapse;
+}
+.data-table thead th{
+  font-family:var(--font-data);font-size:var(--fs-data);
+  font-weight:var(--fw-medium);
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  color:var(--text-secondary);
+  background:var(--bg-subtle);
+  padding:var(--s-md) var(--s-lg);
+  text-align:left;
+}
+.data-table tbody td{
+  font-family:var(--font-body);font-size:var(--fs-body);
+  line-height:var(--lh-data);color:var(--text-primary);
+  padding:var(--s-md) var(--s-lg);
+  border-top:1px solid var(--border-rest);
+  vertical-align:top;
+}
+.data-table tbody tr:first-child td{border-top:none}
+.data-table tbody tr:hover td{background:var(--bg-hover)}
+.data-table__name{
+  font-family:var(--font-data);font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+}
+.data-table__name code{
+  font-family:var(--font-data);font-size:13px;color:var(--color-slate);
+}
+/* tag 状态标记（CP5：状态列用 .tag 而非裸文字色） */
+.tag{
+  display:inline-block;
+  font-family:var(--font-data);font-size:10px;
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  padding:var(--s-xs) var(--s-sm);
+  border:1px solid var(--border-rest);border-radius:var(--r-xs);
+}
+.tag--rec{color:var(--color-moss);border-color:var(--color-moss)}     /* 推荐 */
+.tag--dep{color:var(--text-secondary);border-color:var(--border-strong)} /* 废弃：中性灰，不占 signal 配额 */
+.tag--lim{color:var(--color-slate);border-color:var(--color-slate)}   /* 受限 */
+
+/* ═══════════════════════════════════════════════════════════════
+   Pipeline 组件（流程步骤栈 · 大号 Playfair 步骤编号）
+   ═══════════════════════════════════════════════════════════════ */
+.pipeline__list{display:flex;flex-direction:column;gap:var(--s-2xl)}
+.pipeline__step{display:grid;grid-template-columns:auto 1fr;gap:var(--s-xl);align-items:start}
+.pipeline__num{                                  /* Playfair 装饰数字（E7：Georgia→Playfair） */
+  font-family:var(--font-display);
+  font-size:clamp(48px,5vw,72px);
+  font-weight:var(--fw-light);line-height:1;
+  color:var(--color-steel);                      /* 冷调装饰色（深底 steel 提亮） */
+}
+.pipeline__body{padding-top:var(--s-sm)}
+.pipeline__title{
+  font-family:var(--font-display);
+  font-size:var(--fs-h2);font-weight:var(--fw-medium);
+  line-height:var(--lh-snug);letter-spacing:var(--ls-tight);
+  color:var(--text-inverse);margin-bottom:var(--s-sm);
+}
+.pipeline__desc{
+  font-family:var(--font-body);font-size:var(--fs-body);
+  line-height:var(--lh-body);color:var(--text-inverse-2);
+  max-width:560px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Checklist 组件（cream 底 · 勾选框 + 文字行）
+   ═══════════════════════════════════════════════════════════════ */
+.checklist{
+  background:var(--bg-subtle);                   /* cream 底 */
+  padding:var(--s-3xl);
+  border-radius:var(--r-sm);
+}
+.checklist__title{
+  font-family:var(--font-display);              /* Playfair（v1.8 代际债清零） */
+  font-size:var(--fs-h2);font-weight:var(--fw-medium);
+  letter-spacing:var(--ls-tight);color:var(--text-primary);
+  margin-bottom:var(--s-xl);
+}
+.checklist__item{
+  display:grid;grid-template-columns:auto auto 1fr;gap:var(--s-md);
+  align-items:start;
+  padding:var(--s-md) 0;
+  border-bottom:1px solid var(--border-rest);
+}
+.checklist__item:last-child{border-bottom:none}
+.checklist__box{                                 /* 16px 方框锁死 */
+  width:16px;height:16px;
+  border:1.5px solid var(--text-secondary);
+  border-radius:3px;flex-shrink:0;margin-top:2px;
+}
+.checklist__box--do{border-color:var(--color-moss);background:var(--color-moss);position:relative}
+.checklist__box--do::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--color-white);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.checklist__box--dont{border-color:var(--color-stone)}
+.checklist__sign{
+  font-family:var(--font-data);font-size:var(--fs-data);
+  font-weight:var(--fw-semibold);letter-spacing:var(--ls-wide);
+  text-transform:uppercase;margin-top:1px;
+}
+.checklist__sign--do{color:var(--color-moss)}
+.checklist__sign--dont{color:var(--color-slate)}   /* don't 标记用 slate 冷调，不占 signal 配额 */
+.checklist__text{
+  font-family:var(--font-body);font-size:var(--fs-body);
+  line-height:var(--lh-body);color:var(--text-primary);
+}
+.checklist__text strong{font-weight:var(--fw-semibold)}
+
+/* ═══════════════════════════════════════════════════════════════
+   Callout 组件（提示/警告框 · warning 变体）
+   ═══════════════════════════════════════════════════════════════ */
+.callout{
+  border-left:3px solid var(--color-signal-red); /* warning：signal-red 边框（C7 信号色） */
+  background:var(--surface);
+  padding:var(--s-md) var(--s-lg);
+  border-radius:0 var(--r-xs) var(--r-xs) 0;
+}
+.callout + .callout{margin-top:var(--s-md)}
+.callout__title{
+  font-family:var(--font-data);font-size:var(--fs-data);
+  font-weight:var(--fw-semibold);
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  color:var(--color-signal-red);
+  margin-bottom:var(--s-sm);
+}
+.callout__body{
+  font-family:var(--font-body);font-size:var(--fs-body);
+  line-height:var(--lh-body);color:var(--text-primary);
+}
+.callout__body strong{font-weight:var(--fw-semibold)}
+.callout__body code{
+  font-family:var(--font-data);font-size:13px;
+  color:var(--color-slate);background:var(--bg-subtle);
+  padding:1px var(--s-xs);border-radius:var(--r-xs);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER · 深色 black 终局（A9 红线）
+   ═══════════════════════════════════════════════════════════════ */
+.footer{
+  background:var(--color-black);
+  color:var(--text-inverse);
+  padding:var(--s-5xl) var(--pad) var(--s-2xl);
+}
+.footer__inner{max-width:var(--c-max);margin:0 auto}
+.footer__top{
+  display:grid;grid-template-columns:1.5fr repeat(3,1fr);
+  gap:var(--s-3xl);padding-bottom:var(--s-3xl);
+  border-bottom:1px solid var(--text-inverse-3);
+}
+.footer__wordmark{
+  font-family:var(--font-display);
+  font-size:clamp(28px,3vw,40px);
+  font-weight:var(--fw-regular);letter-spacing:var(--ls-tight);
+  color:var(--text-inverse);margin-bottom:var(--s-md);
+}
+.footer__tagline{
+  font-family:var(--font-body);font-size:var(--fs-body);
+  line-height:var(--lh-body);color:var(--text-inverse-2);max-width:32ch;
+}
+.footer__col-title{
+  font-family:var(--font-data);font-size:var(--fs-data);
+  font-weight:var(--fw-medium);
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  color:var(--color-moss);
+  display:flex;align-items:center;gap:var(--s-sm);
+  margin-bottom:var(--s-lg);
+}
+.footer__col-title::before{content:'';display:inline-block;width:24px;height:1px;background:var(--color-moss)}
+.footer__links{list-style:none}
+.footer__links li{margin-bottom:var(--s-sm)}
+.footer__links a{
+  font-family:var(--font-body);font-size:var(--fs-body);
+  color:var(--text-inverse-2);text-decoration:none;
+  transition:color var(--dur-base) var(--ease-out);
+}
+.footer__links a:hover{color:var(--link)}        /* C7 blue 仅链接 */
+.footer__bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:var(--s-lg);
+  font-family:var(--font-data);font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);text-transform:uppercase;
+  color:var(--text-inverse-3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   响应式（E3 双断点：1024 平板 / 768 手机）
+   ═══════════════════════════════════════════════════════════════ */
+@media(max-width:1024px){
+  .hero{padding:var(--s-5xl) var(--s-md) var(--s-2xl)}
+  .hero__line{left:var(--s-md);right:var(--s-md)}
+  .section{padding:var(--s-4xl) var(--s-md)}
+  .footer{padding:var(--s-4xl) var(--s-md) var(--s-xl)}
+  .footer__top{grid-template-columns:1fr 1fr;gap:var(--s-xl)}
+  .data-table__wrap{overflow-x:auto}
+}
+@media(max-width:768px){
+  .hero{min-height:auto;padding:var(--s-5xl) var(--s-md) var(--s-2xl)}
+  .hero__watermark{font-size:clamp(120px,40vw,220px);right:var(--s-md);opacity:0.10}
+  .section{padding:var(--s-3xl) var(--s-md)}
+  .data-table thead{display:none}
+  .data-table,.data-table tbody,.data-table tr,.data-table td{display:block;width:100%}
+  .data-table tr{border-top:1px solid var(--border-rest)}
+  .pipeline__step{grid-template-columns:1fr;gap:var(--s-md)}
+  .footer__top{grid-template-columns:1fr;gap:var(--s-xl)}
+  .footer__bottom{flex-direction:column;gap:var(--s-sm);align-items:flex-start}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ ① HERO · Statement（浅底 offwhite · 声明主轴） ═══ -->
+<section class="hero">
+  <div class="hero__watermark">O2</div>
+  <div class="hero__tag">RFC 6749 · Authorization Framework</div>
+  <h1 class="hero__title">OAuth 2.0 认证流程<br><em>最佳实践</em></h1>
+  <p class="hero__sub">面向工程师的授权框架实践指南——从四种授权流程选型到授权码流程的端到端实现，再到安全加固与常见陷阱规避。</p>
+  <div class="hero__meta">
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Spec</div>
+      <div class="hero__meta-value">RFC 6749</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Grants</div>
+      <div class="hero__meta-value">4</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Audience</div>
+      <div class="hero__meta-value">Engineers</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Status</div>
+      <div class="hero__meta-value">v2.1</div>
+    </div>
+  </div>
+  <div class="hero__line"></div>
+</section>
+
+<!-- ═══ ② 什么是 OAuth 2.0（概念建立 · Statement Quote + Code Block 浅底）N3 ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">概念建立 / Foundation</div>
+    <h2 class="section__title">授权，而非认证</h2>
+    <div class="statement-quote__inner" style="margin-bottom:var(--s-3xl)">
+      <div class="statement-quote__mark">"</div>
+      <p class="statement-quote__text">OAuth 2.0 是一个<strong style="font-weight:600">授权框架</strong>，让第三方应用在资源所有者授权下，以受限方式访问其 HTTP 服务——它解决的是"能做什么"，而不是"你是谁"。</p>
+      <p class="statement-quote__source">— RFC 6749, The OAuth 2.0 Authorization Framework</p>
+    </div>
+
+    <p style="font-family:var(--font-body);font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--text-secondary);max-width:var(--c-read);margin-bottom:var(--s-lg)">
+      一次授权码流程以一个<strong style="font-weight:600;color:var(--text-primary)">重定向请求</strong>开始：客户端把用户引导到授权服务器的 <code style="font-family:var(--font-data);color:var(--color-slate)">/authorize</code> 端点，附带客户端凭证与请求范围。下面的请求展示了一次最小化的授权请求。
+    </p>
+
+    <!-- Code Block · 浅底变体 · 授权请求示例 -->
+    <div class="code-block code-block--light">
+      <div class="code-block__head">
+        <span class="code-block__dot--ok"></span>
+        <span class="code-block__file">authorize-request.http</span>
+      </div>
+      <pre class="code-block__body"><code><span class="tok--mt">GET</span> /authorize?response_type=<span class="tok--str">code</span>
+  &amp;client_id=<span class="tok--str">s6BhdRkqt3</span>
+  &amp;state=<span class="tok--str">xyz123</span>
+  &amp;redirect_uri=<span class="tok--str">https://app.example.com/cb</span>
+  &amp;scope=<span class="tok--str">read write</span> <span class="tok--cm">HTTP/1.1</span>
+<span class="tok--kw">Host</span>: auth.example.com</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ③ 4 种授权流程对比（cream · Data Table） ═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">流程选型 / Grant Selection</div>
+    <h2 class="section__title">四种授权流程对比</h2>
+    <p class="section__desc">RFC 6749 定义了四种授权类型，各自面向不同的客户端类型与信任边界。选型不当是 OAuth 实现中最常见的安全根因。</p>
+
+    <div class="data-table__wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>授权流程</th>
+            <th>安全性</th>
+            <th>适用场景</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="data-table__name">Authorization Code <code>code</code></span></td>
+            <td>高 · 双步骤隔离凭证</td>
+            <td>Web 应用、移动端、SPA（配 PKCE）</td>
+            <td><span class="tag tag--rec">推荐</span></td>
+          </tr>
+          <tr>
+            <td><span class="data-table__name">Implicit <code>token</code></span></td>
+            <td>低 · Token 经前端返回</td>
+            <td>历史上面向纯前端 SPA</td>
+            <td><span class="tag tag--dep">废弃</span></td>
+          </tr>
+          <tr>
+            <td><span class="data-table__name">Password <code>password</code></span></td>
+            <td>中 · 客户端接触密码</td>
+            <td>自有可信应用、迁移期</td>
+            <td><span class="tag tag--lim">受限</span></td>
+          </tr>
+          <tr>
+            <td><span class="data-table__name">Client Credentials <code>client_credentials</code></span></td>
+            <td>高 · 机器对机器</td>
+            <td>服务间调用、后台任务</td>
+            <td><span class="tag tag--rec">推荐</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ④ 授权码流程详解（dark charcoal · Pipeline + Code Block 深底） ═══ -->
+<section class="section section--dark">
+  <div class="section__inner">
+    <div class="section__tag">授权码流程 / Authorization Code Flow</div>
+    <h2 class="section__title">端到端五步实现</h2>
+    <p class="section__desc">授权码流程通过"前端拿码、后端换令"的双步骤设计，把访问令牌隔离在不暴露给浏览器的后端通道中，是当前所有新实现的事实标准。</p>
+
+    <!-- Pipeline · 五步骤栈 -->
+    <div class="pipeline__list" style="margin-bottom:var(--s-3xl)">
+      <div class="pipeline__step">
+        <div class="pipeline__num">01</div>
+        <div class="pipeline__body">
+          <h3 class="pipeline__title">用户重定向</h3>
+          <p class="pipeline__desc">客户端把用户浏览器重定向到授权端点 <code style="font-family:var(--font-data)">/authorize</code>，携带 <code style="font-family:var(--font-data)">client_id</code>、<code style="font-family:var(--font-data)">redirect_uri</code>、<code style="font-family:var(--font-data)">state</code> 与请求的 <code style="font-family:var(--font-data)">scope</code>。</p>
+        </div>
+      </div>
+      <div class="pipeline__step">
+        <div class="pipeline__num">02</div>
+        <div class="pipeline__body">
+          <h3 class="pipeline__title">用户授权</h3>
+          <p class="pipeline__desc">授权服务器向用户展示同意页，用户登录并明确批准客户端请求的访问范围。授权服务器记录该授权决定。</p>
+        </div>
+      </div>
+      <div class="pipeline__step">
+        <div class="pipeline__num">03</div>
+        <div class="pipeline__body">
+          <h3 class="pipeline__title">回调携带 code</h3>
+          <p class="pipeline__desc">授权服务器把用户重定向回 <code style="font-family:var(--font-data)">redirect_uri</code>，并在 query 中附带短时效的 <code style="font-family:var(--font-data)">code</code> 与原样回传的 <code style="font-family:var(--font-data)">state</code>（防 CSRF）。</p>
+        </div>
+      </div>
+      <div class="pipeline__step">
+        <div class="pipeline__num">04</div>
+        <div class="pipeline__body">
+          <h3 class="pipeline__title">用 code 换 token</h3>
+          <p class="pipeline__desc">客户端后端用 <code style="font-family:var(--font-data)">code</code> + <code style="font-family:var(--font-data)">client_secret</code>（机密客户端）向 <code style="font-family:var(--font-data)">/token</code> 端点换取访问令牌。此步在后端完成，secret 不暴露给前端。</p>
+        </div>
+      </div>
+      <div class="pipeline__step">
+        <div class="pipeline__num">05</div>
+        <div class="pipeline__body">
+          <h3 class="pipeline__title">用 token 访问资源</h3>
+          <p class="pipeline__desc">客户端携带 <code style="font-family:var(--font-data)">Bearer</code> 令牌访问受保护资源服务器，资源服务器校验令牌的有效性与作用域后返回数据。</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-family:var(--font-body);font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--text-inverse-2);max-width:var(--c-read);margin-bottom:var(--s-lg)">
+      第四步是整个流程的安全核心——后端到后端的令牌交换请求如下：
+    </p>
+
+    <!-- Code Block · 深底变体 · Token 交换示例 -->
+    <div class="code-block code-block--dark">
+      <div class="code-block__head">
+        <span class="code-block__dot--ok"></span>
+        <span class="code-block__file">token-exchange.http</span>
+      </div>
+      <pre class="code-block__body"><code><span class="tok--mt">POST</span> /oauth/token <span class="tok--cm">HTTP/1.1</span>
+<span class="tok--kw">Host</span>: auth.example.com
+<span class="tok--kw">Content-Type</span>: application/x-www-form-urlencoded
+
+grant_type=<span class="tok--str">authorization_code</span>
+&amp;code=<span class="tok--str">SplxlOBeZQQYbYS6WxSbIA</span>
+&amp;redirect_uri=<span class="tok--str">https://app.example.com/cb</span>
+&amp;client_id=<span class="tok--str">s6BhdRkqt3</span>
+&amp;client_secret=<span class="tok--str">dCvG9Kx3rF2nQp8</span> <span class="tok--cm"># 后端持有</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ⑤ 安全最佳实践（offwhite · Checklist do/don't） ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">安全加固 / Hardening</div>
+    <h2 class="section__title">七条工程纪律</h2>
+    <p class="section__desc">以下清单覆盖 OAuth 2.0 实现中最高频的安全失分点。每一条都对应一个真实出现过的事故模式。</p>
+
+    <div class="checklist">
+      <div class="checklist__title">交付前自检清单</div>
+
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--do"></div>
+        <span class="checklist__sign checklist__sign--do">Do</span>
+        <span class="checklist__text"><strong>始终校验 <code style="font-family:var(--font-data);color:var(--color-slate)">state</code> 参数</strong>，用不可预测的随机值绑定会话，防 CSRF 攻击。</span>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--do"></div>
+        <span class="checklist__sign checklist__sign--do">Do</span>
+        <span class="checklist__text"><strong>公开客户端强制启用 PKCE</strong>（RFC 7636），用 <code style="font-family:var(--font-data);color:var(--color-slate)">code_verifier</code> / <code style="font-family:var(--font-data);color:var(--color-slate)">code_challenge</code> 替代 client_secret。</span>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--do"></div>
+        <span class="checklist__sign checklist__sign--do">Do</span>
+        <span class="checklist__text"><strong>令牌存储在后端 + HttpOnly Cookie</strong>，绝不在 localStorage 或可被 JS 读取的位置持久化访问令牌。</span>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--do"></div>
+        <span class="checklist__sign checklist__sign--do">Do</span>
+        <span class="checklist__text"><strong>严格匹配 <code style="font-family:var(--font-data);color:var(--color-slate)">redirect_uri</code></strong>，逐字节比较而非前缀/子串匹配，防止开放重定向劫持。</span>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--dont"></div>
+        <span class="checklist__sign checklist__sign--dont">Don't</span>
+        <span class="checklist__text"><strong>不要使用 Implicit 流</strong>，令牌经 URL 片段返回会泄露到浏览器历史与 Referer 头，OAuth 2.1 已废弃该流程。</span>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--dont"></div>
+        <span class="checklist__sign checklist__sign--dont">Don't</span>
+        <span class="checklist__text"><strong>不要把 <code style="font-family:var(--font-data);color:var(--color-slate)">client_secret</code> 放进前端</strong>，SPA / 移动端属于"公开客户端"，无法安全保管机密。</span>
+      </div>
+
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--dont"></div>
+        <span class="checklist__sign checklist__sign--dont">Don't</span>
+        <span class="checklist__text"><strong>不要请求过宽的 scope</strong>，遵循最小权限原则——过宽的授权范围会放大令牌泄露后的爆炸半径。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ⑥ 常见陷阱（cream · Callout 警告 ×3） ═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">常见陷阱 / Pitfalls</div>
+    <h2 class="section__title">三个高频事故模式</h2>
+    <p class="section__desc">以下陷阱都不违反协议本身，但实现疏忽会让一个"合规"的 OAuth 集成变成攻击面。</p>
+
+    <div class="callout">
+      <div class="callout__title">⚠ 陷阱 01 · Redirect URI 松散匹配</div>
+      <div class="callout__body">用 <code>startsWith</code> 或正则匹配 <code>redirect_uri</code> 是经典漏洞。攻击者注册 <code>https://app.example.com.attacker.com/cb</code> 即可接收授权码。必须<strong>全等比较</strong>，并维护已注册 URI 的精确白名单。</div>
+    </div>
+
+    <div class="callout">
+      <div class="callout__title">⚠ 陷阱 02 · Token 经 URL 泄露</div>
+      <div class="callout__body">Implicit 流把令牌放在 URL 片段（<code>#access_token=...</code>），会写入浏览器历史、通过 Referer 头外泄给第三方资源、被浏览器扩展读取。这正是它被 OAuth 2.1 废弃的根本原因——改用授权码 + PKCE。</div>
+    </div>
+
+    <div class="callout">
+      <div class="callout__title">⚠ 陷阱 03 · 把 OAuth 当登录认证</div>
+      <div class="callout__body">OAuth 解决的是<strong>授权</strong>（能做什么），不是<strong>认证</strong>（你是谁）。把 access_token 当作登录凭证会导致令牌窃取即账号接管。需要"登录"语义时使用 OpenID Connect，它在上层提供 <code>id_token</code> 承载用户身份断言。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ⑦ FOOTER · 深色 black 终局 ═══ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div class="footer__wordmark">OAuth Reference</div>
+        <p class="footer__tagline">面向工程师的授权框架实践指南——选型、实现、加固、规避。</p>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Specifications</div>
+        <ul class="footer__links">
+          <li><a href="#">RFC 6749 · Core</a></li>
+          <li><a href="#">RFC 7636 · PKCE</a></li>
+          <li><a href="#">RFC 6750 · Bearer</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Topics</div>
+        <ul class="footer__links">
+          <li><a href="#">授权码流程</a></li>
+          <li><a href="#">安全最佳实践</a></li>
+          <li><a href="#">OAuth 2.1 草案</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Resources</div>
+        <ul class="footer__links">
+          <li><a href="#">OpenID Connect</a></li>
+          <li><a href="#">OWASP Cheat Sheet</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 OAuth Reference</span>
+      <span>Technical Content · Haglöfs Paradigm</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
