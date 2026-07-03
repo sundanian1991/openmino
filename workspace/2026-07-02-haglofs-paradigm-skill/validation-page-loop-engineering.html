@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loop Engineering 深度解析 · AI 自主高效工作</title>
+
+<!-- 字体配方：四字体（Playfair 标题/装饰 · Inter 正文 · JetBrains Mono 标签 · Doto 装饰预留） -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Doto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     TOKEN ROOT · 内联真源（E1 规则：交付页必须内联 :root，不能 link）
+     来源：nian-design token-root.css —— 唯一色值/字体/间距真源
+     ═══════════════════════════════════════════════════════════ */
+  :root{
+    /* ─── Surface 中性阶梯 ──── */
+    --color-white:#FFFFFF; --color-offwhite:#F5F3EF; --color-cream:#E8E4DD;
+    --color-sand:#C4B8A8; --color-stone:#8A7D6E; --color-charcoal:#2D2A26; --color-black:#1A1816;
+    /* ─── Brand 品牌色 ──── */
+    --color-forest:#4A6741; --color-moss:#7A9B6D; --color-slate:#5B6B7A; --color-steel:#7A8B9B;
+    /* ─── Signal 信号色 ──── */
+    --color-signal-red:#E8453C; --color-signal-orange:#E87A3C; --color-signal-yellow:#E8B83C; --color-signal-blue:#3C7AE8;
+    /* ─── 意图别名（施工优先） ──── */
+    --bg-page:var(--color-offwhite); --bg-card:var(--color-white); --bg-subtle:var(--color-cream);
+    --bg-hover:var(--color-cream); --bg-active:var(--color-sand); --bg-inverse:var(--color-black);
+    --border-rest:var(--color-sand); --border-hover:var(--color-stone);
+    --text-display:var(--color-black); --text-primary:var(--color-charcoal); --text-secondary:var(--color-stone);
+    --text-decorative:#B5AC9D; --text-disabled:var(--color-stone);
+    --text-inverse:var(--color-offwhite); --text-inverse-2:rgba(255,255,255,.5); --text-inverse-3:rgba(255,255,255,.3);
+    --primary:var(--color-forest); --primary-2:var(--color-moss); --accent:var(--color-signal-orange);
+    --link:var(--color-signal-blue);
+    /* ─── Font ──── */
+    --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
+    --font-decorative:'Doto','JetBrains Mono',monospace;
+    --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+    --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+    /* ─── Type Scale ──── */
+    --fs-deco:clamp(120px,16vw,200px); --fs-display:clamp(56px,8vw,96px);
+    --fs-h1:clamp(36px,5vw,56px); --fs-h2:clamp(24px,3vw,32px); --fs-h3:18px;
+    --fs-body-lg:15px; --fs-body:14px; --fs-caption:12px; --fs-data:11px;
+    --fw-light:300; --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+    --lh-tight:1.1; --lh-snug:1.3; --lh-body:1.65; --lh-read:1.75; --lh-data:1.4;
+    --ls-tight:-0.02em; --ls-normal:0; --ls-wide:0.06em; --ls-wider:0.2em;
+    /* ─── Radius ──── */
+    --r-0:0; --r-xs:2px; --r-sm:4px; --r-md:6px; --r-lg:8px; --r-full:999px;
+    /* ─── Spacing（真源梯队 1/2/4/8/16/24/32/48/64/96/120px）──── */
+    --s-3xs:1px; --s-2xs:2px; --s-xs:4px; --s-sm:8px; --s-md:16px; --s-lg:24px;
+    --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px; --s-5xl:120px;
+    --c-max:1120px; --c-read:720px; --pad:32px; --gap:24px; --gap-lg:48px;
+    /* ─── Motion ──── */
+    --ease-out:cubic-bezier(0.16,1,0.3,1);
+    --dur-fast:150ms; --dur-base:250ms; --dur-slow:400ms;
+    --shadow-raised:0 1px 2px rgba(26,24,22,0.04);
+  }
+
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    background:var(--bg-page);
+    color:var(--text-primary);
+    line-height:var(--lh-body);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     HERO · Statement V4（浅底 · 单字母水印 · weight 300 细衬线）
+     ═══════════════════════════════════════════════════════════ */
+  .hero{
+    min-height:100vh;
+    background:var(--color-offwhite);
+    color:var(--text-primary);
+    display:flex;flex-direction:column;justify-content:center;
+    padding:var(--s-5xl) var(--s-4xl) var(--s-3xl);
+    position:relative;overflow:hidden;
+  }
+  .hero__watermark{
+    position:absolute;right:var(--s-4xl);top:50%;transform:translateY(-50%);
+    font-family:var(--font-display);
+    font-size:clamp(200px,25vw,400px);
+    font-weight:var(--fw-light);line-height:1;letter-spacing:-0.06em;
+    color:var(--color-sand);opacity:0.12;
+    pointer-events:none;user-select:none;
+  }
+  .hero__tag{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-forest);
+    display:flex;align-items:center;gap:var(--s-sm);
+    margin-bottom:var(--s-lg);z-index:1;
+  }
+  .hero__tag::before{content:'';display:inline-block;width:24px;height:1px;background:var(--color-forest)}
+  .hero__title{
+    font-family:var(--font-display);
+    font-size:clamp(42px,6vw,80px);
+    font-weight:var(--fw-light);
+    line-height:1.02;letter-spacing:-2px;
+    color:var(--text-display);
+    margin-bottom:var(--s-lg);z-index:1;position:relative;max-width:16ch;
+  }
+  .hero__title em{font-style:italic;font-weight:var(--fw-regular)}
+  .hero__sub{
+    font-family:var(--font-body);font-size:var(--fs-body-lg);
+    line-height:var(--lh-body);color:var(--text-secondary);
+    max-width:560px;z-index:1;position:relative;
+  }
+  .hero__meta{display:flex;gap:var(--s-3xl);margin-top:var(--s-4xl);z-index:1;position:relative;flex-wrap:wrap}
+  .hero__meta-item{display:flex;flex-direction:column}
+  .hero__meta-label{
+    font-family:var(--font-data);font-size:10px;
+    letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary);
+    margin-bottom:var(--s-xs);
+  }
+  .hero__meta-value{font-family:var(--font-display);font-size:24px;color:var(--text-display)}
+  .hero__line{position:absolute;bottom:0;left:var(--s-4xl);right:var(--s-4xl);height:1px;background:var(--border-rest)}
+
+  /* ═══════════════════════════════════════════════════════════
+     SECTION 外壳（96px 基底 padding · 背景色切换 · 单一 1120px）
+     ═══════════════════════════════════════════════════════════ */
+  .section{padding:var(--s-4xl) var(--pad);position:relative}
+  .section__inner{max-width:var(--c-max);margin:0 auto;position:relative}
+  .section--cream{background:var(--bg-subtle)}
+  .section--dark{background:var(--color-charcoal);color:var(--text-inverse)}
+
+  .section__tag{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-forest);
+    display:flex;align-items:center;gap:var(--s-sm);
+    margin-bottom:var(--s-xl);
+  }
+  .section__tag::before{content:'';display:inline-block;width:32px;height:1px;background:var(--color-forest)}
+  .section--dark .section__tag{color:var(--color-moss)}
+  .section--dark .section__tag::before{background:var(--color-moss)}
+
+  .section__title{
+    font-family:var(--font-display);
+    font-size:clamp(32px,4.5vw,48px);
+    font-weight:var(--fw-regular);
+    line-height:var(--lh-tight);letter-spacing:var(--ls-tight);
+    color:var(--text-display);
+    margin-bottom:var(--s-lg);max-width:24ch;
+  }
+  .section--dark .section__title{color:var(--text-inverse)}
+  .section__title strong{font-weight:var(--fw-bold)}
+
+  .section__desc{
+    font-family:var(--font-body);font-size:var(--fs-body-lg);
+    line-height:var(--lh-body);color:var(--text-secondary);
+    max-width:var(--c-read);margin-bottom:var(--s-3xl);
+  }
+  .section--dark .section__desc{color:var(--text-inverse-2)}
+
+  /* ─── Prose 正文排版 ─── */
+  .prose{max-width:var(--c-read)}
+  .prose p{
+    font-family:var(--font-body);font-size:var(--fs-body-lg);
+    line-height:var(--lh-body);color:var(--text-secondary);
+    margin-bottom:var(--s-lg);
+  }
+  .prose p strong{font-weight:var(--fw-semibold);color:var(--color-forest)}
+  .section--dark .prose p{color:var(--text-inverse-2)}
+  .section--dark .prose p strong{color:var(--color-moss)}
+
+  /* ─── Statement Quote（§1 概念建立）────────── */
+  .statement-quote__inner{max-width:800px;margin:0 auto;text-align:center}
+  .statement-quote__mark{
+    font-family:var(--font-display);font-size:72px;line-height:1;
+    color:var(--color-sand);margin-bottom:var(--s-xl);
+  }
+  .statement-quote__text{
+    font-family:var(--font-display);
+    font-size:clamp(24px,3vw,36px);
+    font-weight:var(--fw-light);line-height:1.6;letter-spacing:-0.3px;
+    color:var(--text-primary);margin-bottom:var(--s-lg);
+  }
+  .statement-quote__source{
+    font-family:var(--font-body);font-size:13px;color:var(--text-secondary);
+    line-height:var(--lh-body);
+  }
+  .statement-quote__source strong{font-weight:var(--fw-semibold);color:var(--text-primary)}
+  .statement-quote__list{
+    list-style:none;text-align:left;max-width:560px;margin:var(--s-2xl) auto 0;
+  }
+  .statement-quote__list li{
+    font-family:var(--font-body);font-size:var(--fs-body-lg);
+    line-height:var(--lh-body);color:var(--text-secondary);
+    padding:var(--s-md) 0 var(--s-md) var(--s-xl);position:relative;
+    border-top:1px solid var(--border-rest);
+  }
+  .statement-quote__list li:last-child{border-bottom:1px solid var(--border-rest)}
+  .statement-quote__list li::before{
+    content:'—';position:absolute;left:0;top:var(--s-md);
+    font-family:var(--font-data);color:var(--color-forest);
+  }
+  .statement-quote__list li strong{font-weight:var(--fw-semibold);color:var(--text-primary)}
+
+  /* ─── Data Table（§2 §4）────────── */
+  .table-wrap{border:1px solid var(--border-rest);overflow:hidden;border-radius:var(--r-sm)}
+  .data-table{width:100%;border-collapse:collapse}
+  .data-table thead th{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-secondary);
+    background:var(--color-cream);
+    padding:var(--s-md) var(--s-lg);text-align:left;
+    vertical-align:top;
+  }
+  .data-table tbody td{
+    font-family:var(--font-body);font-size:var(--fs-body);
+    line-height:var(--lh-body);color:var(--text-primary);
+    padding:var(--s-lg);vertical-align:top;
+    border-top:1px solid var(--border-rest);
+  }
+  .data-table tbody tr:hover td{background:var(--bg-hover)}
+  .data-table tbody td strong{font-weight:var(--fw-semibold);color:var(--text-primary)}
+  .data-table tbody td[data-label]{position:relative}
+  .data-table__row-label{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-moss);display:block;margin-bottom:var(--s-xs);
+  }
+  .data-table td p{color:var(--text-secondary);font-size:var(--fs-body);line-height:var(--lh-body)}
+
+  /* ─── Pipeline（§3 深底 charcoal）────────── */
+  .pipeline{position:relative}
+  .pipeline__steps{counter-reset:pipe}
+  .pipeline__step{
+    display:grid;grid-template-columns:96px 1fr;gap:var(--s-xl);
+    padding:var(--s-xl) 0;border-top:1px solid var(--text-inverse-3);
+  }
+  .pipeline__step:first-child{border-top:none;padding-top:0}
+  .pipeline__num{
+    font-family:var(--font-display);
+    font-size:clamp(48px,5vw,72px);
+    font-weight:var(--fw-light);line-height:1;
+    color:var(--text-inverse-3);
+  }
+  .pipeline__body{padding-top:var(--s-xs)}
+  .pipeline__step-title{
+    font-family:var(--font-display);
+    font-size:clamp(20px,2vw,28px);
+    font-weight:var(--fw-regular);
+    line-height:var(--lh-snug);letter-spacing:var(--ls-tight);
+    color:var(--text-inverse);margin-bottom:var(--s-sm);
+  }
+  .pipeline__step-desc{
+    font-family:var(--font-body);font-size:var(--fs-body);
+    line-height:var(--lh-body);color:var(--text-inverse-2);
+    max-width:60ch;
+  }
+  .pipeline__insight{
+    margin-top:var(--s-3xl);padding:var(--s-2xl) var(--s-2xl);
+    border:1px solid var(--text-inverse-3);
+    background:rgba(255,255,255,0.02);
+  }
+  .pipeline__insight-tag{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-moss);margin-bottom:var(--s-md);
+  }
+  .pipeline__insight-text{
+    font-family:var(--font-display);
+    font-size:clamp(20px,2.4vw,30px);
+    font-weight:var(--fw-light);line-height:1.4;letter-spacing:var(--ls-tight);
+    color:var(--text-inverse);
+  }
+  .pipeline__insight-text strong{font-weight:var(--fw-semibold);color:var(--color-moss)}
+
+  /* ─── Tension Grid（§5 两类命令）────────── */
+  .tension-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;
+    border-top:1px solid var(--border-rest);
+  }
+  .tension-item{
+    padding:var(--s-3xl) var(--s-2xl);
+    border-bottom:1px solid var(--border-rest);
+    border-right:1px solid var(--border-rest);
+    display:flex;flex-direction:column;
+  }
+  .tension-item:last-child{border-right:none}
+  .tension-item__cmd{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-moss);margin-bottom:var(--s-md);
+    display:flex;align-items:center;gap:var(--s-sm);
+  }
+  .tension-item__cmd::before{
+    content:'';display:inline-block;width:32px;height:1px;background:var(--color-moss);
+  }
+  .tension-item__title{
+    font-family:var(--font-display);
+    font-size:clamp(24px,2.5vw,32px);
+    font-weight:var(--fw-regular);
+    line-height:var(--lh-snug);letter-spacing:var(--ls-tight);
+    color:var(--text-primary);margin-bottom:var(--s-md);
+  }
+  .tension-item__title strong{font-weight:var(--fw-semibold);color:var(--text-primary)}
+  .tension-item__desc{
+    font-family:var(--font-body);font-size:var(--fs-body);
+    line-height:var(--lh-body);color:var(--text-secondary);
+    margin-bottom:var(--s-lg);
+  }
+  .tension-item__meta{
+    margin-top:auto;padding-top:var(--s-md);
+    border-top:1px solid var(--border-rest);
+  }
+  .tension-item__meta-label{
+    font-family:var(--font-data);font-size:10px;
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-secondary);margin-bottom:var(--s-xs);
+  }
+  .tension-item__meta-text{
+    font-family:var(--font-body);font-size:13px;
+    line-height:var(--lh-body);color:var(--text-primary);
+  }
+
+  /* ─── Tension Prose + 代码块（§6 Charter）────────── */
+  .charter-block{
+    margin-top:var(--s-2xl);
+    background:var(--color-cream);
+    border-radius:var(--r-sm);
+    overflow:hidden;
+  }
+  .charter-block__head{
+    padding:var(--s-md) var(--s-lg);
+    border-bottom:1px solid var(--border-rest);
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--color-charcoal);
+  }
+  .charter-block__filename{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-inverse);
+    display:flex;align-items:center;gap:var(--s-sm);
+  }
+  .charter-block__filename::before{
+    content:'';display:inline-block;width:8px;height:8px;border-radius:var(--r-full);background:var(--color-moss);
+  }
+  .charter-block__tag{
+    font-family:var(--font-data);font-size:10px;
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-inverse-2);
+  }
+  .charter-block__body{
+    padding:var(--s-2xl) var(--s-2xl);
+    font-family:var(--font-data);font-size:13px;
+    line-height:var(--lh-data);color:var(--text-primary);
+    overflow-x:auto;
+  }
+  .charter-block__body .c-comment{color:var(--text-secondary);font-style:italic}
+  .charter-block__body .c-key{color:var(--color-slate);font-weight:var(--fw-medium)}
+  .charter-block__body .c-val{color:var(--text-primary)}
+  .charter-block__body .c-sep{color:var(--color-sand);display:block;height:var(--s-sm)}
+
+  /* ─── Checklist（§7）────────── */
+  .checklist{
+    background:var(--color-cream);border-radius:var(--r-sm);
+    padding:var(--s-3xl) var(--s-2xl);
+  }
+  .checklist__title{
+    font-family:var(--font-display);
+    font-size:clamp(20px,2vw,28px);
+    font-weight:var(--fw-regular);
+    line-height:var(--lh-snug);letter-spacing:var(--ls-tight);
+    color:var(--text-primary);margin-bottom:var(--s-xl);
+  }
+  .checklist__item{
+    display:grid;grid-template-columns:24px 1fr;gap:var(--s-md);
+    padding:var(--s-md) 0;border-bottom:1px solid var(--border-rest);
+  }
+  .checklist__item:last-child{border-bottom:none}
+  .checklist__box{
+    width:16px;height:16px;border:1.5px solid var(--color-stone);
+    border-radius:var(--r-xs);margin-top:2px;position:relative;
+  }
+  .checklist__box--no{border-color:var(--color-signal-red)}
+  .checklist__box--no::after{
+    content:'';position:absolute;top:50%;left:50%;
+    width:8px;height:1.5px;background:var(--color-signal-red);
+    transform:translate(-50%,-50%) rotate(-45deg);
+  }
+  .checklist__box--no::before{
+    content:'';position:absolute;top:50%;left:50%;
+    width:8px;height:1.5px;background:var(--color-signal-red);
+    transform:translate(-50%,-50%) rotate(45deg);
+  }
+  .checklist__body{display:flex;flex-direction:column;gap:var(--s-xs)}
+  .checklist__text{
+    font-family:var(--font-body);font-size:var(--fs-body-lg);
+    line-height:var(--lh-body);color:var(--text-primary);
+  }
+  .checklist__text strong{font-weight:var(--fw-semibold);color:var(--text-primary)}
+  .checklist__sub{
+    font-family:var(--font-body);font-size:13px;
+    line-height:var(--lh-body);color:var(--text-secondary);
+  }
+
+  /* ─── Callout（§7 行动建议）────────── */
+  .callout{
+    margin-top:var(--s-2xl);
+    border-left:2px solid var(--color-forest);
+    background:var(--bg-subtle);
+    padding:var(--s-md) var(--s-lg);
+  }
+  .callout__title{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-forest);margin-bottom:var(--s-sm);
+  }
+  .callout__body{
+    font-family:var(--font-body);font-size:var(--fs-body);
+    line-height:var(--lh-body);color:var(--text-secondary);
+  }
+  .callout__body strong{font-weight:var(--fw-semibold);color:var(--text-primary)}
+
+  /* ═══════════════════════════════════════════════════════════
+     FOOTER · 深 black 终局（A9）
+     ═══════════════════════════════════════════════════════════ */
+  .footer{
+    background:var(--color-black);color:var(--text-inverse);
+    padding:var(--s-4xl) var(--pad) var(--s-xl);
+  }
+  .footer__inner{max-width:var(--c-max);margin:0 auto}
+  .footer__top{
+    display:grid;grid-template-columns:1.5fr repeat(3,1fr);
+    gap:var(--s-3xl);padding-bottom:var(--s-3xl);
+    border-bottom:1px solid var(--text-inverse-3);
+  }
+  .footer__wordmark{
+    font-family:var(--font-display);
+    font-size:clamp(28px,3vw,40px);
+    font-weight:var(--fw-regular);letter-spacing:var(--ls-tight);
+    color:var(--text-inverse);margin-bottom:var(--s-md);
+  }
+  .footer__tagline{
+    font-family:var(--font-body);font-size:var(--fs-body);
+    line-height:var(--lh-body);color:var(--text-inverse-2);
+    max-width:32ch;
+  }
+  .footer__col-title{
+    font-family:var(--font-data);font-size:var(--fs-data);
+    font-weight:var(--fw-medium);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--color-moss);
+    display:flex;align-items:center;gap:var(--s-sm);
+    margin-bottom:var(--s-lg);
+  }
+  .footer__col-title::before{content:'';display:inline-block;width:24px;height:1px;background:var(--color-moss)}
+  .footer__links{list-style:none}
+  .footer__links li{margin-bottom:var(--s-sm)}
+  .footer__links a{
+    font-family:var(--font-body);font-size:var(--fs-body);
+    color:var(--text-inverse-2);text-decoration:none;
+    transition:color var(--dur-base) var(--ease-out);
+  }
+  .footer__links a:hover{color:var(--link)}
+  .footer__bottom{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:var(--s-lg);
+    font-family:var(--font-data);font-size:var(--fs-data);
+    letter-spacing:var(--ls-wide);text-transform:uppercase;
+    color:var(--text-inverse-3);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     响应式（A12 双断点：1024 平板 / 768 手机）
+     ═══════════════════════════════════════════════════════════ */
+  @media(max-width:1024px){
+    .hero{padding:var(--s-4xl) var(--s-md) var(--s-2xl)}
+    .hero__watermark{right:var(--s-md)}
+    .hero__line{left:var(--s-md);right:var(--s-md)}
+    .hero__meta{gap:var(--s-xl)}
+    .section{padding:var(--s-4xl) var(--s-md)}
+    .data-table thead th{padding:var(--s-sm) var(--s-md)}
+    .data-table tbody td{padding:var(--s-md)}
+    .footer{padding:var(--s-4xl) var(--s-md) var(--s-xl)}
+    .footer__top{grid-template-columns:1fr 1fr;gap:var(--s-xl)}
+  }
+  @media(max-width:768px){
+    .hero{min-height:auto;padding:var(--s-4xl) var(--s-md) var(--s-2xl)}
+    .hero__watermark{font-size:clamp(120px,40vw,220px);right:var(--s-md);opacity:0.10}
+    .section{padding:var(--s-3xl) var(--s-md)}
+    .section__title{font-size:clamp(26px,7vw,36px)}
+    .statement-quote__text{font-size:clamp(20px,5vw,28px)}
+    /* Data Table → 卡片化 */
+    .data-table thead{display:none}
+    .data-table,.data-table tbody,.data-table tr,.data-table td{display:block;width:100%}
+    .data-table tbody tr{border-top:1px solid var(--border-rest)}
+    .data-table tbody td{
+      border-top:none;padding:var(--s-sm) var(--s-md);
+      border-bottom:1px dashed var(--border-rest);
+    }
+    .data-table tbody td:last-child{border-bottom:none}
+    .data-table tbody td::before{
+      content:attr(data-th);display:block;
+      font-family:var(--font-data);font-size:10px;
+      letter-spacing:var(--ls-wide);text-transform:uppercase;
+      color:var(--text-secondary);margin-bottom:var(--s-xs);
+    }
+    .tension-grid{grid-template-columns:1fr}
+    .tension-item{border-right:none}
+    .pipeline__step{grid-template-columns:64px 1fr;gap:var(--s-md)}
+    .charter-block__body{padding:var(--s-md);font-size:12px}
+    .footer__top{grid-template-columns:1fr;gap:var(--s-xl)}
+    .footer__bottom{flex-direction:column;gap:var(--s-sm);align-items:flex-start}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:0.01ms !important;
+      transition-duration:0.01ms !important;
+      scroll-behavior:auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO · Statement V4（浅底 offwhite · 声明主轴）
+     ═══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero__watermark">L</div>
+  <div class="hero__tag">Loop Engineering · Deep Dive</div>
+  <h1 class="hero__title">Loop Engineering<br><em>深度解析</em></h1>
+  <p class="hero__sub">厘清 Prompt、/goal、Loop 与定时任务的核心差异，实现 AI 在你休息时也能自主推进任务。</p>
+  <div class="hero__meta">
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Topic</div>
+      <div class="hero__meta-value">AI Autonomy</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Source</div>
+      <div class="hero__meta-value">Datawhale × Raytar</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Sections</div>
+      <div class="hero__meta-value">07</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">Type</div>
+      <div class="hero__meta-value">Editorial</div>
+    </div>
+  </div>
+  <div class="hero__line"></div>
+</section>
+
+<!-- ═══ §1 概念建立（核心问题）· Statement Quote · 浅 offwhite ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="statement-quote__inner">
+      <div class="section__tag" style="justify-content:center">§ 01 · The Core Question</div>
+      <div class="statement-quote__mark">"</div>
+      <p class="statement-quote__text">Prompting is doing the work. Loop engineering is managing the worker.</p>
+      <p class="statement-quote__source"><strong>Datawhale × Raytar</strong> · Loop Engineering 教程系列</p>
+    </div>
+    <ul class="statement-quote__list">
+      <li>Claude Code 已经内置 <strong>/goal</strong> 指令，为何还要额外学习 Loop 相关内容？</li>
+      <li>Loop 搭配 Prompt 的方案，相比<strong>手动编写脚本 + 定时任务</strong>的组合优势在哪里？</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ §2 案例对比 · Data Table · cream ═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">§ 02 · Case Study</div>
+    <h2 class="section__title">让 Claude 撰写一页 <strong>brief</strong>：两种模式对比</h2>
+    <p class="section__desc">同一任务，不同工作模式，最终效果截然不同。问题不在"能不能生成"，而在"生成的能不能信"。</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>工作模式</th>
+            <th>执行过程</th>
+            <th>最终效果</th>
+            <th>存在的问题</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-th="工作模式"><span class="data-table__row-label">Single Shot</span><strong>单次 Prompt</strong></td>
+            <td data-th="执行过程">直接要求 Claude 输出 brief</td>
+            <td data-th="最终效果">快速生成外观完整、排版干净的内容，末尾附带大量来源链接</td>
+            <td data-th="存在的问题">极易出现"自信式幻觉"：部分来源为编造，链接无法打开，或内容不支撑论断，且 Claude <strong>自身无法察觉错误</strong></td>
+          </tr>
+          <tr>
+            <td data-th="工作模式"><span class="data-table__row-label">Iterative</span><strong>Loop 模式</strong></td>
+            <td data-th="执行过程">设定可衡量标准：每个论断至少 3 个来源，所有链接可打开且内容匹配</td>
+            <td data-th="最终效果">Claude 先生成初稿，随后逐个校验链接，替换无效来源，反复迭代直到所有来源全部合规后才停止</td>
+            <td data-th="存在的问题"><strong>完全规避</strong>单次 Prompt 的隐性幻觉风险，输出结果可信度大幅提升</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §3 5步逻辑 · Pipeline · 深 charcoal（视觉重音）═══ -->
+<section class="section section--dark">
+  <div class="section__inner">
+    <div class="section__tag">§ 03 · The Five Steps</div>
+    <h2 class="section__title">Loop 的核心定义与 <strong>五步逻辑</strong></h2>
+    <p class="section__desc">Loop 本质是一个自动化小系统，它会替代人类反复向 Claude 发起指令，直到目标任务彻底完成。无论复杂度高低，所有 Loop 都遵循 5 个标准执行步骤。</p>
+    <div class="pipeline">
+      <div class="pipeline__steps">
+        <div class="pipeline__step">
+          <div class="pipeline__num">01</div>
+          <div class="pipeline__body">
+            <h3 class="pipeline__step-title">找到工作</h3>
+            <p class="pipeline__step-desc">扫描待处理任务池——未读邮件、待修改文件、失败的测试用例等。Loop 需要知道"去哪里取活"。</p>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">02</div>
+          <div class="pipeline__body">
+            <h3 class="pipeline__step-title">执行任务</h3>
+            <p class="pipeline__step-desc">像人类手动操作一样，逐个处理单个任务。Claude 大模型驱动，实时理解任务语义并产出结果。</p>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">03</div>
+          <div class="pipeline__body">
+            <h3 class="pipeline__step-title">自检校验</h3>
+            <p class="pipeline__step-desc">二次确认任务是"真正完成且结果正确"，而非仅完成生成动作。这是规避幻觉的关键环节。</p>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">04</div>
+          <div class="pipeline__body">
+            <h3 class="pipeline__step-title">状态记忆</h3>
+            <p class="pipeline__step-desc">记录已完成进度，避免重复劳动、防止任务进度丢失。即使中断重启也能精准接续。</p>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">05</div>
+          <div class="pipeline__body">
+            <h3 class="pipeline__step-title">循环迭代</h3>
+            <p class="pipeline__step-desc">重复上述流程，直到所有任务处理完毕，或触发阈值通知用户。Loop 的终点由规则定义，不靠人工盯守。</p>
+          </div>
+        </div>
+      </div>
+      <div class="pipeline__insight">
+        <div class="pipeline__insight-tag">◆ 核心认知差异</div>
+        <p class="pipeline__insight-text">写 Prompt 属于<strong>人类亲自上手</strong>执行任务，而 Loop Engineering 是<strong>对 AI"工人"进行任务管理</strong>。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §4 Loop vs Cron · Data Table · 浅 offwhite ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">§ 04 · Loop vs Cron</div>
+    <h2 class="section__title">Loop 与传统定时任务的 <strong>本质区别</strong></h2>
+    <p class="section__desc">同样"自动执行"，底层逻辑完全不同：Cron 到点跑死脚本，Loop 跑的是能自主判断的大模型。</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>对比维度</th>
+            <th>传统定时任务（Cron Job）</th>
+            <th>Loop 模式</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-th="对比维度"><span class="data-table__row-label">Logic</span><strong>运行逻辑</strong></td>
+            <td data-th="传统定时任务（Cron Job）">到点触发固定脚本，每天执行完全相同的预设步骤</td>
+            <td data-th="Loop 模式">运行 Claude 大模型，实时判断当前场景<strong>动态调整动作</strong></td>
+          </tr>
+          <tr>
+            <td data-th="对比维度"><span class="data-table__row-label">Decision</span><strong>决策能力</strong></td>
+            <td data-th="传统定时任务（Cron Job）">无内置决策者，脚本遇到异常场景无法自主调整</td>
+            <td data-th="Loop 模式">内置决策者，可自主选择下一步：继续执行、重试、撤回操作、停止任务</td>
+          </tr>
+          <tr>
+            <td data-th="对比维度"><span class="data-table__row-label">Flexibility</span><strong>灵活性</strong></td>
+            <td data-th="传统定时任务（Cron Job）">只能处理预设范围内的标准化流程</td>
+            <td data-th="Loop 模式">可应对非预期场景，<strong>自主生成解决方案</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §5 两类命令 · Tension Grid 2×2 · cream ═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">§ 05 · Two Commands</div>
+    <h2 class="section__title">Claude Code 内置 <strong>两类 Loop 命令</strong></h2>
+    <p class="section__desc">/goal 与 /loop，一个面向"有终点的任务"，一个面向"持续盯守的任务"。选错命令，效果天差地别。</p>
+    <div class="tension-grid">
+      <div class="tension-item">
+        <div class="tension-item__cmd">/goal</div>
+        <h3 class="tension-item__title"><strong>有终点的任务</strong></h3>
+        <p class="tension-item__desc">输入指令后描述"完成"的可衡量标准，Claude 多轮迭代工作。每轮结束后由另一个 Claude 实例自检是否达成目标，未达标则补充推进，直到目标完全实现后自动停止。</p>
+        <div class="tension-item__meta">
+          <div class="tension-item__meta-label">典型场景</div>
+          <div class="tension-item__meta-text">撰写合规 brief · 批量修改文件内容</div>
+        </div>
+      </div>
+      <div class="tension-item">
+        <div class="tension-item__cmd">/loop</div>
+        <h3 class="tension-item__title"><strong>持续盯守的任务</strong></h3>
+        <p class="tension-item__desc">适合无明确终点、需要持续盯守的任务。指定检查频率和执行动作后，Claude 按设定节奏重复运行，恢复后通知并停止。</p>
+        <div class="tension-item__meta">
+          <div class="tension-item__meta-label">典型示例</div>
+          <div class="tension-item__meta-text">每 30 分钟检测网站状态 · 每日定时整理收件箱</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §6 Charter 模板 · Tension Prose + 代码块 · 浅 offwhite ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">§ 06 · The Charter</div>
+    <h2 class="section__title">Loop <strong>Charter 模板</strong></h2>
+    <p class="section__desc">针对复杂多步骤任务，通过完整的 Charter（任务宪章）明确所有规则。模板包含 6 段结构，覆盖从目标定义到停止条件的完整闭环。</p>
+    <div class="prose" style="margin-bottom:var(--s-2xl)">
+      <p><strong>LOOP-STATE.md</strong> 是 Loop 的核心支撑文件。它记录全量进度，即使任务中断后重启，也能精准接续之前的工作，无需从零开始。这是 Loop 区别于普通脚本执行的关键所在——它"记得自己做到哪了"。</p>
+    </div>
+    <div class="charter-block">
+      <div class="charter-block__head">
+        <div class="charter-block__filename">LOOP-CHARTER.md</div>
+        <div class="charter-block__tag">Charter Template · 6 Sections</div>
+      </div>
+      <div class="charter-block__body"><span class="c-comment"># You are running as a loop. Follow this charter until the goal is met.</span>
+
+<span class="c-key">## GOAL</span>
+<span class="c-comment"># 最终完成状态——什么算"做完了"</span>
+<span class="c-val">为每个论断提供至少 3 个可打开且内容匹配的来源</span>
+
+<span class="c-sep"></span>
+<span class="c-key">## WHERE THE WORK IS</span>
+<span class="c-comment"># 任务扫描范围——去哪里取活</span>
+<span class="c-val">./drafts/ 目录下所有 .md 文件</span>
+
+<span class="c-sep"></span>
+<span class="c-key">## HOW TO WORK</span>
+<span class="c-comment"># 执行规范——怎么干</span>
+<span class="c-val">逐个文件处理，为每个无来源论断检索合规来源</span>
+
+<span class="c-sep"></span>
+<span class="c-key">## HOW TO CHECK YOURSELF</span>
+<span class="c-comment"># 自检规则——怎么确认做对了</span>
+<span class="c-val">链接可打开 · 内容匹配 · 每论断 ≥3 来源</span>
+
+<span class="c-sep"></span>
+<span class="c-key">## HOW TO REMEMBER</span>
+<span class="c-comment"># 状态记忆——记到哪、怎么记</span>
+<span class="c-val">进度写入 LOOP-STATE.md，含已处理/待处理/替换记录</span>
+
+<span class="c-sep"></span>
+<span class="c-key">## WHEN TO STOP</span>
+<span class="c-comment"># 停止条件——什么时候停</span>
+<span class="c-val">所有文件所有论断全部满足自检标准，写入最终报告后停止</span>
+</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ §7 边界与建议 · Checklist + Callout · 浅 offwhite ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">§ 07 · Boundaries</div>
+    <h2 class="section__title">不适合使用 Loop 的 <strong>三类场景</strong></h2>
+    <p class="section__desc">Loop 不是银弹。以下场景，直接用 Prompt 或脚本反而效率更高、成本更低。</p>
+    <div class="checklist">
+      <h3 class="checklist__title">边界自检</h3>
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--no"></div>
+        <div class="checklist__body">
+          <div class="checklist__text"><strong>一次性简单任务</strong></div>
+          <div class="checklist__sub">仅需要单次答案的场景，直接使用普通 Prompt 效率更高。Loop 的多轮校验对单次任务是过度设计。</div>
+        </div>
+      </div>
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--no"></div>
+        <div class="checklist__body">
+          <div class="checklist__text"><strong>对成本敏感的场景</strong></div>
+          <div class="checklist__sub">带自检、重试逻辑的 Loop 会多次调用 Claude，推高使用成本。预算受限时需谨慎评估投入产出比。</div>
+        </div>
+      </div>
+      <div class="checklist__item">
+        <div class="checklist__box checklist__box--no"></div>
+        <div class="checklist__body">
+          <div class="checklist__text"><strong>目标模糊的任务</strong></div>
+          <div class="checklist__sub">"构思更好的产品策略"这类没有明确可衡量完成标准的任务——Loop 无法判断"做完了"，会陷入空转。</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="callout__title">◆ 行动建议</div>
+      <div class="callout__body">新手入门可从<strong>自己日常手动重复、多步骤易出错、结果可校验</strong>的小任务切入。填入 Charter 模板后，先人工全程观察运行过程，确认流程可靠后再接入定时任务——先验证，再放手。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER · 深 black 终局（A9 红线）
+     ═══════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div class="footer__brand">
+        <div class="footer__wordmark">Loop Engineering</div>
+        <p class="footer__tagline">让 AI 在你休息时也能自主推进任务。Prompting is doing the work; loop engineering is managing the worker.</p>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Topics</div>
+        <ul class="footer__links">
+          <li><a href="#">Prompt vs Loop</a></li>
+          <li><a href="#">/goal Command</a></li>
+          <li><a href="#">/loop Command</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Reference</div>
+        <ul class="footer__links">
+          <li><a href="#">Charter Template</a></li>
+          <li><a href="#">Cron vs Loop</a></li>
+          <li><a href="#">Boundaries</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <div class="footer__col-title">Source</div>
+        <ul class="footer__links">
+          <li><a href="#">Datawhale</a></li>
+          <li><a href="#">Raytar</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 · Editorial Deep Dive</span>
+      <span>Brand Page · Haglöfs Paradigm</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
