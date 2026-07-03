@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OAuth 2.0 认证流程最佳实践 · haglofs-paradigm v2.0 验证 T5b</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   :root · token-root 内联（E1 硬要求 · 交付页必须内联真源）
+   ============================================================ */
+:root {
+  /* ─── Surface 中性阶梯（暖灰）─── */
+  --color-white:     #FFFFFF;
+  --color-offwhite:  #F5F3EF;
+  --color-cream:     #E8E4DD;
+  --color-sand:      #C4B8A8;
+  --color-stone:     #8A7D6E;
+  --color-charcoal:  #2D2A26;
+  --color-black:     #1A1816;
+
+  /* ─── Brand 品牌色 ─── */
+  --color-forest:    #4A6741;
+  --color-moss:      #7A9B6D;
+  --color-slate:     #5B6B7A;
+  --color-steel:     #7A8B9B;
+
+  /* ─── Signal 信号色（≤2 处）─── */
+  --color-signal-red:    #E8453C;
+  --color-signal-orange: #E87A3C;
+  --color-signal-yellow: #E8B83C;
+  --color-signal-blue:   #3C7AE8;
+
+  /* ─── v1.9 浅底品牌软档 ─── */
+  --color-forest-soft: #547444;
+  --color-moss-soft:   #6D845C;
+
+  /* ─── 意图别名层（施工优先用）─── */
+  --bg-page:        var(--color-offwhite);
+  --bg-card:        var(--color-white);
+  --bg-subtle:      var(--color-cream);
+  --bg-hover:       var(--color-cream);
+  --bg-active:      var(--color-sand);
+  --bg-inverse:     var(--color-black);
+
+  --border-rest:    var(--color-sand);
+  --border-hover:   var(--color-stone);
+  --border-strong:  var(--color-stone);
+
+  --text-display:   var(--color-black);
+  --text-primary:   var(--color-charcoal);
+  --text-secondary: var(--color-stone);
+  --text-decorative:#B5AC9D;
+  --text-disabled:  var(--color-stone);
+  --text-inverse:   var(--color-offwhite);
+  --text-inverse-2: rgba(255,255,255,.5);
+  --text-inverse-3: rgba(255,255,255,.3);
+
+  --delta-up:   var(--color-moss);
+  --delta-down: var(--color-signal-red);
+
+  /* ─── Font ─── */
+  --font-display:    'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-decorative: 'Doto', 'JetBrains Mono', monospace;
+  --font-body:       'Inter', -apple-system, 'Helvetica Neue', sans-serif;
+  --font-data:       'JetBrains Mono', 'SF Mono', 'Courier New', monospace;
+
+  /* ─── Type Scale ─── */
+  --fs-deco:    clamp(120px, 16vw, 200px);
+  --fs-display: clamp(56px, 8vw, 96px);
+  --fs-h1:      clamp(36px, 5vw, 56px);
+  --fs-h2:      clamp(24px, 3vw, 32px);
+  --fs-h3:      18px;
+  --fs-body-lg: 15px;
+  --fs-body:    14px;
+  --fs-caption: 12px;
+  --fs-data:    11px;
+
+  --fw-light:300; --fw-regular:400; --fw-medium:500; --fw-semibold:600; --fw-bold:700;
+  --lh-tight:1.1; --lh-snug:1.3; --lh-body:1.65; --lh-read:1.75; --lh-data:1.4;
+  --ls-tight:-0.02em; --ls-normal:0; --ls-wide:0.06em; --ls-wider:0.2em;
+
+  /* ─── Radius ─── */
+  --r-0:0; --r-xs:2px; --r-sm:4px; --r-md:6px; --r-lg:8px; --r-full:999px;
+
+  /* ─── Spacing 真源梯队 ─── */
+  --s-3xs:1px; --s-2xs:2px; --s-xs:4px; --s-sm:8px; --s-md:16px; --s-lg:24px;
+  --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px; --s-5xl:120px;
+
+  --c-max:1120px; --c-read:720px;
+  --pad:32px; --gap:24px; --gap-lg:48px;
+
+  /* ─── Motion ─── */
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --ease-spring:cubic-bezier(0.175,0.885,0.32,1.1);
+  --dur-fast:150ms; --dur-base:250ms; --dur-slow:400ms;
+
+  /* ─── Elevation ─── */
+  --shadow-raised:0 1px 2px rgba(26,24,22,.04);
+  --shadow-popover:0 4px 12px -2px rgba(26,24,22,.08),0 1px 1px rgba(26,24,22,.02);
+  --shadow-modal:0 8px 24px -4px rgba(26,24,22,.12),0 1px 1px rgba(26,24,22,.02);
+
+  --ghost-opacity-light:0.04;
+  --ghost-opacity-dark:0.08;
+
+  /* ═══════════════════════════════════════════════════════════════
+     v2.0 · slate 冷钢暗色变体（T2 科技工程调性）
+     完整覆写 7 变量，避免色温断层（NC-9）
+     ═══════════════════════════════════════════════════════════════ */
+  --dk-charcoal:  #2C3138;
+  --dk-black:     #1A1D22;
+  --dk-subtle:    #232830;
+  --dk-hover:     #2A3038;
+  --dk-border:    #3A4048;
+  --dk-border-h:  #4A5058;
+  --dk-text-sec:  #8A9098;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-primary);
+  background:var(--bg-page);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+::selection{background:var(--color-slate);color:var(--color-offwhite)}
+
+/* ─── 共享：标签前缀线（测绘基准线美学 · 铁律4）─── */
+.section-tag{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:var(--color-slate);   /* 技术段冷调主导（rules-content-types 规则1） */
+  display:flex;align-items:center;gap:var(--s-sm);
+  margin-bottom:var(--s-lg);
+}
+.section-tag::before{
+  content:'';display:block;width:var(--s-2xl);height:var(--s-2xs);
+  background:var(--color-slate);
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:var(--fs-h1);
+  font-weight:var(--fw-regular);
+  line-height:var(--lh-tight);
+  letter-spacing:var(--ls-tight);
+  color:var(--text-display);
+  max-width:820px;
+}
+.section-title strong{font-weight:var(--fw-semibold);color:var(--text-primary)}
+.section-lead{
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-read);
+  color:var(--text-secondary);
+  max-width:640px;
+  margin-top:var(--s-md);
+}
+
+/* ─── Section 外壳（浅 / cream / 深三变体）─── */
+.section{padding:var(--s-5xl) var(--pad)}
+.section--cream{background:var(--bg-subtle)}
+.section--dark{
+  background:var(--dk-charcoal);
+  color:var(--text-inverse);
+}
+.section--dark .section-tag{color:var(--color-steel)}
+.section--dark .section-tag::before{background:var(--color-steel)}
+.section--dark .section-title{color:var(--text-inverse)}
+.section--dark .section-title strong{color:var(--color-offwhite)}
+.section--dark .section-lead{color:var(--text-inverse-2)}
+
+.section-inner{max-width:var(--c-max);margin:0 auto}
+.container{max-width:var(--c-max);margin:0 auto;padding:0 var(--pad)}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO · V3 Split（v1.7 决策树：声明/主张主轴 → V3 Split，非 V4）
+   左浅主张 + 右深块（slate 冷钢），单字母水印 O2 + 点阵
+   ═══════════════════════════════════════════════════════════════ */
+.hero-split{
+  display:grid;
+  grid-template-columns:1.5fr 1fr;
+  min-height:100vh;
+  position:relative;
+  overflow:hidden;
+}
+.hero-left{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--s-5xl) var(--s-4xl);
+  position:relative;
+  background:var(--bg-page);
+}
+.hero-tag{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:var(--color-slate);
+  display:flex;align-items:center;gap:var(--s-sm);
+  margin-bottom:var(--s-2xl);
+}
+.hero-tag::before{content:'';display:block;width:var(--s-2xl);height:var(--s-2xs);background:var(--color-slate)}
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(48px,6.4vw,92px);
+  font-weight:var(--fw-regular);
+  line-height:1.02;
+  letter-spacing:-0.025em;
+  color:var(--text-display);
+  margin-bottom:var(--s-lg);
+}
+.hero-title strong{font-weight:var(--fw-semibold)}
+.hero-desc{
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-read);
+  color:var(--text-secondary);
+  max-width:480px;
+  margin-bottom:var(--s-3xl);
+}
+.hero-meta{
+  display:flex;gap:var(--s-2xl);
+  border-top:var(--s-3xs) solid var(--border-rest);
+  padding-top:var(--s-xl);
+}
+.hero-meta-item .hero-meta-label{
+  font-family:var(--font-data);
+  font-size:10px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-bottom:var(--s-2xs);
+}
+.hero-meta-item .hero-meta-value{
+  font-family:var(--font-data);
+  font-size:var(--fs-h2);
+  font-weight:var(--fw-medium);
+  color:var(--text-primary);
+  letter-spacing:var(--ls-tight);
+}
+/* 左浅底单字母水印 O2 */
+.hero-ghost{
+  position:absolute;
+  right:var(--s-2xl);bottom:var(--s-md);
+  font-family:var(--font-display);
+  font-size:clamp(120px,16vw,240px);
+  font-weight:var(--fw-light);
+  color:var(--color-sand);
+  opacity:0.14;
+  line-height:1;letter-spacing:-0.06em;
+  pointer-events:none;user-select:none;
+}
+/* 右深块（slate 冷钢） */
+.hero-right{
+  background:var(--dk-charcoal);
+  position:relative;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+/* 深块巨字水印 */
+.hero-right__ghost{
+  position:absolute;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--font-display);
+  font-size:clamp(140px,18vw,300px);
+  font-weight:var(--fw-bold);
+  color:var(--text-inverse);
+  opacity:0.06;
+  line-height:0.85;
+  letter-spacing:-0.06em;
+  pointer-events:none;user-select:none;white-space:nowrap;
+}
+/* 点阵网格（5×N 4px 白点 opacity .05） */
+.hero-dots{
+  position:absolute;inset:0;
+  background-image:radial-gradient(circle, var(--text-inverse) 1.5px, transparent 1.5px);
+  background-size:32px 32px;
+  opacity:0.08;
+  pointer-events:none;
+}
+/* 深块内引言符号 */
+.hero-symbol{
+  position:relative;z-index:2;
+  text-align:center;padding:var(--s-xl);
+}
+.hero-symbol__mark{
+  font-family:var(--font-display);
+  font-size:clamp(40px,4vw,64px);
+  font-weight:var(--fw-light);
+  color:var(--color-steel);
+  line-height:1.1;letter-spacing:-0.02em;
+  font-style:italic;
+}
+.hero-symbol__sub{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:var(--text-inverse-2);
+  margin-top:var(--s-md);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   §② 什么是 OAuth 2.0 · 概念建立（Statement Quote + Prose）
+   N3：Hero 后第二段是概念建立，不直接跳数据
+   ═══════════════════════════════════════════════════════════════ */
+.statement-quote{
+  max-width:var(--c-read);
+  margin:0 auto var(--s-3xl);
+  text-align:center;
+  position:relative;
+}
+.statement-quote__mark{
+  font-family:var(--font-display);
+  font-size:clamp(36px,4vw,52px);
+  font-weight:var(--fw-light);
+  font-style:italic;
+  line-height:var(--lh-snug);
+  letter-spacing:var(--ls-tight);
+  color:var(--text-display);
+}
+.statement-quote__mark strong{font-style:normal;font-weight:var(--fw-semibold);color:var(--color-slate)}
+.statement-quote__attr{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-top:var(--s-lg);
+}
+.concept-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--s-2xl);
+  margin-top:var(--s-3xl);
+}
+.concept-card{
+  padding:var(--s-xl);
+  background:var(--bg-card);
+  border:var(--s-3xs) solid var(--border-rest);
+  border-radius:var(--r-sm);
+}
+.concept-card__num{
+  font-family:var(--font-display);
+  font-size:var(--fs-h2);
+  font-weight:var(--fw-regular);
+  color:var(--color-sand);
+  line-height:1;margin-bottom:var(--s-sm);
+}
+.concept-card__h{
+  font-family:var(--font-display);
+  font-size:var(--fs-h3);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+  margin-bottom:var(--s-sm);
+}
+.concept-card__p{
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-secondary);
+}
+.concept-card__code{
+  font-family:var(--font-data);
+  font-size:var(--fs-caption);
+  color:var(--color-slate);
+  background:var(--bg-subtle);
+  padding:var(--s-2xs) var(--s-sm);
+  border-radius:var(--r-xs);
+  margin-top:var(--s-sm);
+  display:inline-block;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   §③ 4 种授权流程对比 · Data Table（v1.9 移动端卡片化）
+   ═══════════════════════════════════════════════════════════════ */
+.data-table-wrap{
+  margin-top:var(--s-3xl);
+  border:var(--s-3xs) solid var(--border-rest);
+  border-radius:var(--r-sm);
+  overflow:hidden;
+}
+.data-table__head{
+  background:var(--bg-subtle);
+  padding:var(--s-md) var(--s-xl);
+  border-bottom:var(--s-3xs) solid var(--border-rest);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.data-table__title{
+  font-family:var(--font-display);
+  font-size:var(--fs-h3);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+}
+.data-table__count{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+}
+.data-table{width:100%;border-collapse:collapse;font-size:var(--fs-body)}
+.data-table thead th{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  text-align:left;
+  padding:var(--s-md) var(--s-xl);
+  background:var(--bg-card);
+  border-bottom:var(--s-3xs) solid var(--border-rest);
+}
+.data-table tbody td{
+  padding:var(--s-md) var(--s-xl);
+  border-bottom:var(--s-3xs) solid var(--border-rest);
+  color:var(--text-primary);
+  vertical-align:top;
+}
+.data-table tbody tr:last-child td{border-bottom:none}
+.data-table tbody tr:hover td{background:var(--bg-hover)}
+.data-table td.name{font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--fw-semibold)}
+.data-table td.flow{font-family:var(--font-data);font-size:var(--fs-caption);color:var(--color-slate)}
+.tag{
+  display:inline-block;
+  font-family:var(--font-data);
+  font-size:10px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  padding:var(--s-2xs) var(--s-sm);
+  border-radius:var(--r-xs);
+  font-weight:var(--fw-medium);
+}
+.tag--rec{background:rgba(90,107,122,.12);color:var(--color-slate);border:var(--s-3xs) solid rgba(90,107,122,.25)}
+.tag--lim{background:var(--bg-subtle);color:var(--text-secondary);border:var(--s-3xs) solid var(--border-rest)}
+
+/* ═══════════════════════════════════════════════════════════════
+   §④ 授权码流程详解 · Code Block (light) + Pipeline
+   技术页深段配额放宽（rules-content-types 规则3）
+   ═══════════════════════════════════════════════════════════════ */
+.flow-intro{
+  max-width:var(--c-read);
+  margin:var(--s-3xl) 0 var(--s-2xl);
+}
+.code-block{
+  border-radius:var(--r-sm);
+  overflow:hidden;
+  margin:var(--s-3xl) 0;
+}
+.code-block__head{
+  background:var(--dk-charcoal);
+  color:var(--text-inverse);
+  padding:var(--s-sm) var(--s-md);
+  font-family:var(--font-data);
+  font-size:var(--fs-caption);
+  display:flex;align-items:center;gap:var(--s-sm);
+}
+.code-block__dot{
+  width:6px;height:6px;border-radius:var(--r-full);
+  display:inline-block;
+}
+.code-block__dot--ok{background:var(--color-moss)}
+.code-block__dot--req{background:var(--color-signal-orange)}
+.code-block__file{letter-spacing:var(--ls-wide)}
+.code-block__lang{
+  margin-left:auto;
+  font-size:10px;color:var(--text-inverse-2);
+  letter-spacing:var(--ls-wide);
+}
+.code-block--light .code-block__body{
+  background:var(--bg-subtle);
+  color:var(--text-primary);
+  padding:var(--s-lg);
+  overflow-x:auto;
+  font-family:var(--font-data);
+  font-size:13px;
+  line-height:var(--lh-data);
+}
+.code-block--light .code-block__body code{white-space:pre}
+.tok--kw{color:var(--color-forest)}
+.tok--cm{color:var(--text-secondary);font-style:italic}
+.tok--str,.tok--val{color:var(--color-slate)}
+.tok--mt{color:var(--color-stone)}
+
+/* Pipeline（流程栈）· 大号步骤编号 + 连接线（v1.9 F2 建议采纳） */
+.pipeline{margin-top:var(--s-2xl);position:relative}
+.pipeline__list{display:flex;flex-direction:column;gap:0}
+.pipeline__step{
+  display:grid;
+  grid-template-columns:64px 1fr;
+  gap:var(--s-xl);
+  padding:var(--s-xl) 0;
+  position:relative;
+  border-bottom:var(--s-3xs) solid var(--dk-border);
+}
+.pipeline__step:last-child{border-bottom:none}
+/* 连接线（左侧竖线 + 节点）· 技术流程递进感 · 对齐 64px 列中心(32px) */
+.pipeline__step::before{
+  content:'';
+  position:absolute;
+  left:32px;top:0;bottom:0;
+  width:var(--s-3xs);
+  background:var(--dk-border);
+}
+.pipeline__step:first-child::before{top:var(--s-lg)}
+.pipeline__step:last-child::before{bottom:auto;height:var(--s-lg)}
+.pipeline__num{
+  font-family:var(--font-display);
+  font-size:var(--fs-display);
+  font-weight:var(--fw-light);
+  line-height:1;
+  color:var(--color-steel);
+  position:relative;z-index:2;
+  text-align:center;
+}
+.pipeline__num::after{
+  content:'';display:block;
+  width:12px;height:12px;
+  background:var(--color-moss);
+  border-radius:var(--r-full);
+  margin:var(--s-sm) auto 0;
+  box-shadow:0 0 0 4px var(--dk-charcoal);
+}
+.pipeline__body{padding-top:var(--s-xs)}
+.pipeline__h{
+  font-family:var(--font-display);
+  font-size:var(--fs-h2);
+  font-weight:var(--fw-regular);
+  color:var(--text-inverse);
+  margin-bottom:var(--s-sm);
+  line-height:var(--lh-snug);
+}
+.pipeline__h strong{font-weight:var(--fw-semibold);color:var(--color-moss)}
+.pipeline__p{
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-inverse-2);
+  max-width:560px;
+}
+.pipeline__endpoint{
+  font-family:var(--font-data);
+  font-size:var(--fs-caption);
+  color:var(--color-steel);
+  margin-top:var(--s-sm);
+  display:inline-block;
+  background:var(--dk-subtle);
+  padding:var(--s-2xs) var(--s-sm);
+  border-radius:var(--r-xs);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   §⑤ 安全性能趋势 · Elevation Profile（v2.0 新组件 · 叙事链第2环）
+   浅底多卡并排 · SVG 面积/折线曲线
+   ═══════════════════════════════════════════════════════════════ */
+.elev-intro{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:var(--s-xl);
+  align-items:end;
+  margin-bottom:var(--s-3xl);
+}
+.elev-summary{
+  font-family:var(--font-data);
+  font-size:var(--fs-caption);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  text-align:right;
+}
+.elev-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--s-lg);
+}
+.elev{
+  padding:var(--s-xl);
+  background:var(--bg-card);
+  border:var(--s-3xs) solid var(--border-rest);
+  border-radius:var(--r-sm);
+  position:relative;
+  overflow:hidden;
+}
+.elev__lbl{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-bottom:var(--s-md);
+}
+.elev__val{
+  font-family:var(--font-data);
+  font-size:clamp(28px,3.2vw,40px);
+  font-weight:var(--fw-semibold);
+  line-height:1;
+  letter-spacing:-0.03em;
+  color:var(--text-primary);
+  margin-bottom:var(--s-lg);
+}
+.elev__val span{font-size:1.25rem;color:var(--text-secondary)}
+.elev__val--down span{color:var(--color-slate)}
+.elev__line{
+  width:100%;
+  height:64px;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:var(--s-sm);
+}
+.elev__line svg{width:100%;height:100%;display:block}
+.elev__ctx{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  color:var(--text-secondary);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   §⑥ 达成度对比 · Seam Benchmark（v2.0 新组件 · 叙事链第4环）
+   cream 底 · 水平条形 + 目标竖线
+   ═══════════════════════════════════════════════════════════════ */
+.seam-head{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:var(--s-xl);
+  align-items:end;
+  margin-bottom:var(--s-lg);
+}
+.seam-legend{
+  display:flex;gap:var(--s-lg);
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+}
+.seam-legend span{display:flex;align-items:center;gap:var(--s-sm)}
+.seam-legend i{
+  display:inline-block;
+  width:16px;height:var(--s-2xs);
+}
+.seam-legend .lg-fill{background:var(--color-forest)}
+.seam-legend .lg-over{background:var(--color-moss)}
+.seam-legend .lg-mark{
+  width:var(--s-2xs);height:16px;
+  background:var(--color-charcoal);opacity:.3;
+}
+.seam__list{
+  display:flex;flex-direction:column;
+  gap:var(--s-md);
+  margin-top:var(--s-2xl);
+}
+.seam-row{
+  display:grid;
+  grid-template-columns:160px 1fr 88px;
+  gap:var(--s-lg);
+  align-items:center;
+  padding:var(--s-md) 0;
+  position:relative;
+}
+.seam-row::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  border-top:var(--s-3xs) dashed var(--border-rest);
+}
+.seam-row:last-child::after{display:none}
+.seam-row__lbl{
+  font-family:var(--font-data);
+  font-size:var(--fs-body);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+  letter-spacing:0.02em;
+}
+.seam-row__track{
+  height:8px;
+  background:var(--bg-subtle);
+  border-radius:var(--r-sm);
+  position:relative;
+  overflow:visible;
+}
+.seam-row__fill{
+  height:100%;
+  border-radius:var(--r-sm);
+  background:var(--color-forest);
+  transition:width 1s var(--ease-out);
+}
+.seam-row__fill--over{background:var(--color-moss)}
+.seam-row__mark{
+  position:absolute;top:-4px;
+  width:var(--s-2xs);height:16px;
+  background:var(--color-charcoal);
+  opacity:.3;
+}
+.seam-row__vals{text-align:right}
+.seam-row__val{
+  font-family:var(--font-data);
+  font-size:var(--fs-body);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+}
+.seam-row__tgt{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  color:var(--text-secondary);
+  margin-top:var(--s-3xs);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   §⑦ 安全最佳实践 · Checklist（行动建议 · 叙事链第5环代理）
+   ═══════════════════════════════════════════════════════════════ */
+.checklist{
+  background:var(--bg-subtle);
+  padding:var(--s-2xl);
+  border-radius:var(--r-sm);
+  margin-top:var(--s-3xl);
+}
+.checklist__title{
+  font-family:var(--font-display);
+  font-size:var(--fs-h2);
+  font-weight:var(--fw-regular);
+  color:var(--text-primary);
+  margin-bottom:var(--s-xl);
+}
+.checklist__list{display:flex;flex-direction:column}
+.checklist__item{
+  display:flex;align-items:flex-start;gap:var(--s-md);
+  padding:var(--s-md) 0;
+  border-bottom:var(--s-3xs) solid var(--border-rest);
+}
+.checklist__item:last-child{border-bottom:none}
+.checklist__box{
+  flex-shrink:0;
+  width:16px;height:16px;
+  border:1.5px solid var(--color-stone);
+  border-radius:var(--r-xs);
+  margin-top:var(--s-2xs);
+  position:relative;
+}
+.checklist__box--do::after{
+  content:'';position:absolute;
+  top:4px;left:4px;width:8px;height:8px;
+  background:var(--color-forest);
+  border-radius:var(--s-3xs);
+}
+.checklist__item-text{
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-body);
+  color:var(--text-primary);
+}
+.checklist__item-text strong{font-weight:var(--fw-semibold)}
+.checklist__item-text code{
+  font-family:var(--font-data);
+  font-size:var(--fs-caption);
+  background:var(--bg-card);
+  padding:var(--s-2xs) var(--s-sm);
+  border-radius:var(--r-xs);
+  color:var(--color-slate);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   §⑧ 常见陷阱 · Callout 簇（叙事链第6环 · 发现总结）
+   CP3：连续堆叠 ≤3，跟在数据组件后
+   ═══════════════════════════════════════════════════════════════ */
+.callout-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:var(--s-lg);
+  margin-top:var(--s-3xl);
+}
+.callout{
+  border-left:2px solid var(--color-slate);
+  background:var(--bg-card);
+  padding:var(--s-md) var(--s-lg);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+}
+.callout--warn{border-left-color:var(--color-signal-red)}
+.callout__tag{
+  font-family:var(--font-data);
+  font-size:10px;
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:var(--color-slate);
+  margin-bottom:var(--s-sm);
+}
+.callout--warn .callout__tag{color:var(--color-signal-red)}
+.callout__h{
+  font-family:var(--font-display);
+  font-size:var(--fs-h3);
+  font-weight:var(--fw-semibold);
+  color:var(--text-primary);
+  margin-bottom:var(--s-sm);
+  line-height:var(--lh-snug);
+}
+.callout__body{
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-secondary);
+}
+.callout__body code{
+  font-family:var(--font-data);
+  font-size:var(--fs-caption);
+  color:var(--color-slate);
+  background:var(--bg-subtle);
+  padding:var(--s-2xs) var(--s-sm);
+  border-radius:var(--r-xs);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER · 深色 black 收尾（N5）
+   ═══════════════════════════════════════════════════════════════ */
+.footer{
+  background:var(--dk-black);
+  color:var(--text-inverse);
+  padding:var(--s-4xl) var(--pad) var(--s-3xl);
+}
+.footer__inner{
+  max-width:var(--c-max);margin:0 auto;
+  display:grid;
+  grid-template-columns:1.5fr 1fr 1fr;
+  gap:var(--s-2xl);
+}
+.footer__brand .footer__mark{
+  font-family:var(--font-display);
+  font-size:var(--fs-h2);
+  font-weight:var(--fw-regular);
+  letter-spacing:var(--ls-tight);
+  margin-bottom:var(--s-md);
+}
+.footer__brand .footer__desc{
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-inverse-2);
+  max-width:360px;
+}
+.footer__col-h{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:var(--text-inverse-3);
+  margin-bottom:var(--s-md);
+}
+.footer__list{list-style:none;display:flex;flex-direction:column;gap:var(--s-sm)}
+.footer__list a{
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  color:var(--text-inverse-2);
+  text-decoration:none;
+  transition:color var(--dur-base) var(--ease-out);
+}
+.footer__list a:hover{color:var(--color-signal-blue)}
+.footer__bottom{
+  max-width:var(--c-max);margin:var(--s-3xl) auto 0;
+  padding-top:var(--s-xl);
+  border-top:var(--s-3xs) solid var(--dk-border);
+  display:flex;justify-content:space-between;
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  color:var(--text-inverse-3);
+}
+
+/* ============================================================
+   响应式（E3 · 双断点 1024 / 768）
+   ============================================================ */
+@media(max-width:1024px){
+  .hero-split{grid-template-columns:1fr;min-height:auto}
+  .hero-left{padding:var(--s-4xl) var(--s-lg);min-height:60vh}
+  .hero-right{min-height:40vh}
+  .concept-grid{grid-template-columns:repeat(2,1fr)}
+  .elev-grid{grid-template-columns:1fr}
+  .footer__inner{grid-template-columns:1fr;gap:var(--s-xl)}
+}
+@media(max-width:768px){
+  :root{--pad:var(--s-lg)}
+  .section{padding:var(--s-3xl) var(--pad)}
+  .hero-left{padding:var(--s-3xl) var(--s-lg)}
+  .hero-meta{flex-wrap:wrap;gap:var(--s-lg)}
+  .concept-grid{grid-template-columns:1fr}
+  .callout-grid{grid-template-columns:1fr}
+  .pipeline__step{grid-template-columns:56px 1fr;gap:var(--s-md)}
+  .pipeline__num{font-size:clamp(40px,10vw,56px)}
+  /* Data Table 卡片化（v1.9 NC-5） */
+  .data-table thead{display:none}
+  .data-table,.data-table tbody,.data-table tr,.data-table td{display:block}
+  .data-table tbody tr{
+    border:var(--s-3xs) solid var(--border-rest);
+    border-radius:var(--r-sm);
+    margin-bottom:var(--s-md);
+    padding:var(--s-md);
+  }
+  .data-table td{
+    display:flex;justify-content:space-between;
+    padding:var(--s-xs) 0;border:none;align-items:center;gap:var(--s-lg);
+  }
+  .data-table td::before{
+    content:attr(data-label);
+    font-family:var(--font-data);
+    font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--text-secondary);
+  }
+  /* Seam 移动端塌缩 */
+  .seam-row{grid-template-columns:1fr;gap:var(--s-md)}
+  .seam-row__vals{text-align:left}
+  .seam-row__lbl{font-size:var(--fs-body-lg)}
+  /* Elev 移动端 */
+  .elev-intro{grid-template-columns:1fr;gap:var(--s-md)}
+  .elev-summary{text-align:left}
+  .footer__bottom{flex-direction:column;gap:var(--s-sm)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:0.01ms!important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═════════════ HERO · V3 Split ═════════════ -->
+<section class="hero-split">
+  <div class="hero-left">
+    <div class="hero-tag">OAuth 2.0 · Authorization Framework</div>
+    <h1 class="hero-title">Access, <strong>delegated.</strong><br>Security, <strong>by design.</strong></h1>
+    <p class="hero-desc">授权码、客户端凭证、PKCE 扩展——四种许可类型覆盖从 Web 应用到机器对机器的全部场景。本文给出工程师可直接落地的最佳实践。</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Grant Types</div>
+        <div class="hero-meta-value">4</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">RFC</div>
+        <div class="hero-meta-value">6749</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Code Samples</div>
+        <div class="hero-meta-value">2</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="hero-meta-label">Checklist</div>
+        <div class="hero-meta-value">7</div>
+      </div>
+    </div>
+    <div class="hero-ghost">O2</div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-dots"></div>
+    <div class="hero-right__ghost">OAuth</div>
+    <div class="hero-symbol">
+      <div class="hero-symbol__mark">"Never let the<br>client see<br>the secret."</div>
+      <div class="hero-symbol__sub">— Engineering Principle</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ §② 什么是 OAuth 2.0 · 概念建立 ═════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag">§ 01 · Foundation</div>
+    <h2 class="section-title">委托授权，<strong>而非凭据共享</strong>。</h2>
+    <p class="section-lead">OAuth 2.0 是一种授权协议：资源所有者向第三方应用授予对受保护资源的有限访问权限，全程不暴露自身凭据。它取代了"把密码交给客户端"这种危险的旧模式。</p>
+
+    <div class="statement-quote">
+      <div class="statement-quote__mark">"The access token is a <strong>bearer instrument</strong>——持有即有效，签发即责任。"</div>
+      <div class="statement-quote__attr">RFC 6749 · §1.4 Access Token</div>
+    </div>
+
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="concept-card__num">01</div>
+        <div class="concept-card__h">四个角色</div>
+        <p class="concept-card__p">资源所有者、客户端、授权服务器、资源服务器。职责分离是安全的根基。</p>
+        <span class="concept-card__code">Resource Owner · Client · AS · RS</span>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card__num">02</div>
+        <div class="concept-card__h">令牌即范围</div>
+        <p class="concept-card__p">每个 access_token 绑定 scope 与 expiry。最小权限原则由协议层强制，而非靠开发者自觉。</p>
+        <span class="concept-card__code">scope=read:profile&expires_in=3600</span>
+      </div>
+      <div class="concept-card">
+        <div class="concept-card__num">03</div>
+        <div class="concept-card__h">机密分级</div>
+        <p class="concept-card__p">Confidential 客户端持有 client_secret，Public 客户端用 PKCE 替代。机密性决定流程选型。</p>
+        <span class="concept-card__code">confidential | public</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ §③ 4 种授权流程对比 · Data Table ═════════════ -->
+<section class="section section--cream">
+  <div class="section-inner">
+    <div class="section-tag">§ 02 · Grant Types</div>
+    <h2 class="section-title">四种许可类型，<strong>各司其职</strong>。</h2>
+    <p class="section-lead">选择错误的授权流程是 OAuth 实施中最常见的安全漏洞。下表按场景给出选型决策。</p>
+
+    <div class="data-table-wrap">
+      <div class="data-table__head">
+        <div class="data-table__title">Grant Type Comparison</div>
+        <div class="data-table__count">4 Flows · RFC 6749</div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>许可类型</th>
+            <th>适用场景</th>
+            <th>客户端类型</th>
+            <th>推荐度</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name" data-label="许可类型">Authorization Code</td>
+            <td data-label="适用场景">Web 应用、SPA（配合 PKCE）。服务端可安全存储 secret，授权码经前端中转但 token 直达后端。</td>
+            <td class="flow" data-label="客户端类型">Confidential + Public(PKCE)</td>
+            <td data-label="推荐度"><span class="tag tag--rec">推荐 · 首选</span></td>
+          </tr>
+          <tr>
+            <td class="name" data-label="许可类型">Client Credentials</td>
+            <td data-label="适用场景">机器对机器（M2M）。无最终用户参与，服务直接以自身身份获取 token。</td>
+            <td class="flow" data-label="客户端类型">Confidential</td>
+            <td data-label="推荐度"><span class="tag tag--rec">推荐 · M2M</span></td>
+          </tr>
+          <tr>
+            <td class="name" data-label="许可类型">PKCE Extension</td>
+            <td data-label="适用场景">移动端、SPA 等无法安全存储 secret 的公开客户端。用 code_verifier/code_challenge 替代 secret。</td>
+            <td class="flow" data-label="客户端类型">Public</td>
+            <td data-label="推荐度"><span class="tag tag--rec">推荐 · 公开客户端</span></td>
+          </tr>
+          <tr>
+            <td class="name" data-label="许可类型">Implicit / Password</td>
+            <td data-label="适用场景">已废弃。Implicit 易受 token 泄露，Password 暴露用户凭据。OAuth 2.1 移除。</td>
+            <td class="flow" data-label="客户端类型">—</td>
+            <td data-label="推荐度"><span class="tag tag--lim">废弃 · 勿用</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ §④ 授权码流程详解 · 深段 (Code Block + Pipeline) ═════════════ -->
+<section class="section section--dark">
+  <div class="section-inner">
+    <div class="section-tag">§ 03 · Authorization Code Flow</div>
+    <h2 class="section-title">五步握手，<strong>token 永不暴露给浏览器</strong>。</h2>
+    <p class="section-lead">授权码流程的核心安全价值：前端只拿到一次性 code，真正的 access_token 在后端与授权服务器之间直接交换，前端历史记录与日志中均无 token 痕迹。</p>
+
+    <!-- Code Block 浅底变体（head 深色反相锚点）-->
+    <div class="code-block code-block--light" style="margin-top:var(--s-2xl)">
+      <div class="code-block__head">
+        <span class="code-block__dot code-block__dot--req"></span>
+        <span class="code-block__file">authorize-request.http</span>
+        <span class="code-block__lang">HTTP · Step 1-2</span>
+      </div>
+      <pre class="code-block__body"><code><span class="tok--cm"># ① 重定向用户到授权端点（浏览器跳转）</span>
+GET /authorize?<span class="tok--str">response_type=code</span>&amp;
+            <span class="tok--str">client_id=s6BhdRkqt3</span>&amp;
+            <span class="tok--str">redirect_uri=https://app.example.com/cb</span>&amp;
+            <span class="tok--str">scope=read:profile write:posts</span>&amp;
+            <span class="tok--str">state=xyzABC123</span>&amp;
+            <span class="tok--str">code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM</span>
+Host: auth.example.com
+
+<span class="tok--cm"># ② 用户同意后，授权服务器重定向回 redirect_uri，附带 code</span>
+302 Location: https://app.example.com/cb?<span class="tok--str">code=SplxlOBeZQQYbYS6WxSbIA</span>&amp;<span class="tok--str">state=xyzABC123</span></code></pre>
+    </div>
+
+    <!-- Pipeline 五步栈（含连接线） -->
+    <div class="pipeline">
+      <div class="pipeline__list">
+        <div class="pipeline__step">
+          <div class="pipeline__num">01</div>
+          <div class="pipeline__body">
+            <div class="pipeline__h">客户端发起 <strong>授权请求</strong></div>
+            <p class="pipeline__p">客户端将用户重定向到授权服务器的 <code style="font-family:var(--font-data);color:var(--color-steel)">/authorize</code> 端点，携带 client_id、scope、state 与 PKCE 的 code_challenge。</p>
+            <span class="pipeline__endpoint">GET /authorize</span>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">02</div>
+          <div class="pipeline__body">
+            <div class="pipeline__h">用户 <strong>认证并同意</strong></div>
+            <p class="pipeline__p">授权服务器展示同意页，用户登录并显式批准请求的 scope。state 参数在此回传，防 CSRF。</p>
+            <span class="pipeline__endpoint">302 → redirect_uri?code=</span>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">03</div>
+          <div class="pipeline__body">
+            <div class="pipeline__h">客户端后端 <strong>交换 token</strong></div>
+            <p class="pipeline__p">客户端后端用一次性 code、client_secret（或 PKCE 的 code_verifier）向 token 端点换取 access_token。此步在前端不可见。</p>
+            <span class="pipeline__endpoint">POST /token · server-to-server</span>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">04</div>
+          <div class="pipeline__body">
+            <div class="pipeline__h">授权服务器 <strong>签发令牌</strong></div>
+            <p class="pipeline__p">校验 code、secret/verifier 通过后，返回 access_token（短期）与可选 refresh_token（长期）。token 带 scope 与 expires_in。</p>
+            <span class="pipeline__endpoint">200 {access_token, expires_in:3600}</span>
+          </div>
+        </div>
+        <div class="pipeline__step">
+          <div class="pipeline__num">05</div>
+          <div class="pipeline__body">
+            <div class="pipeline__h">客户端 <strong>访问资源</strong></div>
+            <p class="pipeline__p">客户端携带 access_token 请求资源服务器。token 过期后用 refresh_token 静默续期，无需重新打扰用户。</p>
+            <span class="pipeline__endpoint">GET /api · Authorization: Bearer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code Block 深底变体（token 交换） -->
+    <div class="code-block" style="background:var(--dk-subtle);border-radius:var(--r-sm);overflow:hidden;margin-top:var(--s-3xl)">
+      <div class="code-block__head" style="background:var(--dk-black)">
+        <span class="code-block__dot code-block__dot--ok"></span>
+        <span class="code-block__file">token-exchange.http</span>
+        <span class="code-block__lang">HTTP · Step 3-4</span>
+      </div>
+      <pre style="background:var(--dk-subtle);color:var(--text-inverse);padding:var(--s-lg);overflow-x:auto;font-family:var(--font-data);font-size:13px;line-height:var(--lh-data)"><code><span style="color:var(--color-moss)"># ③ 后端用 code 换 token（机密请求，永不在前端执行）</span>
+POST /token HTTP/1.1
+Host: auth.example.com
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=<span style="color:var(--color-slate)">authorization_code</span>&amp;
+client_id=<span style="color:var(--color-slate)">s6BhdRkqt3</span>&amp;
+client_secret=<span style="color:var(--color-slate)">$CLIENT_SECRET</span>&amp;
+code=<span style="color:var(--color-slate)">SplxlOBeZQQYbYS6WxSbIA</span>&amp;
+code_verifier=<span style="color:var(--color-slate)">dBjftJeZ4CVK-mJMgjYqsrkuerxyAL_m4kO-n1H1LNE</span>
+
+<span style="color:var(--color-moss)"># ④ 响应：token 永不暴露给浏览器历史记录</span>
+200 OK
+{
+  <span style="color:var(--color-moss)">"access_token"</span>: <span style="color:var(--color-slate)">"2YotnFZFEjr1zCsicMWpAA"</span>,
+  <span style="color:var(--color-moss)">"token_type"</span>: <span style="color:var(--color-slate)">"Bearer"</span>,
+  <span style="color:var(--color-moss)">"expires_in"</span>: <span style="color:var(--color-slate)">3600</span>,
+  <span style="color:var(--color-moss)">"refresh_token"</span>: <span style="color:var(--color-slate)">"tGzv3JOkF0XG5Qx2TlKWIA"</span>
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ §⑤ 安全性能趋势 · Elevation Profile (v2.0) ═════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag">§ 04 · Security Trends</div>
+    <h2 class="section-title">采纳 PKCE 与令牌轮换后，<strong>安全事件逐年下降</strong>。</h2>
+    <p class="section-lead">数据来自某 SaaS 平台 2019-2024 年的 OAuth 实施审计。纵轴为相对安全事件指数（基线=2019），曲线反映最佳实践普及带来的改善趋势。</p>
+
+    <div class="elev-intro">
+      <div></div>
+      <div class="elev-summary">2019 → 2024 · 6 数据点 · Q/T 贝塞尔曲线</div>
+    </div>
+
+    <div class="elev-grid">
+      <!-- Elevation 1：Token 泄露事件下降趋势 -->
+      <div class="elev">
+        <div class="elev__lbl">Token 泄露事件</div>
+        <div class="elev__val elev__val--down">-78<span>%</span></div>
+        <div class="elev__line">
+          <svg viewBox="0 0 280 90" preserveAspectRatio="none">
+            <path d="M0 20 Q40 25 80 38 T160 58 T220 72 T280 80 L280 90 L0 90 Z"
+                  fill="var(--color-forest)" opacity="0.15"/>
+            <path d="M0 20 Q40 25 80 38 T160 58 T220 72 T280 80"
+                  fill="none" stroke="var(--color-forest)" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="0" y1="90" x2="280" y2="90" stroke="var(--border-rest)" stroke-width="1"/>
+            <circle cx="0"   cy="20" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="56"  cy="32" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="112" cy="48" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="168" cy="62" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="224" cy="74" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="280" cy="80" r="2.5" fill="var(--color-forest)"/>
+          </svg>
+        </div>
+        <div class="elev__ctx">'19 → '24 · PKCE 普及</div>
+      </div>
+
+      <!-- Elevation 2：CSRF 攻击下降 -->
+      <div class="elev">
+        <div class="elev__lbl">CSRF 攻击</div>
+        <div class="elev__val elev__val--down">-64<span>%</span></div>
+        <div class="elev__line">
+          <svg viewBox="0 0 280 90" preserveAspectRatio="none">
+            <path d="M0 30 Q50 35 100 45 T180 62 T260 75 L280 78 L280 90 L0 90 Z"
+                  fill="var(--color-forest)" opacity="0.15"/>
+            <path d="M0 30 Q50 35 100 45 T180 62 T260 75 L280 78"
+                  fill="none" stroke="var(--color-forest)" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="0" y1="90" x2="280" y2="90" stroke="var(--border-rest)" stroke-width="1"/>
+            <circle cx="0"   cy="30" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="56"  cy="38" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="112" cy="48" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="168" cy="58" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="224" cy="70" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="280" cy="78" r="2.5" fill="var(--color-forest)"/>
+          </svg>
+        </div>
+        <div class="elev__ctx">'19 → '24 · state 强制校验</div>
+      </div>
+
+      <!-- Elevation 3：令牌轮换覆盖率上升 -->
+      <div class="elev">
+        <div class="elev__lbl">令牌轮换覆盖率</div>
+        <div class="elev__val">+52<span>%</span></div>
+        <div class="elev__line">
+          <svg viewBox="0 0 280 90" preserveAspectRatio="none">
+            <path d="M0 75 Q50 70 100 60 T180 35 T260 15 L280 12 L280 90 L0 90 Z"
+                  fill="var(--color-forest)" opacity="0.15"/>
+            <path d="M0 75 Q50 70 100 60 T180 35 T260 15 L280 12"
+                  fill="none" stroke="var(--color-forest)" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="0" y1="90" x2="280" y2="90" stroke="var(--border-rest)" stroke-width="1"/>
+            <circle cx="0"   cy="75" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="56"  cy="70" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="112" cy="58" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="168" cy="42" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="224" cy="22" r="2.5" fill="var(--color-forest)"/>
+            <circle cx="280" cy="12" r="2.5" fill="var(--color-forest)"/>
+          </svg>
+        </div>
+        <div class="elev__ctx">'19 → '24 · refresh_rotation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ §⑥ 达成度对比 · Seam Benchmark (v2.0) ═════════════ -->
+<section class="section section--cream">
+  <div class="section-inner">
+    <div class="section-tag">§ 05 · Posture Benchmark</div>
+    <h2 class="section-title">四项核心指标，<strong>对照行业基准</strong>。</h2>
+    <p class="section-lead">本平台当前 OAuth 安全姿态 vs OWASP 推荐基准。条形为实际达成，竖线为目标值；达成用 forest，超出用 moss。</p>
+
+    <div class="seam-head">
+      <div></div>
+      <div class="seam-legend">
+        <span><i class="lg-fill"></i>实际达成</span>
+        <span><i class="lg-over"></i>超出基准</span>
+        <span><i class="lg-mark"></i>目标线</span>
+      </div>
+    </div>
+
+    <div class="seam__list">
+      <div class="seam-row">
+        <span class="seam-row__lbl">PKCE 强制率</span>
+        <div class="seam-row__track">
+          <div class="seam-row__fill" style="width:72%"></div>
+          <div class="seam-row__mark" style="left:90%"></div>
+        </div>
+        <div class="seam-row__vals">
+          <div class="seam-row__val">72</div>
+          <div class="seam-row__tgt">目标 90</div>
+        </div>
+      </div>
+      <div class="seam-row">
+        <span class="seam-row__lbl">令牌有效期 ≤15min</span>
+        <div class="seam-row__track">
+          <div class="seam-row__fill seam-row__fill--over" style="width:100%"></div>
+          <div class="seam-row__mark" style="left:85%"></div>
+        </div>
+        <div class="seam-row__vals">
+          <div class="seam-row__val">100</div>
+          <div class="seam-row__tgt">目标 85</div>
+        </div>
+      </div>
+      <div class="seam-row">
+        <span class="seam-row__lbl">state 参数校验</span>
+        <div class="seam-row__track">
+          <div class="seam-row__fill seam-row__fill--over" style="width:94%"></div>
+          <div class="seam-row__mark" style="left:90%"></div>
+        </div>
+        <div class="seam-row__vals">
+          <div class="seam-row__val">94</div>
+          <div class="seam-row__tgt">目标 90</div>
+        </div>
+      </div>
+      <div class="seam-row">
+        <span class="seam-row__lbl">refresh 轮换</span>
+        <div class="seam-row__track">
+          <div class="seam-row__fill" style="width:68%"></div>
+          <div class="seam-row__mark" style="left:80%"></div>
+        </div>
+        <div class="seam-row__vals">
+          <div class="seam-row__val">68</div>
+          <div class="seam-row__tgt">目标 80</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ §⑦ 安全最佳实践 · Checklist ═════════════ -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-tag">§ 06 · Best Practices</div>
+    <h2 class="section-title">七条纪律，<strong>逐条可验收</strong>。</h2>
+    <p class="section-lead">这是上线前的安全 checklist。每一条都对应一个可观测、可验收的工程动作。</p>
+
+    <div class="checklist">
+      <div class="checklist__title">OAuth 2.0 上线自检</div>
+      <div class="checklist__list">
+        <div class="checklist__item">
+          <div class="checklist__box checklist__box--do"></div>
+          <div class="checklist__item-text"><strong>公开客户端强制 PKCE</strong>。SPA/移动端一律用 <code>code_challenge</code>/<code>code_verifier</code>，禁止存储任何 secret。</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box checklist__box--do"></div>
+          <div class="checklist__item-text"><strong>access_token 有效期 ≤ 15 分钟</strong>。配合 refresh_token 静默续期；token 越短，泄露窗口越小。</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box checklist__box--do"></div>
+          <div class="checklist__item-text"><strong>state 参数必须是不可预测随机值</strong>。授权回调时严格比对，防 CSRF。</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box checklist__box--do"></div>
+          <div class="checklist__item-text"><strong>refresh_token 启用轮换（rotation）</strong>。每次使用后失效并签发新值，配合重用检测告警。</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box checklist__box--do"></div>
+          <div class="checklist__item-text"><strong>scope 遵循最小权限</strong>。按需申请，禁止 "all scopes" 兜底；用户可逐项撤销。</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box checklist__box--do"></div>
+          <div class="checklist__item-text"><strong>redirect_uri 精确白名单匹配</strong>。禁用通配符，禁用开放重定向；只允许 HTTPS（localhost 除外）。</div>
+        </div>
+        <div class="checklist__item">
+          <div class="checklist__box checklist__box--do"></div>
+          <div class="checklist__item-text"><strong>client_secret 仅存后端/密钥管理服务</strong>。永不进前端代码、环境变量明文、日志或监控面板。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ §⑧ 常见陷阱 · Callout 簇 ═════════════ -->
+<section class="section section--cream">
+  <div class="section-inner">
+    <div class="section-tag">§ 07 · Common Pitfalls</div>
+    <h2 class="section-title">三个高频陷阱，<strong>审计时必查</strong>。</h2>
+    <p class="section-lead">这些不是理论问题——它们是真实生产事故的根因。</p>
+
+    <div class="callout-grid">
+      <div class="callout callout--warn">
+        <div class="callout__tag">⚠ 陷阱 01 · 高危</div>
+        <div class="callout__h">redirect_uri 通配符匹配</div>
+        <p class="callout__body">允许 <code>*.example.com</code> 或前缀匹配会让攻击者用子域名劫持授权码。必须精确字符串匹配，每次新增回调地址走白名单审批流程。</p>
+      </div>
+      <div class="callout callout--warn">
+        <div class="callout__tag">⚠ 陷阱 02 · 高危</div>
+        <div class="callout__h">token 存 localStorage</div>
+        <p class="callout__body">localStorage 对任意 JS 可读，一次 XSS 即可窃取全量 token。SPA 应走 BFF（后端 for 前端）模式，token 存 HttpOnly Cookie。</p>
+      </div>
+      <div class="callout">
+        <div class="callout__tag">◆ 陷阱 03 · 中危</div>
+        <div class="callout__h">忽略 token_type 校验</div>
+        <p class="callout__body">未校验 <code>token_type=Bearer</code> 与 <code>alg</code> 的实现可能接受任意格式令牌。资源服务器必须严格验证签名与类型。</p>
+      </div>
+      <div class="callout">
+        <div class="callout__tag">◆ 陷阱 04 · 中危</div>
+        <div class="callout__h">refresh_token 永不过期</div>
+        <p class="callout__body">不设绝对过期时间的 refresh_token 等于永久凭据。应设 <code>7-30 天</code>绝对上限 + 滑动续期，超时强制重新认证。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ FOOTER ═════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <div class="footer__mark">OAuth 2.0 · 工程参考</div>
+      <p class="footer__desc">面向工程师的授权协议落地指南。基于 RFC 6749 / RFC 7636 (PKCE) / OWASP OAuth Cheat Sheet 编写。本文档随标准演进持续更新。</p>
+    </div>
+    <div>
+      <div class="footer__col-h">规格</div>
+      <ul class="footer__list">
+        <li><a href="#">RFC 6749 · Core</a></li>
+        <li><a href="#">RFC 7636 · PKCE</a></li>
+        <li><a href="#">RFC 7009 · Revocation</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer__col-h">参考</div>
+      <ul class="footer__list">
+        <li><a href="#">OWASP OAuth Cheat Sheet</a></li>
+        <li><a href="#">OAuth 2.1 Draft</a></li>
+        <li><a href="#">Bearer Token RFC 6750</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <span> haglofs-paradigm v2.0 · T5b · Technology Content</span>
+    <span>Editorial × Engineering · Slate Cool Tone</span>
+  </div>
+</footer>
+
+</body>
+</html>

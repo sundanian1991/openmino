@@ -220,3 +220,7 @@
 - 2026-06-22 17:52 | [原话] "你记得要这么去用。看看怎么记录" — 要求将此方法论固化为长期记忆
 - 2026-06-22 18:25 | [技能bug·已修 2026-06-23] nian-decision-card 校验脚本 validate-decision-card.py 跑不通:找 components.md 但已改名 COMPONENTS-MASTER.md,编号从"01-38"迁移到"A01-H11"(63族)。已修:①脚本文件名+正则改 `[A-H]\d{2} ·` ②schema 同步63族清单+palette枚举(darkgray/olive→forest/slate/steel/charcoal, yellow/orange→signal-orange/signal-yellow) ③24个variants补齐28 token(--font-decorative+14色+--accent别名)。校验脚本现 PASS。
 - 2026-06-23 21:40 | [技能重构·三轨制根治] nian-design token 三轨制(v1 tokens.json / v2 token-root.css / 变体杂交)根治完成:①tokens.json 归档到 _archive/legacy-tokens/(0引用孤儿) ②24个变体中性灰阶+语义色 v1 hex → var(--color-*) 指向v2(消除全部hex硬编码警告) ③8个 base 底座 :root 整段升级到v2 token-root体系(--olive→--color-forest 等) ④validator 组件计数逻辑修复:从宽泛关键词匹配改为BEM block层容器去重(sec2/sec5/sec6 从17/36/17→1/1/1),连带修了规则5数据段计数的同类bug。全量回归:测试HTML PASS(14项/1真实警告),变体/底座 token全过、hex清零。新增2个可复用脚本:patch-variant-tokens.py(补token/迁移灰阶 双模式)、migrate-base-to-v2.py(底座升级)。
+
+- 2026-07-03 18:30 | [项目] 文件夹体系重构完成。Root 20项 / Workspace 20项。5大改动：MCP统一→settings.local.json、hooks symlink、workspace合并归档、根目录清废、skills清断链。详见对话日志。
+
+- 2026-07-03 19:00 | [决策] 年老师确认 MEMORY.md vs topics/画像 以 MEMORY.md 为主源。已更新 MEMORY.md 加"主源原则"+互引指针，topics/画像/README.md 加"同步规则"。
