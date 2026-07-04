@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SABC 标准化深度诊断框架 · 完整版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Token Root ── */
+:root {
+  /* Color */
+  --color-offwhite: #F5F3EF;
+  --color-offwhite-warm: #EDE9E3;
+  --color-card: #FFFFFF;
+  --text-primary: #1A1A1A;
+  --text-secondary: #5A5A5A;
+  --text-tertiary: #8A8A8A;
+  --text-decorative: #C4BFB6;
+  --color-forest: #4A5D3A;
+  --color-forest-soft: #547444;
+  --color-moss-soft: #6D845C;
+  --color-charcoal: #2A2A28;
+  --color-black: #111111;
+  --color-warm-gray: #D1C9C0;
+  --color-warm-gray-dark: #C0A898;
+  --color-signal-red: #D14343;
+  --color-signal-orange: #E8734A;
+  --color-signal-yellow: #D4A843;
+  --color-blue-link: #3B6EA5;
+  --color-sabc-s: #E8734A;
+  --color-sabc-a: #5A6878;
+  --color-sabc-b: #8B99A8;
+  --color-sabc-c: #B8C4D0;
+  --color-heatmap-light: #FFF0EB;
+  --color-heatmap-dark: #C75A35;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-data: 'JetBrains Mono', 'SF Mono', monospace;
+
+  /* Type Scale */
+  --fs-eyebrow: 11px;
+  --fs-caption: 12px;
+  --fs-body-sm: 13px;
+  --fs-body: 15px;
+  --fs-body-lg: 17px;
+  --fs-h4: clamp(18px, 2vw, 22px);
+  --fs-h3: clamp(22px, 2.8vw, 30px);
+  --fs-h2: clamp(28px, 3.6vw, 42px);
+  --fs-h1: clamp(36px, 5vw, 60px);
+  --fs-display: clamp(48px, 8vw, 100px);
+
+  /* Spacing */
+  --s-3xs: 1px;
+  --s-2xs: 2px;
+  --s-xs: 4px;
+  --s-sm: 8px;
+  --s-md: 16px;
+  --s-lg: 24px;
+  --s-xl: 32px;
+  --s-2xl: 48px;
+  --s-3xl: 64px;
+  --s-4xl: 96px;
+  --s-5xl: 120px;
+
+  /* Layout */
+  --c-max: 1120px;
+  --c-medium: 960px;
+  --c-read: 720px;
+  --c-narrow: 640px;
+  --c-wide: 1280px;
+
+  /* Type details */
+  --ls-wide: 0.08em;
+  --ls-tight: -0.02em;
+  --ls-tighter: -0.04em;
+  --lh-tight: 1.05;
+  --lh-body: 1.7;
+  --lh-read: 1.75;
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  background: var(--color-offwhite);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { max-width: 100%; display: block; }
+a { color: var(--color-blue-link); text-decoration: none; }
+strong { font-weight: var(--fw-semibold); }
+
+/* ── Utility ── */
+.container { max-width: var(--c-max); margin: 0 auto; padding: 0 var(--s-xl); }
+.container--read { max-width: var(--c-read); margin: 0 auto; padding: 0 var(--s-xl); }
+.container--medium { max-width: var(--c-medium); margin: 0 auto; padding: 0 var(--s-xl); }
+.container--wide { max-width: var(--c-wide); margin: 0 auto; padding: 0 var(--s-xl); }
+
+.eyebrow {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-forest-soft);
+  margin-bottom: var(--s-md);
+  display: flex;
+  align-items: center;
+  gap: var(--s-md);
+}
+.eyebrow::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: var(--color-forest-soft);
+}
+.eyebrow--dark { color: rgba(255,255,255,0.4); }
+.eyebrow--dark::before { background: rgba(255,255,255,0.3); }
+.eyebrow--neutral { color: var(--text-tertiary); }
+.eyebrow--neutral::before { background: var(--text-decorative); }
+
+/* ── HERO (V4 Statement · 文档首页) ── */
+.hero-statement {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--s-5xl) 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-offwhite);
+}
+.hero-statement__watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: clamp(120px, 20vw, 280px);
+  font-weight: var(--fw-light);
+  color: rgba(74, 93, 58, 0.04);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.hero-statement__tag {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-forest-soft);
+  margin-bottom: var(--s-xl);
+  position: relative;
+  z-index: 2;
+}
+.hero-statement__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tighter);
+  color: var(--text-primary);
+  max-width: 800px;
+  margin-bottom: var(--s-lg);
+  position: relative;
+  z-index: 2;
+}
+.hero-statement__title strong {
+  font-weight: var(--fw-bold);
+  color: var(--color-forest-soft);
+}
+.hero-statement__subtitle {
+  font-size: var(--fs-body-lg);
+  color: var(--text-secondary);
+  max-width: 560px;
+  line-height: var(--lh-read);
+  position: relative;
+  z-index: 2;
+}
+.hero-statement__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-md);
+  margin-top: var(--s-3xl);
+  font-family: var(--font-data);
+  font-size: var(--fs-caption);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-wide);
+  position: relative;
+  z-index: 2;
+}
+.hero-statement__meta span:not(:last-child)::after {
+  content: '·';
+  margin-left: var(--s-md);
+  color: var(--text-decorative);
+}
+.hero-statement__scroll {
+  position: absolute;
+  bottom: var(--s-3xl);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-decorative);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── SECTION ── */
+.section {
+  padding: var(--s-5xl) 0;
+  position: relative;
+}
+.section--dark {
+  background: var(--color-charcoal);
+  color: #fff;
+  padding: var(--s-5xl) 0;
+}
+.section--darker {
+  background: var(--color-black);
+  color: #fff;
+  padding: var(--s-5xl) 0;
+}
+.section__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: var(--s-md);
+  display: flex;
+  align-items: center;
+  gap: var(--s-md);
+}
+.section__label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--text-decorative);
+}
+.section--dark .section__label { color: rgba(255,255,255,0.35); }
+.section--dark .section__label::before { background: rgba(255,255,255,0.25); }
+
+.section__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--s-lg);
+  max-width: 720px;
+}
+.section--dark .section__title { color: #fff; }
+.section__title strong {
+  font-weight: var(--fw-bold);
+  color: var(--color-forest-soft);
+}
+.section--dark .section__title strong { color: var(--color-sabc-s); }
+
+.section__intro {
+  font-size: var(--fs-body-lg);
+  color: var(--text-secondary);
+  max-width: var(--c-read);
+  line-height: var(--lh-read);
+  margin-bottom: var(--s-3xl);
+}
+.section--dark .section__intro { color: rgba(255,255,255,0.55); }
+
+/* ── CHAPTER NAV ── */
+.chapter-nav {
+  padding: var(--s-3xl) 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: var(--color-offwhite);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.chapter-nav__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xl);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chapter-nav__inner::-webkit-scrollbar { display: none; }
+.chapter-nav__link {
+  font-family: var(--font-data);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  padding: var(--s-xs) 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.chapter-nav__link:hover {
+  color: var(--color-forest-soft);
+  border-bottom-color: var(--color-forest-soft);
+}
+
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-lg);
+  margin-top: var(--s-2xl);
+}
+.kpi-card {
+  background: var(--color-card);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: var(--s-xl);
+  position: relative;
+}
+.kpi-card__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: var(--s-sm);
+}
+.kpi-card__value {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  line-height: 1.1;
+  margin-bottom: var(--s-xs);
+}
+.kpi-card__desc {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.kpi-card__indicator {
+  position: absolute;
+  top: var(--s-xl);
+  right: var(--s-xl);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.kpi-card__indicator--red { background: var(--color-signal-red); }
+.kpi-card__indicator--yellow { background: var(--color-signal-yellow); }
+.kpi-card__indicator--green { background: var(--color-forest-soft); }
+.kpi-card__spark {
+  margin-top: var(--s-md);
+  height: 24px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+.kpi-card__spark-bar {
+  flex: 1;
+  background: var(--text-decorative);
+  opacity: 0.3;
+  min-height: 4px;
+}
+.kpi-card__spark-bar--active {
+  background: var(--color-forest-soft);
+  opacity: 0.5;
+}
+
+/* ── CHART PLACEHOLDER (骨架示意图) ── */
+.chart-mock {
+  background: var(--color-card);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: var(--s-xl);
+  margin-top: var(--s-xl);
+}
+.chart-mock__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--s-lg);
+}
+.chart-mock__title {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--s-xs);
+}
+.chart-mock__subtitle {
+  font-size: var(--fs-body-sm);
+  color: var(--text-tertiary);
+}
+.chart-mock__tag {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: var(--s-xs) var(--s-sm);
+  background: var(--color-offwhite);
+  color: var(--text-tertiary);
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.chart-mock__canvas {
+  width: 100%;
+  min-height: 200px;
+  background: var(--color-offwhite);
+  border: 1px dashed rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.chart-mock__note {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-decorative);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── BAR CHART MOCK ── */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-sm);
+  height: 160px;
+  padding: var(--s-lg);
+}
+.bar-chart__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-xs);
+}
+.bar-chart__bar {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.3s;
+}
+.bar-chart__label {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+}
+
+/* ── STACKED BAR MOCK ── */
+.stacked-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-md);
+  height: 140px;
+  padding: var(--s-lg);
+}
+.stacked-bar__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+.stacked-bar__segment {
+  width: 100%;
+}
+.stacked-bar__label {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin-top: var(--s-xs);
+}
+
+/* ── TABLE ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-body-sm);
+  margin-top: var(--s-xl);
+}
+.data-table th {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  text-align: left;
+  padding: var(--s-sm) var(--s-md);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  font-weight: var(--fw-regular);
+}
+.data-table td {
+  padding: var(--s-sm) var(--s-md);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  color: var(--text-primary);
+}
+.data-table tr:nth-child(even) td {
+  background: rgba(0,0,0,0.015);
+}
+.data-table .highlight {
+  font-weight: var(--fw-semibold);
+  color: var(--color-signal-orange);
+}
+.data-table .cell--hot { background: rgba(209, 67, 67, 0.08); }
+.data-table .cell--warm { background: rgba(232, 115, 74, 0.08); }
+.data-table .cell--cool { background: rgba(74, 93, 58, 0.06); }
+
+/* ── COMPARISON CARD ── */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+  margin-top: var(--s-xl);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.comparison-col {
+  padding: var(--s-xl);
+}
+.comparison-col--left { background: var(--color-card); }
+.comparison-col--right { background: var(--color-offwhite); }
+.comparison-col--center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-md);
+  background: var(--color-offwhite-warm);
+  border-left: 1px solid rgba(0,0,0,0.06);
+  border-right: 1px solid rgba(0,0,0,0.06);
+  writing-mode: vertical-rl;
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-decorative);
+}
+.comparison-col__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: var(--s-lg);
+}
+.comparison-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: var(--s-sm) 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.comparison-row:last-child { border-bottom: none; }
+.comparison-row__label {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+}
+.comparison-row__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+}
+.comparison-row__value--accent { color: var(--color-signal-orange); }
+.comparison-row__note {
+  font-size: var(--fs-caption);
+  color: var(--text-tertiary);
+  margin-top: var(--s-xs);
+}
+
+/* ── HEATMAP MOCK ── */
+.heatmap {
+  display: grid;
+  grid-template-columns: 60px repeat(4, 1fr);
+  gap: 2px;
+  padding: var(--s-lg);
+}
+.heatmap__corner { }
+.heatmap__header {
+  font-family: var(--font-data);
+  font-size: 10px;
+  text-align: center;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+  padding-bottom: var(--s-sm);
+}
+.heatmap__row-label {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.02em;
+}
+.heatmap__cell {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-data);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  border-radius: 2px;
+}
+
+/* ── LINE CHART MOCK ── */
+.line-chart {
+  padding: var(--s-lg);
+  height: 180px;
+  position: relative;
+}
+.line-chart__svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── SMALL MULTIPLES ── */
+.small-multiples {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--s-md);
+  margin-top: var(--s-xl);
+}
+.sm-panel {
+  background: var(--color-card);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: var(--s-lg);
+  display: flex;
+  flex-direction: column;
+}
+.sm-panel--large { grid-row: span 2; }
+.sm-panel__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: var(--s-sm);
+}
+.sm-panel__title {
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  margin-bottom: var(--s-md);
+  color: var(--text-primary);
+}
+.sm-panel__canvas {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-sm);
+  min-height: 80px;
+}
+.sm-bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  position: relative;
+}
+.sm-bar--orange { background: var(--color-sabc-s); }
+.sm-bar--gray { background: var(--color-sabc-b); }
+.sm-bar__value {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ── INFOGRAPHIC TABLE (拐点) ── */
+.ig-table {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  margin-top: var(--s-xl);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.ig-table__cell {
+  padding: var(--s-lg);
+  border-right: 1px solid rgba(0,0,0,0.06);
+}
+.ig-table__cell:last-child { border-right: none; }
+.ig-table__knot {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--s-sm);
+}
+.ig-table__finding {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--s-sm);
+  line-height: 1.5;
+}
+.ig-table__meaning {
+  font-size: var(--fs-body-sm);
+  color: var(--color-forest-soft);
+  font-weight: var(--fw-medium);
+  line-height: 1.5;
+}
+
+/* ── TIER TABLE (效率阶梯) ── */
+.tier-table {
+  display: flex;
+  gap: 2px;
+  margin-top: var(--s-md);
+}
+.tier-bar {
+  flex: 1;
+  padding: var(--s-md);
+  text-align: center;
+  border-radius: 2px;
+}
+.tier-bar__label {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--s-xs);
+  opacity: 0.7;
+}
+.tier-bar__value {
+  font-family: var(--font-display);
+  font-size: clamp(14px, 1.5vw, 18px);
+  font-weight: var(--fw-light);
+}
+.tier-bar__mult {
+  font-family: var(--font-data);
+  font-size: 10px;
+  margin-top: var(--s-xs);
+  opacity: 0.6;
+}
+
+/* ── CONTRADICTION CARDS ── */
+.contradiction-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-lg);
+  margin-top: var(--s-xl);
+}
+.contradiction-card {
+  background: var(--color-card);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: var(--s-lg);
+  position: relative;
+}
+.contradiction-card__icon {
+  position: absolute;
+  top: var(--s-lg);
+  right: var(--s-lg);
+  font-size: 16px;
+  color: var(--color-signal-red);
+  font-weight: var(--fw-bold);
+}
+.contradiction-card__title {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--s-sm);
+  padding-right: var(--s-xl);
+}
+.contradiction-card__case {
+  font-family: var(--font-data);
+  font-size: var(--fs-caption);
+  color: var(--color-signal-orange);
+  margin-bottom: var(--s-sm);
+  letter-spacing: 0.02em;
+}
+.contradiction-card__insight {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--s-md);
+}
+.contradiction-card__bars {
+  display: flex;
+  gap: var(--s-sm);
+  align-items: flex-end;
+  height: 48px;
+}
+.contradiction-card__bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+}
+.contradiction-card__bar--high { background: var(--color-sabc-s); }
+.contradiction-card__bar--low { background: var(--color-sabc-c); }
+.contradiction-card__bar-label {
+  font-family: var(--font-data);
+  font-size: 9px;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin-top: var(--s-xs);
+}
+
+/* ── PRIORITY CARDS ── */
+.priority-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-lg);
+  margin-top: var(--s-xl);
+}
+.priority-card {
+  padding: var(--s-lg);
+  border: 1px solid rgba(0,0,0,0.06);
+  background: var(--color-card);
+}
+.priority-card__badge {
+  font-family: var(--font-data);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  display: inline-block;
+  margin-bottom: var(--s-md);
+  border-radius: 2px;
+}
+.priority-card__badge--p0 { background: rgba(209,67,67,0.1); color: var(--color-signal-red); }
+.priority-card__badge--p1 { background: rgba(232,115,74,0.1); color: var(--color-signal-orange); }
+.priority-card__badge--p2 { background: rgba(74,93,58,0.08); color: var(--color-forest-soft); }
+.priority-card__action {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  margin-bottom: var(--s-sm);
+  line-height: 1.4;
+}
+.priority-card__meta {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+}
+
+/* ── LEVER TABLE ── */
+.lever-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  padding: var(--s-md) 0;
+  align-items: start;
+}
+.lever-row:last-child { border-bottom: none; }
+.lever-row__num {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-light);
+  color: var(--text-decorative);
+  line-height: 1;
+}
+.lever-row__cell {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding-right: var(--s-md);
+}
+.lever-row__cell strong {
+  display: block;
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  margin-bottom: var(--s-xs);
+  font-weight: var(--fw-semibold);
+}
+
+/* ── TRACKING TABLE ── */
+.tracking-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+  gap: var(--s-lg);
+  padding: var(--s-md) 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  align-items: baseline;
+}
+.tracking-row:last-child { border-bottom: none; }
+.tracking-row__label {
+  font-weight: var(--fw-medium);
+  font-size: var(--fs-body-sm);
+}
+.tracking-row__current {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  color: var(--color-signal-orange);
+  letter-spacing: var(--ls-tight);
+}
+.tracking-row__target {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  color: var(--color-forest-soft);
+  letter-spacing: var(--ls-tight);
+}
+.tracking-row__method {
+  font-size: var(--fs-body-sm);
+  color: var(--text-tertiary);
+}
+
+/* ── PROSE ── */
+.prose {
+  max-width: var(--c-read);
+  margin: 0 auto;
+  padding: 0 var(--s-xl);
+}
+.prose p {
+  font-size: var(--fs-body);
+  line-height: var(--lh-read);
+  color: var(--text-primary);
+  margin-bottom: var(--s-lg);
+}
+.prose p:first-of-type {
+  font-size: var(--fs-body-lg);
+  color: var(--text-secondary);
+}
+
+/* ── PULL QUOTE ── */
+.pull-quote {
+  border-left: 2px solid var(--color-forest-soft);
+  padding: var(--s-lg) var(--s-xl);
+  margin: var(--s-2xl) 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-light);
+  line-height: 1.4;
+  color: var(--text-primary);
+  font-style: italic;
+}
+.pull-quote__attr {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-top: var(--s-md);
+  font-style: normal;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  background: var(--color-offwhite-warm);
+  border-left: 2px solid var(--color-forest-soft);
+  padding: var(--s-lg);
+  margin: var(--s-xl) 0;
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.callout--dark {
+  background: rgba(255,255,255,0.05);
+  border-left-color: var(--color-sabc-s);
+  color: rgba(255,255,255,0.6);
+}
+.callout__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-forest-soft);
+  margin-bottom: var(--s-sm);
+}
+.callout--dark .callout__label { color: var(--color-sabc-s); }
+
+/* ── DIVIDER ── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(0,0,0,0.06);
+  margin: 0;
+}
+.section--dark .divider { background: rgba(255,255,255,0.08); }
+
+/* ── SECTION ASSEMBLY ── */
+.section-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2xl);
+  margin-top: var(--s-xl);
+}
+.section-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ── SUBSECTION ── */
+.subsection {
+  margin-top: var(--s-3xl);
+}
+.subsection__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-forest-soft);
+  margin-bottom: var(--s-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--s-sm);
+}
+.subsection__label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--color-forest-soft);
+}
+.subsection__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--s-md);
+}
+.subsection__desc {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: var(--lh-read);
+  margin-bottom: var(--s-lg);
+}
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--color-black);
+  color: #fff;
+  padding: var(--s-5xl) 0 var(--s-3xl);
+}
+.footer__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--s-lg);
+  max-width: 600px;
+}
+.footer__title strong {
+  font-weight: var(--fw-bold);
+  color: var(--color-sabc-s);
+}
+.footer__meta {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: var(--s-xl);
+}
+.footer__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-md);
+  margin-top: var(--s-xl);
+}
+.footer__source {
+  font-family: var(--font-data);
+  font-size: var(--fs-caption);
+  padding: var(--s-xs) var(--s-sm);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.04em;
+}
+.footer__copyright {
+  margin-top: var(--s-3xl);
+  padding-top: var(--s-lg);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.04em;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .priority-grid { grid-template-columns: 1fr; }
+  .section-grid { grid-template-columns: 1fr; }
+  .section-grid--3 { grid-template-columns: 1fr; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .comparison-col--center { display: none; }
+  .small-multiples { grid-template-columns: 1fr; }
+  .sm-panel--large { grid-row: span 1; }
+  .ig-table { grid-template-columns: 1fr; }
+  .ig-table__cell { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .contradiction-grid { grid-template-columns: 1fr; }
+  .lever-row { grid-template-columns: 40px 1fr; gap: var(--s-sm); }
+  .lever-row__cell:nth-child(3),
+  .lever-row__cell:nth-child(4),
+  .lever-row__cell:nth-child(5) { grid-column: 2; }
+  .tracking-row { grid-template-columns: 1fr 1fr; gap: var(--s-sm); }
+}
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .hero-statement__title { font-size: var(--fs-h2); }
+  .section__title { font-size: var(--fs-h3); }
+  .data-table { font-size: var(--fs-caption); }
+  .data-table th, .data-table td { padding: var(--s-xs) var(--s-sm); }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO — V4 Statement (文档首页)
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="hero-statement">
+  <div class="hero-statement__watermark">SABC</div>
+  <div class="container">
+    <div class="hero-statement__tag">供应商绩效诊断 · 标准化框架</div>
+    <h1 class="hero-statement__title">
+      SABC 标准化<br><strong>深度诊断框架</strong>
+    </h1>
+    <p class="hero-statement__subtitle">
+      六章框架 × 14 张图表映射 × 视觉叙事设计。从全景总览到整改行动，为供应商坐席绩效提供完整的诊断方法论。
+    </p>
+    <div class="hero-statement__meta">
+      <span>完整版 v3.1</span>
+      <span>2026-05-17</span>
+      <span>整合自 sabc-diagnostic / viz-* 四技能</span>
+    </div>
+  </div>
+  <div class="hero-statement__scroll">Scroll ↓</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     目录
+     ═══════════════════════════════════════════════════════════════ -->
+<nav class="chapter-nav">
+  <div class="container">
+    <div class="chapter-nav__inner">
+      <a href="#ch1" class="chapter-nav__link">① 全景总览</a>
+      <a href="#ch2" class="chapter-nav__link">② 趋势纵深</a>
+      <a href="#ch3" class="chapter-nav__link">③ 分群画像</a>
+      <a href="#ch4" class="chapter-nav__link">④ 关联归因</a>
+      <a href="#ch5" class="chapter-nav__link">⑤ 异常预警</a>
+      <a href="#ch6" class="chapter-nav__link">⑥ 诊断结论</a>
+      <a href="#appendix" class="chapter-nav__link">附录</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHAPTER 1 — 全景总览
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="ch1">
+  <div class="container">
+    <div class="section__label">第一章</div>
+    <h2 class="section__title">全景总览</h2>
+    <p class="section__intro">一眼看清这个月什么状态。给决策者的仪表盘——核心 KPI、人力结构、月度变化，三件事扫一眼就有判断。</p>
+
+    <!-- 1.1 KPI Cards -->
+    <div class="subsection">
+      <div class="subsection__label">1.1 核心 KPI 卡片</div>
+      <p class="subsection__desc">4 张指标卡，每张含红绿灯指示 + 数值 + 简要说明。低于阈值亮灯，无需读数字就能感知状态。</p>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card__indicator kpi-card__indicator--red"></div>
+          <div class="kpi-card__label">参评率</div>
+          <div class="kpi-card__value">46.7%</div>
+          <div class="kpi-card__desc">参评人数/总人数，低于 60% 亮红灯</div>
+          <div class="kpi-card__spark">
+            <div class="kpi-card__spark-bar" style="height:30%"></div>
+            <div class="kpi-card__spark-bar" style="height:45%"></div>
+            <div class="kpi-card__spark-bar" style="height:38%"></div>
+            <div class="kpi-card__spark-bar" style="height:52%"></div>
+            <div class="kpi-card__spark-bar--active" style="height:65%"></div>
+            <div class="kpi-card__spark-bar--active" style="height:47%"></div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__indicator kpi-card__indicator--yellow"></div>
+          <div class="kpi-card__label">C 级率</div>
+          <div class="kpi-card__value">39.1%</div>
+          <div class="kpi-card__desc">C 级人数/参评人数，高于 25% 亮黄灯</div>
+          <div class="kpi-card__spark">
+            <div class="kpi-card__spark-bar" style="height:20%"></div>
+            <div class="kpi-card__spark-bar" style="height:25%"></div>
+            <div class="kpi-card__spark-bar" style="height:30%"></div>
+            <div class="kpi-card__spark-bar" style="height:35%"></div>
+            <div class="kpi-card__spark-bar--active" style="height:39%"></div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__indicator kpi-card__indicator--yellow"></div>
+          <div class="kpi-card__label">S/C 转化倍差</div>
+          <div class="kpi-card__value">3.4×</div>
+          <div class="kpi-card__desc">S 级平均转化率 / C 级平均转化率，头部和尾部的技能差距</div>
+          <div class="kpi-card__spark">
+            <div class="kpi-card__spark-bar" style="height:50%"></div>
+            <div class="kpi-card__spark-bar" style="height:55%"></div>
+            <div class="kpi-card__spark-bar--active" style="height:72%"></div>
+            <div class="kpi-card__spark-bar--active" style="height:85%"></div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__indicator kpi-card__indicator--red"></div>
+          <div class="kpi-card__label">GMV 集中度</div>
+          <div class="kpi-card__value">59.2%</div>
+          <div class="kpi-card__desc">Top20% GMV 占比，高于 60% 亮红灯</div>
+          <div class="kpi-card__spark">
+            <div class="kpi-card__spark-bar" style="height:40%"></div>
+            <div class="kpi-card__spark-bar" style="height:48%"></div>
+            <div class="kpi-card__spark-bar" style="height:52%"></div>
+            <div class="kpi-card__spark-bar--active" style="height:59%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1.2 人力结构 -->
+    <div class="subsection">
+      <div class="subsection__label">1.2 人力结构总览</div>
+      <p class="subsection__desc">参评 vs 非参评 / 首贷 vs 复贷，一眼看清团队构成。两种业务模式分开看，不混在一起分析。</p>
+
+      <div class="section-grid">
+        <!-- 图1: 堆叠柱状图 -->
+        <div class="chart-mock">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title">图1 · 职场 S/A/B/C 构成</div>
+              <div class="chart-mock__subtitle">首贷参评 56 人 + 复贷参评 93 人 = 合计参评 149 人</div>
+            </div>
+            <div class="chart-mock__tag">堆叠柱状图</div>
+          </div>
+          <div class="chart-mock__canvas">
+            <div class="stacked-bar" style="width:100%">
+              <div class="stacked-bar__col">
+                <div class="stacked-bar__segment" style="height:10%;background:var(--color-sabc-c)"></div>
+                <div class="stacked-bar__segment" style="height:20%;background:var(--color-sabc-b)"></div>
+                <div class="stacked-bar__segment" style="height:35%;background:var(--color-sabc-a)"></div>
+                <div class="stacked-bar__segment" style="height:35%;background:var(--color-sabc-s)"></div>
+                <div class="stacked-bar__label">职场 A</div>
+              </div>
+              <div class="stacked-bar__col">
+                <div class="stacked-bar__segment" style="height:40%;background:var(--color-sabc-c)"></div>
+                <div class="stacked-bar__segment" style="height:25%;background:var(--color-sabc-b)"></div>
+                <div class="stacked-bar__segment" style="height:20%;background:var(--color-sabc-a)"></div>
+                <div class="stacked-bar__segment" style="height:15%;background:var(--color-sabc-s)"></div>
+                <div class="stacked-bar__label">职场 B</div>
+              </div>
+              <div class="stacked-bar__col">
+                <div class="stacked-bar__segment" style="height:15%;background:var(--color-sabc-c)"></div>
+                <div class="stacked-bar__segment" style="height:30%;background:var(--color-sabc-b)"></div>
+                <div class="stacked-bar__segment" style="height:30%;background:var(--color-sabc-a)"></div>
+                <div class="stacked-bar__segment" style="height:25%;background:var(--color-sabc-s)"></div>
+                <div class="stacked-bar__label">职场 C</div>
+              </div>
+              <div class="stacked-bar__col">
+                <div class="stacked-bar__segment" style="height:30%;background:var(--color-sabc-c)"></div>
+                <div class="stacked-bar__segment" style="height:35%;background:var(--color-sabc-b)"></div>
+                <div class="stacked-bar__segment" style="height:25%;background:var(--color-sabc-a)"></div>
+                <div class="stacked-bar__segment" style="height:10%;background:var(--color-sabc-s)"></div>
+                <div class="stacked-bar__label">职场 D</div>
+              </div>
+              <div class="stacked-bar__col">
+                <div class="stacked-bar__segment" style="height:22%;background:var(--color-sabc-c)"></div>
+                <div class="stacked-bar__segment" style="height:28%;background:var(--color-sabc-b)"></div>
+                <div class="stacked-bar__segment" style="height:25%;background:var(--color-sabc-a)"></div>
+                <div class="stacked-bar__segment" style="height:25%;background:var(--color-sabc-s)"></div>
+                <div class="stacked-bar__label">职场 E</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:var(--s-lg);padding:0 var(--s-lg) var(--s-md);font-family:var(--font-data);font-size:10px;color:var(--text-tertiary)">
+            <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:8px;height:8px;background:var(--color-sabc-s);border-radius:1px"></span>S 级</span>
+            <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:8px;height:8px;background:var(--color-sabc-a);border-radius:1px"></span>A 级</span>
+            <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:8px;height:8px;background:var(--color-sabc-b);border-radius:1px"></span>B 级</span>
+            <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:8px;height:8px;background:var(--color-sabc-c);border-radius:1px"></span>C 级</span>
+          </div>
+        </div>
+
+        <!-- 图2: 首贷×复贷对比卡 -->
+        <div class="chart-mock">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title">图2 · 首贷 × 复贷 双池对比</div>
+              <div class="chart-mock__subtitle">复贷贡献 90% 总 GMV，但首贷的客户池积累价值不能只看 GMV</div>
+            </div>
+            <div class="chart-mock__tag">对比表格 + Spark Bar</div>
+          </div>
+          <div class="comparison-grid" style="margin-top:0">
+            <div class="comparison-col comparison-col--left">
+              <div class="comparison-col__label">首贷</div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">总人数</span>
+                <span class="comparison-row__value">120</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">参评率</span>
+                <span class="comparison-row__value">46.7%</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">总 GMV</span>
+                <span class="comparison-row__value comparison-row__value--accent">9,040万</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">有通话活动</span>
+                <span class="comparison-row__value">69%</span>
+              </div>
+            </div>
+            <div class="comparison-col--center">VS</div>
+            <div class="comparison-col comparison-col--right">
+              <div class="comparison-col__label">复贷</div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">总人数</span>
+                <span class="comparison-row__value">223</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">参评率</span>
+                <span class="comparison-row__value">41.7%</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">总 GMV</span>
+                <span class="comparison-row__value comparison-row__value--accent">8.16亿</span>
+              </div>
+              <div class="comparison-row">
+                <span class="comparison-row__label">有通话活动</span>
+                <span class="comparison-row__value">99%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1.3 月度对比 -->
+    <div class="subsection">
+      <div class="subsection__label">1.3 月度对比</div>
+      <div class="callout">
+        <div class="callout__label">当前暂缺</div>
+        本期为单期截面数据，无上期对比。建议下期起加入此模块。已有数据可先对比本次与历史分析报告中的关键指标（参评率 / C级率 / GMV 总量），做方向性判断，标注为"估算"。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHAPTER 2 — 趋势纵深
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section section--dark" id="ch2">
+  <div class="container">
+    <div class="section__label">第二章</div>
+    <h2 class="section__title">趋势纵深</h2>
+    <p class="section__intro">司龄全生命周期——团队是怎么走到今天这个状态的？数据随时间的演变路径。</p>
+
+    <!-- 2.1 司龄段核心指标 -->
+    <div class="subsection">
+      <div class="subsection__label">2.1 司龄段核心指标曲线</div>
+      <p class="subsection__desc">GMV / 通时 / 效率随司龄的变化规律。哪个时间点是产能拐点？</p>
+
+      <div class="section-grid">
+        <!-- 图3: 热力图 -->
+        <div class="chart-mock" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title" style="color:#fff">图3 · 司龄 × 等级矩阵</div>
+              <div class="chart-mock__subtitle" style="color:rgba(255,255,255,0.4)">S 级集中在 MOB12+ 老员工，C 级集中在 MOB1-3 新人</div>
+            </div>
+            <div class="chart-mock__tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">热力图</div>
+          </div>
+          <div class="heatmap" style="padding:0">
+            <div class="heatmap__corner"></div>
+            <div class="heatmap__header">S</div>
+            <div class="heatmap__header">A</div>
+            <div class="heatmap__header">B</div>
+            <div class="heatmap__header">C</div>
+            <div class="heatmap__row-label">MOB12+</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.8);color:#fff">18</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.5);color:#fff">12</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.2)">5</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.05)">2</div>
+            <div class="heatmap__row-label">MOB6-12</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.5);color:#fff">8</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.4);color:#fff">10</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.2)">7</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.08)">4</div>
+            <div class="heatmap__row-label">MOB3-6</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.15)">3</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.25)">6</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.3);color:#fff">9</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.15)">6</div>
+            <div class="heatmap__row-label">MOB1-3</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.05)">1</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.1)">3</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.2)">7</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.5);color:#fff">14</div>
+            <div class="heatmap__row-label">MOB1-</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.02)">0</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.05)">1</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.1)">3</div>
+            <div class="heatmap__cell" style="background:rgba(199,90,53,0.3);color:#fff">8</div>
+          </div>
+        </div>
+
+        <!-- 图4: 折线图 -->
+        <div class="chart-mock" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title" style="color:#fff">图4 · 司龄段绩效走势</div>
+              <div class="chart-mock__subtitle" style="color:rgba(255,255,255,0.4)">MOB3-6 效率跃升 2.5 倍，MOB12+ 效率是新人的 6.1 倍</div>
+            </div>
+            <div class="chart-mock__tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">折线图 + 拐点标注</div>
+          </div>
+          <div class="line-chart" style="height:160px">
+            <svg class="line-chart__svg" viewBox="0 0 400 160" preserveAspectRatio="none">
+              <!-- Grid lines -->
+              <line x1="0" y1="40" x2="400" y2="40" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <line x1="0" y1="80" x2="400" y2="80" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <line x1="0" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              <!-- GMV line -->
+              <polyline points="30,140 100,120 170,80 240,55 310,25" fill="none" stroke="#E8734A" stroke-width="2"/>
+              <!-- Conversion line -->
+              <polyline points="30,130 100,115 170,90 240,70 310,50" fill="none" stroke="#5A6878" stroke-width="2"/>
+              <!-- Dots -->
+              <circle cx="30" cy="140" r="3" fill="#E8734A"/>
+              <circle cx="100" cy="120" r="3" fill="#E8734A"/>
+              <circle cx="170" cy="80" r="3" fill="#E8734A"/>
+              <circle cx="240" cy="55" r="3" fill="#E8734A"/>
+              <circle cx="310" cy="25" r="3" fill="#E8734A"/>
+              <!-- Annotation -->
+              <line x1="170" y1="80" x2="170" y2="105" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="2,2"/>
+              <text x="175" y="115" fill="rgba(255,255,255,0.5)" font-size="9" font-family="JetBrains Mono">2.5×</text>
+              <line x1="310" y1="25" x2="310" y2="50" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="2,2"/>
+              <text x="280" y="60" fill="rgba(255,255,255,0.5)" font-size="9" font-family="JetBrains Mono">6.1×</text>
+            </svg>
+          </div>
+          <div style="display:flex;gap:var(--s-lg);padding:0 var(--s-lg) var(--s-md);font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.4)">
+            <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:8px;height:2px;background:var(--color-sabc-s)"></span>平均 GMV</span>
+            <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:8px;height:2px;background:var(--color-sabc-a)"></span>平均转化率</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.2 新人育成追踪 -->
+    <div class="subsection">
+      <div class="subsection__label">2.2 新人育成追踪</div>
+      <p class="subsection__desc">入职批次 vs 产出曲线——招了这么多人，多久能产出？</p>
+
+      <div class="section-grid">
+        <!-- 图5: 月度入职趋势 -->
+        <div class="chart-mock" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title" style="color:#fff">图5 · 月度入职趋势</div>
+              <div class="chart-mock__subtitle" style="color:rgba(255,255,255,0.4)">2026 年 3-4 月集中入职 150 人——历史月均仅 5.6 人</div>
+            </div>
+            <div class="chart-mock__tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">条形图 + 均值线</div>
+          </div>
+          <div class="chart-mock__canvas" style="min-height:140px">
+            <div class="bar-chart" style="height:140px;gap:6px;padding:var(--s-md)">
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:12%;background:var(--color-warm-gray)"></div><div class="bar-chart__label">2025-09</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:8%;background:var(--color-warm-gray)"></div><div class="bar-chart__label">10</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:10%;background:var(--color-warm-gray)"></div><div class="bar-chart__label">11</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:6%;background:var(--color-warm-gray)"></div><div class="bar-chart__label">12</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:14%;background:var(--color-warm-gray)"></div><div class="bar-chart__label">2026-01</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:10%;background:var(--color-warm-gray)"></div><div class="bar-chart__label">02</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:88%;background:var(--color-signal-orange)"></div><div class="bar-chart__label" style="color:var(--color-signal-orange)">03</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:92%;background:var(--color-signal-orange)"></div><div class="bar-chart__label" style="color:var(--color-signal-orange)">04</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:30%;background:rgba(209,201,192,0.5)"></div><div class="bar-chart__label">05*</div></div>
+            </div>
+          </div>
+          <div style="padding:0 var(--s-lg) var(--s-md);font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.3)">
+            * 部分月份（截至 5 月 12 日）&nbsp;&nbsp;— — 历史月均 5.6 人&nbsp;&nbsp;— — 历史峰值 19 人
+          </div>
+        </div>
+
+        <!-- 图6: Small Multiples -->
+        <div class="chart-mock" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title" style="color:#fff">图6 · 新人产出追踪</div>
+              <div class="chart-mock__subtitle" style="color:rgba(255,255,255,0.4)">3 月入职新人已贡献 6,970 万 GMV（占总量 21.8%），4 月仍处育成期</div>
+            </div>
+            <div class="chart-mock__tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">Small Multiples</div>
+          </div>
+          <div class="small-multiples" style="margin-top:0">
+            <div class="sm-panel sm-panel--large" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+              <div class="sm-panel__label">有 GMV 人数占比</div>
+              <div class="sm-panel__title">3 月入职 89% 已产生 GMV</div>
+              <div class="sm-panel__canvas">
+                <div class="sm-bar sm-bar--orange" style="height:89%"><span class="sm-bar__value">89%</span></div>
+                <div class="sm-bar sm-bar--gray" style="height:42%"><span class="sm-bar__value">42%</span></div>
+              </div>
+              <div style="display:flex;gap:var(--s-md);margin-top:var(--s-sm);font-family:var(--font-data);font-size:9px;color:rgba(255,255,255,0.3)">
+                <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:6px;height:6px;background:var(--color-sabc-s)"></span>3 月入职</span>
+                <span style="display:flex;align-items:center;gap:var(--s-xs)"><span style="width:6px;height:6px;background:var(--color-sabc-b)"></span>4 月入职</span>
+              </div>
+            </div>
+            <div class="sm-panel" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+              <div class="sm-panel__label">人均 GMV</div>
+              <div class="sm-panel__canvas">
+                <div class="sm-bar sm-bar--orange" style="height:72%"><span class="sm-bar__value">38万</span></div>
+                <div class="sm-bar sm-bar--gray" style="height:28%"><span class="sm-bar__value">12万</span></div>
+              </div>
+            </div>
+            <div class="sm-panel" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+              <div class="sm-panel__label">人均外呼天数</div>
+              <div class="sm-panel__canvas">
+                <div class="sm-bar sm-bar--orange" style="height:65%"><span class="sm-bar__value">18天</span></div>
+                <div class="sm-bar sm-bar--gray" style="height:35%"><span class="sm-bar__value">8天</span></div>
+              </div>
+            </div>
+            <div class="sm-panel" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+              <div class="sm-panel__label">参评率</div>
+              <div class="sm-panel__canvas">
+                <div class="sm-bar sm-bar--orange" style="height:58%"><span class="sm-bar__value">58%</span></div>
+                <div class="sm-bar sm-bar--gray" style="height:22%"><span class="sm-bar__value">22%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2.3 关键拐点 -->
+    <div class="subsection">
+      <div class="subsection__label">2.3 关键拐点判定</div>
+      <p class="subsection__desc">3 个月 / 6 个月 / 12 个月的质变——什么时点的产出质变最明显？</p>
+      <div class="ig-table" style="border-color:rgba(255,255,255,0.08)">
+        <div class="ig-table__cell" style="border-color:rgba(255,255,255,0.08)">
+          <div class="ig-table__knot" style="color:#fff">MOB1-3 → MOB3-6</div>
+          <div class="ig-table__finding" style="color:rgba(255,255,255,0.5)">单位效率提升 2.5 倍（8,898 → 21,099 元/小时）</div>
+          <div class="ig-table__meaning" style="color:var(--color-sabc-s)">3 个月是新人产能爬坡的关键拐点</div>
+        </div>
+        <div class="ig-table__cell" style="border-color:rgba(255,255,255,0.08)">
+          <div class="ig-table__knot" style="color:#fff">MOB6-12 → MOB12+</div>
+          <div class="ig-table__finding" style="color:rgba(255,255,255,0.5)">单位效率再提升 1.9 倍（28,207 → 54,117 元/小时）</div>
+          <div class="ig-table__meaning" style="color:var(--color-sabc-s)">1 年是老手养成线</div>
+        </div>
+        <div class="ig-table__cell" style="border-color:rgba(255,255,255,0.08)">
+          <div class="ig-table__knot" style="color:#fff">MOB3-6 以下</div>
+          <div class="ig-table__finding" style="color:rgba(255,255,255,0.5)">C 级集中，效率低于基准线</div>
+          <div class="ig-table__meaning" style="color:var(--color-sabc-s)">前 6 个月的带教质量决定坐席是否沦为 C 级</div>
+        </div>
+      </div>
+
+      <!-- 效率阶梯表 -->
+      <div style="margin-top:var(--s-xl)">
+        <div style="font-family:var(--font-data);font-size:var(--fs-eyebrow);letter-spacing:var(--ls-wide);text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:var(--s-md)">效率阶梯参考</div>
+        <div class="tier-table">
+          <div class="tier-bar" style="background:rgba(255,255,255,0.03)">
+            <div class="tier-bar__label">MOB1-</div>
+            <div class="tier-bar__value" style="color:#fff">5,570</div>
+            <div class="tier-bar__mult">0.6×</div>
+          </div>
+          <div class="tier-bar" style="background:rgba(255,255,255,0.06)">
+            <div class="tier-bar__label">MOB1-3</div>
+            <div class="tier-bar__value" style="color:#fff">8,898</div>
+            <div class="tier-bar__mult">1× 基准</div>
+          </div>
+          <div class="tier-bar" style="background:rgba(255,255,255,0.1)">
+            <div class="tier-bar__label">MOB3-6</div>
+            <div class="tier-bar__value" style="color:var(--color-sabc-s)">21,099</div>
+            <div class="tier-bar__mult">2.4×</div>
+          </div>
+          <div class="tier-bar" style="background:rgba(255,255,255,0.15)">
+            <div class="tier-bar__label">MOB6-12</div>
+            <div class="tier-bar__value" style="color:var(--color-sabc-s)">28,207</div>
+            <div class="tier-bar__mult">3.2×</div>
+          </div>
+          <div class="tier-bar" style="background:rgba(255,255,255,0.22)">
+            <div class="tier-bar__label">MOB12+</div>
+            <div class="tier-bar__value" style="color:var(--color-sabc-s)">54,117</div>
+            <div class="tier-bar__mult">6.1×</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHAPTER 3 — 分群画像
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="ch3">
+  <div class="container">
+    <div class="section__label">第三章</div>
+    <h2 class="section__title">分群画像</h2>
+    <p class="section__intro">谁在扛业绩、谁在拖后腿？S/A/B/C 四类坐席各自的核心画像。</p>
+
+    <!-- 3.1 SABC 等级画像 -->
+    <div class="subsection">
+      <div class="subsection__label">3.1 SABC 等级画像</div>
+      <p class="subsection__desc">S 级和 C 级不是"好一点"的差别，是量级差。人均 GMV 差 6.7 倍，转化率差 3.4 倍。</p>
+
+      <!-- 图7: 对比表格 -->
+      <div class="chart-mock">
+        <div class="chart-mock__header">
+          <div>
+            <div class="chart-mock__title">图7 · SABC 四档画像明细</div>
+            <div class="chart-mock__subtitle">S/C 倍差列用背景色阶标注——>3× 深红、1.5-3× 黄色、<1.5× 绿色</div>
+          </div>
+          <div class="chart-mock__tag">对比表格 + 色阶</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table" style="margin-top:0">
+            <thead>
+              <tr>
+                <th>维度</th>
+                <th>S 级 (5人)</th>
+                <th>A 级 (13人)</th>
+                <th>B 级 (16人)</th>
+                <th>C 级 (22人)</th>
+                <th>S/C 倍差</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>人均 GMV (万)</td>
+                <td>376</td>
+                <td>255</td>
+                <td>85</td>
+                <td>56</td>
+                <td class="cell--hot"><strong>6.7×</strong></td>
+              </tr>
+              <tr>
+                <td>平均转化率</td>
+                <td>1.68%</td>
+                <td>—</td>
+                <td>—</td>
+                <td>0.50%</td>
+                <td class="cell--hot"><strong>3.4×</strong></td>
+              </tr>
+              <tr>
+                <td>日均通时 (min)</td>
+                <td>123</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td class="cell—cool">—</td>
+              </tr>
+              <tr>
+                <td>ATT (秒)</td>
+                <td>101</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td class="cell—cool">—</td>
+              </tr>
+              <tr>
+                <td>T0 首贷 GMV 得分</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>0.9-38.2 (宽区间)</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td>司龄主力</td>
+                <td>MOB12+ (3人)</td>
+                <td>—</td>
+                <td>—</td>
+                <td>MOB1-3 (多人)</td>
+                <td class="cell--warm">结构差异</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 图8: 转化断层 -->
+      <div class="chart-mock" style="margin-top:var(--s-xl)">
+        <div class="chart-mock__header">
+          <div>
+            <div class="chart-mock__title">图8 · 转化断层 — S/A/B/C 转化率对比</div>
+            <div class="chart-mock__subtitle">A→B 断崖降 67%，中间层培养机制未有效落地</div>
+          </div>
+          <div class="chart-mock__tag">条形图 + 断崖标注</div>
+        </div>
+        <div class="chart-mock__canvas" style="min-height:140px">
+          <div class="bar-chart" style="height:140px;gap:var(--s-xl);padding:var(--s-lg)">
+            <div class="bar-chart__col"><div class="bar-chart__bar" style="height:100%;background:var(--color-sabc-s)"></div><div class="bar-chart__label">S · 1.68%</div></div>
+            <div class="bar-chart__col"><div class="bar-chart__bar" style="height:72%;background:var(--color-sabc-a)"></div><div class="bar-chart__label">A · 1.21%</div></div>
+            <div class="bar-chart__col"><div class="bar-chart__bar" style="height:38%;background:var(--color-sabc-b)"></div><div class="bar-chart__label" style="color:var(--color-signal-red)">B · 0.40% ↓67%</div></div>
+            <div class="bar-chart__col"><div class="bar-chart__bar" style="height:30%;background:var(--color-sabc-c)"></div><div class="bar-chart__label">C · 0.50%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.3 非参评群体拆解 -->
+    <div class="subsection">
+      <div class="subsection__label">3.3 非参评群体拆解</div>
+      <p class="subsection__desc">194 人未参评——他们是零通话、低效、还是隐藏高潜？</p>
+
+      <div class="section-grid">
+        <!-- 图9a -->
+        <div class="chart-mock">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title">图9a · 非参评群体三分类</div>
+              <div class="chart-mock__subtitle">核心问题是"零通话"而非"整个非参评池"</div>
+            </div>
+            <div class="chart-mock__tag">堆叠条形图</div>
+          </div>
+          <div class="chart-mock__canvas" style="min-height:80px;align-items:stretch">
+            <div style="display:flex;width:80%;height:48px;border-radius:2px;overflow:hidden">
+              <div style="width:36%;background:var(--color-signal-red);display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:11px;color:#fff;font-weight:600">47 零通话</div>
+              <div style="width:40%;background:var(--color-warm-gray-dark);display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:11px;color:#fff;font-weight:600">83 低效</div>
+              <div style="width:24%;background:var(--color-sabc-b);display:flex;align-items:center;justify-content:center;font-family:var(--font-data);font-size:11px;color:#fff;font-weight:600">64 隐藏高潜</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 图9b -->
+        <div class="chart-mock">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title">图9b · 非参评人群日均通时分布</div>
+              <div class="chart-mock__subtitle">零通话 47 人集中在左侧，尾部藏有 15 名 MOB12+ 老员工</div>
+            </div>
+            <div class="chart-mock__tag">直方图</div>
+          </div>
+          <div class="chart-mock__canvas" style="min-height:80px">
+            <div class="bar-chart" style="height:80px;gap:4px;padding:var(--s-md)">
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:100%;background:var(--color-signal-red)"></div><div class="bar-chart__label">0</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:45%;background:var(--color-warm-gray-dark)"></div><div class="bar-chart__label">0-30</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:30%;background:var(--color-warm-gray-dark)"></div><div class="bar-chart__label">30-60</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:20%;background:var(--color-warm-gray-dark)"></div><div class="bar-chart__label">60-90</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:12%;background:var(--color-sabc-b)"></div><div class="bar-chart__label">90-120</div></div>
+              <div class="bar-chart__col"><div class="bar-chart__bar" style="height:8%;background:var(--color-sabc-b)"></div><div class="bar-chart__label">120+</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 非参评三群人处置表 -->
+      <table class="data-table" style="margin-top:var(--s-xl)">
+        <thead>
+          <tr>
+            <th>群体</th>
+            <th>人数</th>
+            <th>特征</th>
+            <th>建议处置</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>① 零通话</td>
+            <td>47 人 (36%)</td>
+            <td>近 30 天无任何通话记录</td>
+            <td>7 天内确认状态：离岗 / 转岗 / 淘汰</td>
+          </tr>
+          <tr>
+            <td>② 低效</td>
+            <td>83 人 (64%)</td>
+            <td>日均通时 30-90min，远低于 SABC 核心 >120min</td>
+            <td>分析根因：技能差距 / 名单质量 / 管理缺位</td>
+          </tr>
+          <tr>
+            <td>③ 隐藏高潜</td>
+            <td>少数</td>
+            <td>GMV 达到参评中游，但出勤天数不足</td>
+            <td>优先激活——他们是成本最低的增量</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHAPTER 4 — 关联归因
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section section--dark" id="ch4">
+  <div class="container">
+    <div class="section__label">第四章</div>
+    <h2 class="section__title">关联归因</h2>
+    <p class="section__intro">业绩到底由什么驱动？给管理动作提供数据依据。</p>
+
+    <!-- 4.1 GMV 驱动因素排序 -->
+    <div class="subsection">
+      <div class="subsection__label">4.1 GMV 驱动因素排序</div>
+      <p class="subsection__desc">通时 / 外呼天数 / ATT / 转化率——哪个指标对 GMV 影响最大？</p>
+
+      <table class="data-table" style="border-color:rgba(255,255,255,0.08)">
+        <thead>
+          <tr>
+            <th>排序</th>
+            <th>驱动因素</th>
+            <th>相关系数 r</th>
+            <th>解读</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td style="color:#fff">有效通时总量</td>
+            <td style="color:var(--color-sabc-s)">0.69</td>
+            <td style="color:rgba(255,255,255,0.5)">最核心的投入指标——通话总时长 = 客户触达广度</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td style="color:#fff">外呼天数</td>
+            <td style="color:rgba(255,255,255,0.7)">0.61</td>
+            <td style="color:rgba(255,255,255,0.5)">稳定出勤是基础——外呼 <10 天几乎不可能高产出</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td style="color:#fff">接通话单数</td>
+            <td style="color:rgba(255,255,255,0.7)">0.63</td>
+            <td style="color:rgba(255,255,255,0.5)">和有效通时高度共线</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td style="color:#fff">日均通时强度</td>
+            <td style="color:rgba(255,255,255,0.4)">0.47</td>
+            <td style="color:rgba(255,255,255,0.5)">必要条件但不是充分条件</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td style="color:#fff">ATT</td>
+            <td style="color:rgba(255,255,255,0.25)">0.12</td>
+            <td style="color:rgba(255,255,255,0.3)"><strong style="color:var(--color-signal-red)">最不重要</strong>——无需作为管理重点</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4.2 投入产出效率 -->
+    <div class="subsection">
+      <div class="subsection__label">4.2 投入产出效率</div>
+      <p class="subsection__desc">通时效率随司龄的变化——老员工和新人的效率差异有多大？</p>
+
+      <!-- 图10: 散点图 -->
+      <div class="chart-mock" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+        <div class="chart-mock__header">
+          <div>
+            <div class="chart-mock__title" style="color:#fff">图10 · 通时 × GMV 关联分析</div>
+            <div class="chart-mock__subtitle" style="color:rgba(255,255,255,0.4)">复贷：通话量 ≈ 产出（r=0.83）· 首贷：通话之外转化技巧更重要（r=0.47）</div>
+          </div>
+          <div class="chart-mock__tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">散点图 + 回归线</div>
+        </div>
+        <div class="line-chart" style="height:140px">
+          <svg class="line-chart__svg" viewBox="0 0 400 140">
+            <!-- Scatter: 首贷 (gray) -->
+            <circle cx="60" cy="100" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="90" cy="90" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="120" cy="85" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="150" cy="75" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="180" cy="70" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="210" cy="65" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="240" cy="60" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="270" cy="55" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="300" cy="50" r="3" fill="rgba(139,153,168,0.6)"/>
+            <circle cx="330" cy="48" r="3" fill="rgba(139,153,168,0.6)"/>
+            <!-- Scatter: 复贷 (orange) -->
+            <circle cx="60" cy="110" r="3" fill="rgba(232,115,74,0.7)"/>
+            <circle cx="100" cy="100" r="3" fill="rgba(232,115,74,0.7)"/>
+            <circle cx="140" cy="88" r="3" fill="rgba(232,115,74,0.7)"/>
+            <circle cx="180" cy="72" r="3" fill="rgba(232,115,74,0.7)"/>
+            <circle cx="220" cy="58" r="3" fill="rgba(232,115,74,0.7)"/>
+            <circle cx="260" cy="45" r="3" fill="rgba(232,115,74,0.7)"/>
+            <circle cx="300" cy="35" r="3" fill="rgba(232,115,74,0.7)"/>
+            <circle cx="340" cy="25" r="3" fill="rgba(232,115,74,0.7)"/>
+            <!-- Regression lines -->
+            <line x1="60" y1="105" x2="340" y2="40" stroke="rgba(139,153,168,0.4)" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="60" y1="112" x2="340" y2="18" stroke="rgba(232,115,74,0.5)" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- Labels -->
+            <text x="345" y="42" fill="rgba(139,153,168,0.6)" font-size="9" font-family="JetBrains Mono">r=0.47</text>
+            <text x="345" y="20" fill="rgba(232,115,74,0.7)" font-size="9" font-family="JetBrains Mono">r=0.83</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.3 评分体系校验 -->
+    <div class="subsection">
+      <div class="subsection__label">4.3 评分体系校验</div>
+      <p class="subsection__desc">现有 SABC 评分规则是否合理？各个维度的实际贡献权重。</p>
+
+      <!-- 图12 -->
+      <div class="chart-mock" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+        <div class="chart-mock__header">
+          <div>
+            <div class="chart-mock__title" style="color:#fff">图12 · 评分维度贡献权重</div>
+            <div class="chart-mock__subtitle" style="color:rgba(255,255,255,0.4)">转化率得分是综合评分的最大决定因素（beta=0.42），通时得分出现负权重（beta=-0.21）</div>
+          </div>
+          <div class="chart-mock__tag" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">发散条形图</div>
+        </div>
+        <div class="chart-mock__canvas" style="min-height:120px;flex-direction:column;gap:var(--s-sm);padding:var(--s-lg)">
+          <div style="display:flex;align-items:center;gap:var(--s-md);width:100%">
+            <span style="font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.4);width:120px;text-align:right">转化率得分</span>
+            <div style="flex:1;height:18px;background:rgba(255,255,255,0.04);border-radius:2px;position:relative;overflow:hidden">
+              <div style="position:absolute;left:50%;top:0;bottom:0;width:42%;background:var(--color-sabc-s);border-radius:0 2px 2px 0"></div>
+              <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.5)">beta=0.42</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--s-md);width:100%">
+            <span style="font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.4);width:120px;text-align:right">外呼天数得分</span>
+            <div style="flex:1;height:18px;background:rgba(255,255,255,0.04);border-radius:2px;position:relative;overflow:hidden">
+              <div style="position:absolute;left:50%;top:0;bottom:0;width:28%;background:var(--color-sabc-s);border-radius:0 2px 2px 0"></div>
+              <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.5)">beta=0.28</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--s-md);width:100%">
+            <span style="font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.4);width:120px;text-align:right">T0 GMV 得分</span>
+            <div style="flex:1;height:18px;background:rgba(255,255,255,0.04);border-radius:2px;position:relative;overflow:hidden">
+              <div style="position:absolute;left:50%;top:0;bottom:0;width:5%;background:var(--color-sabc-s);border-radius:0 2px 2px 0"></div>
+              <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.5)">beta=0.05</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--s-md);width:100%">
+            <span style="font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.4);width:120px;text-align:right">通时得分</span>
+            <div style="flex:1;height:18px;background:rgba(255,255,255,0.04);border-radius:2px;position:relative;overflow:hidden">
+              <div style="position:absolute;left:29%;top:0;bottom:0;width:21%;background:var(--color-sabc-b);border-radius:2px 0 0 2px"></div>
+              <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.5)">beta=-0.21</span>
+            </div>
+          </div>
+        </div>
+        <div style="padding:0 var(--s-lg) var(--s-md);font-family:var(--font-data);font-size:10px;color:rgba(255,255,255,0.3)">
+          R² = 0.27 · 还有 73% 的评分变异未被这四个维度解释
+        </div>
+      </div>
+    </div>
+
+    <!-- 4.4 首贷 vs 复贷驱动差异 -->
+    <div class="subsection">
+      <div class="subsection__label">4.4 首贷 vs 复贷驱动差异</div>
+      <p class="subsection__desc">钓鱼逻辑 vs 收割逻辑——两种业务的管理重点完全不同。</p>
+
+      <table class="data-table" style="border-color:rgba(255,255,255,0.08)">
+        <thead>
+          <tr>
+            <th>业务</th>
+            <th>驱动逻辑</th>
+            <th>管理重点</th>
+            <th>考核关注</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--color-sabc-s)">首贷 (钓鱼)</td>
+            <td style="color:rgba(255,255,255,0.6)">GMV = 转化技巧 × 通话量</td>
+            <td style="color:rgba(255,255,255,0.6)">沟通技巧 + 客户识别能力</td>
+            <td style="color:rgba(255,255,255,0.6)">转化率、T0 GMV</td>
+          </tr>
+          <tr>
+            <td style="color:var(--color-sabc-a)">复贷 (收割)</td>
+            <td style="color:rgba(255,255,255,0.6)">GMV = 通话量 × 持续性</td>
+            <td style="color:rgba(255,255,255,0.6)">出勤 + 工作饱和度</td>
+            <td style="color:rgba(255,255,255,0.6)">外呼天数、有效通时</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHAPTER 5 — 异常预警
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="ch5">
+  <div class="container">
+    <div class="section__label">第五章</div>
+    <h2 class="section__title">异常预警</h2>
+    <p class="section__intro">哪些信号需要立即关注？给管理者的干预清单。</p>
+
+    <!-- 5.1 极端值扫描 -->
+    <div class="subsection">
+      <div class="subsection__label">5.1 极端值扫描</div>
+      <p class="subsection__desc">明星坐席和尾部坐席各有什么特征？从他们身上能学到什么 / 发现什么问题？</p>
+
+      <div class="section-grid">
+        <!-- Top5 -->
+        <div class="chart-mock">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title">明星坐席 Top 5</div>
+              <div class="chart-mock__subtitle">全部 S 级、司龄长、ATT 在 90-120s 区间、日均通时 110-160min</div>
+            </div>
+          </div>
+          <table class="data-table" style="margin-top:0">
+            <thead>
+              <tr>
+                <th>坐席</th>
+                <th>得分</th>
+                <th>GMV</th>
+                <th>转化率</th>
+                <th>司龄</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>张军港</td><td class="highlight">93.8</td><td>565万</td><td>2.34%</td><td>MOB12+</td></tr>
+              <tr><td>钱成林</td><td class="highlight">82.1</td><td>640万</td><td>2.10%</td><td>MOB12+</td></tr>
+              <tr><td>王夏娟</td><td class="highlight">85.0</td><td>1,320万</td><td>—</td><td>—</td></tr>
+              <tr><td>王兆雪</td><td class="highlight">79.3</td><td>1,330万</td><td>—</td><td>—</td></tr>
+              <tr><td>吴娟</td><td class="highlight">79.6</td><td>267万</td><td>1.32%</td><td>MOB12+</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Bottom5 -->
+        <div class="chart-mock">
+          <div class="chart-mock__header">
+            <div>
+              <div class="chart-mock__title">尾部坐席 Bottom 3</div>
+              <div class="chart-mock__subtitle">部分人 GMV 不低但得分极低——评分体系对"有产出但效率低"的坐席惩罚严重</div>
+            </div>
+          </div>
+          <table class="data-table" style="margin-top:0">
+            <thead>
+              <tr>
+                <th>坐席</th>
+                <th>得分</th>
+                <th>GMV</th>
+                <th>转化率</th>
+                <th>司龄</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>刘效林</td><td>3.9</td><td>16.6万</td><td>0.33%</td><td>MOB1-</td></tr>
+              <tr><td>范迎迎</td><td>7.6</td><td>560万</td><td>—</td><td>—</td></tr>
+              <tr class="cell--hot"><td>刘颖</td><td class="highlight">0.5</td><td>883万</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.2 矛盾模式识别 -->
+    <div class="subsection">
+      <div class="subsection__label">5.2 矛盾模式识别</div>
+      <p class="subsection__desc">高 GMV 低得分、高通时低转化——这些违背直觉的数据点藏着什么信息？</p>
+
+      <div class="contradiction-grid">
+        <div class="contradiction-card">
+          <div class="contradiction-card__icon">!</div>
+          <div class="contradiction-card__title">高 GMV + 低综合得分</div>
+          <div class="contradiction-card__case">刘颖 GMV=883万，得分=0.5</div>
+          <div class="contradiction-card__insight">评分体系过度惩罚有效工时不足的坐席</div>
+          <div class="contradiction-card__bars">
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--high" style="height:100%"></div>
+              <div class="contradiction-card__bar-label">GMV 883万</div>
+            </div>
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--low" style="height:5%"></div>
+              <div class="contradiction-card__bar-label">得分 0.5</div>
+            </div>
+          </div>
+        </div>
+        <div class="contradiction-card">
+          <div class="contradiction-card__icon">!</div>
+          <div class="contradiction-card__title">高通时 + 低 GMV</div>
+          <div class="contradiction-card__case">日均通时 >120min 但 GMV <30万</div>
+          <div class="contradiction-card__insight">纯通话量不转化为业绩：通话质量是关键差异</div>
+          <div class="contradiction-card__bars">
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--high" style="height:90%"></div>
+              <div class="contradiction-card__bar-label">通时 120min</div>
+            </div>
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--low" style="height:15%"></div>
+              <div class="contradiction-card__bar-label">GMV 30万</div>
+            </div>
+          </div>
+        </div>
+        <div class="contradiction-card">
+          <div class="contradiction-card__icon">!</div>
+          <div class="contradiction-card__title">ATT 短但 GMV 高</div>
+          <div class="contradiction-card__case">ATT <65s 但 GMV >80万</div>
+          <div class="contradiction-card__insight">少数坐席话术高效、快速筛选客户——不是普遍模式</div>
+          <div class="contradiction-card__bars">
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--low" style="height:30%"></div>
+              <div class="contradiction-card__bar-label">ATT 65s</div>
+            </div>
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--high" style="height:85%"></div>
+              <div class="contradiction-card__bar-label">GMV 80万</div>
+            </div>
+          </div>
+        </div>
+        <div class="contradiction-card">
+          <div class="contradiction-card__icon">!</div>
+          <div class="contradiction-card__title">ATT 长但 GMV 低</div>
+          <div class="contradiction-card__case">ATT >100s 但 GMV 低</div>
+          <div class="contradiction-card__insight">无效沟通多——通话效率差</div>
+          <div class="contradiction-card__bars">
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--high" style="height:95%"></div>
+              <div class="contradiction-card__bar-label">ATT 100s</div>
+            </div>
+            <div>
+              <div class="contradiction-card__bar contradiction-card__bar--low" style="height:20%"></div>
+              <div class="contradiction-card__bar-label">GMV 低</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5.3 异常标记分析 -->
+    <div class="subsection">
+      <div class="subsection__label">5.3 异常标记分析</div>
+      <p class="subsection__desc">超 7 天未上线、连续 3 天预警、外呼天数不足——这些标记揭示了什么？</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>标记类型</th>
+            <th>人数</th>
+            <th>特征</th>
+            <th>建议</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>超 7 天未上线</td>
+            <td>2 人</td>
+            <td>周娜娜、周红娟 · 0 通话、0 GMV</td>
+            <td>确认是否已离职或长期病事假</td>
+          </tr>
+          <tr>
+            <td>连续 3 天预警</td>
+            <td>14 人</td>
+            <td>几乎全部为 MOB1- 新人</td>
+            <td>新人培训期出勤不稳定——可接受但需关注</td>
+          </tr>
+          <tr>
+            <td>外呼天数不足 22 天</td>
+            <td class="highlight">194 人 (56.6%)</td>
+            <td>全部非参评</td>
+            <td>正常筛选机制——但其中 15 名 MOB12+ 老员工需关注</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5.4 集中度风险 -->
+    <div class="subsection">
+      <div class="subsection__label">5.4 集中度风险</div>
+      <p class="subsection__desc">前 30% 扛多少业绩？一旦核心流失，短期无人接替。</p>
+
+      <div class="chart-mock">
+        <div class="chart-mock__header">
+          <div>
+            <div class="chart-mock__title">图15 · GMV 集中度 — 帕累托曲线</div>
+            <div class="chart-mock__subtitle">前 30% 坐席扛着 76% 的业绩——一旦核心人员流失，短期无法接替</div>
+          </div>
+          <div class="chart-mock__tag">帕累托曲线</div>
+        </div>
+        <div class="line-chart" style="height:160px">
+          <svg class="line-chart__svg" viewBox="0 0 400 160">
+            <!-- Perfect equality line -->
+            <line x1="40" y1="140" x2="380" y2="20" stroke="rgba(0,0,0,0.08)" stroke-width="1" stroke-dasharray="4,3"/>
+            <!-- Pareto curve -->
+            <path d="M40,140 C80,138 120,130 160,110 C200,85 240,55 280,35 C320,25 360,20 380,18" fill="none" stroke="#E8734A" stroke-width="2"/>
+            <!-- Area under curve -->
+            <path d="M40,140 C80,138 120,130 160,110 C200,85 240,55 280,35 C320,25 360,20 380,18 L380,140 Z" fill="rgba(232,115,74,0.06)"/>
+            <!-- Reference lines -->
+            <line x1="142" y1="140" x2="142" y2="18" stroke="rgba(212,168,67,0.4)" stroke-width="1" stroke-dasharray="3,3"/>
+            <line x1="244" y1="140" x2="244" y2="18" stroke="rgba(0,0,0,0.15)" stroke-width="1" stroke-dasharray="3,3"/>
+            <!-- Annotations -->
+            <text x="145" y="155" fill="var(--text-tertiary)" font-size="9" font-family="JetBrains Mono">前 30%</text>
+            <text x="247" y="155" fill="var(--text-tertiary)" font-size="9" font-family="JetBrains Mono">前 50%</text>
+            <circle cx="142" cy="68" r="4" fill="#E8734A"/>
+            <text x="110" y="60" fill="var(--color-signal-orange)" font-size="10" font-family="JetBrains Mono" font-weight="600">76%</text>
+          </svg>
+        </div>
+        <div style="padding:0 var(--s-lg) var(--s-md);font-family:var(--font-data);font-size:10px;color:var(--text-tertiary)">
+          前 5% = 20.3% · 前 20% = 59.2% · 前 30% = 76.4% · 后 50% 仅贡献 4.3% GMV
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHAPTER 6 — 诊断结论与行动
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section section--dark" id="ch6">
+  <div class="container">
+    <div class="section__label">第六章</div>
+    <h2 class="section__title">诊断结论与行动</h2>
+    <p class="section__intro">交付给管理者的整改清单。从核心问题到分层策略，再到优先级排序。</p>
+
+    <!-- 6.1 核心问题清单 -->
+    <div class="subsection">
+      <div class="subsection__label">6.1 核心问题清单</div>
+      <table class="data-table" style="border-color:rgba(255,255,255,0.08)">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>问题</th>
+            <th>数据定位</th>
+            <th>根因推测</th>
+            <th>置信度</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td style="color:#fff">C 级率 39% 偏高</td>
+            <td style="color:rgba(255,255,255,0.5)">参评 56 人中 22 人 C 级</td>
+            <td style="color:rgba(255,255,255,0.5)">制度设计已到位，执行端 14 天改善期未有效落地</td>
+            <td>中</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td style="color:var(--color-sabc-s)">A→B 断崖降 67%</td>
+            <td style="color:rgba(255,255,255,0.5)">人均 GMV: A 级 255万→B 级 85万</td>
+            <td style="color:rgba(255,255,255,0.5)">中间层培养机制缺失。S 级经验未被萃取</td>
+            <td style="color:var(--color-sabc-s)">高</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td style="color:#fff">53% 坐席未参评</td>
+            <td style="color:rgba(255,255,255,0.5)">120 人中 64 人未达 22 天外呼标准</td>
+            <td style="color:rgba(255,255,255,0.5)">新人批量入职未过育成期属正常，但 15 名 MOB12+ 老员工需关注</td>
+            <td>中</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td style="color:var(--color-sabc-s)">GMV 过度集中</td>
+            <td style="color:rgba(255,255,255,0.5)">Top30% 贡献 76%</td>
+            <td style="color:rgba(255,255,255,0.5)">核心梯队依赖度高，一旦流失短期无法接替</td>
+            <td style="color:var(--color-sabc-s)">高</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td style="color:#fff">零通话 47 人</td>
+            <td style="color:rgba(255,255,255,0.5)">近 30 天无任何通话活动</td>
+            <td style="color:rgba(255,255,255,0.5)">需确认：已离岗？转二线职能？还是管理缺位？</td>
+            <td style="color:var(--color-signal-red)">低</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 6.2 分层改善策略 -->
+    <div class="subsection">
+      <div class="subsection__label">6.2 分层改善策略</div>
+      <div style="margin-top:var(--s-lg)">
+        <div class="lever-row">
+          <div class="lever-row__num">①</div>
+          <div class="lever-row__cell"><strong>止血</strong><br><span style="color:rgba(255,255,255,0.4)">C 级 22 人</span></div>
+          <div class="lever-row__cell">改善期执行效果有限</div>
+          <div class="lever-row__cell">核查 14 天改善期实际执行率 + 结果追踪</div>
+          <div class="lever-row__cell">降低 C 级率</div>
+        </div>
+        <div class="lever-row">
+          <div class="lever-row__num">②</div>
+          <div class="lever-row__cell"><strong>提效</strong><br><span style="color:rgba(255,255,255,0.4)">低效 83 人</span></div>
+          <div class="lever-row__cell">通话效率远低于 SABC 核心</div>
+          <div class="lever-row__cell">分析根因：技能差距 / 名单质量 / 管理缺位</div>
+          <div class="lever-row__cell">提升人均通时 +30min</div>
+        </div>
+        <div class="lever-row">
+          <div class="lever-row__num">③</div>
+          <div class="lever-row__cell"><strong>育成</strong><br><span style="color:rgba(255,255,255,0.4)">新人 165 人</span></div>
+          <div class="lever-row__cell">3-4 月集中入职未满育成期</div>
+          <div class="lever-row__cell">标准化新人带教 SOP + 首月外呼达标率监控</div>
+          <div class="lever-row__cell">缩短育成周期 2-4 周</div>
+        </div>
+        <div class="lever-row">
+          <div class="lever-row__num">④</div>
+          <div class="lever-row__cell"><strong>防守</strong><br><span style="color:rgba(255,255,255,0.4)">SABC 核心 93 人</span></div>
+          <div class="lever-row__cell">扛 9 成业绩，无冗余</div>
+          <div class="lever-row__cell">流失预警 + 激励锁定</div>
+          <div class="lever-row__cell">月流失率 <3%</div>
+        </div>
+        <div class="lever-row">
+          <div class="lever-row__num">⑤</div>
+          <div class="lever-row__cell"><strong>清理</strong><br><span style="color:rgba(255,255,255,0.4)">零通话 47 人</span></div>
+          <div class="lever-row__cell">近 30 天零通话</div>
+          <div class="lever-row__cell">7 天内确认状态：离岗 / 转岗 / 淘汰</div>
+          <div class="lever-row__cell">释放工位 + 成本</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.3 整改优先级 -->
+    <div class="subsection">
+      <div class="subsection__label">6.3 整改优先级</div>
+      <div class="priority-grid">
+        <div class="priority-card" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="priority-card__badge priority-card__badge--p0">P0 紧急</div>
+          <div class="priority-card__action" style="color:#fff">核查 C 级改善期执行记录</div>
+          <div class="priority-card__meta">本周 · 业务管理组</div>
+        </div>
+        <div class="priority-card" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="priority-card__badge priority-card__badge--p0">P0 紧急</div>
+          <div class="priority-card__action" style="color:#fff">确认零通话 47 人状态</div>
+          <div class="priority-card__meta">本周 · 职场负责人</div>
+        </div>
+        <div class="priority-card" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="priority-card__badge priority-card__badge--p1">P1 重要</div>
+          <div class="priority-card__action" style="color:#fff">客户分配规则公平性审计</div>
+          <div class="priority-card__meta">本月 · 策略组</div>
+        </div>
+        <div class="priority-card" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="priority-card__badge priority-card__badge--p1">P1 重要</div>
+          <div class="priority-card__action" style="color:#fff">MOB12+ 老员工出勤不足原因分析</div>
+          <div class="priority-card__meta">本月 · 业务管理组</div>
+        </div>
+        <div class="priority-card" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="priority-card__badge priority-card__badge--p2">P2 常规</div>
+          <div class="priority-card__action" style="color:#fff">S 级经验萃取 + 话术标准化</div>
+          <div class="priority-card__meta">本季度 · 质检培训组</div>
+        </div>
+        <div class="priority-card" style="background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08)">
+          <div class="priority-card__badge priority-card__badge--p2">P2 常规</div>
+          <div class="priority-card__action" style="color:#fff">新人带教 SOP 标准化</div>
+          <div class="priority-card__meta">本季度 · 质检培训组</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6.4 下月复查重点 -->
+    <div class="subsection">
+      <div class="subsection__label">6.4 下月复查重点关注</div>
+      <div style="margin-top:var(--s-lg)">
+        <div class="tracking-row">
+          <div class="tracking-row__label">C 级率</div>
+          <div class="tracking-row__current">39%</div>
+          <div class="tracking-row__target"><25%</div>
+          <div class="tracking-row__method">下期 SABC 评级</div>
+        </div>
+        <div class="tracking-row">
+          <div class="tracking-row__label">参评率</div>
+          <div class="tracking-row__current">46.7%</div>
+          <div class="tracking-row__target">>60%</div>
+          <div class="tracking-row__method">下期参评判定</div>
+        </div>
+        <div class="tracking-row">
+          <div class="tracking-row__label">TOP20% GMV 集中度</div>
+          <div class="tracking-row__current">59.2%</div>
+          <div class="tracking-row__target"><50%</div>
+          <div class="tracking-row__method">下期帕累托曲线</div>
+        </div>
+        <div class="tracking-row">
+          <div class="tracking-row__label">零通话人数</div>
+          <div class="tracking-row__current">47 人</div>
+          <div class="tracking-row__target"><10 人</div>
+          <div class="tracking-row__method">通话活跃度监控</div>
+        </div>
+        <div class="tracking-row">
+          <div class="tracking-row__label">MOB12+ 外呼不足</div>
+          <div class="tracking-row__current">15 人</div>
+          <div class="tracking-row__target"><5 人</div>
+          <div class="tracking-row__method">出勤追踪</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     附录
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="section" id="appendix" style="padding-top:var(--s-3xl)">
+  <div class="container">
+    <div class="section__label">附录</div>
+    <h2 class="section__title">图表总目录</h2>
+    <p class="section__intro">14 张图/表，覆盖 6 章全部模块。</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>图表</th>
+          <th>章节</th>
+          <th>类型</th>
+          <th>来源</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>图1</td><td>职场 S/A/B/C 构成</td><td>① 全景</td><td>堆叠柱状图</td><td>SABC 现有升级</td></tr>
+        <tr><td>图2</td><td>首贷×复贷对比卡</td><td>① 全景</td><td>对比表格 + Spark Bar</td><td>新增</td></tr>
+        <tr><td>图3</td><td>司龄×等级热力图</td><td>② 趋势</td><td>热力图</td><td>SABC 现有升级</td></tr>
+        <tr><td>图4</td><td>司龄段绩效走势</td><td>② 趋势</td><td>折线图 + 标注</td><td>新增</td></tr>
+        <tr><td>图5</td><td>月度入职趋势</td><td>② 趋势</td><td>条形图 + 均值线</td><td>叙事原型完成</td></tr>
+        <tr><td>图6</td><td>新人产出追踪</td><td>② 趋势</td><td>Small Multiples</td><td>新增</td></tr>
+        <tr><td>图7</td><td>SABC 四档画像表</td><td>③ 分群</td><td>对比表格 + 色阶</td><td>新增</td></tr>
+        <tr><td>图8</td><td>转化断层对比</td><td>③ 分群</td><td>条形图 + 断崖标注</td><td>SABC 现有升级</td></tr>
+        <tr><td>图9a</td><td>非参评三分类</td><td>③ 分群</td><td>堆叠条形图</td><td>新增</td></tr>
+        <tr><td>图9b</td><td>非参评通时分布</td><td>③ 分群</td><td>直方图</td><td>新增</td></tr>
+        <tr><td>图10</td><td>通时×GMV 关联</td><td>④ 归因</td><td>散点图 + 回归线</td><td>新增</td></tr>
+        <tr><td>图12</td><td>评分维度贡献权重</td><td>④ 归因</td><td>发散条形图</td><td>新增</td></tr>
+        <tr><td>图13</td><td>ATT×转化率矩阵</td><td>④ 归因</td><td>散点图</td><td>SABC 现有升级</td></tr>
+        <tr><td>图14</td><td>职场 C 级率排名</td><td>⑤ 异常</td><td>水平条形图</td><td>SABC 现有升级</td></tr>
+        <tr><td>图15</td><td>GMV 帕累托曲线</td><td>⑤ 异常</td><td>帕累托曲线</td><td>SABC 现有升级</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout" style="margin-top:var(--s-2xl)">
+      <strong>合计 14 张图/表</strong>（原 15 张，图 11 合并入图 4 删除）<br>
+      SABC 现有升级：6 张 · 新增：8 张 · 其中图 5 已完成叙事原型验证
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer__meta">SABC 标准化深度诊断框架 · v3.1</div>
+    <h2 class="footer__title">
+      不是说出来就完了。<strong>做出来，才是诊断的终点。</strong>
+    </h2>
+    <div class="footer__sources">
+      <span class="footer__source">sabc-diagnostic V3.1</span>
+      <span class="footer__source">viz-data-storytelling</span>
+      <span class="footer__source">viz-design</span>
+      <span class="footer__source">viz-echarts-visualization</span>
+    </div>
+    <div class="footer__copyright">
+      最后更新 2026-05-17 · Codex 审计后修订 · 本文档为框架设计文档，示意数据仅展示方法论形态
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

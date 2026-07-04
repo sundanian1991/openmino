@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吸收组件验证 · haglofs-paradigm</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --color-white:#FFFFFF;--color-offwhite:#F5F3EF;--color-cream:#E8E4DD;
+  --color-sand:#C4B8A8;--color-stone:#8A7D6E;--color-charcoal:#2D2A26;--color-black:#1A1816;
+  --color-forest:#4A6741;--color-moss:#7A9B6D;--color-slate:#5B6B7A;--color-steel:#7A8B9B;
+  --color-signal-red:#E8453C;--color-signal-orange:#E87A3C;
+  --bg-page:var(--color-offwhite);--bg-card:var(--color-white);--bg-subtle:var(--color-cream);
+  --border-rest:var(--color-sand);
+  --text-display:var(--color-black);--text-primary:var(--color-charcoal);--text-secondary:var(--color-stone);--text-decorative:#B5AC9D;
+  --font-display:'Playfair Display',Georgia,serif;--font-body:'Inter',sans-serif;--font-data:'JetBrains Mono',monospace;
+  --fs-caption:13px;--fs-data:11px;--fw-medium:500;--fw-semibold:600;
+  --ls-wide:0.06em;--ls-wider:0.2em;
+  --s-xs:4px;--s-sm:8px;--s-md:16px;--s-lg:24px;--s-xl:32px;--s-2xl:48px;--s-3xl:64px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);--dur-base:300ms;
+}
+body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-primary);line-height:1.6;font-size:14px;padding:40px 20px}
+.wrap{max-width:960px;margin:0 auto}
+.intro{margin-bottom:64px;padding-bottom:32px;border-bottom:2px solid var(--text-display)}
+.intro h1{font-family:var(--font-display);font-size:clamp(32px,5vw,48px);font-weight:300;letter-spacing:-1px;color:var(--text-display);margin-bottom:12px}
+.intro p{color:var(--text-secondary);max-width:560px;line-height:1.7}
+.demo{margin-bottom:64px}
+.demo__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--color-forest);margin-bottom:8px}
+.demo__title{font-family:var(--font-display);font-size:24px;font-weight:400;color:var(--text-display);margin-bottom:24px}
+.demo__box{padding:32px;background:var(--bg-card);border:1px solid var(--border-rest);min-height:200px;display:flex;align-items:center;justify-content:center}
+.demo__box--dark{background:var(--color-charcoal);color:var(--color-offwhite);border:none}
+
+/* AB-01 Pyramid */
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:4px}
+.pyr-layer{height:44px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-data);font-size:11px;font-weight:var(--fw-medium);letter-spacing:var(--ls-wide);text-transform:uppercase;transition:opacity var(--dur-base) var(--ease-out)}
+.pyr-1{width:38%;background:var(--color-forest);color:var(--color-offwhite)}
+.pyr-2{width:54%;background:var(--bg-subtle);color:var(--text-primary)}
+.pyr-3{width:70%;background:var(--bg-subtle);color:var(--text-primary)}
+.pyr-4{width:100%;background:var(--bg-subtle);color:var(--text-primary)}
+.pyr-layer:hover{opacity:.85}
+
+/* AB-02 Waffle */
+.waffle{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;width:160px}
+.waffle__cell{width:100%;aspect-ratio:1;background:var(--bg-subtle);border-radius:1px}
+.waffle__cell--on{background:var(--color-forest)}
+.waffle__label{font-family:var(--font-data);font-size:11px;color:var(--text-secondary);margin-top:12px;text-align:center;letter-spacing:.04em}
+
+/* AB-03 Bullet */
+.bullet{max-width:280px;width:100%}
+.bullet__lbl{display:flex;justify-content:space-between;font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px}
+.bullet__track{position:relative;height:14px;background:var(--bg-subtle);border-radius:2px;overflow:hidden}
+.bullet__range{position:absolute;top:0;height:100%}
+.bullet__range--low{left:0;width:33%;background:rgba(232,69,60,.10)}
+.bullet__range--mid{left:33%;width:34%;background:rgba(232,69,60,.18)}
+.bullet__range--high{left:67%;width:33%;background:rgba(74,103,65,.15)}
+.bullet__bar{position:absolute;top:3px;height:8px;background:var(--text-display);border-radius:1px;z-index:2}
+.bullet__mark{position:absolute;top:-2px;width:2px;height:18px;background:var(--color-signal-orange);z-index:3}
+.bullet__scale{display:flex;justify-content:space-between;font-family:var(--font-data);font-size:8px;color:var(--text-secondary);margin-top:4px}
+
+/* AB-04 Radial */
+.radial{position:relative;display:flex;align-items:center;justify-content:center;width:200px;height:200px}
+.radial__circle{width:120px;height:120px;border-radius:50%;background:var(--color-forest);display:flex;align-items:center;justify-content:center;z-index:2}
+.radial__value{font-family:var(--font-data);font-size:32px;font-weight:500;color:var(--color-offwhite);line-height:1}
+.radial__item{position:absolute;display:flex;align-items:center;gap:8px;font-family:var(--font-data);font-size:11px;color:var(--text-primary)}
+.radial__dot{width:8px;height:8px;border-radius:50%;background:var(--color-signal-orange)}
+.radial__item:nth-child(2){top:10px;left:10px}
+.radial__item:nth-child(3){top:10px;right:10px}
+.radial__item:nth-child(4){bottom:10px;left:10px}
+.radial__item:nth-child(5){bottom:10px;right:10px}
+
+/* AB-05 Newspaper */
+.news{background:var(--bg-card);padding:clamp(32px,5vw,48px) clamp(20px,4vw,40px);border:1px solid var(--border-rest);width:100%}
+.news__head{font-family:var(--font-display);font-size:clamp(20px,3vw,28px);font-weight:700;text-align:center;border-top:2px solid var(--text-display);border-bottom:1px solid var(--text-display);padding:10px 0;margin-bottom:clamp(20px,3vw,28px);letter-spacing:.02em}
+.news__grid{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;gap:clamp(14px,2vw,20px)}
+.news__sep{background:var(--border-rest)}
+.news__h{font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--text-display);margin-bottom:10px}
+.news__p{font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:8px}
+.news__note{font-family:var(--font-data);font-size:11px;color:var(--color-signal-orange);letter-spacing:.04em}
+@media(max-width:640px){.news__grid{grid-template-columns:1fr;gap:20px}.news__sep{display:none}}
+
+/* AB-06 Dot Table */
+.dottbl{display:flex;flex-direction:column;width:100%}
+.dottbl__row{display:grid;grid-template-columns:120px 1fr 1fr;gap:16px;padding:14px 0;align-items:baseline;border-bottom:1px solid var(--border-rest)}
+.dottbl__row:last-child{border-bottom:none}
+.dottbl__dim{font-family:var(--font-data);font-size:11px;font-weight:500;color:var(--text-secondary);position:relative;padding-left:16px;letter-spacing:.04em;text-transform:uppercase}
+.dottbl__dim::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:var(--color-forest)}
+.dottbl__row:nth-child(2n) .dottbl__dim::before{background:var(--color-moss)}
+.dottbl__row:nth-child(3n) .dottbl__dim::before{background:var(--color-signal-orange)}
+.dottbl__val{font-family:var(--font-data);font-size:14px;color:var(--text-primary)}
+.dottbl__val:last-child{color:var(--color-forest);font-weight:500}
+
+/* AB-07 Dark Quote */
+.darkquote{min-height:280px;display:flex;align-items:center;justify-content:center;background:var(--color-charcoal);color:var(--color-offwhite);padding:48px 32px;width:100%}
+.darkquote__inner{max-width:680px;text-align:center}
+.darkquote__txt{font-family:var(--font-display);font-size:clamp(22px,3vw,30px);font-weight:400;line-height:1.5;letter-spacing:-.01em;color:rgba(255,255,255,0.9)}
+.darkquote__txt em{color:var(--color-moss);font-style:normal;font-weight:600}
+.darkquote__attr{margin-top:24px;font-family:var(--font-data);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)}
+
+/* AB-08 Magazine Cards */
+.magcards{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;width:100%}
+.magcards__c{position:relative;padding:32px 0}
+.magcards__c::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--text-display);opacity:.1}
+.magcards__num{font-family:var(--font-display);font-size:14px;font-style:italic;color:var(--text-decorative);margin-bottom:12px}
+.magcards__c h3{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--text-display);line-height:1.2;margin-bottom:12px}
+.magcards__c p{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.magcards__tag{display:inline-block;margin-top:16px;font-family:var(--font-data);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-forest)}
+@media(max-width:768px){.magcards{grid-template-columns:1fr;gap:24px}}
+
+/* AB-09 Scroll Reveal */
+.reveal{overflow:hidden;margin-bottom:16px}
+.reveal__inner{transform:translateY(12px);opacity:0;transition:transform 500ms var(--ease-out),opacity 500ms var(--ease-out);will-change:transform,opacity;padding:16px;background:var(--bg-subtle);font-family:var(--font-data);font-size:13px;color:var(--text-primary)}
+.reveal__inner.reveal--visible{transform:translateY(0);opacity:1}
+
+/* AB-10 Hover Reveal */
+.h-reveal{background:var(--bg-card);border:1px solid var(--border-rest);position:relative;overflow:hidden;cursor:default;width:200px;height:140px}
+.h-reveal__front{padding:20px;transition:opacity 200ms var(--ease-out)}
+.h-reveal:hover .h-reveal__front{opacity:.15}
+.h-reveal__back{position:absolute;inset:0;padding:20px;display:flex;flex-direction:column;justify-content:center;opacity:0;transition:opacity 250ms var(--ease-out) 50ms;pointer-events:none}
+.h-reveal:hover .h-reveal__back{opacity:1}
+.h-reveal__tag{font-family:var(--font-data);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px}
+.h-reveal__num{font-family:var(--font-display);font-size:32px;font-weight:500;color:var(--text-display);line-height:1;letter-spacing:-.02em}
+.h-reveal__lbl{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);margin-top:4px}
+.h-reveal__desc{font-size:13px;color:var(--text-primary);line-height:1.5;margin-bottom:8px}
+.h-reveal__meta{font-family:var(--font-data);font-size:10px;color:var(--text-secondary)}
+
+/* AB-11 Dark Ending */
+.dark-end{background:var(--color-charcoal);padding:48px 32px;text-align:center;width:100%}
+.dark-end__label{font-family:var(--font-data);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:20px}
+.dark-end__title{font-family:var(--font-display);font-size:clamp(24px,3.5vw,34px);font-weight:400;color:rgba(255,255,255,0.9);line-height:1.2;margin-bottom:10px;letter-spacing:-.01em}
+.dark-end__desc{font-size:14px;color:rgba(255,255,255,0.55);line-height:1.6;max-width:400px;margin:0 auto 20px}
+.dark-end__meta{font-family:var(--font-data);font-size:10px;letter-spacing:.06em;color:rgba(255,255,255,0.35)}
+
+/* AB-12 Infographic 示意(矩阵图) */
+.infographic{width:100%;overflow-x:auto}
+.matrix{display:grid;grid-template-columns:100px repeat(4,1fr);gap:2px;background:var(--border-rest);border:1px solid var(--border-rest);min-width:480px}
+.matrix__cell{background:var(--bg-card);padding:12px 8px;text-align:center;font-family:var(--font-data);font-size:11px;color:var(--text-primary)}
+.matrix__cell--head{background:var(--bg-subtle);font-weight:600;color:var(--text-display);text-transform:uppercase;letter-spacing:.04em;font-size:10px}
+.matrix__cell--tier1{background:rgba(74,103,65,.25);color:var(--text-display);font-weight:600}
+.matrix__cell--tier2{background:rgba(74,103,65,.12)}
+.matrix__cell--tier3{background:rgba(122,155,109,.15)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>吸收组件验证 · <em style="font-style:italic;color:var(--color-forest)">12 件</em></h1>
+    <p>从 nian-design 合理吸收的 12 个组件,在 haglofs-paradigm token 体系下的渲染验证。每个组件都做了范式适配(token 别名对齐 + haglofs 哑光克制禁忌补充)。</p>
+  </div>
+
+  <!-- AB-01 Pyramid -->
+  <div class="demo">
+    <div class="demo__label">AB-01 · 吸收自 nian B07</div>
+    <div class="demo__title">Pyramid 金字塔</div>
+    <div class="demo__box">
+      <div class="pyramid">
+        <div class="pyr-layer pyr-1">复盘</div>
+        <div class="pyr-layer pyr-2">应用</div>
+        <div class="pyr-layer pyr-3">精读</div>
+        <div class="pyr-layer pyr-4">选书</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-02 Waffle -->
+  <div class="demo">
+    <div class="demo__label">AB-02 · 吸收自 nian B09</div>
+    <div class="demo__title">Waffle 华夫图</div>
+    <div class="demo__box">
+      <div>
+        <div class="waffle" id="waffle-demo"></div>
+        <div class="waffle__label">15% 留存率 · 15/100</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-03 Bullet -->
+  <div class="demo">
+    <div class="demo__label">AB-03 · 吸收自 nian B10</div>
+    <div class="demo__title">Bullet 子弹图</div>
+    <div class="demo__box">
+      <div class="bullet">
+        <div class="bullet__lbl">留存率 <span>目标 30%</span></div>
+        <div class="bullet__track">
+          <div class="bullet__range bullet__range--low"></div>
+          <div class="bullet__range bullet__range--mid"></div>
+          <div class="bullet__range bullet__range--high"></div>
+          <div class="bullet__bar" style="width:15%"></div>
+          <div class="bullet__mark" style="left:30%"></div>
+        </div>
+        <div class="bullet__scale"><span>0</span><span>50</span><span>100%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-04 Radial -->
+  <div class="demo">
+    <div class="demo__label">AB-04 · 吸收自 nian B08</div>
+    <div class="demo__title">Radial 多环 + 卫星项</div>
+    <div class="demo__box">
+      <div class="radial">
+        <div class="radial__circle"><span class="radial__value">15%</span></div>
+        <div class="radial__item"><span class="radial__dot"></span>数量</div>
+        <div class="radial__item"><span class="radial__dot"></span>质量</div>
+        <div class="radial__item"><span class="radial__dot"></span>应用</div>
+        <div class="radial__item"><span class="radial__dot"></span>留存</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-05 Newspaper -->
+  <div class="demo">
+    <div class="demo__label">AB-05 · 吸收自 nian F07</div>
+    <div class="demo__title">Newspaper 报纸多栏</div>
+    <div class="demo__box" style="display:block;padding:0;background:transparent;border:none">
+      <div class="news">
+        <div class="news__head">THE DAILY BRIEF · 阅读复盘</div>
+        <div class="news__grid">
+          <div class="news__col">
+            <h3 class="news__h">数量层</h3>
+            <p class="news__p">半年读完 27 本,社科 17 / 商业 7 / 技术 3。</p>
+            <p class="news__note">↑ 占比失衡</p>
+          </div>
+          <div class="news__sep"></div>
+          <div class="news__col">
+            <h3 class="news__h">质量层</h3>
+            <p class="news__p">留存仅 4/27,其余一周内遗忘。</p>
+          </div>
+          <div class="news__sep"></div>
+          <div class="news__col">
+            <h3 class="news__h">转向</h3>
+            <p class="news__p">下半年砍到 12 本,强制读完即用。</p>
+            <p class="news__note">★ 核心结论</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-06 Dot Table -->
+  <div class="demo">
+    <div class="demo__label">AB-06 · 吸收自 nian F08</div>
+    <div class="demo__title">Dot Table 圆点标识表</div>
+    <div class="demo__box" style="display:block">
+      <div class="dottbl">
+        <div class="dottbl__row"><div class="dottbl__dim">数量</div><div class="dottbl__val">27 本</div><div class="dottbl__val">12 本</div></div>
+        <div class="dottbl__row"><div class="dottbl__dim">留存</div><div class="dottbl__val">15%</div><div class="dottbl__val">60%</div></div>
+        <div class="dottbl__row"><div class="dottbl__dim">应用</div><div class="dottbl__val">4 次</div><div class="dottbl__val">12 次</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-07 Dark Quote -->
+  <div class="demo">
+    <div class="demo__label">AB-07 · 吸收自 nian F10</div>
+    <div class="demo__title">Dark Quote 全屏暗色引用</div>
+    <div class="demo__box demo__box--dark" style="padding:0">
+      <div class="darkquote">
+        <div class="darkquote__inner">
+          <p class="darkquote__txt">衡量阅读的,从来不是书单上的<em>数字</em>,而是被改写的<em>决策</em>。</p>
+          <p class="darkquote__attr">— 2026 阅读复盘</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-08 Magazine Cards -->
+  <div class="demo">
+    <div class="demo__label">AB-08 · 吸收自 nian F11</div>
+    <div class="demo__title">Magazine Cards 杂志并列卡</div>
+    <div class="demo__box" style="display:block">
+      <div class="magcards">
+        <div class="magcards__c">
+          <div class="magcards__num">i.</div>
+          <h3>读完即用</h3>
+          <p>合上书一周内必须有具体应用。</p>
+          <span class="magcards__tag">METHOD</span>
+        </div>
+        <div class="magcards__c">
+          <div class="magcards__num">ii.</div>
+          <h3>一句话锚点</h3>
+          <p>强制提炼一个可复用的判断框架。</p>
+          <span class="magcards__tag">METHOD</span>
+        </div>
+        <div class="magcards__c">
+          <div class="magcards__num">iii.</div>
+          <h3>主动设限</h3>
+          <p>每月最多 2 本,留出消化时间。</p>
+          <span class="magcards__tag">METHOD</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-09 Scroll Reveal -->
+  <div class="demo">
+    <div class="demo__label">AB-09 · 吸收自 nian H03</div>
+    <div class="demo__title">Scroll Reveal 滚动揭示</div>
+    <div class="demo__box" style="display:block">
+      <div class="reveal"><div class="reveal__inner">↓ 滚动到此时淡入上滑(本页已自动触发)</div></div>
+      <div class="reveal"><div class="reveal__inner">第二行 · 错位 80ms 延迟</div></div>
+      <div class="reveal"><div class="reveal__inner">第三行 · 继续错位</div></div>
+    </div>
+  </div>
+
+  <!-- AB-10 Hover Reveal -->
+  <div class="demo">
+    <div class="demo__label">AB-10 · 吸收自 nian H04</div>
+    <div class="demo__title">Hover Reveal Card 悬停揭示(鼠标移上去)</div>
+    <div class="demo__box">
+      <div class="h-reveal">
+        <div class="h-reveal__front">
+          <div class="h-reveal__tag">KPI</div>
+          <div class="h-reveal__num">87.3</div>
+          <div class="h-reveal__lbl">满意度评分</div>
+        </div>
+        <div class="h-reveal__back">
+          <div class="h-reveal__desc">较上月 +5.2%,一线城市增幅最显著。</div>
+          <div class="h-reveal__meta">采样:1,247 份</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-11 Dark Ending -->
+  <div class="demo">
+    <div class="demo__label">AB-11 · 吸收自 nian H09</div>
+    <div class="demo__title">Dark Typographic Ending</div>
+    <div class="demo__box demo__box--dark" style="padding:0">
+      <div class="dark-end">
+        <div class="dark-end__label">— 全文完 —</div>
+        <div class="dark-end__title">数据不会说谎</div>
+        <div class="dark-end__desc">但解读数据的人,需要勇气面对真相。</div>
+        <div class="dark-end__meta">报告 · 2026 Q2</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AB-12 Infographic -->
+  <div class="demo">
+    <div class="demo__label">AB-12 · 吸收自 nian EXTENSIONS-infographic</div>
+    <div class="demo__title">概念关系图 · 矩阵图(tier-shading 编码)</div>
+    <div class="demo__box" style="display:block">
+      <div class="infographic">
+        <div class="matrix">
+          <div class="matrix__cell matrix__cell--head"></div>
+          <div class="matrix__cell matrix__cell--head">放款量</div>
+          <div class="matrix__cell matrix__cell--head">达成率</div>
+          <div class="matrix__cell matrix__cell--head">人效</div>
+          <div class="matrix__cell matrix__cell--head">合规</div>
+
+          <div class="matrix__cell matrix__cell--head" style="text-align:left">北京</div>
+          <div class="matrix__cell matrix__cell--tier1">¥134M</div>
+          <div class="matrix__cell matrix__cell--tier1">112%</div>
+          <div class="matrix__cell matrix__cell--tier2">8.4</div>
+          <div class="matrix__cell matrix__cell--tier2">A</div>
+
+          <div class="matrix__cell matrix__cell--head" style="text-align:left">上海</div>
+          <div class="matrix__cell matrix__cell--tier2">¥98M</div>
+          <div class="matrix__cell matrix__cell--tier2">95%</div>
+          <div class="matrix__cell matrix__cell--tier3">6.2</div>
+          <div class="matrix__cell matrix__cell--tier1">A+</div>
+
+          <div class="matrix__cell matrix__cell--head" style="text-align:left">深圳</div>
+          <div class="matrix__cell matrix__cell--tier3">¥67M</div>
+          <div class="matrix__cell matrix__cell--tier3">78%</div>
+          <div class="matrix__cell matrix__cell--tier3">5.1</div>
+          <div class="matrix__cell matrix__cell--tier2">B+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// AB-02 Waffle 填充
+(function(){var w=document.getElementById('waffle-demo');if(w){for(var i=0;i<100;i++){var c=document.createElement('span');c.className='waffle__cell'+(i<15?' waffle__cell--on':'');w.appendChild(c)}}})();
+// AB-09 Scroll Reveal
+(function(){var els=document.querySelectorAll('.reveal__inner');els.forEach(function(el,i){el.style.transitionDelay=(i*80)+'ms';if('IntersectionObserver' in window){new IntersectionObserver(function(e){if(e[0].isIntersecting){el.classList.add('reveal--visible');this.disconnect()}},{threshold:0.1}).observe(el)}else{el.classList.add('reveal--visible')}})})}();
+</script>
+</body>
+</html>

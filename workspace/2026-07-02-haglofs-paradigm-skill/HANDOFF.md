@@ -1,13 +1,53 @@
 # haglofs-paradigm 技能项目 · 完整交接文档
 
 > 本文件是新对话的起点。包含：项目全貌、已完成成果、核心洞察、未解决问题、下一步方向。
-> 创建：2026-07-04
+> 创建：2026-07-04 · **v2.3 更新：2026-07-04（基准修正 + 方向调整 + 4 新组件）**
+
+---
+
+## ⚠️ v2.3 关键更新（2026-07-04，必读）
+
+### 基准搞错了——真正打动用户的是 component-showcase，不是 H061
+
+**原假设**：用户被 H061 的"核心论点一致性"打动 → 整个项目朝"叙事灵魂"方向走。
+**真相**（用户亲自确认）：真正打动用户的是 **`haglofs-component-showcase.html`**——打动人的是**组件质感 + 克制排版**（斜切深块、点阵测绘、ghost 巨字、衬线温度、慷慨留白），不是叙事灵魂。
+
+### 方向调整：从"叙事派"转向"组件质感 + 叙事"两手抓
+
+- 早期版本（v2.0-v2.2）过度偏向"叙事灵魂"，忽略了组件质感
+- P1/P2/P3 三个验证页都在追叙事（核心论点/反转/代价段），但视觉质感没起来
+- **P4 示范页**（`p4-paradigm-showcase.html`）用真基准视觉语法重做，用户确认"对了"
+- 定位调整为：**高级感 = 组件质感 + 克制排版 + 叙事一致性**（三者缺一不可）
+
+### 本次新增（已登记进 rules）
+
+1. **V7 Marquee Hero**（斜切+点阵+ghost 年份）→ 登记进 `rules-hero.md`，产品宣告类默认
+2. **Bento Grid**（产品/概念生态矩阵）→ 登记进 `rules-components-brand.md`
+3. **Symbol Evolution**（符号演化 BEFORE→AFTER）→ 登记进 `rules-components-brand.md`
+4. **Footer Statement**（28ch 限宽宣言式收尾）→ 登记进 `rules-components-brand.md`
+5. **`.prose` 阅读容器**已存在（H001 母版，680px/17px/1.8/28px），P4 示范页验证有效
+
+### 验证产物（workspace）
+
+- `p4-paradigm-showcase.html` —— 真基准视觉语法的组合示范页（用户确认"对了"）
+- `p3-mona-l03-judgment.html` —— V2 Grille 版（中间产物，已被 P4 方向取代）
+- `p2-claude-code-judgment.html` —— 判断框架驱动版（n=1 验证）
+- `soul-samples/` —— H 系列 + component-showcase 副本，供对比
+
+### 下一步（新对话起点）
+
+- **P4 方向已验证**：组件质感 + 克制排版是真方向
+- 待做：用 P4 的视觉语法重做实际内容（如重做 Mona L03 用 V7 Marquee Hero），验证"真基准语法 + 真实内容"的组合效果
+- 待做：`.prose` 阅读体系需要做组合示范页（Article Header → Drop Cap → Prose → Pull Quote → Footer 的完整长文链）
+- design-judgment.md + judgment-bridge.md 仍有效，但不再是唯一重心——它们是"叙事层"，组件质感层是同等重要的地基
 
 ---
 
 ## 一、项目起源
 
 用户被 nian-design 技能 showcase 里的 **H061-品牌系统-Haglofs早期-statement.html** 彻底打动。那个页面"搜索了一下品牌设计相关信息"后产出，有强烈的审美灵魂。用户围绕这个审美感觉做了很多东西，朴素的想法是：**希望任何内容都能按这个审美体系做出打动人的页面**。
+
+> ⚠️ **v2.3 修正**：后续确认（2026-07-04）用户记错了——真正打动他的是 `haglofs-component-showcase.html`，不是 H061。详见文档顶部 v2.3 更新段。
 
 文件位置：`.agents/skills/nian-design/references/showcase-archive/H/H061-品牌系统-Haglofs早期-statement.html`
 
