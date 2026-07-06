@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在 AI 面前，你的「专家」资历归零了 — 40 万次 Claude Code 真实对话分析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════
+   TOKEN ROOT · Haglöfs 范式真源
+   ════════════════════════════════════════════════════════════ */
+:root{
+  --color-white:#FFFFFF;
+  --color-offwhite:#F5F3EF;
+  --color-cream:#E8E4DD;
+  --color-sand:#C4B8A8;
+  --color-stone:#8A7D6E;
+  --color-charcoal:#2D2A26;
+  --color-black:#1A1816;
+  --color-forest:#4A6741;
+  --color-moss:#7A9B6D;
+  --color-forest-soft:#547444;
+  --color-moss-soft:#6D845C;
+  --color-signal-red:#E8453C;
+  --color-signal-blue:#3C7AE8;
+
+  --bg-page:var(--color-offwhite);
+  --bg-card:var(--color-white);
+  --bg-subtle:var(--color-cream);
+  --border-rest:var(--color-sand);
+  --border-hover:var(--color-stone);
+  --text-display:var(--color-black);
+  --text-primary:var(--color-charcoal);
+  --text-secondary:var(--color-stone);
+  --text-tertiary:var(--color-stone);
+  --text-inverse:var(--color-offwhite);
+  --text-inverse-2:rgba(245,243,239,.5);
+  --text-inverse-3:rgba(245,243,239,.3);
+  --link:var(--color-signal-blue);
+
+  --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+  --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+
+  --fs-deco:clamp(120px,16vw,200px);
+  --fs-display:clamp(56px,8vw,96px);
+  --fs-h1:clamp(36px,5vw,56px);
+  --fs-h2:clamp(24px,3vw,32px);
+  --fs-h3:18px;
+  --fs-body-lg:15px;
+  --fs-body:14px;
+  --fs-caption:12px;
+  --fs-data:11px;
+
+  --lh-tight:1.1;
+  --lh-snug:1.3;
+  --lh-body:1.65;
+  --lh-read:1.75;
+
+  --ls-tight:-0.02em;
+  --ls-normal:0;
+  --ls-wide:0.06em;
+  --ls-wider:0.2em;
+
+  --s-3xs:1px; --s-2xs:2px; --s-xs:4px; --s-sm:8px; --s-md:16px;
+  --s-lg:24px; --s-xl:32px; --s-2xl:48px; --s-3xl:64px; --s-4xl:96px;
+  --s-5xl:120px;
+
+  --c-max:1120px;
+  --c-medium:960px;
+  --c-read:720px;
+
+  --r-sm:4px;
+  --r-lg:8px;
+  --r-full:9999px;
+
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+
+/* ═══ RESET & BASE ═══ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg-page);
+  color:var(--text-primary);
+  font-family:var(--font-body);
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-read);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ════════════════════════════════════════════════════════════
+   READING PROGRESS · 顶部进度条（CT-1 长文标配）
+   ════════════════════════════════════════════════════════════ */
+.reading-progress{
+  position:fixed;
+  top:0;left:0;
+  width:100%;
+  height:2px;
+  background:var(--border-rest);
+  z-index:100;
+  pointer-events:none;
+}
+.reading-progress__bar{
+  height:100%;
+  width:0%;
+  background:var(--color-forest);
+  transition:width .1s linear;
+}
+
+/* ════════════════════════════════════════════════════════════
+   ARTICLE HEADER · 阅读导向标题区（非 Hero，不占满屏）
+   ════════════════════════════════════════════════════════════ */
+.article-header{
+  max-width:var(--c-read);
+  margin:0 auto;
+  padding:var(--s-5xl) var(--s-xl) var(--s-3xl);
+}
+.article-header__tag{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:var(--color-forest-soft);
+  margin-bottom:var(--s-lg);
+  display:inline-flex;
+  align-items:center;
+  gap:var(--s-md);
+  font-weight:500;
+}
+.article-header__tag::before{
+  content:'';
+  width:32px;
+  height:1px;
+  background:currentColor;
+}
+.article-header__title{
+  font-family:var(--font-display);
+  font-size:clamp(32px,4.5vw,52px);
+  font-weight:400;
+  line-height:var(--lh-tight);
+  letter-spacing:var(--ls-tight);
+  color:var(--text-display);
+  margin-bottom:var(--s-lg);
+}
+.article-header__title strong{
+  font-weight:600;
+  color:var(--color-forest-soft);
+}
+.article-header__subtitle{
+  font-family:var(--font-body);
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-read);
+  color:var(--text-secondary);
+  margin-bottom:var(--s-xl);
+}
+.article-header__meta{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--s-md) var(--s-xl);
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  color:var(--text-secondary);
+  text-transform:uppercase;
+  letter-spacing:var(--ls-wide);
+}
+.article-header__sep{color:var(--text-tertiary)}
+.article-header__rule{
+  height:1px;
+  background:var(--border-rest);
+  margin-top:var(--s-xl);
+}
+
+/* ════════════════════════════════════════════════════════════
+   ARTICLE BODY · 720px 收窄正文流（阅读宽度优先）
+   ════════════════════════════════════════════════════════════ */
+.article-body{
+  max-width:var(--c-read);
+  margin:0 auto;
+  padding:0 var(--s-xl);
+  font-family:var(--font-body);
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-read);
+  color:var(--text-primary);
+}
+.article-body p{margin-bottom:var(--s-md)}
+.article-body p:last-child{margin-bottom:0}
+.article-body strong{font-weight:600;color:var(--text-primary)}
+
+/* 小章节标题（叙事钩子，非学术编号） */
+.article-body h2{
+  font-family:var(--font-display);
+  font-size:clamp(22px,2.8vw,30px);
+  font-weight:400;
+  line-height:var(--lh-snug);
+  letter-spacing:var(--ls-tight);
+  color:var(--text-display);
+  margin-top:var(--s-4xl);
+  margin-bottom:var(--s-lg);
+  padding-top:var(--s-2xl);
+  border-top:1px solid var(--border-rest);
+}
+.article-body h2:first-of-type{
+  margin-top:var(--s-3xl);
+  border-top:none;
+  padding-top:0;
+}
+.article-body h2 strong{font-weight:600;color:var(--color-forest-soft)}
+
+/* 小节序号（inline 在标题前，叙事性而非学术编号） */
+.article-body h2 .sec-num{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  font-weight:500;
+  color:var(--color-forest-soft);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:var(--s-sm);
+}
+
+/* DROP CAP · 首段首字装饰（开篇仪式） */
+.drop-cap::first-letter{
+  font-family:var(--font-display);
+  font-size:4em;
+  font-weight:400;
+  line-height:.8;
+  float:left;
+  margin-right:var(--s-sm);
+  margin-top:var(--s-2xs);
+  color:var(--color-forest-soft);
+}
+
+/* PULL QUOTE · 段落级浮动金句（左浮 + forest 竖线） */
+.pull-quote{
+  float:right;
+  width:42%;
+  margin:var(--s-lg) 0 var(--s-sm) var(--s-xl);
+  padding-left:var(--s-lg);
+  border-left:2px solid var(--color-forest-soft);
+  background:none;
+}
+.pull-quote__text{
+  font-family:var(--font-display);
+  font-size:clamp(18px,2.2vw,24px);
+  font-style:italic;
+  font-weight:400;
+  line-height:var(--lh-snug);
+  letter-spacing:var(--ls-tight);
+  color:var(--text-display);
+}
+.pull-quote__cite{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-top:var(--s-sm);
+}
+
+/* clearfix */
+.article-body::after{
+  content:'';
+  display:block;
+  clear:both;
+}
+
+/* DATA INLINE · 数据点内联呈现（不抬到独立段） */
+.data-inline{
+  display:block;
+  margin:var(--s-lg) 0;
+  padding:var(--s-md) var(--s-lg);
+  background:var(--bg-subtle);
+  border-left:2px solid var(--color-moss-soft);
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-secondary);
+}
+.data-inline strong{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:1.15em;
+  color:var(--color-forest-soft);
+  margin-right:var(--s-xs);
+}
+
+/* 两个并列数据（inline 对比，非 Tension Grid） */
+.data-pair{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:var(--s-md);
+  margin:var(--s-lg) 0;
+}
+.data-pair__cell{
+  padding:var(--s-md) var(--s-lg);
+  background:var(--bg-subtle);
+  border-left:2px solid var(--color-moss-soft);
+}
+.data-pair__cell--alt{border-left-color:var(--color-forest-soft)}
+.data-pair__big{
+  font-family:var(--font-display);
+  font-size:clamp(24px,3vw,32px);
+  font-weight:600;
+  line-height:1;
+  letter-spacing:var(--ls-tight);
+  color:var(--color-forest-soft);
+  margin-bottom:var(--s-xs);
+}
+.data-pair__cell--alt .data-pair__big{color:var(--color-forest-soft)}
+.data-pair__label{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  margin-bottom:var(--s-2xs);
+}
+.data-pair__desc{
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-secondary);
+}
+
+/* 引述块（作者强调，非 Pull Quote——是正文内 blockquote） */
+.article-body blockquote{
+  margin:var(--s-xl) 0;
+  padding:var(--s-lg) var(--s-xl);
+  font-family:var(--font-display);
+  font-size:clamp(18px,2.2vw,22px);
+  font-style:italic;
+  font-weight:400;
+  line-height:var(--lh-snug);
+  color:var(--text-primary);
+  border-left:2px solid var(--color-forest-soft);
+  background:var(--bg-subtle);
+}
+
+/* 三件事检查清单（收束，inline 在正文流中） */
+.checklist-inline{
+  margin:var(--s-xl) 0;
+  padding:var(--s-xl) var(--s-2xl);
+  background:var(--bg-subtle);
+}
+.checklist-inline__title{
+  font-family:var(--font-display);
+  font-size:var(--fs-h3);
+  font-weight:600;
+  color:var(--color-forest-soft);
+  margin-bottom:var(--s-md);
+  font-style:italic;
+}
+.checklist-inline__item{
+  display:grid;
+  grid-template-columns:32px 1fr;
+  gap:var(--s-md);
+  align-items:baseline;
+  padding:var(--s-sm) 0;
+  border-bottom:1px solid var(--color-sand);
+}
+.checklist-inline__item:last-child{border-bottom:none}
+.checklist-inline__num{
+  font-family:var(--font-display);
+  font-size:20px;
+  font-weight:400;
+  color:var(--color-forest-soft);
+}
+.checklist-inline__text{
+  font-family:var(--font-body);
+  font-size:var(--fs-body-lg);
+  line-height:var(--lh-body);
+  color:var(--text-primary);
+}
+
+/* ════════════════════════════════════════════════════════════
+   ARTICLE FOOTER · 浅底阅读收束（作者位 + 相关 + 标签）
+   ════════════════════════════════════════════════════════════ */
+.article-footer{
+  max-width:var(--c-read);
+  margin:0 auto;
+  padding:var(--s-4xl) var(--s-xl) var(--s-3xl);
+  border-top:1px solid var(--border-rest);
+}
+.article-footer__author{
+  display:flex;
+  align-items:flex-start;
+  gap:var(--s-lg);
+  margin-bottom:var(--s-xl);
+}
+.article-footer__avatar{
+  width:48px;
+  height:48px;
+  border-radius:var(--r-full);
+  background:var(--bg-subtle);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-display);
+  font-size:20px;
+  font-weight:400;
+  color:var(--color-forest-soft);
+  flex-shrink:0;
+}
+.article-footer__name{
+  font-family:var(--font-display);
+  font-size:var(--fs-h3);
+  font-weight:500;
+  color:var(--text-display);
+  margin-bottom:var(--s-xs);
+}
+.article-footer__bio{
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  line-height:var(--lh-body);
+  color:var(--text-secondary);
+}
+.article-footer__cta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--s-md);
+  margin-bottom:var(--s-xl);
+}
+.article-footer__cta-link{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--color-forest-soft);
+  border:1px solid var(--border-rest);
+  padding:var(--s-sm) var(--s-lg);
+  text-decoration:none;
+  transition:border-color .3s var(--ease-out),color .3s var(--ease-out);
+}
+.article-footer__cta-link:hover{
+  border-color:var(--color-forest-soft);
+}
+.article-footer__tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:var(--s-sm);
+}
+.article-footer__tag{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:var(--text-secondary);
+  border:1px solid var(--border-rest);
+  padding:4px var(--s-sm);
+}
+
+/* ════════════════════════════════════════════════════════════
+   FOOTER · 深色收尾（唯一深段）
+   ════════════════════════════════════════════════════════════ */
+.footer{
+  background:var(--color-black);
+  color:var(--text-inverse);
+  padding:var(--s-4xl) var(--s-xl) var(--s-3xl);
+  position:relative;
+  overflow:hidden;
+}
+.footer::before{
+  content:'EXPERTISE';
+  position:absolute;
+  bottom:-.08em;
+  right:-.04em;
+  font-family:var(--font-display);
+  font-size:clamp(6rem,16vw,18rem);
+  font-weight:700;
+  line-height:.8;
+  letter-spacing:-.06em;
+  color:rgba(245,243,239,.03);
+  pointer-events:none;
+  user-select:none;
+}
+.footer__inner{
+  max-width:var(--c-read);
+  margin:0 auto;
+  position:relative;
+  z-index:2;
+}
+.footer__src-label{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wider);
+  text-transform:uppercase;
+  color:rgba(245,243,239,.4);
+  margin-bottom:var(--s-md);
+  display:inline-flex;
+  align-items:center;
+  gap:var(--s-md);
+}
+.footer__src-label::before{
+  content:'';
+  width:32px;
+  height:1px;
+  background:rgba(245,243,239,.2);
+}
+.footer__src-title{
+  font-family:var(--font-display);
+  font-size:var(--fs-h2);
+  font-weight:400;
+  line-height:var(--lh-snug);
+  color:var(--text-inverse);
+  margin-bottom:var(--s-sm);
+}
+.footer__src-link{
+  font-family:var(--font-body);
+  font-size:var(--fs-body);
+  color:var(--color-moss);
+  text-decoration:none;
+  border-bottom:1px solid rgba(122,155,109,.3);
+  padding-bottom:2px;
+  transition:border-color .3s var(--ease-out);
+}
+.footer__src-link:hover{border-color:var(--color-moss)}
+.footer__meta{
+  font-family:var(--font-data);
+  font-size:var(--fs-data);
+  letter-spacing:var(--ls-wide);
+  text-transform:uppercase;
+  color:rgba(245,243,239,.3);
+  margin-top:var(--s-xl);
+  padding-top:var(--s-lg);
+  border-top:1px solid rgba(245,243,239,.08);
+}
+
+/* ════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  .article-header{padding:var(--s-4xl) var(--s-md) var(--s-3xl)}
+  .article-body,.article-footer{padding:0 var(--s-md)}
+  .article-footer{padding:var(--s-3xl) var(--s-md)}
+  .pull-quote{
+    float:none;
+    width:100%;
+    margin:var(--s-lg) 0;
+  }
+  .data-pair{grid-template-columns:1fr}
+  .footer{padding:var(--s-3xl) var(--s-md) var(--s-2xl)}
+}
+
+/* ═══ FADE-IN（仅 Article Header · 长文渐显克制） ═══ */
+@media (prefers-reduced-motion:no-preference){
+  .article-header__tag,.article-header__title,.article-header__subtitle,.article-header__meta{
+    opacity:0;
+    transform:translateY(16px);
+    animation:fadeUp .8s var(--ease-out) forwards;
+  }
+  .article-header__tag{animation-delay:.1s}
+  .article-header__title{animation-delay:.2s}
+  .article-header__subtitle{animation-delay:.4s}
+  .article-header__meta{animation-delay:.6s}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+}
+</style>
+</head>
+<body>
+
+<!-- READING PROGRESS · 长文标配 -->
+<div class="reading-progress" aria-hidden="true">
+  <div class="reading-progress__bar" id="readingProgressBar"></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     ARTICLE HEADER · 阅读导向标题区（非 Hero，不占满屏）
+     ════════════════════════════════════════════════════════════ -->
+<header class="article-header">
+  <div class="article-header__tag">Anthropic Research · 深度解读</div>
+  <h1 class="article-header__title">在 AI 面前，你的「专家」资历<strong>归零了</strong></h1>
+  <p class="article-header__subtitle">40 万次真实 Claude Code 对话，第一次用数据证明：人管判断，AI 管执行。资历不再可信，指令质量才是新的分水岭。</p>
+  <div class="article-header__meta">
+    <span>Anthropic 报告解读</span>
+    <span class="article-header__sep" aria-hidden="true">·</span>
+    <span>40 万次对话 · 23.5 万用户</span>
+    <span class="article-header__sep" aria-hidden="true">·</span>
+    <span>2025.10 — 2026.04</span>
+    <span class="article-header__sep" aria-hidden="true">·</span>
+    <span>10 min read</span>
+  </div>
+  <div class="article-header__rule"></div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════
+     ARTICLE BODY · 720px 收窄正文流（保留作者声音）
+     ════════════════════════════════════════════════════════════ -->
+<article class="article-body">
+
+  <!-- 引子 · 保留作者叙述语气 -->
+  <p class="drop-cap">上周，Anthropic 发了一份报告。本来没太当回事——最近这家公司身上的新闻实在太多了，一会儿要搞实名认证，一会儿把顶级模型给看不给用，还有跟美国政府的对线。一看到他家的名字，都快有点免疫了。</p>
+
+  <p>但看完这份报告的详细内容后，还是忍不住想分享给你。因为它不是那种「我们觉得未来会怎样」的趋势预测，而是实打实的数据报告。</p>
+
+  <p>他们分析了约 <strong>40 万次真实的 Claude Code 交互会话</strong>，来自约 23.5 万个用户，时间跨度整整七个月。注意，这已经不是「写代码的工具」，而是一个「完成复杂任务」的 AI 产品——你给一条指令，它平均触发约 10 个动作，输出约 2400 字。</p>
+
+  <p>这种数据，在 AI 行业里之前几乎没有。大多数研究报告，要么跑测试题，要么做问卷调查。但真实的人机协作过程到底长什么样——人说了什么、AI 做了什么、最后成没成——只有像 Anthropic 这样既做模型、又能看到真实使用数据的公司，才拿得到。</p>
+
+  <!-- 章节 01 -->
+  <h2><span class="sec-num">01</span>人管判断，AI 管<strong>执行</strong></h2>
+
+  <p>这份报告最有价值的发现，是第一次用真实使用数据证明了一件事：<strong>人主要负责判断，AI 主要负责执行。</strong></p>
+
+  <p>具体来说，在典型会话里，人做了约 70% 的规划决策——也就是「做什么」「走哪条路线」「怎样算完成」；AI 做了约 80% 的执行决策——也就是「改哪些文件」「写什么代码」「跑哪些命令」。</p>
+
+  <div class="data-pair">
+    <div class="data-pair__cell">
+      <div class="data-pair__label">— 人 · 判断</div>
+      <div class="data-pair__big">70%</div>
+      <div class="data-pair__desc">规划决策：做什么 · 走哪条路 · 怎样算完成</div>
+    </div>
+    <div class="data-pair__cell data-pair__cell--alt">
+      <div class="data-pair__label">— AI · 执行</div>
+      <div class="data-pair__big">80%</div>
+      <div class="data-pair__desc">执行决策：改哪些文件 · 写什么 · 跑哪些命令</div>
+    </div>
+  </div>
+
+  <p>这两个数字不是猜测，不是推演，是 40 万次对话里真实存在的分工比例。「人管 what，AI 管 how」——这句话以前很多人在说，但从来没有人拿数据证明过。现在有了。</p>
+
+  <p>报告追踪了七个月的变化，还发现一个有意思的趋势：修 bug 的会话占比从 33% 降到了 19%，说明用户不再只是拿它修修补补；运行软件从 14% 升到 21%；写作和数据分析加起来从大约 10% 翻倍到了 20%。任务的平均估算价值上升了 <strong>27%</strong>——AI 编程工具的进化方向，不是「更会补全代码」，而是用户开始让它干代码之外的活了。</p>
+
+  <!-- 章节 02 -->
+  <h2><span class="sec-num">02</span>在 AI 面前，人的资历<strong>归零了</strong></h2>
+
+  <p>好，人管判断，AI 管执行，分工清楚了。那接下来的问题就是——既然 AI 负责干活，什么决定了一个人的判断好不好？</p>
+
+  <p>Anthropic 给每个会话里的用户打了一个「专业度」评分，从新手到专家，五个级别。但这个「专家」的定义，跟我们以为的完全不一样。它不看你的职位头衔，不看你在行业里干了多少年，不看学历和证书。它只看<strong>这一次具体任务</strong>里的三个信号——</p>
+
+  <p>你的指令够不够精确，你知不知道该让 AI 验证什么，以及当 AI 理解错了的时候，你能不能发现并纠正它。</p>
+
+  <blockquote>一个不会 Python 的会计，从来没写过代码，但她能清清楚楚地告诉 Claude Code，对账脚本必须执行哪些规则，而且能抓住月末结账时的边界错误。在这个任务上，她就是专家。</blockquote>
+
+  <p>反过来，一个做了 20 年的产品经理，如果只是跟 AI 说「你帮我做个 PRD」——在 AI 眼里就是新手。不是资历浅，而是<strong>指令质量</strong>太低。</p>
+
+  <p>这背后意味着：咱们在人类场域里的资历，在 AI 面前归零。一大批只会管人的中高层领导，在 AI 面前，就要被归为「职场新手」了。</p>
+
+  <!-- 章节 03 · Pull Quote 在此 -->
+  <h2><span class="sec-num">03</span>专家一条指令，<strong>顶新手五倍</strong></h2>
+
+  <p>这个「指令质量」的差距，到底有多大？这份报告给出了数据。</p>
+
+  <aside class="pull-quote">
+    <p class="pull-quote__text">专家的一条指令，顶新手的好几条。</p>
+    <p class="pull-quote__cite">— 按每条指令的产出算</p>
+  </aside>
+
+  <p>在典型的新手会话里，用户每发一条指令，Claude Code 平均触发 5 个动作，输出 600 字。在专家会话里，每条指令触发 12 个动作，输出 3200 字。按每条指令的产出来算，专家从 AI 那里拿回来的，是新手的<strong>五倍还多</strong>。</p>
+
+  <div class="data-pair">
+    <div class="data-pair__cell">
+      <div class="data-pair__label">— 新手 · 每条指令</div>
+      <div class="data-pair__big">5 / 600</div>
+      <div class="data-pair__desc">动作数 / 输出字数</div>
+    </div>
+    <div class="data-pair__cell data-pair__cell--alt">
+      <div class="data-pair__label">— 专家 · 每条指令</div>
+      <div class="data-pair__big">12 / 3,200</div>
+      <div class="data-pair__desc">动作数 / 输出字数</div>
+    </div>
+  </div>
+
+  <p>而且这个差距不是专家输入了更多字。报告做了控制变量，把工作类型、任务价值、时间、职业、模型家族全部拉平之后，专业度每升一级，动作数增加 9%，输出增加 13%。趋势依然显著。</p>
+
+  <p>好指令不是微操，不是事无巨细地告诉 AI 每一步该干什么。好指令是<strong>高质量授权</strong>——你把目标、边界和验收标准说得足够清楚，AI 拿到之后能自己跑很远。差别不在于你说了多少字，而在于你有没有把 AI 需要的东西给到。</p>
+
+  <!-- 章节 04 -->
+  <h2><span class="sec-num">04</span>管理者的成功率，<strong>比工程师还高</strong></h2>
+
+  <p>说到指令质量，报告里还有一个让人意外的发现。在确实新增或修改了代码的会话里，Anthropic 把用户按职业分类，比较他们的成功率。这里说的成功率，不是 AI 自己说「做完了」就算——要么代码提交了，要么测试通过了，要么用户明确确认了「这就是我要的」。得有硬证据，才算数。</p>
+
+  <p>按这个标准，十大职业的验证成功率，跟软件工程师的差距不超过 7 个百分点。软件工程师约 34%，<strong>管理类职业大约 37%</strong>，法律类 33%，商业金融 29%，医疗、设计、销售、教育、科学类在 27% 到 28% 之间。</p>
+
+  <p>你注意到没？管理职业的验证成功率比软件工程师还高。报告特别说明，这可能和管理者更习惯明确确认结果有关——毕竟当领导的习惯了说「对对对就是这」。但即便打个折，这个数据依然给出了一个很强的信号：拆任务、说清目标、委派、检查结果，这些原本是<strong>管理动作</strong>，现在也成了操作 AI 的技术动作。</p>
+
+  <p>你不需要先把自己训练成工程师，但你需要能说清业务规则、边界条件和验收标准。AI 能帮你写代码，但不能替你知道什么叫「对」。</p>
+
+  <!-- 章节 05 -->
+  <h2><span class="sec-num">05</span>翻车后，才是真正<strong>分水岭</strong></h2>
+
+  <p>前面说的是让 AI 知道什么叫「对」，这和发现 AI 哪里理解错了，还不是一回事。报告里有一组数据，我觉得比前面所有的都更值得细看。</p>
+
+  <p>它把会话里「遇到麻烦」的情况单独拎了出来——报错、测试失败、反复重试、用户表达不满这些信号。在复杂任务里，AI 出错是常态，这不丢人。但遇到麻烦之后，不同专业度的用户，结局完全不同。</p>
+
+  <div class="data-pair">
+    <div class="data-pair__cell">
+      <div class="data-pair__label">— 新手翻车后成功率</div>
+      <div class="data-pair__big">4%</div>
+      <div class="data-pair__desc">100 次里只有 4 次救回来；19% 直接放弃</div>
+    </div>
+    <div class="data-pair__cell data-pair__cell--alt">
+      <div class="data-pair__label">— 专家翻车后成功率</div>
+      <div class="data-pair__big">15%</div>
+      <div class="data-pair__desc">是新手近 4 倍；其他级别放弃率仅 5–7%</div>
+    </div>
+  </div>
+
+  <p>4% 是什么概念？100 次遇到麻烦里，新手只有 4 次能救回来。更扎心的是放弃率——遇到麻烦之后，19% 的新手直接放弃，判定失败且没写任何代码；而其他专业度级别的用户，放弃率只有 5% 到 7%。</p>
+
+  <p>这说明什么？专业用户的优势，不在于永远不翻车，而在于<strong>翻车之后知道怎么把 AI 拉回来</strong>。他们知道该补充什么约束，该要求 AI 验证什么，该在哪个方向上纠偏。</p>
+
+  <p>而新手呢，不是 AI 不够努力，而是新手自己都不知道该往哪拉。AI 等着你给方向，但你给不出来，那就只能放弃。同一个工具，同一个困境，结局完全不同——差的不是工具，是人对问题的理解深度。</p>
+
+  <!-- 章节 06 · 收束 -->
+  <h2><span class="sec-num">06</span>写在最后</h2>
+
+  <p>报告里有一句话让我印象很深：</p>
+
+  <blockquote>生产软件，可能正在从一种程序员专属的职业能力，变成一种普通工作能力。</blockquote>
+
+  <p>这不是说非程序员可以替代软件工程师——工程师的价值从来不只是写代码，还有系统架构、风险控制、长期质量维护，这些 AI 暂时替代不了。但方向是对的：未来不是人人都成为程序员，而是各行业懂问题的人，可以直接生产脚本、自动化流程、内部工具和技术文档。律师会写合同检查脚本，还是一名律师；会计指挥 Python 对账，还是一名会计。</p>
+
+  <p>AI 面前，你的资历归零了，但你的专业能力没有归零——它只是换了一种接口和表现形式。</p>
+
+  <p>所以，下次你跟 AI 对话前，不妨过一遍这三件事：</p>
+
+  <div class="checklist-inline">
+    <div class="checklist-inline__title">做到这三件，你就是让 AI 跑出五倍产出的专家。</div>
+    <div class="checklist-inline__item">
+      <div class="checklist-inline__num">①</div>
+      <div class="checklist-inline__text">我有没有说清<strong>目标</strong>？</div>
+    </div>
+    <div class="checklist-inline__item">
+      <div class="checklist-inline__num">②</div>
+      <div class="checklist-inline__text">我有没有告诉它<strong>验证什么</strong>？</div>
+    </div>
+    <div class="checklist-inline__item">
+      <div class="checklist-inline__num">③</div>
+      <div class="checklist-inline__text">如果它理解错了，我能不能<strong>发现并纠正</strong>？</div>
+    </div>
+  </div>
+
+</article>
+
+<!-- ════════════════════════════════════════════════════════════
+     ARTICLE FOOTER · 浅底阅读收束
+     ════════════════════════════════════════════════════════════ -->
+<footer class="article-footer">
+  <div class="article-footer__author">
+    <div class="article-footer__avatar">A</div>
+    <div>
+      <div class="article-footer__name">Anthropic 报告解读</div>
+      <p class="article-footer__bio">基于 Anthropic《Agentic coding and persistent returns to expertise》研究报告，解读 40 万次真实 Claude Code 对话背后的洞察。</p>
+    </div>
+  </div>
+
+  <div class="article-footer__cta">
+    <a href="https://www.anthropic.com/research/claude-code-expertise" class="article-footer__cta-link" target="_blank" rel="noopener">阅读原报告 ↗</a>
+  </div>
+
+  <div class="article-footer__tags">
+    <span class="article-footer__tag">AI 协作</span>
+    <span class="article-footer__tag">Claude Code</span>
+    <span class="article-footer__tag">Anthropic</span>
+    <span class="article-footer__tag">人机分工</span>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════
+     FOOTER · 深色收尾（唯一深段）
+     ════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__src-label">Source</div>
+    <h2 class="footer__src-title">Agentic coding and persistent returns to expertise</h2>
+    <a href="https://www.anthropic.com/research/claude-code-expertise" class="footer__src-link" target="_blank" rel="noopener">anthropic.com/research/claude-code-expertise ↗</a>
+    <div class="footer__meta">40 万次对话 · 23.5 万用户 · 7 个月追踪</div>
+  </div>
+</footer>
+
+<script>
+  // Reading Progress · CT-1 长文标配（JS 仅做交互态，B7 允许）
+  const bar = document.getElementById('readingProgressBar');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    bar.style.width = progress + '%';
+  }, { passive: true });
+</script>
+
+</body>
+</html>

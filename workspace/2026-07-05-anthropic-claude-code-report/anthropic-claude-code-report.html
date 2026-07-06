@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>专业知识的持续回报 · Anthropic Claude Code 研究报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --color-white:#FFFFFF;--color-offwhite:#F5F3EF;--color-cream:#E8E4DD;
+  --color-sand:#C4B8A8;--color-stone:#8A7D6E;--color-charcoal:#2D2A26;--color-black:#1A1816;
+  --color-forest:#4A6741;--color-moss:#7A9B6D;--color-forest-soft:#547444;--color-moss-soft:#6D845C;
+  --color-signal-red:#E8453C;--color-signal-blue:#3C7AE8;
+  --bg-page:var(--color-offwhite);--bg-card:var(--color-white);--bg-subtle:var(--color-cream);
+  --border-rest:var(--color-sand);--border-hover:var(--color-stone);
+  --text-display:var(--color-black);--text-primary:var(--color-charcoal);
+  --text-secondary:var(--color-stone);--text-tertiary:var(--color-stone);
+  --text-inverse:var(--color-offwhite);--text-inverse-2:rgba(245,243,239,.5);--text-inverse-3:rgba(245,243,239,.3);
+  --link:var(--color-signal-blue);
+  --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+  --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+  --fw-light:300;--fw-regular:400;--fw-medium:500;--fw-semibold:600;
+  --fs-h1:clamp(36px,5vw,56px);--fs-h2:clamp(24px,3vw,32px);--fs-h3:18px;
+  --fs-body-lg:15px;--fs-body:14px;--fs-data:11px;
+  --lh-tight:1.1;--lh-snug:1.3;--lh-body:1.65;--lh-read:1.75;
+  --ls-tight:-0.02em;--ls-wide:0.06em;--ls-wider:0.2em;
+  --s-sm:8px;--s-md:16px;--s-lg:24px;--s-xl:32px;--s-2xl:48px;--s-3xl:64px;--s-4xl:96px;--s-5xl:120px;
+  --c-max:1120px;--c-read:720px;
+  --r-sm:4px;--r-full:9999px;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-primary);-webkit-font-smoothing:antialiased;font-size:var(--fs-body-lg);line-height:var(--lh-read)}
+
+.reading-progress{position:fixed;top:0;left:0;width:100%;height:2px;background:var(--border-rest);z-index:100;pointer-events:none}
+.reading-progress__bar{height:100%;width:0%;background:var(--color-forest);transition:width .1s linear}
+
+/* ═══ V4 STATEMENT HERO（浅底 offwhite + 单字母水印）═══ */
+.hero{min-height:100vh;background:var(--color-offwhite);color:var(--text-primary);display:flex;flex-direction:column;justify-content:center;padding:var(--s-5xl) var(--s-xl) var(--s-3xl);position:relative;overflow:hidden}
+.hero__watermark{position:absolute;right:var(--s-xl);top:50%;transform:translateY(-50%);font-family:var(--font-display);font-size:clamp(200px,25vw,400px);font-weight:var(--fw-light);line-height:1;letter-spacing:-0.06em;color:var(--color-sand);opacity:0.14;pointer-events:none;user-select:none}
+.hero__tag{font-family:var(--font-data);font-size:var(--fs-data);font-weight:var(--fw-medium);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--color-forest);display:flex;align-items:center;gap:var(--s-md);margin-bottom:var(--s-lg);z-index:1;position:relative}
+.hero__tag::before{content:'';width:32px;height:1px;background:var(--color-forest)}
+.hero__title{font-family:var(--font-display);font-size:clamp(42px,6vw,80px);font-weight:var(--fw-light);line-height:1.02;letter-spacing:-2px;color:var(--text-display);margin-bottom:var(--s-lg);z-index:1;position:relative;max-width:14ch}
+.hero__title em{font-style:italic;font-weight:var(--fw-medium);color:var(--color-forest-soft)}
+.hero__sub{font-family:var(--font-body);font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--text-secondary);max-width:480px;z-index:1;position:relative;margin-bottom:var(--s-3xl)}
+.hero__meta{display:flex;flex-wrap:wrap;gap:var(--s-md) var(--s-xl);z-index:1;position:relative;border-top:1px solid var(--border-rest);padding-top:var(--s-xl)}
+.hero__meta-item{display:flex;flex-direction:column;gap:var(--s-2xs)}
+.hero__meta-label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary)}
+.hero__meta-value{font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--fw-medium);color:var(--text-display)}
+.hero__line{position:absolute;bottom:0;left:var(--s-xl);right:var(--s-xl);height:1px;background:var(--border-rest)}
+
+/* dot pattern */
+.dot-pattern{display:flex;flex-direction:column;gap:20px;position:absolute;left:60px;bottom:var(--s-4xl);z-index:0}
+.dot-row{display:flex;gap:20px}
+.dot{width:4px;height:4px;background:var(--color-forest-soft);opacity:.2;border-radius:50%}
+
+/* ═══ SECTION ═══ */
+.section{padding:var(--s-4xl) var(--s-xl);position:relative}
+.section--cream{background:var(--bg-subtle)}
+.section--dark{background:var(--color-charcoal);color:var(--text-inverse)}
+.section__inner{max-width:var(--c-max);margin:0 auto;position:relative}
+.section__tag{font-family:var(--font-data);font-size:var(--fs-data);font-weight:var(--fw-medium);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--color-forest-soft);display:inline-flex;align-items:center;gap:var(--s-md);margin-bottom:var(--s-lg)}
+.section--dark .section__tag{color:var(--color-moss)}
+.section__tag::before{content:'';width:32px;height:1px;background:currentColor}
+.section__title{font-family:var(--font-display);font-size:var(--fs-h1);font-weight:var(--fw-regular);line-height:var(--lh-tight);letter-spacing:var(--ls-tight);color:var(--text-display);margin-bottom:var(--s-lg);max-width:780px}
+.section--dark .section__title{color:var(--text-inverse)}
+.section__title em{font-style:italic;font-weight:var(--fw-medium);color:var(--color-forest-soft)}
+.section--dark .section__title em{color:var(--color-moss)}
+.section__title-rule{width:48px;height:2px;background:var(--color-forest);margin:var(--s-lg) 0}
+.section--dark .section__title-rule{background:var(--color-moss)}
+.section__lede{font-family:var(--font-body);font-size:var(--fs-body-lg);line-height:var(--lh-read);color:var(--text-secondary);margin-bottom:var(--s-3xl);max-width:var(--c-read)}
+.section--dark .section__lede{color:rgba(245,243,239,.5)}
+
+.prose{max-width:var(--c-read);margin-bottom:var(--s-3xl)}
+.prose p{font-family:var(--font-body);font-size:var(--fs-body-lg);line-height:var(--lh-read);color:var(--text-secondary);margin-bottom:var(--s-md)}
+.prose p:last-child{margin-bottom:0}
+.prose strong{font-weight:600;color:var(--color-forest)}
+.section--dark .prose p{color:var(--text-inverse-2)}
+.section--dark .prose strong{color:var(--color-moss)}
+
+/* ═══ STAT GRID（editorial 组件即视觉化）═══ */
+.stat-grid{display:grid;gap:1px;background:var(--border-rest);margin-top:var(--s-3xl)}
+.stat-grid--2{grid-template-columns:repeat(2,1fr)}
+.stat-grid--3{grid-template-columns:repeat(3,1fr)}
+.stat-grid__cell{background:var(--bg-page);padding:var(--s-2xl) var(--s-lg)}
+.section--dark .stat-grid__cell{background:var(--color-charcoal)}
+.stat-grid__num{font-family:var(--font-display);font-size:clamp(36px,4.5vw,56px);font-weight:var(--fw-medium);line-height:1;letter-spacing:var(--ls-tight);color:var(--text-display)}
+.stat-grid__num--accent{color:var(--color-forest-soft)}
+.section--dark .stat-grid__num{color:var(--text-inverse)}
+.section--dark .stat-grid__num--accent{color:var(--color-moss)}
+.stat-grid__num span{font-size:.4em;color:var(--color-stone);font-weight:var(--fw-regular);margin-left:4px}
+.section--dark .stat-grid__num span{color:rgba(245,243,239,.3)}
+.stat-grid__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary);margin-top:var(--s-md)}
+.section--dark .stat-grid__label{color:rgba(245,243,239,.4)}
+.stat-grid__desc{font-family:var(--font-body);font-size:13px;line-height:var(--lh-body);color:var(--text-secondary);margin-top:var(--s-sm)}
+
+/* ═══ 9 MODES BAR（条形阵列 · 占比分布视觉化）═══ */
+.modes-list{margin-top:var(--s-3xl);display:flex;flex-direction:column;gap:var(--s-md)}
+.mode-row{display:grid;grid-template-columns:180px 1fr 60px;gap:var(--s-lg);align-items:center}
+.mode-row__label{font-family:var(--font-body);font-size:var(--fs-body);font-weight:var(--fw-medium);color:var(--text-primary);text-align:right}
+.mode-row__track{height:28px;background:var(--bg-subtle);position:relative;overflow:hidden}
+.mode-row__fill{height:100%;background:var(--color-forest-soft);transition:width 1s var(--ease-out)}
+.mode-row__fill--moss{background:var(--color-moss-soft)}
+.mode-row__fill--stone{background:var(--color-stone);opacity:.5}
+.mode-row__val{font-family:var(--font-data);font-size:var(--fs-body);font-weight:600;color:var(--text-primary)}
+
+/* ═══ TREND ARROWS（大数字箭头 · 趋势视觉化 · 高编码强度）═══ */
+.trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-rest);margin-top:var(--s-3xl)}
+.trend-cell{background:var(--bg-page);padding:var(--s-2xl) var(--s-lg);text-align:center}
+.trend-cell__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary);margin-bottom:var(--s-sm)}
+.trend-cell__nums{font-family:var(--font-display);font-size:clamp(28px,3.5vw,40px);font-weight:var(--fw-light);line-height:1;letter-spacing:var(--ls-tight);color:var(--text-display);display:flex;align-items:center;justify-content:center;gap:var(--s-sm)}
+.trend-cell__from{color:var(--color-stone);text-decoration:line-through;text-decoration-thickness:1px}
+.trend-cell__arrow{color:var(--color-forest-soft);font-size:.7em}
+.trend-cell__to{color:var(--color-forest-soft);font-weight:var(--fw-medium)}
+.trend-cell__delta{font-family:var(--font-data);font-size:var(--fs-data);color:var(--text-secondary);margin-top:var(--s-sm)}
+
+/* ═══ EXPERTISE GRADIENT（专业度阶梯 · 成功率梯度视觉化）═══ */
+.gradient-bars{margin-top:var(--s-3xl);display:flex;flex-direction:column;gap:var(--s-sm)}
+.gradient-row{display:grid;grid-template-columns:120px 1fr 80px;gap:var(--s-lg);align-items:center;padding:var(--s-sm) 0}
+.gradient-row__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-secondary)}
+.gradient-row__track{height:32px;background:var(--bg-subtle);position:relative;overflow:hidden}
+.gradient-row__fill{height:100%;display:flex;align-items:center;padding-left:var(--s-sm)}
+.gradient-row__fill--novice{background:var(--color-stone);opacity:.4;width:45%}
+.gradient-row__fill--mid{background:var(--color-moss-soft);width:85%}
+.gradient-row__fill--expert{background:var(--color-forest-soft);width:100%}
+.gradient-row__fill-num{font-family:var(--font-data);font-size:var(--fs-data);font-weight:600;color:var(--text-inverse)}
+.gradient-row__fill--novice .gradient-row__fill-num{color:var(--text-primary)}
+.gradient-row__val{font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--fw-medium);color:var(--text-primary)}
+
+/* ═══ DATA TABLE · 职业排名 ═══ */
+.rank-table{margin-top:var(--s-3xl);border-top:2px solid var(--color-forest)}
+.rank-row{display:grid;grid-template-columns:48px 1fr 1fr 80px;gap:var(--s-lg);align-items:center;padding:var(--s-md) 0;border-bottom:1px solid var(--border-rest)}
+.rank-row--top{background:var(--color-cream);padding-left:var(--s-md);padding-right:var(--s-md)}
+.rank-row__num{font-family:var(--font-display);font-size:20px;font-weight:var(--fw-medium);color:var(--text-tertiary)}
+.rank-row--top .rank-row__num{color:var(--color-forest-soft)}
+.rank-row__name{font-family:var(--font-body);font-size:var(--fs-body-lg);font-weight:var(--fw-medium);color:var(--text-primary)}
+.rank-row__bar-track{height:6px;background:var(--bg-subtle);border-radius:var(--r-sm);overflow:hidden}
+.rank-row__bar-fill{height:100%;background:var(--color-forest-soft);border-radius:var(--r-sm)}
+.rank-row--top .rank-row__bar-fill{background:var(--color-forest)}
+.rank-row__val{font-family:var(--font-data);font-size:var(--fs-body);font-weight:600;color:var(--text-primary);text-align:right}
+.rank-row--top .rank-row__val{color:var(--color-forest-soft)}
+
+/* ═══ CALLOUT ═══ */
+.callout{border-left:2px solid var(--color-forest-soft);padding:var(--s-xl) var(--s-2xl);background:var(--bg-subtle);margin-top:var(--s-3xl)}
+.callout--dark{background:rgba(245,243,239,.03);border-left-color:var(--color-moss)}
+.callout--muted{background:transparent;border-left-color:var(--color-stone)}
+.callout__tag{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--color-forest-soft);margin-bottom:var(--s-sm);font-weight:600}
+.callout--dark .callout__tag{color:var(--color-moss)}
+.callout--muted .callout__tag{color:var(--text-secondary)}
+.callout__h{font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-regular);line-height:var(--lh-snug);color:var(--text-display);margin-bottom:var(--s-sm)}
+.callout--dark .callout__h{color:var(--text-inverse)}
+.callout__h .hl{color:var(--color-forest-soft);font-weight:600}
+.callout--dark .callout__h .hl{color:var(--color-moss)}
+.callout__p{font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)}
+.callout--dark .callout__p{color:rgba(245,243,239,.5)}
+
+/* ═══ FOOTER ═══ */
+.footer{background:var(--color-black);color:var(--text-inverse);padding:var(--s-4xl) var(--s-xl) var(--s-3xl);position:relative;overflow:hidden}
+.footer::before{content:'CODE';position:absolute;bottom:-.08em;right:-.04em;font-family:var(--font-display);font-size:clamp(6rem,16vw,18rem);font-weight:700;line-height:.8;letter-spacing:-.06em;color:rgba(245,243,239,.03);pointer-events:none;user-select:none}
+.footer__inner{max-width:var(--c-max);margin:0 auto;position:relative;z-index:2}
+.footer__top{display:grid;grid-template-columns:1.5fr repeat(2,1fr);gap:var(--s-3xl);padding-bottom:var(--s-3xl);border-bottom:1px solid var(--text-inverse-3)}
+.footer__wordmark{font-family:var(--font-display);font-size:clamp(24px,2.5vw,32px);font-weight:var(--fw-regular);letter-spacing:var(--ls-tight);color:var(--text-inverse);margin-bottom:var(--s-md)}
+.footer__tagline{font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-inverse-2);max-width:32ch}
+.footer__col-title{font-family:var(--font-data);font-size:var(--fs-data);font-weight:500;letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--color-moss);display:flex;align-items:center;gap:var(--s-sm);margin-bottom:var(--s-lg)}
+.footer__col-title::before{content:'';display:inline-block;width:24px;height:1px;background:var(--color-moss)}
+.footer__links{list-style:none}
+.footer__links li{margin-bottom:var(--s-sm)}
+.footer__links a{font-family:var(--font-body);font-size:var(--fs-body);color:var(--text-inverse-2);text-decoration:none;transition:color .3s var(--ease-out)}
+.footer__links a:hover{color:var(--link)}
+.footer__bottom{display:flex;justify-content:space-between;align-items:center;padding-top:var(--s-lg);font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-inverse-3)}
+
+/* 响应式 */
+@media(max-width:1024px){
+  .hero{padding:var(--s-4xl) var(--s-md) var(--s-3xl)}
+  .hero__line{left:var(--s-md);right:var(--s-md)}
+  .section{padding:var(--s-3xl) var(--s-md)}
+  .footer{padding:var(--s-3xl) var(--s-md) var(--s-xl)}
+  .footer__top{grid-template-columns:1fr 1fr;gap:var(--s-xl)}
+  .stat-grid--3{grid-template-columns:repeat(2,1fr)}
+  .stat-grid--2{grid-template-columns:1fr}
+  .trend-grid{grid-template-columns:1fr}
+  .rank-row{grid-template-columns:32px 1fr 60px}
+  .rank-row__bar-track{display:none}
+  .dot-pattern{display:none}
+  .hero__meta{flex-direction:column;gap:var(--s-md)}
+  .mode-row{grid-template-columns:120px 1fr 50px}
+  .gradient-row{grid-template-columns:100px 1fr 60px}
+}
+@media(max-width:768px){
+  .hero__meta{flex-direction:row;flex-wrap:wrap}
+  .stat-grid--3,.stat-grid--2{grid-template-columns:1fr}
+  .footer__top{grid-template-columns:1fr}
+  .footer__bottom{flex-direction:column;gap:var(--s-sm);align-items:flex-start}
+  .mode-row{grid-template-columns:100px 1fr 50px}
+  .gradient-row{grid-template-columns:80px 1fr 50px}
+}
+@media(prefers-reduced-motion:no-preference){
+  .hero__tag,.hero__title,.hero__sub,.hero__meta{opacity:0;transform:translateY(20px);animation:fadeUp .9s var(--ease-out) forwards}
+  .hero__tag{animation-delay:.1s}.hero__title{animation-delay:.2s}.hero__sub{animation-delay:.4s}.hero__meta{animation-delay:.6s}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+}
+</style>
+</head>
+<body>
+
+<div class="reading-progress" aria-hidden="true"><div class="reading-progress__bar" id="readingProgressBar"></div></div>
+
+<!-- ═══ V4 STATEMENT HERO（浅底 offwhite + "E" 水印 + meta 四格）═══ -->
+<section class="hero">
+  <div class="hero__watermark">E</div>
+  <div class="dot-pattern">
+    <div class="dot-row"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="dot-row"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    <div class="dot-row"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  </div>
+  <div class="hero__tag">Anthropic Research · 2026-06-16</div>
+  <h1 class="hero__title">专业知识的<br><em>持续回报</em></h1>
+  <p class="hero__sub">基于约 40 万次真实 Claude Code 会话的隐私保护分析。人决定做什么，Agent 决定怎么做——领域知识持续回报，回报若下降意味着模型补上了判断力。</p>
+  <div class="hero__meta">
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">会话</div>
+      <div class="hero__meta-value">~40 万</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">用户</div>
+      <div class="hero__meta-value">~23.5 万</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">周期</div>
+      <div class="hero__meta-value">7 个月</div>
+    </div>
+    <div class="hero__meta-item">
+      <div class="hero__meta-label">作者</div>
+      <div class="hero__meta-value">Hitzig et al.</div>
+    </div>
+  </div>
+  <div class="hero__line"></div>
+</section>
+
+<!-- ═══ INTRODUCTION ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">Introduction · 视角锚定</div>
+    <h2 class="section__title">这可能<em>预览</em>了知识工作的走向。</h2>
+    <div class="section__title-rule"></div>
+    <div class="prose">
+      <p>Agentic coding 已经起飞。GitHub 项目中有 coding agent 活动的比例自 2025 年底以来<strong>翻了一倍多</strong>，Claude Code 用户现在平均每周花 <strong>20 小时</strong>使用这个工具。</p>
+      <p>没有正式编程经验的人，能不能成功指挥 Agent 完成复杂的技术工作？这些工具的快速采用和改进，对知识工作意味着什么？Anthropic 的这份报告从 Claude Code 使用数据中寻找<strong>早期信号</strong>。</p>
+      <p>"What happens on Claude Code <em>may be</em> a preview of where knowledge work is headed." —— 这是报告的开场判断。不是定论，是预览。</p>
+    </div>
+    <div class="callout">
+      <div class="callout__tag">◆ 核心论点</div>
+      <p class="callout__h">Coding agents <span class="hl">不是在替代</span>领域专业知识。</p>
+      <p class="callout__p">工作者带来的理解越多，Agent 能产出的高质量工作越多。成功取决于人对问题的理解程度，不是是否受过编程训练。如果这些模式在整个经济中成立，意味着 agentic coding 工具在吸收部分实现密集型工作的同时，也在<strong>奖励</strong>那些对解决的问题有扎实理解的人。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIVISION OF LABOR · 分工（cream）═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">Section 2 · 分工</div>
+    <h2 class="section__title">人决定<em>做什么</em>，Agent 决定<em>怎么做</em>。</h2>
+    <div class="section__title-rule"></div>
+    <p class="section__lede">报告构建了一个隐私保护的决策归因分类器——列出会话中所有有意义的决策，分为规划（做什么/走哪条路线/怎样算完成）和执行（改哪些文件/写什么代码/跑哪些命令），然后将每个决策归因于 Claude 或用户。</p>
+
+    <!-- Fig 2 视觉化：Stat Grid 两个大数字并列（editorial 组件即视觉化）-->
+    <div class="stat-grid stat-grid--2">
+      <div class="stat-grid__cell">
+        <div class="stat-grid__num stat-grid__num--accent">70<span>%</span></div>
+        <div class="stat-grid__label">人的规划决策占比</div>
+        <div class="stat-grid__desc">做什么 · 走哪条路线 · 怎样算完成</div>
+      </div>
+      <div class="stat-grid__cell">
+        <div class="stat-grid__num">20<span>%</span></div>
+        <div class="stat-grid__label">人的执行决策占比（仅）</div>
+        <div class="stat-grid__desc">改哪些文件 · 写什么代码 · 跑哪些命令——其余 80% 由 Agent 决定</div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:var(--s-3xl)">
+      <p>典型的 Claude Code 会话约有 <strong>4 轮</strong>交互。用户每发一条 prompt，Claude 平均执行约 <strong>10 个动作</strong>（有时超过 100 个），每轮输出平均 <strong>2,400 字</strong>——读文件、改代码、跑命令。</p>
+      <p>Claude 在两轮检查之间做多少事，很大程度上取决于<strong>谁在做决策</strong>。当用户保持执行控制（做 >80% 执行决策），Claude 每轮约 8 个动作。当 Claude 接管规划（做 >80% 规划决策），每轮动作数最高，约 <strong>16 个</strong>。</p>
+    </div>
+
+    <!-- Fig 1 视觉化：9 个工作模式条形阵列（占比分布）-->
+    <h3 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-regular);color:var(--text-display);margin-top:var(--s-3xl);margin-bottom:var(--s-md)">9 种工作模式 · 会话占比分布</h3>
+    <div class="modes-list">
+      <div class="mode-row"><div class="mode-row__label">修 bug Fixing</div><div class="mode-row__track"><div class="mode-row__fill" style="width:100%"></div></div><div class="mode-row__val">26%</div></div>
+      <div class="mode-row"><div class="mode-row__label">写代码 Building</div><div class="mode-row__track"><div class="mode-row__fill" style="width:96%"></div></div><div class="mode-row__val">25%</div></div>
+      <div class="mode-row"><div class="mode-row__label">运行软件 Operating</div><div class="mode-row__track"><div class="mode-row__fill mode-row__fill--moss" style="width:65%"></div></div><div class="mode-row__val">17%</div></div>
+      <div class="mode-row"><div class="mode-row__label">规划/探索 Plan+Understand</div><div class="mode-row__track"><div class="mode-row__fill mode-row__fill--moss" style="width:54%"></div></div><div class="mode-row__val">14%</div></div>
+      <div class="mode-row"><div class="mode-row__label">分析+写作 Analysis+Prose</div><div class="mode-row__track"><div class="mode-row__fill mode-row__fill--stone" style="width:50%"></div></div><div class="mode-row__val">13%</div></div>
+      <div class="mode-row"><div class="mode-row__label">测试+编排 Testing+Orch.</div><div class="mode-row__track"><div class="mode-row__fill mode-row__fill--stone" style="width:19%"></div></div><div class="mode-row__val">5%</div></div>
+    </div>
+
+    <div class="prose" style="margin-top:var(--s-3xl)">
+      <p>约 <strong>56%</strong> 的会话是直接写代码或维护代码（写 25% + 修 26% + 测试/编排 5%）。运行软件占 17%，规划/探索占 14%，分析和写作占 13%——<strong>后两类已经不完全是编程工作</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ EXPERTISE · 专业度（深底 · 核心发现）═══ -->
+<section class="section section--dark">
+  <div class="section__inner">
+    <div class="section__tag">Section 3 · 专业度</div>
+    <h2 class="section__title">回报来自<em>领域知识</em>，不是编程技能。</h2>
+    <div class="section__title-rule"></div>
+    <p class="section__lede">Claude 从每个转录中用五分制（novice 到 expert）评估用户在该任务上的专业度。分类器寻找三个信号：用户指令的精确程度、用户让 Claude 验证什么、以及用户纠正 Claude 还是 Claude 纠正用户。</p>
+
+    <div class="prose">
+      <p><strong>关键：专业度是任务特定的，不是职位或通用能力。</strong>一个资深工程师第一次问 Rust 问题，在 Rust 上就是新手。一个从没用过 Python 的会计，如果能准确告诉 Claude 对账脚本必须执行哪些规则，并抓住月末结账时它处理错的边界情况——在这个任务上就是专家。</p>
+    </div>
+
+    <!-- Fig 3 视觉化：新手 vs 专家每条 prompt 产出对比（Stat Grid）-->
+    <div class="stat-grid stat-grid--2" style="margin-top:var(--s-3xl)">
+      <div class="stat-grid__cell">
+        <div class="stat-grid__label" style="margin-bottom:var(--s-md)">— 新手会话 · 每条 prompt</div>
+        <div class="stat-grid__num">5 <span>动作</span></div>
+        <div class="stat-grid__desc" style="margin-top:var(--s-sm);font-size:18px;color:var(--text-inverse)">~600 字输出</div>
+      </div>
+      <div class="stat-grid__cell">
+        <div class="stat-grid__label" style="margin-bottom:var(--s-md)">— 专家会话 · 每条 prompt</div>
+        <div class="stat-grid__num stat-grid__num--accent">12 <span>动作</span></div>
+        <div class="stat-grid__desc" style="margin-top:var(--s-sm);font-size:18px;color:var(--color-moss)">~3,200 字输出</div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:var(--s-3xl)">
+      <p>专家的每条 prompt 设触发的动作链是新手的两倍多（12 vs 5），输出是新手的五倍（3,200 vs 600 字）。这个差距<strong>在每一种工作类型、每一个任务价值区间都存在</strong>。</p>
+      <p>回归分析（控制工作模式、任务价值、月份、职业、模型家族）后，专业度每升一级，动作数增加 <strong>+9%</strong>，输出增加 <strong>+13%</strong>（p &lt; 0.001，标准误按用户聚类）。</p>
+    </div>
+
+    <!-- Fig 5 视觉化：专业度 vs 成功率梯度（阶梯条形 · 高编码强度）-->
+    <h3 style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-regular);color:var(--text-inverse);margin-top:var(--s-3xl);margin-bottom:var(--s-md)">专业度 vs 成功率梯度 · verified success</h3>
+    <div class="gradient-bars">
+      <div class="gradient-row">
+        <div class="gradient-row__label">— Novice</div>
+        <div class="gradient-row__track"><div class="gradient-row__fill gradient-row__fill--novice"><span class="gradient-row__fill-num">15%</span></div></div>
+        <div class="gradient-row__val">15%</div>
+      </div>
+      <div class="gradient-row">
+        <div class="gradient-row__label">— Intermediate</div>
+        <div class="gradient-row__track"><div class="gradient-row__fill gradient-row__fill--mid"><span class="gradient-row__fill-num">28%</span></div></div>
+        <div class="gradient-row__val">28%</div>
+      </div>
+      <div class="gradient-row">
+        <div class="gradient-row__label">— Expert</div>
+        <div class="gradient-row__track"><div class="gradient-row__fill gradient-row__fill--expert"><span class="gradient-row__fill-num">33%</span></div></div>
+        <div class="gradient-row__val">33%</div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:var(--s-3xl)">
+      <p>所有成功率指标都指向同一个模式：<strong>专业度越高，成功率越高</strong>。但大部分增益集中在量表低端——新手到中级的差距，比中级到专家的差距大得多。<strong>差距是 modest 的</strong>——在一个领域有足够的熟练度，就能用得几乎和深度精通者一样好。不必是大师，懂行就够了。</p>
+    </div>
+
+    <div class="callout callout--dark" style="margin-top:var(--s-3xl)">
+      <div class="callout__tag">◆ "verified success" 严格定义</div>
+      <p class="callout__p" style="color:rgba(245,243,239,.5)">报告的"成功"有两层：<strong style="color:var(--text-inverse)">judged success</strong>（分类器读完整转录，判断用户是否做到了设定的目标）+ <strong style="color:var(--text-inverse)">verified success</strong>（judged success + 至少一个硬信号）。硬信号包括：git 提交/PR、测试套件通过、用户明确确认。两者<strong style="color:var(--text-inverse)">同时满足</strong>才算 verified success。约 7.7% 的会话被判定为"无明确目标"，不纳入成功率分析。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 翻车恢复（浅底 cream）═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">Section 4 · 翻车恢复</div>
+    <h2 class="section__title">翻车之后，<em>专家</em>救得回来。</h2>
+    <div class="section__title-rule"></div>
+    <p class="section__lede">"hit trouble" 定义：失败信号记录到验证过的失败证据——报错、测试失败、多次重试同一件事、用户表达不满或沮丧。复杂任务里，Agent 出错是常态。区别在出错之后。</p>
+
+    <!-- 视觉化：新手 vs 专家翻车后恢复率（Stat Grid 对比）-->
+    <div class="stat-grid stat-grid--2">
+      <div class="stat-grid__cell">
+        <div class="stat-grid__label" style="margin-bottom:var(--s-md)">— 新手翻车后</div>
+        <div class="stat-grid__num">4<span>%</span></div>
+        <div class="stat-grid__desc">verified success · 至少部分成功 60%<br><strong>19% 直接放弃</strong>（判定失败 + 0 行代码）</div>
+      </div>
+      <div class="stat-grid__cell">
+        <div class="stat-grid__label" style="margin-bottom:var(--s-md)">— 专家翻车后</div>
+        <div class="stat-grid__num stat-grid__num--accent">15<span>%</span></div>
+        <div class="stat-grid__desc">verified success · 至少部分成功 80-81%<br><strong>放弃率仅 5-7%</strong></div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout__tag">◆ 关键发现</div>
+      <p class="callout__h">专家会话达到 verified success 的频率是新手的两倍多。翻车时新手放弃的比率是其他人的<span class="hl">数倍</span>。</p>
+      <p class="callout__p">专业度的一部分价值，似乎正是<strong>引导 Agent 走对方向的能力</strong>——知道补充什么约束、要求验证什么、在哪个方向纠偏。优势不在不翻车，在翻车后的恢复力。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 职业排名（浅底）═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">Section 5 · 跨职业对比</div>
+    <h2 class="section__title">软件工程师<em>不独占</em>鳌头。</h2>
+    <div class="section__title-rule"></div>
+    <p class="section__lede">报告从会话转录推断用户职业，映射到美国劳工统计局 SOC 分类的 23 个主要组。分类器明确指令：不要把"在编程"本身当作编程职业的证据。约 70% 的会话成功推断出职业。</p>
+
+    <div class="prose">
+      <p>软件相关职业在产代码会话中的 verified success 约 <strong>34%</strong>，其他职业约 <strong>29%</strong>——5 个百分点的差距，且<strong>在 7 个月内既没有扩大也没有缩小</strong>。在更宽松的"至少部分成功"指标下，两组差距几乎消失（89% vs 88%）。</p>
+      <p>十大职业每一个与软件/数学类用户的差距都在 <strong>7 个百分点以内</strong>。管理类在 verified success 上最高，略高于软件工程类。</p>
+    </div>
+
+    <!-- Fig 6 视觉化：职业排名 rank list + 进度条 -->
+    <div class="rank-table">
+      <div class="rank-row rank-row--top">
+        <div class="rank-row__num">01</div>
+        <div class="rank-row__name">管理类 Management</div>
+        <div class="rank-row__bar-track"><div class="rank-row__bar-fill" style="width:100%"></div></div>
+        <div class="rank-row__val">~37%</div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-row__num">02</div>
+        <div class="rank-row__name">软件/数学 Computer & Math</div>
+        <div class="rank-row__bar-track"><div class="rank-row__bar-fill" style="width:92%"></div></div>
+        <div class="rank-row__val">~34%</div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-row__num">03</div>
+        <div class="rank-row__name">法律类 Legal</div>
+        <div class="rank-row__bar-track"><div class="rank-row__bar-fill" style="width:89%"></div></div>
+        <div class="rank-row__val">~33%</div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-row__num">04</div>
+        <div class="rank-row__name">商业/金融 Business & Financial</div>
+        <div class="rank-row__bar-track"><div class="rank-row__bar-fill" style="width:78%"></div></div>
+        <div class="rank-row__val">~29%</div>
+      </div>
+      <div class="rank-row">
+        <div class="rank-row__num">05</div>
+        <div class="rank-row__name">医疗/设计/销售/教育/科学等</div>
+        <div class="rank-row__bar-track"><div class="rank-row__bar-fill" style="width:73%"></div></div>
+        <div class="rank-row__val">~27%</div>
+      </div>
+    </div>
+
+    <div class="callout callout--muted">
+      <div class="callout__tag">◆ 原文的克制</div>
+      <p class="callout__p">管理类最高——但报告说"<em>this may relate to confirmation habits</em>"。verification 部分依赖转录中的明确确认，管理者可能更习惯在得到想要的东西时说出来。数据打了折。</p>
+    </div>
+
+    <p class="section__lede" style="margin-top:var(--s-3xl);font-size:13px;color:var(--text-secondary)">数据来源：Figure 6。误差线为 95% 置信区间。"成功"= verified success（judged success + git 提交/PR OR 测试通过 OR 用户确认）。增长最快的非软件职业组：管理、销售、法律。</p>
+  </div>
+</section>
+
+<!-- ═══ 七个月趋势（深底）═══ -->
+<section class="section section--dark">
+  <div class="section__inner">
+    <div class="section__tag">Section 3.3 · 七个月变化</div>
+    <h2 class="section__title">不再只是<em>修修补补</em>。</h2>
+    <div class="section__title-rule"></div>
+    <p class="section__lede">2025.10 → 2026.04，工作构成发生了实质性变化。最明显的是修 bug 的会话占比<strong>从 33% 降到 19%</strong>——取而代之的是围绕代码的工作在增长。</p>
+
+    <!-- Fig 4 视觉化：大数字箭头（高编码强度 · 趋势一眼可见）-->
+    <div class="trend-grid">
+      <div class="trend-cell">
+        <div class="trend-cell__label">修 bug 占比</div>
+        <div class="trend-cell__nums">
+          <span class="trend-cell__from">33%</span>
+          <span class="trend-cell__arrow">→</span>
+          <span class="trend-cell__to">19%</span>
+        </div>
+        <div class="trend-cell__delta">降幅近一半</div>
+      </div>
+      <div class="trend-cell">
+        <div class="trend-cell__label">运行软件占比</div>
+        <div class="trend-cell__nums">
+          <span class="trend-cell__from">14%</span>
+          <span class="trend-cell__arrow">→</span>
+          <span class="trend-cell__to">21%</span>
+        </div>
+        <div class="trend-cell__delta">部署 · 配置 · 跑流程</div>
+      </div>
+      <div class="trend-cell">
+        <div class="trend-cell__label">写作+分析占比</div>
+        <div class="trend-cell__nums">
+          <span class="trend-cell__from">10%</span>
+          <span class="trend-cell__arrow">→</span>
+          <span class="trend-cell__to">20%</span>
+        </div>
+        <div class="trend-cell__delta">翻倍 · 已不完全是编程</div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:var(--s-3xl)">
+      <p>任务本身也变得更有价值。报告用自由职业市场的报价估算每个会话的经济价值——7 个月间，平均会话价值<strong>上升约 27%</strong>。这个上升跨多种工作类型：building 约 +43%，operating 约 +34%，fixing 约 +32%。报告说这些估价是粗略的，主要用于任务间的相对比较，不作为字面美元值。</p>
+    </div>
+
+    <div class="callout callout--dark">
+      <div class="callout__tag">◆ 方向信号</div>
+      <p class="callout__p">AI 编程工具的进化方向不是"更会补全代码"——用户开始让它干<strong style="color:var(--text-inverse)">代码之外的活</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LOOKING AHEAD（浅底）═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">Looking Ahead · 未来观察指标</div>
+    <h2 class="section__title">如果回报<em>下降</em>，意味着什么？</h2>
+    <div class="section__title-rule"></div>
+
+    <div class="prose">
+      <p>报告最深的一层不在发现，在未来观察指标。它给了一套可以持续追踪的尺子。</p>
+      <p><strong>能力来自胜任，不是精通。</strong>——原文："competence, not mastery."。对领域有工作中的把握，就能获得大部分收益；深度专精只在此基础上增加一点点。</p>
+      <p>有这种把握的人，在任何领域，现在都可能做到以前做不到的技术工作。没有这种专业知识的人，从同一个工具得到的要少得多。</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout__tag">◆ 核心观察框架</div>
+      <p class="callout__h">如果专业度回报开始<span class="hl">下降</span>，意味着模型正在补上人类现在带的判断力。</p>
+      <p class="callout__p">那时受益群体会从领域专家扩展到所有人。同样，如果非软件职业的会话成功率持续上升，意味着软件开发正变成各行各业的<strong>普通工作能力</strong>，而不是单一职业的产物。这些转变会改变谁从 agentic coding 中受益、受益多少。</p>
+    </div>
+
+    <div class="callout callout--muted" style="margin-top:var(--s-lg)">
+      <div class="callout__tag">◆ 局限性</div>
+      <p class="callout__p">报告不能测量真实世界结果（代码是否被使用或丢弃、是否产出经济价值）。非交互式使用被排除。所有会话分类依赖模型对转录的阅读——分类器在规模上验证仍然困难。</p>
+    </div>
+
+    <div class="callout" style="margin-top:var(--s-lg);background:transparent;border-left-color:var(--color-stone)">
+      <div class="callout__tag" style="color:var(--text-secondary)">◆ 这不是结论，是观察框架</div>
+      <p class="callout__p">这份报告留给你的是一套追踪指标——分工比例、专业度回报、错误恢复率、跨职业成功率。用它自己观察趋势，不要把它当定论。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__top">
+      <div>
+        <div class="footer__wordmark">Agentic coding and persistent returns to expertise</div>
+        <p class="footer__tagline">Hitzig, Massenkoff, Lyubich, Zhang, Heller, McCrory · 2026-06-16 · Anthropic</p>
+      </div>
+      <div>
+        <div class="footer__col-title">Source</div>
+        <ul class="footer__links">
+          <li><a href="https://www.anthropic.com/research/claude-code-expertise" target="_blank" rel="noopener">研究报告全文</a></li>
+          <li><a href="https://cdn.sanity.io/files/4zrzovbb/website/433472e34b60db1a52ebf0b8c6600f057b6908c5.pdf" target="_blank" rel="noopener">附录 PDF</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer__col-title">Data</div>
+        <ul class="footer__links">
+          <li>~400,000 sessions</li>
+          <li>~235,000 users</li>
+          <li>Oct 2025 — Apr 2026</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 · Anthropic Research</span>
+      <span>Persistent returns · An observation framework</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const bar=document.getElementById('readingProgressBar');
+  window.addEventListener('scroll',()=>{
+    const s=window.scrollY,d=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(d>0?(s/d)*100:0)+'%';
+  },{passive:true});
+</script>
+
+</body>
+</html>

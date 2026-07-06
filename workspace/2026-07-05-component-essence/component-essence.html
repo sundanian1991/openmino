@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>组件的本质 · Haglöfs 范式认知</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --color-white:#FFFFFF;--color-offwhite:#F5F3EF;--color-cream:#E8E4DD;
+  --color-sand:#C4B8A8;--color-stone:#8A7D6E;--color-charcoal:#2D2A26;--color-black:#1A1816;
+  --color-forest:#4A6741;--color-moss:#7A9B6D;--color-forest-soft:#547444;--color-moss-soft:#6D845C;
+  --color-signal-blue:#3C7AE8;
+  --bg-page:var(--color-offwhite);--bg-card:var(--color-white);--bg-subtle:var(--color-cream);
+  --border-rest:var(--color-sand);--border-hover:var(--color-stone);
+  --text-display:var(--color-black);--text-primary:var(--color-charcoal);
+  --text-secondary:var(--color-stone);--text-tertiary:var(--color-stone);
+  --text-inverse:var(--color-offwhite);--text-inverse-2:rgba(245,243,239,.5);--text-inverse-3:rgba(245,243,239,.3);
+  --link:var(--color-signal-blue);
+  --font-display:'Playfair Display',Georgia,'Times New Roman',serif;
+  --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+  --font-data:'JetBrains Mono','SF Mono','Courier New',monospace;
+  --fw-light:300;--fw-regular:400;--fw-medium:500;--fw-semibold:600;
+  --fs-h1:clamp(36px,5vw,56px);--fs-h2:clamp(24px,3vw,32px);--fs-h3:18px;
+  --fs-body-lg:15px;--fs-body:14px;--fs-data:11px;
+  --lh-tight:1.1;--lh-snug:1.3;--lh-body:1.65;--lh-read:1.75;
+  --ls-tight:-0.02em;--ls-wide:0.06em;--ls-wider:0.2em;
+  --s-sm:8px;--s-md:16px;--s-lg:24px;--s-xl:32px;--s-2xl:48px;--s-3xl:64px;--s-4xl:96px;--s-5xl:120px;
+  --c-max:1120px;--c-read:720px;
+  --r-sm:4px;--r-lg:8px;--r-full:9999px;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg-page);color:var(--text-primary);-webkit-font-smoothing:antialiased;font-size:var(--fs-body-lg);line-height:var(--lh-read)}
+
+/* ═══ HERO V4 Statement 浅底 ═══ */
+.hero{min-height:100vh;background:var(--color-offwhite);color:var(--text-primary);display:flex;flex-direction:column;justify-content:center;padding:var(--s-5xl) var(--s-xl) var(--s-3xl);position:relative;overflow:hidden}
+.hero__watermark{position:absolute;right:var(--s-xl);top:50%;transform:translateY(-50%);font-family:var(--font-display);font-size:clamp(200px,25vw,400px);font-weight:var(--fw-light);line-height:1;letter-spacing:-0.06em;color:var(--color-sand);opacity:0.12;pointer-events:none;user-select:none}
+.hero__tag{font-family:var(--font-data);font-size:var(--fs-data);font-weight:var(--fw-medium);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--color-forest);display:flex;align-items:center;gap:var(--s-md);margin-bottom:var(--s-lg);z-index:1;position:relative}
+.hero__tag::before{content:'';width:32px;height:1px;background:var(--color-forest)}
+.hero__title{font-family:var(--font-display);font-size:clamp(42px,6vw,80px);font-weight:var(--fw-light);line-height:1.02;letter-spacing:-2px;color:var(--text-display);margin-bottom:var(--s-lg);z-index:1;position:relative;max-width:14ch}
+.hero__title em{font-style:italic;font-weight:var(--fw-medium);color:var(--color-forest-soft)}
+.hero__sub{font-family:var(--font-body);font-size:var(--fs-body-lg);line-height:var(--lh-body);color:var(--text-secondary);max-width:480px;z-index:1;position:relative}
+.hero__line{position:absolute;bottom:0;left:var(--s-xl);right:var(--s-xl);height:1px;background:var(--border-rest)}
+
+/* ═══ SECTION ═══ */
+.section{padding:var(--s-4xl) var(--s-xl);position:relative}
+.section--cream{background:var(--bg-subtle)}
+.section--dark{background:var(--color-charcoal);color:var(--text-inverse)}
+.section__inner{max-width:var(--c-max);margin:0 auto;position:relative}
+.section__tag{font-family:var(--font-data);font-size:var(--fs-data);font-weight:var(--fw-medium);letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--color-forest-soft);display:inline-flex;align-items:center;gap:var(--s-md);margin-bottom:var(--s-lg)}
+.section--dark .section__tag{color:var(--color-moss)}
+.section__tag::before{content:'';width:32px;height:1px;background:currentColor}
+.section__title{font-family:var(--font-display);font-size:var(--fs-h1);font-weight:var(--fw-regular);line-height:var(--lh-tight);letter-spacing:var(--ls-tight);color:var(--text-display);margin-bottom:var(--s-lg);max-width:780px}
+.section--dark .section__title{color:var(--text-inverse)}
+.section__title em{font-style:italic;font-weight:var(--fw-medium);color:var(--color-forest-soft)}
+.section--dark .section__title em{color:var(--color-moss)}
+.section__title-rule{width:48px;height:2px;background:var(--color-forest);margin:var(--s-lg) 0}
+.section--dark .section__title-rule{background:var(--color-moss)}
+
+.prose{max-width:var(--c-read);margin-bottom:var(--s-3xl)}
+.prose p{font-family:var(--font-body);font-size:var(--fs-body-lg);line-height:var(--lh-read);color:var(--text-secondary);margin-bottom:var(--s-md)}
+.prose p:last-child{margin-bottom:0}
+.prose strong{font-weight:600;color:var(--color-forest)}
+.section--dark .prose p{color:var(--text-inverse-2)}
+.section--dark .prose strong{color:var(--color-moss)}
+
+/* ═══ PRINCIPLE CARDS（4 条宪法）═══ */
+.principles{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-2xl) var(--s-lg)}
+.principle{border-top:1px solid var(--border-rest);padding-top:var(--s-xl)}
+.principle__num{font-family:var(--font-display);font-size:clamp(48px,5vw,72px);font-weight:var(--fw-light);line-height:1;color:var(--color-sand);margin-bottom:var(--s-md)}
+.principle__title{font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-medium);line-height:var(--lh-snug);letter-spacing:var(--ls-tight);color:var(--text-display);margin-bottom:var(--s-sm)}
+.principle__desc{font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary);margin-bottom:var(--s-md)}
+.principle__insight{font-family:var(--font-display);font-size:var(--fs-h3);font-style:italic;font-weight:var(--fw-regular);color:var(--color-forest-soft);line-height:var(--lh-snug);padding-left:var(--s-lg);border-left:2px solid var(--color-moss-soft)}
+
+/* ═══ STAT GRID（3 类组件）═══ */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border-rest);margin-top:var(--s-3xl)}
+.stat-grid__cell{background:var(--bg-page);padding:var(--s-2xl) var(--s-lg)}
+.stat-grid__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--color-forest-soft);margin-bottom:var(--s-md)}
+.stat-grid__big{font-family:var(--font-display);font-size:clamp(28px,3vw,36px);font-weight:var(--fw-medium);line-height:var(--lh-snug);color:var(--text-display);margin-bottom:var(--s-sm)}
+.stat-grid__desc{font-family:var(--font-body);font-size:13px;line-height:var(--lh-body);color:var(--text-secondary)}
+.stat-grid__count{font-family:var(--font-data);font-size:var(--fs-data);color:var(--color-stone);margin-top:var(--s-sm)}
+
+/* ═══ RADIUS DEMO（三级硬度演示）═══ */
+.radius-demo{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-lg);margin-top:var(--s-3xl)}
+.radius-cell{padding:var(--s-2xl) var(--s-lg);background:var(--bg-card);border:1px solid var(--border-rest);text-align:center}
+.radius-cell--structural{border-radius:0}
+.radius-cell--content{border-radius:var(--r-sm)}
+.radius-cell--interactive{border-radius:var(--r-lg)}
+.radius-cell__shape{width:64px;height:64px;background:var(--color-forest-soft);margin:0 auto var(--s-md)}
+.radius-cell--structural .radius-cell__shape{border-radius:0}
+.radius-cell--content .radius-cell__shape{border-radius:var(--r-sm)}
+.radius-cell--interactive .radius-cell__shape{border-radius:var(--r-lg)}
+.radius-cell__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--color-forest-soft);margin-bottom:var(--s-xs)}
+.radius-cell__value{font-family:var(--font-display);font-size:24px;font-weight:var(--fw-medium);color:var(--text-display);margin-bottom:var(--s-xs)}
+.radius-cell__desc{font-family:var(--font-body);font-size:13px;line-height:var(--lh-body);color:var(--text-secondary)}
+
+/* ═══ 深底反相演示 ═══ */
+.inverse-demo{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-rest);margin-top:var(--s-3xl)}
+.inverse-cell{padding:var(--s-2xl) var(--s-lg)}
+.inverse-cell--light{background:var(--bg-page);color:var(--text-primary)}
+.inverse-cell--dark{background:var(--color-charcoal);color:var(--text-inverse)}
+.inverse-cell__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;margin-bottom:var(--s-md)}
+.inverse-cell--light .inverse-cell__label{color:var(--color-forest-soft)}
+.inverse-cell--dark .inverse-cell__label{color:var(--color-moss)}
+.inverse-cell__num{font-family:var(--font-display);font-size:clamp(36px,4vw,48px);font-weight:var(--fw-medium);line-height:1;margin-bottom:var(--s-sm)}
+.inverse-cell--light .inverse-cell__num{color:var(--text-display)}
+.inverse-cell--dark .inverse-cell__num{color:var(--text-inverse)}
+.inverse-cell__num span{font-size:.4em;font-weight:var(--fw-regular);margin-left:4px}
+.inverse-cell--light .inverse-cell__num span{color:var(--color-stone)}
+.inverse-cell--dark .inverse-cell__num span{color:rgba(245,243,239,.3)}
+.inverse-cell__desc{font-family:var(--font-body);font-size:13px;line-height:var(--lh-body)}
+.inverse-cell--light .inverse-cell__desc{color:var(--text-secondary)}
+.inverse-cell--dark .inverse-cell__desc{color:rgba(245,243,239,.5)}
+
+/* ═══ CALL OUT ═══ */
+.callout{border-left:2px solid var(--color-forest-soft);padding:var(--s-xl) var(--s-2xl);background:var(--bg-subtle);margin-top:var(--s-3xl)}
+.callout--dark{background:rgba(245,243,239,.03);border-left-color:var(--color-moss)}
+.callout__tag{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--color-forest-soft);margin-bottom:var(--s-sm);font-weight:600}
+.callout--dark .callout__tag{color:var(--color-moss)}
+.callout__h{font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--fw-regular);line-height:var(--lh-snug);color:var(--text-display);margin-bottom:var(--s-sm)}
+.callout--dark .callout__h{color:var(--text-inverse)}
+.callout__h .hl{color:var(--color-forest-soft);font-weight:600}
+.callout--dark .callout__h .hl{color:var(--color-moss)}
+.callout__p{font-family:var(--font-body);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--text-secondary)}
+.callout--dark .callout__p{color:rgba(245,243,239,.5)}
+
+/* ═══ 编辑性 vs chart 对比 ═══ */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border-rest);margin-top:var(--s-3xl)}
+.compare-cell{padding:var(--s-2xl) var(--s-lg);background:var(--bg-page)}
+.compare-cell__label{font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;margin-bottom:var(--s-md)}
+.compare-cell__label--bad{color:var(--color-stone)}
+.compare-cell__label--good{color:var(--color-forest-soft)}
+.compare-cell__title{font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--fw-medium);color:var(--text-display);margin-bottom:var(--s-sm)}
+.compare-cell__desc{font-family:var(--font-body);font-size:13px;line-height:var(--lh-body);color:var(--text-secondary);margin-bottom:var(--s-md)}
+
+/* mini chart 演示：饼图 vs Stat Grid */
+.mini-pie{width:80px;height:80px;border-radius:50%;background:conic-gradient(var(--color-forest-soft) 0 70%,var(--color-moss-soft) 70% 100%);margin:0 auto var(--s-sm);opacity:.5}
+.mini-stat{display:flex;gap:var(--s-lg);justify-content:center;margin-bottom:var(--s-sm)}
+.mini-stat__num{font-family:var(--font-display);font-size:28px;font-weight:var(--fw-medium);line-height:1}
+.mini-stat__num--accent{color:var(--color-forest-soft)}
+.mini-stat__num span{font-size:.4em;color:var(--color-stone)}
+
+/* ═══ FOOTER ═══ */
+.footer{background:var(--color-black);color:var(--text-inverse);padding:var(--s-4xl) var(--s-xl) var(--s-3xl);position:relative;overflow:hidden}
+.footer::before{content:'DNA';position:absolute;bottom:-.08em;right:-.04em;font-family:var(--font-display);font-size:clamp(6rem,16vw,18rem);font-weight:700;line-height:.8;letter-spacing:-.06em;color:rgba(245,243,239,.03);pointer-events:none;user-select:none}
+.footer__inner{max-width:var(--c-max);margin:0 auto;position:relative;z-index:2}
+.footer__quote{font-family:var(--font-display);font-size:clamp(24px,3vw,36px);font-weight:var(--fw-light);font-style:italic;line-height:var(--lh-snug);letter-spacing:var(--ls-tight);color:var(--text-inverse);max-width:760px;margin-bottom:var(--s-3xl)}
+.footer__bottom{border-top:1px solid var(--text-inverse-3);padding-top:var(--s-lg);font-family:var(--font-data);font-size:var(--fs-data);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-inverse-3)}
+
+/* 响应式 */
+@media(max-width:1024px){
+  .hero{padding:var(--s-4xl) var(--s-md) var(--s-3xl)}
+  .hero__line{left:var(--s-md);right:var(--s-md)}
+  .section{padding:var(--s-3xl) var(--s-md)}
+  .footer{padding:var(--s-3xl) var(--s-md) var(--s-xl)}
+  .principles{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr}
+  .radius-demo{grid-template-columns:1fr}
+  .inverse-demo{grid-template-columns:1fr}
+  .compare-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .footer__bottom{flex-direction:column;gap:var(--s-sm)}
+}
+@media(prefers-reduced-motion:no-preference){
+  .hero__tag,.hero__title,.hero__sub{opacity:0;transform:translateY(20px);animation:fadeUp .9s var(--ease-out) forwards}
+  .hero__tag{animation-delay:.1s}.hero__title{animation-delay:.2s}.hero__sub{animation-delay:.4s}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero__watermark">◆</div>
+  <div class="hero__tag">Haglöfs 范式 · 组件认知</div>
+  <h1 class="hero__title">组件不是<br><em>UI 部件</em></h1>
+  <p class="hero__sub">组件是信息本质到视觉形态的翻译器。选组件不是选"好看的图表"，是识别"这块信息本质上是什么"。</p>
+  <div class="hero__line"></div>
+</section>
+
+<!-- ═══ 认知 1：组件 = 信息本质的翻译器 ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">认知 01 · 本质</div>
+    <h2 class="section__title">每个组件翻译一种<em>信息本质</em>。</h2>
+    <div class="section__title-rule"></div>
+    <div class="prose">
+      <p>在 Haglöfs 范式里，55 个组件不是 55 个"长得不同的卡片"。它们是 55 种<strong>信息本质到视觉形态的映射</strong>——每种信息本质（二元对立 / 成组数字 / 单句宣言 / 时间序列 / 层级构成）都有对应的组件来翻译它。</p>
+      <p>选组件的第一步不是翻组件库找"哪个好看"，是问：<strong>这块信息本质上是什么？</strong>是对比？是趋势？是构成？是流程？是声明？——回答了这个问题，组件自己就浮出来了。</p>
+    </div>
+
+    <!-- 3 类组件 · stat grid -->
+    <div class="stat-grid">
+      <div class="stat-grid__cell">
+        <div class="stat-grid__label">— 数据组件</div>
+        <div class="stat-grid__big">信息层</div>
+        <div class="stat-grid__desc">展示事实、数据、规格。是页面的"骨"——承载论证的证据。</div>
+        <div class="stat-grid__count">16 个 · Tension Grid / Stat Grid / Elevation / Seam / Ring / Layer / Pipeline ...</div>
+      </div>
+      <div class="stat-grid__cell">
+        <div class="stat-grid__label">— 品牌叙事组件</div>
+        <div class="stat-grid__big">节奏断点</div>
+        <div class="stat-grid__desc">制造呼吸、停顿、收束。是页面的"气口"——在信息密集段之间插留白和升华。</div>
+        <div class="stat-grid__count">12 个 · Manifesto / Statement Quote / Principle Cards / Footer ...</div>
+      </div>
+      <div class="stat-grid__cell">
+        <div class="stat-grid__label">— editorial 组件</div>
+        <div class="stat-grid__big">阅读体例</div>
+        <div class="stat-grid__desc">承载长篇阅读的结构和体验。是页面的"脉络"——阅读宽度、进度、首字装饰、引文抽取。</div>
+        <div class="stat-grid__count">11 个 · Article Header / Drop Cap / Pull Quote / Reading Progress ...</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout__tag">◆ 分类原理</div>
+      <p class="callout__p">三类不是按"长得像"分，是按<strong>在叙事里干什么</strong>分——数据做"信息层"，品牌做"节奏断点"，editorial 做"阅读体例"。三类在同一页面混用：数据组件铺信息，品牌组件做呼吸谷和收束，editorial 组件管阅读宽度。它们是<strong>叙事的三个声部</strong>，不是三种卡片样式。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 认知 2：宪法 4 条 = 减法的 4 个面相 ═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">认知 02 · 设计宪法</div>
+    <h2 class="section__title">4 条宪法不是 4 条规则，是<em>同一个原理</em>。</h2>
+    <div class="section__title-rule"></div>
+    <div class="prose">
+      <p>组件设计宪法的本质是<strong>减法优先</strong>——每加一个元素问"删了它损失多大"。4 条宪法是这个原理从 4 个角度的切面，不是 4 件独立的事。它们回答的是同一个问题的 4 种问法：这个元素<strong>该不该存在</strong>。</p>
+    </div>
+
+    <div class="principles">
+      <div class="principle">
+        <div class="principle__num">01</div>
+        <h3 class="principle__title">信息本质驱动形态</h3>
+        <p class="principle__desc">量化事实 → 数字最大、标签最小。对比多项 → 结构最清晰、边框最少。声明主张 → 文字最少、留白最大。违反 = "为好看加东西"。</p>
+        <p class="principle__insight">先问"这是什么"，再问"长什么样"。</p>
+      </div>
+      <div class="principle">
+        <div class="principle__num">02</div>
+        <h3 class="principle__title">每个元素挣到自己的像素</h3>
+        <p class="principle__desc">每加一个元素问：删了它，信息传达损失多少？损失 ≤5% 就删。表格删外框、斑马纹、粗边框 → 只留发丝线。产品卡删价格、评分 → 只留图+名+一句话。</p>
+        <p class="principle__insight">留白也是产出。不干活的元素不配占像素。</p>
+      </div>
+      <div class="principle">
+        <div class="principle__num">03</div>
+        <h3 class="principle__title">字体角色是信息性质的翻译器</h3>
+        <p class="principle__desc">Playfair = 郑重/温度（标题、主张、权威数字）。Mono = 精确/刻度（数据、标签、编号）。Inter = 功能/清晰（正文、描述）。表格数字 Mono、列头 Mono 全大写、总计行 Playfair——每种字承担一种认知角色。</p>
+        <p class="principle__insight">字体不是风格选择，是信息的性质分类。</p>
+      </div>
+      <div class="principle">
+        <div class="principle__num">04</div>
+        <h3 class="principle__title">层次靠留白 + 色调 + 1px 线</h3>
+        <p class="principle__desc">section 之间 96-120px 留白，不加分隔条。表格行之间 1px 发丝线，不用斑马纹。卡片之间 cream 底差异 + 间距，不用阴影。层次不是"加东西"造的，是"减东西"露出来的。</p>
+        <p class="principle__insight">哑光克制的本质：深度来自克制，不来自装饰。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 认知 3：editorial 组件即视觉化 ═══ -->
+<section class="section section--dark">
+  <div class="section__inner">
+    <div class="section__tag">认知 03 · editorial 即视觉化</div>
+    <h2 class="section__title">大字数字 + 发丝线 = <em>高强度编码</em>。</h2>
+    <div class="section__title-rule"></div>
+    <p class="section__lede">"70 vs 20"用 Stat Grid 两个大数字并列比用饼图更有力——大字 Playfair 数字本身是高强度的视觉编码，饼图反而稀释了对比。在选 chart 类组件之前，先问 editorial 组件能不能完成同样的视觉化任务。</p>
+
+    <!-- 对比演示：饼图 vs Stat Grid -->
+    <div class="compare-grid">
+      <div class="compare-cell">
+        <div class="compare-cell__label compare-cell__label--bad">— 饼图</div>
+        <div class="mini-pie"></div>
+        <h3 class="compare-cell__title">70% vs 30% 分工</h3>
+        <p class="compare-cell__desc">饼图把对比分散到圆形面积里，读者要估算扇形角度才能感知比例差距。在浅底 offwhite 上对比更弱。</p>
+      </div>
+      <div class="compare-cell">
+        <div class="compare-cell__label compare-cell__label--good">— Stat Grid</div>
+        <div class="mini-stat">
+          <div class="mini-stat__num mini-stat__num--accent">70<span>%</span></div>
+          <div class="mini-stat__num">20<span>%</span></div>
+        </div>
+        <h3 class="compare-cell__title">70% vs 20% 分工</h3>
+        <p class="compare-cell__desc">大字 Playfair 数字并列 + 1px 发丝线切分。对比是 0 秒发生的——视觉系统直接处理"大数字 vs 小数字"，不需要估算。</p>
+      </div>
+    </div>
+
+    <div class="callout callout--dark" style="margin-top:var(--s-3xl)">
+      <div class="callout__tag">◆ 编码强度原理</div>
+      <p class="callout__p">在 Haglöfs 的浅底克制语境里，editorial 组件（大字数字、网格并列、发丝线切分）经常比 chart 类组件（折线、饼图、雷达图）有更高的<strong style="color:var(--text-inverse)">编码强度</strong>——因为大字 + 留白对视觉系统的刺激比细线条 + 色块面积更直接。这是范式 DNA 决定的：Haglöfs 是 editorial 不是 dashboard。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 认知 4：radius = 角色硬度 ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">认知 04 · radius 三级</div>
+    <h2 class="section__title">圆角不是审美选择，是<em>角色硬度</em>。</h2>
+    <div class="section__title-rule"></div>
+    <div class="prose">
+      <p>Haglöfs 范式的 radius 三级（0 / 4 / 8px）不是"圆多少好看"的审美问题，是<strong>组件在结构里扮演什么角色</strong>的视觉表达——结构性越强越硬（锐角），交互性越强越软（圆角）。读者感知到的不是"这个圆角几像素"，是"这个组件在结构里有多硬"。</p>
+    </div>
+
+    <div class="radius-demo">
+      <div class="radius-cell radius-cell--structural">
+        <div class="radius-cell__shape"></div>
+        <div class="radius-cell__label">— 结构件</div>
+        <div class="radius-cell__value">0px</div>
+        <div class="radius-cell__desc">Tension Grid / Data Table / Pipeline / Grid Matrix。结构靠对齐和发丝线，圆角破坏秩序感。</div>
+      </div>
+      <div class="radius-cell radius-cell--content">
+        <div class="radius-cell__shape"></div>
+        <div class="radius-cell__label">— 内容卡</div>
+        <div class="radius-cell__value">4px</div>
+        <div class="radius-cell__desc">Swatch / Product Card / Code Block / Ring / Stat Grid。极轻微圆角暗示"这是一个物体"，但不柔软。</div>
+      </div>
+      <div class="radius-cell radius-cell--interactive">
+        <div class="radius-cell__shape"></div>
+        <div class="radius-cell__label">— 交互控件</div>
+        <div class="radius-cell__value">8px</div>
+        <div class="radius-cell__desc">Button / Input / Toggle。交互控件可稍软，暗示"可操作"。pill 50% 仅限圆点。</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout__tag">◆ 为什么不用大圆角</div>
+      <p class="callout__p">大圆角（>8px）是 Material / 电商的语言——它暗示"柔软、友好、可触摸"。Haglöfs 的哑光克制恰好相反：结构要硬朗、editorial 要锐利、克制要有边界感。圆角越大，品牌温度越向 SaaS 滑。<strong>radius 是品牌 DNA 的视觉度量</strong>，不是细节装饰。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 认知 5：深底反相 = 环境适应性 ═══ -->
+<section class="section section--cream">
+  <div class="section__inner">
+    <div class="section__tag">认知 05 · 深底反相</div>
+    <h2 class="section__title">同一组件，<em>两种环境</em>。</h2>
+    <div class="section__title-rule"></div>
+    <div class="prose">
+      <p>浅底 DNA 的组件能适应深底环境——不靠每个组件各写一套 inverse 规则，靠 <code>.section--dark</code> 父级作用域统一继承。组件只需声明"我是浅底通用类"，放到深段时自动反相：主文字 offwhite、次要文字 50% 白、强调色 forest→moss（深底提亮）。</p>
+      <p>这背后的认知：<strong>组件的环境适应性 &gt; 组件的独立样式</strong>。一个组件不应该"只会在浅底工作"——它应该像一件好的户外装备，在不同光线下都保持识别度。</p>
+    </div>
+
+    <!-- 同一组件在浅底和深底的演示 -->
+    <div class="inverse-demo">
+      <div class="inverse-cell inverse-cell--light">
+        <div class="inverse-cell__label">— 浅底 offwhite</div>
+        <div class="inverse-cell__num">70<span>%</span></div>
+        <div class="inverse-cell__desc">主文字 charcoal · 强调 forest-soft · 底 offwhite</div>
+      </div>
+      <div class="inverse-cell inverse-cell--dark">
+        <div class="inverse-cell__label">— 深底 charcoal</div>
+        <div class="inverse-cell__num">70<span>%</span></div>
+        <div class="inverse-cell__desc">主文字 offwhite · 强调 moss（提亮）· 底 charcoal</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout__tag">◆ 三类深底角色</div>
+      <p class="callout__p"><strong>原生深底</strong>（Tension Grid / Manifesto / Grid Matrix）：天然为深底设计，骨架即深底。<strong>浅底通用</strong>（Data Table / Ring / Swatch / Stat Grid）：放深段时继承 `.section--dark` 统一反相。<strong>仅浅底</strong>（Drop Cap / Pull Quote / Testimonial）：深底会破坏其 DNA——Drop Cap 的 forest-soft 浮字在深底显脏。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 认知 6：选型不是查清单 ═══ -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__tag">认知 06 · 选型</div>
+    <h2 class="section__title">选组件不是查清单，是<em>翻译</em>。</h2>
+    <div class="section__title-rule"></div>
+    <div class="prose">
+      <p>组件选型决策树的本质不是"信息类型 → 组件名"的查找表，是<strong>信息本质 → 视觉形态</strong>的翻译过程。决策树只是一个加速器——当你真正理解了"这块信息要求读者做什么运算"，组件自己就浮现了。</p>
+      <p>真正会选组件的人，不记 55 个组件名。他记的是<strong>每种信息本质该用什么编码强度</strong>——对比用并列大数字，趋势用面积/箭头，分布用条形阵列，层级用堆叠条，流程用步骤编号。组件名只是这些编码方式的命名。</p>
+    </div>
+
+    <div class="callout">
+      <div class="callout__tag">◆ 选型的 3 个问题</div>
+      <p class="callout__h">每次选组件，问<span class="hl">这三个</span>问题。</p>
+      <p class="callout__p"><strong>1. 这块信息本质上是什么？</strong>（对比 / 趋势 / 构成 / 流程 / 声明 / 阅读流）<br><strong>2. 读者需要在脑子里运算吗？</strong>（要 → 画出来；不要 → 用文字/大字）<br><strong>3. editorial 组件能完成吗？</strong>（能 → 不用 chart；不能 → 才用 chart 类）</p>
+    </div>
+
+    <div class="callout callout--muted" style="background:transparent;border-left-color:var(--color-stone);margin-top:var(--s-lg)">
+      <div class="callout__tag" style="color:var(--text-secondary)">◆ 组件不是终点</div>
+      <p class="callout__p">组件是"信息→视觉"翻译的<strong>已验证方案</strong>——55 个组件是 55 种已经被证明有效的翻译。但它们不是唯一的翻译方式。当你理解了翻译的原理（信息本质 → 编码强度 → 视觉形态），你可以在没有现成组件时，自己推导出合适的视觉形态——这才是组件系统的真正价值：不是让你记住 55 个答案，是让你学会<strong>怎么到达答案</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <p class="footer__quote">"组件不是 UI 部件，是信息本质的翻译器。选组件不是选好看的图表，是识别这块信息本质上是什么。"</p>
+    <div class="footer__bottom">
+      <span>Haglöfs 范式 · 组件认知 · v3.4</span>
+      <span>55 components · 3 categories · 1 principle</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

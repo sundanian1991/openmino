@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>40万次Claude Code真实对话分析：专业能力的「接口」升级</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-offwhite: #F5F3EF;
+  --color-offwhite-warm: #EDE9E3;
+  --color-card: #FFFFFF;
+  --text-primary: #1A1A1A;
+  --text-secondary: #5A5A5A;
+  --text-tertiary: #8A8A8A;
+  --text-decorative: #C4BFB6;
+  --color-forest-soft: #547444;
+  --color-charcoal: #2A2A28;
+  --color-black: #111111;
+  --color-warm-gray: #D1C9C0;
+  --color-signal-red: #D14343;
+  --color-signal-orange: #E8734A;
+  --color-signal-blue: #3B6EA5;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+  --font-data: 'JetBrains Mono', 'SF Mono', monospace;
+  --fs-eyebrow: 11px; --fs-caption: 12px; --fs-body-sm: 13px; --fs-body: 15px; --fs-body-lg: 17px;
+  --fs-h4: clamp(18px, 2vw, 22px); --fs-h3: clamp(22px, 2.8vw, 30px);
+  --fs-h2: clamp(28px, 3.6vw, 42px); --fs-h1: clamp(36px, 5vw, 52px);
+  --s-sm: 8px; --s-md: 16px; --s-lg: 24px; --s-xl: 32px; --s-2xl: 48px; --s-3xl: 64px; --s-4xl: 96px; --s-5xl: 120px;
+  --c-max: 1120px; --c-read: 720px; --c-wide: 1040px;
+  --ls-wide: 0.08em; --ls-tight: -0.02em; --ls-tighter: -0.04em;
+  --lh-tight: 1.05; --lh-body: 1.7; --lh-read: 1.8;
+  --fw-light: 300; --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  background: var(--color-offwhite);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--color-signal-blue); text-decoration: none; }
+strong { font-weight: var(--fw-semibold); }
+
+.container { max-width: var(--c-max); margin: 0 auto; padding: 0 var(--s-xl); }
+.container--read { max-width: var(--c-read); margin: 0 auto; padding: 0 var(--s-xl); }
+
+/* ── HERO ── */
+.hero-split-v2 {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+.hero-split-v2__left {
+  background: var(--color-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--s-5xl);
+}
+.hero-split-v2__right {
+  background: var(--color-charcoal);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--s-5xl);
+  position: relative;
+  overflow: hidden;
+}
+.hero-split-v2__right-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: clamp(80px, 14vw, 160px);
+  font-weight: var(--fw-light);
+  color: rgba(255,255,255,0.02);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.hero-split-v2__tag {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-forest-soft);
+  margin-bottom: var(--s-xl);
+}
+.hero-split-v2__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tighter);
+  color: var(--text-primary);
+  margin-bottom: var(--s-lg);
+}
+.hero-split-v2__title strong {
+  font-weight: var(--fw-bold);
+  color: var(--color-forest-soft);
+}
+.hero-split-v2__subtitle {
+  font-size: var(--fs-body-lg);
+  color: var(--text-secondary);
+  max-width: 480px;
+  line-height: var(--lh-read);
+}
+.hero-split-v2__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-md);
+  margin-top: var(--s-3xl);
+  font-family: var(--font-data);
+  font-size: var(--fs-caption);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-wide);
+}
+.hero-split-v2__meta span:not(:last-child)::after { content: '·'; margin-left: var(--s-md); color: var(--text-decorative); }
+
+.report-card {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: var(--s-2xl);
+}
+.report-card__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: var(--s-lg);
+}
+.report-card__stat {
+  margin-bottom: var(--s-xl);
+  padding-bottom: var(--s-xl);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.report-card__stat:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.report-card__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  color: #fff;
+  line-height: 1;
+  margin-bottom: var(--s-xs);
+}
+.report-card__key {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-signal-orange);
+}
+.report-card__desc {
+  font-size: var(--fs-body-sm);
+  color: rgba(255,255,255,0.4);
+  margin-top: var(--s-xs);
+  line-height: 1.5;
+}
+
+/* ── SECTION ── */
+.section { padding: var(--s-5xl) 0; position: relative; }
+.section--warm { background: var(--color-offwhite-warm); }
+.section--dark { background: var(--color-charcoal); color: #fff; }
+.section--dark-soft { background: #1E1E1C; color: #fff; }
+
+.eyebrow {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-forest-soft);
+  margin-bottom: var(--s-md);
+  display: flex;
+  align-items: center;
+  gap: var(--s-md);
+}
+.eyebrow::before { content: ''; display: block; width: 32px; height: 1px; background: var(--color-forest-soft); }
+.section--dark .eyebrow, .section--dark-soft .eyebrow { color: var(--color-signal-orange); }
+.section--dark .eyebrow::before, .section--dark-soft .eyebrow::before { background: var(--color-signal-orange); }
+
+.section__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--s-xl);
+  max-width: 720px;
+}
+.section--dark .section__title, .section--dark-soft .section__title { color: #fff; }
+.section__title strong { font-weight: var(--fw-bold); color: var(--color-forest-soft); }
+.section--dark .section__title strong, .section--dark-soft .section__title strong { color: var(--color-signal-orange); }
+
+/* ── PROSE ── */
+.prose { max-width: var(--c-read); margin: 0 auto; padding: 0 var(--s-xl); }
+.prose p {
+  font-size: var(--fs-body);
+  line-height: var(--lh-read);
+  color: var(--text-primary);
+  margin-bottom: var(--s-lg);
+}
+.prose p.lead { font-size: var(--fs-body-lg); color: var(--text-secondary); }
+
+/* ── NARRATIVE STAT ── */
+.narrative-stat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-sm);
+  padding: var(--s-lg);
+  border-left: 2px solid var(--color-signal-orange);
+  margin: var(--s-xl) 0;
+  background: var(--color-offwhite-warm);
+}
+.narrative-stat__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  color: var(--color-signal-orange);
+  line-height: 1;
+}
+.narrative-stat__of {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.narrative-stat__context {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-left: auto;
+  max-width: 400px;
+}
+
+/* ── CALLOUT ── */
+.callout {
+  background: var(--color-offwhite-warm);
+  border-left: 2px solid var(--color-forest-soft);
+  padding: var(--s-lg) var(--s-xl);
+  margin: var(--s-xl) 0;
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  line-height: var(--lh-read);
+}
+.section--dark .callout, .section--dark-soft .callout {
+  background: rgba(255,255,255,0.04);
+  border-left-color: var(--color-signal-orange);
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── PULL QUOTE ── */
+.pull-quote {
+  border-left: 2px solid var(--color-forest-soft);
+  padding: var(--s-lg) var(--s-xl);
+  margin: var(--s-2xl) 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-light);
+  line-height: 1.4;
+  color: var(--text-primary);
+  font-style: italic;
+}
+.section--dark .pull-quote, .section--dark-soft .pull-quote {
+  border-left-color: var(--color-signal-orange);
+  color: rgba(255,255,255,0.9);
+}
+
+/* ── SPLIT COMPARISON ── */
+.split-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin: var(--s-2xl) 0;
+}
+.split-compare__col {
+  padding: var(--s-2xl);
+  text-align: center;
+}
+.split-compare__col--failure { background: rgba(209,67,67,0.06); }
+.split-compare__col--success { background: var(--color-offwhite-warm); }
+.section--dark .split-compare__col--failure { background: rgba(209,67,67,0.1); }
+.section--dark .split-compare__col--success { background: rgba(255,255,255,0.04); }
+.split-compare__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: var(--s-md);
+}
+.split-compare__value {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tighter);
+  line-height: 1;
+  margin-bottom: var(--s-sm);
+}
+.split-compare__col--failure .split-compare__value { color: var(--color-signal-red); }
+.split-compare__col--success .split-compare__value { color: var(--color-forest-soft); }
+.section--dark .split-compare__col--success .split-compare__value { color: var(--color-signal-orange); }
+.split-compare__context {
+  font-size: var(--fs-body-sm);
+  color: var(--text-tertiary);
+  line-height: 1.5;
+}
+
+/* ── ABANDON RATE ROW ── */
+.abandon-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xl);
+  margin-top: var(--s-xl);
+}
+.abandon-row__item {
+  flex: 1;
+  text-align: center;
+  padding: var(--s-lg);
+  border-top: 2px solid var(--text-decorative);
+}
+.abandon-row__item--high { border-top-color: var(--color-signal-red); }
+.abandon-row__item--low { border-top-color: var(--color-forest-soft); }
+.section--dark .abandon-row__item--low { border-top-color: var(--color-signal-orange); }
+.abandon-row__value {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  line-height: 1;
+  margin-bottom: var(--s-xs);
+}
+.abandon-row__item--high .abandon-row__value { color: var(--color-signal-red); }
+.abandon-row__item--low .abandon-row__value { color: var(--color-forest-soft); }
+.section--dark .abandon-row__item--low .abandon-row__value { color: var(--color-signal-orange); }
+.abandon-row__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+/* ── TREND INLINE ── */
+.trend-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-md);
+  padding: var(--s-md) 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.trend-inline:last-child { border-bottom: none; }
+.trend-inline__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  width: 100px;
+  flex-shrink: 0;
+}
+.trend-inline__from {
+  font-family: var(--font-data);
+  font-size: var(--fs-body-sm);
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+.trend-inline__arrow { color: var(--text-decorative); }
+.trend-inline__to {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-light);
+  letter-spacing: var(--ls-tight);
+  color: var(--color-forest-soft);
+  line-height: 1;
+}
+.trend-inline__to--down { color: var(--color-signal-red); }
+
+/* ── RATE TABLE ── */
+.rate-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-body-sm);
+  margin-top: var(--s-md);
+}
+.rate-table th {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  text-align: left;
+  padding: var(--s-sm) var(--s-md);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  font-weight: var(--fw-regular);
+}
+.rate-table th:nth-child(2), .rate-table th:nth-child(3) { text-align: right; }
+.rate-table td {
+  padding: var(--s-md);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  color: var(--text-primary);
+}
+.rate-table td:nth-child(2), .rate-table td:nth-child(3) { text-align: right; font-family: var(--font-data); }
+.rate-table tr:nth-child(even) td { background: rgba(0,0,0,0.015); }
+.rate-table .highlight { font-weight: var(--fw-semibold); color: var(--color-forest-soft); }
+.rate-table td:nth-child(2) { font-family: var(--font-display); font-size: var(--fs-h4); letter-spacing: var(--ls-tight); }
+
+/* ── PROMPT COMPARISON ── */
+.prompt-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-xl);
+  margin: var(--s-xl) 0;
+}
+.prompt-card {
+  padding: var(--s-xl);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.prompt-card--bad { border-left: 3px solid var(--color-warm-gray); }
+.prompt-card--good { border-left: 3px solid var(--color-forest-soft); }
+.prompt-card__label {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  margin-bottom: var(--s-sm);
+}
+.prompt-card--bad .prompt-card__label { color: var(--text-tertiary); }
+.prompt-card--good .prompt-card__label { color: var(--color-forest-soft); }
+.prompt-card__example {
+  font-family: var(--font-data);
+  font-size: var(--fs-body-sm);
+  background: var(--color-offwhite);
+  padding: var(--s-md);
+  margin-bottom: var(--s-md);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  border-radius: 2px;
+}
+.prompt-card__result {
+  font-size: var(--fs-body-sm);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── SUMMARY LIST ── */
+.summary-list {
+  margin-top: var(--s-xl);
+}
+.summary-item {
+  display: flex;
+  gap: var(--s-md);
+  padding: var(--s-lg) 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.summary-item:last-child { border-bottom: none; }
+.summary-item__num {
+  font-family: var(--font-data);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--color-forest-soft);
+  padding-top: 4px;
+  min-width: 24px;
+}
+.summary-item__text {
+  font-size: var(--fs-body);
+  line-height: var(--lh-read);
+  color: var(--text-primary);
+}
+
+/* ── FOOTER ── */
+.footer { background: var(--color-black); color: #fff; padding: var(--s-5xl) 0 var(--s-3xl); }
+.footer__title { font-family: var(--font-display); font-size: var(--fs-h2); font-weight: var(--fw-light); letter-spacing: var(--ls-tight); margin-bottom: var(--s-lg); max-width: 600px; }
+.footer__title strong { font-weight: var(--fw-bold); color: var(--color-signal-orange); }
+.footer__meta { font-family: var(--font-data); font-size: var(--fs-eyebrow); letter-spacing: var(--ls-wide); text-transform: uppercase; color: rgba(255,255,255,0.3); }
+.footer__copyright { margin-top: var(--s-3xl); padding-top: var(--s-lg); border-top: 1px solid rgba(255,255,255,0.08); font-family: var(--font-data); font-size: var(--fs-eyebrow); color: rgba(255,255,255,0.35); letter-spacing: 0.04em; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .hero-split-v2 { grid-template-columns: 1fr; min-height: auto; }
+  .hero-split-v2__left, .hero-split-v2__right { min-height: 50vh; }
+  .prompt-compare { grid-template-columns: 1fr; }
+  .split-compare { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .hero-split-v2__title { font-size: var(--fs-h2); }
+  .section__title { font-size: var(--fs-h3); }
+  .rate-table { font-size: var(--fs-caption); }
+  .rate-table th, .rate-table td { padding: var(--s-xs) var(--s-sm); }
+}
+</style>
+</head>
+<body>
+
+<section class="hero-split-v2">
+  <div class="hero-split-v2__left">
+    <div class="hero-split-v2__tag">Research Report · Agentic Coding</div>
+    <h1 class="hero-split-v2__title">
+      40 万次真实对话<br><strong>专业能力的「接口」升级</strong>
+    </h1>
+    <p class="hero-split-v2__subtitle">
+      Anthropic 分析了 40 万次 Claude Code 交互会话。结论很明确：在 AI 面前，决定产出上限的不再是编程技巧，而是你对领域知识的掌握程度。
+    </p>
+    <div class="hero-split-v2__meta">
+      <span>Anthropic Research</span>
+      <span>Oct 2025 — Apr 2026</span>
+      <span>Deep Analysis</span>
+    </div>
+  </div>
+  <div class="hero-split-v2__right">
+    <div class="hero-split-v2__right-watermark">EXPERTISE</div>
+    <div class="report-card">
+      <div class="report-card__label">Claude Code 规模化数据集</div>
+      <div class="report-card__stat">
+        <div class="report-card__value">~40万</div>
+        <div class="report-card__key">交互会话</div>
+        <div class="report-card__desc">跨越 7 个月的真实生产环境数据</div>
+      </div>
+      <div class="report-card__stat">
+        <div class="report-card__value">~23.5万</div>
+        <div class="report-card__key">独立用户</div>
+        <div class="report-card__desc">涵盖软件工程师、管理层及多种专业人士</div>
+      </div>
+      <div class="report-card__stat">
+        <div class="report-card__value">~10次</div>
+        <div class="report-card__key">单条指令触发动作</div>
+        <div class="report-card__desc">人管规划(What)，AI管执行(How)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container--read">
+    <div class="prose">
+      <p class="lead">这不仅是一份关于 AI 编程的报告，而是一次关于「专家」定义权的迁移。当 AI 能够承担 80% 的执行细节时，人类在协作链路中的位置发生了根本性的移动。</p>
+      <p>Claude Code 标志着 AI 从「代码补全工具」进化为「任务执行 Agent」。它不再等待你写每一行，而是接受你的战略意图，然后自主地读文件、改代码、跑命令、验证结果。</p>
+      <div class="callout">
+        <strong>核心洞察：</strong> 这种协作模式创造了一种新的「分工」。人不再是搬砖的，而是成为了 AI 的架构师和验收员。
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--dark">
+  <div class="container--read">
+    <div class="eyebrow">核心发现 01</div>
+    <h2 class="section__title" style="max-width:var(--c-read)">人管判断，<br><strong>AI 管执行</strong></h2>
+    <div class="prose">
+      <p class="lead" style="color:rgba(255,255,255,0.6)">数据第一次量化了人机协作中的「权力分配」。</p>
+    </div>
+
+    <div class="narrative-stat" style="background:rgba(255,255,255,0.04);border-left-color:var(--color-signal-orange)">
+      <div>
+        <div class="narrative-stat__value">~70%</div>
+        <div class="narrative-stat__of">人类决策</div>
+      </div>
+      <div class="narrative-stat__context">规划层：确定做什么、定义完成标准、选择整体路线</div>
+    </div>
+
+    <div class="narrative-stat" style="background:rgba(255,255,255,0.04);border-left-color:var(--color-forest-soft)">
+      <div>
+        <div class="narrative-stat__value">~80%</div>
+        <div class="narrative-stat__of">AI 决策</div>
+      </div>
+      <div class="narrative-stat__context">执行层：决定修改哪个文件、编写具体逻辑、运行调试命令</div>
+    </div>
+
+    <div class="prose">
+      <p style="color:rgba(255,255,255,0.7)">这种分工在七个月中显著增强。用户开始将更复杂的端到端任务交给 AI，而非简单的 Bug 修复。</p>
+    </div>
+
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);padding:var(--s-xl);margin-top:var(--s-xl)">
+      <div class="trend-inline">
+        <div class="trend-inline__label">Bug 修复</div>
+        <span class="trend-inline__from">33%</span>
+        <span class="trend-inline__arrow">→</span>
+        <span class="trend-inline__to trend-inline__to--down">19%</span>
+      </div>
+      <div class="trend-inline">
+        <div class="trend-inline__label">软件运行</div>
+        <span class="trend-inline__from">14%</span>
+        <span class="trend-inline__arrow">→</span>
+        <span class="trend-inline__to">21%</span>
+      </div>
+      <div class="trend-inline">
+        <div class="trend-inline__label">分析与创作</div>
+        <span class="trend-inline__from">~10%</span>
+        <span class="trend-inline__arrow">→</span>
+        <span class="trend-inline__to">~20%</span>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p style="color:rgba(255,255,255,0.7)">结果是：任务的平均估算价值上升了 27%。AI 编程的本质，正在从「写代码」变成「通过代码解决问题」。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container--read">
+    <div class="eyebrow">核心发现 02</div>
+    <h2 class="section__title" style="max-width:var(--c-read)">定义升级：<br><strong>什么是 AI 时代的「专家」</strong></h2>
+    <div class="prose">
+      <p class="lead">报告指出，传统的从业年限在 Agent 面前正在失效。真正的「专家」是那些能通过高质量指令引导 AI 的人。</p>
+      <p>AI 时代的专业度不再由头衔决定，而是由三个具体的<strong>交互信号</strong>决定：</p>
+    </div>
+
+    <div class="summary-list">
+      <div class="summary-item">
+        <div class="summary-item__num">信号 1</div>
+        <div class="summary-item__text"><strong>方向精度 (Direction Precision)</strong>：能否清晰定义目标、边界条件和验收标准，而非模糊的请求</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-item__num">信号 2</div>
+        <div class="summary-item__text"><strong>验证意识 (Verification Requests)</strong>：是否知道在哪些关键节点要求 AI 进行自检或运行测试</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-item__num">信号 3</div>
+        <div class="summary-item__text"><strong>纠偏能力 (Correction Patterns)</strong>：当 AI 产生幻觉或误解时，能否迅速识别并将其拉回正确路径</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>这意味着，一个懂业务规则的会计在编写对账脚本时，其表现可能远超一个不熟悉该业务的资深工程师。<strong>领域知识（Domain Knowledge）成了最高权重。</strong></p>
+      <div class="pull-quote">
+        "编程能力正在从一种专属职业技能，转化为一种通用工作能力。"
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--warm">
+  <div class="container--read">
+    <div class="eyebrow">核心发现 03</div>
+    <h2 class="section__title" style="max-width:var(--c-read)">高质量授权：<br><strong>1 条指令顶 5 倍产出</strong></h2>
+    <div class="prose">
+      <p>指令质量的差距直接决定了 AI 的「奔跑距离」。专家通过高质量授权，让 AI 一次性完成更多工作。</p>
+    </div>
+
+    <div class="narrative-stat">
+      <div>
+        <div class="narrative-stat__value">5→12</div>
+        <div class="narrative-stat__of">触发动作数</div>
+      </div>
+      <div class="narrative-stat__context">新手每条指令触发 5 个动作；专家则能引导 AI 执行 12 个动作。</div>
+    </div>
+
+    <div class="narrative-stat">
+      <div>
+        <div class="narrative-stat__value">600→3200</div>
+        <div class="narrative-stat__of">单次输出字数</div>
+      </div>
+      <div class="narrative-stat__context">在同等任务下，专家从 AI 那里拿回的实质产出是新手的 5 倍以上。</div>
+    </div>
+
+    <div class="prose">
+      <p>这种差异并非来自字数，而在于<strong>授权的完整度</strong>。</p>
+    </div>
+
+    <div class="prompt-compare">
+      <div class="prompt-card prompt-card--bad">
+        <div class="prompt-card__label">低质量请求 (Novice)</div>
+        <div class="prompt-card__example">「帮我写一个数据导出脚本」</div>
+        <div class="prompt-card__result">AI 给出基础代码 $\rightarrow$ 用户发现格式不对 $\rightarrow$ 修正 $\rightarrow$ 发现漏了过滤条件 $\rightarrow$ 再次修正。</div>
+      </div>
+      <div class="prompt-card prompt-card--good">
+        <div class="prompt-card__label">高质量授权 (Expert)</div>
+        <div class="prompt-card__example">「写一个导出脚本，需校验 A/B 两个表的一致性，过滤掉 2023 年前的历史数据，输出为标准 CSV，并包含一个错误日志文件」</div>
+        <div class="prompt-card__result">AI 完整构建链路 $\rightarrow$ 自行运行测试 $\rightarrow$ 直接交付可生产版本。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container--read">
+    <div class="eyebrow">核心发现 04</div>
+    <h2 class="section__title" style="max-width:var(--c-read)">跨越门槛：<br><strong>非工程背景的成功率</h2></h2>
+    <div class="prose">
+      <p>最令人意外的是，软件工程背景不再是成功的主要决定因素。在「验证成功」（代码提交或测试通过）的维度上，各职业表现极其接近。</p>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="rate-table">
+        <thead>
+          <tr>
+            <th>用户职业类别</th>
+            <th>验证成功率</th>
+            <th>对比工程师</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>管理类 (Management)</td><td class="highlight">37%</td><td>+3pp</td></tr>
+          <tr><td>软件工程师 / 数学</td><td>34%</td><td>基准</td></tr>
+          <tr><td>法律类 (Legal)</td><td>33%</td><td>-1pp</td></tr>
+          <tr><td>商业金融 (Business)</td><td>29%</td><td>-5pp</td></tr>
+          <tr><td>其他专业人士</td><td>27-28%</td><td>-6-7pp</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="prose">
+      <p>管理者的成功率甚至略高，这验证了<strong>「拆解任务 $\rightarrow$ 设定目标 $\rightarrow$ 委派执行 $\rightarrow$ 检查验收」</strong>这一管理链路，正是操作 Agent 的最佳路径。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section--dark-soft">
+  <div class="container--read">
+    <div class="eyebrow">核心发现 05</div>
+    <h2 class="section__title" style="max-width:var(--c-read)">分水岭：<br><strong>面对「翻车」时的反应</strong></h2>
+
+    <div class="prose">
+      <p style="color:rgba(255,255,255,0.6)">在复杂任务中，AI 出错是常态。真正的专家不在于不遇到错误，而在于在错误发生后能将其「救回来」。</p>
+    </div>
+
+    <div class="split-compare">
+      <div class="split-compare__col split-compare__col--failure">
+        <div class="split-compare__label">新手在出错后</div>
+        <div class="split-compare__value">4%</div>
+        <div class="split-compare__context">仅 4% 的会话能通过进一步对话修复问题</div>
+      </div>
+      <div class="split-compare__col split-compare__col--success">
+        <div class="split-compare__label">专家在出错后</div>
+        <div class="split-compare__value">15%</div>
+        <div class="split-compare__context">救回率是新手的 3.75 倍，翻车只是调试的开始</div>
+      </div>
+    </div>
+
+    <div class="abandon-row">
+      <div class="abandon-row__item abandon-row__item--high">
+        <div class="abandon-row__value" style="color:var(--color-signal-red)">19%</div>
+        <div class="abandon-row__label">新手放弃率</div>
+      </div>
+      <div class="abandon-row__item abandon-row__item--low">
+        <div class="abandon-row__value" style="color:var(--color-signal-orange)">5-7%</div>
+        <div class="abandon-row__label">专家放弃率</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p style="color:rgba(255,255,255,0.7)">新手倾向于将 AI 的失败归结为「工具不好用」从而放弃；专家则将其视为「指令不足」，通过补充边界条件和修正方向来引导 AI 完成任务。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container--read">
+    <div class="eyebrow">结语</div>
+    <h2 class="section__title" style="max-width:var(--c-read)">让专业能力，<br><strong>通过 AI 重新流动</strong></h2>
+    <div class="prose">
+      <div class="pull-quote">
+        "生产软件，可能正在从一种程序员专属的职业能力，变成一种普通工作能力。"
+        <div style="font-family:var(--font-data);font-size:var(--fs-eyebrow);letter-spacing:var(--ls-wide);text-transform:uppercase;color:var(--text-tertiary);margin-top:var(--s-md);font-style:normal;">—— Anthropic Research</div>
+      </div>
+      <p>这意味着，未来最强的竞争力不再是掌握某种编程语言，而是<strong>「定义问题的能力」</strong>。当你能把一个复杂的业务问题，拆解为 AI 可执行的精准指令序列时，你就拥有了直接生产软件的能力。</p>
+      <p>资历归零，但判断力永恒。专业能力没有消失，它只是换了一套接口。</p>
+    </div>
+
+    <div style="margin-top:var(--s-3xl)">
+      <div class="eyebrow">Agent 协作自检清单</div>
+      <div class="summary-list">
+        <div class="summary-item">
+          <div class="summary-item__num">01</div>
+          <div class="summary-item__text"><strong>目标对齐</strong>：我是否定义了明确的终点，而非一个模糊的方向？</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item__num">02</div>
+          <div class="summary-item__text"><strong>验证闭环</strong>：我是否告诉了 AI 在哪个环节、用什么标准来验证结果？</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-item__num">03</div>
+          <div class="summary-item__text"><strong>纠偏意识</strong>：当 AI 走偏时，我能否迅速指出错误点并给出正确的修正方向？</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__meta">Claude Code Expertise Analysis · Haglofs Paradigm Edition</div>
+    <h2 class="footer__title">
+      定义问题，<br><strong>即是定义答案。</strong>
+    </h2>
+    <div class="footer__copyright">
+      Data Source: <a href="https://www.anthropic.com/research/claude-code-expertise" style="color:rgba(255,255,255,0.5)">Anthropic《Agentic coding and persistent returns to expertise》</a> · 2026
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
