@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent 记忆体系与技能调用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #FAFAFA;
+            color: #1A1A1A;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 600;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            color: #0A0A0A;
+        }
+
+        .header .subtitle {
+            font-size: 20px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 80px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #0A0A0A;
+            display: inline-block;
+        }
+
+        /* Memory Architecture */
+        .memory-arch {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-bottom: 60px;
+        }
+
+        .memory-layer {
+            background: #fff;
+            border: 1px solid #E5E5E5;
+            padding: 32px;
+            position: relative;
+        }
+
+        .memory-layer::before {
+            content: attr(data-layer);
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            background: #0A0A0A;
+            color: #fff;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .memory-layer h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #0A0A0A;
+        }
+
+        .memory-layer p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .memory-layer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .memory-layer li {
+            font-size: 14px;
+            color: #444;
+            padding: 8px 0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .memory-layer li:last-child {
+            border-bottom: none;
+        }
+
+        /* Conversation Summary Demo */
+        .summary-demo {
+            background: #fff;
+            border: 1px solid #E5E5E5;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .summary-demo h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #0A0A0A;
+        }
+
+        .summary-field {
+            margin-bottom: 20px;
+        }
+
+        .summary-field .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .summary-field .content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+            padding-left: 16px;
+            border-left: 2px solid #E5E5E5;
+        }
+
+        .summary-field .content.error {
+            border-left-color: #E53E3E;
+            background: #FFF5F5;
+            padding: 12px 16px;
+        }
+
+        .summary-field .content.decision {
+            border-left-color: #38A169;
+            background: #F0FFF4;
+            padding: 12px 16px;
+        }
+
+        /* Skill Flow */
+        .skill-flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .flow-step {
+            background: #fff;
+            border: 1px solid #E5E5E5;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: "→";
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #999;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .flow-step .step-num {
+            font-size: 32px;
+            font-weight: 600;
+            color: #0A0A0A;
+            margin-bottom: 12px;
+        }
+
+        .flow-step .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #0A0A0A;
+        }
+
+        .flow-step .step-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Principles */
+        .principles {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 60px;
+        }
+
+        .principle {
+            background: #fff;
+            border: 1px solid #E5E5E5;
+            padding: 32px;
+        }
+
+        .principle h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #0A0A0A;
+        }
+
+        .principle p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Prompt Examples */
+        .prompt-examples {
+            background: #fff;
+            border: 1px solid #E5E5E5;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .prompt-examples h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #0A0A0A;
+        }
+
+        .prompt-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .prompt-box {
+            padding: 24px;
+            border: 1px solid #E5E5E5;
+        }
+
+        .prompt-box.bad {
+            background: #FFF5F5;
+            border-color: #FED7D7;
+        }
+
+        .prompt-box.good {
+            background: #F0FFF4;
+            border-color: #C6F6D5;
+        }
+
+        .prompt-box .tag {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding: 4px 8px;
+            display: inline-block;
+        }
+
+        .prompt-box.bad .tag {
+            background: #FED7D7;
+            color: #C53030;
+        }
+
+        .prompt-box.good .tag {
+            background: #C6F6D5;
+            color: #276749;
+        }
+
+        .prompt-box p {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #E5E5E5;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .memory-arch,
+            .skill-flow,
+            .principles,
+            .prompt-compare {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-step::after {
+                display: none;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>AI Agent 记忆体系与技能调用</h1>
+            <p class="subtitle">从对话到知识，从知识到能力</p>
+        </div>
+
+        <!-- Section 1: Memory Architecture -->
+        <div class="section">
+            <h2 class="section-title">一、三层记忆架构</h2>
+
+            <div class="memory-arch">
+                <div class="memory-layer" data-layer="L0">
+                    <h3>索引层</h3>
+                    <p>每次自动加载，告诉 Agent "什么信息在哪里"</p>
+                    <ul>
+                        <li>MEMORY.md（60行以内）</li>
+                        <li>SOUL.md：核心价值</li>
+                        <li>USER.md：用户画像</li>
+                        <li>06-NOW.md：当前状态</li>
+                    </ul>
+                </div>
+
+                <div class="memory-layer" data-layer="L1">
+                    <h3>工作记忆</h3>
+                    <p>每个 Session 载入，"现在在做什么"</p>
+                    <ul>
+                        <li>brain.md：当前任务状态</li>
+                        <li>对话历史（滚动窗口）</li>
+                        <li>临时任务上下文</li>
+                        <li>工具调用中间结果</li>
+                    </ul>
+                </div>
+
+                <div class="memory-layer" data-layer="L2">
+                    <h3>主题记忆</h3>
+                    <p>按需加载，"聊到什么读什么"</p>
+                    <ul>
+                        <li>memory/user/profile.md</li>
+                        <li>memory/topics/*.md</li>
+                        <li>projects/*/context.md</li>
+                        <li>docs/知识库/</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Conversation Summary Demo -->
+        <div class="section">
+            <h2 class="section-title">二、对话摘录：从对话到知识</h2>
+
+            <div class="summary-demo">
+                <h3>实际案例：2026-07-05 文件夹体系重构</h3>
+
+                <div class="summary-field">
+                    <div class="label">Goal（目标）</div>
+                    <div class="content">对 Mino 的家（my-agent 项目）做全文件夹体系诊断与重构</div>
+                </div>
+
+                <div class="summary-field">
+                    <div class="label">Decisions（决策）</div>
+                    <div class="content decision">
+                        • 保留 .claude + .codex 双轨（两者都是真实工具）<br>
+                        • workspace 归档改用 git-mtime 判断（而非目录mtime）<br>
+                        • token-article 系列 3 个目录不合并（语义不同）
+                    </div>
+                </div>
+
+                <div class="summary-field">
+                    <div class="label">Errors & Corrections（错误与修正）</div>
+                    <div class="content error">
+                        • 最初建议 single-track 配置 → 被年老师纠正为双轨<br>
+                        • 最初建议删 .codegraph/.netlify/wiki-viz → 对抗性审查后修正为只删 wiki-viz<br>
+                        • 最初建议合并 token-* 目录 → 审查后撤销
+                    </div>
+                </div>
+
+                <div class="summary-field">
+                    <div class="label">Artifacts（产出）</div>
+                    <div class="content">
+                        • 合并 7 对话摘要 → 1（对话摘要/）<br>
+                        • 16 个过期 workspace 目录 → workspace/archive/2026-q2/<br>
+                        • 创建 design-lab/ 下设 history/（8个）+ audit/（3个）<br>
+                        • .gitignore 更新：memory/.wal-queue.ndjson, 删 .mcp.json
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Skill Flow -->
+        <div class="section">
+            <h2 class="section-title">三、技能调用流程</h2>
+
+            <div class="skill-flow">
+                <div class="flow-step">
+                    <div class="step-num">01</div>
+                    <div class="step-title">明确需求</div>
+                    <div class="step-desc">我需要做什么？<br>输入是什么？<br>输出要什么格式？</div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">02</div>
+                    <div class="step-title">搜索技能</div>
+                    <div class="step-desc">curl 搜索技能列表<br>匹配最合适的 1-3 个<br>确认后再安装</div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">03</div>
+                    <div class="step-title">整理内容</div>
+                    <div class="step-desc">准备输入材料<br>明确约束条件<br>定义成功标准</div>
+                </div>
+
+                <div class="flow-step">
+                    <div class="step-num">04</div>
+                    <div class="step-title">调用执行</div>
+                    <div class="step-desc">按技能流程执行<br>确认门逐步验证<br>产出并校准</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Pre-skill Content Organization -->
+        <div class="section">
+            <h2 class="section-title">四、调用技能前的内容整理</h2>
+
+            <div class="principles">
+                <div class="principle">
+                    <h4>1. 明确输入</h4>
+                    <p>
+                        • 源材料：文档/数据/截图/链接<br>
+                        • 约束条件：时间/格式/风格/受众<br>
+                        • 参考样例：想要什么调性？<br>
+                        • 成功标准：什么算做好了？
+                    </p>
+                </div>
+
+                <div class="principle">
+                    <h4>2. 理解技能</h4>
+                    <p>
+                        • 读 SKILL.md：这个技能做什么？<br>
+                        • 读 references/：有哪些约束和规范？<br>
+                        • 读 examples/：产出长什么样？<br>
+                        • 确认流程：需要几个确认门？
+                    </p>
+                </div>
+
+                <div class="principle">
+                    <h4>3. 准备材料</h4>
+                    <p>
+                        • 文本内容：整理成结构化格式<br>
+                        • 数据表格：确保数字准确<br>
+                        • 图片素材：高清、有版权<br>
+                        • 品牌资产：Logo、字体、色板
+                    </p>
+                </div>
+
+                <div class="principle">
+                    <h4>4. 定义边界</h4>
+                    <p>
+                        • 做什么：明确任务范围<br>
+                        • 不做什么：排除无关需求<br>
+                        • 优先级：哪些是必须的？<br>
+                        • 妥协点：哪些可以降级？
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5: Prompt Engineering -->
+        <div class="section">
+            <h2 class="section-title">五、更好的问 AI</h2>
+
+            <div class="prompt-examples">
+                <h3>第一性原理提问 vs 普通提问</h3>
+
+                <div class="prompt-compare">
+                    <div class="prompt-box bad">
+                        <span class="tag">普通提问</span>
+                        <p>
+                            "帮我写一份市场分析报告"
+                        </p>
+                        <p style="margin-top: 16px; font-size: 12px; color: #999;">
+                            问题：目标模糊、受众不清、深度未知、格式未定
+                        </p>
+                    </div>
+
+                    <div class="prompt-box good">
+                        <span class="tag">第一性原理提问</span>
+                        <p>
+                            "我要向董事会汇报 Q2 市场表现，需要一份 5 页的 PPT。听众是 CEO 和 CFO，他们最关心的是市场份额变化和竞品动态。请先给出大纲让我确认方向。"
+                        </p>
+                        <p style="margin-top: 16px; font-size: 12px; color: #999;">
+                            包含：目标、受众、格式、深度、确认机制
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prompt-examples">
+                <h3>对抗 AI 谄媚性</h3>
+
+                <div class="prompt-compare">
+                    <div class="prompt-box bad">
+                        <span class="tag">容易被迎合的问法</span>
+                        <p>
+                            "这个方案可行吗？"
+                        </p>
+                        <p style="margin-top: 16px; font-size: 12px; color: #999;">
+                            AI 默认反应："方向很好"——即使漏洞百出
+                        </p>
+                    </div>
+
+                    <div class="prompt-box good">
+                        <span class="tag">要求批评的问法</span>
+                        <p>
+                            "假设这个方案会失败，最可能的原因是什么？告诉我这个前提错误的三个理由。"
+                        </p>
+                        <p style="margin-top: 16px; font-size: 12px; color: #999;">
+                            主动要求 AI 批评，撕开你的盲区
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>AI Agent 记忆体系 · 从对话到知识，从知识到能力</p>
+        </div>
+    </div>
+</body>
+</html>
