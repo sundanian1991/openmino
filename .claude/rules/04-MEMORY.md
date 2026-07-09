@@ -30,6 +30,10 @@ Information should flow from raw notes to topic files, then into this file only 
 
 ## Current Context
 
+- **CloudBase MCP 生图流程**（2026-07-09）：配置已完成，待新会话验证工具加载
+- **guizang-material-illustration 技能**（2026-07-09）：已安装并链接，能力边界已分析
+- **电视机海报项目**（2026-07-09）：J-Space 概念插图生成 + HTML 海报页面已完成
+
 Add the current state of important projects here as short pointers. Put detailed timelines in `memory/topics/`.
 
 ## Durable Lessons

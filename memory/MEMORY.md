@@ -37,11 +37,13 @@
 ## 当前状态
 
 **最近工作焦点**（2026-07 上旬）：
-- **Q2绩效总结撰写**：供应商生态优化完成情况+降本增效专项+Q3目标设定
-- **岗位价值体系化**：工作定位叙事不清，需要从碎片化执行中提炼"角色定位→价值主张→可衡量指标"
+- **07-07 线下分享**：1990s下岗PPT + 思维透镜介绍页 + 赛博清明上河图
+- **07-09 CloudBase MCP 配置**：生图流程配置完成，待新会话验证工具加载
+- **07-09 guizang-material-illustration 技能**：安装链接+能力边界分析+J-Space插图生成
+- **07-09 电视机海报项目**：8张概念插图 + HTML海报页面
+- **Q2绩效总结撰写**：供应商生态优化完成情况+降本增效专项+Q3目标设定（进行中）
 - **nian-design 技能系统**：4级组件体系+token三轨制根治+showcase质量标准
 - **电销AI转型方案**：四阶段推进（能看见→能判断→能行动→自动化）
-- **文件夹体系重构**：Root 20项/Workspace 20项，MCP统一+hooks symlink+workspace合并
 
 **历史工作焦点**（2026-05 下旬）：
 - **策展技能定位升级**：从"可视化时顺带跑的流程"改为"可视化之前的独立分析层"，成为标准前置工具
@@ -79,6 +81,9 @@
 | Tool Call Repair Layer 落地 | 2026-06-22 | 采纳Ahmad Awais方案，修复开源模型工具调用失败（90%是Harness层问题） |
 | 文件夹体系重构完成 | 2026-07-03 | Root 20项/Workspace 20项，MCP统一+hooks symlink+workspace合并+根目录清废+skills断链清理 |
 | MEMORY.md 确立为主源 | 2026-07-03 | 年老师确认MEMORY.md vs topics/画像以MEMORY.md为主源 |
+| CloudBase MCP 配置方法 | 2026-07-09 | 写入 `agents[N].mcpServersJson` + `agents[N].mcpEnabledServers`，新建会话生效 |
+| guizang-material-illustration 技能安装 | 2026-07-09 | 符号链接 `.claude/skills/` → `~/.agents/skills/`，`myagents skill enable` 激活 |
+| 电视机海报项目完成 | 2026-07-09 | J-Space 8张概念插图 + HTML海报页面 |
 
 ---
 
@@ -207,4 +212,4 @@
 
 ---
 
-*最后更新：2026-07-06 — buffer归档132条→insights.md，提取12条决策+16条用户模式到MEMORY.md*
+*最后更新：2026-07-09 — CloudBase MCP配置+guizang技能安装+电视机海报项目+07-07线下分享收尾*
