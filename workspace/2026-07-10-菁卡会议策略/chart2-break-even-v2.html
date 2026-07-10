@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5版本盈亏全景</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #FFFFFF;
+    font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #2C3E50;
+  }
+  .container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 28px 16px;
+    box-sizing: border-box;
+  }
+  .panel-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 2px 0;
+    color: #1A1A1A;
+    padding-left: 12px;
+    border-left: 3px solid #95A5A6;
+  }
+  .panel-sub {
+    font-size: 12px;
+    color: #95A5A6;
+    margin: 0 0 6px 0;
+    padding-left: 15px;
+  }
+  #chart {
+    width: 100%;
+    height: 760px;
+  }
+  .footer {
+    font-size: 11px;
+    color: #BDC3C7;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ECF0F1;
+  }
+  .h-red { color: #C0392B; }
+  .h-green { color: #1E8449; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="panel-title">坐席收入：即使提到 4,500 元（版本4），AI 端<span class="h-red">仍亏</span></div>
+  <div class="panel-sub">上图 · 坐席到手月收入 · 健康线 ¥4,500（版本4已触达，但 AI 端仍 -15.51 万）</div>
+  <div class="panel-title" style="margin-top:4px;">AI 供应商月盈亏：只有<span class="h-green">底线值方案</span>能转正</div>
+  <div class="panel-sub">下图 · AI 供应商月度盈亏（万元）· 盈亏平衡线为零轴 · 不调分润比例，怎么提坐席收入都救不了 AI 端</div>
+  <div id="chart"></div>
+  <div class="footer">数据来源：5 版本盈亏测算 · 上图单位：元 / 人 / 月，下图单位：万元 / 月 · 上下两图共享同一 X 轴（5 个版本）· 6月真实与底线值方案高亮，其余灰化</div>
+</div>
+
+<script>
+(function () {
+  var chart = echarts.init(document.getElementById('chart'));
+
+  var versions = ['6月真实', '版本2', '版本3', '版本4', '底线值'];
+
+  // 坐席收入（上图）
+  var seatData = [3500, 3800, 4000, 4500, 4500];
+  // AI 盈亏（下图，万元）
+  var aiData   = [-33.75, -26.60, -23.09, -15.51, 5.69];
+
+  // 高亮色：6月真实=红，底线值=绿，其余灰
+  var GREY  = '#D5D8DC';
+  var RED   = '#C0392B';
+  var GREEN = '#27AE60';
+
+  var seatColors = [RED, GREY, GREY, GREY, GREEN];
+  var aiColors   = [RED, GREY, GREY, GREY, GREEN];
+
+  function barSeries(data, colors, base, gridIndex) {
+    return {
+      type: 'bar',
+      xAxisIndex: gridIndex,
+      yAxisIndex: gridIndex,
+      data: data,
+      barWidth: 46,
+      itemStyle: {
+        color: function (p) { return colors[p.dataIndex]; },
+        borderRadius: gridIndex === 1
+          ? data.map(function (v) { return v >= 0 ? [4,4,0,0] : [0,0,4,4]; })
+          : [4,4,0,0]
+      },
+      label: {
+        show: true,
+        position: function (p) {
+          if (gridIndex === 1) {
+            return data[p.dataIndex] >= 0 ? 'top' : 'bottom';
+          }
+          return 'top';
+        },
+        formatter: function (p) {
+          if (gridIndex === 1) {
+            var v = p.value;
+            return (v > 0 ? '+' : '') + v.toFixed(2) + ' 万';
+          }
+          return '¥' + p.value.toLocaleString();
+        },
+        color: function (p) {
+          return colors[p.dataIndex] === GREY ? '#7F8C8D' : '#1A1A1A';
+        },
+        fontSize: 12,
+        fontWeight: 600
+      }
+    };
+  }
+
+  var option = {
+    backgroundColor: '#FFFFFF',
+    grid: [
+      { left: 70, right: 40, top: 30,  bottom: 410, containLabel: true }, // 上图：坐席
+      { left: 70, right: 40, top: 410, bottom: 50, containLabel: true }   // 下图：AI盈亏
+    ],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      backgroundColor: '#FFFFFF',
+      borderColor: '#ECF0F1',
+      borderWidth: 1,
+      textStyle: { color: '#2C3E50', fontSize: 12 }
+    },
+    xAxis: [
+      {
+        type: 'category',
+        gridIndex: 0,
+        data: versions,
+        axisLine:  { show: true, lineStyle: { color: '#BDC3C7' } },
+        axisTick:  { show: false },
+        axisLabel: { show: false } // 标签只在下图显示
+      },
+      {
+        type: 'category',
+        gridIndex: 1,
+        data: versions,
+        axisLine:  { show: true, lineStyle: { color: '#BDC3C7' } },
+        axisTick:  { show: false },
+        axisLabel: {
+          color: '#34495E',
+          fontSize: 12,
+          fontWeight: 500,
+          margin: 14
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        gridIndex: 0,
+        min: 0,
+        max: 6000,
+        interval: 1500,
+        axisLine:   { show: false },
+        axisTick:   { show: false },
+        splitLine:  { show: false },
+        axisLabel:  {
+          color: '#95A5A6',
+          fontSize: 11,
+          formatter: function (v) { return v.toLocaleString(); }
+        },
+        name: '元/人/月',
+        nameTextStyle: { color: '#BDC3C7', fontSize: 11, padding: [0, 0, 0, -30] }
+      },
+      {
+        type: 'value',
+        gridIndex: 1,
+        min: -40,
+        max: 10,
+        interval: 10,
+        axisLine:   { show: false },
+        axisTick:   { show: false },
+        splitLine:  { show: false },
+        axisLabel:  {
+          color: '#95A5A6',
+          fontSize: 11,
+          formatter: function (v) { return v + ' 万'; }
+        },
+        name: '万元/月',
+        nameTextStyle: { color: '#BDC3C7', fontSize: 11, padding: [0, 0, 0, -30] }
+      }
+    ],
+    series: [
+      // 上图：坐席收入
+      Object.assign(barSeries(seatData, seatColors, 0, 0), {
+        markLine: {
+          symbol: ['none', 'none'],
+          silent: true,
+          lineStyle: { color: '#2874A6', type: 'dashed', width: 1.5 },
+          label: {
+            show: true,
+            position: 'insideStartTop',
+            formatter: '坐席健康线 ¥4,500',
+            color: '#2874A6',
+            fontSize: 11,
+            fontWeight: 600
+          },
+          data: [ { yAxis: 4500 } ]
+        }
+      }),
+      // 下图：AI 盈亏
+      Object.assign(barSeries(aiData, aiColors, 0, 1), {
+        markLine: {
+          symbol: ['none', 'none'],
+          silent: true,
+          lineStyle: { color: '#7F8C8D', type: 'dashed', width: 1.5 },
+          label: {
+            show: true,
+            position: 'insideEndBottom',
+            formatter: '盈亏平衡线（0 万）',
+            color: '#7F8C8D',
+            fontSize: 11,
+            fontWeight: 600
+          },
+          data: [ { yAxis: 0 } ]
+        }
+      })
+    ],
+    graphic: [
+      // 两图之间的分隔说明
+      {
+        type: 'text',
+        left: 'center',
+        top: 385,
+        z: 100,
+        style: {
+          text: '坐席收入即便提升至健康线，AI 端仍持续亏损 ↓',
+          font: 'italic 12px system-ui',
+          fill: '#C0392B'
+        }
+      }
+    ]
+  };
+
+  chart.setOption(option);
+  window.addEventListener('resize', function () { chart.resize(); });
+})();
+</script>
+</body>
+</html>

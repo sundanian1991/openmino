@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>让Codex长周期大项目不跑偏：OpenAI工程师分享的5个AI协作实操习惯</title>
+<style>
+:root {
+  --bg: #F5F5F0;
+  --card: #FFFFFF;
+  --ink: #1A1A1A;
+  --ink-2: #4A4A4A;
+  --ink-3: #8A8A8A;
+  --accent: #002FA7;
+  --accent-soft: #E8EDFA;
+  --orange: #FF6B35;
+  --green: #C5E803;
+  --red: #E60012;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --border: #E5E5E0;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(180deg, #FAFAFA 0%, var(--bg) 100%);
+  padding: 64px 0 48px;
+  border-bottom: 1px solid var(--border);
+}
+.hero-tag {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+.hero-sub {
+  font-size: 16px;
+  color: var(--ink-2);
+  max-width: 600px;
+}
+.hero-meta {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* Section */
+.section {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-child { border-bottom: none; }
+.section-num {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  width: 28px; height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+.section-num.orange { background: var(--orange); }
+.section-num.green { background: var(--green); color: var(--ink); }
+.section-num.red { background: var(--red); }
+.section-num.lemon { background: #FFD500; color: var(--ink); }
+.section-num.gray { background: var(--ink-3); }
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 28px 0 12px;
+  color: var(--ink);
+}
+p { margin-bottom: 14px; font-size: 16px; color: var(--ink-2); }
+
+/* Card */
+.card {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Diagram container */
+.diagram-wrap {
+  margin: 28px 0;
+  text-align: center;
+}
+.diagram-wrap svg {
+  max-width: 100%;
+  height: auto;
+}
+.diagram-caption {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 10px;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+th {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 13px;
+}
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-2);
+}
+tr:last-child td { border-bottom: none; }
+
+/* List */
+ul, ol { margin: 12px 0 12px 20px; }
+li {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+li strong { color: var(--ink); }
+
+/* Highlight box */
+.highlight {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 6px 6px 0;
+}
+.highlight.orange { background: #FFF3EE; border-left-color: var(--orange); }
+.highlight.green { background: #F8FCE8; border-left-color: var(--green); }
+.highlight.red { background: #FDE8E8; border-left-color: var(--red); }
+.highlight p { margin-bottom: 0; color: var(--ink); font-size: 14px; }
+.highlight-icon { font-size: 16px; margin-right: 6px; }
+
+/* Flow step */
+.flow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+.flow-step {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 12px 8px;
+  position: relative;
+}
+.flow-step::after {
+  content: "→";
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 700;
+}
+.flow-step:last-child::after { display: none; }
+.flow-icon {
+  display: block;
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+.flow-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.flow-desc {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+
+/* Tag */
+.tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 3px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+.tag-blue { background: var(--accent-soft); color: var(--accent); }
+.tag-orange { background: #FFF3EE; color: var(--orange); }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .container { padding: 0 16px; }
+  .hero h1 { font-size: 22px; }
+  h2 { font-size: 18px; }
+  .flow { flex-direction: column; }
+  .flow-step::after { content: "↓"; right: 50%; top: auto; bottom: -16px; transform: translateX(50%); }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+<div class="container">
+  <span class="hero-tag">AI 协作 · 长周期项目管理</span>
+  <h1>让 Codex 长周期大项目不跑偏：<br>OpenAI 工程师分享的 5 个 AI 协作实操习惯</h1>
+  <p class="hero-sub">OpenAI Codex 团队 DX 工程师 Gabriel Chua 的实践总结，全网浏览量 89 万。适配所有支持长任务 + 子 agent 的编码工具（Codex / Claude Code / Cursor）。</p>
+  <div class="hero-meta">来源：Gabriel Chua (OpenAI Codex DX Engineer) &nbsp;|&nbsp; 推文浏览 89 万+ &nbsp;|&nbsp; 2026-07-10 深度拆解</div>
+</div>
+</div>
+
+<div class="container">
+
+<!-- Section 0: 核心背景 -->
+<div class="section">
+<h2><span class="section-num">背</span>核心背景与行业痛点</h2>
+<p>AI 编码工具已经能连续运行数小时甚至数天——<strong>长任务执行能力已落地</strong>。但行业普遍的核心难点并非「启动一个 AI 任务」，而是：</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="700" height="220" fill="#FAFAFA" rx="8"/>
+
+  <!-- Left: Pain point -->
+  <rect x="30" y="30" width="300" height="160" fill="#FDE8E8" rx="8" opacity="0.5"/>
+  <text x="180" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#E60012">放养式（现状多数）</text>
+
+  <!-- Chaos arrows -->
+  <path d="M80 140 Q120 80 160 130 Q200 180 240 120 Q280 60 300 110" stroke="#E60012" stroke-width="1.5" fill="none" stroke-dasharray="4 3" opacity="0.6"/>
+  <circle cx="80" cy="140" r="5" fill="#E60012" opacity="0.6"/>
+  <circle cx="160" cy="130" r="5" fill="#E60012" opacity="0.6"/>
+  <circle cx="240" cy="120" r="5" fill="#E60012" opacity="0.6"/>
+  <circle cx="300" cy="110" r="5" fill="#E60012" opacity="0.6"/>
+
+  <text x="180" y="100" text-anchor="middle" font-size="11" fill="#E60012">目标漂移</text>
+  <text x="180" y="165" text-anchor="middle" font-size="11" fill="#E60012">多日迭代后逐渐偏离</text>
+
+  <!-- Arrow -->
+  <path d="M345 110 L375 110" stroke="#4A4A4A" stroke-width="2" marker-end="url(#arrow)"/>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#4A4A4A"/></marker></defs>
+
+  <!-- Right: Goal -->
+  <rect x="390" y="30" width="280" height="160" fill="#E8EDFA" rx="8" opacity="0.5"/>
+  <text x="530" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#002FA7">带领式（本文目标）</text>
+
+  <!-- Straight arrow -->
+  <line x1="430" y1="110" x2="630" y2="110" stroke="#002FA7" stroke-width="2.5" marker-end="url(#arrow2)"/>
+  <defs><marker id="arrow2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#002FA7"/></marker></defs>
+  <text x="530" y="95" text-anchor="middle" font-size="11" fill="#002FA7">目标锚定</text>
+  <text x="530" y="140" text-anchor="middle" font-size="11" fill="#002FA7">多日后仍对齐初始意图</text>
+
+  <!-- Icons -->
+  <text x="180" y="185" text-anchor="middle" font-size="20">🎯❌</text>
+  <text x="530" y="185" text-anchor="middle" font-size="20">🎯✅</text>
+</svg>
+<div class="diagram-caption">图 1：核心差异——从"放养单个 AI"升级为"带领 AI 团队"</div>
+</div>
+
+<table>
+<tr><th>维度</th><th>当前行业现状</th><th>本文方法的目标</th></tr>
+<tr><td>执行能力</td><td>数小时~数天连续运行 ✅</td><td>相同 ✅</td></tr>
+<tr><td>启动任务</td><td>已解决 ✅</td><td>相同 ✅</td></tr>
+<tr><td><span class="tag tag-red">核心难点</span><br>多日目标对齐</td><td>上下文漂移、新信息打偏目标、反复返工</td><td>GOALS.md 锚定 + 里程碑审计 + 证据验收</td></tr>
+<tr><td>协作模式</td><td>人盯 AI（放养单只）</td><td>人定目标 + AI 执行 + 分层验收（带团队）</td></tr>
+</table>
+
+<div class="highlight orange">
+<p><span class="highlight-icon">⚡</span><strong>方法的通用性</strong>：这套协作方法不是 Codex 专属，所有支持「长任务运行 + 可开子 agent」的编码工具都能迁移核心逻辑：Claude Code、Cursor、Windsurf 均可。</p>
+</div>
+</div>
+
+<!-- Section 1: Habit 1 -->
+<div class="section">
+<h2><span class="section-num">1</span>习惯一：让 AI 自主规划并维护路线图</h2>
+<p><strong>核心动作</strong>：不用 <code>/plan</code> 开局，先通过对话口述需求 + 给出约束，引导 AI 持续提问，直至生成初版计划。项目成型后，让 AI 将大路线图写入持久文件 <code>GOALS.md</code>。</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="280" fill="#FAFAFA" rx="8"/>
+
+  <!-- Phase 1: Dialogue -->
+  <rect x="30" y="30" width="180" height="220" fill="#E8EDFA" rx="6" opacity="0.4"/>
+  <text x="120" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#002FA7">阶段一：对话发散</text>
+  <text x="120" y="75" text-anchor="middle" font-size="10" fill="#4A4A4A">人口述需求 + 约束</text>
+  <text x="120" y="95" text-anchor="middle" font-size="10" fill="#4A4A4A">AI 持续提问澄清</text>
+  <line x1="120" y1="105" x2="120" y2="125" stroke="#002FA7" stroke-width="1" stroke-dasharray="3 2"/>
+  <text x="120" y="145" text-anchor="middle" font-size="10" fill="#4A4A4A">共同生成初版计划</text>
+  <text x="120" y="200" text-anchor="middle" font-size="20">💬</text>
+
+  <!-- Phase 2: GOALS.md -->
+  <rect x="260" y="30" width="180" height="220" fill="#F8FCE8" rx="6" opacity="0.5"/>
+  <text x="350" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#6B8C00">阶段二：固化为 GOALS.md</text>
+  <rect x="280" y="65" width="140" height="100" fill="#fff" rx="4" stroke="#C5E803" stroke-width="1"/>
+  <text x="350" y="85" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">GOALS.md</text>
+  <line x1="290" y1="92" x2="410" y2="92" stroke="#C5E803" stroke-width="0.5"/>
+  <text x="350" y="108" text-anchor="middle" font-size="9" fill="#4A4A4A">· 目标产出</text>
+  <text x="350" y="122" text-anchor="middle" font-size="9" fill="#4A4A4A">· 工作范围</text>
+  <text x="350" y="136" text-anchor="middle" font-size="9" fill="#4A4A4A">· 重要决策</text>
+  <text x="350" y="150" text-anchor="middle" font-size="9" fill="#4A4A4A">· 已知阻塞 / 完成证据</text>
+  <text x="350" y="200" text-anchor="middle" font-size="20">📄</text>
+
+  <!-- Phase 3: Dynamic update -->
+  <rect x="490" y="30" width="180" height="220" fill="#FFF3EE" rx="6" opacity="0.4"/>
+  <text x="580" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#FF6B35">阶段三：动态维护</text>
+  <text x="580" y="75" text-anchor="middle" font-size="10" fill="#4A4A4A">AI 随推进持续更新</text>
+  <text x="580" y="95" text-anchor="middle" font-size="10" fill="#4A4A4A">同一时刻仅一个活跃 Goal</text>
+  <path d="M580 120 Q600 140 580 160 Q560 180 580 200" stroke="#FF6B35" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+  <text x="580" y="200" text-anchor="middle" font-size="20">🔄</text>
+
+  <!-- Arrows -->
+  <path d="M210 140 L255 140" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar)"/>
+  <path d="M440 140 L485 140" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar)"/>
+  <defs><marker id="ar" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#4A4A4A"/></marker></defs>
+</svg>
+<div class="diagram-caption">图 2：路线图三阶段演化——从灵活对话到持久文件再到动态维护</div>
+</div>
+
+<h3>GOALS.md 的每个里程碑记录什么</h3>
+<table>
+<tr><th>字段</th><th>内容</th><th>为什么需要</th></tr>
+<tr><td>目标产出</td><td>这个里程碑要交付什么</td><td>避免"做完了但不知道做了什么"</td></tr>
+<tr><td>当前工作范围</td><td>做什么、不做什么</td><td>防止范围蔓延</td></tr>
+<tr><td>重要决策</td><td>选了什么方案、为什么</td><td>决策可追溯，不会反复推翻</td></tr>
+<tr><td>已知阻塞</td><td>卡住的关键依赖</td><td>提前暴露风险</td></tr>
+<tr><td>完成所需证据</td><td>怎么证明做完了</td><td>定义可验收的标准</td></tr>
+</table>
+
+<div class="highlight">
+<p><strong>为什么不用 <code>/plan</code> 开局？</strong> <code>/plan</code> 模式逼你在没充分讨论前就写规格文档，计划容易僵化。先通过对话让 AI 帮你提问、梳理约束，计划自然浮现——更符合真实项目的演进节奏。</p>
+</div>
+</div>
+
+<!-- Section 2: Habit 2 -->
+<div class="section">
+<h2><span class="section-num orange">2</span>习惯二：主线程只负责全局协调</h2>
+<p><strong>核心动作</strong>：主线程（你 + AI 协调者）仅在「目标、约束、决策、状态」四个维度工作。代码实现细节全部委派给 subagent 或独立 thread。</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="300" fill="#FAFAFA" rx="8"/>
+
+  <!-- Central hub -->
+  <circle cx="350" cy="100" r="55" fill="#002FA7" opacity="0.1" stroke="#002FA7" stroke-width="2"/>
+  <text x="350" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#002FA7">主线程</text>
+  <text x="350" y="108" text-anchor="middle" font-size="9" fill="#002FA7">（人 + 协调者）</text>
+  <text x="350" y="125" text-anchor="middle" font-size="9" fill="#4A4A4A">目标·约束·决策·状态</text>
+
+  <!-- Spokes -->
+  <!-- Top left -->
+  <rect x="100" y="30" width="130" height="50" fill="#fff" rx="5" stroke="#8A8A8A" stroke-width="1"/>
+  <text x="165" y="50" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">Subagent A</text>
+  <text x="165" y="65" text-anchor="middle" font-size="9" fill="#4A4A4A">编码实现</text>
+  <line x1="230" y1="55" x2="298" y2="85" stroke="#8A8A8A" stroke-width="1" stroke-dasharray="3 2"/>
+
+  <!-- Top right -->
+  <rect x="470" y="30" width="130" height="50" fill="#fff" rx="5" stroke="#8A8A8A" stroke-width="1"/>
+  <text x="535" y="50" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">Subagent B</text>
+  <text x="535" y="65" text-anchor="middle" font-size="9" fill="#4A4A4A">编码实现</text>
+  <line x1="470" y1="55" x2="402" y2="85" stroke="#8A8A8A" stroke-width="1" stroke-dasharray="3 2"/>
+
+  <!-- Bottom left -->
+  <rect x="100" y="210" width="130" height="50" fill="#fff" rx="5" stroke="#8A8A8A" stroke-width="1"/>
+  <text x="165" y="230" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">独立 Thread 1</text>
+  <text x="165" y="245" text-anchor="middle" font-size="9" fill="#4A4A4A">可回溯的任务 A</text>
+  <line x1="220" y1="210" x2="300" y2="130" stroke="#8A8A8A" stroke-width="1" stroke-dasharray="3 2"/>
+
+  <!-- Bottom right -->
+  <rect x="470" y="210" width="130" height="50" fill="#fff" rx="5" stroke="#8A8A8A" stroke-width="1"/>
+  <text x="535" y="230" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">独立 Thread 2</text>
+  <text x="535" y="245" text-anchor="middle" font-size="9" fill="#4A4A4A">可回溯的任务 B</text>
+  <line x1="480" y1="210" x2="400" y2="130" stroke="#8A8A8A" stroke-width="1" stroke-dasharray="3 2"/>
+
+  <!-- Annotation -->
+  <rect x="260" y="160" width="180" height="65" fill="#E8EDFA" rx="5"/>
+  <text x="350" y="178" text-anchor="middle" font-size="10" font-weight="600" fill="#002FA7">主线程 4 项职责</text>
+  <text x="350" y="194" text-anchor="middle" font-size="9" fill="#4A4A4A">① 决定下一步动作</text>
+  <text x="350" y="207" text-anchor="middle" font-size="9" fill="#4A4A4A">② 委派有边界的任务</text>
+  <text x="350" y="220" text-anchor="middle" font-size="9" fill="#4A4A4A">③ 评估执行结果</text>
+
+  <!-- Red X on code -->
+  <text x="350" y="275" text-anchor="middle" font-size="11" fill="#E60012">主线程不承载代码实现细节 ❌</text>
+</svg>
+<div class="diagram-caption">图 3：Hub-and-Spoke 协调模型——主线程居中调度，执行全部外派</div>
+</div>
+
+<div class="highlight orange">
+<p><strong>为什么要用独立 thread？</strong> 需要回溯的工作如果放在主线程，会被后续对话淹没。独立 thread 保留完整历史，主线程保持轻量——两者可并行推进。</p>
+</div>
+
+<table>
+<tr><th>主线程做</th><th>主线程不做</th></tr>
+<tr><td>定目标、给约束</td><td>写代码、改代码</td></tr>
+<tr><td>决定下一步动作</td><td>调试排错细节</td></tr>
+<tr><td>评估执行结果</td><td>读大量日志</td></tr>
+<tr><td>验收证据、审计路线</td><td>纠缠实现语法</td></tr>
+</table>
+</div>
+
+<!-- Section 3: Habit 3 -->
+<div class="section">
+<h2><span class="section-num green">3</span>习惯三：里程碑结束后先审计路线图，再 review 代码</h2>
+<p><strong>核心动作</strong>：每完成一个里程碑，<strong>不要急着推进</strong>。先在独立 thread 对照现状审计路线图，再同步 review 代码。两项审计完成后才激活下一里程碑。</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="260" fill="#FAFAFA" rx="8"/>
+
+  <!-- Step flow -->
+  <!-- Step 1 -->
+  <rect x="30" y="40" width="130" height="60" fill="#E8EDFA" rx="6" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="95" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#002FA7">里程碑完成</text>
+  <text x="95" y="80" text-anchor="middle" font-size="9" fill="#4A4A4A">产出交付物</text>
+
+  <!-- Arrow -->
+  <path d="M160 70 L190 70" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar2)"/>
+  <defs><marker id="ar2" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#4A4A4A"/></marker></defs>
+
+  <!-- Step 2: Split into 2 parallel audits -->
+  <rect x="200" y="20" width="160" height="45" fill="#FFF3EE" rx="5" stroke="#FF6B35" stroke-width="1"/>
+  <text x="280" y="38" text-anchor="middle" font-size="10" font-weight="600" fill="#FF6B35">路线图审计</text>
+  <text x="280" y="54" text-anchor="middle" font-size="9" fill="#4A4A4A">5 项校验问题</text>
+
+  <rect x="200" y="75" width="160" height="45" fill="#F8FCE8" rx="5" stroke="#C5E803" stroke-width="1"/>
+  <text x="280" y="93" text-anchor="middle" font-size="10" font-weight="600" fill="#6B8C00">代码 review</text>
+  <text x="280" y="109" text-anchor="middle" font-size="9" fill="#4A4A4A">发现问题</text>
+
+  <!-- Merge arrow -->
+  <path d="M360 42 L390 70" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar2)"/>
+  <path d="M360 97 L390 70" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar2)"/>
+
+  <!-- Step 3: Gate -->
+  <rect x="395" y="45" width="120" height="50" fill="#fff" rx="5" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="455" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">双审计门</text>
+  <text x="455" y="82" text-anchor="middle" font-size="9" fill="#4A4A4A">两项都过才继续</text>
+
+  <!-- Arrow -->
+  <path d="M515 70 L545 70" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar2)"/>
+
+  <!-- Step 4 -->
+  <rect x="550" y="40" width="120" height="60" fill="#E8EDFA" rx="6" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="610" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#002FA7">激活下一里程碑</text>
+  <text x="610" y="80" text-anchor="middle" font-size="9" fill="#4A4A4A">带修正后的路线</text>
+
+  <!-- 5 questions -->
+  <rect x="30" y="150" width="640" height="90" fill="#fff" rx="6" stroke="#E5E5E0" stroke-width="1"/>
+  <text x="55" y="172" font-size="11" font-weight="700" fill="#FF6B35">路线图审计 5 项核心问题</text>
+  <text x="55" y="192" font-size="10" fill="#4A4A4A">① 里程碑是否真的完成？（不是"代码跑通"，是目标产出已交付）</text>
+  <text x="55" y="208" font-size="10" fill="#4A4A4A">② 下一个目标是否合理？（新信息可能改变优先级）</text>
+  <text x="55" y="224" font-size="10" fill="#4A4A4A">③ 是否遗漏里程碑？（信息差导致规划盲区） ④ 新证据是否需调整工作顺序？ ⑤ "完成定义"是否仍成立？</text>
+</svg>
+<div class="diagram-caption">图 4：里程碑双审计门控——路线审计 + 代码 review 并行，两项都过才推进</div>
+</div>
+
+<div class="highlight green">
+<p><strong>实际例子</strong>：登录流程实现后，通过同步代码 review 可能顺带发现 token 存储错误、浏览器端验证缺失等隐藏缺陷——这些是远程测试覆盖不到的。</p>
+</div>
+</div>
+
+<!-- Section 4: Habit 4 -->
+<div class="section">
+<h2><span class="section-num red">4</span>习惯四：本机专属测试交由"本地线程"</h2>
+<p><strong>核心动作</strong>：远程实例 + 本地设备解耦。涉及登录态浏览器、本地凭据、Xcode、macOS 权限、iOS 模拟器等<strong>必须依赖本机环境</strong>的检查，由远程协调者创建本地线程承接。</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="280" fill="#FAFAFA" rx="8"/>
+
+  <!-- Remote side -->
+  <rect x="30" y="30" width="280" height="220" fill="#E8EDFA" rx="8" opacity="0.4"/>
+  <text x="170" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#002FA7">☁️ 远程实例（Codex 会话）</text>
+
+  <!-- Remote components -->
+  <rect x="55" y="75" width="100" height="45" fill="#fff" rx="4" stroke="#002FA7" stroke-width="1"/>
+  <text x="105" y="95" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">协调者</text>
+  <text x="105" y="110" text-anchor="middle" font-size="9" fill="#4A4A4A">主线程</text>
+
+  <rect x="175" y="75" width="100" height="45" fill="#fff" rx="4" stroke="#002FA7" stroke-width="1"/>
+  <text x="225" y="95" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">Worker A</text>
+  <text x="225" y="110" text-anchor="middle" font-size="9" fill="#4A4A4A">远程执行</text>
+
+  <rect x="55" y="135" width="100" height="45" fill="#fff" rx="4" stroke="#002FA7" stroke-width="1"/>
+  <text x="105" y="155" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">Worker B</text>
+  <text x="105" y="170" text-anchor="middle" font-size="9" fill="#4A4A4A">远程执行</text>
+
+  <rect x="175" y="135" width="100" height="45" fill="#fff" rx="4" stroke="#002FA7" stroke-width="1"/>
+  <text x="225" y="155" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">Worker C</text>
+  <text x="225" y="170" text-anchor="middle" font-size="9" fill="#4A4A4A">远程执行</text>
+
+  <text x="170" y="215" text-anchor="middle" font-size="9" fill="#002FA7">电脑关闭仍继续运行 ✅</text>
+  <text x="170" y="235" text-anchor="middle" font-size="9" fill="#002FA7">积分消耗、长时间任务 ✅</text>
+
+  <!-- Divider -->
+  <line x1="340" y1="40" x2="340" y2="250" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="340" y="268" text-anchor="middle" font-size="10" font-weight="600" fill="#8A8A8A">↕ 网络边界</text>
+
+  <!-- Local side -->
+  <rect x="370" y="30" width="300" height="220" fill="#FFF3EE" rx="8" opacity="0.4"/>
+  <text x="520" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#FF6B35">💻 本机设备（Mac / PC）</text>
+
+  <!-- Local thread -->
+  <rect x="395" y="80" width="250" height="120" fill="#fff" rx="6" stroke="#FF6B35" stroke-width="1.5"/>
+  <text x="520" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#FF6B35">本地线程（Local Thread）</text>
+  <line x1="405" y1="110" x2="635" y2="110" stroke="#FF6B35" stroke-width="0.5"/>
+
+  <text x="520" y="128" text-anchor="middle" font-size="9" fill="#4A4A4A">承接需要本机环境的检查：</text>
+  <text x="520" y="145" text-anchor="middle" font-size="9" fill="#4A4A4A">🌐 登录态浏览器</text>
+  <text x="520" y="159" text-anchor="middle" font-size="9" fill="#4A4A4A">🔑 本地凭据 / Keychain</text>
+  <text x="520" y="173" text-anchor="middle" font-size="9" fill="#4A4A4A">📱 iOS 模拟器 / Xcode</text>
+  <text x="520" y="187" text-anchor="middle" font-size="9" fill="#4A4A4A">🔐 macOS 权限 / TCC</text>
+
+  <text x="520" y="225" text-anchor="middle" font-size="9" fill="#FF6B35">远程修复后可复测，远程任务可等待本机</text>
+  <text x="520" y="242" text-anchor="middle" font-size="9" fill="#FF6B35">仅在必要时调用本地资源</text>
+</svg>
+<div class="diagram-caption">图 5：远程/本地能力解耦架构——远程持续运行，本机仅承接必须本机环境的测试</div>
+</div>
+</div>
+
+<!-- Section 5: Habit 5 -->
+<div class="section">
+<h2><span class="section-num" style="background:#FFD500;color:#1A1A1A;">5</span>习惯五：简报 + 仪表盘同步全局进度</h2>
+<p><strong>核心动作</strong>：每次状态更新仅输出三段极简汇报，跨多里程碑项目维护自定义 <code>progress-dashboard.html</code> 仪表盘。</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="320" fill="#FAFAFA" rx="8"/>
+
+  <!-- Three-part brief -->
+  <rect x="30" y="20" width="640" height="100" fill="#fff" rx="6" stroke="#E5E5E0" stroke-width="1"/>
+  <text x="55" y="45" font-size="12" font-weight="700" fill="#1A1A1A">每次更新的三段简报</text>
+
+  <rect x="50" y="58" width="180" height="45" fill="#F8FCE8" rx="4" stroke="#C5E803" stroke-width="1"/>
+  <text x="140" y="78" text-anchor="middle" font-size="10" font-weight="600" fill="#6B8C00">What's Done</text>
+  <text x="140" y="93" text-anchor="middle" font-size="9" fill="#4A4A4A">已完成什么</text>
+
+  <rect x="250" y="58" width="180" height="45" fill="#E8EDFA" rx="4" stroke="#002FA7" stroke-width="1"/>
+  <text x="340" y="78" text-anchor="middle" font-size="10" font-weight="600" fill="#002FA7">What's Next</text>
+  <text x="340" y="93" text-anchor="middle" font-size="9" fill="#4A4A4A">下一步做什么</text>
+
+  <rect x="450" y="58" width="180" height="45" fill="#FFF3EE" rx="4" stroke="#FF6B35" stroke-width="1"/>
+  <text x="540" y="78" text-anchor="middle" font-size="10" font-weight="600" fill="#FF6B35">Any Blockers</text>
+  <text x="540" y="93" text-anchor="middle" font-size="9" fill="#4A4A4A">有无阻塞</text>
+
+  <!-- Dashboard preview -->
+  <rect x="30" y="140" width="640" height="160" fill="#fff" rx="6" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="55" y="163" font-size="12" font-weight="700" fill="#002FA7">progress-dashboard.html 示意</text>
+  <line x1="40" y1="170" x2="660" y2="170" stroke="#E5E5E0" stroke-width="0.5"/>
+
+  <!-- Dashboard sections -->
+  <rect x="50" y="185" width="130" height="100" fill="#E8EDFA" rx="4" opacity="0.5"/>
+  <text x="115" y="205" text-anchor="middle" font-size="10" font-weight="600" fill="#002FA7">活跃目标</text>
+  <text x="115" y="225" text-anchor="middle" font-size="9" fill="#4A4A4A">Goal #3</text>
+  <text x="115" y="242" text-anchor="middle" font-size="9" fill="#4A4A4A">支付集成</text>
+  <rect x="60" y="255" width="110" height="8" fill="#E0E0D8" rx="4"/>
+  <rect x="60" y="255" width="65" height="8" fill="#002FA7" rx="4" opacity="0.7"/>
+
+  <rect x="200" y="185" width="130" height="100" fill="#F8FCE8" rx="4" opacity="0.5"/>
+  <text x="265" y="205" text-anchor="middle" font-size="10" font-weight="600" fill="#6B8C00">已完成里程碑</text>
+  <text x="265" y="225" text-anchor="middle" font-size="9" fill="#4A4A4A">✅ 用户注册</text>
+  <text x="265" y="242" text-anchor="middle" font-size="9" fill="#4A4A4A">✅ 登录流程</text>
+  <text x="265" y="259" text-anchor="middle" font-size="9" fill="#4A4A4A">✅ 数据库迁移</text>
+
+  <rect x="350" y="185" width="130" height="100" fill="#FFF3EE" rx="4" opacity="0.5"/>
+  <text x="415" y="205" text-anchor="middle" font-size="10" font-weight="600" fill="#FF6B35">阻塞项</text>
+  <text x="415" y="225" text-anchor="middle" font-size="9" fill="#E60012">⛔ 银行接口审批</text>
+  <text x="415" y="242" text-anchor="middle" font-size="9" fill="#FF6B35">⏳ 安全审计排队</text>
+
+  <rect x="500" y="185" width="130" height="100" fill="#FAFAFA" rx="4" stroke="#E5E5E0" stroke-width="1"/>
+  <text x="565" y="205" text-anchor="middle" font-size="10" font-weight="600" fill="#1A1A1A">关键决策</text>
+  <text x="565" y="225" text-anchor="middle" font-size="9" fill="#4A4A4A">选 Stripe 不选</text>
+  <text x="565" y="242" text-anchor="middle" font-size="9" fill="#4A4A4A">Adyen（成本）</text>
+  <text x="565" y="259" text-anchor="middle" font-size="9" fill="#4A4A4A">PostgreSQL 主库</text>
+
+  <!-- Slack icon -->
+  <text x="520" y="310" text-anchor="middle" font-size="9" fill="#4A4A4A">可推送至 Slack 私信 / 频道 | 可部署为公开站点远程查看</text>
+</svg>
+<div class="diagram-caption">图 6：三段简报 + 仪表盘结构——每小时一次 AI 版站会，状态外置可查</div>
+</div>
+
+<div class="highlight">
+<p><strong>核心价值</strong>：无需回溯大量 worker 线程历史。你随时回到项目，扫一眼 Dashboard 即可在 10 秒内重建全局上下文——大幅降低长周期项目的上下文重建成本。</p>
+</div>
+</div>
+
+<!-- Section 6: 三个锚点 -->
+<div class="section">
+<h2><span class="section-num gray">锚</span>三个关键锚点</h2>
+<p>五个习惯的底层逻辑收束为三个锚点。理解这三个锚点，就能把整套方法迁移到任何 AI 编码工具上。</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="240" fill="#FAFAFA" rx="8"/>
+
+  <!-- Anchor 1 -->
+  <rect x="30" y="30" width="200" height="180" fill="#E8EDFA" rx="8" opacity="0.4"/>
+  <circle cx="130" cy="70" r="22" fill="#002FA7" opacity="0.15"/>
+  <text x="130" y="75" text-anchor="middle" font-size="16">🎯</text>
+  <text x="130" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="#002FA7">目标锚定</text>
+  <line x1="50" y1="120" x2="210" y2="120" stroke="#002FA7" stroke-width="0.5" opacity="0.5"/>
+  <text x="130" y="140" text-anchor="middle" font-size="9" fill="#4A4A4A">持久 Goal + GOALS.md</text>
+  <text x="130" y="156" text-anchor="middle" font-size="9" fill="#4A4A4A">为 AI 提供不随对话</text>
+  <text x="130" y="172" text-anchor="middle" font-size="9" fill="#4A4A4A">漂移的稳定参照</text>
+  <text x="130" y="196" text-anchor="middle" font-size="9" fill="#8A8A8A">对应习惯一</text>
+
+  <!-- Anchor 2 -->
+  <rect x="250" y="30" width="200" height="180" fill="#F8FCE8" rx="8" opacity="0.5"/>
+  <circle cx="350" cy="70" r="22" fill="#C5E803" opacity="0.3"/>
+  <text x="350" y="75" text-anchor="middle" font-size="16">✅</text>
+  <text x="350" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="#6B8C00">证据验收</text>
+  <line x1="270" y1="120" x2="430" y2="120" stroke="#C5E803" stroke-width="0.5" opacity="0.5"/>
+  <text x="350" y="140" text-anchor="middle" font-size="9" fill="#4A4A4A">完成定义 + 里程碑审计</text>
+  <text x="350" y="156" text-anchor="middle" font-size="9" fill="#4A4A4A">+ 代码 review</text>
+  <text x="350" y="172" text-anchor="middle" font-size="9" fill="#4A4A4A">多层质量关卡</text>
+  <text x="350" y="196" text-anchor="middle" font-size="9" fill="#8A8A8A">对应习惯三</text>
+
+  <!-- Anchor 3 -->
+  <rect x="470" y="30" width="200" height="180" fill="#FFF3EE" rx="8" opacity="0.4"/>
+  <circle cx="570" cy="70" r="22" fill="#FF6B35" opacity="0.15"/>
+  <text x="570" y="75" text-anchor="middle" font-size="16">📊</text>
+  <text x="570" y="110" text-anchor="middle" font-size="11" font-weight="700" fill="#FF6B35">状态外置</text>
+  <line x1="490" y1="120" x2="650" y2="120" stroke="#FF6B35" stroke-width="0.5" opacity="0.5"/>
+  <text x="570" y="140" text-anchor="middle" font-size="9" fill="#4A4A4A">简报 + 仪表盘</text>
+  <text x="570" y="156" text-anchor="middle" font-size="9" fill="#4A4A4A">项目状态从线程上下文中</text>
+  <text x="570" y="172" text-anchor="middle" font-size="9" fill="#4A4A4A">剥离，实现全局可查</text>
+  <text x="570" y="196" text-anchor="middle" font-size="9" fill="#8A8A8A">对应习惯二、四、五</text>
+</svg>
+<div class="diagram-caption">图 7：三锚点结构——目标锚定、证据验收、状态外置构成整套方法的骨架</div>
+</div>
+</div>
+
+<!-- Section 7: Full Workflow -->
+<div class="section">
+<h2><span class="section-num gray">流</span>完整工作流闭环</h2>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="380" fill="#FAFAFA" rx="8"/>
+
+  <!-- Cycle arrows (circular) -->
+  <ellipse cx="350" cy="180" rx="180" ry="140" fill="none" stroke="#002FA7" stroke-width="2" stroke-dasharray="8 4" opacity="0.3"/>
+
+  <!-- Step 1 -->
+  <rect x="270" y="30" width="160" height="50" fill="#E8EDFA" rx="6" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="350" y="52" text-anchor="middle" font-size="11" font-weight="700" fill="#002FA7">初始对话</text>
+  <text x="350" y="68" text-anchor="middle" font-size="9" fill="#4A4A4A">口述需求 → 生成路线图</text>
+
+  <!-- Step 2 -->
+  <rect x="490" y="110" width="160" height="50" fill="#F8FCE8" rx="6" stroke="#C5E803" stroke-width="1.5"/>
+  <text x="570" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#6B8C00">激活里程碑</text>
+  <text x="570" y="148" text-anchor="middle" font-size="9" fill="#4A4A4A">GOALS.md → 当前 Goal</text>
+
+  <!-- Step 3 -->
+  <rect x="490" y="210" width="160" height="50" fill="#FFF3EE" rx="6" stroke="#FF6B35" stroke-width="1.5"/>
+  <text x="570" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="#FF6B35">委派执行</text>
+  <text x="570" y="248" text-anchor="middle" font-size="9" fill="#4A4A4A">Subagent / Thread 并行</text>
+
+  <!-- Step 4 -->
+  <rect x="270" y="290" width="160" height="50" fill="#fff" rx="6" stroke="#8A8A8A" stroke-width="1.5"/>
+  <text x="350" y="312" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">验收</text>
+  <text x="350" y="328" text-anchor="middle" font-size="9" fill="#4A4A4A">证据审计 + 代码 review</text>
+
+  <!-- Step 5 -->
+  <rect x="70" y="210" width="160" height="50" fill="#FDE8E8" rx="6" stroke="#E60012" stroke-width="1.5"/>
+  <text x="150" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="#E60012">同步状态</text>
+  <text x="150" y="248" text-anchor="middle" font-size="9" fill="#4A4A4A">简报 + 更新仪表盘</text>
+
+  <!-- Step 6 (back to start) -->
+  <rect x="70" y="110" width="160" height="50" fill="#E8EDFA" rx="6" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="150" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#002FA7">推进下一环</text>
+  <text x="150" y="148" text-anchor="middle" font-size="9" fill="#4A4A4A">回到激活 / 或调整路线</text>
+
+  <!-- Curved arrows -->
+  <path d="M430 55 L488 125" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar3)" fill="none"/>
+  <defs><marker id="ar3" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#4A4A4A"/></marker></defs>
+
+  <path d="M570 160 L570 208" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar3)" fill="none"/>
+  <path d="M430 315 L232 315" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar3)" fill="none"/>
+  <path x1="150 y1="260 x2="150 y2="262" d="M150 260 L150 262" stroke="#4A4A4A" stroke-width="1.5" fill="none"/>
+  <!-- curved from sync back -->
+  <path d="M150 210 Q150 160 150 160" stroke="#4A4A4A" stroke-width="1.5" marker-end="url(#ar3)" fill="none"/>
+
+  <!-- Center label -->
+  <rect x="290" y="155" width="120" height="50" fill="#fff" rx="5" stroke="#002FA7" stroke-width="1"/>
+  <text x="350" y="178" text-anchor="middle" font-size="10" font-weight="700" fill="#002FA7">闭环驱动</text>
+  <text x="350" y="194" text-anchor="middle" font-size="9" fill="#4A4A4A">每轮循环逼近目标</text>
+</svg>
+<div class="diagram-caption">图 8：完整闭环——初始对话→激活→委派→验收→同步→推进，形成可循环可修正的执行引擎</div>
+</div>
+</div>
+
+<!-- Section 8: 适用场景 -->
+<div class="section">
+<h2><span class="section-num gray">适</span>适用场景判断</h2>
+<p>这套协作架构<span style="color:#E60012;font-weight:600">不是万能的</span>，仅当项目满足以下特征时投入产出比最高：</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="240" fill="#FAFAFA" rx="8"/>
+
+  <!-- Decision flow -->
+  <rect x="230" y="20" width="240" height="45" fill="#fff" rx="6" stroke="#002FA7" stroke-width="1.5"/>
+  <text x="350" y="42" text-anchor="middle" font-size="11" font-weight="700" fill="#002FA7">你的项目是否满足以下全部条件？</text>
+  <text x="350" y="57" text-anchor="middle" font-size="9" fill="#4A4A4A">（三条件 AND 关系）</text>
+
+  <!-- Three criteria -->
+  <rect x="50" y="100" width="180" height="80" fill="#E8EDFA" rx="6" stroke="#002FA7" stroke-width="1"/>
+  <text x="140" y="122" text-anchor="middle" font-size="10" font-weight="700" fill="#002FA7">① 持续涌现新信息</text>
+  <text x="140" y="142" text-anchor="middle" font-size="9" fill="#4A4A4A">推进中会不断发现</text>
+  <text x="140" y="158" text-anchor="middle" font-size="9" fill="#4A4A4A">新的事实、约束、机会</text>
+
+  <rect x="260" y="100" width="180" height="80" fill="#F8FCE8" rx="6" stroke="#C5E803" stroke-width="1"/>
+  <text x="350" y="122" text-anchor="middle" font-size="10" font-weight="700" fill="#6B8C00">② 多块独立并行工作</text>
+  <text x="350" y="142" text-anchor="middle" font-size="9" fill="#4A4A4A">任务可拆分给多个</text>
+  <text x="350" y="158" text-anchor="middle" font-size="9" fill="#4A4A4A">subagent 同步推进</text>
+
+  <rect x="470" y="100" width="180" height="80" fill="#FFF3EE" rx="6" stroke="#FF6B35" stroke-width="1"/>
+  <text x="560" y="122" text-anchor="middle" font-size="10" font-weight="700" fill="#FF6B35">③ 多环境验证证据</text>
+  <text x="560" y="142" text-anchor="middle" font-size="9" fill="#4A4A4A">需要从本地、远程、</text>
+  <text x="560" y="158" text-anchor="middle" font-size="9" fill="#4A4A4A">浏览器等多处取证</text>
+
+  <!-- Result boxes -->
+  <rect x="80" y="200" width="250" height="30" fill="#E8EDFA" rx="4"/>
+  <text x="205" y="220" text-anchor="middle" font-size="10" font-weight="600" fill="#002FA7">✅ 全部满足 → 投入产出比最高，用这套方法</text>
+
+  <rect x="380" y="200" width="260" height="30" fill="#FFF3EE" rx="4"/>
+  <text x="510" y="220" text-anchor="middle" font-size="10" font-weight="600" fill="#FF6B35">⚠️ 只满足 1-2 项 → ROI 一般，可简化使用</text>
+</svg>
+<div class="diagram-caption">图 9：适用场景决策——三条件 AND 关系，全部满足时投入产出比最高</div>
+</div>
+</div>
+
+<!-- Section 9: Role transformation -->
+<div class="section">
+<h2><span class="section-num gray">变</span>核心洞察：开发者的角色转型</h2>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+  <rect width="700" height="260" fill="#FAFAFA" rx="8"/>
+
+  <!-- Before -->
+  <rect x="30" y="30" width="280" height="200" fill="#FDE8E8" rx="8" opacity="0.3"/>
+  <text x="170" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#E60012">转型前：执行者</text>
+
+  <text x="170" y="85" text-anchor="middle" font-size="10" fill="#4A4A4A">核心职责：亲自写代码</text>
+  <line x1="60" y1="95" x2="280" y2="95" stroke="#E60012" stroke-width="0.5" opacity="0.5"/>
+
+  <text x="170" y="118" text-anchor="middle" font-size="9" fill="#4A4A4A">🎯 自己定目标</text>
+  <text x="170" y="135" text-anchor="middle" font-size="9" fill="#E60012">✍️ 自己写代码 ← 瓶颈</text>
+  <text x="170" y="152" text-anchor="middle" font-size="9" fill="#E60012">🔍 自己调试</text>
+  <text x="170" y="169" text-anchor="middle" font-size="9" fill="#E60012">📋 自己 review</text>
+  <text x="170" y="186" text-anchor="middle" font-size="9" fill="#E60012">🔄 自己回归测试</text>
+
+  <text x="170" y="212" text-anchor="middle" font-size="9" font-weight="600" fill="#E60012">↓ 个人产出上限即项目上限</text>
+
+  <!-- Arrow -->
+  <path d="M320 130 L360 130" stroke="#4A4A4A" stroke-width="2" marker-end="url(#ar4)"/>
+  <defs><marker id="ar4" markerWidth="9" markerHeight="6" refX="9" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6" fill="#4A4A4A"/></marker></defs>
+  <text x="340" y="120" text-anchor="middle" font-size="11" font-weight="600" fill="#1A1A1A">AI 时代</text>
+
+  <!-- After -->
+  <rect x="390" y="30" width="280" height="200" fill="#E8EDFA" rx="8" opacity="0.4"/>
+  <text x="530" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#002FA7">转型后：Tech Lead</text>
+
+  <text x="530" y="85" text-anchor="middle" font-size="10" fill="#4A4A4A">核心职责：带领 AI 团队</text>
+  <line x1="420" y1="95" x2="640" y2="95" stroke="#002FA7" stroke-width="0.5" opacity="0.5"/>
+
+  <text x="530" y="118" text-anchor="middle" font-size="9" fill="#002FA7">🎯 定目标</text>
+  <text x="530" y="135" text-anchor="middle" font-size="9" fill="#002FA7">🔨 拆里程碑 + 派任务</text>
+  <text x="530" y="152" text-anchor="middle" font-size="9" fill="#002FA7">✅ 验收结果 + 审计路线</text>
+  <text x="530" y="169" text-anchor="middle" font-size="9" fill="#002FA7">📊 监控全局状态</text>
+  <text x="530" y="186" text-anchor="middle" font-size="9" fill="#002FA7">🤖 AI 负责实现细节</text>
+
+  <text x="530" y="212" text-anchor="middle" font-size="9" font-weight="600" fill="#002FA7">↓ 项目上限 = 你的管理能力</text>
+</svg>
+<div class="diagram-caption">图 10：角色本质变化——从"写代码的人"变成"带 AI 团队的人"</div>
+</div>
+
+<div class="highlight red">
+<p><strong>边界与注意事项</strong>：</p>
+<ul>
+<li><span class="tag tag-red">非官方</span>Gabriel Chua 个人实践，非 OpenAI 官方定论</li>
+<li><span class="tag tag-orange">工具差异</span>Codex 专属能力（<code>/goal</code>、<code>/side</code>、本地/远程线程）在其他工具需找替代，但核心框架完全通用</li>
+<li><span class="tag tag-blue">自定义约定</span><code>GOALS.md</code>、<code>progress-dashboard.html</code> 都是项目自建的，非工具内置，需要你和 AI 共同维护</li>
+</ul>
+</div>
+</div>
+
+<!-- Two landing methods -->
+<div class="section">
+<h2><span class="section-num gray">落</span>两种开箱即用的落地方法</h2>
+
+<div class="flow">
+<div class="flow-step">
+<span class="flow-icon">📋</span>
+<div class="flow-label">方法一：直接粘贴</div>
+<div class="flow-desc">把协作规则<br>粘贴进新会话</div>
+</div>
+<div class="flow-step">
+<span class="flow-icon">🖼️</span>
+<div class="flow-label">方法二：截图生成 Skill</div>
+<div class="flow-desc">把文章截图<br>上传给 AI</div>
+</div>
+<div class="flow-step">
+<span class="flow-icon">🚀</span>
+<div class="flow-label">一句话调用</div>
+<div class="flow-desc">生成名为<br>orchestrate-projects<br>的可复用 skill</div>
+</div>
+</div>
+
+<div class="highlight">
+<p><strong>核心结论</strong>：AI 模型负责产出智能能力；人类开发者的核心价值是引导这份智能始终锚定统一目标，沿着验证过的证据稳步推进。</p>
+</div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+<p>🔗 <strong>参考链接</strong></p>
+<p style="margin-top:8px;">
+<a href="https://x.com/gabrielchua/status/2074505300766568563">Gabriel Chua 原文推文</a> &nbsp;|&nbsp;
+<a href="https://x.com/gabrielchua">作者主页</a> &nbsp;|&nbsp;
+<a href="https://github.com/openai/codex">Codex 开源仓库</a>
+</p>
+<p style="margin-top:16px;">拆解 by Mino · 2026-07-10 · 信息无遗漏 · 可转发可复用</p>
+</div>
+
+</div>
+</body>
+</html>

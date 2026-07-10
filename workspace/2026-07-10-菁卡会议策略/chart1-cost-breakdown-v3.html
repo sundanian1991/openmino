@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6月人均成本结构拆解 · 修正版</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: #FFFFFF;
+    font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #2C3E50;
+  }
+  .container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 34px 32px 22px;
+  }
+  h1 {
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.45;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+  }
+  h1 .hl-blue { color: #2980B9; font-weight: 800; }
+  h1 .hl-red  { color: #C0392B; font-weight: 800; }
+  .subtitle {
+    font-size: 13px;
+    color: #95A5A6;
+    margin-bottom: 26px;
+  }
+  #chart {
+    width: 100%;
+    height: 300px;
+  }
+  .calc-box {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #FDF2E9;
+    border-left: 4px solid #E67E22;
+    font-size: 14px;
+    color: #2C3E50;
+    line-height: 1.7;
+  }
+  .calc-box .formula {
+    font-weight: 700;
+    color: #C0392B;
+    font-size: 15px;
+  }
+  .calc-box .note {
+    font-size: 12px;
+    color: #7F8C8D;
+    margin-top: 2px;
+  }
+  .footer {
+    font-size: 11px;
+    color: #BDC3C7;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #ECF0F1;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>坐席到手<span class="hl-blue">3,500元</span>，低于行业健康线<span class="hl-red">22%</span>——BPO公司在倒贴运营</h1>
+  <p class="subtitle">6月真实成本结构 · 人均月度总结算13,222元 · 只高亮坐席到手，揭示调价（而非压话费）的必要性</p>
+  <div id="chart"></div>
+  <div class="calc-box">
+    <span class="formula">BPO净收益：1,224元收入 − 1,630元运营成本 = −406元/人/月</span><br>
+    <span class="note">口径：BPO分润收入 ≈ 总结算13,222 × 分润率9.26% ≈ 1,224元；运营成本 = 社保400 + 质检培训600 + 税点360 + 场地物业水电270</span>
+  </div>
+  <div class="footer">数据来源：菁卡拉新职场成本测算V2.xlsx（2026年6月，已验证） · 口径：人机组月度真实结算单 · 单位：元/人/月</div>
+</div>
+
+<script>
+(function () {
+  var chart = echarts.init(document.getElementById('chart'));
+
+  // 五段堆叠：只有坐席到手高亮蓝色，其余全灰
+  var segments = [
+    { name: '话费成本',     value: 5858, pct: '44.3%', color: '#BDC3C7', note: '刚性外呼成本，随名单量波动' },
+    { name: '坐席到手',     value: 3500, pct: '26.5%', color: '#2980B9', emph: true,  note: '低于健康线4,500元' },
+    { name: 'BPO运营成本',  value: 1630, pct: '12.3%', color: '#D5D8DC', note: '社保400+质检培训600+税点360+场地物业水电270' },
+    { name: '软电话+质检',  value: 615,  pct: '4.6%',  color: '#D5D8DC', note: '软电话396 + 质检系统219' },
+    { name: 'AI分摊',       value: 1620, pct: '12.2%', color: '#D5D8DC', note: 'AI服务器/能力分摊' }
+  ];
+
+  var total = 13222;
+  var categoryLabel = '人均月度总结算 ¥13,222';
+
+  var series = segments.map(function (seg, idx) {
+    var dataArr = new Array(segments.length).fill(0);
+    dataArr[idx] = seg.value;
+    return {
+      name: seg.name,
+      type: 'bar',
+      stack: 'cost',
+      data: dataArr,
+      itemStyle: { color: seg.color },
+      barWidth: 88,
+      emphasis: { focus: 'self' },
+      label: {
+        show: true,
+        position: 'inside',
+        formatter: function () {
+          if (idx === 0) {
+            // 话费段：标注占比 + 刚性
+            return '{pct|44.3%}\n{name|话费·刚性}';
+          }
+          if (seg.emph) {
+            // 坐席到手：大号金额
+            return '{big|3,500元}\n{nameW|坐席到手}';
+          }
+          if (seg.value <= 700) {
+            // 小段简标
+            return '{mini|¥' + seg.value + '}';
+          }
+          return '{nameG|' + seg.name + '}\n{amtG|¥' + seg.value.toLocaleString() + '}';
+        },
+        rich: {
+          pct:    { fontSize: 18, fontWeight: 700, color: '#566573', lineHeight: 22 },
+          name:   { fontSize: 12, fontWeight: 500, color: '#7F8C8D', lineHeight: 16 },
+          big:    { fontSize: 24, fontWeight: 800, color: '#FFFFFF', lineHeight: 30 },
+          nameW:  { fontSize: 12, fontWeight: 500, color: '#D6EAF8', lineHeight: 16 },
+          nameG:  { fontSize: 12, fontWeight: 500, color: '#7F8C8D', lineHeight: 16 },
+          amtG:   { fontSize: 13, fontWeight: 600, color: '#7F8C8D', lineHeight: 18 },
+          mini:   { fontSize: 11, fontWeight: 500, color: '#95A5A6', lineHeight: 14 }
+        }
+      }
+    };
+  });
+
+  // 坐席到手段中心 x = 5858 + 1750 = 7608
+  // 用 markPoint 在段上方标注健康线缺口
+  series[1].markPoint = {
+    symbol: 'circle',
+    symbolSize: 1,
+    itemStyle: { color: 'transparent', borderColor: 'transparent' },
+    data: [{
+      coord: [7608, categoryLabel],
+      label: {
+        show: true,
+        formatter: '健康线 4,500元\n↓ 缺口1,000元 / 低22%',
+        position: 'top',
+        distance: 8,
+        color: '#2980B9',
+        fontSize: 13,
+        fontWeight: 700,
+        backgroundColor: '#EBF5FB',
+        borderColor: '#2980B9',
+        borderWidth: 1.5,
+        padding: [8, 12],
+        borderRadius: 5,
+        lineHeight: 19
+      }
+    }]
+  };
+
+  var option = {
+    backgroundColor: '#FFFFFF',
+    grid: { left: 150, right: 70, top: 90, bottom: 30 },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: '#FFFFFF',
+      borderColor: '#ECF0F1',
+      borderWidth: 1,
+      textStyle: { color: '#2C3E50', fontSize: 12 },
+      formatter: function (p) {
+        var seg = segments[p.seriesIndex];
+        return '<b>' + seg.name + '</b><br/>¥' + seg.value.toLocaleString() + '（' + seg.pct + '）' +
+               (seg.note ? '<br/><span style="color:#95A5A6;font-size:11px">' + seg.note + '</span>' : '');
+      }
+    },
+    xAxis: {
+      type: 'value',
+      max: total,
+      show: false,
+      splitLine: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'category',
+      data: [categoryLabel],
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: '#7F8C8D', fontSize: 13, fontWeight: 600 }
+    },
+    series: series
+  };
+
+  chart.setOption(option);
+  window.addEventListener('resize', function () { chart.resize(); });
+})();
+</script>
+</body>
+</html>

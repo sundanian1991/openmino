@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>38%激活缺口三方共担拆解</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: #FFFFFF;
+    font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #2C3E50;
+  }
+  .container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 34px 32px 22px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.45;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+  }
+  h1 .hl-orange { color: #E67E22; font-weight: 800; }
+  .subtitle {
+    font-size: 13px;
+    color: #95A5A6;
+    margin-bottom: 28px;
+  }
+  .subtitle .tag {
+    display: inline-block;
+    padding: 1px 8px;
+    background: #ECF0F1;
+    color: #7F8C8D;
+    border-radius: 3px;
+    font-size: 11px;
+    margin-left: 6px;
+    font-weight: 600;
+  }
+  #chart {
+    width: 100%;
+    height: 220px;
+  }
+  .calc-box {
+    margin-top: 18px;
+    padding: 14px 18px;
+    background: #FDF2E9;
+    border-left: 4px solid #E67E22;
+    font-size: 13px;
+    color: #2C3E50;
+    line-height: 1.85;
+    font-family: "SF Mono", "Menlo", "Consolas", system-ui, monospace;
+  }
+  .calc-box .line1 {
+    font-weight: 700;
+    color: #1A1A1A;
+    font-size: 14px;
+  }
+  .calc-box .line2 { color: #2C3E50; }
+  .calc-box .src {
+    font-size: 11px;
+    color: #7F8C8D;
+    margin-top: 6px;
+    font-family: system-ui, sans-serif;
+  }
+  .footer {
+    font-size: 11px;
+    color: #BDC3C7;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #ECF0F1;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>38%激活缺口三方共担：运营扛10%，策略扛10%，定价<span class="hl-orange">18%不可替代</span></h1>
+  <p class="subtitle">数学拆解——非谈判筹码<span class="tag">最关键结论</span></p>
+  <div id="chart"></div>
+  <div class="calc-box">
+    <div class="line1">38% = (底线值总结算18,234 ÷ 6月总结算13,222) − 1 = 37.91%</div>
+    <div class="line2">拆解：运营10% + 策略10% + 定价18% = 38%</div>
+    <div class="src">数据来源：汇总sheet R31(37.91%) / S31(运营10%) / U31(策略10%) / W31(调价18%) · 定价口径：单激活结算 197元 → 232元（+35元，+17.77%）</div>
+  </div>
+  <div class="footer">数据来源：菁卡拉新职场成本测算V2.xlsx · 汇总sheet · 三方共担为数学闭合拆解，非主观分配</div>
+</div>
+
+<script>
+(function () {
+  var chart = echarts.init(document.getElementById('chart'));
+
+  // 三段：运营10 + 策略10 + 定价18 = 38
+  var segments = [
+    {
+      name: '运营提效', value: 10, color: '#BDC3C7',
+      detail: '言犀转零犀 +5%\n批次合并 +3%\n人机阈值 +2%',
+      note: '10%'
+    },
+    {
+      name: '策略提效', value: 10, color: '#BDC3C7',
+      detail: '算法优化建模\n名单筛选逻辑',
+      note: '10%'
+    },
+    {
+      name: '产品调价', value: 18, color: '#E67E22', emph: true,
+      detail: '单激活结算\n197 → 232元',
+      note: '18%'
+    }
+  ];
+
+  var categoryLabel = '激活缺口 38%';
+
+  var series = segments.map(function (seg, idx) {
+    var dataArr = new Array(segments.length).fill(0);
+    dataArr[idx] = seg.value;
+    var isEmph = !!seg.emph;
+    return {
+      name: seg.name,
+      type: 'bar',
+      stack: 'uplift',
+      data: dataArr,
+      itemStyle: { color: seg.color },
+      barWidth: 100,
+      emphasis: { focus: 'self' },
+      label: {
+        show: true,
+        position: 'inside',
+        formatter: function () {
+          if (isEmph) {
+            return '{big|18%}\n{name|不可替代}\n{det|197→232元}';
+          }
+          return '{mid|' + seg.note + '}\n{nameG|' + seg.name + '}';
+        },
+        rich: {
+          big:   { fontSize: 30, fontWeight: 800, color: '#FFFFFF', lineHeight: 36 },
+          name:  { fontSize: 14, fontWeight: 600, color: '#FFFFFF', lineHeight: 20 },
+          det:   { fontSize: 13, fontWeight: 600, color: '#FDEBD0', lineHeight: 18 },
+          mid:   { fontSize: 20, fontWeight: 700, color: '#566573', lineHeight: 26 },
+          nameG: { fontSize: 12, fontWeight: 500, color: '#7F8C8D', lineHeight: 16 }
+        }
+      }
+    };
+  });
+
+  // 灰色段在段内加措施标注（小号），通过 markPoint 实现
+  // 运营段中心 = 5；策略段中心 = 15
+  series[0].markPoint = {
+    symbol: 'circle', symbolSize: 1,
+    itemStyle: { color: 'transparent', borderColor: 'transparent' },
+    data: [{
+      coord: [5, categoryLabel],
+      label: {
+        show: true,
+        formatter: '言犀转零犀+5%\n批次合并+3%\n人机阈值+2%',
+        position: 'bottom',
+        distance: 6,
+        color: '#7F8C8D',
+        fontSize: 11,
+        fontWeight: 500,
+        lineHeight: 16,
+        align: 'center'
+      }
+    }]
+  };
+
+  series[1].markPoint = {
+    symbol: 'circle', symbolSize: 1,
+    itemStyle: { color: 'transparent', borderColor: 'transparent' },
+    data: [{
+      coord: [15, categoryLabel],
+      label: {
+        show: true,
+        formatter: '算法优化建模\n名单筛选逻辑',
+        position: 'bottom',
+        distance: 6,
+        color: '#7F8C8D',
+        fontSize: 11,
+        fontWeight: 500,
+        lineHeight: 16,
+        align: 'center'
+      }
+    }]
+  };
+
+  // 定价段中心 = 10+10+9 = 29，在上方加大号标注
+  series[2].markPoint = {
+    symbol: 'circle', symbolSize: 1,
+    itemStyle: { color: 'transparent', borderColor: 'transparent' },
+    data: [{
+      coord: [29, categoryLabel],
+      label: {
+        show: true,
+        formatter: '18% 不可替代',
+        position: 'top',
+        distance: 8,
+        color: '#E67E22',
+        fontSize: 16,
+        fontWeight: 800,
+        backgroundColor: '#FDF2E9',
+        borderColor: '#E67E22',
+        borderWidth: 1.5,
+        padding: [6, 12],
+        borderRadius: 5
+      }
+    }]
+  };
+
+  var option = {
+    backgroundColor: '#FFFFFF',
+    grid: { left: 130, right: 60, top: 70, bottom: 80 },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: '#FFFFFF',
+      borderColor: '#ECF0F1',
+      borderWidth: 1,
+      textStyle: { color: '#2C3E50', fontSize: 12 },
+      formatter: function (p) {
+        var seg = segments[p.seriesIndex];
+        return '<b>' + seg.name + '</b>：' + seg.note +
+               '<br/><span style="color:#95A5A6;font-size:11px">' + seg.detail.replace(/\n/g, ' / ') + '</span>';
+      }
+    },
+    xAxis: {
+      type: 'value',
+      max: 38,
+      show: false,
+      splitLine: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'category',
+      data: [categoryLabel],
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { color: '#7F8C8D', fontSize: 13, fontWeight: 600 }
+    },
+    series: series
+  };
+
+  // 在条形右端用 graphic 标注 "= 38% 总激活提升需求"
+  option.graphic = [
+    {
+      type: 'text',
+      right: 70,
+      bottom: 78,
+      z: 100,
+      style: {
+        text: '← 38% 总激活提升需求',
+        font: '700 14px system-ui',
+        fill: '#1A1A1A'
+      }
+    }
+  ];
+
+  chart.setOption(option);
+  window.addEventListener('resize', function () { chart.resize(); });
+})();
+</script>
+</body>
+</html>

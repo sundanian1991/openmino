@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>菁卡业务：从亏损到健康运转的路径</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    color: #ffffff;
+    font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  #chart { width: 100%; height: 600px; }
+  .insight {
+    margin-top: 18px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid #E67E22;
+    border-radius: 4px;
+    color: #d0d0e0;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .insight strong { color: #E67E22; }
+  .footer-note {
+    text-align: center;
+    color: #666677;
+    font-size: 12px;
+    margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="chart"></div>
+  <div class="insight">
+    <strong>数据解读：</strong>从6月真实的人均总结算13,222元到健康底线18,234元，存在5,012元的缺口（需提升38%）。其中运营和策略提效仅能各贡献约1,322元，合计仅补齐一半缺口；剩余2,380元（占缺口的47%）必须通过产品端调价18%才能补齐——这是绕不开的核心动作。
+  </div>
+  <div class="footer-note">数据来源：菁卡拉新职场成本测算V2.xlsx（2026年6月）</div>
+</div>
+<script>
+  var chart = echarts.init(document.getElementById('chart'));
+
+  var categories = [
+    '6月真实\n总结算',
+    '运营提效\n+10%',
+    '策略提效\n+10%',
+    '产品调价\n+18%',
+    '底线健康值\n总结算'
+  ];
+
+  // Placeholder (transparent) - the base each visible bar sits on
+  var placeholder = [0, 13222, 14544, 15866, 0];
+
+  // Cumulative totals at each step
+  var cumulative = [13222, 14544, 15866, 18246, 18234];
+
+  // Visible bar values with individual colors
+  var visibleData = [
+    { value: 13222, itemStyle: { color: '#E74C3C', borderRadius: [4,4,0,0] } },
+    { value: 1322,  itemStyle: { color: '#3498DB', borderRadius: [4,4,0,0] } },
+    { value: 1322,  itemStyle: { color: '#2ECC71', borderRadius: [4,4,0,0] } },
+    { value: 2380,  itemStyle: { color: '#E67E22', borderRadius: [4,4,0,0] } },
+    { value: 18234, itemStyle: { color: '#27AE60', borderRadius: [4,4,0,0] } }
+  ];
+
+  var stepLabels = [
+    '6月真实总结算',
+    '运营提效 +10%',
+    '策略提效 +10%',
+    '产品调价 +18%（关键）',
+    '底线健康值总结算'
+  ];
+
+  var option = {
+    backgroundColor: 'transparent',
+    title: {
+      text: '菁卡业务：从亏损到健康运转的路径',
+      subtext: '人均总结算拆解 — 需提升38%才能达到健康底线',
+      left: 'center',
+      top: 8,
+      textStyle: { color: '#ffffff', fontSize: 21, fontWeight: 'bold' },
+      subtextStyle: { color: '#9090a8', fontSize: 14 }
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      backgroundColor: 'rgba(26,26,46,0.95)',
+      borderColor: '#444466',
+      textStyle: { color: '#ffffff' },
+      formatter: function(params) {
+        var idx = params[0].dataIndex;
+        var html = '<b>' + stepLabels[idx] + '</b><br/>';
+        html += '累计结算：<b style="color:#ffd54a">' + cumulative[idx].toLocaleString() + ' 元/人</b><br/>';
+        if (idx > 0 && idx < 4) {
+          html += '本步增量：<b style="color:#2ECC71">+' + visibleData[idx].value.toLocaleString() + ' 元</b>';
+        } else if (idx === 0) {
+          html += '坐席到手：<b>3,500 元</b>';
+        } else if (idx === 4) {
+          html += '坐席到手：<b>4,500 元</b>';
+        }
+        return html;
+      }
+    },
+    grid: { left: '7%', right: '6%', bottom: '13%', top: '20%', containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: categories,
+      axisLine: { lineStyle: { color: '#3a3a52' } },
+      axisTick: { show: false },
+      axisLabel: {
+        color: '#c0c0d4',
+        fontSize: 13,
+        interval: 0,
+        lineHeight: 18,
+        rich: {}
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '人均总结算（元）',
+      nameTextStyle: { color: '#9090a8', fontSize: 12 },
+      axisLine: { show: false },
+      axisLabel: { color: '#c0c0d4', fontSize: 11 },
+      splitLine: { lineStyle: { color: '#2a2a3e' } }
+    },
+    series: [
+      {
+        name: 'placeholder',
+        type: 'bar',
+        stack: 'waterfall',
+        itemStyle: { color: 'transparent' },
+        emphasis: { itemStyle: { color: 'transparent' } },
+        data: placeholder,
+        tooltip: { show: false }
+      },
+      {
+        name: '金额',
+        type: 'bar',
+        stack: 'waterfall',
+        data: visibleData,
+        barWidth: '46%',
+        label: {
+          show: true,
+          position: 'top',
+          distance: 6,
+          formatter: function(params) {
+            var idx = params.dataIndex;
+            var inc = visibleData[idx].value;
+            var cum = cumulative[idx];
+            if (idx === 0 || idx === 4) {
+              return '{big|' + cum.toLocaleString() + ' 元}';
+            }
+            return '{big|+' + inc.toLocaleString() + ' 元}\n{sml|累计 ' + cum.toLocaleString() + '}';
+          },
+          rich: {
+            big: { color: '#ffffff', fontSize: 15, fontWeight: 'bold', lineHeight: 24 },
+            sml: { color: '#80809a', fontSize: 11, lineHeight: 14 }
+          }
+        },
+        markLine: {
+          silent: true,
+          symbol: ['none','none'],
+          lineStyle: { color: '#555566', type: 'dotted', width: 1 },
+          label: { show: false },
+          data: [
+            [{ coord: [0, 13222] }, { coord: [1, 14544] }],
+            [{ coord: [1, 14544] }, { coord: [2, 15866] }],
+            [{ coord: [2, 15866] }, { coord: [3, 18246] }],
+            [{ coord: [3, 18246] }, { coord: [4, 18234] }]
+          ]
+        }
+      }
+    ]
+  };
+
+  chart.setOption(option);
+  window.addEventListener('resize', function() { chart.resize(); });
+</script>
+</body>
+</html>

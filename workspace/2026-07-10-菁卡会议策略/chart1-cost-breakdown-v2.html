@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6月人均成本结构拆解</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #FFFFFF;
+    font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #2C3E50;
+  }
+  .container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 28px 20px;
+    box-sizing: border-box;
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin: 0 0 6px 0;
+    color: #1A1A1A;
+  }
+  .title .hl-red { color: #C0392B; }
+  .title .hl-blue { color: #2874A6; }
+  .subtitle {
+    font-size: 14px;
+    color: #7F8C8D;
+    margin: 0 0 22px 0;
+    font-weight: 400;
+  }
+  #chart {
+    width: 100%;
+    height: 380px;
+  }
+  .footer {
+    font-size: 11px;
+    color: #BDC3C7;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid #ECF0F1;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">
+    每产出 13,222 元结算，话费吃掉 <span class="hl-red">44.3%</span>，坐席到手仅 <span class="hl-blue">3,500 元</span>
+  </div>
+  <div class="subtitle">6月真实成本结构 · 人机组总结算 13,222 元 / 月 · BPO 公司零利润运转</div>
+  <div id="chart"></div>
+  <div class="footer">数据来源：6月人机组真实结算单 · 单位：元 / 人 / 月 · 软电话396 + 质检系统219 归入"软电话+质检系统"块，质检人力成本归入"BPO运营+固定成本"</div>
+</div>
+
+<script>
+(function () {
+  var chart = echarts.init(document.getElementById('chart'));
+
+  // 构成项（从左到右）
+  // 注意：BPO利润为 0，仅以注释呈现，不占条形宽度
+  var segments = [
+    { name: '话费成本',       value: 5858,  pct: '44.3%', color: '#C0392B', emph: true,  note: '最大成本块' },
+    { name: '坐席薪酬',       value: 3500,  pct: '26.5%', color: '#3498DB', emph: true,  note: '低于健康线' },
+    { name: 'BPO运营+固定成本', value: 1630,  pct: '12.3%', color: '#BDC3C7', emph: false, note: '社保400+质检培训600+税点360+场地200+物业20+水电50' },
+    { name: '软电话+质检系统',  value: 615,   pct: '4.6%',  color: '#BDC3C7', emph: false, note: '软电话396 + 质检系统219' },
+    { name: 'AI相关分摊',     value: 1620,  pct: '12.2%', color: '#E67E22', emph: false, note: 'AI服务器/分摊收入' }
+  ];
+
+  // 堆叠条形图：一条横柱，每段一个 series
+  var series = segments.map(function (seg, idx) {
+    var dataArr = new Array(segments.length).fill(0);
+    dataArr[idx] = seg.value;
+    return {
+      name: seg.name,
+      type: 'bar',
+      stack: 'cost',
+      data: dataArr,
+      itemStyle: { color: seg.color },
+      barWidth: 72,
+      barGap: '-100%',
+      emphasis: { focus: 'self' },
+      // 仅在当前段中心做标注
+      label: {
+        show: true,
+        position: 'inside',
+        formatter: function () {
+          // 只标到主要段（话费、坐席、AI）
+          if (idx === 0) return '{pct|' + seg.pct + '}\n{amt|¥' + seg.value.toLocaleString() + '}';
+          if (idx === 1) return '{pct|' + seg.pct + '}\n{amt|¥' + seg.value.toLocaleString() + '}';
+          if (idx === 4) return '{pct|' + seg.pct + '}\n{amt|¥' + seg.value.toLocaleString() + '}';
+          return seg.name + '\n¥' + seg.value.toLocaleString();
+        },
+        rich: {
+          pct: { fontSize: 18, fontWeight: 700, color: '#FFFFFF', lineHeight: 22 },
+          amt: { fontSize: 12, fontWeight: 400, color: '#FFFFFF', lineHeight: 16 }
+        },
+        color: '#34495E',
+        fontSize: 11,
+        fontWeight: 500,
+        lineHeight: 15
+      }
+    };
+  });
+
+  var option = {
+    backgroundColor: '#FFFFFF',
+    grid: {
+      left: 140,
+      right: 60,
+      top: 30,
+      bottom: 70
+    },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: '#FFFFFF',
+      borderColor: '#ECF0F1',
+      borderWidth: 1,
+      textStyle: { color: '#2C3E50', fontSize: 12 },
+      formatter: function (p) {
+        var seg = segments[p.seriesIndex];
+        return '<b>' + seg.name + '</b><br/>¥' + seg.value.toLocaleString() + '（' + seg.pct + '）<br/><span style="color:#95A5A6;font-size:11px">' + seg.note + '</span>';
+      }
+    },
+    xAxis: {
+      type: 'value',
+      max: 13222,
+      show: false, // 不画坐标轴，靠直接标注
+      splitLine: { show: false },
+      axisLine: { show: false },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'category',
+      data: ['人均月度总结算 ¥13,222'],
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: {
+        color: '#7F8C8D',
+        fontSize: 13,
+        fontWeight: 600
+      }
+    },
+    series: series,
+    // 用 graphic 在条形下方画"坐席健康线 4,500元"参考标注，
+    // 以及 BPO 零利润注释
+    graphic: [
+      // 健康线：在条形对应 x=4500 位置画一条竖直短线
+      {
+        type: 'group',
+        right: 60,
+        bottom: 50,
+        children: [
+          {
+            type: 'text',
+            left: 'center',
+            top: 0,
+            style: {
+              text: '坐席健康线 ¥4,500  （坐席实际到手 ¥3,500，缺口 ¥1,000）',
+              font: '12px system-ui',
+              fill: '#2874A6',
+              fontWeight: 600
+            }
+          }
+        ]
+      },
+      {
+        type: 'group',
+        right: 60,
+        bottom: 28,
+        children: [
+          {
+            type: 'text',
+            left: 'center',
+            top: 0,
+            style: {
+              text: 'BPO 公司利润：¥0 （分润率 76%，结算后几乎全归坐席与话费）',
+              font: '12px system-ui',
+              fill: '#C0392B',
+              fontWeight: 600
+            }
+          }
+        ]
+      }
+    ]
+  };
+
+  // 追加一条标记线（markLine 用在话费与坐席薪酬交界附近，标"健康线4500"）
+  // 坐席薪酬段中心 = 5858 + 1750 = 7608；健康线在 4500 处（落在话费段内偏右）
+  // 改为在 坐席薪酬 series 上画 markLine，从 x=4500 位置
+  series[1].markLine = {
+    symbol: ['none', 'none'],
+    silent: true,
+    lineStyle: { color: '#2874A6', type: 'dashed', width: 1.5 },
+    label: { show: false },
+    data: [
+      { xAxis: 4500 }
+    ]
+  };
+
+  chart.setOption(option);
+  window.addEventListener('resize', function () { chart.resize(); });
+})();
+</script>
+</body>
+</html>
