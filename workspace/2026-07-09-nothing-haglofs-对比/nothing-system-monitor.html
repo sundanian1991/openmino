@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NODE-7 // System Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ═══ TOKENS ═══ */
+  :root {
+    --black: #000000;
+    --surface: #111111;
+    --surface-raised: #1A1A1A;
+    --border: #222222;
+    --border-visible: #333333;
+    --text-disabled: #666666;
+    --text-secondary: #999999;
+    --text-primary: #E8E8E8;
+    --text-display: #FFFFFF;
+    --accent: #D71921;
+    --accent-subtle: rgba(215,25,33,0.15);
+    --success: #4A9E5C;
+    --warning: #D4A843;
+    --interactive: #5B9BF6;
+
+    --display-xl: 72px;
+    --display-lg: 48px;
+    --display-md: 36px;
+    --heading: 24px;
+    --subheading: 18px;
+    --body: 16px;
+    --body-sm: 14px;
+    --caption: 12px;
+    --label: 11px;
+
+    --s-xs: 4px;
+    --s-sm: 8px;
+    --s-md: 16px;
+    --s-lg: 24px;
+    --s-xl: 32px;
+    --s-2xl: 48px;
+    --s-3xl: 64px;
+    --s-4xl: 96px;
+
+    --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --dur: 200ms;
+  }
+
+  /* ═══ RESET ═══ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body {
+    background: var(--black);
+    color: var(--text-primary);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ═══ DOT GRID BG ═══ */
+  .dot-grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--border) 0.5px, transparent 0.5px);
+    background-size: 12px 12px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ═══ LAYOUT ═══ */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--s-2xl) var(--s-xl);
+  }
+
+  /* ═══ TOP BAR ═══ */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--s-lg);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--s-3xl);
+  }
+  .topbar__id {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .topbar__id span { color: var(--text-display); }
+  .topbar__nav {
+    display: flex;
+    gap: var(--s-lg);
+  }
+  .topbar__nav span {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+    cursor: pointer;
+    transition: color var(--dur) var(--ease);
+  }
+  .topbar__nav span:hover { color: var(--text-primary); }
+  .topbar__nav span.is-active { color: var(--text-display); }
+
+  /* ═══ HERO ═══ */
+  .hero {
+    margin-bottom: var(--s-4xl);
+  }
+  .hero__label {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--s-sm);
+  }
+  .hero__number {
+    font-family: 'Doto', 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: var(--display-xl);
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--text-display);
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-sm);
+  }
+  .hero__unit {
+    font-family: 'Space Mono', monospace;
+    font-weight: 400;
+    font-size: var(--body-sm);
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
+  .hero__meta {
+    display: flex;
+    gap: var(--s-xl);
+    margin-top: var(--s-md);
+  }
+  .hero__meta-item {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--caption);
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+  }
+  .hero__meta-item span { color: var(--text-primary); }
+
+  /* The ONE break: red status dot */
+  .hero__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-xs);
+    font-family: 'Space Mono', monospace;
+    font-size: var(--caption);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-top: var(--s-md);
+  }
+  .hero__status::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ═══ SECTION TITLE ═══ */
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--s-lg);
+    padding-bottom: var(--s-sm);
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ═══ STAT GRID ═══ */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: var(--s-3xl);
+  }
+  .stat {
+    background: var(--black);
+    padding: var(--s-lg);
+  }
+  .stat__label {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--s-sm);
+  }
+  .stat__value {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: var(--display-md);
+    line-height: 1.1;
+    color: var(--text-display);
+  }
+  .stat__unit {
+    font-family: 'Space Mono', monospace;
+    font-weight: 400;
+    font-size: var(--caption);
+    color: var(--text-secondary);
+    margin-left: var(--s-xs);
+  }
+  .stat__delta {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--caption);
+    letter-spacing: 0.02em;
+    margin-top: var(--s-xs);
+  }
+  .delta--up { color: var(--success); }
+  .delta--down { color: var(--accent); }
+  .delta--flat { color: var(--text-disabled); }
+
+  /* ═══ SEGMENTED BAR ═══ */
+  .seg-bar {
+    display: flex;
+    height: 12px;
+    gap: 2px;
+    margin-top: var(--s-sm);
+  }
+  .seg-bar__seg {
+    flex: 1;
+    background: var(--border-visible);
+    border-radius: 1px;
+  }
+  .seg-bar__seg--active { background: var(--text-display); }
+
+  /* ═══ DATA ROWS ═══ */
+  .data-rows {
+    margin-bottom: var(--s-3xl);
+  }
+  .data-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 120px;
+    align-items: center;
+    padding: var(--s-md) 0;
+    border-bottom: 1px solid var(--border);
+    gap: var(--s-lg);
+  }
+  .data-row__label {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .data-row__bar {
+    height: 4px;
+    background: var(--border-visible);
+    position: relative;
+    border-radius: 1px;
+  }
+  .data-row__bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--text-primary);
+    border-radius: 1px;
+    transition: width 400ms var(--ease);
+  }
+  .data-row__bar-fill--warn { background: var(--warning); }
+  .data-row__bar-fill--crit { background: var(--accent); }
+  .data-row__value {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--body-sm);
+    color: var(--text-primary);
+    text-align: right;
+  }
+  .data-row__value span { color: var(--text-secondary); font-size: var(--caption); }
+
+  /* ═══ SPARKLINE SECTION ═══ */
+  .spark-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: var(--s-3xl);
+  }
+  .spark-card {
+    background: var(--black);
+    padding: var(--s-lg);
+  }
+  .spark-card__label {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: var(--s-sm);
+  }
+  .spark-card__value {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: var(--heading);
+    color: var(--text-display);
+    margin-bottom: var(--s-sm);
+  }
+  .spark-card__value span {
+    font-weight: 400;
+    font-size: var(--caption);
+    color: var(--text-secondary);
+  }
+  .sparkline {
+    width: 100%;
+    height: 40px;
+    display: block;
+  }
+
+  /* ═══ RINGS ═══ */
+  .rings-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-xl);
+    margin-bottom: var(--s-3xl);
+    padding: var(--s-xl);
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .ring-block {
+    text-align: center;
+  }
+  .ring-block__svg {
+    width: 100px;
+    height: 100px;
+    margin-bottom: var(--s-sm);
+  }
+  .ring-block__bg { stroke: var(--border-visible); }
+  .ring-block__fill { stroke: var(--text-display); stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; }
+  .ring-block__fill--warn { stroke: var(--warning); }
+  .ring-block__fill--crit { stroke: var(--accent); }
+  .ring-block__label {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .ring-block__num {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: var(--subheading);
+    color: var(--text-display);
+    margin-bottom: var(--s-xs);
+  }
+
+  /* ═══ LOG TABLE ═══ */
+  .log-section {
+    margin-bottom: var(--s-3xl);
+  }
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .log-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: var(--s-sm) var(--s-md);
+    border-bottom: 1px solid var(--border-visible);
+    font-weight: 400;
+  }
+  .log-table td {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--body-sm);
+    color: var(--text-primary);
+    padding: var(--s-sm) var(--s-md);
+    border-bottom: 1px solid var(--border);
+  }
+  .log-table td:nth-child(1) { color: var(--text-secondary); width: 120px; }
+  .log-table td:nth-child(3) { color: var(--text-secondary); width: 100px; }
+  .log-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid var(--border-visible);
+    border-radius: 2px;
+    color: var(--text-secondary);
+  }
+  .log-tag--ok { color: var(--success); border-color: var(--success); }
+  .log-tag--warn { color: var(--warning); border-color: var(--warning); }
+  .log-tag--err { color: var(--accent); border-color: var(--accent); }
+
+  /* ═══ FOOTER ═══ */
+  .footer {
+    margin-top: var(--s-4xl);
+    padding-top: var(--s-lg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer__text {
+    font-family: 'Space Mono', monospace;
+    font-size: var(--caption);
+    letter-spacing: 0.04em;
+    color: var(--text-disabled);
+  }
+  .footer__text span { color: var(--text-secondary); }
+
+  /* ═══ RESPONSIVE ═══ */
+  @media (max-width: 768px) {
+    .page { padding: var(--s-lg) var(--s-md); }
+    .hero__number { font-size: 48px; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .spark-section { grid-template-columns: 1fr; }
+    .rings-section { grid-template-columns: 1fr; }
+    .data-row { grid-template-columns: 1fr; gap: var(--s-sm); }
+    .data-row__value { text-align: left; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="dot-grid-bg"></div>
+
+<div class="page">
+
+  <!-- ═══ TOP BAR ═══ -->
+  <div class="topbar">
+    <div class="topbar__id">NODE-7 // <span>SYSTEM MONITOR</span></div>
+    <div class="topbar__nav">
+      <span class="is-active">Overview</span>
+      <span>Network</span>
+      <span>Storage</span>
+      <span>Logs</span>
+    </div>
+  </div>
+
+  <!-- ═══ HERO — Primary Layer ═══ -->
+  <div class="hero">
+    <div class="hero__label">Aggregate Throughput</div>
+    <div class="hero__number">
+      36.4<span class="hero__unit">GB/s</span>
+    </div>
+    <div class="hero__meta">
+      <div class="hero__meta-item">UPTIME <span>99.97%</span></div>
+      <div class="hero__meta-item">NODES <span>14/14</span></div>
+      <div class="hero__meta-item">LATENCY <span>0.8ms</span></div>
+      <div class="hero__meta-item">REGION <span>AP-EAST-1</span></div>
+    </div>
+    <!-- The ONE break: red pulse -->
+    <div class="hero__status">DEGRADED — NODE-07 RECOVERING</div>
+  </div>
+
+  <!-- ═══ STAT GRID ═══ -->
+  <div class="section-title">Core Metrics</div>
+  <div class="stat-grid">
+    <div class="stat">
+      <div class="stat__label">CPU Load</div>
+      <div class="stat__value">42<span class="stat__unit">%</span></div>
+      <div class="seg-bar">
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat__label">Memory</div>
+      <div class="stat__value">68<span class="stat__unit">%</span></div>
+      <div class="seg-bar">
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat__label">Disk I/O</div>
+      <div class="stat__value">1.2<span class="stat__unit">GB/s</span></div>
+      <div class="seg-bar">
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+        <div class="seg-bar__seg"></div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat__label">Net I/O</div>
+      <div class="stat__value">36.4<span class="stat__unit">GB/s</span></div>
+      <div class="seg-bar">
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg seg-bar__seg--active"></div>
+        <div class="seg-bar__seg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DATA ROWS — inline bars ═══ -->
+  <div class="section-title">Node Health</div>
+  <div class="data-rows">
+    <div class="data-row">
+      <div class="data-row__label">NODE-01</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill" style="width:38%"></div></div>
+      <div class="data-row__value">38<span>%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__label">NODE-02</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill" style="width:52%"></div></div>
+      <div class="data-row__value">52<span>%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__label">NODE-03</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill" style="width:41%"></div></div>
+      <div class="data-row__value">41<span>%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__label">NODE-04</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill" style="width:67%"></div></div>
+      <div class="data-row__value">67<span>%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__label">NODE-05</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill" style="width:44%"></div></div>
+      <div class="data-row__value">44<span>%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__label">NODE-06</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill" style="width:55%"></div></div>
+      <div class="data-row__value">55<span>%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__label">NODE-07</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill data-row__bar-fill--warn" style="width:83%"></div></div>
+      <div class="data-row__value">83<span>%</span></div>
+    </div>
+    <div class="data-row">
+      <div class="data-row__label">NODE-08</div>
+      <div class="data-row__bar"><div class="data-row__bar-fill" style="width:39%"></div></div>
+      <div class="data-row__value">39<span>%</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ SPARKLINES ═══ -->
+  <div class="section-title">Throughput — Last 60 Minutes</div>
+  <div class="spark-section">
+    <div class="spark-card">
+      <div class="spark-card__label">Inbound</div>
+      <div class="spark-card__value">18.2 <span>GB/s avg</span></div>
+      <svg class="sparkline" viewBox="0 0 200 40" preserveAspectRatio="none">
+        <polyline points="0,28 12,24 24,26 36,18 48,20 60,14 72,16 84,10 96,12 108,8 120,14 132,6 144,10 156,4 168,8 180,12 192,6 200,10"
+          fill="none" stroke="#E8E8E8" stroke-width="1.5" />
+        <circle cx="200" cy="10" r="2.5" fill="#D71921" />
+      </svg>
+    </div>
+    <div class="spark-card">
+      <div class="spark-card__label">Outbound</div>
+      <div class="spark-card__value">18.2 <span>GB/s avg</span></div>
+      <svg class="sparkline" viewBox="0 0 200 40" preserveAspectRatio="none">
+        <polyline points="0,20 12,22 24,18 36,24 48,16 60,22 72,14 84,20 96,12 108,18 120,10 132,16 144,8 156,14 168,6 180,12 192,8 200,14"
+          fill="none" stroke="#E8E8E8" stroke-width="1.5" />
+        <circle cx="200" cy="14" r="2.5" fill="#E8E8E8" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- ═══ RINGS ═══ -->
+  <div class="section-title">Capacity</div>
+  <div class="rings-section">
+    <div class="ring-block">
+      <svg class="ring-block__svg" viewBox="0 0 100 100">
+        <circle class="ring-block__bg" cx="50" cy="50" r="42" fill="none" stroke-width="6" />
+        <circle class="ring-block__fill" cx="50" cy="50" r="42" fill="none" stroke-width="6"
+          stroke-dasharray="263.9" stroke-dashoffset="105.6" />
+      </svg>
+      <div class="ring-block__num">60%</div>
+      <div class="ring-block__label">Storage</div>
+    </div>
+    <div class="ring-block">
+      <svg class="ring-block__svg" viewBox="0 0 100 100">
+        <circle class="ring-block__bg" cx="50" cy="50" r="42" fill="none" stroke-width="6" />
+        <circle class="ring-block__fill ring-block__fill--warn" cx="50" cy="50" r="42" fill="none" stroke-width="6"
+          stroke-dasharray="263.9" stroke-dashoffset="79.2" />
+      </svg>
+      <div class="ring-block__num">70%</div>
+      <div class="ring-block__label">Memory</div>
+    </div>
+    <div class="ring-block">
+      <svg class="ring-block__svg" viewBox="0 0 100 100">
+        <circle class="ring-block__bg" cx="50" cy="50" r="42" fill="none" stroke-width="6" />
+        <circle class="ring-block__fill ring-block__fill--crit" cx="50" cy="50" r="42" fill="none" stroke-width="6"
+          stroke-dasharray="263.9" stroke-dashoffset="52.8" />
+      </svg>
+      <div class="ring-block__num">80%</div>
+      <div class="ring-block__label">CPU</div>
+    </div>
+  </div>
+
+  <!-- ═══ LOG TABLE ═══ -->
+  <div class="section-title">Event Log</div>
+  <div class="log-section">
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Event</th>
+          <th>Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>14:32:08</td>
+          <td>Node-07 auto-recovery initiated</td>
+          <td><span class="log-tag log-tag--warn">WARN</span></td>
+        </tr>
+        <tr>
+          <td>14:31:52</td>
+          <td>Throughput spike detected — 36.4 GB/s</td>
+          <td><span class="log-tag log-tag--ok">INFO</span></td>
+        </tr>
+        <tr>
+          <td>14:30:14</td>
+          <td>Node-07 memory threshold exceeded (83%)</td>
+          <td><span class="log-tag log-tag--err">ERROR</span></td>
+        </tr>
+        <tr>
+          <td>14:28:03</td>
+          <td>Health check passed — 13/14 nodes</td>
+          <td><span class="log-tag log-tag--ok">OK</span></td>
+        </tr>
+        <tr>
+          <td>14:25:41</td>
+          <td>Configuration reloaded — region AP-EAST-1</td>
+          <td><span class="log-tag">INFO</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    <div class="footer__text">NODE-7 // <span>BUILD 7.2.1</span></div>
+    <div class="footer__text"><span>SYNCED</span> 2026-07-09 14:32:08 UTC</div>
+  </div>
+
+</div>
+
+</body>
+</html>
