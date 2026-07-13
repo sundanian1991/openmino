@@ -12,10 +12,11 @@ pos: .claude/rules/06-NOW.md
 
 ## 活跃项目
 
-- **kaas-kb 知识库技能（06-16）**：封装 KaaS 知识库 MCP 工具，支持自然语言检索、文档读取、项目管理、文档上传引导
-- **nian-template 正交重构（06-17）**：16 套模板体系化，区分 SEED（可直接注入）与 ADAPT（需二次适配），补齐 injection-contract 与空组合兜底规则
-- **beautiful-article 技能实践（06-18）**：长图文文章生成，标题/导语/正文/配图/排版一体化输出
-- **规则体系再精简（06-18）**：响应 Claude Code 之父"少即是多"理念，压缩重复规则，只保留硬约束 + 人格 + 用户画像
+- **guizang 深图多轮计划（07-13）**：AGNES 3D建模感风格适配，按归藏 9-10 个模式分批调优，遵守速率限制
+- **nian-design 技能系统（06-01）**：4级组件体系+token三轨制+showcase质量标准，持续迭代
+- **电销AI转型方案（06-05）**：四阶段推进（能看见→能判断→能行动→自动化），数字人三层架构
+- **供应商联盟机制（06-08）**：线上月度+线下季度，已办金条两期，朱晓明7月接手
+- **kaas-kb 知识库技能（06-16）**：封装 KaaS 知识库 MCP 工具
 
 ---
 
@@ -52,10 +53,19 @@ pos: .claude/rules/06-NOW.md
 
 详见 `memory/events/` | 任务地图和定期提醒见 `memory/context/`
 
-**06-18 重要事件**：
-- 规则体系再精简启动：删除模型已内化、跨文件重复的条款
-- beautiful-article 技能产出落地
+**07-13 重要事件**：
+- guizang 技能更新 + AGNES 深图多轮生成计划制定
+- Codex 用例库 HTML 生成（nothing-design 浅色风格）
+
+**07-10 重要事件**：
+- AI 编码工具长任务能力 PPT（CyberPPT 流程，11页）
+- OfficeCLI 工具调研
+
+**07-09 重要事件**：
+- guizang-material-illustration 技能安装+能力边界分析
+- 电视机海报项目（J-Space 8张概念插图+HTML）
+- CloudBase MCP 配置完成
 
 ---
 
-*最后更新：2026-06-25 — 新增 Session Log 规则（Agent Memory 日记法）*
+*最后更新：2026-07-13 — 每周记忆维护，更新活跃项目+最近事件*

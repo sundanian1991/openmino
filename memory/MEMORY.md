@@ -36,12 +36,14 @@
 
 ## 当前状态
 
-**最近工作焦点**（2026-07 上旬）：
-- **07-07 线下分享**：1990s下岗PPT + 思维透镜介绍页 + 赛博清明上河图
+**最近工作焦点**（2026-07 中旬）：
+- **07-13 guizang 技能更新 + AGNES 深图**：技能 git pull 更新，AGNES 3D建模感风格适配，制定长期多轮图像生成计划（9-10个模式分批调优）
+- **07-12 Codex 用例库 HTML**：基于 OpenAI 12个官方用例生成 nothing-design 浅色风格 HTML
+- **07-10 AI 编码工具 PPT**：CyberPPT 流程制作 11 页长任务能力 PPT + OfficeCLI 工具调研
 - **07-09 CloudBase MCP 配置**：生图流程配置完成，待新会话验证工具加载
 - **07-09 guizang-material-illustration 技能**：安装链接+能力边界分析+J-Space插图生成
 - **07-09 电视机海报项目**：8张概念插图 + HTML海报页面
-- **Q2绩效总结撰写**：供应商生态优化完成情况+降本增效专项+Q3目标设定（进行中）
+- **07-07 线下分享**：1990s下岗PPT + 思维透镜介绍页 + 赛博清明上河图
 - **nian-design 技能系统**：4级组件体系+token三轨制根治+showcase质量标准
 - **电销AI转型方案**：四阶段推进（能看见→能判断→能行动→自动化）
 
@@ -84,6 +86,7 @@
 | CloudBase MCP 配置方法 | 2026-07-09 | 写入 `agents[N].mcpServersJson` + `agents[N].mcpEnabledServers`，新建会话生效 |
 | guizang-material-illustration 技能安装 | 2026-07-09 | 符号链接 `.claude/skills/` → `~/.agents/skills/`，`myagents skill enable` 激活 |
 | 电视机海报项目完成 | 2026-07-09 | J-Space 8张概念插图 + HTML海报页面 |
+| AGNES 深图多轮生成计划 | 2026-07-13 | 按归藏 9-10 个模式分批调优，遵守 AGNES 速率限制，风格往 3D 建模感靠近 |
 
 ---
 
@@ -212,4 +215,4 @@
 
 ---
 
-*最后更新：2026-07-09 — CloudBase MCP配置+guizang技能安装+电视机海报项目+07-07线下分享收尾*
+*最后更新：2026-07-13 — AGNES深图多轮计划+Codex用例HTML+AI编码工具PPT+每周记忆维护*
