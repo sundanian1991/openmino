@@ -215,4 +215,48 @@
 
 ---
 
-*最后更新：2026-07-13 — AGNES深图多轮计划+Codex用例HTML+AI编码工具PPT+每周记忆维护*
+## 七文件夹知识体系（2026-07-15 建立 → 07-15 完善）
+
+> 对标 Dan Martell AI 大脑体系。各目录均有 MOC（README.md）索引。
+> 归类清理完成：topics/ 5个领域文件→年老师知识体系/，design-philosophy→topics/，
+> hagloefs→archive/projects/，根目录3个过期文件删除，.wal-queue删除，.claude/memory/清空。
+
+| Dan 概念 | 我们的目录 | 位置 | MOC |
+|:---|:---|:---|:---|
+| people | 关键人画像 | `memory/projects/关键人画像/` | ✅ 00_索引.md |
+| projects | 项目 | `memory/projects/` | ✅ 各子目录 |
+| decisions | 决策 | `memory/decisions/` ⭐新建 | ✅ README.md |
+| companies | 供应商画像 | `memory/archive/供应商画像/` | ✅ README.md |
+| meetings | 会议 | `memory/meetings/` ⭐新建 | ✅ README.md + TEMPLATE.md |
+| daily | 日志 | `memory/daily/` | ✅ README.md |
+| knowledge | 知识 | `memory/topics/` + `memory/archive/` | ✅ 各子目录 README |
+
+### 跨目录链接规则
+1. people ↔ companies：关键人画像/供应商/ → 链接到 archive/供应商画像/
+2. meetings ↔ decisions：会议决策同时写入 decisions/ 交叉引用
+3. projects ↔ decisions：项目变更链接到触发决策记录
+4. daily ↔ meetings：daily 日志提及时链接到 meetings/
+
+### 每日自动整理（10:00 AM）
+- **触发**：LaunchAgent `com.mino.daily-memory-organize` 每日 10:00
+- **脚本**：`scripts/daily-memory-organize.sh`
+- **指令**：`scripts/daily-memory-organizer.md`
+- **流程**：扫描 buffer.md → 分类 → 分发到目标目录 → 更新 MOC → 清空 buffer → 生成摘要
+- **日志**：`memory/logs/daily-organize.log`
+
+---
+
+## 身份文件体系（三层）
+
+| 层级 | 路径 | 文件 | 用途 |
+|:---|:---|:---|:---|
+| 当前主文件 | `.codex/rules/` | 01~05 + MEMORY-L1 | 会话自动加载 |
+| 工作上下文 | `.codex/workspace/Rules/` | about-me / work-detail / write-style / ai-methodology | 启动时读取 |
+| 原始参考 | `.claude/reference/` | 00-IDENTITY-PUSH / 03-USER / honesty-constitution 等 | 按需读取 |
+| 简洁骨架 | `.claude/rules/` | 02-SOUL / 03-USER / 04-MEMORY | 备用 |
+
+**主从关系**：以 `.codex/rules/` 为当前主文件，`reference/` 为初始版本（03-USER.md 445行深度理解仍有独特价值），`.claude/rules/` 为简洁骨架版。
+
+---
+
+*最后更新：2026-07-15 — 七文件夹体系建立+MOC索引+每日整理cron+身份文件梳理*

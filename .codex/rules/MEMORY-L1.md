@@ -66,6 +66,7 @@ pos: .claude/rules/MEMORY-L1.md
 **心跳**：读本文件 + `memory/state.json`
 **完整启动**：+ todo.md + events 最近3天（详见 [06-NOW.md](06-NOW.md)）
 **截断恢复**：读 `workspace/*/对话总结-*.md`
+**启动时检查 buffer.md**：如果有待处理条目，在回复最开头提及"⚠️ buffer 中有 N 条未整理"
 
 ---
 
@@ -74,8 +75,22 @@ pos: .claude/rules/MEMORY-L1.md
 发现修正、专有名词、偏好、决策、具体值、异常、年老师原话时，立即追加到 `memory/thinking/buffer.md` 再回复。
 格式：`- YYYY-MM-DD HH:MM | [类型] 内容`
 
+**类型与目标映射**（详见 [knowledge-system-guide.md](../../docs/knowledge-system-guide.md)）：
+
+| 类型 | buffer 标注 | 每日整理后分发到 |
+|:---|:---|:---|
+| 决策 | [决策] | `decisions/2026/YYYY-MM-DD-主题.md` |
+| 偏好/人物信息 | [偏好] | `people/` 或 `daily-letter/` |
+| 会议内容 | [原话/决策] | `meetings/2026/` |
+| 线索/洞察 | [线索] | `topics/` 或 `learnings/` |
+| 异常 | [异常] | `events/` 或 `daily/` |
+
 ---
 
-## 记忆文件
+## 知识库系统
+
+**操作规程**：`docs/knowledge-system-guide.md`（何时写 buffer、怎么分类、每日自动整理）
+**七文件夹结构**：projects / decisions / meetings / daily / topics / thinking / archive
+**每日整理**：LaunchAgent 每日 10:00 自动运行 `scripts/daily-memory-organizer.md`
 
 详见 `memory/` 目录
