@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Haglöfs Area Chart Component</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================
+       Haglöfs Token System
+       ============================================ */
+    :root {
+      --color-offwhite: #F5F5F0;
+      --color-cream: #EDE8E0;
+      --color-charcoal: #2A2A28;
+      --color-black: #1A1A18;
+      --color-forest: #2D5A3D;
+      --color-moss: #4A7C5C;
+      --color-signal-red: #D71921;
+      
+      --text-primary: #1A1A18;
+      --text-secondary: #666660;
+      --text-tertiary: #999990;
+      --text-inverse: #F5F5F0;
+      --text-inverse-2: rgba(245, 245, 240, 0.6);
+      
+      --border-rest: #E8E4DC;
+      
+      --s-xs: 4px;
+      --s-sm: 8px;
+      --s-md: 16px;
+      --s-lg: 24px;
+      --s-xl: 32px;
+      --s-2xl: 48px;
+      --s-3xl: 64px;
+      --s-4xl: 96px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--color-cream);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: var(--s-4xl) var(--s-xl);
+    }
+
+    /* ============================================
+       Haglöfs Area Chart Component
+       ============================================ */
+    .haglofs-area-chart {
+      width: 100%;
+      max-width: 800px;
+      background: var(--color-offwhite);
+      border: 1px solid var(--border-rest);
+      border-radius: 0px; /* 结构件：0px */
+      padding: var(--s-lg);
+    }
+
+    .haglofs-area-chart__title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--s-md);
+    }
+
+    .haglofs-area-chart__subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: var(--s-lg);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .haglofs-area-chart__canvas {
+      width: 100%;
+      position: relative;
+    }
+
+    .haglofs-area-chart svg {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+
+    /* 网格线 */
+    .haglofs-area-chart .grid-line {
+      stroke: var(--border-rest);
+      stroke-width: 1px;
+      fill: none;
+    }
+
+    /* 坐标轴 */
+    .haglofs-area-chart .axis {
+      stroke: var(--border-rest);
+      stroke-width: 1px;
+    }
+
+    /* 轴标签 */
+    .haglofs-area-chart .axis-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      fill: var(--text-secondary);
+    }
+
+    /* 填充区域 */
+    .haglofs-area-chart .area-fill {
+      fill: var(--color-forest);
+      opacity: 0.12; /* 哑光质感，低透明度 */
+    }
+
+    /* 多数据集填充区域 */
+    .haglofs-area-chart .area-fill--secondary {
+      fill: var(--color-moss);
+      opacity: 0.12;
+    }
+
+    /* 边界线 */
+    .haglofs-area-chart .area-stroke {
+      fill: none;
+      stroke: var(--color-forest);
+      stroke-width: 2px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* 多数据集边界线 */
+    .haglofs-area-chart .area-stroke--secondary {
+      stroke: var(--color-moss);
+    }
+
+    /* 数据点 */
+    .haglofs-area-chart .data-point {
+      fill: var(--color-offwhite);
+      stroke: var(--color-forest);
+      stroke-width: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .haglofs-area-chart .data-point--secondary {
+      stroke: var(--color-moss);
+    }
+
+    .haglofs-area-chart .data-point:hover {
+      fill: var(--color-forest);
+      stroke-width: 0;
+    }
+
+    .haglofs-area-chart .data-point--secondary:hover {
+      fill: var(--color-moss);
+    }
+
+    /* 数据点组 */
+    .haglofs-area-chart .data-point-group {
+      cursor: pointer;
+    }
+
+    .haglofs-area-chart .data-point-group:hover .data-tooltip {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 工具提示 */
+    .haglofs-area-chart .data-tooltip {
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    .haglofs-area-chart .tooltip-bg {
+      fill: var(--color-charcoal);
+      rx: 2px;
+    }
+
+    .haglofs-area-chart .tooltip-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      fill: var(--text-inverse);
+    }
+
+    /* 图例 */
+    .haglofs-area-chart__legend {
+      display: flex;
+      gap: var(--s-lg);
+      margin-top: var(--s-md);
+      padding-top: var(--s-md);
+      border-top: 1px solid var(--border-rest);
+    }
+
+    .haglofs-area-chart__legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--s-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .haglofs-area-chart__legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .haglofs-area-chart__legend-dot--primary {
+      background: var(--color-forest);
+    }
+
+    .haglofs-area-chart__legend-dot--secondary {
+      background: var(--color-moss);
+    }
+
+    .haglofs-area-chart__note {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: var(--s-md);
+    }
+
+    /* ============================================
+       深底反相（.section--dark 通用机制）
+       ============================================ */
+    .section--dark .haglofs-area-chart {
+      background: var(--color-charcoal);
+      border-color: var(--border-rest);
+    }
+
+    .section--dark .haglofs-area-chart__title {
+      color: var(--text-inverse);
+    }
+
+    .section--dark .haglofs-area-chart__subtitle {
+      color: var(--text-inverse-2);
+    }
+
+    /* 深底专属规则（仅 2 条） */
+    .section--dark .haglofs-area-chart .area-fill {
+      fill: var(--color-moss);
+      opacity: 0.2;
+    }
+
+    .section--dark .haglofs-area-chart .data-point {
+      fill: var(--color-charcoal);
+      stroke: var(--color-moss);
+    }
+
+    /* ============================================
+       Demo Layout
+       ============================================ */
+    .demo-section {
+      margin-bottom: var(--s-4xl);
+    }
+
+    .demo-section--dark {
+      background: var(--color-charcoal);
+      padding: var(--s-4xl) var(--s-xl);
+      margin: calc(-1 * var(--s-xl));
+      margin-top: var(--s-4xl);
+    }
+
+    .demo-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--s-sm);
+    }
+
+    .demo-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: var(--s-3xl);
+    }
+
+    .demo-section--dark .demo-title {
+      color: var(--text-inverse);
+    }
+
+    .demo-section--dark .demo-subtitle {
+      color: var(--text-inverse-2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 浅底示例：单数据集 -->
+  <div class="demo-section">
+    <h1 class="demo-title">用户增长趋势</h1>
+    <p class="demo-subtitle">Haglöfs Area Chart · 单数据集 · 浅底</p>
+    
+    <div class="haglofs-area-chart">
+      <h2 class="haglofs-area-chart__title">User Growth</h2>
+      <p class="haglofs-area-chart__subtitle">2026 · Cumulative</p>
+      
+      <div class="haglofs-area-chart__canvas">
+        <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- 网格线 -->
+          <line class="grid-line" x1="60" y1="40" x2="680" y2="40" />
+          <line class="grid-line" x1="60" y1="100" x2="680" y2="100" />
+          <line class="grid-line" x1="60" y1="160" x2="680" y2="160" />
+          <line class="grid-line" x1="60" y1="220" x2="680" y2="220" />
+          
+          <!-- Y 轴标签 -->
+          <text class="axis-label" x="50" y="44" text-anchor="end">10K</text>
+          <text class="axis-label" x="50" y="104" text-anchor="end">7.5K</text>
+          <text class="axis-label" x="50" y="164" text-anchor="end">5K</text>
+          <text class="axis-label" x="50" y="224" text-anchor="end">2.5K</text>
+          
+          <!-- X 轴标签 -->
+          <text class="axis-label" x="110" y="250" text-anchor="middle">JAN</text>
+          <text class="axis-label" x="210" y="250" text-anchor="middle">FEB</text>
+          <text class="axis-label" x="310" y="250" text-anchor="middle">MAR</text>
+          <text class="axis-label" x="410" y="250" text-anchor="middle">APR</text>
+          <text class="axis-label" x="510" y="250" text-anchor="middle">MAY</text>
+          <text class="axis-label" x="610" y="250" text-anchor="middle">JUN</text>
+          
+          <!-- 坐标轴 -->
+          <line class="axis" x1="60" y1="240" x2="680" y2="240" />
+          <line class="axis" x1="60" y1="40" x2="60" y2="240" />
+          
+          <!-- 填充区域 -->
+          <path class="area-fill" d="M110,200 L210,180 L310,140 L410,110 L510,70 L610,40 L610,240 L110,240 Z" />
+          
+          <!-- 边界线 -->
+          <path class="area-stroke" d="M110,200 L210,180 L310,140 L410,110 L510,70 L610,40" />
+          
+          <!-- 数据点 -->
+          <g class="data-point-group">
+            <circle class="data-point" cx="110" cy="200" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="80" y="170" width="60" height="24" />
+              <text class="tooltip-text" x="110" y="186" text-anchor="middle">2,000</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="210" cy="180" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="180" y="150" width="60" height="24" />
+              <text class="tooltip-text" x="210" y="166" text-anchor="middle">3,000</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="310" cy="140" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="280" y="110" width="60" height="24" />
+              <text class="tooltip-text" x="310" y="126" text-anchor="middle">5,000</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="410" cy="110" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="380" y="80" width="60" height="24" />
+              <text class="tooltip-text" x="410" y="96" text-anchor="middle">6,500</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="510" cy="70" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="480" y="40" width="60" height="24" />
+              <text class="tooltip-text" x="510" y="56" text-anchor="middle">8,500</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="610" cy="40" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="580" y="10" width="60" height="24" />
+              <text class="tooltip-text" x="610" y="26" text-anchor="middle">10,000</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+      
+      <div class="haglofs-area-chart__legend">
+        <div class="haglofs-area-chart__legend-item">
+          <span class="haglofs-area-chart__legend-dot haglofs-area-chart__legend-dot--primary"></span>
+          <span>累计用户</span>
+        </div>
+      </div>
+      
+      <p class="haglofs-area-chart__note">数据来源：用户增长系统 · 更新时间：2026-07-13</p>
+    </div>
+  </div>
+
+  <!-- 浅底示例：双数据集 -->
+  <div class="demo-section">
+    <h1 class="demo-title">收入与成本对比</h1>
+    <p class="demo-subtitle">Haglöfs Area Chart · 双数据集 · 浅底</p>
+    
+    <div class="haglofs-area-chart">
+      <h2 class="haglofs-area-chart__title">Revenue vs Cost</h2>
+      <p class="haglofs-area-chart__subtitle">2026 · Monthly</p>
+      
+      <div class="haglofs-area-chart__canvas">
+        <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- 网格线 -->
+          <line class="grid-line" x1="60" y1="40" x2="680" y2="40" />
+          <line class="grid-line" x1="60" y1="100" x2="680" y2="100" />
+          <line class="grid-line" x1="60" y1="160" x2="680" y2="160" />
+          <line class="grid-line" x1="60" y1="220" x2="680" y2="220" />
+          
+          <!-- Y 轴标签 -->
+          <text class="axis-label" x="50" y="44" text-anchor="end">200</text>
+          <text class="axis-label" x="50" y="104" text-anchor="end">150</text>
+          <text class="axis-label" x="50" y="164" text-anchor="end">100</text>
+          <text class="axis-label" x="50" y="224" text-anchor="end">50</text>
+          
+          <!-- X 轴标签 -->
+          <text class="axis-label" x="110" y="250" text-anchor="middle">JAN</text>
+          <text class="axis-label" x="210" y="250" text-anchor="middle">FEB</text>
+          <text class="axis-label" x="310" y="250" text-anchor="middle">MAR</text>
+          <text class="axis-label" x="410" y="250" text-anchor="middle">APR</text>
+          <text class="axis-label" x="510" y="250" text-anchor="middle">MAY</text>
+          <text class="axis-label" x="610" y="250" text-anchor="middle">JUN</text>
+          
+          <!-- 坐标轴 -->
+          <line class="axis" x1="60" y1="240" x2="680" y2="240" />
+          <line class="axis" x1="60" y1="40" x2="60" y2="240" />
+          
+          <!-- 成本区域（先画，在下面） -->
+          <path class="area-fill area-fill--secondary" d="M110,200 L210,180 L310,170 L410,160 L510,140 L610,130 L610,240 L110,240 Z" />
+          <path class="area-stroke area-stroke--secondary" d="M110,200 L210,180 L310,170 L410,160 L510,140 L610,130" />
+          
+          <!-- 收入区域（后画，在上面） -->
+          <path class="area-fill" d="M110,180 L210,150 L310,120 L410,100 L510,70 L610,40 L610,240 L110,240 Z" />
+          <path class="area-stroke" d="M110,180 L210,150 L310,120 L410,100 L510,70 L610,40" />
+          
+          <!-- 数据点 - 收入 -->
+          <g class="data-point-group">
+            <circle class="data-point" cx="110" cy="180" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="80" y="150" width="60" height="24" />
+              <text class="tooltip-text" x="110" y="166" text-anchor="middle">¥120万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="210" cy="150" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="180" y="120" width="60" height="24" />
+              <text class="tooltip-text" x="210" y="136" text-anchor="middle">¥150万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="310" cy="120" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="280" y="90" width="60" height="24" />
+              <text class="tooltip-text" x="310" y="106" text-anchor="middle">¥180万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="410" cy="100" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="380" y="70" width="60" height="24" />
+              <text class="tooltip-text" x="410" y="86" text-anchor="middle">¥200万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="510" cy="70" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="480" y="40" width="60" height="24" />
+              <text class="tooltip-text" x="510" y="56" text-anchor="middle">¥230万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="610" cy="40" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="580" y="10" width="60" height="24" />
+              <text class="tooltip-text" x="610" y="26" text-anchor="middle">¥260万</text>
+            </g>
+          </g>
+          
+          <!-- 数据点 - 成本 -->
+          <g class="data-point-group">
+            <circle class="data-point data-point--secondary" cx="110" cy="200" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="80" y="170" width="60" height="24" />
+              <text class="tooltip-text" x="110" y="186" text-anchor="middle">¥80万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point data-point--secondary" cx="210" cy="180" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="180" y="150" width="60" height="24" />
+              <text class="tooltip-text" x="210" y="166" text-anchor="middle">¥90万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point data-point--secondary" cx="310" cy="170" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="280" y="140" width="60" height="24" />
+              <text class="tooltip-text" x="310" y="156" text-anchor="middle">¥95万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point data-point--secondary" cx="410" cy="160" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="380" y="130" width="60" height="24" />
+              <text class="tooltip-text" x="410" y="146" text-anchor="middle">¥100万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point data-point--secondary" cx="510" cy="140" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="480" y="110" width="60" height="24" />
+              <text class="tooltip-text" x="510" y="126" text-anchor="middle">¥110万</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point data-point--secondary" cx="610" cy="130" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="580" y="100" width="60" height="24" />
+              <text class="tooltip-text" x="610" y="116" text-anchor="middle">¥115万</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+      
+      <div class="haglofs-area-chart__legend">
+        <div class="haglofs-area-chart__legend-item">
+          <span class="haglofs-area-chart__legend-dot haglofs-area-chart__legend-dot--primary"></span>
+          <span>收入</span>
+        </div>
+        <div class="haglofs-area-chart__legend-item">
+          <span class="haglofs-area-chart__legend-dot haglofs-area-chart__legend-dot--secondary"></span>
+          <span>成本</span>
+        </div>
+      </div>
+      
+      <p class="haglofs-area-chart__note">数据来源：财务系统 · 更新时间：2026-07-13</p>
+    </div>
+  </div>
+
+  <!-- 深底示例 -->
+  <div class="demo-section demo-section--dark">
+    <h1 class="demo-title">用户增长趋势</h1>
+    <p class="demo-subtitle">Haglöfs Area Chart · 深底示例</p>
+    
+    <div class="haglofs-area-chart">
+      <h2 class="haglofs-area-chart__title">User Growth</h2>
+      <p class="haglofs-area-chart__subtitle">2026 · Cumulative</p>
+      
+      <div class="haglofs-area-chart__canvas">
+        <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- 网格线 -->
+          <line class="grid-line" x1="60" y1="40" x2="680" y2="40" />
+          <line class="grid-line" x1="60" y1="100" x2="680" y2="100" />
+          <line class="grid-line" x1="60" y1="160" x2="680" y2="160" />
+          <line class="grid-line" x1="60" y1="220" x2="680" y2="220" />
+          
+          <!-- Y 轴标签 -->
+          <text class="axis-label" x="50" y="44" text-anchor="end">10K</text>
+          <text class="axis-label" x="50" y="104" text-anchor="end">7.5K</text>
+          <text class="axis-label" x="50" y="164" text-anchor="end">5K</text>
+          <text class="axis-label" x="50" y="224" text-anchor="end">2.5K</text>
+          
+          <!-- X 轴标签 -->
+          <text class="axis-label" x="110" y="250" text-anchor="middle">JAN</text>
+          <text class="axis-label" x="210" y="250" text-anchor="middle">FEB</text>
+          <text class="axis-label" x="310" y="250" text-anchor="middle">MAR</text>
+          <text class="axis-label" x="410" y="250" text-anchor="middle">APR</text>
+          <text class="axis-label" x="510" y="250" text-anchor="middle">MAY</text>
+          <text class="axis-label" x="610" y="250" text-anchor="middle">JUN</text>
+          
+          <!-- 坐标轴 -->
+          <line class="axis" x1="60" y1="240" x2="680" y2="240" />
+          <line class="axis" x1="60" y1="40" x2="60" y2="240" />
+          
+          <!-- 填充区域 -->
+          <path class="area-fill" d="M110,200 L210,180 L310,140 L410,110 L510,70 L610,40 L610,240 L110,240 Z" />
+          
+          <!-- 边界线 -->
+          <path class="area-stroke" d="M110,200 L210,180 L310,140 L410,110 L510,70 L610,40" />
+          
+          <!-- 数据点 -->
+          <g class="data-point-group">
+            <circle class="data-point" cx="110" cy="200" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="80" y="170" width="60" height="24" />
+              <text class="tooltip-text" x="110" y="186" text-anchor="middle">2,000</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="210" cy="180" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="180" y="150" width="60" height="24" />
+              <text class="tooltip-text" x="210" y="166" text-anchor="middle">3,000</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="310" cy="140" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="280" y="110" width="60" height="24" />
+              <text class="tooltip-text" x="310" y="126" text-anchor="middle">5,000</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="410" cy="110" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="380" y="80" width="60" height="24" />
+              <text class="tooltip-text" x="410" y="96" text-anchor="middle">6,500</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="510" cy="70" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="480" y="40" width="60" height="24" />
+              <text class="tooltip-text" x="510" y="56" text-anchor="middle">8,500</text>
+            </g>
+          </g>
+          
+          <g class="data-point-group">
+            <circle class="data-point" cx="610" cy="40" r="5" />
+            <g class="data-tooltip">
+              <rect class="tooltip-bg" x="580" y="10" width="60" height="24" />
+              <text class="tooltip-text" x="610" y="26" text-anchor="middle">10,000</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+      
+      <div class="haglofs-area-chart__legend">
+        <div class="haglofs-area-chart__legend-item">
+          <span class="haglofs-area-chart__legend-dot haglofs-area-chart__legend-dot--primary"></span>
+          <span>累计用户</span>
+        </div>
+      </div>
+      
+      <p class="haglofs-area-chart__note">数据来源：用户增长系统 · 更新时间：2026-07-13</p>
+    </div>
+  </div>
+
+</body>
+</html>

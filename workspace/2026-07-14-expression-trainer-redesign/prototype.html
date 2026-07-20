@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语音工作站 · 设计稿 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   Haglöfs Token Root（fork · 语音工作站适配）
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Surface 中性阶梯 */
+  --color-white:     #FFFFFF;
+  --color-offwhite:  #F5F3EF;
+  --color-cream:     #E8E4DD;
+  --color-sand:      #C4B8A8;
+  --color-stone:     #8A7D6E;
+  --color-charcoal:  #2D2A26;
+  --color-black:     #1A1816;
+
+  /* Brand 品牌色 */
+  --color-forest:      #4A6741;
+  --color-forest-soft: #547444;
+  --color-moss:        #7A9B6D;
+  --color-moss-soft:   #6D845C;
+  --color-slate:       #5B6B7A;
+  --color-steel:       #7A8B9B;
+
+  /* Signal 信号色 */
+  --color-signal-red:    #E8453C;
+  --color-signal-orange: #E87A3C;
+  --color-signal-yellow: #E8B83C;
+  --color-signal-blue:   #3C7AE8;
+
+  /* 意图别名 */
+  --bg-page:        var(--color-offwhite);
+  --bg-card:        var(--color-white);
+  --bg-subtle:      var(--color-cream);
+  --bg-hover:       var(--color-cream);
+  --bg-active:      var(--color-sand);
+  --bg-inverse:     var(--color-black);
+
+  --border-rest:    var(--color-sand);
+  --border-hover:   var(--color-stone);
+  --border-strong:  var(--color-stone);
+
+  --text-display:   var(--color-black);
+  --text-primary:   var(--color-charcoal);
+  --text-secondary: var(--color-stone);
+  --text-decorative: #B5AC9D;
+  --text-disabled:  var(--color-stone);
+  --text-inverse:   var(--color-offwhite);
+  --text-inverse-2: rgba(255,255,255,.5);
+  --text-inverse-3: rgba(255,255,255,.3);
+
+  /* Font */
+  --font-display:    'Playfair Display', Georgia, serif;
+  --font-body:       'Inter', -apple-system, sans-serif;
+  --font-data:       'JetBrains Mono', 'SF Mono', monospace;
+
+  /* Type Scale */
+  --fs-deco:    clamp(120px, 16vw, 200px);
+  --fs-display: clamp(56px, 8vw, 96px);
+  --fs-h1:      clamp(36px, 5vw, 56px);
+  --fs-h2:      clamp(24px, 3vw, 32px);
+  --fs-h3:      18px;
+  --fs-body-lg: 15px;
+  --fs-body:    14px;
+  --fs-caption: 12px;
+  --fs-data:    11px;
+
+  --lh-tight: 1.1;
+  --lh-snug:  1.3;
+  --lh-body:  1.65;
+  --lh-read:  1.75;
+  --lh-data:  1.4;
+
+  --ls-tight: -0.02em;
+  --ls-normal: 0;
+  --ls-wide:   0.06em;
+  --ls-wider:  0.2em;
+
+  /* Radius */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-full: 999px;
+
+  /* Spacing */
+  --s-xs: 4px; --s-sm: 8px; --s-md: 16px; --s-lg: 24px;
+  --s-xl: 32px; --s-2xl: 48px; --s-3xl: 64px;
+  --s-4xl: 96px; --s-5xl: 120px;
+
+  /* Shadow */
+  --shadow-raised:  0 1px 2px rgba(26,24,22,0.04);
+  --shadow-popover: 0 4px 12px -2px rgba(26,24,22,0.08), 0 1px 1px rgba(26,24,22,0.02);
+  --shadow-modal:   0 8px 24px -4px rgba(26,24,22,0.12), 0 1px 1px rgba(26,24,22,0.02);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16,1,0.3,1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: #EFEBE7;
+  color: var(--text-primary);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════
+   设计稿页框
+   ═══════════════════════════════════════════════ */
+.page-wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px 120px; }
+
+/* Nav */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(239,235,231,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-rest);
+  margin: 0 -24px 48px;
+  padding: 12px 24px;
+  display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;
+}
+.nav a {
+  font-family: var(--font-data); font-size: var(--fs-data);
+  font-weight: 500; letter-spacing: var(--ls-wide); text-transform: uppercase;
+  color: var(--text-secondary); text-decoration: none;
+  padding: 6px 12px; border-radius: var(--r-lg);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.nav a:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* Cover */
+.cover { text-align: center; padding: var(--s-4xl) 0 var(--s-3xl); }
+.cover h1 {
+  font-family: var(--font-display); font-size: 42px; font-weight: 600;
+  letter-spacing: var(--ls-tight); color: var(--text-display); margin-bottom: var(--s-sm);
+}
+.cover p { font-size: var(--fs-body-lg); color: var(--text-secondary); }
+.cover .tag-line {
+  display: inline-flex; align-items: center; gap: var(--s-sm); margin-bottom: var(--s-lg);
+}
+.cover .tag-line::before, .cover .tag-line::after {
+  content: ''; width: 32px; height: 1px; background: var(--border-rest);
+}
+.cover .tag-line span {
+  font-family: var(--font-data); font-size: var(--fs-data); font-weight: 500;
+  text-transform: uppercase; letter-spacing: var(--ls-wider); color: var(--color-forest-soft);
+}
+
+/* Section */
+.section { margin-bottom: var(--s-4xl); }
+.sec-eyebrow {
+  font-family: var(--font-data); font-size: var(--fs-data); font-weight: 600;
+  text-transform: uppercase; letter-spacing: var(--ls-wider);
+  color: var(--color-forest-soft); margin-bottom: var(--s-sm);
+  display: flex; align-items: center; gap: var(--s-sm);
+}
+.sec-eyebrow::before { content:''; width: 24px; height: 1px; background: var(--color-forest-soft); }
+.sec-title {
+  font-family: var(--font-display); font-size: var(--fs-h2); font-weight: 600;
+  letter-spacing: var(--ls-tight); color: var(--text-display); margin-bottom: var(--s-sm);
+}
+.sec-desc {
+  font-size: var(--fs-body-lg); color: var(--text-secondary);
+  max-width: 640px; line-height: var(--lh-body); margin-bottom: var(--s-2xl);
+}
+
+/* Mockup Frame */
+.mockup {
+  background: var(--bg-card); border-radius: var(--r-md); overflow: hidden;
+  box-shadow: var(--shadow-modal); border: 1px solid var(--border-rest);
+}
+.mockup-bar {
+  height: 36px; background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-rest);
+  display: flex; align-items: center; padding: 0 var(--s-md); gap: var(--s-sm);
+}
+.mockup-bar .dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot-r { background: #E0655E; } .dot-y { background: #E6B84C; } .dot-g { background: #67BD6A; }
+.mockup-bar .title {
+  flex: 1; text-align: center;
+  font-family: var(--font-data); font-size: 10px; font-weight: 500;
+  color: var(--text-secondary); letter-spacing: var(--ls-wide);
+}
+
+/* ═══ App Chrome ═══ */
+.app-topbar {
+  display: flex; align-items: center; padding: 0 var(--s-lg);
+  height: 48px; background: var(--bg-card); border-bottom: 1px solid var(--border-rest);
+}
+.app-brand {
+  font-family: var(--font-display); font-size: 15px; font-weight: 600;
+  color: var(--text-display); margin-right: var(--s-2xl);
+  letter-spacing: var(--ls-tight);
+}
+.app-tabs { display: flex; gap: 2px; }
+.app-tab {
+  padding: 6px var(--s-md); font-size: var(--fs-body); font-weight: 500;
+  color: var(--text-secondary); border: none; background: none;
+  border-radius: var(--r-md); cursor: default;
+  transition: all var(--dur-fast) var(--ease-out); font-family: var(--font-body);
+}
+.app-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+.app-tab.active { color: var(--color-forest-soft); background: rgba(74,103,65,0.08); }
+.app-tab.disabled { color: var(--text-decorative); cursor: not-allowed; }
+.app-tab.disabled:hover { background: none; }
+.app-spacer { flex: 1; }
+.app-icon-btn {
+  width: 28px; height: 28px; border: none; background: none;
+  border-radius: var(--r-sm); color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.app-icon-btn:hover { background: var(--bg-hover); }
+
+/* ═══ 录制按钮（统一规范）═══ */
+.rec-btn-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: var(--s-sm);
+}
+.rec-btn {
+  width: 56px; height: 56px; border-radius: 50%; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all var(--dur-base) var(--ease-out);
+}
+.rec-btn--idle { background: var(--color-forest); }
+.rec-btn--idle:hover { background: var(--color-forest-soft); transform: scale(1.05); }
+.rec-btn--idle svg { width: 22px; height: 22px; fill: var(--color-white); }
+
+.rec-btn--recording {
+  background: var(--color-signal-red);
+  animation: rec-pulse 2s ease-in-out infinite;
+}
+.rec-btn--recording:hover { transform: scale(1.05); }
+.rec-btn--recording svg { width: 18px; height: 18px; fill: var(--color-white); }
+@keyframes rec-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(232,69,60,0.35); }
+  50% { box-shadow: 0 0 0 12px rgba(232,69,60,0); }
+}
+
+.rec-btn--processing { background: var(--color-sand); cursor: wait; }
+.rec-btn--processing svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.rec-status {
+  font-family: var(--font-data); font-size: var(--fs-data); font-weight: 500;
+  color: var(--text-secondary); letter-spacing: var(--ls-wide);
+  text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+}
+.rec-status .live { width: 6px; height: 6px; border-radius: 50%; background: var(--color-signal-red); }
+.rec-status .live { animation: blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ═══ 统计面板 ═══ */
+.stat-card {
+  background: var(--bg-subtle); padding: var(--s-md); border-radius: var(--r-sm);
+}
+.stat-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 0;
+}
+.stat-row + .stat-row { border-top: 1px solid var(--border-rest); }
+.stat-label {
+  display: flex; align-items: center; gap: var(--s-sm);
+  font-size: var(--fs-body); color: var(--text-secondary);
+}
+.stat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.stat-num {
+  font-family: var(--font-data); font-size: var(--fs-body-lg); font-weight: 600;
+  color: var(--text-primary); font-variant-numeric: tabular-nums;
+}
+.stat-detail {
+  font-family: var(--font-data); font-size: 10px; color: var(--text-decorative);
+  letter-spacing: var(--ls-wide); margin-left: 15px; margin-top: -4px; margin-bottom: 4px;
+}
+
+/* ═══ Eyebrow / Panel heading ═══ */
+.eyebrow {
+  font-family: var(--font-data); font-size: var(--fs-data); font-weight: 600;
+  text-transform: uppercase; letter-spacing: var(--ls-wider);
+  color: var(--text-secondary); display: flex; align-items: center; gap: var(--s-sm);
+  margin-bottom: var(--s-md);
+}
+.eyebrow::before { content:''; width: 24px; height: 1px; background: var(--color-forest-soft); }
+
+/* ═══ 反馈卡片 ═══ */
+.fb-card {
+  background: var(--bg-subtle); border-radius: var(--r-sm); padding: var(--s-md);
+  margin-bottom: var(--s-sm); border-left: 2px solid var(--color-moss-soft);
+}
+.fb-card--warn { border-left-color: var(--color-signal-red); }
+.fb-card--tip { border-left-color: var(--color-signal-orange); }
+.fb-head { display: flex; align-items: center; gap: var(--s-sm); margin-bottom: 6px; }
+.fb-icon { font-size: 13px; }
+.fb-title { font-size: var(--fs-caption); font-weight: 600; color: var(--text-secondary); }
+.fb-body { font-size: var(--fs-body); line-height: 1.7; color: var(--text-primary); }
+.fb-body .s { color: var(--color-forest-soft); font-weight: 600; }
+.fb-body .x { color: var(--color-signal-red); }
+
+/* ═══ 字幕高亮 ═══ */
+.sub-stage {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: var(--s-2xl); flex: 1; min-height: 320px;
+}
+.subtitle {
+  max-width: 600px; text-align: center;
+  font-size: var(--fs-h3); line-height: 1.8; font-weight: 500; color: var(--text-primary);
+}
+.subtitle--lg { font-size: var(--fs-h2); line-height: 1.7; }
+.hl-filler { color: var(--color-signal-red); text-decoration: underline wavy var(--color-signal-red); text-underline-offset: 4px; }
+.hl-hedge { color: var(--text-secondary); font-style: italic; }
+.hl-vague { color: var(--color-signal-orange); border-bottom: 1px dotted var(--color-signal-orange); }
+.hl-strong { color: var(--color-forest-soft); font-weight: 700; }
+
+/* ═══ 三栏结果 ═══ */
+.tri-col { display: grid; grid-template-columns: 1fr 1fr 1fr; height: 420px; }
+.tri-col .col + .col { border-left: 1px solid var(--border-rest); }
+.col-head {
+  padding: 10px var(--s-md); border-bottom: 1px solid var(--border-rest);
+  background: var(--bg-subtle);
+  display: flex; align-items: center; justify-content: space-between; min-height: 40px;
+}
+.col-title { font-size: var(--fs-caption); font-weight: 600; color: var(--text-primary); }
+.col-badge {
+  font-family: var(--font-data); font-size: 9px; font-weight: 600;
+  padding: 2px 6px; border-radius: var(--r-sm);
+  letter-spacing: var(--ls-wide); text-transform: uppercase;
+}
+.badge-gray { background: var(--border-rest); color: var(--text-secondary); }
+.badge-forest { background: rgba(74,103,65,0.1); color: var(--color-forest-soft); }
+.badge-moss { background: rgba(122,155,109,0.15); color: var(--color-moss-soft); }
+.col-body {
+  padding: var(--s-md); overflow-y: auto; flex: 1;
+  font-size: var(--fs-body); line-height: 1.8; color: var(--text-secondary);
+}
+.col-body p { margin-bottom: var(--s-sm); }
+.col-body--doc h1 { font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 600; color: var(--text-display); margin-bottom: var(--s-md); }
+.col-body--doc h2 { font-size: var(--fs-body); font-weight: 600; color: var(--text-primary); margin: var(--s-md) 0 var(--s-sm); }
+.col-body--doc p { color: var(--text-primary); margin-bottom: var(--s-sm); }
+.col-body--doc ul { margin: 0 0 var(--s-sm) var(--s-md); }
+.col-body--doc li { margin-bottom: 4px; color: var(--text-primary); }
+.col-body--doc strong { color: var(--text-display); }
+
+.change-item {
+  background: var(--bg-subtle); border-radius: var(--r-sm); padding: 10px; margin-bottom: 8px;
+}
+.change-tag {
+  font-family: var(--font-data); font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 1px 5px; border-radius: var(--r-sm); margin-bottom: 6px; display: inline-block;
+}
+.tag-del { background: rgba(232,69,60,0.1); color: var(--color-signal-red); }
+.tag-fix { background: rgba(232,122,60,0.1); color: var(--color-signal-orange); }
+.tag-strong { background: rgba(122,155,109,0.1); color: var(--color-moss-soft); }
+.tag-struct { background: rgba(74,103,65,0.1); color: var(--color-forest-soft); }
+.change-diff { font-size: var(--fs-body); line-height: 1.6; margin-bottom: 4px; }
+.change-old { color: var(--color-signal-red); text-decoration: line-through; }
+.change-new { color: var(--color-forest-soft); font-weight: 600; }
+.change-arrow { color: var(--text-decorative); font-size: 11px; margin: 0 4px; }
+.change-why { font-size: var(--fs-caption); color: var(--text-secondary); line-height: 1.5; }
+
+/* ═══ 按钮 ═══ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px var(--s-md); font-size: var(--fs-body); font-weight: 500;
+  border: none; border-radius: var(--r-lg); cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--dur-fast) var(--ease-out);
+}
+.btn-primary { background: var(--color-forest); color: var(--color-white); }
+.btn-primary:hover { background: var(--color-forest-soft); }
+.btn-secondary {
+  background: var(--bg-card); color: var(--text-primary);
+  border: 1px solid var(--border-rest);
+}
+.btn-secondary:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+.btn-ghost { background: none; color: var(--text-secondary); }
+.btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+.btn-danger { background: var(--color-signal-red); color: var(--color-white); }
+.btn-sm { padding: 5px 10px; font-size: var(--fs-caption); }
+.btn-lg { padding: 10px var(--s-lg); font-size: var(--fs-body-lg); }
+
+/* ═══ 进度条 ═══ */
+.bar-wrap { height: 4px; background: var(--border-rest); border-radius: 2px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 2px; transition: width var(--dur-base) var(--ease-out); }
+
+/* ═══ 评分卡 ═══ */
+.score-card {
+  background: var(--bg-subtle); border-radius: var(--r-sm); padding: var(--s-md); text-align: center;
+}
+.score-label {
+  font-family: var(--font-data); font-size: var(--fs-data); font-weight: 600;
+  text-transform: uppercase; letter-spacing: var(--ls-wide); color: var(--text-secondary);
+  margin-bottom: var(--s-sm);
+}
+.score-num { font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: var(--ls-tight); }
+.score-trend { font-size: var(--fs-caption); margin-top: 4px; }
+
+/* ═══ 底部条 ═══ */
+.app-bottom {
+  display: flex; align-items: center; justify-content: center; gap: var(--s-xl);
+  padding: var(--s-sm) var(--s-lg); background: var(--bg-card);
+  border-top: 1px solid var(--border-rest); height: 40px;
+}
+.bot-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: var(--fs-caption); color: var(--text-secondary);
+}
+.bot-item b { font-family: var(--font-data); font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+/* ═══ 空状态 / 错误状态 ═══ */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; min-height: 400px; padding: var(--s-3xl); text-align: center;
+}
+.empty-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--bg-subtle); border: 1px solid var(--border-rest);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: var(--text-decorative); margin-bottom: var(--s-lg);
+}
+.empty-title {
+  font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 600;
+  color: var(--text-display); margin-bottom: var(--s-sm);
+}
+.empty-desc { font-size: var(--fs-body); color: var(--text-secondary); max-width: 360px; margin-bottom: var(--s-lg); }
+
+/* 错误状态变体 */
+.empty-icon--error { border-color: rgba(232,69,60,0.3); color: var(--color-signal-red); background: rgba(232,69,60,0.05); }
+
+/* ═══ 设置面板 ═══ */
+.settings-body { padding: var(--s-xl); max-height: 420px; overflow-y: auto; }
+.settings-group { margin-bottom: var(--s-xl); }
+.settings-group:last-child { margin-bottom: 0; }
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--s-md) 0; border-bottom: 1px solid var(--border-rest);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-label { font-size: var(--fs-body); color: var(--text-primary); font-weight: 500; }
+.setting-hint { font-size: var(--fs-caption); color: var(--text-secondary); margin-top: 2px; }
+.input-field {
+  padding: 7px 10px; font-size: var(--fs-body); font-family: var(--font-body);
+  border: 1px solid var(--border-rest); border-radius: var(--r-md);
+  background: var(--bg-card); color: var(--text-primary);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.input-field:focus { outline: none; border-color: var(--color-forest-soft); }
+.input-field--mono { font-family: var(--font-data); font-size: var(--fs-caption); }
+
+/* Toggle */
+.toggle {
+  width: 36px; height: 20px; border-radius: var(--r-full);
+  background: var(--border-rest); position: relative; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+.toggle.on { background: var(--color-forest); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%; background: white;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.toggle.on::after { transform: translateX(16px); }
+
+/* ═══ Toast ═══ */
+.toast {
+  background: var(--color-charcoal); color: var(--text-inverse);
+  padding: var(--s-sm) var(--s-md); border-radius: var(--r-md);
+  font-size: var(--fs-body); display: flex; align-items: center; gap: var(--s-sm);
+  box-shadow: var(--shadow-popover);
+}
+.toast--success { background: var(--color-forest); }
+.toast--error { background: var(--color-signal-red); }
+
+/* ═══ 加载骨架 ═══ */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-subtle) 25%, var(--border-rest) 50%, var(--bg-subtle) 75%);
+  background-size: 200% 100%; animation: shimmer 1.5s infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* ═══ Token 展示卡 ═══ */
+.token-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: var(--s-md); }
+.token-card {
+  background: var(--bg-card); border-radius: var(--r-sm); overflow: hidden;
+  border: 1px solid var(--border-rest); box-shadow: var(--shadow-raised);
+}
+.token-swatch { height: 64px; display: flex; align-items: flex-end; padding: var(--s-sm); }
+.token-swatch span {
+  font-family: var(--font-data); font-size: 9px; font-weight: 500;
+  background: rgba(255,255,255,0.88); padding: 2px 5px; border-radius: var(--r-sm);
+  color: #333; letter-spacing: 0.5px;
+}
+.token-info { padding: var(--s-sm) var(--s-md); }
+.token-name { font-size: var(--fs-body); font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+.token-use { font-size: var(--fs-caption); color: var(--text-secondary); }
+
+/* ═══ 组件展示网格 ═══ */
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-lg); }
+.comp-card {
+  background: var(--bg-card); border-radius: var(--r-sm); padding: var(--s-lg);
+  border: 1px solid var(--border-rest);
+}
+.comp-card h4 {
+  font-family: var(--font-data); font-size: var(--fs-data); font-weight: 600;
+  text-transform: uppercase; letter-spacing: var(--ls-wide); color: var(--text-secondary);
+  margin-bottom: var(--s-md);
+}
+.comp-row { display: flex; align-items: center; gap: var(--s-sm); margin-bottom: var(--s-sm); flex-wrap: wrap; }
+.comp-note { font-size: var(--fs-caption); color: var(--text-secondary); margin-top: var(--s-sm); }
+
+/* Annotation */
+.annot {
+  max-width: 1280px; margin: var(--s-md) auto 0; padding: 0 24px;
+}
+.annot p { font-size: var(--fs-caption); color: var(--text-secondary); line-height: 1.7; }
+.annot .hl { color: var(--color-forest-soft); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     NAV
+     ═══════════════════════════════════════════════ -->
+<div class="nav">
+  <a href="#design-system">设计系统</a>
+  <a href="#components">组件库</a>
+  <a href="#s1">① 空状态</a>
+  <a href="#s2">② 训练·录制</a>
+  <a href="#s3">③ 训练·报告</a>
+  <a href="#s4">④ 文档·录制</a>
+  <a href="#s5">⑤ 文档·结果</a>
+  <a href="#s6">⑥ 设置</a>
+  <a href="#s7">⑦ 错误状态</a>
+</div>
+
+<div class="page-wrap">
+
+<!-- ═══════ COVER ═══════ -->
+<div class="cover">
+  <div class="tag-line"><span>Voice Workstation · v2</span></div>
+  <h1>语音工作站</h1>
+  <p>Haglöfs 范式设计系统 · 10 个界面状态 · 完整组件库</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     DESIGN SYSTEM
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="design-system">
+  <div class="sec-eyebrow">Design System</div>
+  <div class="sec-title">Haglöfs Token 映射</div>
+  <div class="sec-desc">22 色调色板 → 语音工作站语义映射。页面底色温润米白 offwhite，主强调森林绿 forest，层次靠色调+边框不靠阴影。Signal 色克制使用。</div>
+
+  <div class="token-grid">
+    <div class="token-card"><div class="token-swatch" style="background:#F5F3EF"><span>#F5F3EF</span></div><div class="token-info"><div class="token-name">页面底色</div><div class="token-use">offwhite · 温润米白</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#FFFFFF"><span>#FFFFFF</span></div><div class="token-info"><div class="token-name">卡片底</div><div class="token-use">white · 浮起的面</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#E8E4DD"><span>#E8E4DD</span></div><div class="token-info"><div class="token-name">次级面</div><div class="token-use">cream · 分隔/hover</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#C4B8A8"><span>#C4B8A8</span></div><div class="token-info"><div class="token-name">边框</div><div class="token-use">sand · 发丝线</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#2D2A26"><span style="color:#fff;background:rgba(0,0,0,.4)">#2D2A26</span></div><div class="token-info"><div class="token-name">正文</div><div class="token-use">charcoal · 泥土暖灰</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#8A7D6E"><span style="color:#fff;background:rgba(0,0,0,.4)">#8A7D6E</span></div><div class="token-info"><div class="token-name">次要文字</div><div class="token-use">stone · caption/meta</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#4A6741"><span style="color:#fff;background:rgba(0,0,0,.4)">#4A6741</span></div><div class="token-info"><div class="token-name">主强调</div><div class="token-use">forest · 按钮/Tab</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#547444"><span style="color:#fff;background:rgba(0,0,0,.4)">#547444</span></div><div class="token-info"><div class="token-name">浅底强调</div><div class="token-use">forest-soft · 正文绿</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#7A9B6D"><span style="color:#fff;background:rgba(0,0,0,.4)">#7A9B6D</span></div><div class="token-info"><div class="token-name">成功/有力</div><div class="token-use">moss · 正向反馈</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#E8453C"><span style="color:#fff;background:rgba(0,0,0,.4)">#E8453C</span></div><div class="token-info"><div class="token-name">填充词</div><div class="token-use">signal-red · 标注</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#E87A3C"><span style="color:#fff;background:rgba(0,0,0,.4)">#E87A3C</span></div><div class="token-info"><div class="token-name">笼统词</div><div class="token-use">signal-orange · 标注</div></div></div>
+    <div class="token-card"><div class="token-swatch" style="background:#1A1816"><span style="color:#fff;background:rgba(0,0,0,.4)">#1A1816</span></div><div class="token-info"><div class="token-name">收束/深底</div><div class="token-use">black · Hero/footer</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     COMPONENTS
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="components">
+  <div class="sec-eyebrow">Component Library</div>
+  <div class="sec-title">组件规范</div>
+  <div class="sec-desc">所有界面共享的原子组件。圆角三级：结构件 0px · 内容卡 4px · 交互控件 8px。</div>
+
+  <div class="comp-grid">
+
+    <!-- 录制按钮三态 -->
+    <div class="comp-card">
+      <h4>录制按钮 · 统一规格</h4>
+      <div class="comp-row" style="gap:32px;justify-content:center;padding:16px 0">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <button class="rec-btn rec-btn--idle"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="white" stroke-width="2"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2"/></svg></button>
+          <span style="font-family:var(--font-data);font-size:9px;text-transform:uppercase;letter-spacing:var(--ls-wide);color:var(--text-secondary)">Idle</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <button class="rec-btn rec-btn--recording"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1"/></svg></button>
+          <span style="font-family:var(--font-data);font-size:9px;text-transform:uppercase;letter-spacing:var(--ls-wide);color:var(--color-signal-red)">Recording</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+          <button class="rec-btn rec-btn--processing"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></button>
+          <span style="font-family:var(--font-data);font-size:9px;text-transform:uppercase;letter-spacing:var(--ls-wide);color:var(--text-secondary)">Processing</span>
+        </div>
+      </div>
+      <div class="comp-note">
+        <b>56px 圆形</b> · 所有界面底部居中 · 距底边 48px<br>
+        idle=forest · recording=signal-red+脉冲 · processing=sand+旋转
+      </div>
+    </div>
+
+    <!-- 按钮 -->
+    <div class="comp-card">
+      <h4>按钮</h4>
+      <div class="comp-row">
+        <button class="btn btn-primary">导出 Markdown</button>
+        <button class="btn btn-secondary">重新生成</button>
+        <button class="btn btn-ghost">取消</button>
+        <button class="btn btn-danger btn-sm">删除</button>
+      </div>
+      <div class="comp-row">
+        <button class="btn btn-primary btn-sm">小按钮</button>
+        <button class="btn btn-primary btn-lg">大按钮</button>
+      </div>
+      <div class="comp-note">Primary=forest · Secondary=白底+边框 · Ghost=透明 · 圆角 8px</div>
+    </div>
+
+    <!-- Eyebrow -->
+    <div class="comp-card">
+      <h4>Eyebrow / 标签</h4>
+      <div style="margin-bottom:12px"><span class="eyebrow">实时统计</span></div>
+      <div style="margin-bottom:12px"><span class="eyebrow" style="--color-forest-soft:var(--color-moss-soft)">AI 反馈</span></div>
+      <div class="comp-note">Mono · 全大写 · 0.2em 字距 · 前缀线 24px · forest-soft</div>
+    </div>
+
+    <!-- 进度条 -->
+    <div class="comp-card">
+      <h4>进度条 / 维度评分</h4>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:var(--fs-body)">逻辑清晰度</span><span style="font-family:var(--font-data);font-size:var(--fs-caption);font-weight:600;color:var(--color-moss-soft)">良好</span></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:75%;background:var(--color-moss-soft)"></div></div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:var(--fs-body)">填充词控制</span><span style="font-family:var(--font-data);font-size:var(--fs-caption);font-weight:600;color:var(--color-signal-red)">偏多</span></div>
+        <div class="bar-wrap"><div class="bar-fill" style="width:35%;background:var(--color-signal-red)"></div></div>
+      </div>
+      <div class="comp-note">4px 高 · 颜色对应评级 · 不用渐变</div>
+    </div>
+
+    <!-- 统计标签 -->
+    <div class="comp-card">
+      <h4>统计标签</h4>
+      <div style="background:var(--bg-subtle);padding:var(--s-md);border-radius:var(--r-sm)">
+        <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--color-signal-red)"></span>填充词</div><div class="stat-num">12</div></div>
+        <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--text-secondary)"></span>犹豫词</div><div class="stat-num">5</div></div>
+        <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--color-signal-orange)"></span>笼统词</div><div class="stat-num">3</div></div>
+        <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--color-moss-soft)"></span>有力表达</div><div class="stat-num">8</div></div>
+      </div>
+      <div class="comp-note">色点 + 标签名 + 数字（Mono 粗体）</div>
+    </div>
+
+    <!-- 文字高亮 -->
+    <div class="comp-card">
+      <h4>文字高亮（词库标注）</h4>
+      <p style="font-size:var(--fs-h3);line-height:2;margin-bottom:12px">
+        <span class="hl-filler">填充词</span> · <span class="hl-hedge">犹豫词</span> · <span class="hl-vague">笼统词</span> · <span class="hl-strong">有力表达</span>
+      </p>
+      <div class="comp-note">填充词: signal-red 波浪线 · 犹豫: 灰色斜体 · 笼统: orange 虚线 · 有力: forest 粗体</div>
+    </div>
+
+    <!-- Toggle + Input -->
+    <div class="comp-card">
+      <h4>表单控件</h4>
+      <div class="comp-row" style="justify-content:space-between">
+        <span style="font-size:var(--fs-body)">云端 AI 反馈</span>
+        <div class="toggle on"></div>
+      </div>
+      <div class="comp-row" style="justify-content:space-between">
+        <span style="font-size:var(--fs-body)">本地 Ollama</span>
+        <div class="toggle"></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="setting-hint" style="margin-bottom:4px">API Key</div>
+        <input class="input-field input-field--mono" type="text" value="sk-••••••••••••••••" style="width:100%">
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="comp-card">
+      <h4>Toast 通知</h4>
+      <div class="comp-row"><div class="toast toast--success">✓ 报告已保存到桌面</div></div>
+      <div class="comp-row"><div class="toast">文件已导出</div></div>
+      <div class="comp-row"><div class="toast toast--error">⚠ AI 调用失败，已降级为本地分析</div></div>
+      <div class="comp-note">charcoal/forest/red 三色 · popover 阴影</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     界面 ① 空状态
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="sec-eyebrow">界面 01</div>
+  <div class="sec-title">空状态 · 首次打开</div>
+  <div class="sec-desc">用户第一次打开应用看到的状态。选择模式 → 点击录制按钮开始。录制按钮固定在底部居中。</div>
+
+  <div class="mockup">
+    <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">语音工作站</div></div>
+    <div class="app-topbar">
+      <div class="app-brand">语音工作站</div>
+      <div class="app-tabs">
+        <button class="app-tab active">训练</button>
+        <button class="app-tab">报告</button>
+        <button class="app-tab disabled">纪要</button>
+        <button class="app-tab disabled">邮件</button>
+        <button class="app-tab disabled">笔记</button>
+      </div>
+      <div class="app-spacer"></div>
+      <button class="app-icon-btn">⚙</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;height:400px">
+      <div class="empty-state">
+        <div class="empty-icon">🎤</div>
+        <div class="empty-title">开始你的第一次表达训练</div>
+        <div class="empty-desc">点击下方按钮，对着麦克风说话。系统会实时识别你的语音，分析填充词、犹豫词和笼统词，并给出 AI 反馈。</div>
+        <div style="display:flex;gap:12px;margin-bottom:8px">
+          <button class="btn btn-secondary btn-sm">查看使用指南</button>
+        </div>
+      </div>
+
+      <!-- 统一录制按钮 -->
+      <div style="display:flex;justify-content:center;padding-bottom:48px">
+        <div class="rec-btn-wrap">
+          <button class="rec-btn rec-btn--idle"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="white" stroke-width="2"/><line x1="12" y1="19" x2="12" y2="22" stroke="white" stroke-width="2"/></svg></button>
+          <div class="rec-status">点击开始录制</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     界面 ② 训练·录制中
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="sec-eyebrow">界面 02</div>
+  <div class="sec-title">训练模式 · 录制中</div>
+  <div class="sec-desc">三栏布局：左统计 / 中高亮字幕 / 右 AI 反馈。录制按钮固定底部居中，signal-red + 脉冲动画。</div>
+
+  <div class="mockup">
+    <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">语音工作站 — 训练</div></div>
+    <div class="app-topbar">
+      <div class="app-brand">语音工作站</div>
+      <div class="app-tabs">
+        <button class="app-tab active">训练</button>
+        <button class="app-tab">报告</button>
+        <button class="app-tab disabled">纪要</button>
+        <button class="app-tab disabled">邮件</button>
+        <button class="app-tab disabled">笔记</button>
+      </div>
+      <div class="app-spacer"></div>
+      <button class="app-icon-btn">⚙</button>
+    </div>
+
+    <div style="display:grid;grid-template-columns:220px 1fr 260px;height:440px">
+      <!-- 左：统计 -->
+      <div style="padding:var(--s-lg) var(--s-md);border-right:1px solid var(--border-rest);overflow-y:auto">
+        <div class="eyebrow">实时统计</div>
+        <div class="stat-card">
+          <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--color-signal-red)"></span>填充词</div><div class="stat-num">12</div></div>
+          <div class="stat-detail">嗯×5 · 啊×4 · 然后×3</div>
+          <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--text-secondary)"></span>犹豫词</div><div class="stat-num">5</div></div>
+          <div class="stat-detail">可能×2 · 我觉得×2</div>
+          <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--color-signal-orange)"></span>笼统词</div><div class="stat-num">3</div></div>
+          <div class="stat-row"><div class="stat-label"><span class="stat-dot" style="background:var(--color-moss-soft)"></span>有力表达</div><div class="stat-num">8</div></div>
+        </div>
+        <div class="eyebrow" style="margin-top:var(--s-lg)">表达密度</div>
+        <div class="stat-card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--s-sm)">
+            <span style="font-size:var(--fs-body);color:var(--text-secondary)">有效内容比</span>
+            <span style="font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--color-forest-soft)">72%</span>
+          </div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:72%;background:var(--color-forest-soft)"></div></div>
+          <div style="font-family:var(--font-data);font-size:10px;color:var(--text-secondary);margin-top:6px">有效 286 / 共 397 字</div>
+        </div>
+      </div>
+
+      <!-- 中：字幕 + 录制按钮 -->
+      <div style="display:flex;flex-direction:column">
+        <div class="sub-stage" style="flex:1">
+          <div class="subtitle subtitle--lg">
+            <span class="hl-filler">嗯</span>，<span class="hl-filler">然后</span><span class="hl-hedge">我觉得</span>这个项目的核心问题在于，<span class="hl-hedge">可能</span>大家<span class="hl-vague">还没搞清楚</span>真正的用户需求是什么。我们需要在下周之前，<span class="hl-strong">完成至少三十个用户的深度访谈</span>，<span class="hl-filler">然后</span>把结论整理成一份可执行的行动方案。
+          </div>
+        </div>
+        <!-- 统一录制按钮 -->
+        <div style="display:flex;justify-content:center;padding-bottom:48px">
+          <div class="rec-btn-wrap">
+            <button class="rec-btn rec-btn--recording"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1"/></svg></button>
+            <div class="rec-status"><span class="live"></span>录制中 · 03:24</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右：AI 反馈 -->
+      <div style="padding:var(--s-lg) var(--s-md);border-left:1px solid var(--border-rest);overflow-y:auto">
+        <div class="eyebrow">AI 反馈</div>
+        <div class="fb-card fb-card--warn">
+          <div class="fb-head"><span class="fb-icon">⚠</span><span class="fb-title">填充词过密</span></div>
+          <div class="fb-body">这段出现了 <span class="x">"嗯"、"然后"、"然后"</span>。<br><span class="s">→ 删掉语气词，直接说"核心问题是…"</span></div>
+        </div>
+        <div class="fb-card">
+          <div class="fb-head"><span class="fb-icon">✓</span><span class="fb-title">动作明确</span></div>
+          <div class="fb-body"><span class="s">"完成至少三十个用户的深度访谈"</span> 是标杆表达——有数字、有截止、可量化。</div>
+        </div>
+        <div class="fb-card fb-card--tip">
+          <div class="fb-head"><span class="fb-icon">💡</span><span class="fb-title">可以更直接</span></div>
+          <div class="fb-body"><span class="x">"可能大家还没搞清楚"</span> 含犹豫词。<br><span class="s">→ 有数据就直说"团队尚未对齐"</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-bottom">
+      <div class="bot-item"><span class="stat-dot" style="width:6px;height:6px;border-radius:50%;background:var(--color-signal-red);animation:blink 1.5s ease-in-out infinite"></span>录制中 <b>03:24</b></div>
+      <div class="bot-item">字数 <b>397</b></div>
+      <div class="bot-item">语速 <b>116 字/分</b></div>
+      <div class="bot-item">填充词率 <b style="color:var(--color-signal-red)">9.1%</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     界面 ③ 训练·报告
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="sec-eyebrow">界面 03</div>
+  <div class="sec-title">训练模式 · 分析报告</div>
+  <div class="sec-desc">录制结束后。3 个评分卡（Playfair 大数字）+ 6 维度进度条 + 完整标注文字稿。</div>
+
+  <div class="mockup">
+    <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">语音工作站 — 分析报告</div></div>
+    <div class="app-topbar">
+      <div class="app-brand">语音工作站</div>
+      <div class="app-tabs"><button class="app-tab active">训练</button><button class="app-tab">报告</button><button class="app-tab disabled">纪要</button><button class="app-tab disabled">邮件</button><button class="app-tab disabled">笔记</button></div>
+      <div class="app-spacer"></div>
+      <button class="app-icon-btn">⚙</button>
+    </div>
+
+    <div style="padding:var(--s-2xl);max-height:480px;overflow-y:auto">
+      <div style="max-width:720px;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:var(--s-2xl)">
+          <div>
+            <div style="font-family:var(--font-data);font-size:var(--fs-data);font-weight:600;text-transform:uppercase;letter-spacing:var(--ls-wider);color:var(--text-secondary);margin-bottom:4px">表达分析报告 · 第 3 次训练</div>
+            <div style="font-family:var(--font-display);font-size:var(--fs-h2);font-weight:600;letter-spacing:var(--ls-tight);color:var(--text-display)">2026-07-14</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost">再次训练</button>
+            <button class="btn btn-primary">保存 Markdown</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-md);margin-bottom:var(--s-2xl)">
+          <div class="score-card"><div class="score-label">精准度</div><div class="score-num" style="color:var(--color-forest-soft)">72</div><div class="score-trend" style="color:var(--color-moss-soft)">↑ +8</div></div>
+          <div class="score-card"><div class="score-label">信息密度</div><div class="score-num" style="color:var(--color-forest-soft)">68%</div><div class="score-trend" style="color:var(--color-moss-soft)">↑ +5%</div></div>
+          <div class="score-card"><div class="score-label">填充词率</div><div class="score-num" style="color:var(--color-signal-red)">9.1%</div><div class="score-trend" style="color:var(--color-moss-soft)">↓ -2.3%</div></div>
+        </div>
+
+        <div style="background:var(--bg-subtle);border-radius:var(--r-sm);padding:var(--s-lg);margin-bottom:var(--s-md)">
+          <div class="eyebrow" style="margin-bottom:var(--s-md)">6 维度分析</div>
+
+          <div style="margin-bottom:var(--s-md)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:var(--fs-body);font-weight:500">① 逻辑清晰度</span><span style="font-family:var(--font-data);font-size:var(--fs-caption);font-weight:600;color:var(--color-moss-soft)">良好</span></div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:75%;background:var(--color-moss-soft)"></div></div>
+            <div style="font-size:var(--fs-caption);color:var(--text-secondary);margin-top:5px">问题→行动→交付物结构清晰，有明确截止时间。</div>
+          </div>
+          <div style="margin-bottom:var(--s-md)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:var(--fs-body);font-weight:500">② 直接性</span><span style="font-family:var(--font-data);font-size:var(--fs-caption);font-weight:600;color:var(--color-signal-orange)">待提升</span></div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:45%;background:var(--color-signal-orange)"></div></div>
+            <div style="font-size:var(--fs-caption);color:var(--text-secondary);margin-top:5px">"可能大家还没搞清楚"——有数据支撑时去掉犹豫词会更坚定。</div>
+          </div>
+          <div style="margin-bottom:var(--s-md)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:var(--fs-body);font-weight:500">③ 填充词控制</span><span style="font-family:var(--font-data);font-size:var(--fs-caption);font-weight:600;color:var(--color-signal-red)">偏多</span></div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:35%;background:var(--color-signal-red)"></div></div>
+            <div style="font-size:var(--fs-caption);color:var(--text-secondary);margin-top:5px">12 个填充词，密度 9.1%。用停顿替代"嗯""然后"。</div>
+          </div>
+          <div style="margin-bottom:var(--s-md)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:var(--fs-body);font-weight:500">⑥ 亮点表达</span><span style="font-family:var(--font-data);font-size:var(--fs-caption);font-weight:600;color:var(--color-moss-soft)">突出</span></div>
+            <div class="bar-wrap"><div class="bar-fill" style="width:85%;background:var(--color-moss-soft)"></div></div>
+            <div style="font-size:var(--fs-caption);color:var(--text-secondary);margin-top:5px">"完成至少三十个用户的深度访谈"——有数字、有截止、可量化。标杆。</div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-subtle);border-radius:var(--r-sm);padding:var(--s-lg)">
+          <div class="eyebrow" style="margin-bottom:var(--s-md)">完整文字稿</div>
+          <p style="font-size:var(--fs-body-lg);line-height:2;color:var(--text-primary)">
+            <span class="hl-filler">嗯</span>，<span class="hl-filler">然后</span><span class="hl-hedge">我觉得</span>这个项目的核心问题在于，<span class="hl-hedge">可能</span>大家<span class="hl-vague">还没搞清楚</span>真正的用户需求是什么。我们需要在下周之前，<span class="hl-strong">完成至少三十个用户的深度访谈</span>，<span class="hl-filler">然后</span>把结论整理成一份可执行的行动方案。
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     界面 ④ 文档·录制中
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="sec-eyebrow">界面 04</div>
+  <div class="sec-title">文档模式 · 录制中</div>
+  <div class="sec-desc">干净字幕，无高亮、无统计面板、无反馈。<span class="annot"><span class="hl">录制按钮位置和大小与训练模式完全一致</span></span>——底部居中，56px。</div>
+
+  <div class="mockup">
+    <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">语音工作站 — 正式报告</div></div>
+    <div class="app-topbar">
+      <div class="app-brand">语音工作站</div>
+      <div class="app-tabs"><button class="app-tab">训练</button><button class="app-tab active">报告</button><button class="app-tab disabled">纪要</button><button class="app-tab disabled">邮件</button><button class="app-tab disabled">笔记</button></div>
+      <div class="app-spacer"></div>
+      <button class="app-icon-btn">⚙</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;height:440px">
+      <div class="sub-stage" style="flex:1">
+        <div style="position:absolute;top:24px;right:32px" class="rec-status"><span class="live"></span>录制中 · 02:48</div>
+        <div class="subtitle" style="text-align:left;font-size:var(--fs-body-lg);color:var(--text-secondary);font-weight:400;line-height:1.9">
+          这个季度我们 AI 产品线的核心目标是把对话式搜索的日活从三万做到十万。具体策略有三条：第一是接入更多垂类数据源，把覆盖率从目前的百分之四十提升到八十五以上；第二是优化召回排序，目前前三个结果的点击率只有百分之二十二，我们要做到三十五以上……
+        </div>
+      </div>
+      <!-- 统一录制按钮 -->
+      <div style="display:flex;justify-content:center;padding-bottom:48px">
+        <div class="rec-btn-wrap">
+          <button class="rec-btn rec-btn--recording"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1"/></svg></button>
+          <div class="rec-status"><span class="live"></span>录制中 · 02:48</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="annot"><p><span class="hl">对比界面 02</span>：去掉了左右面板和颜色高亮，全宽干净字幕。录制按钮位置/大小/样式完全一致。</p></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     界面 ⑤ 文档·三栏结果
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="sec-eyebrow">界面 05</div>
+  <div class="sec-title">文档模式 · 三栏对比结果</div>
+  <div class="sec-desc"><span class="annot"><span class="hl">产品核心差异化</span></span>：不只是转换，而是三栏对比教学。原文标注 / 正式文档（可编辑）/ 变更说明。</div>
+
+  <div class="mockup">
+    <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">语音工作站 — 正式报告 · 结果</div></div>
+    <div class="app-topbar">
+      <div class="app-brand">语音工作站</div>
+      <div class="app-tabs"><button class="app-tab">训练</button><button class="app-tab active">报告</button><button class="app-tab disabled">纪要</button><button class="app-tab disabled">邮件</button><button class="app-tab disabled">笔记</button></div>
+      <div class="app-spacer"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm">重新录制</button>
+        <button class="btn btn-primary btn-sm">导出 Markdown</button>
+      </div>
+    </div>
+
+    <div class="tri-col">
+      <!-- Col 1: Original -->
+      <div class="col" style="display:flex;flex-direction:column">
+        <div class="col-head"><span class="col-title">原始口述</span><span class="col-badge badge-gray">带标注</span></div>
+        <div class="col-body">
+          <p><span class="hl-filler">嗯</span>，<span class="hl-filler">就是说</span>这个季度我们 AI 产品线的<span class="hl-vague">核心目标</span>是把对话式搜索日活从三万做到十万。</p>
+          <p><span class="hl-filler">然后</span>具体策略有<span class="hl-hedge">大概</span>三条：</p>
+          <p>第一是接入更多<span class="hl-vague">垂类数据源</span>，覆盖率从百分之四十提升到八十五以上。</p>
+          <p>第二是<span class="hl-vague">优化一下</span>召回排序，目前前三个结果点击率只有百分之二十二。</p>
+          <p><span class="hl-filler">反正</span>，这三条做到了，十万日活<span class="hl-hedge">应该</span>问题不大。</p>
+        </div>
+      </div>
+
+      <!-- Col 2: Formal -->
+      <div class="col" style="display:flex;flex-direction:column">
+        <div class="col-head"><span class="col-title">正式文档</span><span class="col-badge badge-forest">AI 生成</span></div>
+        <div class="col-body col-body--doc">
+          <h1>AI 产品线 Q3 目标规划</h1>
+          <h2>核心目标</h2>
+          <p>本季度将对话式搜索日活用户从 <strong>3 万</strong>提升至 <strong>10 万</strong>。</p>
+          <h2>关键策略</h2>
+          <p><strong>策略一：扩大数据覆盖</strong></p>
+          <ul><li>接入垂类数据源，覆盖率 40% → 85%+</li></ul>
+          <p><strong>策略二：优化召回排序</strong></p>
+          <ul><li>改进排序算法，Top-3 点击率 22% → 35%+</li></ul>
+          <p><strong>预期成果</strong></p>
+          <p>三项策略落地后，预计可实现 10 万日活目标。</p>
+        </div>
+      </div>
+
+      <!-- Col 3: Changes -->
+      <div class="col" style="display:flex;flex-direction:column">
+        <div class="col-head"><span class="col-title">变更说明</span><span class="col-badge badge-moss">6 处改进</span></div>
+        <div class="col-body">
+          <div class="change-item">
+            <span class="change-tag tag-del">删除填充</span>
+            <div class="change-diff"><span class="change-old">嗯、就是说、然后、反正</span></div>
+            <div class="change-why">5 个填充词已删除。正式文档不需要口头语气词。</div>
+          </div>
+          <div class="change-item">
+            <span class="change-tag tag-fix">精确化</span>
+            <div class="change-diff"><span class="change-old">核心目标</span><span class="change-arrow">→</span><span class="change-new">3万→10万日活</span></div>
+            <div class="change-why">补充具体数字让目标可量化。</div>
+          </div>
+          <div class="change-item">
+            <span class="change-tag tag-strong">去犹豫</span>
+            <div class="change-diff"><span class="change-old">应该问题不大</span><span class="change-arrow">→</span><span class="change-new">预计可实现</span></div>
+            <div class="change-why">"应该……问题不大"语气不确定。</div>
+          </div>
+          <div class="change-item">
+            <span class="change-tag tag-struct">结构化</span>
+            <div class="change-why">口语线性叙述重组为「目标→策略→预期」三段结构。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     界面 ⑥ 设置
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="sec-eyebrow">界面 06</div>
+  <div class="sec-title">设置 · AI 后端配置</div>
+  <div class="sec-desc">双模式可切换：云端 API + 本地 Ollama。Toggle 开关 + API Key 输入 + 模型选择。</div>
+
+  <div class="mockup">
+    <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">语音工作站 — 设置</div></div>
+    <div class="app-topbar">
+      <div class="app-brand">语音工作站</div>
+      <div class="app-tabs"><button class="app-tab">训练</button><button class="app-tab">报告</button><button class="app-tab disabled">纪要</button><button class="app-tab disabled">邮件</button><button class="app-tab disabled">笔记</button></div>
+      <div class="app-spacer"></div>
+      <button class="app-icon-btn">✕</button>
+    </div>
+
+    <div class="settings-body" style="max-width:560px;margin:0 auto">
+      <div class="settings-group">
+        <div class="eyebrow">AI 后端</div>
+        <div class="setting-row">
+          <div><div class="setting-label">云端 API（DeepSeek）</div><div class="setting-hint">生成报告质量高，成本极低</div></div>
+          <div class="toggle on"></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">本地 Ollama</div><div class="setting-hint">完全离线，零成本，取决于硬件</div></div>
+          <div class="toggle"></div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="eyebrow">云端配置</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Provider</div></div>
+          <select class="input-field input-field--mono"><option>DeepSeek</option><option>OpenAI</option><option>自定义</option></select>
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">API Key</div><div class="setting-hint">platform.deepseek.com 获取</div></div>
+          <input class="input-field input-field--mono" type="password" value="sk-••••••••••••" style="width:200px">
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Model</div></div>
+          <select class="input-field input-field--mono"><option>deepseek-chat</option><option>deepseek-reasoner</option></select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="eyebrow">本地配置</div>
+        <div class="setting-row">
+          <div><div class="setting-label">Ollama URL</div></div>
+          <input class="input-field input-field--mono" type="text" value="http://localhost:11434" style="width:200px">
+        </div>
+        <div class="setting-row">
+          <div><div class="setting-label">Model</div><div class="setting-hint">需要先 ollama pull</div></div>
+          <select class="input-field input-field--mono"><option>qwen2.5:7b</option><option>llama3.1:8b</option></select>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:var(--s-xl)">
+        <button class="btn btn-ghost">取消</button>
+        <button class="btn btn-primary">保存设置</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     界面 ⑦ 错误状态
+     ═══════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="sec-eyebrow">界面 07</div>
+  <div class="sec-title">错误状态 · 3 种场景</div>
+  <div class="sec-desc">ASR 初始化失败 / AI 调用失败降级 / 无麦克风权限。错误不是终点，提供下一步操作。</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s-lg)">
+    <!-- 错误 1: ASR 模型缺失 -->
+    <div class="mockup">
+      <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">ASR 错误</div></div>
+      <div class="empty-state" style="min-height:280px">
+        <div class="empty-icon empty-icon--error">⚠</div>
+        <div class="empty-title" style="font-size:var(--fs-body-lg)">语音模型未找到</div>
+        <div class="empty-desc" style="font-size:var(--fs-caption)">Sherpa-ONNX 模型文件缺失。请下载并放入 models/ 目录。</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm">下载模型</button>
+          <button class="btn btn-ghost btn-sm">查看教程</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 错误 2: AI 降级 -->
+    <div class="mockup">
+      <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">AI 降级</div></div>
+      <div class="empty-state" style="min-height:280px">
+        <div class="empty-icon empty-icon--error" style="border-color:rgba(232,122,60,0.3);color:var(--color-signal-orange);background:rgba(232,122,60,0.05)">⚡</div>
+        <div class="empty-title" style="font-size:var(--fs-body-lg)">AI 调用失败</div>
+        <div class="empty-desc" style="font-size:var(--fs-caption)">已降级为本地词库分析。训练模式仍可用，AI 报告暂不可用。</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm">继续使用</button>
+          <button class="btn btn-ghost btn-sm">检查设置</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 错误 3: 麦克风权限 -->
+    <div class="mockup">
+      <div class="mockup-bar"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div><div class="title">权限错误</div></div>
+      <div class="empty-state" style="min-height:280px">
+        <div class="empty-icon empty-icon--error">🎤</div>
+        <div class="empty-title" style="font-size:var(--fs-body-lg)">无法访问麦克风</div>
+        <div class="empty-desc" style="font-size:var(--fs-caption)">请在系统设置 → 隐私与安全 → 麦克风中允许语音工作站。</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm">打开系统设置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page-wrap -->
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Haglöfs Donut Chart Component</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-offwhite: #F5F5F0;
+      --color-cream: #EDE8E0;
+      --color-charcoal: #2A2A28;
+      --color-black: #1A1A18;
+      --color-forest: #2D5A3D;
+      --color-moss: #4A7C5C;
+      --color-signal-red: #D71921;
+      --color-signal-orange: #E67E22;
+      
+      --text-primary: #1A1A18;
+      --text-secondary: #666660;
+      --text-tertiary: #999990;
+      --text-inverse: #F5F5F0;
+      --text-inverse-2: rgba(245, 245, 240, 0.6);
+      
+      --border-rest: #E8E4DC;
+      
+      --s-xs: 4px;
+      --s-sm: 8px;
+      --s-md: 16px;
+      --s-lg: 24px;
+      --s-xl: 32px;
+      --s-2xl: 48px;
+      --s-3xl: 64px;
+      --s-4xl: 96px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--color-cream);
+      color: var(--text-primary);
+      line-height: 1.5;
+      padding: var(--s-4xl) var(--s-xl);
+    }
+
+    /* ============================================
+       Haglöfs Donut Chart Component
+       ============================================ */
+    .haglofs-donut-chart {
+      width: 100%;
+      max-width: 800px;
+      background: var(--color-offwhite);
+      border: 1px solid var(--border-rest);
+      border-radius: var(--r-sm); /* 内容卡：4px */
+      padding: var(--s-lg);
+    }
+
+    .haglofs-donut-chart__title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--s-md);
+    }
+
+    .haglofs-donut-chart__subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: var(--s-lg);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .haglofs-donut-chart__content {
+      display: flex;
+      align-items: center;
+      gap: var(--s-2xl);
+    }
+
+    .haglofs-donut-chart__canvas {
+      flex-shrink: 0;
+      width: 200px;
+      height: 200px;
+      position: relative;
+    }
+
+    .haglofs-donut-chart svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* 弧段 */
+    .haglofs-donut-chart .arc {
+      fill: none;
+      stroke-width: 24px; /* 固定宽度 */
+      stroke-linecap: butt;
+      transition: opacity 0.2s ease;
+    }
+
+    .haglofs-donut-chart .arc:hover {
+      opacity: 0.8;
+    }
+
+    /* 颜色变体 */
+    .haglofs-donut-chart .arc--forest { stroke: var(--color-forest); }
+    .haglofs-donut-chart .arc--moss { stroke: var(--color-moss); }
+    .haglofs-donut-chart .arc--red { stroke: var(--color-signal-red); }
+    .haglofs-donut-chart .arc--orange { stroke: var(--color-signal-orange); }
+    .haglofs-donut-chart .arc--tertiary { stroke: var(--text-tertiary); }
+
+    /* 中心文字 */
+    .haglofs-donut-chart__center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .haglofs-donut-chart__center-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .haglofs-donut-chart__center-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: var(--s-xs);
+    }
+
+    /* 图例 */
+    .haglofs-donut-chart__legend {
+      flex: 1;
+    }
+
+    .haglofs-donut-chart__legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--s-sm);
+      padding: var(--s-sm) 0;
+      border-bottom: 1px solid var(--border-rest);
+    }
+
+    .haglofs-donut-chart__legend-item:last-child {
+      border-bottom: none;
+    }
+
+    .haglofs-donut-chart__legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .haglofs-donut-chart__legend-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .haglofs-donut-chart__legend-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .haglofs-donut-chart__legend-pct {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      width: 40px;
+      text-align: right;
+    }
+
+    .haglofs-donut-chart__note {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: var(--s-md);
+      padding-top: var(--s-md);
+      border-top: 1px solid var(--border-rest);
+    }
+
+    /* 深底反相 */
+    .section--dark .haglofs-donut-chart {
+      background: var(--color-charcoal);
+      border-color: var(--border-rest);
+    }
+
+    .section--dark .haglofs-donut-chart__title { color: var(--text-inverse); }
+    .section--dark .haglofs-donut-chart__subtitle { color: var(--text-inverse-2); }
+
+    /* 深底专属规则（仅 2 条） */
+    .section--dark .haglofs-donut-chart__center-value { color: var(--text-inverse); }
+    .section--dark .haglofs-donut-chart__legend-label { color: var(--text-inverse); }
+
+    /* Demo */
+    .demo-section { margin-bottom: var(--s-4xl); }
+    .demo-section--dark {
+      background: var(--color-charcoal);
+      padding: var(--s-4xl) var(--s-xl);
+      margin: calc(-1 * var(--s-xl));
+      margin-top: var(--s-4xl);
+    }
+
+    .demo-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: var(--s-sm);
+    }
+
+    .demo-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: var(--s-3xl);
+    }
+
+    .demo-section--dark .demo-title { color: var(--text-inverse); }
+    .demo-section--dark .demo-subtitle { color: var(--text-inverse-2); }
+  </style>
+</head>
+<body>
+
+  <!-- 浅底示例 -->
+  <div class="demo-section">
+    <h1 class="demo-title">市场份额分布</h1>
+    <p class="demo-subtitle">Haglöfs Donut Chart · 浅底</p>
+    
+    <div class="haglofs-donut-chart">
+      <h2 class="haglofs-donut-chart__title">Market Share</h2>
+      <p class="haglofs-donut-chart__subtitle">2026 · Q2</p>
+      
+      <div class="haglofs-donut-chart__content">
+        <div class="haglofs-donut-chart__canvas">
+          <svg viewBox="0 0 100 100">
+            <!-- 弧段 - 从大到小顺时针排列 -->
+            <!-- 华北: 35% = 126° -->
+            <circle class="arc arc--forest" cx="50" cy="50" r="38" 
+                    stroke-dasharray="83.5 155.2" stroke-dashoffset="0" />
+            <!-- 华东: 28% = 100.8° -->
+            <circle class="arc arc--moss" cx="50" cy="50" r="38" 
+                    stroke-dasharray="66.8 171.9" stroke-dashoffset="-83.5" />
+            <!-- 华南: 22% = 79.2° -->
+            <circle class="arc arc--red" cx="50" cy="50" r="38" 
+                    stroke-dasharray="52.3 186.4" stroke-dashoffset="-150.3" />
+            <!-- 其他: 15% = 54° -->
+            <circle class="arc arc--tertiary" cx="50" cy="50" r="38" 
+                    stroke-dasharray="35.8 202.9" stroke-dashoffset="-202.6" />
+          </svg>
+          
+          <div class="haglofs-donut-chart__center">
+            <div class="haglofs-donut-chart__center-value">¥2.8亿</div>
+            <div class="haglofs-donut-chart__center-label">总销售额</div>
+          </div>
+        </div>
+        
+        <div class="haglofs-donut-chart__legend">
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--color-forest)"></span>
+            <span class="haglofs-donut-chart__legend-label">华北</span>
+            <span class="haglofs-donut-chart__legend-value">¥980万</span>
+            <span class="haglofs-donut-chart__legend-pct">35%</span>
+          </div>
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--color-moss)"></span>
+            <span class="haglofs-donut-chart__legend-label">华东</span>
+            <span class="haglofs-donut-chart__legend-value">¥784万</span>
+            <span class="haglofs-donut-chart__legend-pct">28%</span>
+          </div>
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--color-signal-red)"></span>
+            <span class="haglofs-donut-chart__legend-label">华南</span>
+            <span class="haglofs-donut-chart__legend-value">¥616万</span>
+            <span class="haglofs-donut-chart__legend-pct">22%</span>
+          </div>
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--text-tertiary)"></span>
+            <span class="haglofs-donut-chart__legend-label">其他</span>
+            <span class="haglofs-donut-chart__legend-value">¥420万</span>
+            <span class="haglofs-donut-chart__legend-pct">15%</span>
+          </div>
+        </div>
+      </div>
+      
+      <p class="haglofs-donut-chart__note">数据来源：销售系统 · 更新时间：2026-07-13</p>
+    </div>
+  </div>
+
+  <!-- 深底示例 -->
+  <div class="demo-section demo-section--dark">
+    <h1 class="demo-title">市场份额分布</h1>
+    <p class="demo-subtitle">Haglöfs Donut Chart · 深底</p>
+    
+    <div class="haglofs-donut-chart">
+      <h2 class="haglofs-donut-chart__title">Market Share</h2>
+      <p class="haglofs-donut-chart__subtitle">2026 · Q2</p>
+      
+      <div class="haglofs-donut-chart__content">
+        <div class="haglofs-donut-chart__canvas">
+          <svg viewBox="0 0 100 100">
+            <circle class="arc arc--forest" cx="50" cy="50" r="38" 
+                    stroke-dasharray="83.5 155.2" stroke-dashoffset="0" />
+            <circle class="arc arc--moss" cx="50" cy="50" r="38" 
+                    stroke-dasharray="66.8 171.9" stroke-dashoffset="-83.5" />
+            <circle class="arc arc--red" cx="50" cy="50" r="38" 
+                    stroke-dasharray="52.3 186.4" stroke-dashoffset="-150.3" />
+            <circle class="arc arc--tertiary" cx="50" cy="50" r="38" 
+                    stroke-dasharray="35.8 202.9" stroke-dashoffset="-202.6" />
+          </svg>
+          
+          <div class="haglofs-donut-chart__center">
+            <div class="haglofs-donut-chart__center-value">¥2.8亿</div>
+            <div class="haglofs-donut-chart__center-label">总销售额</div>
+          </div>
+        </div>
+        
+        <div class="haglofs-donut-chart__legend">
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--color-forest)"></span>
+            <span class="haglofs-donut-chart__legend-label">华北</span>
+            <span class="haglofs-donut-chart__legend-value">¥980万</span>
+            <span class="haglofs-donut-chart__legend-pct">35%</span>
+          </div>
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--color-moss)"></span>
+            <span class="haglofs-donut-chart__legend-label">华东</span>
+            <span class="haglofs-donut-chart__legend-value">¥784万</span>
+            <span class="haglofs-donut-chart__legend-pct">28%</span>
+          </div>
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--color-signal-red)"></span>
+            <span class="haglofs-donut-chart__legend-label">华南</span>
+            <span class="haglofs-donut-chart__legend-value">¥616万</span>
+            <span class="haglofs-donut-chart__legend-pct">22%</span>
+          </div>
+          <div class="haglofs-donut-chart__legend-item">
+            <span class="haglofs-donut-chart__legend-dot" style="background: var(--text-tertiary)"></span>
+            <span class="haglofs-donut-chart__legend-label">其他</span>
+            <span class="haglofs-donut-chart__legend-value">¥420万</span>
+            <span class="haglofs-donut-chart__legend-pct">15%</span>
+          </div>
+        </div>
+      </div>
+      
+      <p class="haglofs-donut-chart__note">数据来源：销售系统 · 更新时间：2026-07-13</p>
+    </div>
+  </div>
+
+</body>
+</html>
