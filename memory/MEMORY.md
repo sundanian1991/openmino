@@ -36,14 +36,13 @@
 
 ## 当前状态
 
-**最近工作焦点**（2026-07 中旬）：
-- **07-13 guizang 技能更新 + AGNES 深图**：技能 git pull 更新，AGNES 3D建模感风格适配，制定长期多轮图像生成计划（9-10个模式分批调优）
+**最近工作焦点**（2026-07 中下旬）：
+- **07-21 warm-editorial 技能创建**：基于Rachel Akinwale作品集12张截图，创建暖调编辑式设计系统（6色+3字体+审美驱动），fork Haglofs Paradigm框架
+- **07-21 voice-workstation 代码审查**：7个问题定位（P0:ASR状态/sox竞态/云端丢弃），Phase0观测点已加，待基线测试
+- **07-13 guizang 技能更新 + AGNES 深图**：技能 git pull 更新，AGNES 3D建模感风格适配
 - **07-12 Codex 用例库 HTML**：基于 OpenAI 12个官方用例生成 nothing-design 浅色风格 HTML
 - **07-10 AI 编码工具 PPT**：CyberPPT 流程制作 11 页长任务能力 PPT + OfficeCLI 工具调研
 - **07-09 CloudBase MCP 配置**：生图流程配置完成，待新会话验证工具加载
-- **07-09 guizang-material-illustration 技能**：安装链接+能力边界分析+J-Space插图生成
-- **07-09 电视机海报项目**：8张概念插图 + HTML海报页面
-- **07-07 线下分享**：1990s下岗PPT + 思维透镜介绍页 + 赛博清明上河图
 - **nian-design 技能系统**：4级组件体系+token三轨制根治+showcase质量标准
 - **电销AI转型方案**：四阶段推进（能看见→能判断→能行动→自动化）
 
@@ -193,6 +192,7 @@
 | 供应商管理 | `projects/供应商.md` | 活跃 |
 | 车抵贷新供应商（浙江阅文） | `projects/浙江阅文.md` | 合同未完成 |
 | 视觉实践手册（基于《用数据说服》） | `docs/工具箱/可视化/用数据说服-视觉实践手册.html` | 已完成 · 4 章左错右对对比 |
+| warm-editorial 技能 | `workspace/2026-07-17-warm-editorial-skill/` | 新建 · Rachel Akinwale作品集衍生的暖调编辑式设计系统 |
 
 ---
 
