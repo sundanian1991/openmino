@@ -12,6 +12,7 @@ pos: .claude/rules/06-NOW.md
 
 ## 活跃项目
 
+- **voice-workstation 稳定性修复（07-21）**：Electron语音工作站，7个问题已定位(P0:ASR状态/sox竞态/云端丢弃)，Phase0观测点已加，待基线测试后修P0
 - **guizang 深图多轮计划（07-13）**：AGNES 3D建模感风格适配，按归藏 9-10 个模式分批调优，遵守速率限制
 - **nian-design 技能系统（06-01）**：4级组件体系+token三轨制+showcase质量标准，持续迭代
 - **电销AI转型方案（06-05）**：四阶段推进（能看见→能判断→能行动→自动化），数字人三层架构
@@ -52,6 +53,10 @@ pos: .claude/rules/06-NOW.md
 ## 最近事件
 
 详见 `memory/events/` | 任务地图和定期提醒见 `memory/context/`
+
+**07-21 重要事件**：
+- voice-workstation 代码审查完成（7问题定位），Phase0观测点已加，待基线测试
+- 思维透镜分析：测试视角的系统性检验方法论（先观测再修再验）
 
 **07-13 重要事件**：
 - guizang 技能更新 + AGNES 深图多轮生成计划制定
