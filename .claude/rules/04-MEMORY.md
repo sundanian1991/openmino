@@ -30,6 +30,7 @@ Information should flow from raw notes to topic files, then into this file only 
 
 ## Current Context
 
+- **voice-workstation**（2026-07-22）：代码重构完成（三模式总行数 -15%），云端 ASR 过渡 UI 优化
 - **CloudBase MCP 生图流程**（2026-07-09）：配置已完成，待新会话验证工具加载
 - **guizang-material-illustration 技能**（2026-07-09）：已安装并链接，能力边界已分析
 - **电视机海报项目**（2026-07-09）：J-Space 概念插图生成 + HTML 海报页面已完成
@@ -39,3 +40,15 @@ Add the current state of important projects here as short pointers. Put detailed
 ## Durable Lessons
 
 Add cross-project lessons and working principles here when they have repeated value.
+
+### 代码重构经验（2026-07-22）
+
+**提取共享组件/ Hook 的判据**：
+- 三个以上组件有相同逻辑 → 提取
+- 一个组件独有逻辑多 → 保留专用 hook
+- 函数间共享状态多 → 不拆分文件
+
+**kw-workflow 适用场景**：
+- 复杂问题需要系统化分析
+- 不确定从哪开始
+- 需要完整闭环（brainstorm → plan → review → work）
