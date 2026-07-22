@@ -45,6 +45,28 @@ Add the current state of important projects here as short pointers. Put detailed
 
 Add cross-project lessons and working principles here when they have repeated value.
 
+### 目标树设计原则（2026-07-22）
+
+**三层结构优于扁平罗列**：
+- 战略层：方向锚，对应能力水位和晋升叙事
+- 战术层：管理动作分类（如选用育留汰）
+- 执行层：Issues 追踪具体任务
+
+**目标描述要有立场**：
+- 先说"为什么存在"（连接上层愿景）
+- 再说"怎么做"（具体原则）
+- 避免写成任务清单
+
+**AI协作分层设计**：
+- 战略层：方向锚（告诉AI长期方向）
+- 战术层：流程触发器（按节奏主动提醒）
+- 执行层：任务执行单元（具体Issue驱动）
+
+**失败模式**：
+- 把不同层级的概念并列（如"准入清退"和"联盟运营"并列）
+- 缺少战略高度，只有战术动作
+- 没有考虑晋升叙事
+
 ### 代码重构经验（2026-07-22）
 
 **提取共享组件/ Hook 的判据**：
