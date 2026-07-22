@@ -31,6 +31,7 @@ Information should flow from raw notes to topic files, then into this file only 
 ## Current Context
 
 - **voice-workstation**（2026-07-22）：代码重构完成（三模式总行数 -15%），云端 ASR 过渡 UI 优化
+- **Superpowers 插件**（2026-07-22）：已安装到 MyAgents（v5.0.7），包含 14 个核心技能（TDD、调试、协作模式等）
 - **CloudBase MCP 生图流程**（2026-07-09）：配置已完成，待新会话验证工具加载
 - **guizang-material-illustration 技能**（2026-07-09）：已安装并链接，能力边界已分析
 - **电视机海报项目**（2026-07-09）：J-Space 概念插图生成 + HTML 海报页面已完成
