@@ -52,6 +52,8 @@ argument_hint: "[auto | 阶段名]"
 | **类型** | bugfix / feature / refactor / infra（基础设施） | 任务性质 |
 | **风险** | low / high | 是否触及认证、支付、数据迁移、不可逆操作、线上部署 |
 
+> **注意**：规模维度决定阶段组合与技能选配；类型维度影响技能倾向（如 bugfix 偏向调试技能）但不改变阶段组合；风险维度决定是否升级 high-risk 流程。
+
 commander 读用户请求 + 扫代码上下文，**自行判定画像**，用一句话宣告：
 
 > 📋 画像：`feature / feature / low` —— 中等规模新功能，低风险。将执行 Plan→Build→Verify→Review，跳过 Define 和 Ship。
@@ -248,6 +250,7 @@ commander 读用户请求 + 扫代码上下文，**自行判定画像**，用一
 
 | 画像 | 🟢 必选 | 🟡 可选 |
 |------|--------|--------|
+| atomic | _(跳过——适用画像已排除)_ | — |
 | feature | `code-review-and-quality` | — |
 | project | `code-review-and-quality` + `code-simplification` | `security-and-hardening`（安全敏感时）· `performance-optimization`（性能敏感时） |
 
