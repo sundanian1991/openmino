@@ -324,14 +324,14 @@ auto 模式下，commander 自动推进全流程，**仅以下 4 类情况强制
 
 ## 6. 产出物清单（每阶段交付）
 
-| 阶段 | 产出物 | 路径 |
-|------|--------|------|
-| DEFINE | 需求规格 | `SPEC.md` |
-| PLAN | 任务计划 + 待办 | `tasks/plan.md`、`tasks/todo.md` |
-| BUILD | 可运行代码 + 提交 | git commits |
-| VERIFY | 测试报告 | 运行输出 |
-| REVIEW | 审查报告 | 审查输出 |
-| SHIP | 已发布版本 + 文档 | git tag + ADR |
+| 阶段 | 输入物 | 产出物 | 路径 |
+|------|--------|--------|------|
+| DEFINE | 用户需求（自然语言） | 需求规格 | `SPEC.md` |
+| PLAN | `SPEC.md` 或当场目标 | 任务计划 + 待办 | `tasks/plan.md`、`tasks/todo.md` |
+| BUILD | `tasks/plan.md` 或单任务描述 | 可运行代码 + 提交 | git commits |
+| VERIFY | git commits | 测试报告 | 运行输出 |
+| REVIEW | 代码变更 | 审查报告 | 审查输出 |
+| SHIP | 审查通过的代码 | 已发布版本 + 文档 | git tag + ADR |
 
 ---
 
@@ -343,12 +343,15 @@ auto 模式下，commander 自动推进全流程，**仅以下 4 类情况强制
 |--------|------|--------|
 | agent-skills | 无前缀（本地引用 `docs/agent-skills/skills/`） | interview-me, idea-refine, spec-driven-development, planning-and-task-breakdown, incremental-implementation, test-driven-development, context-engineering, source-driven-development, doubt-driven-development, frontend-ui-engineering, api-and-interface-design, browser-testing-with-devtools, debugging-and-error-recovery, code-review-and-quality, code-simplification, security-and-hardening, performance-optimization, git-workflow-and-versioning, ci-cd-and-automation, deprecation-and-migration, documentation-and-adrs, observability-and-instrumentation, shipping-and-launch |
 | Superpowers | `superpowers:` | using-superpowers, brainstorming, dispatching-parallel-agents, writing-plans, executing-plans, systematic-debugging, verification-before-completion, requesting-code-review, receiving-code-review, using-git-worktrees, subagent-driven-development, finishing-a-development-branch |
-| VIBE | `vibe-` | vibe-idea, vibe-interaction, vibe-architecture, vibe-design, vibe-prototype, vibe-implement |
+| VIBE（可选） | `vibe-` | vibe-idea, vibe-interaction, vibe-design, vibe-prototype, vibe-implement |
 
 **按需扩展（特定阶段可调用，用户已装的其它技能）：**
 - 可视化阶段 → `viz-*` 系列（图表/信息图/流程图）
 - 文档写作 → `write-*` 系列（公文/结构化表达）
 - 调用时需在编排中注明"[按需扩展]"标签，保持主干清晰。
+
+**升级交接（非选配，是分诊升级路径）：**
+- project + 跨会话/多里程碑 → 升级到 `orchestrate-projects`，由其 `.planning/` 工件体系和里程碑编排接管。`/dev` 和 `orchestrate-projects` 是平级技能，分诊时二选一。
 
 ---
 
@@ -360,3 +363,4 @@ auto 模式下，commander 自动推进全流程，**仅以下 4 类情况强制
 4. **并行子代理套娃** —— 子代理不再派子代理，保持一层深。
 5. **auto 模式越过暂停规则** —— 4 类情况必须停，不可自行决定继续。
 6. **混淆三套定位** —— VIBE 管创意端、agent-skills 管工程纪律、Superpowers 管编排与协作，不要错位调用。
+7. **分诊不宣告就开跑** —— 必须先宣告画像和阶段组合，给用户纠正机会。不跳过分诊直接进阶段。
