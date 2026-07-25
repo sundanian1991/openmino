@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视觉审阅 — 职场能力跃升指南 — batch_03</title>
+<style>
+  :root{--ink:#17202A;--muted:#6B7480;--soft:#EEF2F6;--paper:#FFFFFF;--line:#DDE4EC;--navy:#051C2C;--accent:#D46A00;--ok:#007A53;--danger:#E60012;--blue:#006BA6;--wash:#F7F9FC}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,#E9EEF4 0,#F5F7FA 320px);color:var(--ink);line-height:1.58;letter-spacing:0}
+  .header{background:rgba(5,28,44,.96);color:#FFF;padding:16px 30px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:10;box-shadow:0 10px 26px rgba(5,28,44,.16)}
+  .header h1{font-size:23px;font-weight:850}
+  .status-bar{display:flex;gap:12px;font-size:14px}
+  .status-bar .pass{color:#8BC34A} .status-bar .warn{color:#FFC107} .status-bar .fail{color:#FF5252}
+  .workspace{max-width:1620px;margin:0 auto;padding:22px 24px;display:grid;grid-template-columns:176px minmax(0,1fr);gap:18px;align-items:start}
+  .side-nav{position:sticky;top:92px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:8px;padding:10px;box-shadow:0 14px 36px rgba(5,28,44,.08);backdrop-filter:blur(10px)}
+  .side-nav-title{font-size:13px;font-weight:850;color:var(--muted);margin-bottom:10px}
+  .nav-list{display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 138px);overflow:auto;padding-right:2px}
+  .nav-item{display:grid;grid-template-columns:8px 1fr;align-items:center;gap:7px;padding:8px 9px;border-radius:7px;color:#46515E;text-decoration:none;font-size:12px;font-weight:800;background:#F5F7FA;border:1px solid transparent;transition:.16s ease}
+  .nav-item:hover,.nav-item.active{background:#FFF7EB;border-color:#F0C48C;color:#8A4700;transform:translateX(2px)}
+  .nav-dot{width:8px;height:8px;border-radius:50%;background:#007A53;flex:0 0 auto}
+  .nav-dot.warning{background:#D46A00}
+  .container{min-width:0}
+  .global-alert{padding:14px 20px;border-radius:8px;margin-bottom:20px;font-size:15px;font-weight:850}
+  .global-alert.error{background:#FFEBEE;color:#C62828;border:2px solid #E60012}
+  .global-alert.warning{background:#FFF3E0;color:#D46A00;border:2px solid #D46A00}
+  .page-review{background:var(--paper);border-radius:8px;margin-bottom:26px;box-shadow:0 18px 44px rgba(5,28,44,.08);overflow:hidden;border:1px solid var(--line)}
+  .page-review.fail{border-left:5px solid #E60012}
+  .page-review.warning{border-left:5px solid #D46A00}
+  .page-review.pass{border-left:5px solid #007A53}
+  .page-head{padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;background:linear-gradient(180deg,#FFFFFF,#FAFBFD)}
+  .page-head h2{font-size:22px;line-height:1.35;font-weight:900;max-width:1040px}
+  .page-meta{font-size:13px;color:#8A929C;font-weight:800}
+  .page-body{padding:22px 24px 24px}
+  .review-grid{display:grid;grid-template-columns:minmax(720px,1.55fr) minmax(380px,.75fr);gap:24px;align-items:start}
+  .preview-panel{position:sticky;top:104px}
+  .qa-panel{min-width:0}
+  .preview-row{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+  .preview-box{flex:1;min-width:340px;max-width:100%}
+  .preview-box img{width:100%;border:1px solid var(--line);border-radius:8px;background:#FAFAFA;box-shadow:0 18px 44px rgba(5,28,44,.10)}
+  .preview-box .vlabel{font-size:12px;color:#999;margin-bottom:4px;font-weight:bold}
+  .grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:800px){.grid-2col{grid-template-columns:1fr}}
+  .section-label{font-size:13px;font-weight:900;color:#8A929C;margin-bottom:8px;letter-spacing:0;margin-top:14px}
+  .section-label:first-child{margin-top:0}
+  .val-summary{background:#F7F9FC;border-radius:8px;padding:13px 16px;margin-bottom:14px;font-size:15px;border:1px solid var(--line);font-weight:850}
+  .val-summary .status-pass{color:#007A53} .val-summary .status-warn{color:#D46A00} .val-summary .status-fail{color:#E60012}
+  .required-fixes{background:#FFEBEE;border:2px solid #E60012;border-radius:8px;padding:12px 16px;margin-bottom:16px}
+  .required-fixes .rf-title{font-size:15px;font-weight:bold;color:#C62828;margin-bottom:6px}
+  .required-fixes .rf-subtitle{font-size:12px;color:#999;margin-bottom:6px}
+  .required-fixes li{font-size:14px;color:#C62828;margin-left:18px;margin-bottom:2px}
+  .self-review-status{margin-bottom:16px;padding:10px 14px;border-radius:8px;font-size:14px}
+  .self-review-status.blocked{background:#FFEBEE;color:#C62828;border:1px solid #E60012}
+  .self-review-status.revise{background:#FFF3E0;color:#D46A00;border:1px solid #D46A00}
+  .self-review-status.pass{background:#E8F5E9;color:#007A53;border:1px solid #007A53}
+  .self-review-status.human_review{background:#E3F2FD;color:#006BA6;border:1px solid #006BA6}
+  .review-actions{display:grid;gap:10px;margin-bottom:16px}
+  .review-action{display:grid;grid-template-columns:22px 1fr;gap:12px;padding:14px 16px;background:#FFF;border:1px solid var(--line);border-radius:8px;cursor:pointer;transition:.16s ease}
+  .review-action:hover{border-color:#007A53;background:#F2FBF7;transform:translateY(-1px)}
+  .review-action input{width:22px;height:22px;accent-color:#007A53;margin-top:2px}
+  .action-title{font-size:15px;font-weight:900;color:#26323F;margin-bottom:3px}
+  .action-desc{font-size:13px;color:#66717E;line-height:1.45}
+  .action-meta{font-size:12px;color:#9AA2AC;margin-top:5px;font-weight:800}
+  .action-source{display:inline-block;border-radius:999px;padding:2px 8px;margin-right:6px;background:#EEF2F6;color:#66717E}
+  .accept-note{background:#F7F9FC;border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:#6B7480;font-size:13px;margin-bottom:14px}
+  .tech-details{border:1px solid var(--line);border-radius:8px;background:#FFF;margin-bottom:14px}
+  .tech-details summary{cursor:pointer;list-style:none;padding:13px 14px;font-weight:850;color:#66717E}
+  .tech-details summary::-webkit-details-marker{display:none}
+  .tech-details ul{padding:0 18px 14px 32px}
+  .tech-details li{font-size:13px;color:#66717E;margin-bottom:4px}
+  .revision-notes{margin-top:18px;background:#F7F9FC;border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+  .revision-notes-title{font-size:15px;font-weight:900;color:#26323F;margin-bottom:8px}
+  .revision-grid{display:grid;gap:9px}
+  .revision-block{background:#FFF;border:1px solid #E8ECF2;border-radius:8px;padding:10px 12px}
+  .revision-block strong{display:block;font-size:13px;color:#7A8490;margin-bottom:4px}
+  .revision-block li{font-size:13px;color:#46515E;margin-left:18px;margin-bottom:3px}
+  .suggestions{display:grid;gap:10px;margin-bottom:18px}
+  .suggestions label{display:flex;align-items:center;gap:12px;padding:15px 16px;font-size:16px;color:#39424E;cursor:pointer;background:#FFF;border:1px solid var(--line);border-radius:8px;min-height:58px;transition:.16s ease}
+  .suggestions label:hover{border-color:#007A53;background:#F2FBF7;transform:translateY(-1px)}
+  .suggestions input,.approve-row input{width:22px;height:22px;accent-color:#007A53;flex:0 0 auto}
+  .feedback-text textarea{width:100%;min-height:92px;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:16px;font-family:inherit;resize:vertical;background:#FFF}
+  .action-zone{position:sticky;bottom:14px;background:rgba(255,255,255,.94);border:1px solid var(--line);box-shadow:0 14px 34px rgba(5,28,44,.10);border-radius:8px;padding:14px;margin-top:10px;backdrop-filter:blur(10px)}
+  .approve-row{display:flex;align-items:center;gap:12px;padding:14px 16px;font-size:16px;background:#F7FBF8;border:1px solid #CFE8D8;border-radius:8px;font-weight:850}
+  .submit-area{text-align:center;padding:16px 0 40px}
+  .submit-btn{background:var(--danger);color:#FFF;border:none;padding:14px 40px;font-size:18px;font-weight:850;border-radius:8px;cursor:pointer;margin:0 6px;box-shadow:0 12px 28px rgba(230,0,18,.18)}
+  .submit-btn.green{background:#007A53}
+  .toast{position:fixed;top:20px;right:20px;background:#051C2C;color:#FFF;padding:14px 24px;border-radius:8px;font-size:15px;display:none;z-index:999}
+  .toast.show{display:block}
+  .project-credit{max-width:1620px;margin:0 auto 28px;padding:0 24px;text-align:center;color:#8A929C;font-size:13px;font-weight:800}
+  .project-credit a{color:#59636F;text-decoration:none;border-bottom:1px solid #C8D0DA}
+  .missing-file{background:#FFEBEE;color:#C62828;padding:8px 12px;border-radius:6px;font-size:13px;margin-bottom:8px;border:1px solid #E60012}
+  /* Compact visual review UI override. */
+  body{background:#EEF3F8;color:#182433}
+  .header{background:#06131B;padding:20px 40px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"title status" ". brand";align-items:center;gap:8px 18px;box-shadow:none;transition:padding .18s ease}
+  .header h1{grid-area:title;font-size:24px}
+  .header .creator{grid-area:brand;justify-self:end;font-size:15px;font-weight:900;color:#FFFFFF;margin-left:0;white-space:nowrap}
+  .status-bar{grid-area:status;justify-self:end;align-self:center}
+  body.review-scrolled .header{padding:10px 40px;grid-template-areas:"title status"}
+  body.review-scrolled .header .creator{display:none}
+  body.review-scrolled .header h1{font-size:21px}
+  .workspace{max-width:none;padding:14px 18px 14px 0;grid-template-columns:104px minmax(0,1fr);gap:0}
+  .side-nav{justify-self:center;top:92px;width:46px;padding:8px 5px;border-radius:9px;box-shadow:0 10px 28px rgba(5,28,44,.08)}
+  body.review-scrolled .side-nav{top:58px}
+  .side-nav-title{display:none}
+  .nav-list{counter-reset:batchNav;align-items:center;gap:8px;max-height:calc(100vh - 120px);padding:0;overflow:visible}
+  .nav-item{counter-increment:batchNav;display:grid;grid-template-columns:1fr;place-items:center;width:32px;height:32px;padding:0;border-radius:999px;background:#F4F7FA;font-size:0;line-height:1}
+  .nav-item::before{content:counter(batchNav);display:block;width:100%;height:32px;font-size:13px;font-weight:950;line-height:32px;text-align:center;transform:translateY(1px);color:#66717E}
+  .nav-item:hover,.nav-item.active{transform:none;background:#FFF4E3;border-color:#F0C48C}
+  .nav-item:hover::before,.nav-item.active::before{color:#D46A00}
+  .nav-dot{display:none}
+  .page-review{border-radius:9px;margin-bottom:18px;box-shadow:0 10px 26px rgba(5,28,44,.05)}
+  .page-review.fail,.page-review.warning,.page-review.pass{border-left:1px solid var(--line)}
+  .page-head{padding:18px 28px}
+  .page-head h2{font-size:22px}
+  .page-body{padding:18px 28px}
+  .review-grid{grid-template-columns:minmax(760px,1.65fr) minmax(330px,.62fr);gap:22px}
+  .preview-panel{top:96px}
+  .preview-box img{box-shadow:none;border-color:#E6ECF3}
+  .val-summary,.accept-note,.review-action,.feedback-text textarea,.approve-row,details.self-review-status{border-color:#E6ECF3}
+  .page-meta,.section-label{font-size:12px}
+  .review-action{padding:12px 14px}
+  .action-title{font-size:14px}
+  .action-desc,.action-meta,.accept-note{font-size:12px}
+  details.self-review-status{padding:0;overflow:hidden}
+  details.self-review-status summary{list-style:none;cursor:pointer;padding:11px 14px;font-weight:900}
+  details.self-review-status summary::-webkit-details-marker{display:none}
+  .self-review-body{padding:0 14px 12px;line-height:1.7;color:inherit}
+  .approve-row{cursor:pointer}
+  .action-zone{box-shadow:0 10px 28px rgba(5,28,44,.08)}
+  .submit-area{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;padding:28px 0 34px;background:linear-gradient(180deg,#EEF3F8,#F7F9FC)}
+  .submit-btn{min-width:210px;border-radius:10px;margin:0;padding:13px 28px;box-shadow:none}
+  .submit-area div,.submit-area p{flex-basis:100%;text-align:center}
+  .project-credit{font-size:14px;padding-bottom:22px}
+  @media(max-width:1100px){.workspace{grid-template-columns:1fr;padding-left:18px}.side-nav{position:static;width:auto}.nav-list{flex-direction:row;overflow:auto}.review-grid{grid-template-columns:1fr}.preview-panel{position:static}.header{grid-template-columns:1fr;grid-template-areas:"title" "brand" "status"}.header .creator,.status-bar{justify-self:start;white-space:normal}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>视觉审阅: 职场能力跃升指南 — batch_03</h1>
+  <div class="creator">小红书 @阿祖不看 TVC</div>
+  <div class="status-bar">
+    <span class="pass">页面: 3</span>
+    <span class="warn">设计建议: 0</span>
+    <span class="fail">阻断: 0</span>
+  </div>
+</div>
+<div class="workspace">
+  <aside class="side-nav">
+    <div class="side-nav-title">批次导航</div>
+    <nav class="nav-list" id="pageNav"></nav>
+  </aside>
+  <main class="container" id="container"><div class="global-alert warning">人工视觉审阅模式：模型视觉能力不可用，PNG 画面判断交由人工完成。原因：本运行时无法直接解析 PNG 图像内容；已通过 validate_svg_layout 诊断 + SVG 源码结构审查做综合判断，但请用户在浏览器视觉审阅页亲自确认实际渲染效果。</div></main>
+</div>
+<div class="submit-area">
+  <button class="submit-btn green" onclick="submitFeedback()">提交批次反馈</button>
+  <button class="submit-btn" onclick="approveAll()">全部通过并继续</button>
+  <div style="margin-top:12px">
+    <input id="approvalKey" type="password" autocomplete="off" placeholder="人工审批口令（批准时必填）" style="width:min(420px,90%);padding:12px 14px;border:1px solid #D6DEE8;border-radius:8px;font-size:16px">
+  </div>
+  <p style="margin-top:12px;font-size:14px;color:#999">请使用本地审阅服务器提交反馈，不要直接打开 file:// HTML。</p>
+</div>
+<div class="toast" id="toast"></div>
+<footer class="project-credit">
+  Planner's PPT Hell © 2026 · 小红书 @阿祖不看 TVC · 网站 <a href="https://demyth.info" target="_blank" rel="noreferrer">demyth.info</a>
+</footer>
+<script>
+var pages = [{"page_key": "page_07", "page_title": "后两步：固化成 6 模块文档，在跨场景迁移中校准边界", "svg_path": "/_internal/02_svg_source/page_07.svg", "png_path": "/_internal/03_png_preview/page_07.png", "layout_id": "L10", "page_mode": "rational", "visual_density": "balanced"}, {"page_key": "page_08", "page_title": "经验锚定已知场景，判断模型让你应对未知", "svg_path": "/_internal/02_svg_source/page_08.svg", "png_path": "/_internal/03_png_preview/page_08.png", "layout_id": "L08", "page_mode": "emotional", "visual_density": "airy"}, {"page_key": "page_09", "page_title": "从经验堆砌，到判断复利", "svg_path": "/_internal/02_svg_source/page_09.svg", "png_path": "/_internal/03_png_preview/page_09.png", "layout_id": "L15", "page_mode": "emotional", "visual_density": "airy"}];
+var validation = {"page_07": {"file": "deck/_internal/02_svg_source/page_07.svg", "status": "warning", "summary": {"errors": 0, "warnings": 2, "infos": 14}, "issues": [{"severity": "warning", "code": "FONT_SIZE_TIERS", "message": "6 distinct font sizes (max 4 recommended): [22, 24, 26, 32, 40, 64]", "target": "typography"}, {"severity": "warning", "code": "HIGH_TEXT_DENSITY", "message": "Page has 38 text elements — may be overcrowded", "target": "svg_structure", "diagnosis": {"text_element_count": 38, "recommended_max_for_normal_pages": 25}, "recommended_fix": {"type": "reduce_or_group_text", "action": "优先合并重复标签、删减解释性小字，或把一页拆成更清晰的两页；不要通过继续缩小字号解决。"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_3)", "target": "text_16", "detail": {"x": 930.0, "y": 308.0, "w": 40.5, "h": 26.0}, "diagnosis": {"text": "模块", "text_box": {"x": 930.0, "y": 308.0, "w": 40.5, "h": 26.0}, "container_box": {"x": 900.0, "y": 290.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 40.5, "overflow_px": {"left": 0.0, "right": 0.0, "top": 2.0, "bottom": 4.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_3)", "target": "text_17", "detail": {"x": 1080.0, "y": 308.0, "w": 81.0, "h": 26.0}, "diagnosis": {"text": "记录内容", "text_box": {"x": 1080.0, "y": 308.0, "w": 81.0, "h": 26.0}, "container_box": {"x": 900.0, "y": 290.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 81.0, "overflow_px": {"left": 0.0, "right": 0.0, "top": 2.0, "bottom": 4.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_4)", "target": "text_18", "detail": {"x": 930.0, "y": 366.0, "w": 81.0, "h": 26.0}, "diagnosis": {"text": "适用场景", "text_box": {"x": 930.0, "y": 366.0, "w": 81.0, "h": 26.0}, "container_box": {"x": 900.0, "y": 350.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 81.0, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_4)", "target": "text_19", "detail": {"x": 1080.0, "y": 366.0, "w": 202.4, "h": 26.0}, "diagnosis": {"text": "该模型适配的问题类型", "text_box": {"x": 1080.0, "y": 366.0, "w": 202.4, "h": 26.0}, "container_box": {"x": 900.0, "y": 350.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 202.4, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_5)", "target": "text_20", "detail": {"x": 930.0, "y": 426.0, "w": 81.0, "h": 26.0}, "diagnosis": {"text": "关键变量", "text_box": {"x": 930.0, "y": 426.0, "w": 81.0, "h": 26.0}, "container_box": {"x": 900.0, "y": 410.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 81.0, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_5)", "target": "text_21", "detail": {"x": 1080.0, "y": 426.0, "w": 222.6, "h": 26.0}, "diagnosis": {"text": "直接影响结果的核心因素", "text_box": {"x": 1080.0, "y": 426.0, "w": 222.6, "h": 26.0}, "container_box": {"x": 900.0, "y": 410.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 222.6, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_6)", "target": "text_22", "detail": {"x": 930.0, "y": 486.0, "w": 81.0, "h": 26.0}, "diagnosis": {"text": "判断顺序", "text_box": {"x": 930.0, "y": 486.0, "w": 81.0, "h": 26.0}, "container_box": {"x": 900.0, "y": 470.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 81.0, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_6)", "target": "text_23", "detail": {"x": 1080.0, "y": 486.0, "w": 202.4, "h": 26.0}, "diagnosis": {"text": "分析问题的先后优先级", "text_box": {"x": 1080.0, "y": 486.0, "w": 202.4, "h": 26.0}, "container_box": {"x": 900.0, "y": 470.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 202.4, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_7)", "target": "text_24", "detail": {"x": 930.0, "y": 546.0, "w": 81.0, "h": 26.0}, "diagnosis": {"text": "常见误判", "text_box": {"x": 930.0, "y": 546.0, "w": 81.0, "h": 26.0}, "container_box": {"x": 900.0, "y": 530.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 81.0, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_7)", "target": "text_25", "detail": {"x": 1080.0, "y": 546.0, "w": 222.6, "h": 26.0}, "diagnosis": {"text": "过往高频出错的判断盲区", "text_box": {"x": 1080.0, "y": 546.0, "w": 222.6, "h": 26.0}, "container_box": {"x": 900.0, "y": 530.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 222.6, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_8)", "target": "text_26", "detail": {"x": 930.0, "y": 606.0, "w": 81.0, "h": 26.0}, "diagnosis": {"text": "最小验证", "text_box": {"x": 930.0, "y": 606.0, "w": 81.0, "h": 26.0}, "container_box": {"x": 900.0, "y": 590.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 81.0, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_8)", "target": "text_27", "detail": {"x": 1080.0, "y": 606.0, "w": 242.9, "h": 26.0}, "diagnosis": {"text": "遇到问题的第一步落地动作", "text_box": {"x": 1080.0, "y": 606.0, "w": 242.9, "h": 26.0}, "container_box": {"x": 900.0, "y": 590.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 242.9, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_9)", "target": "text_28", "detail": {"x": 930.0, "y": 666.0, "w": 81.0, "h": 26.0}, "diagnosis": {"text": "校准记录", "text_box": {"x": 930.0, "y": 666.0, "w": 81.0, "h": 26.0}, "container_box": {"x": 900.0, "y": 650.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 81.0, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}, {"severity": "info", "code": "TEXT_BASELINE_ESTIMATE_DRIFT", "message": "Minor text-box drift detected; likely baseline estimation, not a hard layout problem (rect_9)", "target": "text_29", "detail": {"x": 1080.0, "y": 666.0, "w": 242.9, "h": 26.0}, "diagnosis": {"text": "每次使用后的效果修正记录", "text_box": {"x": 1080.0, "y": 666.0, "w": 242.9, "h": 26.0}, "container_box": {"x": 900.0, "y": 650.0, "w": 880.0, "h": 60.0}, "available_width": 832.0, "available_height": 20.0, "estimated_text_width": 242.9, "overflow_px": {"left": 0.0, "right": 0.0, "top": 4.0, "bottom": 2.0}, "risk": "minor"}, "recommended_fix": {"type": "wrap_or_rebalance_text", "action": "轻微 baseline/估算偏差；不要为了 1-6px 反复微调。请在 PNG 预览中确认是否真的可见。", "suggested_lines": 1, "max_lines_in_current_box": 1, "suggested_font_size": 22.0, "minimum_font_size": 20.0, "fits_if_wrapped": true, "priority": "do_not_chase_pixels"}}], "meta": {"page_key": "page_07", "data-layout": "L10", "page_mode": "rational", "visual_density": "balanced", "reason": "左栏两步说明 + 右栏 6 模块文档表 + 三层校验清单。"}}, "page_08": {"file": "deck/_internal/02_svg_source/page_08.svg", "status": "warning", "summary": {"errors": 0, "warnings": 7, "infos": 0}, "issues": [{"severity": "warning", "code": "TEXT_ANCHOR_MIDDLE_LONG", "message": "text-anchor=\"middle\" used on long text; PPT text width estimation may shift horizontally", "target": "text_2", "diagnosis": {"visual_length": 13.0, "text": "判断模型完全不排斥经验——"}, "recommended_fix": {"type": "left_align_long_text", "action": "长文本改为 text-anchor=\"start\"，用明确 x 坐标左对齐；只有短标题、短数字适合居中锚点。"}}, {"severity": "warning", "code": "TEXT_ANCHOR_MIDDLE_LONG", "message": "text-anchor=\"middle\" used on long text; PPT text width estimation may shift horizontally", "target": "text_5", "diagnosis": {"visual_length": 17.0, "text": "长期成长的核心资产，不是经历堆砌，"}, "recommended_fix": {"type": "left_align_long_text", "action": "长文本改为 text-anchor=\"start\"，用明确 x 坐标左对齐；只有短标题、短数字适合居中锚点。"}}, {"severity": "warning", "code": "TEXT_ANCHOR_MIDDLE_LONG", "message": "text-anchor=\"middle\" used on long text; PPT text width estimation may shift horizontally", "target": "text_6", "diagnosis": {"visual_length": 13.0, "text": "而是可反复调用的判断结构。"}, "recommended_fix": {"type": "left_align_long_text", "action": "长文本改为 text-anchor=\"start\"，用明确 x 坐标左对齐；只有短标题、短数字适合居中锚点。"}}, {"severity": "warning", "code": "TEXT_ANCHOR_MIDDLE_LONG", "message": "text-anchor=\"middle\" used on long text; PPT text width estimation may shift horizontally", "target": "text_7", "diagnosis": {"visual_length": 15.0, "text": "经验 = 原料 · 判断模型 = 产品"}, "recommended_fix": {"type": "left_align_long_text", "action": "长文本改为 text-anchor=\"start\"，用明确 x 坐标左对齐；只有短标题、短数字适合居中锚点。"}}, {"severity": "warning", "code": "FONT_SIZE_TIERS", "message": "5 distinct font sizes (max 4 recommended): [22, 24, 28, 32, 88]", "target": "typography"}, {"severity": "warning", "code": "DENSITY_IMBALANCE_HORIZONTAL", "message": "Page visual density is heavily biased to the right side", "target": "svg_structure", "diagnosis": {"region_density": {"left": 0.008, "right": 0.195, "top": 0.093, "bottom": 0.11}, "heavy_side": "right"}, "recommended_fix": {"type": "rebalance_layout", "action": "重新分配左右空间：扩大轻侧的标题/图片/留白角色，或把重侧内容拆组；不要只靠挪动单个元素解决。"}}, {"severity": "warning", "code": "LARGE_EMPTY_REGION", "message": "Large low-utilization area detected in 左下 region", "target": "layout_quality", "diagnosis": {"region": "左下", "region_box": {"x": 60.0, "y": 520.0, "w": 900.0, "h": 420.0}, "estimated_occupancy": 0.0}, "recommended_fix": {"type": "rebalance_empty_space", "action": "页面左下存在大块低利用空白。若这是理性信息页，优先扩大关键模块、改成洞察卡/时间轴/摘要区，或把相邻模块重新分配到该区域；情绪页可人工接受。"}}], "meta": {"page_key": "page_08", "data-layout": "L08", "page_mode": "emotional", "visual_density": "airy", "reason": "关键洞察金句页，中央大字 + 上下铺垫与呼应，大量留白。"}}, "page_09": {"file": "deck/_internal/02_svg_source/page_09.svg", "status": "warning", "summary": {"errors": 0, "warnings": 4, "infos": 0}, "issues": [{"severity": "warning", "code": "TEXT_ANCHOR_MIDDLE_LONG", "message": "text-anchor=\"middle\" used on long text; PPT text width estimation may shift horizontally", "target": "text_5", "diagnosis": {"visual_length": 18.0, "text": "起点：今天复盘一件事时，多问一句——"}, "recommended_fix": {"type": "left_align_long_text", "action": "长文本改为 text-anchor=\"start\"，用明确 x 坐标左对齐；只有短标题、短数字适合居中锚点。"}}, {"severity": "warning", "code": "TEXT_ANCHOR_MIDDLE_LONG", "message": "text-anchor=\"middle\" used on long text; PPT text width estimation may shift horizontally", "target": "text_6", "diagnosis": {"visual_length": 14.0, "text": "这件事背后的判断模型是什么？"}, "recommended_fix": {"type": "left_align_long_text", "action": "长文本改为 text-anchor=\"start\"，用明确 x 坐标左对齐；只有短标题、短数字适合居中锚点。"}}, {"severity": "warning", "code": "FONT_SIZE_TIERS", "message": "6 distinct font sizes (max 4 recommended): [22, 24, 26, 30, 44, 64]", "target": "typography"}, {"severity": "warning", "code": "LARGE_EMPTY_REGION", "message": "Large low-utilization area detected in 左下 region", "target": "layout_quality", "diagnosis": {"region": "左下", "region_box": {"x": 60.0, "y": 520.0, "w": 900.0, "h": 420.0}, "estimated_occupancy": 0.0}, "recommended_fix": {"type": "rebalance_empty_space", "action": "页面左下存在大块低利用空白。若这是理性信息页，优先扩大关键模块、改成洞察卡/时间轴/摘要区，或把相邻模块重新分配到该区域；情绪页可人工接受。"}}], "meta": {"page_key": "page_09", "data-layout": "L15", "page_mode": "emotional", "visual_density": "airy", "reason": "收束页，资产转型主张 + 行动召唤问句，大量留白。"}}};
+var selfReview = {};
+var versions = {};
+var revisionNotes = {};
+var batchId = "batch_03";
+var hasSelfReview = true;
+var visionAvailable = false;
+var visionUnavailableReason = "本运行时无法直接解析 PNG 图像内容；已通过 validate_svg_layout 诊断 + SVG 源码结构审查做综合判断，但请用户在浏览器视觉审阅页亲自确认实际渲染效果。";
+var hasValidation = true;
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function assetUrl(path) {
+  if (!path) return '';
+  if (location.protocol === 'file:' && path.indexOf('/_internal/') === 0) {
+    return path.slice(1);
+  }
+  return path;
+}
+
+var pageActionCache = {};
+
+function warningActionSpec(issue) {
+  var code = issue.code || '';
+  var msg = issue.message || '';
+  var text = code + ' ' + msg;
+  if (/FONT_TOO_SMALL|FONT_SIZE|MISSING_FONT|font-size/i.test(text)) {
+    return {
+      id:'font_readability',
+      title:'小字或字体风险',
+      desc:'提高小字号、减少次级说明，优先保证投影和 PPT 编辑后的可读性。'
+    };
+  }
+  if (/TEXT_OVERFLOW_MAJOR/i.test(text)) {
+    return {
+      id:'text_overflow_major',
+      title:'文字明显放不下',
+      desc:'优先拆行、扩大容器或减少上屏文字；这是进入审阅前最值得修的文字容量问题。'
+    };
+  }
+  if (/TEXT_CONTAINER_TIGHT|TEXT_BASELINE_ESTIMATE_DRIFT|OVERFLOW|贴边|overflow/i.test(text)) {
+    return {
+      id:'text_fit',
+      title:'文字贴边或估算偏差',
+      desc:'先看左侧 PNG 是否真的拥挤；若肉眼可接受，可不修，若显得紧再拆行或扩大容器。'
+    };
+  }
+  if (/HIGH_TEXT_DENSITY|density|text elements/i.test(text)) {
+    return {
+      id:'reduce_density',
+      title:'信息密度偏高',
+      desc:'合并重复标签，删除非关键注释，保留主判断和关键证据。'
+    };
+  }
+  if (/PALETTE|COLOR|Colors outside/i.test(text)) {
+    return {
+      id:'color_consistency',
+      title:'颜色可能偏离规范',
+      desc:'检查是否需要统一色板；如果这是品牌色覆盖，请在反馈中确认接受。'
+    };
+  }
+  if (/SAFE_MARGIN|UNSAFE_MARGIN|bounds|outside/i.test(text)) {
+    return {
+      id:'safe_margin',
+      title:'元素靠近边界',
+      desc:'调整元素位置，避免导出或投影时显得拥挤、被裁切。'
+    };
+  }
+  if (/TEXT_ANCHOR_MIDDLE_LONG|text-anchor/i.test(text)) {
+    return {
+      id:'long_center_text',
+      title:'居中文本过长',
+      desc:'改成左对齐或拆行，降低 PPT 编辑后跑版风险。'
+    };
+  }
+  if (/same page_mode|same visual_density|rhythm/i.test(text)) {
+    return {
+      id:'deck_rhythm',
+      title:'页面节奏重复',
+      desc:'调整页面信息密度或视觉模式，避免连续页面观感过于相似。'
+    };
+  }
+  if (/LARGE_EMPTY_REGION|LOW_MODULE_UTILIZATION|TABLE_READABILITY_RISK|VISUAL_WEIGHT|DENSITY_IMBALANCE/i.test(text)) {
+    return {
+      id:'layout_quality',
+      title:'版面空间利用或视觉重心不稳',
+      desc:'检查是否存在大块无功能空白、表格占位低效或上下左右重量失衡；优先改模块结构，不要只微调坐标。'
+    };
+  }
+  return {
+    id:'review_warning',
+    title:'其他可检查风险',
+    desc:'存在非阻断质量提示，可人工检查页面细节后决定是否优化。'
+  };
+}
+
+function buildReviewActions(suggestions) {
+  var actions = [];
+  (suggestions || []).slice(0,3).forEach(function(sug, si) {
+    actions.push({
+      action_id: 'self_' + (sug.id || si),
+      label: sug.text || '模型建议优化',
+      description: sug.basis
+        ? ('设计建议：' + String(sug.type || 'visual').toUpperCase() + ' · ' + String(sug.basis))
+        : (sug.type ? ('设计建议：' + String(sug.type).toUpperCase()) : '设计建议'),
+      source: 'self_review',
+      source_index: si,
+      source_codes: [],
+      messages: [sug.text || '']
+    });
+  });
+  return actions;
+}
+
+function renderReviewActions(pageKey, idx, actions) {
+  pageActionCache[pageKey] = actions || [];
+  if (!actions || !actions.length) {
+    return '<div class="accept-note">没有建议修改项。若页面效果可接受，可直接确认通过。</div>';
+  }
+  var html = '<div class="review-actions">';
+  actions.forEach(function(a, ai) {
+    var meta = '来源：模型综合视觉判断';
+    html += '<label class="review-action">';
+    html += '<input type="checkbox" name="action_'+idx+'" value="'+ai+'">';
+    html += '<div><div class="action-title">'+escapeHtml(a.label)+'</div>';
+    html += '<div class="action-desc">'+escapeHtml(a.description || '')+'</div>';
+    html += '<div class="action-meta"><span class="action-source">'+escapeHtml(a.source || '')+'</span>'+escapeHtml(meta)+'</div>';
+    html += '</div></label>';
+  });
+  html += '</div><div class="accept-note">勾选表示“下一轮请修”。不勾选的设计建议视为本轮人工接受或暂不处理。</div>';
+  return html;
+}
+
+function renderRevisionNotes(pageKey) {
+  var notesRoot = revisionNotes || {};
+  var pagesNotes = notesRoot.pages || notesRoot;
+  var n = pagesNotes[pageKey];
+  if (!n) return '';
+  function block(title, arr) {
+    if (!arr || !arr.length) return '';
+    var html = '<div class="revision-block"><strong>'+escapeHtml(title)+'</strong><ul>';
+    arr.forEach(function(item) { html += '<li>'+escapeHtml(item)+'</li>'; });
+    html += '</ul></div>';
+    return html;
+  }
+  var body = '';
+  body += block('上一轮用户要求', n.previous_feedback || n.user_requests);
+  body += block('本轮已修改', n.changes_made);
+  body += block('未改 / 保留原因', n.not_changed);
+  body += block('仍需确认', n.remaining_risks);
+  if (!body) return '';
+  return '<div class="revision-notes"><div class="revision-notes-title">上一轮反馈与本轮修改</div><div class="revision-grid">'+body+'</div></div>';
+}
+
+function pageHasBlockingIssues(pageKey) {
+  var v = (validation||{})[pageKey]||{};
+  var issues = v.issues || [];
+  var hasError = v.status === 'fail' || issues.some(function(i) { return i.severity === 'error'; });
+  var s = (selfReview||{})[pageKey]||{};
+  var fixes = (s.required_fixes || []);
+  return hasError || s.visual_status === 'blocked' || s.status === 'blocked' || fixes.length > 0;
+}
+
+function statusLabel(v) {
+  return {pass:'通过', warning:'警告', fail:'失败', unknown:'未知'}[v] || v || '未知';
+}
+
+function modeLabel(v) {
+  return {rational:'理性页', emotional:'情绪页'}[v] || v || '';
+}
+
+function densityLabel(v) {
+  return {dense:'高密度', balanced:'均衡', airy:'留白'}[v] || v || '';
+}
+
+function renderPages() {
+  var container = document.getElementById('container');
+  var nav = document.getElementById('pageNav');
+
+  if (!hasValidation) {
+    var alertDiv = document.createElement('div');
+    alertDiv.className = 'global-alert error';
+    alertDiv.textContent = '警告：validation_summary.json 缺失。所有页面校验结果未知，请先运行 validate_svg_layout.py。';
+    container.appendChild(alertDiv);
+  }
+
+  if (!hasSelfReview) {
+    var alertDiv2 = document.createElement('div');
+    alertDiv2.className = 'global-alert warning';
+    alertDiv2.textContent = '注意：self_review.json 缺失。模型视觉自检尚未完成，所有视觉检查已推迟到人工审阅。请仔细检查每页。';
+    container.appendChild(alertDiv2);
+  } else if (!visionAvailable) {
+    var alertDiv3 = document.createElement('div');
+    alertDiv3.className = 'global-alert warning';
+    alertDiv3.textContent = '人工视觉审阅模式：模型视觉能力不可用，PNG 画面判断交由人工完成。原因：' + (visionUnavailableReason || '未提供');
+    container.appendChild(alertDiv3);
+  }
+
+  pages.forEach(function(p, idx) {
+    var pageKey = p.page_key || ('page_' + String(idx+1).padStart(2,'0'));
+    var v = (validation||{})[pageKey]||{};
+    var s = (selfReview||{})[pageKey]||{};
+    var vers = (versions||{})[pageKey]||[];
+
+    var vStatus = v.status||'unknown';
+    var srStatus = s.visual_status||s.status||'not_reviewed';
+    var hasDesignSuggestions = ((s||{}).suggestions||[]).length > 0;
+    var hasRequiredFixes = ((s||{}).required_fixes||[]).length > 0;
+    var borderClass = (vStatus === 'fail' || hasRequiredFixes || srStatus === 'blocked') ? 'fail' : (hasDesignSuggestions ? 'warning' : 'pass');
+
+    var card = document.createElement('div');
+    card.id = 'page-' + pageKey;
+    card.className = 'page-review ' + borderClass;
+
+    if (nav) {
+      var link = document.createElement('a');
+      link.className = 'nav-item';
+      link.href = '#page-' + pageKey;
+      link.innerHTML = '<span class="nav-dot '+borderClass+'"></span><span>第'+(idx+1)+'页</span>';
+      nav.appendChild(link);
+    }
+
+    var html = '<div class="page-head"><h2>第'+(idx+1)+'页: '+escapeHtml(p.page_title||pageKey)+'</h2>';
+    html += '<span class="page-meta">'+escapeHtml(pageKey);
+
+    // Layout info from layout plan if available
+    if (p.layout_id) html += ' | ' + escapeHtml(p.layout_id);
+    if (p.page_mode) html += ' | ' + escapeHtml(modeLabel(p.page_mode));
+    if (p.visual_density) html += ' | ' + escapeHtml(densityLabel(p.visual_density));
+    html += '</span></div>';
+    html += '<div class="page-body"><div class="review-grid">';
+
+    // Preview first
+    html += '<section class="preview-panel">';
+    var pngPath = p.png_path;
+    if (!pngPath) {
+      html += '<div class="missing-file">PNG 预览路径未在 page_manifest.json 中设置</div>';
+    } else {
+      if (vers.length >= 2) {
+        var latest = vers[vers.length-1];
+        var prev = vers[vers.length-2];
+        var versionBase = '_internal/05_review/versions/' + pageKey + '/';
+        html += '<div class="section-label">版本对比</div><div class="grid-2col">';
+        html += '<div class="preview-box"><div class="vlabel">v'+prev.version+' ('+prev.created_at+')</div><img src="'+assetUrl(versionBase+prev.png)+'" alt="v'+prev.version+'"></div>';
+        html += '<div class="preview-box"><div class="vlabel">v'+latest.version+' ('+latest.created_at+') — 当前版本</div><img src="'+assetUrl(versionBase+latest.png)+'" alt="v'+latest.version+'"></div>';
+        html += '</div>';
+      } else {
+        html += '<div class="section-label">预览</div><div class="preview-row"><div class="preview-box"><img src="'+assetUrl(pngPath)+'" alt="页面预览"></div></div>';
+      }
+    }
+    html += '</section><section class="qa-panel">';
+
+    // Internal check status. Non-blocking validator warnings are intentionally
+    // not exposed as user-facing actions; the model should synthesize them into
+    // design suggestions only when the PNG confirms a real issue.
+    html += '<div class="section-label">内部检查</div>';
+    if (vStatus === 'unknown') {
+      html += '<div class="missing-file">内部检查结果未知 — validation_summary.json 中未找到此页</div>';
+    } else {
+      html += '<div class="val-summary">';
+      var visibleStatus = vStatus === 'fail' ? '发现阻断项' : '已完成';
+      html += '<span class="status-'+(vStatus === 'fail' ? 'fail' : 'pass')+'">状态: '+escapeHtml(visibleStatus)+'</span>';
+      var es = (v.summary||{}).errors||0;
+      if (es) html += ' | 阻断: '+es;
+      html += '</div>';
+      var issues = v.issues || [];
+      var errIssues = issues.filter(function(i) { return i.severity === 'error'; });
+      if (errIssues.length) {
+        html += '<div class="required-fixes"><div class="rf-title">必须修复项</div><ul>';
+        errIssues.forEach(function(i) { html += '<li>'+escapeHtml(i.message)+'</li>'; });
+        html += '</ul></div>';
+      }
+    }
+
+    // Self-review status
+    html += '<div class="section-label">模型自检</div>';
+    if (!visionAvailable) {
+      html += '<div class="self-review-status human_review">人工视觉审阅模式：请以左侧 PNG 预览为准，脚本检查仍然有效。原因：'+escapeHtml(visionUnavailableReason || '未提供')+'</div>';
+    } else if (srStatus === 'not_reviewed') {
+      html += '<div class="self-review-status" style="background:#F5F7FA;color:#999;border:1px solid #E0E0E0">自检状态: 未完成</div>';
+    } else {
+      html += '<details class="self-review-status '+srStatus+'"><summary>自检状态: ' + srStatus.toUpperCase();
+      if (s.confidence != null) html += ' | 置信度: ' + (s.confidence*100).toFixed(0) + '%';
+      html += '</summary><div class="self-review-body">';
+      if (s.layout_feedback) html += '<div>版式: ' + escapeHtml(s.layout_feedback) + '</div>';
+      if (s.copy_feedback) html += '<div>文案: ' + escapeHtml(s.copy_feedback) + '</div>';
+      if (s.visual_feedback) html += '<div>视觉: ' + escapeHtml(s.visual_feedback) + '</div>';
+      html += '</div></details>';
+    }
+
+    // Required fixes (blocking — shown BEFORE feedback controls)
+    var fixes = (s||{}).required_fixes||[];
+    if (fixes.length) {
+      html += '<div class="required-fixes"><div class="rf-title">阻断性问题（必须在PPT转换前解决）</div>';
+      html += '<div class="rf-subtitle">以下问题不解决，pipeline_gate.py 将阻止导出</div><ul>';
+      fixes.forEach(function(f) { html += '<li>'+escapeHtml(f)+'</li>'; });
+      html += '</ul></div>';
+    }
+
+    // User-facing design suggestions from model self-review only.
+    var suggestions = (s||{}).suggestions||[];
+    var reviewActions = buildReviewActions(suggestions);
+    html += '<div class="section-label">设计建议（勾选表示下一轮请修改）</div>';
+    html += renderReviewActions(pageKey, idx, reviewActions);
+
+    // Free-text feedback
+    html += '<div class="action-zone"><div class="section-label">您的反馈</div><div class="feedback-text">';
+    html += '<textarea name="feedback_'+idx+'" placeholder="对此页的反馈意见..."></textarea></div>';
+
+    // Approve
+    html += '<label class="approve-row"><input type="checkbox" name="approve_'+idx+'" value="1"> <strong>确认此页通过审阅</strong></label>';
+    html += '</div>';
+    html += '</section></div></div>'; // qa-panel, review-grid, page-body
+    html += renderRevisionNotes(pageKey);
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+function submitFeedback() {
+  var payload = {batch_id: batchId, pages:{}, all_approved: false};
+  pages.forEach(function(p, idx) {
+    var pageKey = p.page_key || ('page_' + String(idx+1).padStart(2,'0'));
+    var selectedActions = [];
+    var selectedSuggestionIndexes = [];
+    var actionCbs = document.getElementsByName('action_'+idx);
+    actionCbs.forEach(function(cb) {
+      if (!cb.checked) return;
+      var ai = parseInt(cb.value);
+      var action = (pageActionCache[pageKey] || [])[ai];
+      if (action) {
+        selectedActions.push(action);
+        if (action.source === 'self_review' && action.source_index != null) {
+          selectedSuggestionIndexes.push(action.source_index);
+        }
+      }
+    });
+    var approved = (document.getElementsByName('approve_'+idx)[0]||{}).checked||false;
+    payload.pages[pageKey] = {
+      approved: approved,
+      selected_suggestions: selectedSuggestionIndexes,
+      selected_review_actions: selectedActions,
+      custom_feedback: (document.getElementsByName('feedback_'+idx)[0]||{}).value||''
+    };
+  });
+  payload.all_approved = Object.values(payload.pages).every(function(p) { return p.approved; });
+  payload.approval_key = (document.getElementById('approvalKey')||{}).value || '';
+  var toast = document.getElementById('toast');
+  for (var pk in payload.pages) {
+    if (!Object.prototype.hasOwnProperty.call(payload.pages, pk)) continue;
+    var pagePayload = payload.pages[pk];
+    if (pagePayload.approved && pageHasBlockingIssues(pk)) {
+      toast.textContent = pk + ' 仍有阻断项，不能批准。请先修复。';
+      toast.className = 'toast show';
+      setTimeout(function(){ toast.className='toast'; }, 5000);
+      return;
+    }
+    if (pagePayload.approved && pagePayload.selected_review_actions && pagePayload.selected_review_actions.length) {
+      toast.textContent = pk + ' 已勾选修改建议。请先提交反馈，或取消勾选后再批准。';
+      toast.className = 'toast show';
+      setTimeout(function(){ toast.className='toast'; }, 5000);
+      return;
+    }
+  }
+  if (payload.all_approved && !payload.approval_key.trim()) {
+    toast.textContent = '全部通过需要输入人工审批口令。';
+    toast.className = 'toast show';
+    setTimeout(function(){ toast.className='toast'; }, 5000);
+    return;
+  }
+  postPayload(payload);
+}
+
+function approveAll() {
+  pages.forEach(function(p, idx) {
+    var cb = document.getElementsByName('approve_'+idx)[0];
+    if(cb) cb.checked = true;
+  });
+  submitFeedback();
+}
+
+function postPayload(payload) {
+  var toast = document.getElementById('toast');
+  fetch('/review-feedback', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+  }).then(function(r) {
+    toast.textContent = r.ok ? '反馈已提交。' : '提交失败。审阅服务器是否在运行？';
+    toast.className = 'toast show';
+    setTimeout(function(){ toast.className='toast'; }, 4000);
+  }).catch(function() {
+    toast.textContent = '无法连接服务器。请先启动 review_server.py。';
+    toast.className = 'toast show';
+    setTimeout(function(){ toast.className='toast'; }, 5000);
+  });
+}
+
+renderPages();
+
+function updateHeaderCompactState() {
+  document.body.classList.toggle('review-scrolled', window.scrollY > 24);
+}
+updateHeaderCompactState();
+window.addEventListener('scroll', updateHeaderCompactState, {passive:true});
+
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (!entry.isIntersecting) return;
+    document.querySelectorAll('.nav-item').forEach(function(a) { a.classList.remove('active'); });
+    var active = document.querySelector('.nav-item[href="#'+entry.target.id+'"]');
+    if (active) active.classList.add('active');
+  });
+}, {rootMargin:'-35% 0px -55% 0px', threshold:0});
+document.querySelectorAll('.page-review').forEach(function(card) { observer.observe(card); });
+</script>
+</body>
+</html>

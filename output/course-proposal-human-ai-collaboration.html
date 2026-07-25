@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人机协同 · 课程设计方案 v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#F5F5F5;--surface:#FFFFFF;--surface-raised:#F0F0F0;--border:#E8E8E8;--border-visible:#CCCCCC;--text-disabled:#999;--text-secondary:#666;--text-primary:#1A1A1A;--text-display:#000;--accent:#D71921;--accent-subtle:rgba(215,25,33,0.07);--success:#4A9E5C;--blue:#007AFF;--blue-subtle:rgba(0,122,255,0.07);--purple:#8B7CF6;--gold:#D4A843;--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--space-2xl:48px;--space-3xl:64px;--space-4xl:96px}
+html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--text-primary);line-height:1.6;min-height:100vh;background-image:radial-gradient(circle,var(--border)0.6px,transparent 0.6px);background-size:20px 20px}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(245,245,245,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 var(--space-xl);height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-display)}
+.nav-brand em{font-style:normal;color:var(--accent)}
+.nav-links{display:flex;gap:var(--space-md)}
+.nav-links a{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary);text-decoration:none;white-space:nowrap;padding:var(--space-xs)0;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+.nav-links a:hover{color:var(--text-display)}
+.nav-links a.active{color:var(--accent);border-bottom-color:var(--accent)}
+.hero{padding:var(--space-4xl) var(--space-xl) var(--space-3xl);max-width:1200px;margin:0 auto;position:relative;overflow:hidden}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--accent);margin-bottom:var(--space-sm)}
+.hero-title{font-size:clamp(28px,4vw,48px);font-weight:700;color:var(--text-display);line-height:1.05;letter-spacing:-.02em;max-width:800px}
+.hero-title em{font-style:normal;color:var(--accent)}
+.hero-sub{font-size:16px;color:var(--text-secondary);max-width:640px;margin-top:var(--space-md);line-height:1.6}
+.section{max-width:1200px;margin:0 auto;padding:var(--space-4xl) var(--space-xl)}
+.section-tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin-bottom:var(--space-sm)}
+.section-title{font-size:clamp(24px,3vw,36px);font-weight:700;color:var(--text-display);letter-spacing:-.02em;line-height:1.1;margin-bottom:var(--space-md)}
+.section-title em{font-style:normal;color:var(--accent)}
+.section-sub{font-size:15px;color:var(--text-secondary);max-width:640px;line-height:1.7;margin-bottom:var(--space-xl)}
+
+/* === Cards === */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:var(--space-md)}
+.card{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);border-top:3px solid var(--accent);transition:border-color .2s}
+.card:hover{border-color:var(--border-visible)}
+.card-num{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.card-title{font-size:15px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.card-body{font-size:13px;color:var(--text-secondary);line-height:1.7}
+
+/* === Callout === */
+.callout{padding:var(--space-md) var(--space-lg);border-left:3px solid var(--accent);background:var(--accent-subtle);font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-md)}
+.callout.info{border-left-color:var(--blue);background:var(--blue-subtle)}
+.callout.success{border-left-color:var(--success);background:rgba(74,158,92,0.07)}
+.callout-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--space-xs)}
+.callout.info .callout-label{color:var(--blue)}
+
+/* === Interactive Spec Cards === */
+.ix-card{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);margin-bottom:var(--space-md)}
+.ix-header{display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-md)}
+.ix-icon{font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--surface-raised);border:1px solid var(--border)}
+.ix-info{flex:1}
+.ix-name{font-size:15px;font-weight:600;color:var(--text-display)}
+.ix-meta{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-top:2px}
+.ix-detail{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);font-size:13px}
+.ix-detail-item{}
+.ix-dl{font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:var(--space-xs)}
+.ix-dd{color:var(--text-secondary);line-height:1.6}
+.ix-code{font-family:'Space Mono',monospace;font-size:12px;background:var(--surface-raised);padding:var(--space-md);border:1px solid var(--border);line-height:1.6;overflow-x:auto;margin-top:var(--space-sm)}
+
+/* === Table === */
+.table-scroll{overflow-x:auto;margin-bottom:var(--space-md)}
+.comp-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border:1px solid var(--border)}
+.comp-table th{text-align:left;padding:var(--space-sm) var(--space-md);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--text-secondary);background:var(--surface-raised);border-bottom:2px solid var(--border)}
+.comp-table td{padding:var(--space-sm) var(--space-md);border-bottom:1px solid var(--border);color:var(--text-secondary);line-height:1.5}
+.comp-table td:first-child{color:var(--text-primary);font-weight:500}
+.comp-table tr:hover td{background:var(--surface-raised)}
+
+/* === Footer === */
+.footer{max-width:1200px;margin:0 auto;padding:var(--space-3xl) var(--space-xl);border-top:1px solid var(--border);text-align:center}
+.footer-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)}
+
+@media(max-width:600px){
+  .ix-detail{grid-template-columns:1fr}
+  .hero-title{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">人机协同 · <em>课程方案 v3</em></div>
+    <div class="nav-links">
+      <a href="#analysis">课程分析</a>
+      <a href="#plan">实施方案</a>
+      <a href="#interactive">交互组件</a>
+      <a href="#design">课程设计</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">Course Design v3 · 落地执行方案</div>
+  <h1 class="hero-title">人机协同课程 · 从分析到<em>落地</em></h1>
+  <p class="hero-sub">基于京东课程模式分析，设计适合初学者的渐进式人机协同课程。每步有交互、有产出、有反馈，让学员"学了就能试，试了就能用"。</p>
+</section>
+
+<!-- ============================================
+     1. JD COURSE COMPLETE ANALYSIS
+     ============================================ -->
+<section class="section" id="analysis">
+  <div class="section-tag">01 / 京东课程完整分析</div>
+  <h2 class="section-title">走读 3 条路径 · 提取<em> 6 个核心设计要素</em></h2>
+  <p class="section-sub">完整走读了 AI 通识 10 步路径、前端全栈 10 步路径、以及课程 01-03 的内部页面。以下是核心发现。</p>
+
+  <div class="callout info" style="margin-bottom:var(--space-xl)">
+    <div class="callout-label">已分析内容</div>
+    <strong>AI 通识路径</strong>：10 步课序 + 课程 01（大模型通识，7 章 3 交互组件） + 课程 02（认识 Token，3 章 1 交互组件）<br>
+    <strong>前端全栈路径</strong>：10 步课序 + 课程 01（HTML 核心知识，~15 章，代码密集型）<br>
+    <strong>平台全局</strong>：范式框架、角色演进、6 条学习路径设计、领航/蝶变双轨
+  </div>
+
+  <!-- 6 Key Features -->
+  <div class="card-grid">
+    <div class="card" style="border-top-color:var(--accent)">
+      <div class="card-num">要素 01 · 课序设计</div>
+      <div class="card-title">步进式 + 混合编排 + 自动解锁</div>
+      <div class="card-body">每路径 10 步，课程 × 7 + 实战 × 2 + 测验 × 1。每节点标注 STEP、类型、时长、状态（已完成/进行中/未解锁）。完成当前节点自动解锁下一项，形成"学完即走、走完即开"的闭环。实战节点出现在每 1-2 门课后。</div>
+    </div>
+    <div class="card" style="border-top-color:var(--blue)">
+      <div class="card-num">要素 02 · 章节结构</div>
+      <div class="card-title">概念 → 交互 → 洞察 三段式</div>
+      <div class="card-body">每章 = 概念阐述（简单直白）→ 交互组件（动手试）→ 关键洞察（一句话记住）。编号层级 1.→2.→2.1→2.2 清晰。每章开头有标题，正文图文混排。</div>
+    </div>
+    <div class="card" style="border-top-color:var(--success)">
+      <div class="card-num">要素 03 · 交互组件</div>
+      <div class="card-title">4 类组件降低认知门槛</div>
+      <div class="card-body">① 滑块+实时反馈 — 抽象概念变可调参数（Temperature/成本）② 单选+动态输出 — 切换场景看结果变化 ③ 分步演示 — 复杂过程拆成 4 步 ④ 实时图表 — 数据变化可视化。每个组件有图标+标题+副标题区。</div>
+    </div>
+    <div class="card" style="border-top-color:var(--purple)">
+      <div class="card-num">要素 04 · 信息呈现</div>
+      <div class="card-title">5 种信息框 + 对比表 + ❌✅</div>
+      <div class="card-body">蓝色 info（重要提示/公式）、红色 warning（成本陷阱）、金色 highlight（优化原则）、深色 insight（核心直觉）、绿色 success（关键发现）。对比表格横向滚动，❌✅ 优劣对比直观。</div>
+    </div>
+    <div class="card" style="border-top-color:var(--gold)">
+      <div class="card-num">要素 05 · 侧边栏导航</div>
+      <div class="card-title">目录自动高亮 + 进度暗示</div>
+      <div class="card-body">每课右侧固定侧边栏显示本页目录，滚动时自动高亮当前章节。侧边栏底部有提示"完成本课后 X 会自动解锁"，制造期待感。</div>
+    </div>
+    <div class="card" style="border-top-color:var(--accent)">
+      <div class="card-num">要素 06 · 状态反馈</div>
+      <div class="card-title">无处不在的进度感知</div>
+      <div class="card-body">学习路径页：顶部进度摘要（百分比 + 已学/总节点 + 剩余分钟）+ 当前节点 + 继续学习按钮。课程页：顶栏路径标明当前位置，底部"完成当前课程"按钮。</div>
+    </div>
+  </div>
+
+  <!-- 课程 01 vs 02 对比 -->
+  <div style="margin-top:var(--space-2xl)">
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled);margin-bottom:var(--space-md)">已走读的课程内容结构对比</div>
+    <div class="table-scroll">
+      <table class="comp-table">
+        <thead><tr><th>维度</th><th>📘 AI 通识 · 01 大模型</th><th>📗 AI 通识 · 02 Token</th><th>📙 前端 · 01 HTML</th></tr></thead>
+        <tbody>
+          <tr><td>时长</td><td>15 min</td><td>15 min</td><td>10 min</td></tr>
+          <tr><td>章节数</td><td>7 章（含子节 12 节）</td><td>3 章（含子节 13 节）</td><td>~15 章（含子节）</td></tr>
+          <tr><td>交互组件</td><td>3 个（概率引擎/向量空间/分步演示）</td><td>1 个（成本计算器）</td><td>0 个</td></tr>
+          <tr><td>信息框</td><td>3 个（核心直觉/深度思考/Embedding）</td><td>4 个（重要提示/计费公式/成本陷阱/优化原则）</td><td>0 个</td></tr>
+          <tr><td>对比表</td><td>1 个（擅长/不擅长）</td><td>3 个（中英文对比/定价/模型选择）</td><td>0 个</td></tr>
+          <tr><td>代码块</td><td>少（概念型）</td><td>中（公式+示例）</td><td>大量（代码型课程）</td></tr>
+          <tr><td>侧边栏</td><td>✓ 自动高亮</td><td>✓ 自动高亮</td><td>✓ 自动高亮</td></tr>
+          <tr><td>课程风格</td><td>概念理解型</td><td>知识应用型</td><td>代码实操型</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- How they achieve the effect -->
+  <div style="margin-top:var(--space-xl)">
+    <div class="callout success">
+      <div class="callout-label">京东课程"好效果"的 5 个秘诀</div>
+      <strong>1. 极短课时</strong> — 每课 10-15 分钟，不产生学习疲劳。一次学一个概念，配一个交互。<br>
+      <strong>2. 抽象→具象</strong> — 每个概念都配一个交互组件。理解了原理马上动手调参数，看到结果变化。<br>
+      <strong>3. 零认知负担</strong> — 没有"先修要求"，不铺垫理论基础。直接从日常场景切入（"你有没有遇到过..."）。<br>
+      <strong>4. 即时反馈</strong> — 滑块一拖、按钮一点，结果立刻显示。学员不需要思考"我学得对不对"。<br>
+      <strong>5. 进度透明明</strong> — 任何时候都知道自己在哪、还剩多少、下一步是什么。学习路径清晰可预期。
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     2. IMPLEMENTATION PLAN
+     ============================================ -->
+<section class="section" id="plan">
+  <div class="section-tag">02 / 课程实施方案</div>
+  <h2 class="section-title">10 步渐进式 · 每步<em>有产出可验证</em></h2>
+  <p class="section-sub">面向零基础学员，每次学一个概念 → 做一个交互 → 产出一个制品。课程与实战交替，学完即练。</p>
+
+  <!-- Phase 1: MVP -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-2xl)">
+    <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);border-top:3px solid var(--accent)">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">PHASE 1 · MVP（2 周）</div>
+      <div style="font-size:18px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-md)">先跑通 01-04 步</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.7">
+        <p><strong>Step 01</strong> 人机协同全景认知 — 自测 + 四层模型 + 数据看板</p>
+        <p><strong>Step 02</strong> 3A 分诊法 — 三抽屉 + 交互式分诊器</p>
+        <p><strong>Step ✦</strong> 任务分诊挑战（实战）— 给自己的任务做分类</p>
+        <p><strong>Step 03</strong> 规则文件入门 — AGENTS.md 模板 + 5 条规则</p>
+        <p><strong>Step 04</strong> 判断力基础 — 判断档案模板 + 3 步提取法</p>
+        <br>
+        <p style="color:var(--text-primary)">产出：学员拿到个人阶段定位 + 第一份 AGENTS.md + 3 条判断档案</p>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);border-top:3px solid var(--blue)">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--blue);margin-bottom:var(--space-sm)">PHASE 2 · 完整路径（+3 周）</div>
+      <div style="font-size:18px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-md)">扩展 05-10 步</div>
+      <div style="font-size:13px;color:var(--text-secondary);line-height:1.7">
+        <p><strong>Step 05</strong> 搭建你的第一个 Agent</p>
+        <p><strong>Step 06</strong> 三层协同框架</p>
+        <p><strong>Step ✦</strong> 全流程挑战（实战）</p>
+        <p><strong>Step 07</strong> 构建数字分身</p>
+        <p><strong>Step ✦</strong> 综合能力测验</p>
+        <br>
+        <p style="color:var(--text-primary)">产出：学员拥有可用的 Agent + 项目编排方案 + 数字分身 V1</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 步课序 -->
+  <div style="background:var(--surface);border:1px solid var(--border);overflow:hidden">
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:2px solid var(--border);background:var(--surface-raised);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--text-secondary);text-transform:uppercase;padding:var(--space-sm) var(--space-lg)">
+      <span>#</span><span>类型</span><span>课程名称</span><span>时长</span><span>交互</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);background:var(--accent-subtle);border-left:3px solid var(--accent);font-size:13px">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--accent)">01</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent)">课程</span>
+      <span style="font-weight:500">人机协同全景认知 · 自测+四层模型+数据</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">15 min</span>
+      <span style="font-size:16px">🎮</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--text-disabled)">02</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">课程</span>
+      <span>3A 分诊法 · 三抽屉+三维度+交互分诊器</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">15 min</span>
+      <span style="font-size:16px">🎮</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px;background:var(--surface-raised)">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--success)">✦</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--success)">实战</span>
+      <span><strong style="color:var(--success)">任务分诊挑战</strong> · 给 5 个真实任务做 3A 分类</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">10 min</span>
+      <span style="font-size:16px">✍</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--text-disabled)">03</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">课程</span>
+      <span>规则文件入门 · AGENTS.md 模板+5 条黄金规则</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">15 min</span>
+      <span style="font-size:16px">📝</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--text-disabled)">04</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">课程</span>
+      <span>判断力入门 · 判断档案 3 步提取法</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">10 min</span>
+      <span style="font-size:16px">📝</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px;background:var(--surface-raised)">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--success)">✦</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--success)">实战</span>
+      <span><strong style="color:var(--success)">判断档案练习</strong> · 提取自己的 3 条判断样本</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">10 min</span>
+      <span style="font-size:16px">✍</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--text-disabled)">05</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">课程</span>
+      <span>Agent 入门 · 最小闭环 + 搭建第一个 Agent</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">20 min</span>
+      <span style="font-size:16px">🎮</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--text-disabled)">06</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">课程</span>
+      <span>三层协同框架 · 执行层+编排层+接力层</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">20 min</span>
+      <span style="font-size:16px">🎮</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px;background:var(--surface-raised)">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--success)">✦</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--success)">挑战</span>
+      <span><strong style="color:var(--success)">全流程项目实战</strong> · 用三层协同完成一个任务</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">30 min</span>
+      <span style="font-size:16px">🏗</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;border-bottom:1px solid var(--border);align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--text-disabled)">07</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">课程</span>
+      <span>数字分身 · 知识库+技能+档案 = 你的 AI 分身</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">15 min</span>
+      <span style="font-size:16px">📝</span>
+    </div>
+    <div style="display:grid;grid-template-columns:40px 60px 1fr 80px 60px;gap:0;align-items:center;padding:var(--space-md) var(--space-lg);font-size:13px;background:var(--surface-raised)">
+      <span style="font-family:'Doto',monospace;font-weight:700;color:var(--purple)">✓</span>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--purple)">测验</span>
+      <span><strong style="color:var(--purple)">综合能力测验</strong> · 自测+实战+判断档案综合评分</span>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">10 min</span>
+      <span style="font-size:16px">✓</span>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top:var(--space-lg)">
+    <div class="callout-label">关键设计原则</div>
+    <strong>① 每课时不超过 20 分钟</strong> — 京东验证 10-15 分钟最有效。<br>
+    <strong>② 每课时至少一个交互或产出</strong> — 不能只有"读"，必须有"做"。<br>
+    <strong>③ 先实战再理论</strong> — 先给学员一个工具（3A 分诊器），他们用了产生兴趣，再讲背后的逻辑。<br>
+    <strong>④ 产出一致性</strong> — 每步产出都是"自己的"（自己的阶段定位、自己的 AGENTS.md、自己的判断档案），不是通用案例。
+  </div>
+</section>
+
+<!-- ============================================
+     3. INTERACTIVE COMPONENTS
+     ============================================ -->
+<section class="section" id="interactive">
+  <div class="section-tag">03 / 交互组件设计</div>
+  <h2 class="section-title">7 个交互组件 · 覆盖 10 步<em>全部课程</em></h2>
+  <p class="section-sub">每个组件解决一个特定的认知难点。全部用纯 HTML/CSS/JS 实现，零外部依赖。初级组件（滑块/勾选/单选）+ 中级组件（步骤演示/对比）+ 高级组件（可视化图表）。</p>
+
+  <!-- Component 1 -->
+  <div class="ix-card">
+    <div class="ix-header">
+      <div class="ix-icon">①</div>
+      <div class="ix-info">
+        <div class="ix-name">协同阶段自测 · 勾选式评估器</div>
+        <div class="ix-meta">用于 Step 01 · 复杂度：初级 · 开发量：~40 行 JS</div>
+      </div>
+    </div>
+    <div class="ix-detail">
+      <div class="ix-detail-item">
+        <div class="ix-dl">作用</div>
+        <div class="ix-dd">学员勾选 6-8 个能力条目，系统自动判定所属阶段（S1-S4）。零门槛，30 秒完成。结果带阶段描述和推荐学习路径。</div>
+      </div>
+      <div class="ix-detail-item">
+        <div class="ix-dl">交互逻辑</div>
+        <div class="ix-dd">checkbox 勾选 → 按阶段分组计分 → 取最高分阶段 → 展示定位结果（徽章+描述+推荐）→ 可选保存到 localStorage</div>
+      </div>
+    </div>
+    <div class="ix-code">&lt;!-- 核心逻辑 --&gt;
+function calcStage(checks) {
+  const scores = [0,0,0,0]; // S1-S4
+  checks.forEach(c =&gt; { if(c.checked) scores[c.dataset.tier-1]++; });
+  const max = Math.max(...scores);
+  const stage = scores.lastIndexOf(max) + 1;
+  return { stage, label: ['入门','工具化','判断力','分身化'][stage-1] };
+}</div>
+  </div>
+
+  <!-- Component 2 -->
+  <div class="ix-card">
+    <div class="ix-header">
+      <div class="ix-icon">②</div>
+      <div class="ix-info">
+        <div class="ix-name">3A 分诊器 · 三滑块实时推荐</div>
+        <div class="ix-meta">用于 Step 02 · 复杂度：初级 · 开发量：~50 行 JS</div>
+      </div>
+    </div>
+    <div class="ix-detail">
+      <div class="ix-detail-item">
+        <div class="ix-dl">作用</div>
+        <div class="ix-dd">仿京东 Token 成本计算器。3 个滑块（确定性/可逆性/跨度）→ 实时计算 → 推荐 Auto/Augment/Agent。右侧同步显示分工建议。</div>
+      </div>
+      <div class="ix-detail-item">
+        <div class="ix-dl">交互逻辑</div>
+        <div class="ix-dd">range slider input → 判定规则（不可逆则增强、确定+可逆则看跨度等）→ 更新模式名/颜色/分工卡片 → 平滑过渡动画</div>
+      </div>
+    </div>
+    <div class="ix-code">// 判定规则（验证过的逻辑）
+function triage(certainty, reversibility, span) {
+  if (reversibility &lt; 35) return 'augmentation';
+  if (certainty &gt; 65 &amp;&amp; reversibility &gt; 50)
+    return span &gt; 60 ? 'agent' : 'automation';
+  if (span &gt; 65 &amp;&amp; certainty &gt; 45 &amp;&amp; reversibility &gt; 45) return 'agent';
+  if (certainty &gt; 60) return 'automation';
+  return 'augmentation';
+}</div>
+  </div>
+
+  <!-- Component 3 -->
+  <div class="ix-card">
+    <div class="ix-header">
+      <div class="ix-icon">③</div>
+      <div class="ix-info">
+        <div class="ix-name">实战任务卡片 · 拖拽/分拣式练习</div>
+        <div class="ix-meta">用于实战 Step ✦ · 复杂度：中级 · 开发量：~80 行 JS</div>
+      </div>
+    </div>
+    <div class="ix-detail">
+      <div class="ix-detail-item">
+        <div class="ix-dl">作用</div>
+        <div class="ix-dd">给学员 5 个真实任务场景卡片，拖到对应的 3A 抽屉里。系统自动判定对错并给出解释。之后学员可以输入自己的任务做分类。</div>
+      </div>
+      <div class="ix-detail-item">
+        <div class="ix-dl">交互逻辑</div>
+        <div class="ix-dd">drag & drop 或点击分类 → 比对正确答案 → 显示正确/错误及原因 → 全部完成后显示得分 → 切换到"我的任务"输入模式</div>
+      </div>
+    </div>
+    <div class="ix-code">// 任务池示例
+const tasks = [
+  { text: '把上个月的招聘数据整理成周会汇报摘要',
+    answer: 'automation', reason: '规则明确、可逆、单步' },
+  { text: '评估两个供应商方案并给出推荐',
+    answer: 'augmentation', reason: '需要人做最终决策' },
+  { text: '完整调研某个竞品并输出分析报告',
+    answer: 'agent', reason: '多步串联、可设边界' },
+];</div>
+  </div>
+
+  <!-- Component 4 -->
+  <div class="ix-card">
+    <div class="ix-header">
+      <div class="ix-icon">④</div>
+      <div class="ix-info">
+        <div class="ix-name">AGENTS.md 模板生成器 · 表单→文件</div>
+        <div class="ix-meta">用于 Step 03 · 复杂度：初级 · 开发量：~60 行 JS</div>
+      </div>
+    </div>
+    <div class="ix-detail">
+      <div class="ix-detail-item">
+        <div class="ix-dl">作用</div>
+        <div class="ix-dd">学员填写表单项（角色描述、核心规则、禁令清单、输出偏好），系统实时生成 AGENTS.md 预览。可一键复制/下载。</div>
+      </div>
+      <div class="ix-detail-item">
+        <div class="ix-dl">交互逻辑</div>
+        <div class="ix-dd">表单输入 → 实时渲染 Markdown 预览 → 填写完成度提示 → "复制到剪贴板"按钮 → 可保存到 localStorage</div>
+      </div>
+    </div>
+    <div class="ix-code">// 模板
+function generateAgentsMd(form) {
+  return `# ${form.role} 的 AI 协作规则
+
+## 角色描述
+${form.roleDesc}
+
+## 核心规则
+${form.rules.split('\n').map(r=&gt;'- '+r).join('\n')}
+
+## 禁令清单
+${form.bans.split('\n').map(b=&gt;'- '+b).join('\n')}
+
+## 输出偏好
+${form.preferences}
+`; }</div>
+  </div>
+
+  <!-- Component 5 -->
+  <div class="ix-card">
+    <div class="ix-header">
+      <div class="ix-icon">⑤</div>
+      <div class="ix-info">
+        <div class="ix-name">判断档案 3 步提取器 · 分步表单</div>
+        <div class="ix-meta">用于 Step 04 · 复杂度：初级 · 开发量：~50 行 JS</div>
+      </div>
+    </div>
+    <div class="ix-detail">
+      <div class="ix-detail-item">
+        <div class="ix-dl">作用</div>
+        <div class="ix-dd">仿京东 Tokenizer→矩阵 4 步演示。3 步引导学员提取判断样本：①描述决策场景 ②写你的判断标准 ③下次怎么做。每步一个卡片，点下一步推进。</div>
+      </div>
+      <div class="ix-detail-item">
+        <div class="ix-dl">交互逻辑</div>
+        <div class="ix-dd">step=1→2→3 推进，每步显示当前进度（Step 1/3）。填写后自动保存，完成后显示完整判断档案卡片。可追加新条目。</div>
+      </div>
+    </div>
+    <div class="ix-code">// 分步数据
+const steps = [
+  { title: '发生了什么',
+    placeholder: '描述你做过的一个关键决策...',
+    field: 'scenario' },
+  { title: '你的判断标准是什么',
+    placeholder: '你基于什么做的这个决定...',
+    field: 'criteria' },
+  { title: '下次遇到类似情况怎么做',
+    placeholder: '可复用的判断原则...',
+    field: 'nextTime' },
+];</div>
+  </div>
+
+  <!-- Component 6 -->
+  <div class="ix-card">
+    <div class="ix-header">
+      <div class="ix-icon">⑥</div>
+      <div class="ix-info">
+        <div class="ix-name">Agent 闭环流程图 · 点选式步骤演示</div>
+        <div class="ix-meta">用于 Step 05 · 复杂度：中级 · 开发量：~100 行 JS</div>
+      </div>
+    </div>
+    <div class="ix-detail">
+      <div class="ix-detail-item">
+        <div class="ix-dl">作用</div>
+        <div class="ix-dd">展示 Agent 最小闭环（Plan→Tool→Observe→Revise）。学员点每个节点，右侧展开该步骤的说明+真实案例。底部有"验收底线"checklist。</div>
+      </div>
+      <div class="ix-detail-item">
+        <div class="ix-dl">交互逻辑</div>
+        <div class="ix-dd">点击节点 → 高亮激活 → 更新右侧面板（标题+描述+案例）→ 底部进度条显示在第几步 → 全部点完解锁"下一步"按钮</div>
+      </div>
+    </div>
+    <div class="ix-code">// 节点数据结构
+const nodes = [
+  { id: 'plan', label: 'Plan', desc: 'AI 拆解任务、规划步骤...',
+    example: '用户说"调研竞品"，AI 拆解为 5 个子步骤' },
+  { id: 'tool', label: 'Tool Call', desc: 'AI 调用工具获取信息...',
+    example: '调用搜索 API 获取竞品资料' },
+  { id: 'observe', label: 'Observe', desc: 'AI 观察工具返回结果...',
+    example: '分析搜索结果，提取关键信息' },
+  { id: 'revise', label: 'Revise', desc: 'AI 根据观察调整计划...',
+    example: '发现信息不足，补充搜索关键词' },
+];</div>
+  </div>
+
+  <!-- Component 7 -->
+  <div class="ix-card">
+    <div class="ix-header">
+      <div class="ix-icon">⑦</div>
+      <div class="ix-info">
+        <div class="ix-name">三层协同沙盘 · 场景切换模拟器</div>
+        <div class="ix-meta">用于 Step 06 · 复杂度：中高级 · 开发量：~150 行 JS</div>
+      </div>
+    </div>
+    <div class="ix-detail">
+      <div class="ix-detail-item">
+        <div class="ix-dl">作用</div>
+        <div class="ix-dd">学员选择"任务场景"（写周报/做调研/开发功能等），系统自动展示该项目在 L1/L2/L3 各层的分工建议。点击每层查看该层的具体工作。</div>
+      </div>
+      <div class="ix-detail-item">
+        <div class="ix-dl">交互逻辑</div>
+        <div class="ix-dd">场景下拉选择 → 更新三层卡片内容（L1 执行/ L2 编排/ L3 接力）→ 点每层展开详情 → 底部显示该场景的"最佳协同模式"</div>
+      </div>
+    </div>
+    <div class="ix-code">// 场景数据
+const scenarios = {
+  weekly_report: {
+    l1: 'AI 收集数据、生成初稿',
+    l2: '人设模板标准、AI 按模板填充',
+    l3: '人写 prompt 下发 → AI 夜间执行 → 人早起验收',
+    mode: 'Augmentation' },
+  competitor_research: {
+    l1: 'AI 搜索、整理、对比、出报告',
+    l2: '人定框架和维度、AI 按维度填充',
+    l3: '人下发调研指令 → AI 分步执行 → 人审核结论',
+    mode: 'Agent' },
+};</div>
+  </div>
+</section>
+
+<!-- ============================================
+     4. COURSE DESIGN DETAIL
+     ============================================ -->
+<section class="section" id="design">
+  <div class="section-tag">04 / 课程详细设计</div>
+  <h2 class="section-title">Step 01 和 02 的完整<em>落地实现</em></h2>
+  <p class="section-sub">以下展示两门核心课程的章节结构、每章的交互形式、学习者体验流程和技术实现要点。</p>
+
+  <!-- Step 01 详细设计 -->
+  <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-2xl)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-lg)">
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-xs)">STEP 01 · 课程</div>
+        <div style="font-size:20px;font-weight:600;color:var(--text-display)">人机协同全景认知</div>
+      </div>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">⏱ 15 分钟 · 2 个交互</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);font-size:13px">
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">第一章 · 核心命题</div>
+        <div style="color:var(--text-secondary);line-height:1.6">一句话说清什么是人机协同。从"让AI帮你做"到"让AI替你做好"，核心是判断力的传递。<br><br>
+        <span style="color:var(--text-primary)">呈现：</span>一句话引语 + 数据 callout（40 万次对话验证）</div>
+      </div>
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">第二章 · 四层本质模型</div>
+        <div style="color:var(--text-secondary);line-height:1.6">用一张 4×2 对比表展示四层分工（执行/判断/知识/进化）。每层三句话：核心问题 + 人做什么 + AI做什么。<br><br>
+        <span style="color:var(--text-primary)">呈现：</span>横向滚动对比表 + 洞察 callout</div>
+      </div>
+      <div style="padding:var(--space-md);border:1px solid var(--border);background:var(--accent-subtle)">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">🎮 第三章 · 交互自测</div>
+        <div style="color:var(--text-secondary);line-height:1.6">6 个 checkbox 勾选你的能力。系统自动判定你在 S1-S4 哪个阶段。结果带阶段描述和推荐路径。<br><br>
+        <span style="color:var(--text-primary)">交互组件：</span><strong>① 协同阶段自测</strong></div>
+      </div>
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">第四章 · 数据说了什么</div>
+        <div style="color:var(--text-secondary);line-height:1.6">5 个关键数据点展示表。每个数据点 = 数据 + 来源 + 启示。让学员建立"人机协同有数据支撑"的认知。<br><br>
+        <span style="color:var(--text-primary)">呈现：</span>3 列表格 + 核心发现 callout</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 02 详细设计 -->
+  <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-2xl)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-lg)">
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-xs)">STEP 02 · 课程</div>
+        <div style="font-size:20px;font-weight:600;color:var(--text-display)">3A 分诊法：30 秒决定怎么分</div>
+      </div>
+      <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-disabled)">⏱ 15 分钟 · 1 个交互</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);font-size:13px">
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">第一章 · 三抽屉模型</div>
+        <div style="color:var(--text-secondary);line-height:1.6">三个抽屉 = 三种协同模式。一张 3×4 对比表展示每种模式：AI角色、人角色、典型场景。<br><br>
+        <span style="color:var(--text-primary)">呈现：</span>对比表 + 核心原则 callout</div>
+      </div>
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">第二章 · 三维度判定</div>
+        <div style="color:var(--text-secondary);line-height:1.6">三个维度决定任务怎么分：确定性、可逆性、跨度。每个维度用一句话+一个标尺解释。<br><br>
+        <span style="color:var(--text-primary)">呈现：</span>三行文字 + 判定逻辑 callout</div>
+      </div>
+      <div style="padding:var(--space-md);border:1px solid var(--border);background:var(--accent-subtle);grid-column:1/3">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">🎮 第三章 · 交互分诊</div>
+        <div style="color:var(--text-secondary);line-height:1.6">
+          左侧：任务描述输入框 + 3 个维度滑块。右侧：实时推荐的协同模式 + 分工建议（人做什么 + AI做什么）。<br><br>
+          <span style="color:var(--text-primary)">交互组件：</span><strong>② 3A 分诊器</strong><br>
+          <span style="color:var(--text-primary)">学员体验流程：</span>输入自己的任务 → 拖动 3 个滑块 → 看到推荐结果 → 验证是否合理 → 调整滑块观察变化 → 理解判定逻辑
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 技术实现方案 -->
+  <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl)">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:var(--space-sm)">技术实现方案</div>
+    <div style="font-size:18px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-md)">纯静态 HTML + 无依赖 JS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md);font-size:13px;color:var(--text-secondary);line-height:1.7">
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <strong style="color:var(--text-primary)">前端技术栈</strong><br>
+        • 纯 HTML/CSS/JS，零依赖<br>
+        • 所有交互组件原生实现<br>
+        • localStorage 存学员进度+产出<br>
+        • 响应式设计（移动端适配）
+      </div>
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <strong style="color:var(--text-primary)">组件开发顺序</strong><br>
+        • Phase 1：自测评估器 → 3A 分诊器 → 模板生成器<br>
+        • Phase 2：任务分拣 → 3 步提取器 → 闭环流程图<br>
+        • Phase 3：协同沙盘 → 综合测验
+      </div>
+      <div style="padding:var(--space-md);border:1px solid var(--border)">
+        <strong style="color:var(--text-primary)">内容管理</strong><br>
+        • 所有课程内容写在 HTML 中<br>
+        • 交互数据用 JSON 对象管理<br>
+        • 学员产出存 localStorage<br>
+        • 无需后端，可部署到任何静态服务器
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-text">人机协同课程设计方案 v3 · 2026 · 基于京东课程模式分析 · 可落地执行</div>
+</footer>
+
+</body>
+</html>

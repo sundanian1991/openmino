@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 05 · 让 AI 做多步任务 — 人机协同实战课</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+.course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
+.course-path{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.course-path span{color:var(--accent)}
+.course-title{font-size:22px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.2}
+.course-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:640px;margin-bottom:var(--space-md)}
+.course-meta{display:flex;gap:var(--space-lg);font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.chapter{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);margin-bottom:var(--space-md)}
+.chapter-num{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-xs)}
+.chapter-title{font-size:16px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-sm)}
+.chapter-body{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.chapter-body strong{color:var(--text-primary);font-weight:500}
+.sidebar-layout{display:grid;grid-template-columns:1fr 260px;gap:var(--space-xl)}
+.sidebar{position:sticky;top:80px;align-self:start}
+.sidebar-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-md)}
+.sidebar-links{display:flex;flex-direction:column;gap:var(--space-xs)}
+.sidebar-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:var(--space-xs) 0;border-left:2px solid transparent;padding-left:var(--space-md);transition:all .15s}
+.sidebar-link:hover{color:var(--text-primary)}
+.sidebar-link.active{color:var(--accent);border-left-color:var(--accent)}
+.sidebar-hint{margin-top:var(--space-xl);padding:var(--space-md);background:var(--accent-subtle);border-left:2px solid var(--accent);font-size:12px;color:var(--text-secondary);line-height:1.6}
+.def-compare{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin:var(--space-lg) 0}
+.def-card{padding:var(--space-xl);border:1px solid var(--border);background:var(--surface);border-top:3px solid var(--blue)}
+.def-card:last-child{border-top-color:var(--purple)}
+.def-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:var(--space-sm)}
+.def-card:last-child .def-label{color:var(--purple)}
+.def-name{font-size:18px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm)}
+.def-desc{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.def-desc strong{color:var(--text-primary)}
+.compare-tabs{display:flex;gap:var(--space-xs);margin-bottom:var(--space-lg)}
+.compare-tab{padding:var(--space-sm) var(--space-lg);border:1px solid var(--border-visible);background:var(--surface);cursor:pointer;font-size:13px;color:var(--text-secondary)}
+.compare-tab.active{background:var(--text-display);color:var(--surface)}
+.compare-content{display:none}
+.compare-content.active{display:block}
+.finish-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border);text-align:center}
+.finish-area .btn{margin-top:var(--space-md)}
+@media(max-width:900px){.sidebar-layout{grid-template-columns:1fr}.sidebar{position:static}.def-compare{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner"><div class="nav-brand">人机协同 · <em>实战课</em></div><div class="nav-links"><a href="index.html" class="nav-link">← 路径</a><a href="#define" class="nav-link">定义</a><a href="#compare" class="nav-link">对比</a><a href="#loop" class="nav-link">闭环</a></div></div></nav>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+<div class="sidebar-layout" style="max-width:1200px;margin:var(--space-5xl) auto 0;padding:0 var(--space-xl)">
+<div>
+<div class="course-header"><div class="course-path">课程 &gt; <span>Step 05 · 范式二 Agentic</span></div><div class="course-title">让 AI 做多步任务</div><div class="course-desc">Copilot 是你说一步它做一步，Agent 是你给目标它自主规划执行。理解本质区别，学会搭建可靠 Agent 闭环。</div><div class="course-meta"><span>15 分钟</span><span>3 章节</span></div></div>
+<div class="callout info"><div class="callout-label">学习目标</div>学完本节后：<br>• 准确说出 Copilot 和 Agent 的定义及本质区别<br>• 说出 Agent 最小闭环的 4 个环节</div>
+
+<div class="chapter" id="define">
+<div class="chapter-num">第一章</div><div class="chapter-title">Copilot 和 Agent 的准确定义</div>
+<div class="chapter-body">这两个词被大量滥用。以下是精确定义：</div>
+<div class="def-compare">
+<div class="def-card"><div class="def-label">范式一 · Copilot</div><div class="def-name">🤝 AI 辅助</div><div class="def-desc"><strong>定义：</strong>人在回路中，每一步都需要人确认或触发。<br><br><strong>工作方式：</strong>人拆任务→告诉 AI 每一步→AI 执行→人检查→人告诉下一步<br><br><strong>典型场景：</strong>写邮件、翻译、生成表格<br><br><strong>局限：</strong>人从"自己做"变成"审核 AI 做的"，瓶颈在人</div></div>
+<div class="def-card"><div class="def-label">范式二 · Agentic</div><div class="def-name">🤖 AI 智能体</div><div class="def-desc"><strong>定义：</strong>AI 自主规划执行多步任务，只在关键节点汇报。<br><br><strong>工作方式：</strong>人给目标→AI 拆步骤→AI 调工具→AI 观察调整→完成→人验收<br><br><strong>典型场景：</strong>竞品调研（搜索+整理+对比+出报告）<br><br><strong>价值：</strong>人从"审核每一步"变成"验收结果"，瓶颈在 AI</div></div>
+</div>
+<!-- AI 编程工具进化史 SVG -->
+<svg viewBox="0 0 700 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:700px;display:block;margin:var(--space-md) auto;font-family:Space Grotesk,sans-serif">
+<rect x="5" y="15" width="150" height="75" rx="6" fill="#fff" stroke="#999" stroke-width="1"/><text x="80" y="38" text-anchor="middle" font-size="11" font-weight="600" fill="#999">2021 · Copilot</text><text x="80" y="55" text-anchor="middle" font-size="17">⌨️</text><text x="80" y="77" text-anchor="middle" font-size="9" fill="#999">AI 补全时代</text>
+<line x1="155" y1="52" x2="170" y2="52" stroke="#ccc" stroke-width="1.5" marker-end="url(#ar2)"/>
+<rect x="175" y="15" width="150" height="75" rx="6" fill="#fff" stroke="#999" stroke-width="1"/><text x="250" y="38" text-anchor="middle" font-size="11" font-weight="600" fill="#999">2022 · ChatGPT</text><text x="250" y="55" text-anchor="middle" font-size="17">💬</text><text x="250" y="77" text-anchor="middle" font-size="9" fill="#999">AI 对话时代</text>
+<line x1="325" y1="52" x2="340" y2="52" stroke="#ccc" stroke-width="1.5" marker-end="url(#ar2)"/>
+<rect x="345" y="15" width="150" height="75" rx="6" fill="#fff" stroke="#999" stroke-width="1"/><text x="420" y="38" text-anchor="middle" font-size="11" font-weight="600" fill="#999">2023-24 · Cursor</text><text x="420" y="55" text-anchor="middle" font-size="17">🖥️</text><text x="420" y="77" text-anchor="middle" font-size="9" fill="#999">AI 协作时代</text>
+<line x1="495" y1="52" x2="510" y2="52" stroke="#D71921" stroke-width="1.5" marker-end="url(#ar2)"/>
+<rect x="515" y="15" width="165" height="75" rx="6" fill="#fff" stroke="#D71921" stroke-width="2"/><text x="597" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#D71921">2025 · Codex</text><text x="597" y="55" text-anchor="middle" font-size="17">🤖</text><text x="597" y="77" text-anchor="middle" font-size="9" fill="#D71921">AI 工程 Agent 时代</text>
+<text x="350" y="118" text-anchor="middle" font-size="10" fill="#999">Copilot 帮你补代码 → ChatGPT 帮你想 → Cursor 陪你改 → Codex 替你执行</text>
+</svg>
+
+<div class="callout" style="margin-top:var(--space-md)"><div class="callout" style="margin-top:var(--space-md)"><div class="callout-label">一句话记住</div><strong>Copilot 是你告诉 AI 怎么走，Agent 是你告诉 AI 去哪。</strong></div>
+</div>
+
+<div class="chapter" id="compare">
+<div class="chapter-num">第二章</div><div class="chapter-title">交互对比：同任务不同模式</div>
+<div class="compare-tabs"><div class="compare-tab active" onclick="showCmp('copilot')">🤝 Copilot</div><div class="compare-tab" onclick="showCmp('agent')">🤖 Agent</div></div>
+<div class="compare-content active" id="cmp-copilot">
+<div class="callout info"><div class="callout-label">Copilot · 你需做 10 步</div></div>
+<div style="font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--text-secondary)">
+<span style="color:var(--accent)">👤 你</span>：搜索 X 竞品动态<br><span style="color:var(--blue)">🤖 AI</span>：搜索结果如下…<br>
+<span style="color:var(--accent)">👤 你</span>：整理成表格<br><span style="color:var(--blue)">🤖 AI</span>：表格如下…<br>
+<span style="color:var(--accent)">👤 你</span>：加价格对比<br><span style="color:var(--blue)">🤖 AI</span>：已添加…<br>
+<span style="color:var(--accent)">👤 你</span>：写总结<br><span style="color:var(--blue)">🤖 AI</span>：总结如下…</div>
+<div class="callout"><div class="callout-label">效果</div>4 轮对话，耗时 20 分钟，你全程在线推动。</div>
+</div>
+<div class="compare-content" id="cmp-agent">
+<div class="callout info"><div class="callout-label">Agent · 你只需做 1 步</div></div>
+<div style="font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--text-secondary)">
+<span style="color:var(--accent)">👤 你</span>：调研 X 竞品，出对比报告<br>
+<span style="color:var(--purple)">🤖 AI</span>：收到，开始执行。<br>
+<span style="color:var(--text-disabled)">  └ Step 1: 搜索 X 竞品动态 ✓</span><br>
+<span style="color:var(--text-disabled)">  └ Step 2: 整理数据 ✓</span><br>
+<span style="color:var(--text-disabled)">  └ Step 3: 信息不足→补充搜索 ✓</span><br>
+<span style="color:var(--text-disabled)">  └ Step 4: 生成报告 ✓</span><br>
+<span style="color:var(--purple)">🤖 AI</span>：已完成，报告如下…<br>
+<span style="color:var(--accent)">👤 你</span>：验收通过。</div>
+<div class="callout gold"><div class="callout-label">效果</div>你说一句目标，耗时 5 分钟。</div>
+</div>
+</div>
+
+<div class="chapter" id="loop">
+<div class="chapter-num">第三章</div><div class="chapter-title">Agent 最小闭环</div>
+<div style="display:flex;gap:0;margin:var(--space-lg) 0;border:1px solid var(--border);overflow:hidden">
+<div style="flex:1;min-width:100px;padding:var(--space-lg);text-align:center;background:var(--accent-subtle);border-right:1px solid var(--border)"><div style="font-size:24px;margin-bottom:var(--space-sm)">📋</div><div style="font-size:14px;font-weight:600;color:var(--text-display)">Plan</div><div style="font-size:11px;color:var(--text-secondary)">拆解任务规划步骤</div></div>
+<div style="flex:1;min-width:100px;padding:var(--space-lg);text-align:center;border-right:1px solid var(--border)"><div style="font-size:24px;margin-bottom:var(--space-sm)">🔧</div><div style="font-size:14px;font-weight:600;color:var(--text-display)">Tool Call</div><div style="font-size:11px;color:var(--text-secondary)">调用工具获取信息</div></div>
+<div style="flex:1;min-width:100px;padding:var(--space-lg);text-align:center;border-right:1px solid var(--border)"><div style="font-size:24px;margin-bottom:var(--space-sm)">👀</div><div style="font-size:14px;font-weight:600;color:var(--text-display)">Observe</div><div style="font-size:11px;color:var(--text-secondary)">观察结果提取信息</div></div>
+<div style="flex:1;min-width:100px;padding:var(--space-lg);text-align:center"><div style="font-size:24px;margin-bottom:var(--space-sm)">🔄</div><div style="font-size:14px;font-weight:600;color:var(--text-display)">Revise</div><div style="font-size:11px;color:var(--text-secondary)">调整或下一步</div></div>
+</div>
+<div class="callout gold"><div class="callout-label">验收底线</div><strong>① 稳定性</strong> 同输入 5 次步骤一致 &nbsp; <strong>② 容错</strong> 不无限重试 &nbsp; <strong>③ 可追溯</strong> 每步有日志 &nbsp; <strong>④ 可中断</strong> 人可接管</div>
+</div>
+
+
+      <!-- 流程图点击 -->
+      <div class="interactive-demo" style="margin-top:var(--space-md)">
+        <div class="demo-header"><span class="demo-icon">🔄</span><span class="demo-title">点一点看 Agent 工作流程</span><span class="demo-sub">每个环节点开看真实案例</span></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:var(--space-md)">
+          <div style="padding:var(--space-md);text-align:center;border:2px solid var(--accent);background:var(--accent-subtle);cursor:pointer" onclick="showFlow(1)" id="f1">
+            <div style="font-size:20px">📋</div><div style="font-size:12px;font-weight:600;color:var(--text-display)">Plan</div></div>
+          <div style="padding:var(--space-md);text-align:center;border:2px solid var(--border);background:var(--surface);cursor:pointer" onclick="showFlow(2)" id="f2">
+            <div style="font-size:20px">🔧</div><div style="font-size:12px;font-weight:600;color:var(--text-display)">Tool Call</div></div>
+          <div style="padding:var(--space-md);text-align:center;border:2px solid var(--border);background:var(--surface);cursor:pointer" onclick="showFlow(3)" id="f3">
+            <div style="font-size:20px">👀</div><div style="font-size:12px;font-weight:600;color:var(--text-display)">Observe</div></div>
+          <div style="padding:var(--space-md);text-align:center;border:2px solid var(--border);background:var(--surface);cursor:pointer" onclick="showFlow(4)" id="f4">
+            <div style="font-size:20px">🔄</div><div style="font-size:12px;font-weight:600;color:var(--text-display)">Revise</div></div>
+        </div>
+        <div id="flowDetail" style="padding:var(--space-lg);background:var(--bg);border:1px solid var(--border);font-size:13px;color:var(--text-secondary);line-height:1.7">
+          <strong style="color:var(--text-primary)">Plan 环节：</strong>AI 收到目标后，先拆解任务，规划需要哪些步骤和工具。<br><br>
+          <span style="color:var(--text-disabled)">案例：用户说"调研一下 X 竞品"→ AI 拆解为 4 步：①搜索 ②整理产品信息 ③对比价格 ④出报告</span>
+        </div>
+      </div>
+      
+      <!-- 产出环节：写 Agent 指令 -->
+      <div class="interactive-demo" style="margin-top:var(--space-md)">
+        <div class="demo-header"><span class="demo-icon">✍️</span><span class="demo-title">写一个 Agent 指令</span><span class="demo-sub">把你自己的多步任务写成 Agent 指令，保存下来</span></div>
+        <div style="margin-bottom:var(--space-sm)">
+          <div class="" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-sm)">你的多步任务</div>
+          <textarea id="agentTask" style="width:100%;min-height:50px;padding:var(--space-sm) var(--space-md);border:1px solid var(--border-visible);background:var(--bg);font-family:var(--font-body);font-size:13px;color:var(--text-primary);resize:vertical;outline:none" placeholder="例：每周五生成团队周报——从飞书文档拉数据 → 整理成表格 → 写总结 → 发送到群"></textarea>
+        </div>
+        <div style="margin-bottom:var(--space-sm)">
+          <div class="" style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-sm)">生成的 Agent 指令</div>
+          <div style="background:var(--bg);border:1px solid var(--border);padding:var(--space-lg)">
+            <pre id="agentOutput" style="font-family:var(--font-mono);font-size:12px;line-height:1.6;color:var(--text-primary);white-space:pre-wrap;overflow-x:auto;color:var(--text-disabled);font-style:italic;font-size:13px">输入任务后会生成标准 Agent 指令格式。</pre>
+          </div>
+        </div>
+        <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap">
+          <button class="btn" onclick="genAgentCmd()">⚙️ 生成指令</button>
+          <button class="btn" onclick="saveAgentCmd()">💾 保存指令</button>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);align-self:center" id="agentHint"></span>
+        </div>
+      </div>
+      
+  <div class="finish-area"><button class="btn btn-primary" onclick="completeStep()">✓ 完成</button></div>
+</div>
+<div class="sidebar">
+<div class="sidebar-title">本页目录</div>
+<div class="sidebar-links"><a href="#define" class="sidebar-link">第一章：精确定义</a><a href="#compare" class="sidebar-link">第二章：交互对比</a><a href="#loop" class="sidebar-link">第三章：最小闭环</a></div>
+<div class="sidebar-hint">完成后 <strong style="color:var(--text-primary)">Step 06</strong> 将解锁</div>
+</div>
+</div>
+<footer class="footer"><div class="footer-text">人机协同实战课 · Step 05</div></footer>
+<script src="assets/utils.js"></script>
+<script>
+function showCmp(m){document.querySelectorAll('.compare-content').forEach(c=>c.classList.remove('active'));document.getElementById('cmp-'+m).classList.add('active');document.querySelectorAll('.compare-tab').forEach((t,i)=>t.classList.toggle('active',(m==='copilot'&&i===0)||(m==='agent'&&i===1)));}
+
+const flowData=[
+  {name:'Plan',desc:'AI 拆解任务，规划步骤和工具',ex:'用户说"调研一下 X 竞品"→ AI 拆解为：①搜索 ②整理产品信息 ③对比价格 ④出报告'},
+  {name:'Tool Call',desc:'AI 按规划调用工具获取信息',ex:'AI 调用搜索 API 查找竞品资料，调用网页解析获取详情'},
+  {name:'Observe',desc:'AI 观察工具返回的结果',ex:'浏览搜索结果，提取关键信息，判断信息是否足够'},
+  {name:'Revise',desc:'AI 根据观察调整计划',ex:'发现信息不足，补充搜索关键词，或改变分析维度'}
+];
+let currentFlow=1;
+function showFlow(n){
+  document.querySelectorAll('[id^="f"]').forEach((el,i)=>{const idx=i+1;el.style.borderColor=idx===n?'var(--accent)':'var(--border)';el.style.background=idx===n?'var(--accent-subtle)':'var(--surface)';});
+  const d=flowData[n-1];
+  document.getElementById('flowDetail').innerHTML='<strong style="color:var(--text-primary)">'+d.name+' 环节：</strong>'+d.desc+'<br><br><span style="color:var(--text-disabled)">案例：'+d.ex+'</span>';
+}
+function genAgentCmd(){
+  const task=document.getElementById('agentTask').value.trim();
+  if(!task){document.getElementById('agentOutput').textContent='请先输入你的多步任务。';document.getElementById('agentOutput').style.color='var(--accent)';return;}
+  const cmd='## Agent 指令\n\n**目标：** '+task+'\n\n**你给 AI 的边界：**\n- 输出格式要求：\n- 禁止事项：\n- 关键检查点：\n\n**验收标准：**\n- [ ] 任务完整执行\n- [ ] 输出格式正确\n- [ ] 无越界行为\n\n---\n*由 Agent 指令生成器生成*';
+  document.getElementById('agentOutput').textContent=cmd;
+  document.getElementById('agentOutput').style.color='var(--text-primary)';
+  document.getElementById('agentOutput').style.fontStyle='normal';
+}
+function saveAgentCmd(){
+  const txt=document.getElementById('agentOutput').textContent;
+  if(txt.includes('输入任务后')||txt==='请先输入你的多步任务。'){document.getElementById('agentHint').textContent='⚠️ 请先生成指令';return;}
+  Output.save('step05-agent-cmd-'+Date.now(), txt);
+  document.getElementById('agentHint').textContent='✓ 已保存';
+  setTimeout(()=>document.getElementById('agentHint').textContent='',2000);
+}
+function completeStep(){Progress.complete("step-05");window.location.href="index.html";}
+initProgressBar();initSidebar();
+</script>
+</body>
+</html>

@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人机协同实践课 · 从判断力传递到数字员工</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FBFAF7;--bg-tint:#F4F2EC;--surface:#FFFFFF;--surface-sunken:#F0EEE7;
+  --ink:#15110B;--ink-1:#2B2620;--ink-2:#6B655C;--ink-3:#A39C91;--ink-faint:#C9C2B6;
+  --indigo:#1E3A8A;--indigo-soft:#EDEFF7;--indigo-line:#C7CEEB;
+  --p1:#2F7A5F;--p1-soft:#E8F2EE;--p2:#A8631C;--p2-soft:#F7EFE2;--p3:#5B3A8C;--p3-soft:#F0EBF6;
+  --warn:#B83A2E;--warn-soft:#FBEDEA;--success:#2F7A5C;--success-soft:#E8F2EE;--gold:#9A7B1F;--gold-soft:#F6F0DD;
+  --s-xs:4px;--s-sm:8px;--s-md:16px;--s-lg:24px;--s-xl:32px;--s-2xl:48px;--s-3xl:64px;--s-4xl:96px;--s-5xl:128px;
+  --r-sm:3px;--r-md:6px;--r-lg:10px;
+  --ff-display:'Fraunces','Noto Serif SC',Georgia,serif;
+  --ff-body:-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC','Helvetica Neue',sans-serif;
+  --ff-mono:'JetBrains Mono','SF Mono','Menlo',monospace;
+  --w-prose:680px;--w-content:960px;--w-wide:1160px;
+}
+html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{font-family:var(--ff-body);background:var(--bg);color:var(--ink-1);line-height:1.75;font-size:15px;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:radial-gradient(circle at 20% 30%,rgba(30,58,138,0.015) 0,transparent 50%),radial-gradient(circle at 80% 70%,rgba(151,123,31,0.012) 0,transparent 50%)}
+body>*{position:relative;z-index:1}
+
+/* 布局：左侧固定导航 + 右侧内容 */
+.app{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:248px;background:var(--surface);border-right:1px solid var(--ink-faint);padding:var(--s-xl) var(--s-md);overflow-y:auto;z-index:50}
+.sidebar-brand{font-family:var(--ff-display);font-weight:600;font-size:15px;color:var(--ink);padding:0 var(--s-sm) var(--s-lg);border-bottom:1px solid var(--ink-faint);margin-bottom:var(--s-md);letter-spacing:-0.01em}
+.sidebar-brand em{font-style:italic;color:var(--indigo);font-weight:500}
+.nav-group{margin-bottom:var(--s-lg)}
+.nav-group-label{font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 var(--s-sm);margin-bottom:var(--s-xs)}
+.nav-item{display:flex;align-items:center;gap:var(--s-sm);font-family:var(--ff-mono);font-size:12px;letter-spacing:.02em;color:var(--ink-2);padding:8px var(--s-sm);border-radius:var(--r-sm);cursor:pointer;text-decoration:none;transition:all .15s;border-left:2px solid transparent}
+.nav-item:hover{background:var(--bg-tint);color:var(--ink)}
+.nav-item.active{background:var(--indigo-soft);color:var(--indigo);border-left-color:var(--indigo);font-weight:500}
+.nav-item.locked{opacity:.45;cursor:not-allowed}
+.nav-item.done::after{content:'✓';margin-left:auto;color:var(--success);font-size:11px}
+.nav-item.locked::after{content:'🔒';margin-left:auto;font-size:10px;opacity:.6}
+.nav-num{font-size:10px;color:var(--ink-3);width:20px;flex-shrink:0}
+.nav-item.active .nav-num{color:var(--indigo)}
+.progress-wrap{position:absolute;bottom:0;left:0;right:0;padding:var(--s-md);background:var(--surface);border-top:1px solid var(--ink-faint)}
+.progress-label{font-family:var(--ff-mono);font-size:10px;color:var(--ink-3);letter-spacing:.06em;margin-bottom:6px;display:flex;justify-content:space-between}
+.progress-bar-bg{width:100%;height:4px;background:var(--surface-sunken);border-radius:2px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--indigo);transition:width .4s ease;border-radius:2px}
+
+.main{margin-left:248px;min-height:100vh}
+.section{display:none;padding:64px var(--s-xl) var(--s-4xl);max-width:var(--w-content);margin:0 auto;animation:fadeUp .3s ease both}
+.section.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* 汉堡（移动端） */
+.burger{display:none;position:fixed;top:14px;left:14px;z-index:60;background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-sm);padding:8px;cursor:pointer}
+.burger span{display:block;width:18px;height:2px;background:var(--ink);margin:3px 0}
+
+/* 排版 */
+h1,h2,h3,h4{font-family:var(--ff-display);color:var(--ink);letter-spacing:-0.015em;line-height:1.2}
+h1{font-size:clamp(28px,4vw,42px);font-weight:600;margin-bottom:var(--s-lg)}
+h1 em{font-style:italic;color:var(--indigo);font-weight:500}
+h2{font-size:clamp(22px,3vw,30px);font-weight:600;margin-bottom:var(--s-md)}
+h3{font-size:18px;font-weight:600;margin-bottom:var(--s-sm)}
+h4{font-size:16px;font-weight:600;margin-bottom:var(--s-xs)}
+p{margin-bottom:var(--s-md);color:var(--ink-1)}p:last-child{margin-bottom:0}
+.lead{font-size:16px;color:var(--ink-2);line-height:1.7;margin-bottom:var(--s-xl)}
+strong{color:var(--ink);font-weight:600}em{font-style:italic}
+a{color:var(--indigo);text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+code{font-family:var(--ff-mono);font-size:.88em;background:var(--surface-sunken);padding:1px 6px;border-radius:var(--r-sm);color:var(--ink)}
+hr{border:none;border-top:1px solid var(--ink-faint);margin:var(--s-3xl) 0}
+
+.eyebrow{font-family:var(--ff-mono);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);margin-bottom:var(--s-md)}
+
+/* 章节 */
+.chapter{margin-bottom:var(--s-4xl);scroll-margin-top:20px}
+.chapter-head{display:flex;align-items:baseline;gap:var(--s-md);margin-bottom:var(--s-xl)}
+.chapter-num{font-family:var(--ff-mono);font-size:13px;font-weight:500;color:var(--indigo);letter-spacing:.08em;flex-shrink:0}
+.chapter-title{font-family:var(--ff-display);font-size:clamp(20px,2.6vw,28px);font-weight:600;color:var(--ink);margin:0}
+.chapter-body ul,.chapter-body ol{margin:var(--s-md) 0 var(--s-md) var(--s-lg)}.chapter-body li{margin-bottom:var(--s-sm);line-height:1.7}
+
+/* callout */
+.callout{margin:var(--s-lg) 0;padding:var(--s-lg) var(--s-xl);border-radius:var(--r-md);font-size:14px;line-height:1.7;border-left:3px solid}
+.callout-label{font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:var(--s-sm);display:block}
+.callout p:last-child{margin-bottom:0}
+.callout-info{background:var(--indigo-soft);border-color:var(--indigo)}.callout-info .callout-label{color:var(--indigo)}
+.callout-warn{background:var(--warn-soft);border-color:var(--warn)}.callout-warn .callout-label{color:var(--warn)}
+.callout-success{background:var(--success-soft);border-color:var(--success)}.callout-success .callout-label{color:var(--success)}
+.callout-gold{background:var(--gold-soft);border-color:var(--gold)}.callout-gold .callout-label{color:var(--gold)}
+.callout-insight{background:var(--ink);color:#E8E5DE;border-color:var(--indigo)}.callout-insight .callout-label{color:#9DB4F5}.callout-insight strong{color:#FFF}.callout-insight a{color:#9DB4F5}
+
+/* 表格 */
+.table-scroll{overflow-x:auto;margin:var(--s-lg) 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:480px}
+thead th{font-family:var(--ff-mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);text-align:left;padding:var(--s-sm) var(--s-md);border-bottom:2px solid var(--ink);white-space:nowrap}
+tbody td{padding:var(--s-md);border-bottom:1px solid var(--ink-faint);color:var(--ink-1);vertical-align:top}
+tbody tr:hover{background:var(--bg-tint)}tbody td strong{color:var(--ink)}
+
+/* 卡片网格 */
+.grid{display:grid;gap:var(--s-md);margin:var(--s-lg) 0}.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:760px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-lg)}
+.card-num{font-family:var(--ff-mono);font-size:11px;color:var(--ink-3);letter-spacing:.1em;margin-bottom:var(--s-sm)}
+.card-title{font-family:var(--ff-display);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:var(--s-xs)}
+.card-body{font-size:13px;color:var(--ink-2);line-height:1.6}
+
+/* 练习卡 */
+.practice{background:var(--surface);border:1px solid var(--ink-faint);border-left:3px solid var(--indigo);border-radius:var(--r-md);padding:var(--s-xl);margin:var(--s-xl) 0}
+.practice-tag{display:inline-block;font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);background:var(--indigo-soft);padding:3px 8px;border-radius:var(--r-sm);margin-bottom:var(--s-md)}
+.practice-title{font-family:var(--ff-display);font-size:18px;font-weight:600;color:var(--ink);margin-bottom:var(--s-lg)}
+.practice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-md) var(--s-xl)}
+@media(max-width:680px){.practice-grid{grid-template-columns:1fr}}
+.pg-label{font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--s-xs)}
+.pg-val{font-size:13px;color:var(--ink-1);line-height:1.6}.pg-val.warn{color:var(--warn)}
+
+/* 按钮 */
+.btn{display:inline-flex;align-items:center;gap:var(--s-sm);font-family:var(--ff-body);font-size:14px;font-weight:500;padding:10px 20px;border-radius:var(--r-sm);text-decoration:none;cursor:pointer;border:1px solid transparent;transition:all .2s}
+.btn-primary{background:var(--ink);color:var(--bg)}.btn-primary:hover{background:var(--indigo);color:#FFF}
+.btn-outline{background:transparent;color:var(--ink);border-color:var(--ink-faint)}.btn-outline:hover{border-color:var(--ink);background:var(--surface)}
+.complete-btn{font-family:var(--ff-body);font-size:14px;font-weight:500;padding:12px 28px;border-radius:var(--r-sm);cursor:pointer;background:transparent;border:1px solid var(--ink);color:var(--ink);transition:all .2s}
+.complete-btn:hover{background:var(--ink);color:var(--bg)}.complete-btn.done{background:var(--success);border-color:var(--success);color:#FFF}
+
+/* 课程头 */
+.course-head{margin-bottom:var(--s-3xl)}
+.paradigm-tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:var(--r-sm);margin-bottom:var(--s-md)}
+.paradigm-tag.p1{color:var(--p1);background:var(--p1-soft)}.paradigm-tag.p2{color:var(--p2);background:var(--p2-soft)}.paradigm-tag.p3{color:var(--p3);background:var(--p3-soft)}
+.paradigm-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.course-meta{display:flex;flex-wrap:wrap;gap:var(--s-lg);margin-top:var(--s-md);font-family:var(--ff-mono);font-size:12px;color:var(--ink-2)}
+.course-meta span{display:flex;align-items:center;gap:var(--s-xs)}
+
+/* 课尾导航 */
+.lesson-foot{display:flex;align-items:center;justify-content:space-between;gap:var(--s-lg);margin-top:var(--s-4xl);padding-top:var(--s-xl);border-top:1px solid var(--ink-faint);flex-wrap:wrap}
+
+/* 表单 */
+input[type=text],textarea{font-family:var(--ff-body);font-size:14px;background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-sm);padding:10px 12px;color:var(--ink);outline:none;width:100%;transition:border-color .2s}
+input[type=text]:focus,textarea:focus{border-color:var(--indigo)}textarea{resize:vertical;min-height:64px;line-height:1.6}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:var(--ink-faint);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--bg);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--indigo);cursor:pointer;border:2px solid var(--bg)}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--indigo);cursor:pointer}
+
+.footer{border-top:1px solid var(--ink-faint);padding:var(--s-xl);text-align:center;font-family:var(--ff-mono);font-size:11px;color:var(--ink-3);letter-spacing:.04em;line-height:1.8}
+
+/* 移动端 */
+@media(max-width:900px){
+  .burger{display:block}
+  .sidebar{transform:translateX(-100%);transition:transform .3s;z-index:55;width:260px}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .section{padding:64px var(--s-md) var(--s-3xl)}
+}
+
+/* —— 首页专用 —— */
+.hero{padding:var(--s-3xl) 0;border-bottom:1px solid var(--ink-faint);margin-bottom:var(--s-4xl)}
+.hero-title{font-family:var(--ff-display);font-size:clamp(32px,5.5vw,52px);font-weight:600;line-height:1.1;letter-spacing:-0.025em;margin-bottom:var(--s-lg)}
+.hero-title em{font-style:italic;color:var(--indigo);font-weight:500}
+.hero-stats{display:flex;gap:var(--s-2xl);flex-wrap:wrap;margin-top:var(--s-xl)}
+.hero-stat-val{font-family:var(--ff-display);font-size:28px;font-weight:600;color:var(--ink);line-height:1}
+.hero-stat-label{font-family:var(--ff-mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;margin-top:4px}
+.paradigm-link{text-decoration:none;color:inherit;display:block;background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-xl);transition:all .2s;height:100%}
+.paradigm-link:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(21,17,11,.06)}
+.paradigm-name{font-family:var(--ff-display);font-size:20px;font-weight:600;margin-bottom:4px}.paradigm-link.p1l .paradigm-name{color:var(--p1)}.paradigm-link.p2l .paradigm-name{color:var(--p2)}.paradigm-link.p3l .paradigm-name{color:var(--p3)}
+.paradigm-name .en{font-style:italic;font-weight:500}
+.paradigm-tagline{font-size:13px;color:var(--ink-2);margin-bottom:var(--s-md);line-height:1.6}
+.paradigm-feature{font-family:var(--ff-mono);font-size:11px;color:var(--ink-3);padding-top:var(--s-sm);border-top:1px solid var(--ink-faint)}
+
+/* 自测 */
+.assess-block{background:var(--bg-tint);border-radius:var(--r-lg);padding:var(--s-2xl);margin:var(--s-2xl) 0}
+.assess-tiers{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-md);margin:var(--s-xl) 0}
+@media(max-width:680px){.assess-tiers{grid-template-columns:1fr}}
+.assess-tier{background:var(--surface);border-radius:var(--r-md);padding:var(--s-md) var(--s-lg);border-left:3px solid var(--ink-faint)}
+.assess-tier.t1{border-left-color:var(--ink-3)}.assess-tier.t2{border-left-color:var(--p1)}.assess-tier.t3{border-left-color:var(--p2)}.assess-tier.t4{border-left-color:var(--p3)}
+.assess-tier-head{display:flex;justify-content:space-between;margin-bottom:var(--s-sm)}
+.assess-tier-name{font-family:var(--ff-mono);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.assess-tier-count{font-family:var(--ff-mono);font-size:11px;color:var(--ink-3)}
+.assess-item{display:flex;align-items:flex-start;gap:var(--s-sm);padding:5px 0;font-size:13px;color:var(--ink-1);cursor:pointer;line-height:1.5}
+.assess-item input{margin-top:2px;flex-shrink:0}
+.assess-result{background:var(--ink);color:#E8E5DE;border-radius:var(--r-md);padding:var(--s-xl);margin-top:var(--s-lg);display:none}
+.assess-result.show{display:block;animation:fadeUp .4s ease both}
+.assess-result-tier{font-family:var(--ff-display);font-size:26px;font-weight:600;color:#FFF;margin-bottom:var(--s-xs)}
+.assess-result-desc{font-size:14px;line-height:1.7;color:#C9C2B6;margin-bottom:var(--s-md)}
+.assess-result-next{font-size:13px;color:#9DB4F5;font-family:var(--ff-mono)}
+
+/* 路径 */
+.path-node{display:flex;align-items:center;gap:var(--s-md);padding:var(--s-md);border:1px solid var(--ink-faint);border-radius:var(--r-md);background:var(--surface);margin-bottom:var(--s-sm);cursor:pointer;transition:all .2s;text-decoration:none;color:inherit}
+.path-node:hover:not(.locked){border-color:var(--ink);transform:translateX(2px)}
+.path-node.locked{opacity:.5;background:var(--bg-tint);cursor:not-allowed}
+.path-node.done{border-left:3px solid var(--success)}.path-node.current{border-left:3px solid var(--indigo)}
+.pn-status{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--ff-mono);font-size:12px;font-weight:600;flex-shrink:0}
+.path-node.locked .pn-status{background:var(--surface-sunken);color:var(--ink-3)}
+.path-node:not(.locked):not(.done) .pn-status{background:var(--indigo);color:#FFF}
+.path-node.done .pn-status{background:var(--success);color:#FFF}
+.pn-body{flex:1;min-width:0}.pn-type{font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.pn-title{font-size:14px;font-weight:500;color:var(--ink)}
+.pn-meta{font-family:var(--ff-mono);font-size:11px;color:var(--ink-3)}
+
+/* 四层模型（c1）*/
+.layer-card{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-lg) var(--s-xl);border-left:3px solid;margin-bottom:var(--s-md)}
+.layer-card.l4{border-left-color:var(--p3)}.layer-card.l3{border-left-color:var(--p2)}.layer-card.l2{border-left-color:var(--indigo)}.layer-card.l1{border-left-color:var(--ink-3)}
+.layer-head{display:flex;align-items:baseline;gap:var(--s-md);margin-bottom:var(--s-sm)}
+.layer-num{font-family:var(--ff-mono);font-size:13px;font-weight:600;color:var(--ink-3)}.layer-name{font-family:var(--ff-display);font-size:16px;font-weight:600;color:var(--ink)}
+.layer-q{font-size:13px;color:var(--ink-2);font-style:italic;margin-left:auto}
+.layer-split{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-md) var(--s-xl);margin-top:var(--s-sm)}
+@media(max-width:600px){.layer-split{grid-template-columns:1fr}}
+.layer-role-label{font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:2px}
+.layer-role-text{font-size:13px;color:var(--ink-1);line-height:1.6}
+.layer-note{font-size:12px;color:var(--ink-2);margin-top:var(--s-sm);padding-top:var(--s-sm);border-top:1px solid var(--ink-faint)}
+.data-point{background:var(--bg-tint);border-radius:var(--r-md);padding:var(--s-md) var(--s-lg)}
+.data-val{font-family:var(--ff-display);font-size:26px;font-weight:600;color:var(--indigo);line-height:1}
+.data-label{font-size:13px;color:var(--ink-1);margin-bottom:2px}.data-src{font-family:var(--ff-mono);font-size:10px;color:var(--ink-3)}
+
+/* 规则卡（c2）*/
+.rule-card{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-lg)}
+.rule-card.warn{border-left:3px solid var(--warn)}
+.example-block{background:var(--surface-sunken);border-radius:var(--r-md);padding:var(--s-lg);margin:var(--s-md) 0;font-size:13px;line-height:1.7}
+.example-bad{color:var(--warn);margin-bottom:var(--s-sm)}.example-good{color:var(--success)}
+.example-label{font-family:var(--ff-mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+
+/* 3A分诊（p1）*/
+.triage-tool{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-lg);padding:var(--s-xl);margin:var(--s-lg) 0}
+.triage-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-xl);align-items:start}
+@media(max-width:760px){.triage-grid{grid-template-columns:1fr}}
+.triage-input-label{font-family:var(--ff-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--s-sm)}
+.slider-row{margin-top:var(--s-md)}.slider-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--s-xs)}
+.slider-name{font-size:13px;color:var(--ink-1);font-weight:500}.slider-val{font-family:var(--ff-mono);font-size:13px;font-weight:600;color:var(--indigo)}
+.slider-labels{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:10px;color:var(--ink-3);margin-top:4px}
+.triage-result{background:var(--ink);color:#E8E5DE;border-radius:var(--r-md);padding:var(--s-lg);text-align:center}
+.triage-result-label{font-family:var(--ff-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9DB4F5;margin-bottom:var(--s-sm)}
+.triage-result-mode{font-family:var(--ff-display);font-size:26px;font-weight:600;margin-bottom:var(--s-sm)}
+.triage-result-mode.auto{color:#7FD1A8}.triage-result-mode.aug{color:#7BA7F5}.triage-result-mode.agent{color:#C4A0F5}
+.triage-result-reason{font-size:13px;line-height:1.6;color:#C9C2B6;margin-bottom:var(--s-md)}
+.triage-roles{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-sm);margin-top:var(--s-sm)}
+.triage-role-box{background:rgba(255,255,255,.06);border-radius:var(--r-sm);padding:var(--s-sm) var(--s-md);text-align:left}
+.triage-role-label{font-family:var(--ff-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9DB4F5;margin-bottom:2px}
+.triage-role-text{font-size:12px;color:#E8E5DE;line-height:1.4}
+
+/* PMP时间线（c3）*/
+.pmp-timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:var(--s-lg) 0}
+@media(max-width:760px){.pmp-timeline{grid-template-columns:1fr;gap:var(--s-sm)}}
+.pmp-step{background:var(--surface);border:1px solid var(--ink-faint);padding:var(--s-md);text-align:center}.pmp-step:not(:last-child){border-right:none}
+@media(max-width:760px){.pmp-step{border-right:1px solid var(--ink-faint)}}
+.pmp-num{font-family:var(--ff-mono);font-size:11px;font-weight:600;color:var(--p2);letter-spacing:.06em}
+.pmp-name{font-family:var(--ff-display);font-size:14px;font-weight:600;color:var(--ink);margin:4px 0}
+.pmp-desc{font-size:12px;color:var(--ink-2);line-height:1.5;margin-bottom:var(--s-xs)}
+.pmp-output{font-family:var(--ff-mono);font-size:10px;color:var(--indigo)}
+.loop-flow{font-family:var(--ff-mono);font-size:12px;color:var(--ink-2);text-align:center;background:var(--bg-tint);padding:var(--s-md);border-radius:var(--r-sm);margin:var(--s-md) 0;letter-spacing:.04em}
+.loop-flow .arr{color:var(--p2)}
+.checklist-items{list-style:none;margin:var(--s-md) 0}
+.checklist-items li{padding:8px 0 8px 24px;position:relative;font-size:13px;line-height:1.6;color:var(--ink-1);border-bottom:1px solid var(--ink-faint)}
+.checklist-items li:last-child{border-bottom:none}.checklist-items li::before{content:'☐';position:absolute;left:0;color:var(--p2)}
+
+/* 偏差卡（c4）*/
+.bias-card{background:var(--warn-soft);border-radius:var(--r-md);padding:var(--s-md) var(--s-lg);border-left:3px solid var(--warn)}
+.bias-name{font-weight:600;color:var(--warn);font-size:14px;margin-bottom:2px}.bias-desc{font-size:13px;color:var(--ink-2);line-height:1.6}
+
+/* 5问（p2）*/
+.q-form{background:var(--ink);color:#E8E5DE;border-radius:var(--r-lg);padding:var(--s-xl);margin:var(--s-lg) 0}
+.q-item{margin-bottom:var(--s-md)}
+.q-label{font-family:var(--ff-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#9DB4F5;margin-bottom:var(--s-xs);display:flex;align-items:baseline;gap:var(--s-sm)}
+.q-num{color:#C4A0F5;font-size:13px}.q-hint{font-size:11px;color:#A39C91;font-weight:400;text-transform:none;letter-spacing:0;margin-left:var(--s-sm)}
+.q-input{background:#2B2620 !important;border-color:#4A443C !important;color:#E8E5DE !important;font-size:13px}
+.q-input:focus{border-color:#9DB4F5 !important}.q-input::placeholder{color:#6B655C}
+.q-gen-btn{font-family:var(--ff-body);font-size:14px;font-weight:500;padding:12px 24px;border-radius:var(--r-sm);cursor:pointer;background:var(--indigo);color:#FFF;border:none}
+.q-gen-btn:hover{background:#15296b}
+.q-copy-btn{font-family:var(--ff-body);font-size:13px;font-weight:500;padding:12px 20px;border-radius:var(--r-sm);cursor:pointer;background:transparent;color:#9DB4F5;border:1px solid #4A443C}
+.q-copy-btn:hover{border-color:#9DB4F5}
+.q-result{margin-top:var(--s-md);background:#2B2620;border-radius:var(--r-sm);padding:var(--s-md);font-family:var(--ff-mono);font-size:12px;line-height:1.7;color:#C9C2B6;white-space:pre-wrap;display:none;max-height:360px;overflow-y:auto}
+.q-result.show{display:block;animation:fadeUp .4s ease both}
+
+/* 三层架构（c5）*/
+.arch-block{background:var(--ink);color:#E8E5DE;border-radius:var(--r-lg);padding:var(--s-xl);margin:var(--s-lg) 0}
+.arch-block .eyebrow{color:#9DB4F5}
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-md);margin:var(--s-md) 0}
+@media(max-width:760px){.arch-grid{grid-template-columns:1fr}}
+.arch-card{background:#2B2620;border:1px solid #4A443C;border-radius:var(--r-md);padding:var(--s-md)}
+.arch-tag{font-family:var(--ff-mono);font-size:10px;color:#C4A0F5;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.arch-name{font-family:var(--ff-display);font-size:14px;font-weight:600;color:#FFF;margin-bottom:6px}
+.arch-desc{font-size:12px;color:#A39C91;line-height:1.5;margin-bottom:var(--s-sm)}
+.arch-flow{font-family:var(--ff-mono);font-size:11px;color:#9DB4F5;line-height:1.6}.arch-flow .arr{color:var(--p3)}
+.anchor-card{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-md);border-top:3px solid var(--p3)}
+.anchor-tag{font-family:var(--ff-mono);font-size:10px;color:var(--p3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:var(--s-xs)}
+.anchor-name{font-family:var(--ff-display);font-size:14px;font-weight:600;color:var(--ink);margin-bottom:var(--s-xs)}
+.anchor-body{font-size:13px;color:var(--ink-2);line-height:1.6}
+.flow-7{display:flex;gap:0;margin:var(--s-md) 0;flex-wrap:wrap}
+.flow-step{flex:1;min-width:90px;background:var(--bg-tint);border:1px solid var(--ink-faint);padding:var(--s-sm);text-align:center}.flow-step:not(:last-child){border-right:none}
+.flow-step.highlight{background:var(--p3-soft);border-color:var(--p3)}
+.flow-num{font-family:var(--ff-mono);font-size:9px;color:var(--ink-3)}.flow-step.highlight .flow-num{color:var(--p3)}
+.flow-name{font-size:11px;font-weight:600;color:var(--ink);margin-top:2px}
+
+/* 阶梯（c6）*/
+.stair-card{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-md) var(--s-lg);display:flex;align-items:flex-start;gap:var(--s-md);margin-bottom:var(--s-sm)}
+.stair-card:nth-child(2){margin-left:20px}.stair-card:nth-child(3){margin-left:40px}.stair-card:nth-child(4){margin-left:60px}
+@media(max-width:600px){.stair-card{margin-left:0 !important}}
+.stair-num{font-family:var(--ff-display);font-size:24px;font-weight:600;color:var(--p3);flex-shrink:0;line-height:1}
+.stair-name{font-family:var(--ff-display);font-size:15px;font-weight:600;color:var(--ink);margin-bottom:var(--s-xs)}
+.stair-desc{font-size:13px;color:var(--ink-2);line-height:1.6}
+.formula{text-align:center;font-family:var(--ff-display);font-size:clamp(18px,2.8vw,24px);font-weight:500;color:var(--ink);padding:var(--s-lg);background:var(--bg-tint);border-radius:var(--r-md);margin:var(--s-lg) 0;line-height:1.5}
+.formula .plus{color:var(--ink-faint);margin:0 6px}.formula .eq{color:var(--p3);margin:0 10px}.formula strong{color:var(--p3);font-weight:600}
+
+/* 结业 */
+.done-hero{text-align:center;padding:var(--s-3xl) 0;border-bottom:1px solid var(--ink-faint);margin-bottom:var(--s-3xl)}
+.done-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--ff-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--success);background:var(--success-soft);padding:6px 14px;border-radius:var(--r-sm);margin-bottom:var(--s-lg)}
+.certificate{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-lg);padding:var(--s-2xl);margin:var(--s-xl) auto var(--s-2xl);text-align:center;border-top:4px solid var(--indigo)}
+.cert-stat{display:inline-block;margin:0 var(--s-md)}
+.cert-val{font-family:var(--ff-display);font-size:36px;font-weight:600;color:var(--ink);line-height:1}
+.cert-lbl{font-family:var(--ff-mono);font-size:11px;color:var(--ink-3);margin-top:4px}
+.cert-divider{width:40px;height:1px;background:var(--ink-faint);margin:var(--s-lg) auto}
+.cert-skills{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s-sm);margin-top:var(--s-md)}
+.cert-skill{font-family:var(--ff-mono);font-size:11px;color:var(--ink-2);background:var(--bg-tint);padding:4px 12px;border-radius:var(--r-sm)}
+.recap-card{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-lg)}
+.recap-card.p1{border-top:3px solid var(--p1)}.recap-card.p2{border-top:3px solid var(--p2)}.recap-card.p3{border-top:3px solid var(--p3)}
+.recap-num{font-family:var(--ff-display);font-size:18px;font-weight:600;margin-bottom:var(--s-xs)}
+.recap-card.p1 .recap-num{color:var(--p1)}.recap-card.p2 .recap-num{color:var(--p2)}.recap-card.p3 .recap-num{color:var(--p3)}
+.next-step{display:flex;gap:var(--s-md);padding:var(--s-md) 0;border-bottom:1px solid var(--ink-faint)}.next-step:last-child{border-bottom:none}
+.next-num{font-family:var(--ff-mono);font-size:13px;font-weight:600;color:var(--indigo);flex-shrink:0;width:24px}
+.next-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}.next-desc{font-size:13px;color:var(--ink-2);line-height:1.6}
+</style>
+</head>
+<body>
+<button class="burger" onclick="document.querySelector('.sidebar').classList.toggle('open')"><span></span><span></span><span></span></button>
+
+<div class="app">
+  <!-- 左侧导航 -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">人机协同<em>实践课</em></div>
+    <div class="nav-group">
+      <div class="nav-group-label">入门</div>
+      <div class="nav-item" data-target="home"><span class="nav-num">00</span>首页·自测</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">范式一 · Copilot</div>
+      <div class="nav-item" data-target="c1"><span class="nav-num">01</span>认知重建</div>
+      <div class="nav-item" data-target="c2"><span class="nav-num">02</span>写操作手册</div>
+      <div class="nav-item" data-target="p1"><span class="nav-num">—</span>实战·分诊</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">范式二 · Agentic</div>
+      <div class="nav-item" data-target="c3"><span class="nav-num">03</span>项目控场</div>
+      <div class="nav-item" data-target="c4"><span class="nav-num">04</span>判断力</div>
+      <div class="nav-item" data-target="p2"><span class="nav-num">—</span>实战·判断样本</div>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">范式三 · Native</div>
+      <div class="nav-item" data-target="c5"><span class="nav-num">05</span>带AI做大事</div>
+      <div class="nav-item" data-target="c6"><span class="nav-num">06</span>数字员工</div>
+      <div class="nav-item" data-target="done"><span class="nav-num">✓</span>结业</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>学习进度</span><span id="progressText">0 / 9</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    </div>
+  </nav>
+
+  <!-- 右侧内容 -->
+  <main class="main">
+
+  <!-- ==================== HOME ==================== -->
+  <section class="section active" id="sec-home">
+    <div class="hero">
+      <div class="eyebrow" style="color:var(--indigo)">实践课 · 约 115 分钟 · 6 课 + 2 实战</div>
+      <h1 class="hero-title">人机协同不是<em>分工表</em>，<br>是判断力的传递过程。</h1>
+      <p class="lead">不讲"AI 能做什么"，讲"你怎么和 AI 一起把事做成"。从把日常重复工作交给 AI，到构建你的数字员工——按你的节奏，一步步来。</p>
+      <div class="hero-stats">
+        <div><div class="hero-stat-val">3</div><div class="hero-stat-label">协同范式</div></div>
+        <div><div class="hero-stat-val">8</div><div class="hero-stat-label">课程+实战</div></div>
+        <div><div class="hero-stat-val">115</div><div class="hero-stat-label">分钟</div></div>
+        <div><div class="hero-stat-val">4</div><div class="hero-stat-label">能力阶段</div></div>
+      </div>
+    </div>
+
+    <h2>三个协同范式</h2>
+    <div class="grid grid-3" style="margin-bottom:var(--s-3xl)">
+      <div class="paradigm-link p1l" data-goto="c1" style="border-top:3px solid var(--p1);cursor:pointer">
+        <div class="card-num">范式一 · 入门</div>
+        <div class="paradigm-name"><span class="en">Copilot</span> · 个人提效</div>
+        <div class="paradigm-tagline">AI 帮你更快。把日常重复工作交给 AI，你专注在判断和决策上。</div>
+        <div class="paradigm-feature">写邮件 · 出周报 · 做表格 · 给 AI 写规则</div>
+      </div>
+      <div class="paradigm-link p2l" data-goto="c3" style="border-top:3px solid var(--p2);cursor:pointer">
+        <div class="card-num">范式二 · 进阶</div>
+        <div class="paradigm-name"><span class="en">Agentic</span> · 流程协同</div>
+        <div class="paradigm-tagline">AI 帮你协同。把多步骤项目交给 AI 跑，你用项目管理思维控全局。</div>
+        <div class="paradigm-feature">需求对齐 · 方案评审 · 项目控场 · 判断显式化</div>
+      </div>
+      <div class="paradigm-link p3l" data-goto="c5" style="border-top:3px solid var(--p3);cursor:pointer">
+        <div class="card-num">范式三 · 高阶</div>
+        <div class="paradigm-name"><span class="en">AI Native</span> · 全栈闭环</div>
+        <div class="paradigm-tagline">带 AI 团队做大事。让 AI 越用越懂你，构建你的数字员工。</div>
+        <div class="paradigm-feature">长周期项目 · 跨班次接力 · 数字员工</div>
+      </div>
+    </div>
+
+    <div class="assess-block">
+      <div class="eyebrow">先花 2 分钟 · 定位你的起点</div>
+      <h2>你在<em>哪一阶</em>？</h2>
+      <p class="lead">勾选你已经具备的能力，系统判断你当前阶段并推荐从哪里开始。</p>
+      <div class="assess-tiers">
+        <div class="assess-tier t1" data-tier="1"><div class="assess-tier-head"><span class="assess-tier-name">阶段 1 · 入门</span><span class="assess-tier-count" id="count-1">0/3</span></div>
+          <label class="assess-item"><input type="checkbox" data-tier="1">我会用 AI 生成通知、邮件、报告等内容</label>
+          <label class="assess-item"><input type="checkbox" data-tier="1">我知道不同 AI 工具的基本区别</label>
+          <label class="assess-item"><input type="checkbox" data-tier="1">我能判断 AI 产出是否可用，知道何时该自己改</label>
+        </div>
+        <div class="assess-tier t2" data-tier="2"><div class="assess-tier-head"><span class="assess-tier-name">阶段 2 · 工具化</span><span class="assess-tier-count" id="count-2">0/3</span></div>
+          <label class="assess-item"><input type="checkbox" data-tier="2">我写过规则文件，让 AI 按我的标准工作</label>
+          <label class="assess-item"><input type="checkbox" data-tier="2">我有至少一个"做一次就能反复用"的 AI 工作流</label>
+          <label class="assess-item"><input type="checkbox" data-tier="2">我用 AI 不只写文案，还能做分析、出报告、搭流程</label>
+        </div>
+        <div class="assess-tier t3" data-tier="3"><div class="assess-tier-head"><span class="assess-tier-name">阶段 3 · 判断力</span><span class="assess-tier-count" id="count-3">0/3</span></div>
+          <label class="assess-item"><input type="checkbox" data-tier="3">每次给 AI 下指令，我能清晰定义目标和验收标准</label>
+          <label class="assess-item"><input type="checkbox" data-tier="3">我有沉淀判断的习惯（复盘、经验文档）</label>
+          <label class="assess-item"><input type="checkbox" data-tier="3">我能在 AI 理解偏差时精准纠偏，而不是笼统说"重做"</label>
+        </div>
+        <div class="assess-tier t4" data-tier="4"><div class="assess-tier-head"><span class="assess-tier-name">阶段 4 · 分身化</span><span class="assess-tier-count" id="count-4">0/3</span></div>
+          <label class="assess-item"><input type="checkbox" data-tier="4">我有结构化知识库，AI 能调用我的专业知识</label>
+          <label class="assess-item"><input type="checkbox" data-tier="4">我的 AI 工具具备长期记忆，跨会话记住我的偏好</label>
+          <label class="assess-item"><input type="checkbox" data-tier="4">我有配置好的技能/Agent，能按场景自动分工</label>
+        </div>
+      </div>
+      <div class="assess-result" id="assessResult">
+        <div class="assess-result-tier" id="resultTier">—</div>
+        <div class="assess-result-desc" id="resultDesc"></div>
+        <div class="assess-result-next" id="resultNext"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== C1 ==================== -->
+  <section class="section" id="sec-c1">
+    <header class="course-head">
+      <span class="paradigm-tag p1">范式一 · Copilot · 课程 01</span>
+      <h1>人机协同的<em>本质</em>是什么</h1>
+      <div class="course-meta"><span>⏱ 15 分钟</span><span>📖 4 章节</span><span>🎯 认知重建</span></div>
+    </header>
+    <div class="chapter" id="c1ch1">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">核心命题：判断力的传递</h2></div>
+      <p>很多人理解的人机协同，是一张静态的"分工表"——<strong>AI 干什么、人干什么</strong>，划清楚就行。但这张表是错的。真正的协同，是动态地<strong>传递</strong>：把你的<strong>判断力</strong>，从脑子里，传递到 AI 可执行的流程里。</p>
+      <p>判断说得越清楚，能交出去的越多，你自己就能往越高的层次走。</p>
+      <div class="callout callout-info"><span class="callout-label">数据验证</span><p>Anthropic 分析了 <strong>40 万次</strong>真实对话：人做约 <strong>70%</strong> 的规划决策，AI 做约 <strong>80%</strong> 的执行决策。人的核心价值，在定方向。</p></div>
+    </div>
+    <div class="chapter" id="c1ch2">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">四层递进分工模型</h2></div>
+      <p>分工不是一张静态表，是<strong>四层递进结构</strong>。越往上越核心，越往下越容易外包。</p>
+      <div class="layer-card l4"><div class="layer-head"><span class="layer-num">04</span><span class="layer-name">进化分工</span><span class="layer-q">谁在变好？</span></div>
+        <div class="layer-split"><div><div class="layer-role-label">人 · 往上游走</div><div class="layer-role-text">把隐性判断显式化。不断把低层任务交出去，自己往更高层走。</div></div><div><div class="layer-role-label">AI · 往下游接</div><div class="layer-role-text">按显式化的判断执行。框架越清晰，承担越多。</div></div></div>
+        <div class="layer-note"><strong>传递过程：</strong>第一次→人全程参与+提取判断；第二次→人给框架AI执行；第三次→AI自主执行人只验收异常；第N次→完全由AI承担。</div></div>
+      <div class="layer-card l3"><div class="layer-head"><span class="layer-num">03</span><span class="layer-name">知识分工</span><span class="layer-q">谁记住什么？</span></div>
+        <div class="layer-split"><div><div class="layer-role-label">人记住</div><div class="layer-role-text">"意味着什么"——判断、风格、直觉、为什么这么定。</div></div><div><div class="layer-role-label">AI 记住</div><div class="layer-role-text">"发生了什么"——事实、过程、上下文。</div></div></div></div>
+      <div class="layer-card l2"><div class="layer-head"><span class="layer-num">02</span><span class="layer-name">判断分工</span><span class="layer-q">谁定标准？</span></div>
+        <div class="layer-split"><div><div class="layer-role-label">人只握两个环节</div><div class="layer-role-text"><strong>判断决策</strong>+<strong>结果验收</strong>。不可外包。</div></div><div><div class="layer-role-label">AI 承接四个环节</div><div class="layer-role-text">信息收集→整理→模式识别→执行落地。</div></div></div>
+        <div class="layer-note"><strong>陷阱：</strong>AI 整理得不对，你的判断就建立在错误信息上。不能把 AI 当裁判。</div></div>
+      <div class="layer-card l1"><div class="layer-head"><span class="layer-num">01</span><span class="layer-name">执行分工</span><span class="layer-q">谁做？</span></div>
+        <div class="layer-split"><div><div class="layer-role-label">人做</div><div class="layer-role-text">低频高价 + 不可逆 + 创造性跳跃。</div></div><div><div class="layer-role-label">AI 做</div><div class="layer-role-text">高频重复 + 可验证 + 模式匹配。</div></div></div></div>
+      <div class="callout callout-insight"><span class="callout-label">核心洞察</span><p>人的不可替代性，不在于"做得比 AI 快"，而在于说清楚<strong>为什么这么定</strong>。每一次把隐性判断显式化，就是在构建你的数字员工。</p></div>
+    </div>
+    <div class="chapter" id="c1ch3">
+      <div class="chapter-head"><span class="chapter-num">第三章</span><h2 class="chapter-title">数据说了什么</h2></div>
+      <div class="grid grid-2">
+        <div class="data-point"><div class="data-val">70%</div><div class="data-label">规划决策由人做</div><div class="data-src">40 万次对话</div></div>
+        <div class="data-point"><div class="data-val">80%</div><div class="data-label">执行决策由 AI 做</div><div class="data-src">40 万次对话</div></div>
+        <div class="data-point"><div class="data-val">5×</div><div class="data-label">专家 vs 新手产出差</div><div class="data-src">差距在指令精准度</div></div>
+        <div class="data-point"><div class="data-val">2.7×</div><div class="data-label">跳阶段事故率</div><div class="data-src">McKinsey 2025</div></div>
+      </div>
+      <div class="callout callout-warn"><span class="callout-label">重要警示</span><p>"跳阶段"是最大的坑——跳过基础直接上自主运行的组织，事故率高 2.7 倍。这就是为什么这门课按范式递进，不能跳。</p></div>
+    </div>
+    <div class="chapter" id="c1ch4">
+      <div class="chapter-head"><span class="chapter-num">第四章</span><h2 class="chapter-title">记住一句话</h2></div>
+      <div class="callout callout-gold"><span class="callout-label">本课要点</span><p>人机协同的本质，是把你的<strong>判断力</strong>从脑子里，传递到 AI 可执行的流程里。判断说得越清楚 → 能交出去的越多 → 你自己往越高的层次走。</p></div>
+    </div>
+    <div class="lesson-foot">
+      <div></div>
+      <div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="c1">标记本节完成</button><button class="btn btn-primary" data-goto="c2">下一课 →</button></div>
+    </div>
+  </section>
+
+  <!-- ==================== C2 ==================== -->
+  <section class="section" id="sec-c2">
+    <header class="course-head">
+      <span class="paradigm-tag p1">范式一 · Copilot · 课程 02</span>
+      <h1>给 AI 写一份<em>操作手册</em></h1>
+      <div class="course-meta"><span>⏱ 15 分钟</span><span>📖 4 章节</span><span>🎯 规则文件</span></div>
+    </header>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">什么是操作手册</h2></div>
+      <p>你肯定遇到过：让 AI 帮你写报告，它写出来的风格、格式、用词，<strong>每次都不一样</strong>，总不是你想要的。原因不是 AI 笨，是你<strong>没给它规则</strong>。</p>
+      <p>解决方法：写一份"操作手册"给 AI，通常叫 <code>AGENTS.md</code>。作用像给新同事的<strong>岗位说明书</strong>——让 AI 瞬间知道你的标准、习惯和禁忌。写一次，反复用。</p>
+      <div class="callout callout-info"><span class="callout-label">一句话理解</span><p>README 是给人看的；<strong>AGENTS.md 是给 AI 看的操作手册</strong>。以极低成本让 AI"瞬间入职"。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">五条最佳实践</h2></div>
+      <div class="grid grid-2">
+        <div class="rule-card"><div class="card-num">01</div><div class="card-title">用强语气词</div><div class="card-body">用 <code>必须</code>/<code>禁止</code>/<code>总是</code>，效果远好于 <code>建议</code>。AI 对强指令遵从度更高。</div></div>
+        <div class="rule-card"><div class="card-num">02</div><div class="card-title">提供正误对比</div><div class="card-body">展示 ❌ 错误 vs ✅ 正确。比写 500 字描述，不如给一对正反示例。</div></div>
+        <div class="rule-card"><div class="card-num">03</div><div class="card-title">机器友好格式</div><div class="card-body">多用<strong>表格、列表、代码块</strong>。AI 处理结构化数据远优于散文。</div></div>
+        <div class="rule-card"><div class="card-num">04</div><div class="card-title">单一职责</div><div class="card-body">只写<strong>规范</strong>，不写业务逻辑。文件不超过 200 行。</div></div>
+        <div class="rule-card"><div class="card-num">05</div><div class="card-title">禁令清单最重要</div><div class="card-body">明确写出<strong>不要做什么</strong>。这是防止 AI"好心办坏事"的关键。</div></div>
+        <div class="rule-card warn"><div class="card-num">!</div><div class="card-title">防坑</div><div class="card-body">① 含糊其辞 ② 信息过时 ③ 文件太大 ④ 忘了写安全约束</div></div>
+      </div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第三章</span><h2 class="chapter-title">正误对比：怎么写才有效</h2></div>
+      <div class="example-block">
+        <div class="example-label example-bad">❌ 坏规则（模糊）</div><div class="example-bad">"帮我写一份高质量的周报，内容专业一点。"</div>
+        <div class="example-label example-good">✅ 好规则（具体）</div><div class="example-good">"周报必须含三部分：本周完成、下周计划、风险阻塞。<strong>禁止</strong>用'赋能''抓手'等空话。每项不超过一行。"</div>
+      </div>
+      <div class="callout callout-gold"><span class="callout-label">关键原则</span><p>好规则 = <strong>结构 + 禁令 + 示例</strong>。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第四章</span><h2 class="chapter-title">四层结构</h2></div>
+      <div class="grid grid-3" style="grid-template-columns:repeat(4,1fr)">
+        <div class="card" style="text-align:center"><div style="font-family:var(--ff-display);font-size:22px;font-weight:600;color:var(--indigo)">01</div><div style="font-size:13px;font-weight:600">核心上下文</div><div style="font-size:11px;color:var(--ink-2)">我是谁、做什么</div></div>
+        <div class="card" style="text-align:center"><div style="font-family:var(--ff-display);font-size:22px;font-weight:600;color:var(--indigo)">02</div><div style="font-size:13px;font-weight:600">运行指南</div><div style="font-size:11px;color:var(--ink-2)">分步骤怎么做</div></div>
+        <div class="card" style="text-align:center"><div style="font-family:var(--ff-display);font-size:22px;font-weight:600;color:var(--indigo)">03</div><div style="font-size:13px;font-weight:600">质量约束</div><div style="font-size:11px;color:var(--ink-2)">标准、格式</div></div>
+        <div class="card" style="text-align:center"><div style="font-family:var(--ff-display);font-size:22px;font-weight:600;color:var(--indigo)">04</div><div style="font-size:13px;font-weight:600">禁令清单</div><div style="font-size:11px;color:var(--ink-2)">不要做什么</div></div>
+      </div>
+      <div class="practice"><span class="practice-tag">练习卡</span><div class="practice-title">给你的一个高频工作写规则</div>
+        <div class="practice-grid"><div><div class="pg-label">动作</div><div class="pg-val">选一个每周做3次以上的任务，按四层结构写规则文件</div></div><div><div class="pg-label">验收</div><div class="pg-val">AI 读完能独立完成该任务，你只需审批结果</div></div><div><div class="pg-label warn">误区</div><div class="pg-val">把所有事写进一个文件；超过200行；忘了写禁令</div></div></div>
+      </div>
+    </div>
+    <div class="lesson-foot"><div><button class="btn btn-outline" data-goto="c1">← 上一课</button></div><div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="c2">标记本节完成</button><button class="btn btn-primary" data-goto="p1">下一节 →</button></div></div>
+  </section>
+
+  <!-- ==================== P1 ==================== -->
+  <section class="section" id="sec-p1">
+    <header class="course-head">
+      <span class="paradigm-tag p1">范式一 · 实战</span>
+      <h1>3A 分诊法 · <em>30 秒</em>决定怎么分</h1>
+      <div class="course-meta"><span>⏱ 10 分钟</span><span>🎮 1 个交互工具</span></div>
+    </header>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">三个抽屉</h2></div>
+      <div class="grid grid-3">
+        <div class="card" style="border-top:3px solid var(--success)"><div style="font-family:var(--ff-display);font-weight:600;color:var(--success)">自动化 <span style="font-style:italic;font-size:12px;color:var(--ink-3)">Automation</span></div><div class="card-body" style="margin-top:var(--s-sm)"><strong>AI 全流程执行</strong>，你验收。适合规则清楚、可验证、可撤的任务。</div></div>
+        <div class="card" style="border-top:3px solid var(--indigo)"><div style="font-family:var(--ff-display);font-weight:600;color:var(--indigo)">增强 <span style="font-style:italic;font-size:12px;color:var(--ink-3)">Augmentation</span></div><div class="card-body" style="margin-top:var(--s-sm)"><strong>AI 提供选项</strong>，你决策。适合需要判断、不可逆的任务。</div></div>
+        <div class="card" style="border-top:3px solid var(--p3)"><div style="font-family:var(--ff-display);font-weight:600;color:var(--p3)">智能体 <span style="font-style:italic;font-size:12px;color:var(--ink-3)">Agent</span></div><div class="card-body" style="margin-top:var(--s-sm)"><strong>AI 自主拆步骤执行</strong>，你设边界。适合多步串联任务。</div></div>
+      </div>
+      <div class="callout callout-warn"><span class="callout-label">安全底线</span><p>不可逆操作（发送、发布、删除、签订）<strong>必须人来按</strong>。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">动手试：分诊你的真实任务</h2></div>
+      <div class="triage-tool"><div class="triage-grid">
+        <div>
+          <div class="triage-input-label">任务描述（可选）</div>
+          <textarea id="triageText" placeholder="例：把上个月招聘数据整理成周会汇报…" style="min-height:44px;margin-bottom:var(--s-sm)"></textarea>
+          <div class="slider-row"><div class="slider-head"><span class="slider-name">确定性 · 规则有多清楚？</span><span class="slider-val" id="val-certainty">50</span></div><input type="range" id="slider-certainty" min="0" max="100" value="50"><div class="slider-labels"><span>模糊说不清</span><span>规则明确好验证</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span class="slider-name">可逆性 · 做错了能撤吗？</span><span class="slider-val" id="val-reversibility">50</span></div><input type="range" id="slider-reversibility" min="0" max="100" value="50"><div class="slider-labels"><span>不可逆</span><span>随时可撤回</span></div></div>
+          <div class="slider-row"><div class="slider-head"><span class="slider-name">任务跨度 · 几步能完？</span><span class="slider-val" id="val-span">50</span></div><input type="range" id="slider-span" min="0" max="100" value="50"><div class="slider-labels"><span>单步即完</span><span>多步串联</span></div></div>
+        </div>
+        <div class="triage-result"><div class="triage-result-label">推荐模式</div><div class="triage-result-mode aug" id="triageMode">增强</div><div class="triage-result-reason" id="triageReason">需要判断、不可逆、或规则不够明确。AI 提供信息和建议，但拍板的是你。</div><div class="triage-roles" id="triageRoles"><div class="triage-role-box"><div class="triage-role-label">你做</div><div class="triage-role-text">最终决策</div></div><div class="triage-role-box"><div class="triage-role-label">AI 做</div><div class="triage-role-text">提供选项和利弊</div></div></div></div>
+      </div></div>
+    </div>
+    <div class="lesson-foot"><div><button class="btn btn-outline" data-goto="c2">← 上一课</button></div><div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="p1">标记本节完成</button><button class="btn btn-primary" data-goto="c3">范式二 →</button></div></div>
+  </section>
+
+  <!-- 以下章节在下方追加 -->
+  <div id="more-sections">
+
+  <!-- ==================== C3 ==================== -->
+  <section class="section" id="sec-c3">
+    <header class="course-head">
+      <span class="paradigm-tag p2">范式二 · Agentic · 课程 03</span>
+      <h1>用<em>项目管理</em>思维控场</h1>
+      <div class="course-meta"><span>⏱ 15 分钟</span><span>📖 3 章节</span><span>🎯 项目控场</span></div>
+    </header>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">从"做任务"升级到"控项目"</h2></div>
+      <p>范式一解决了"单次任务"。但工作中很多事是<strong>项目</strong>：持续 1-4 周，分很多步。这时候你的角色变了：不再是"执行者"，而是"<strong>项目经理</strong>"。</p>
+      <div class="callout callout-info"><span class="callout-label">核心转变</span><p>范式一：AI 做事你<strong>验收</strong>。范式二：AI 做事你<strong>控场</strong>——全程把控方向不跑偏。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">PMP 五阶段法</h2></div>
+      <div class="pmp-timeline">
+        <div class="pmp-step"><div class="pmp-num">① 启动</div><div class="pmp-name">定调</div><div class="pmp-desc">做什么？不做什么？验收标准？</div><div class="pmp-output">→ 项目定义</div></div>
+        <div class="pmp-step"><div class="pmp-num">② 规划</div><div class="pmp-name">拆解</div><div class="pmp-desc">不急做，先拆任务、列风险</div><div class="pmp-output">→ 任务清单</div></div>
+        <div class="pmp-step"><div class="pmp-num">③ 执行</div><div class="pmp-name">小步快跑</div><div class="pmp-desc">按计划逐步交付</div><div class="pmp-output">→ 产物</div></div>
+        <div class="pmp-step"><div class="pmp-num">④ 监控</div><div class="pmp-name">门禁检查</div><div class="pmp-desc">边做边查，偏离即纠</div><div class="pmp-output">→ 纠偏</div></div>
+        <div class="pmp-step"><div class="pmp-num">⑤ 收尾</div><div class="pmp-name">验收</div><div class="pmp-desc">对照启动标准确认</div><div class="pmp-output">→ 交付</div></div>
+      </div>
+      <div class="callout callout-warn"><span class="callout-label">最常见的坑</span><p>收尾时不对照启动时定的验收标准。做完才发现"不是想要的"。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第三章</span><h2 class="chapter-title">让 AI 跑起来：最小闭环与底线</h2></div>
+      <div class="loop-flow">你的任务 <span class="arr">→</span> AI 拆计划 <span class="arr">→</span> 调用工具 <span class="arr">→</span> 观察结果 <span class="arr">→</span> 修正或完成</div>
+      <p>判断一个自主闭环靠不靠谱，看四条底线——达不到就先别放手：</p>
+      <ul class="checklist-items">
+        <li><strong>可复现</strong>：同一输入跑5次，关键步骤一致</li>
+        <li><strong>有上限</strong>：工具失败不无限重试，有兜底</li>
+        <li><strong>可追溯</strong>：每步有日志</li>
+        <li><strong>可接管</strong>：人能在关键节点中断或接管</li>
+      </ul>
+      <div class="callout callout-gold"><span class="callout-label">验收原则</span><p>达不到这四条，先别加更多工具。<strong>先让基础闭环稳，再谈扩展。</strong></p></div>
+    </div>
+    <div class="lesson-foot"><div><button class="btn btn-outline" data-goto="p1">← 上一节</button></div><div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="c3">标记本节完成</button><button class="btn btn-primary" data-goto="c4">下一课 →</button></div></div>
+  </section>
+
+  <!-- ==================== C4 ==================== -->
+  <section class="section" id="sec-c4">
+    <header class="course-head">
+      <span class="paradigm-tag p2">范式二 · Agentic · 课程 04</span>
+      <h1>判断力<em>显式化</em>：从脑子到文件</h1>
+      <div class="course-meta"><span>⏱ 15 分钟</span><span>📖 4 章节</span><span>🎯 判断力资产</span></div>
+    </header>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">为什么判断力是你最大的资产</h2></div>
+      <p>AI 能做执行、分析、整理。但有一样它做不了：<strong>你的判断</strong>。判断力就是面对选择时"为什么这么定"的那套考量，来自你的经验、价值观、对情境的理解。这是你最不可替代的东西。</p>
+      <p>问题是：大部分人的判断力<strong>只存在脑子里</strong>，隐性的、说不清的，随你离开就消失了。</p>
+      <div class="callout callout-insight"><span class="callout-label">核心命题</span><p>判断力<strong>显式化</strong>——把脑子里说不清的"为什么这么定"，变成文件里写得清的"我这么定是因为……"。这是你最大的职业资产，也是数字员工的原材料。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">5 问法：把判断写下来</h2></div>
+      <div class="table-scroll"><table><thead><tr><th>问</th><th>回答什么</th><th>为什么重要</th></tr></thead><tbody>
+        <tr><td><strong>Q1</strong> 做了什么判断？</td><td>一句话描述决策本身</td><td>锚定这次判断</td></tr>
+        <tr><td><strong>Q2</strong> 为什么这么定？</td><td>2-3 个决定因素</td><td>留下你的考量</td></tr>
+        <tr><td><strong>Q3</strong> 排除了哪些选项？</td><td>被否的方案+理由</td><td>最有价值</td></tr>
+        <tr><td><strong>Q4</strong> 什么变了你会改？</td><td>可变条件</td><td>知道判断的边界</td></tr>
+        <tr><td><strong>Q5</strong> 下次的框架？</td><td>可复用 if-then</td><td>提炼成能力</td></tr>
+      </tbody></table></div>
+      <div class="callout callout-gold"><span class="callout-label">最有价值的一问</span><p>Q3（排除了什么）和 Q5（下次的框架）。真正值钱的是"我否了什么、为什么否"——记下来，下次直接复用。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第三章</span><h2 class="chapter-title">常见偏差</h2></div>
+      <div class="grid grid-2">
+        <div class="bias-card"><div class="bias-name">只记结论不记排除项</div><div class="bias-desc">下次忘了当初为什么否了 B，又重新纠结。</div></div>
+        <div class="bias-card"><div class="bias-name">Q5 写成空话</div><div class="bias-desc">"具体情况具体分析"等于没说。必须是可触发的 if-then。</div></div>
+        <div class="bias-card"><div class="bias-name">事后合理化</div><div class="bias-desc">结果好就觉得当时判断对。用 Q4 检验：条件没变，重来还会这么定吗？</div></div>
+        <div class="bias-card"><div class="bias-name">写完就丢</div><div class="bias-desc">判断档案的价值在<strong>积累和复用</strong>，不在写一次。</div></div>
+      </div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第四章</span><h2 class="chapter-title">复利效应</h2></div>
+      <p>判断档案是<strong>成本最低、复利最大</strong>的练习。每条 10-15 分钟，积累 2-3 个月（20 条以上），你就有：别人偷不走的<strong>职业判断资产</strong>、可直接喂给 AI 的<strong>判断框架</strong>、述职晋升的<strong>硬证据</strong>。</p>
+      <div class="callout callout-success"><span class="callout-label">关键发现</span><p>有沉淀判断习惯的人，AI 协同产出质量高 <strong>5 倍</strong>。差距不在工具，在"判断说得清不清楚"。</p></div>
+    </div>
+    <div class="lesson-foot"><div><button class="btn btn-outline" data-goto="c3">← 上一课</button></div><div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="c4">标记本节完成</button><button class="btn btn-primary" data-goto="p2">下一节 →</button></div></div>
+  </section>
+
+  <!-- ==================== P2 ==================== -->
+  <section class="section" id="sec-p2">
+    <header class="course-head">
+      <span class="paradigm-tag p2">范式二 · 实战</span>
+      <h1>提取你的<em>判断样本</em></h1>
+      <div class="course-meta"><span>⏱ 10 分钟</span><span>🎮 1 个生成工具</span></div>
+    </header>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">用 5 问法填写</h2></div>
+      <p>想一个你<strong>这周做过的、有取舍的判断</strong>。逐条填写，Q3 和 Q5 是重点：</p>
+      <div class="q-form">
+        <div class="q-item"><div class="q-label"><span class="q-num">Q1</span>你做了什么判断？<span class="q-hint">一句话描述</span></div><textarea class="q-input" id="q1" rows="2" placeholder="例：决定给候选人A而不是B发offer"></textarea></div>
+        <div class="q-item"><div class="q-label"><span class="q-num">Q2</span>为什么这么定？<span class="q-hint">2-3个因素</span></div><textarea class="q-input" id="q2" rows="2" placeholder="例：①经验对口 ②沟通强 ③薪资合理"></textarea></div>
+        <div class="q-item"><div class="q-label"><span class="q-num">Q3</span>排除了哪些选项？<span class="q-hint">被否方案+理由 · 最有价值</span></div><textarea class="q-input" id="q3" rows="2" placeholder="例：排除了B，经验不足上手成本高"></textarea></div>
+        <div class="q-item"><div class="q-label"><span class="q-num">Q4</span>什么变了你会改？<span class="q-hint">可变条件</span></div><textarea class="q-input" id="q4" rows="2" placeholder="例：预算够就A和B都发"></textarea></div>
+        <div class="q-item"><div class="q-label"><span class="q-num">Q5</span>下次的框架？<span class="q-hint">可复用 if-then</span></div><textarea class="q-input" id="q5" rows="2" placeholder="例：if 需快速上手 then 经验>薪资"></textarea></div>
+        <div style="display:flex;gap:var(--s-sm)"><button class="q-gen-btn" id="genBtn">生成判断档案</button><button class="q-copy-btn" id="copyBtn" style="display:none">复制 Markdown</button></div>
+        <div class="q-result" id="qResult"></div>
+      </div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">归档，持续积累</h2></div>
+      <div class="callout callout-warn"><span class="callout-label">不要犯这个错</span><p>生成完就看一眼关掉。<strong>判断档案的价值在积累</strong>——攒够 20 条，你就有一份别人拿不走的资产。</p></div>
+      <div class="practice"><span class="practice-tag">练习卡</span><div class="practice-title">积累 5 条判断样本</div>
+        <div class="practice-grid"><div><div class="pg-label">动作</div><div class="pg-val">回顾最近一周，挑 5 个重要判断，用工具各写一份</div></div><div><div class="pg-label">验收</div><div class="pg-val">5 条齐全；每条 Q5 有可复用 if-then；存进固定目录</div></div></div>
+      </div>
+    </div>
+    <div class="lesson-foot"><div><button class="btn btn-outline" data-goto="c4">← 上一课</button></div><div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="p2">标记本节完成</button><button class="btn btn-primary" data-goto="c5">范式三 →</button></div></div>
+  </section>
+
+  <!-- ==================== C5 ==================== -->
+  <section class="section" id="sec-c5">
+    <header class="course-head">
+      <span class="paradigm-tag p3">范式三 · AI Native · 课程 05</span>
+      <h1>带 <em>AI 团队</em>做大事</h1>
+      <div class="course-meta"><span>⏱ 20 分钟</span><span>📖 4 章节</span><span>🎯 长周期协同</span></div>
+    </header>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">长周期项目的头号敌人：AI 漂移</h2></div>
+      <p>前两个范式处理的都是"一次能做完"的事。但真正的<strong>大事</strong>——系统重构、季度规划——要跨好几天。这时候你会遇到：<strong>AI 漂移</strong>。</p>
+      <p>对话越长，AI 会逐渐<strong>丢失目标、偏离路线、遗忘决策</strong>。你以为它在帮你，其实它已经跑偏了。</p>
+      <div class="callout callout-warn"><span class="callout-label">这不是AI的问题，是方法的问题</span><p>任何 AI 都会在长对话中漂移。解决它要靠<strong>正确的方法</strong>，不能只靠换更强的模型。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">三层协同架构</h2></div>
+      <div class="arch-block"><div class="eyebrow">三层架构 · 防止漂移</div>
+        <div class="arch-grid">
+          <div class="arch-card"><div class="arch-tag">L1 · 执行层</div><div class="arch-name">把想法做成产物</div><div class="arch-desc">6步走完从灵感到实现。</div><div class="arch-flow">立项 <span class="arr">→</span> 文档 <span class="arr">→</span> 骨架 <span class="arr">→</span> 设计 <span class="arr">→</span> 原型 <span class="arr">→</span> 实现</div></div>
+          <div class="arch-card"><div class="arch-tag">L2 · 编排层</div><div class="arch-name">让长周期不迷失</div><div class="arch-desc">里程碑、路线图、仪表盘、门禁。</div><div class="arch-flow">里程碑 <span class="arr">+</span> 路线图 <span class="arr">+</span> 仪表盘</div></div>
+          <div class="arch-card"><div class="arch-tag">L3 · 接力层</div><div class="arch-name">跨班次连轴转</div><div class="arch-desc">人下发，AI执行，人验收。</div><div class="arch-flow">人 <span class="arr">→</span> 任务书 <span class="arr">→</span> AI <span class="arr">→</span> 验收</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第三章</span><h2 class="chapter-title">三大锚点：把状态外置</h2></div>
+      <p>防止漂移的核心：<strong>不要让项目状态只存在对话里</strong>。对话会丢，文件不会。</p>
+      <div class="grid grid-3">
+        <div class="anchor-card"><div class="anchor-tag">锚点 01</div><div class="anchor-name">目标锚定</div><div class="anchor-body">目标写进持久文件，不随对话漂移。每次启动先读目标。</div></div>
+        <div class="anchor-card"><div class="anchor-tag">锚点 02</div><div class="anchor-name">证据验收</div><div class="anchor-body">里程碑不是AI说了算，是<strong>证据</strong>说了算。对不上就回退。</div></div>
+        <div class="anchor-card"><div class="anchor-tag">锚点 03</div><div class="anchor-name">状态外置</div><div class="anchor-body">状态存在于文件中。三行简报+仪表盘，随时重建全局认知。</div></div>
+      </div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第四章</span><h2 class="chapter-title">七步工作流</h2></div>
+      <div class="flow-7">
+        <div class="flow-step"><div class="flow-num">01</div><div class="flow-name">对话启动</div></div>
+        <div class="flow-step"><div class="flow-num">02</div><div class="flow-name">主线程协调</div></div>
+        <div class="flow-step"><div class="flow-num">03</div><div class="flow-name">里程碑审计</div></div>
+        <div class="flow-step"><div class="flow-num">04</div><div class="flow-name">本地线程</div></div>
+        <div class="flow-step"><div class="flow-num">05</div><div class="flow-name">状态同步</div></div>
+        <div class="flow-step"><div class="flow-num">06</div><div class="flow-name">项目收尾</div></div>
+        <div class="flow-step highlight"><div class="flow-num">07 ✦</div><div class="flow-name">会话接力</div></div>
+      </div>
+      <div class="callout callout-gold"><span class="callout-label">第七步最关键</span><p>会话接力——跨班次工作<strong>无缝衔接</strong>。靠的不是记性，是文件。</p></div>
+    </div>
+    <div class="lesson-foot"><div><button class="btn btn-outline" data-goto="p2">← 上一节</button></div><div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="c5">标记本节完成</button><button class="btn btn-primary" data-goto="c6">下一课 →</button></div></div>
+  </section>
+
+  <!-- ==================== C6 ==================== -->
+  <section class="section" id="sec-c6">
+    <header class="course-head">
+      <span class="paradigm-tag p3">范式三 · AI Native · 课程 06</span>
+      <h1>构建你的<em>数字员工</em></h1>
+      <div class="course-meta"><span>⏱ 15 分钟</span><span>📖 4 章节</span><span>🎯 终极目标</span></div>
+    </header>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">什么是数字分身</h2></div>
+      <p>前五课你学了：给 AI 写规则、用项目管理控场、带 AI 团队做大事。这些能力的<strong>终点</strong>，是构建一个"数字员工"——一个<strong>越用越懂你、能替你执行越来越多事情</strong>的 AI 配置。</p>
+      <div class="formula">知识库 <span class="plus">+</span> 技能包 <span class="plus">+</span> 判断档案 <span class="eq">=</span> <strong>数字员工</strong></div>
+      <div class="callout callout-insight"><span class="callout-label">本质</span><p>数字员工不是"另一个你"，是<strong>你的判断力的外化</strong>。你越把隐性判断显式化，它就越像你。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">四步搭建路径</h2></div>
+      <div class="stair-card"><div class="stair-num">01</div><div><div class="stair-name">积累判断档案</div><div class="stair-desc">用 5 问法持续记录，攒够 20 条以上。这是原材料。</div></div></div>
+      <div class="stair-card"><div class="stair-num">02</div><div><div class="stair-name">搭建结构化知识库</div><div class="stair-desc">按主题归类，提取共性规则，形成可检索的知识库。</div></div></div>
+      <div class="stair-card"><div class="stair-num">03</div><div><div class="stair-name">配置 Agent</div><div class="stair-desc">技能+知识库+记忆+工具权限四件套。</div></div></div>
+      <div class="stair-card"><div class="stair-num">04</div><div><div class="stair-name">持续迭代</div><div class="stair-desc">每次 AI 判断有偏差，回写新档案。越用越准。复利过程。</div></div></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第三章</span><h2 class="chapter-title">数字分身的真实形态：数字员工</h2></div>
+      <p>数字分身已经有了<strong>具体的落地形态</strong>。以开源项目 <a href="https://staffdeck.openbmb.cn/" target="_blank" rel="noopener">StaffDeck</a>（OpenBMB）为例，数字员工不是"又一个聊天机器人"，而是<strong>一位能上岗、能执行、能进化的数字同事</strong>。</p>
+      <div class="callout callout-info"><span class="callout-label">数字员工 vs 聊天机器人</span><p>聊天机器人：你问它答，答完结束。<br><strong>数字员工</strong>：有<strong>档案</strong>（岗位/能力/成长）、有<strong>技能</strong>（能跑完流程）、有<strong>知识</strong>（回答有出处）、有<strong>工作记录</strong>（好评率/反馈）。像真正的同事一样可培养、可考核。</p></div>
+      <div class="table-scroll"><table><thead><tr><th>数字员工能力</th><th>本质</th><th>本课对应</th></tr></thead><tbody>
+        <tr><td><strong>流程型技能（SOP）</strong></td><td>状态机驱动，可打断可恢复</td><td>规则文件的进阶</td></tr>
+        <tr><td><strong>企业知识本体（OKF）</strong></td><td>文档→主题/规则，回答有出处</td><td>判断档案的归宿</td></tr>
+        <tr><td><strong>员工档案与成长</strong></td><td>服务记录、好评差评、迭代</td><td>三层协同的落地</td></tr>
+      </tbody></table></div>
+      <h4 style="margin-top:var(--s-lg)">真实案例：经验继承</h4>
+      <p>某集团一位<strong>八年经验的合规审查员离职</strong>。真正难交接的不是文件，而是他判断合同风险的<strong>标准、顺序和边界</strong>。团队没有"把资料放进共享盘"，而是花一周，把他的判断方法拆成 5 资料域 + 2 技能 + 4 条 SOP，配置进"合规审查助理"数字员工。</p>
+      <div class="callout callout-insight"><span class="callout-label">终极价值</span><p><strong>人的流动不再意味着判断方法归零。</strong>你前面积累的每一条判断档案，最终都会变成这样一份<strong>不随人走的能力</strong>。</p></div>
+    </div>
+    <div class="chapter">
+      <div class="chapter-head"><span class="chapter-num">第四章</span><h2 class="chapter-title">现在就开始</h2></div>
+      <p>数字员工的<strong>第一步你现在就能做</strong>——提取你的第一个判断样本。每提取一条，就在添一块砖。</p>
+      <div class="practice"><span class="practice-tag">终极练习</span><div class="practice-title">启动数字分身 V0.1</div>
+        <div class="practice-grid"><div><div class="pg-label">动作</div><div class="pg-val">回顾本周，用 5 问法写 3 条判断档案，存进固定目录</div></div><div><div class="pg-label">承诺</div><div class="pg-val">未来每周至少新增 2 条。2-3 个月后，回看这份资产。</div></div></div>
+      </div>
+      <hr>
+      <div class="callout callout-gold"><span class="callout-label">课程总结</span><p><strong>①</strong> 人机协同的本质，是把判断力传递给 AI。<br><strong>②</strong> 方法：写规则 → 控项目 → 带团队。<br><strong>③</strong> 终点：让 AI 越用越懂你——你的数字员工。</p></div>
+    </div>
+    <div class="lesson-foot"><div><button class="btn btn-outline" data-goto="c5">← 上一课</button></div><div style="display:flex;gap:var(--s-sm)"><button class="complete-btn" data-module="c6">标记本节完成</button><button class="btn btn-primary" data-goto="done">结业 →</button></div></div>
+  </section>
+
+  <!-- ==================== DONE ==================== -->
+  <section class="section" id="sec-done">
+    <div class="done-hero">
+      <div class="done-badge">✓ 课程已完成</div>
+      <h1>你的协同<em>能力档案</em></h1>
+      <p class="lead">你走完了从"判断力传递"到"数字员工"的完整路径。这是你的能力快照——不是一张证书，是一套可增值的能力。</p>
+    </div>
+    <div class="certificate">
+      <div class="eyebrow">人机协同能力 · 完成认证</div>
+      <div>
+        <div class="cert-stat"><div class="cert-val">100%</div><div class="cert-lbl">课程完成度</div></div>
+        <div class="cert-stat"><div class="cert-val">3</div><div class="cert-lbl">协同范式</div></div>
+        <div class="cert-stat"><div class="cert-val">115</div><div class="cert-lbl">学习分钟</div></div>
+      </div>
+      <div class="cert-divider"></div>
+      <div class="cert-skills">
+        <span class="cert-skill">四层分工</span><span class="cert-skill">3A分诊</span><span class="cert-skill">AGENTS.md</span>
+        <span class="cert-skill">PMP五阶段</span><span class="cert-skill">判断档案</span><span class="cert-skill">三层协同</span><span class="cert-skill">数字员工</span>
+      </div>
+    </div>
+    <h2>三句话带走</h2>
+    <div class="grid grid-3">
+      <div class="recap-card p1"><div class="recap-num">范式一</div><div style="font-weight:600">Copilot · 个人提效</div><div class="card-body" style="margin-top:var(--s-xs)">给 AI 写<strong>规则</strong>，让它按你的标准干活。判断越清楚，交出去越多。</div></div>
+      <div class="recap-card p2"><div class="recap-num">范式二</div><div style="font-weight:600">Agentic · 流程协同</div><div class="card-body" style="margin-top:var(--s-xs)">用<strong>项目管理</strong>控场。定目标、拆任务、盯进度、验收结果。</div></div>
+      <div class="recap-card p3"><div class="recap-num">范式三</div><div style="font-weight:600">AI Native · 全栈闭环</div><div class="card-body" style="margin-top:var(--s-xs)">带 AI 做大事。状态<strong>外置到文件</strong>，构建你的数字员工。</div></div>
+    </div>
+    <h2 style="margin-top:var(--s-3xl)">接下来做什么</h2>
+    <div style="background:var(--bg-tint);border-radius:var(--r-lg);padding:var(--s-xl)">
+      <div class="next-step"><div class="next-num">01</div><div><div class="next-title">本周：写第一个规则文件</div><div class="next-desc">选一个每周做3次以上的高频任务，按四层结构写 AGENTS.md。</div></div></div>
+      <div class="next-step"><div class="next-num">02</div><div><div class="next-title">本月：积累 5 条判断档案</div><div class="next-desc">用 5 问法，把每周重要判断写下来。重点写 Q3 和 Q5。</div></div></div>
+      <div class="next-step"><div class="next-num">03</div><div><div class="next-title">本季：搭一个完整项目</div><div class="next-desc">用 PMP 五阶段 + 三层协同完整走一遍。</div></div></div>
+      <div class="next-step"><div class="next-num">04</div><div><div class="next-title">长期：构建数字员工</div><div class="next-desc">判断档案攒够20条后，组装知识库+配置Agent。</div></div></div>
+    </div>
+    <div class="callout callout-insight" style="margin-top:var(--s-2xl)"><span class="callout-label">最后一句话</span><p>人机协同的终点，不是让 AI 替代你，而是让 AI <strong>放大你</strong>。判断力越显式化，能放大的部分就越多。现在，去用起来。</p></div>
+  </section>
+
+  </div>
+  </main>
+</div>
+</div>
+
+<footer class="footer" style="margin-left:248px">人机协同实践课 · 从判断力传递到数字员工<br>基于 40 万次真实人机对话数据 · 为非技术岗设计</footer>
+
+<script>
+(function(){
+  'use strict';
+  var SEQ=['c1','c2','p1','c3','c4','p2','c5','c6','done'];
+  var SK='course_progress_v3';
+  function getP(){try{return JSON.parse(localStorage.getItem(SK))||{}}catch(e){return{}}}
+  function saveP(p){try{localStorage.setItem(SK,JSON.stringify(p))}catch(e){}}
+  function isDone(id){return !!getP()[id]}
+  function isUnlocked(id){if(id==='c1')return true;var i=SEQ.indexOf(id);if(i<=0)return true;return isDone(SEQ[i-1])}
+
+  function showSection(target){
+    document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
+    var sec=document.getElementById('sec-'+target);
+    if(sec){sec.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+    document.querySelectorAll('.nav-item').forEach(function(n){n.classList.toggle('active',n.getAttribute('data-target')===target)});
+    document.querySelector('.sidebar').classList.remove('open');
+    if(target==='p2')initQForm();
+  }
+
+  // 导航点击
+  document.querySelectorAll('.nav-item[data-target]').forEach(function(n){
+    n.addEventListener('click',function(){
+      var t=n.getAttribute('data-target');
+      if(n.classList.contains('locked'))return;
+      showSection(t);
+    });
+  });
+  // data-goto 跳转
+  document.addEventListener('click',function(e){
+    var el=e.target.closest('[data-goto]');
+    if(el){showSection(el.getAttribute('data-goto'))}
+  });
+
+  // 进度UI
+  function refreshNav(){
+    var p=getP();
+    document.querySelectorAll('.nav-item[data-target]').forEach(function(n){
+      var t=n.getAttribute('data-target');
+      n.classList.toggle('done',!!p[t]);
+      n.classList.toggle('locked',!isUnlocked(t));
+    });
+    var done=0;SEQ.forEach(function(id){if(p[id])done++});
+    var pct=Math.round(done/SEQ.length*100);
+    var fill=document.getElementById('progressFill');
+    var txt=document.getElementById('progressText');
+    if(fill)fill.style.width=pct+'%';
+    if(txt)txt.textContent=done+' / '+SEQ.length;
+  }
+
+  // 完成按钮
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('.complete-btn');
+    if(!btn)return;
+    var id=btn.getAttribute('data-module');
+    var p=getP();
+    if(p[id]){delete p[id];btn.classList.remove('done');btn.textContent='标记本节完成'}
+    else{p[id]=true;btn.classList.add('done');btn.textContent='已完成 ✓'}
+    saveP(p);refreshNav();
+  });
+
+  // 自测
+  var tierInfo={0:{tier:'继续保持',desc:'你刚开始接触 AI 协同。第一课帮你建立正确认知。',next:'→ 从课程 01 开始'},1:{tier:'阶段 1 · 入门',desc:'会用 AI 生成内容。下一步：把重复工作做成可复用工具。',next:'→ 从范式一开始'},2:{tier:'阶段 2 · 工具化',desc:'能让 AI 按规则干活。下一步：把判断说清楚。',next:'→ 进范式二'},3:{tier:'阶段 3 · 判断力',desc:'能精准驾驭 AI。下一步：带 AI 做长周期项目。',next:'→ 进范式三'},4:{tier:'阶段 4 · 分身化',desc:'已在构建数字员工。欢迎温故知新。',next:'→ 跳到结业'}};
+  function updateAssess(){
+    var counts={1:0,2:0,3:0,4:0};
+    document.querySelectorAll('.assess-item input[data-tier]').forEach(function(cb){var t=+cb.getAttribute('data-tier');if(cb.checked)counts[t]++});
+    [1,2,3,4].forEach(function(t){var el=document.getElementById('count-'+t);if(el)el.textContent=counts[t]+'/3'});
+    var total=counts[1]+counts[2]+counts[3]+counts[4];
+    var r=document.getElementById('assessResult');if(total===0){r.classList.remove('show');return}
+    var max=0;if(counts[1]>=2)max=1;if(counts[1]>=2&&counts[2]>=2)max=2;if(counts[1]>=2&&counts[2]>=2&&counts[3]>=2)max=3;if(counts[1]>=2&&counts[2]>=2&&counts[3]>=2&&counts[4]>=2)max=4;
+    var i=tierInfo[max];
+    document.getElementById('resultTier').textContent=i.tier;
+    document.getElementById('resultDesc').textContent=i.desc;
+    document.getElementById('resultNext').textContent=i.next;
+    r.classList.add('show');
+  }
+  document.querySelectorAll('.assess-item input').forEach(function(cb){cb.addEventListener('change',updateAssess)});
+
+  // 3A分诊
+  var slC=document.getElementById('slider-certainty'),slR=document.getElementById('slider-reversibility'),slS=document.getElementById('slider-span');
+  var vC=document.getElementById('val-certainty'),vR=document.getElementById('val-reversibility'),vS=document.getElementById('val-span');
+  var mode=document.getElementById('triageMode'),reason=document.getElementById('triageReason'),roles=document.getElementById('triageRoles');
+  var D={auto:{label:'自动化',cls:'auto',reason:'规则清楚、好验证、可撤。AI 独立完成。',human:'验收结果',ai:'全流程执行'},aug:{label:'增强',cls:'aug',reason:'需要判断、不可逆。AI 提供建议，你拍板。',human:'最终决策',ai:'提供选项和利弊'},agent:{label:'智能体',cls:'agent',reason:'多步串联、可设边界。AI 自主执行。',human:'设边界',ai:'拆步骤+执行'}};
+  function updateTriage(){
+    if(!slC)return;var c=+slC.value,r=+slR.value,s=+slS.value;
+    vC.textContent=c;vR.textContent=r;vS.textContent=s;
+    var score=c*0.4+r*0.35+(100-s)*0.25,k;
+    if(r<35)k='aug';else if(score>=65)k='auto';else if(score<35||s>65)k='agent';else k='aug';
+    var d=D[k];mode.textContent=d.label;mode.className='triage-result-mode '+d.cls;reason.textContent=d.reason;
+    roles.innerHTML='<div class="triage-role-box"><div class="triage-role-label">你做</div><div class="triage-role-text">'+d.human+'</div></div><div class="triage-role-box"><div class="triage-role-label">AI 做</div><div class="triage-role-text">'+d.ai+'</div></div>';
+  }
+  if(slC)[slC,slR,slS].forEach(function(s){s.addEventListener('input',updateTriage)});
+  if(slC)updateTriage();
+
+  // 5问生成器（切换到 p2 后初始化）
+  function initQForm(){
+    var genBtn=document.getElementById('genBtn');
+    if(!genBtn||genBtn.dataset.bound)return;
+    genBtn.dataset.bound='1';
+    var copyBtn=document.getElementById('copyBtn'),result=document.getElementById('qResult');
+    genBtn.addEventListener('click',function(){
+      var q1=(document.getElementById('q1').value||'').trim(),q2=(document.getElementById('q2').value||'').trim(),q3=(document.getElementById('q3').value||'').trim(),q4=(document.getElementById('q4').value||'').trim(),q5=(document.getElementById('q5').value||'').trim();
+      if(!q1&&!q2&&!q3&&!q4&&!q5){result.textContent='请至少填写一个问题再生成。';result.classList.add('show');copyBtn.style.display='none';return}
+      var md='# 判断档案\n\n> 生成时间：'+new Date().toLocaleString('zh-CN')+'\n\n';
+      md+='## Q1 · 判断本身\n'+(q1||'—')+'\n\n## Q2 · 关键考量\n'+(q2||'—')+'\n\n## Q3 · 排除的选项\n'+(q3||'—')+'\n\n## Q4 · 可变条件\n'+(q4||'—')+'\n\n## Q5 · 判断框架\n'+(q5||'—')+'\n';
+      result.textContent=md;result.classList.add('show');copyBtn.style.display='inline-block';
+    });
+    copyBtn.addEventListener('click',function(){
+      var t=result.textContent;
+      if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){copyBtn.textContent='已复制 ✓';setTimeout(function(){copyBtn.textContent='复制 Markdown'},2000)})}
+    });
+  }
+
+  // 监听切到 p2 时初始化5问
+  var origShow=window.CourseAPI?window.CourseAPI.showSection:null;
+
+  refreshNav();
+  window.CourseAPI={getP:getP,saveP:saveP,isDone:isDone,isUnlocked:isUnlocked,refreshNav:refreshNav,showSection:showSection};
+})();
+</script>
+
+</body>
+</html>

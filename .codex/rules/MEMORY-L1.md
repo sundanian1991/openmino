@@ -1,5 +1,5 @@
 ---
-input: 04-MEMORY.md L1 置顶区
+input: 07-MEMORY.md L1 置顶区
 output: MEMORY-L1.md（会话启动必读）
 pos: .claude/rules/MEMORY-L1.md
 ---

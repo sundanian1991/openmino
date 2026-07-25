@@ -13,8 +13,8 @@ Do not use this file as a transcript. Detailed project history belongs in topic 
 
 | Layer | Path | Purpose |
 |---|---|---|
-| Core memory | `.claude/rules/04-MEMORY.md` | Compact principles, current project index, durable decisions |
-| User context | `.claude/rules/03-USER.md` | Stable user preferences and context |
+| Core memory | `.claude/rules/07-MEMORY.md` | Compact principles, current project index, durable decisions |
+| User context | `.claude/rules/05-USER.md` | Stable user preferences and context |
 | Topic memory | `memory/topics/<name>.md` | Detailed project or theme history |
 | Daily notes | `memory/YYYY-MM-DD.md` | Raw chronological notes from recent work |
 

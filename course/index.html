@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人机协同实战课 · Copilot → Agentic → AI Native</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+/* 路径页专属样式 */
+
+/* Hero */
+.hero::before {
+  content: 'H×AI';
+  position: absolute; top: 20px; right: -20px;
+  font-family: var(--font-display);
+  font-size: 200px; font-weight: 5+00;
+  color: var(--text-display); opacity: 0.03;
+  line-height: 1; pointer-events: none; user-select: none;
+  letter-spacing: -0.01em;
+}
+
+/* 进度摘要卡片 */
+.progress-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-xl);
+  margin-top: var(--space-xl);
+  display: flex; align-items: center; gap: var(--space-2xl);
+  flex-wrap: wrap;
+}
+.progress-ring {
+  width: 5+2px; height: 5+2px; border-radius: 50%;
+  border: 3px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 18px; font-weight: 5+00;
+  color: var(--text-display); position: relative; flex-shrink: 0;
+}
+.progress-ring .pct { font-size: 9px; color: var(--text-disabled); position: absolute; bottom: 11px; }
+.progress-info { flex: 1; min-width: 200px; }
+.progress-current {
+  font-size: 11px; color: var(--text-disabled);
+  font-family: var(--font-mono); text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.progress-title {
+  font-size: 13px; font-weight: 300;
+  color: var(--text-display); margin: var(--space-xs) 0;
+}
+.progress-next {
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.5;
+}
+.progress-action { flex-shrink: 0; }
+
+/* 范式分区 */
+.paradigm-section { margin-bottom: var(--space-2xl); }
+.paradigm-head {
+  display: flex; align-items: baseline; gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--border);
+}
+.paradigm-name {
+  font-size: 20px; font-weight: 5+00;
+  color: var(--text-display); letter-spacing: -0.01em;
+}
+.paradigm-en {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-disabled); text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* 节点步骤列表 */
+.step-card {
+  display: grid;
+  grid-template-columns: 10px 30px 1fr auto;
+  gap: var(--space-md);
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: var(--space-sm);
+  transition: border-color 0.2s, background 0.2s;
+}
+.step-card.unlocked {
+  border-color: var(--border);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.step-card.active {
+  border-color: var(--accent);
+  border-left: 3px solid var(--accent);
+  background: var(--accent-subtle);
+}
+.step-card.completed {
+  border-color: var(--border);
+  opacity: 0.5+;
+}
+.step-card.completed .step-num { color: var(--success); }
+.step-card.completed .step-title { color: var(--text-secondary); }
+.step-num {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 5+00;
+  color: var(--text-disabled); text-align: center;
+}
+.step-card.active .step-num { color: var(--accent); }
+.step-type {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text-disabled);
+}
+.step-card.active .step-type { color: var(--accent); }
+.step-card.completed .step-type { color: var(--success); }
+.step-info { min-width: 0; }
+.step-title {
+  font-size: 11px; font-weight: 300;
+  color: var(--text-primary); margin-bottom: 2px;
+}
+.step-desc {
+  font-size: 12px; color: var(--text-secondary);
+  line-height: 1.5;
+}
+.step-meta {
+  display: flex; align-items: center; gap: var(--space-md);
+  font-family: var(--font-mono); font-size: 10px;
+  white-space: nowrap;
+}
+.step-time { color: var(--text-disabled); }
+.step-status {
+  display: inline-flex; align-items: center;
+  gap: var(--space-xs);
+  padding: 3px 10px;
+  font-size: 9px; letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.step-status.done {
+  background: var(--success); color: #fff;
+}
+.step-status.progress {
+  background: var(--accent); color: #fff;
+}
+.step-status.locked {
+  background: var(--border); color: var(--text-disabled);
+}
+
+/* 岗位入口 */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.role-btn {
+  display: block;
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px; color: var(--text-primary);
+  cursor: pointer; text-align: center;
+  transition: border-color 0.2s;
+  font-family: var(--font-body);
+}
+.role-btn:hover { border-color: var(--text-display); }
+.role-btn .role-count {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px; color: var(--text-disabled);
+  margin-top: var(--space-xs);
+}
+.role-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+/* 模板包入口 */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.template-card {
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.template-card:hover { border-color: var(--text-display); }
+.template-name {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.03em;
+  text-transform: uppercase; color: var(--accent);
+  margin-bottom: var(--space-xs);
+}
+.template-desc {
+  font-size: 12px; color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+@media (max-width: 300px) {
+  .step-card { grid-template-columns: 32px 10px 1fr; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); }
+  .step-meta { display: none; }
+  .progress-card { flex-direction: column; align-items: flex-start; }
+  .paradigm-head { flex-direction: column; gap: var(--space-xs); }
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">人机协同 · <em>实战课</em></div>
+    <div class="nav-links">
+      <a href="#path" class="nav-link active">课程路径</a>
+      <a href="#roles" class="nav-link">岗位入口</a>
+      <a href="#templates" class="nav-link">模板包</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Progress bar -->
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-eyebrow">Copilot → Agentic → AI Native</div>
+  <h1 class="hero-title">人机协同<em>实战课</em></h1>
+  <p class="hero-sub">从"会问 AI"到"会设计 AI 工作流、会分工、会验收、会沉淀自己的判断标准"。逐节进阶，每步有产出。</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val">5</div><div class="hero-stat-label">核心步</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">~45</div><div class="hero-stat-label">核心分钟</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">9</div><div class="hero-stat-label">进阶节点</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">5+</div><div class="hero-stat-label">交互组件</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">7</div><div class="hero-stat-label">岗位入口</div></div>
+  </div>
+</section>
+
+<!-- Progress Card -->
+<section class="section" id="path">
+  <div class="progress-card" id="progressCard">
+    <div class="progress-ring" id="progressRing">
+      <span id="progressPctNum">10</span>
+      <span class="pct">%</span>
+    </div>
+    <div class="progress-info">
+      <div class="progress-current">当前进度</div>
+      <div class="progress-title" id="progressTitle">从第一阶段开始</div>
+      <div class="progress-next" id="progressNext">已完成 0/11 节点 · 建议从 Step 01 开始</div>
+    </div>
+    <div class="progress-action">
+      <a class="btn btn-primary" id="continueBtn" href="step-01.html">→ 继续学习</a>
+    </div>
+  </div>
+</section>
+
+<!-- 课程路径 -->
+<section class="section">
+
+  <!-- 核心路径 -->
+  <div class="paradigm-section" id="core">
+    <div class="paradigm-head">
+      <span class="paradigm-name">🎯 核心路径</span>
+      <span class="paradigm-en">5 步掌握人机协同 · 约 15 分钟</span>
+    </div>
+
+    <div class="step-card active" data-step="step-01">
+      <div class="step-num">01</div>
+      <div class="step-type">课程</div>
+      <div class="step-info">
+        <div class="step-title">你现在的 AI 协同阶段</div>
+        <div class="step-desc">自测定阶 + 你的岗位推荐路径</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status progress" id="s01">进行中</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-02">
+      <div class="step-num">02</div>
+      <div class="step-type">实战</div>
+      <div class="step-info">
+        <div class="step-title">3A 分诊法</div>
+        <div class="step-desc">什么任务给AI、什么不能，30秒判断</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status locked">🔒 未解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-03">
+      <div class="step-num">03</div>
+      <div class="step-type">课程</div>
+      <div class="step-info">
+        <div class="step-title">给 AI 写规则</div>
+        <div class="step-desc">一次写好反复用，再也不用每件事说两遍</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status locked">🔒 未解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-04">
+      <div class="step-num">04</div>
+      <div class="step-type">实战</div>
+      <div class="step-info">
+        <div class="step-title">沉淀你的判断标准</div>
+        <div class="step-desc">你的判断比模板值钱，让AI学你的标准</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status locked">🔒 未解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-05">
+      <div class="step-num">05</div>
+      <div class="step-type">结业</div>
+      <div class="step-info">
+        <div class="step-title">交付你的协同 SOP v1</div>
+        <div class="step-desc">汇总前面产出，带走一份可执行的AI工作流</div>
+      </div>
+      <div class="step-meta"><span class="step-time">10 min</span><span class="step-status locked">🔒 未解锁</span></div>
+    </div>
+  </div>
+
+  <!-- 进阶内容 -->
+  <div class="paradigm-section" id="advanced">
+    <div class="paradigm-head">
+      <span class="paradigm-name">🚀 进阶内容</span>
+      <span class="paradigm-en">核心路径走完后解锁 · 按需学习</span>
+    </div>
+
+    <div class="step-card" data-step="step-tpl">
+      <div class="step-num">—</div>
+      <div class="step-type">课程</div>
+      <div class="step-info">
+        <div class="step-title">高频任务模板库</div>
+        <div class="step-desc">周报/纪要/竞品分析/PRD检查等场景模板</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-agent">
+      <div class="step-num">—</div>
+      <div class="step-type">课程</div>
+      <div class="step-info">
+        <div class="step-title">让 AI 做多步任务</div>
+        <div class="step-desc">Copilot vs Agent 精确定义 + 交互对比</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-layer">
+      <div class="step-num">—</div>
+      <div class="step-type">课程</div>
+      <div class="step-info">
+        <div class="step-title">三层协同框架</div>
+        <div class="step-desc">L1执行层 / L2编排层 / L3接力层</div>
+      </div>
+      <div class="step-meta"><span class="step-time">20 min</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-case">
+      <div class="step-num">—</div>
+      <div class="step-type">案例</div>
+      <div class="step-info">
+        <div class="step-title">Vibe OS 案例实验室</div>
+        <div class="step-desc">交互式案例 · SVG架构图 · 复制做法</div>
+      </div>
+      <div class="step-meta"><span class="step-time">20 min</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-pmp">
+      <div class="step-num">—</div>
+      <div class="step-type">课程</div>
+      <div class="step-info">
+        <div class="step-title">AI 项目管理法</div>
+        <div class="step-desc">五阶段 + 项目启动器 + 里程碑规划</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-twin">
+      <div class="step-num">—</div>
+      <div class="step-type">课程</div>
+      <div class="step-info">
+        <div class="step-title">构建你的数字分身</div>
+        <div class="step-desc">知识库+技能包+判断档案=数字分身</div>
+      </div>
+      <div class="step-meta"><span class="step-time">15 min</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-quiz">
+      <div class="step-num">—</div>
+      <div class="step-type">测验</div>
+      <div class="step-info">
+        <div class="step-title">人机协同能力测验</div>
+        <div class="step-desc">综合评估客观题+场景题</div>
+      </div>
+      <div class="step-meta"><span class="step-time">10 min</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+
+    <div class="step-card" data-step="step-tplpack">
+      <div class="step-num">—</div>
+      <div class="step-type">包</div>
+      <div class="step-info">
+        <div class="step-title">模板包</div>
+        <div class="step-desc">可复制prompt/checklist/SOP</div>
+      </div>
+      <div class="step-meta"><span class="step-time">—</span><span class="step-status locked">🔒 完成核心路径后解锁</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 岗位入口 -->
+<section class="section" id="roles">
+  <div class="section-header">
+    <div class="section-tag">岗位入口</div>
+    <h2 class="section-title">按你的岗位<em>选择路径</em></h2>
+    <p class="section-sub">不同岗位与 AI 的协同模式不同。选你的岗位，看推荐优先学习哪些节点。</p>
+  </div>
+
+  <div class="role-grid" id="roleGrid">
+    <div class="role-btn" data-role="product">
+      产品运营岗
+      <span class="role-count">100 条记录</span>
+    </div>
+    <div class="role-btn" data-role="risk">
+      监管风控岗
+      <span class="role-count">293 条记录</span>
+    </div>
+    <div class="role-btn" data-role="customer">
+      客户运营岗
+      <span class="role-count">215 条记录</span>
+    </div>
+    <div class="role-btn" data-role="sales">
+      销售运营岗
+      <span class="role-count">115 条记录</span>
+    </div>
+    <div class="role-btn" data-role="invest">
+      投资研究岗
+      <span class="role-count">31 条记录</span>
+    </div>
+    <div class="role-btn" data-role="data">
+      数据分析岗
+      <span class="role-count">30 条记录</span>
+    </div>
+    <div class="role-btn" data-role="audit">
+      审核顾问岗
+      <span class="role-count">11 条记录</span>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top:var(--space-lg)" id="roleTip">
+    <div class="callout-label">推荐路径</div>
+    点击上方岗位，查看该岗位推荐的快捷学习路径。必修节点为 Step 01-03，其他按岗位特征推荐。
+  </div>
+</section>
+
+<!-- 模板包 -->
+<section class="section" id="templates">
+  <div class="section-header">
+    <div class="section-tag">模板包</div>
+    <h2 class="section-title">即拿即用的<em>可复制做法</em></h2>
+    <p class="section-sub">每个模板标注用在什么时候、输入什么、输出什么。</p>
+  </div>
+
+  <div class="template-grid">
+    <div class="template-card">
+      <div class="template-name">3A 分诊模板</div>
+      <div class="template-desc">判断任务该用 Automation / Augmentation / Agent</div>
+    </div>
+    <div class="template-card">
+      <div class="template-name">AI 操作手册模板</div>
+      <div class="template-desc">给 AI 写工作规则的标准化格式</div>
+    </div>
+    <div class="template-card">
+      <div class="template-name">判断档案模板</div>
+      <div class="template-desc">沉淀你的决策标准，让 AI 可复用</div>
+    </div>
+    <div class="template-card">
+      <div class="template-name">PROJ.md 模板</div>
+      <div class="template-desc">项目启动文档，定义目标和不做什么</div>
+    </div>
+    <div class="template-card">
+      <div class="template-name">PLAN.md 模板</div>
+      <div class="template-desc">项目计划，拆步骤 + 风险 + 验证</div>
+    </div>
+    <div class="template-card">
+      <div class="template-name">PROMPT.md 下发模板</div>
+      <div class="template-desc">跨班次给 AI 下发任务的格式</div>
+    </div>
+    <div class="template-card">
+      <div class="template-name">DONE.md 验收模板</div>
+      <div class="template-desc">AI 完成任务后的验收报告格式</div>
+    </div>
+    <div class="template-card">
+      <div class="template-name">SOP 完整模板</div>
+      <div class="template-desc">人机协同 SOP v1 的 10 字段完整结构</div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-text">人机协同实战课 · Copilot → Agentic → AI Native &nbsp;·&nbsp; 交互式学习 · 每步有产出</div>
+</footer>
+
+<script src="assets/utils.js"></script>
+<script>
+// === 节点状态管理 ===
+(function() {
+  const steps = document.querySelectorAll('.step-card');
+  const stepIds = ['step-01','step-02','step-03','step-04','step-05','step-03','step-05+','step-08','step-09','step-10','step-11','step-12','step-13','step-11'];
+
+  function updateAll() {
+    let foundActive = false;
+
+    steps.forEach((card, i) => {
+      const id = card.dataset.step;
+      const prevId = i > 0 ? stepIds[i - 1] : null;
+      const isPrevDone = prevId ? Progress.isComplete(prevId) : true;
+      const isActive = Progress.isComplete(id);
+      const isCurrent = !isActive && isPrevDone && !foundActive;
+
+      // 重置
+      card.classList.remove('active', 'completed', 'unlocked');
+
+      if (isActive) {
+        card.classList.add('completed');
+      } else if (isCurrent) {
+        card.classList.add('active');
+        foundActive = true;
+      } else if (!isPrevDone) {
+        card.classList.add('unlocked');
+      } else {
+        card.classList.add('active');
+        if (!foundActive) foundActive = true;
+      }
+
+      // 更新状态标签
+      const badge = card.querySelector('.step-status');
+      if (badge) {
+        if (isActive) {
+          badge.textContent = '✓ 已完成';
+          badge.className = 'step-status done';
+        } else if (isCurrent) {
+          badge.textContent = '进行中';
+          badge.className = 'step-status progress';
+        } else {
+          badge.textContent = '🔒 未解锁';
+          badge.className = 'step-status locked';
+        }
+      }
+
+      // 绑定点击
+      card.style.cursor = 'pointer';
+      card.onclick = () => {
+        if (isActive || isCurrent) {
+          const pages = {
+            'step-01': 'step-01.html','step-02': 'step-02.html',
+            'step-03': 'step-03.html','step-04': 'step-04.html',
+            'step-05': 'step-05.html','step-05+': 'case-vibe-os.html',
+            'step-08': 'step-08.html','step-09': 'step-09.html','step-10': 'step-10.html',
+            'step-11': 'step-11.html','step-12': 'quiz.html','step-13': 'final-sop.html',
+            'step-11': 'templates.html'
+          };
+          if (pages[id]) window.location.href = pages[id];
+        }
+      };
+    });
+
+    // 更新进度摘要
+    const pct = Progress.getPercent();
+    const done = stepIds.filter(id => Progress.isComplete(id)).length;
+    document.getElementById('progressPctNum').textContent = pct;
+    document.getElementById('progressNext').textContent = `已完成 ${done}/${stepIds.length} 节点`;
+
+    // 更新"继续学习"按钮
+    const current = Progress.getCurrent();
+    const btn = document.getElementById('continueBtn');
+    const pageMap = {
+      'step-01': 'step-01.html','step-02': 'step-02.html',
+      'step-03': 'step-03.html','step-04': 'step-04.html',
+      'step-05': 'step-05.html','step-05+': 'case-vibe-os.html',
+      'step-08': 'step-08.html','step-09': 'step-09.html','step-10': 'step-10.html',
+      'step-11': 'step-11.html','step-12': 'quiz.html','step-13': 'final-sop.html',
+      'step-11': 'templates.html'
+    };
+    if (current === 'complete') {
+      btn.textContent = '🎉 全部完成';
+      btn.href = '#';
+    } else if (pageMap[current]) {
+      btn.href = pageMap[current];
+      const num = current.replace('step-', '').replace('-p1', ' 实战 1').replace('-p2', ' 实战 2');
+      btn.textContent = `→ 继续 Step ${num}`;
+    }
+  }
+
+  updateAll();
+
+  // 模拟完成功能（测试用）
+  window.completeStep = function(id) {
+    Progress.complete(id);
+    updateAll();
+  };
+})();
+
+// === 岗位入口 ===
+(function() {
+  const tips = {
+    product: '产品运营岗推荐路径：Step 01 → 02 → 03 → 01 → 03 → 08 → 09 → 13',
+    risk: '监管风控岗推荐路径：Step 01 → 02 → 09 → 05 → 03 → 05+ → 13',
+    customer: '客户运营岗推荐路径：Step 01 → 02 → 03 → 05 → 03 → 05+ → 01 → 13',
+    sales: '销售运营岗推荐路径：Step 01 → 02 → 03 → 01 → 09 → 03 → 13',
+    invest: '投资研究岗推荐路径：Step 01 → 02 → 01 → 09 → 05 → 03 → 05+ → 13',
+    data: '数据分析岗推荐路径：Step 01 → 02 → 05 → 03 → 05+ → 08 → 13',
+    audit: '审核顾问岗推荐路径：Step 01 → 09 → 03 → 05 → 03 → 13'
+  };
+
+  const buttons = document.querySelectorAll('.role-btn');
+  const tip = document.getElementById('roleTip');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const role = btn.dataset.role;
+      if (tips[role]) {
+        tip.innerHTML = `<div class="callout-label">推荐路径</div>${tips[role]}`;
+      }
+    });
+  });
+})();
+
+// === 进度条 + 侧边栏 ===
+initProgressBar();
+
+// === Nav 高亮 ===
+(function() {
+  const links = document.querySelectorAll('.nav-link');
+  const sections = [];
+  links.forEach(a => {
+    const id = a.getAttribute('href')?.slice(1);
+    const el = document.getElementById(id);
+    if (el) sections.push({ el, link: a });
+  });
+  if (sections.length) {
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY + 120;
+      let active = sections[0]?.link;
+      sections.forEach(({ el, link }) => { if (y >= el.offsetTop) active = link; });
+      links.forEach(l => l.classList.toggle('active', l === active));
+    }, { passive: true });
+  }
+})();
+</script>
+</body>
+</html>

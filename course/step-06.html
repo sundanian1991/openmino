@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 06 · 三层协同框架 — 人机协同实战课</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+.course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
+.course-path{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.course-path span{color:var(--accent)}
+.course-title{font-size:22px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.2}
+.course-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:640px;margin-bottom:var(--space-md)}
+.course-meta{display:flex;gap:var(--space-lg);font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.chapter{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);margin-bottom:var(--space-md)}
+.chapter-num{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-xs)}
+.chapter-title{font-size:16px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-sm)}
+.chapter-body{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.chapter-body strong{color:var(--text-primary);font-weight:500}
+.sidebar-layout{display:grid;grid-template-columns:1fr 260px;gap:var(--space-xl)}
+.sidebar{position:sticky;top:80px;align-self:start}
+.sidebar-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-md)}
+.sidebar-links{display:flex;flex-direction:column;gap:var(--space-xs)}
+.sidebar-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:var(--space-xs) 0;border-left:2px solid transparent;padding-left:var(--space-md);transition:all .15s}
+.sidebar-link:hover{color:var(--text-primary)}
+.sidebar-link.active{color:var(--accent);border-left-color:var(--accent)}
+.sidebar-hint{margin-top:var(--space-xl);padding:var(--space-md);background:var(--accent-subtle);border-left:2px solid var(--accent);font-size:12px;color:var(--text-secondary);line-height:1.6}
+.finish-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border);text-align:center}
+.finish-area .btn{margin-top:var(--space-md)}
+
+/* 三层卡片 */
+.layer-stack{display:flex;flex-direction:column;gap:var(--space-sm);margin-top:var(--space-lg)}
+.layer-card{border:1px solid var(--border);background:var(--surface);overflow:hidden}
+.layer-header{display:flex;align-items:center;gap:var(--space-lg);padding:var(--space-lg) var(--space-xl);cursor:pointer;user-select:none;transition:background .15s}
+.layer-header:hover{background:var(--surface-raised)}
+.layer-num{font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--border-visible);line-height:1;min-width:40px}
+.layer-card.active .layer-num{color:var(--accent)}
+.layer-name{flex:1}
+.layer-title{font-size:15px;font-weight:600;color:var(--text-display);margin-bottom:2px}
+.layer-sub{font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.layer-arrow{font-family:var(--font-mono);color:var(--text-disabled);transition:transform .2s}
+.layer-card.active .layer-arrow{transform:rotate(90deg)}
+.layer-body{max-height:0;overflow:hidden;transition:max-height .3s}
+.layer-card.active .layer-body{max-height:400px}
+.layer-content{padding:0 var(--space-xl) var(--space-xl) calc(40px + var(--space-xl) + var(--space-lg));border-top:1px solid var(--border);padding-top:var(--space-lg);font-size:13px;color:var(--text-secondary);line-height:1.7}
+.layer-content strong{color:var(--text-primary)}
+
+/* 沙盘 */
+.sandbox-select{margin-bottom:var(--space-lg)}
+.sandbox-select select{width:100%;padding:var(--space-md);border:1px solid var(--border-visible);background:var(--surface);font-family:var(--font-body);font-size:14px;color:var(--text-primary);outline:none;cursor:pointer}
+.sandbox-select select:focus{border-color:var(--text-display)}
+
+@media(max-width:900px){.sidebar-layout{grid-template-columns:1fr}.sidebar{position:static}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">人机协同 · <em>实战课</em></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">← 路径</a>
+      <a href="#concept" class="nav-link">概念</a>
+      <a href="#sandbox" class="nav-link">沙盘</a>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="sidebar-layout" style="max-width:1200px;margin:var(--space-5xl) auto 0;padding:0 var(--space-xl)">
+
+  <div>
+
+    <div class="course-header">
+      <div class="course-path">课程 &gt; <span>Step 06 · 范式二 Agentic</span></div>
+      <div class="course-title">三层协同框架</div>
+      <div class="course-desc">简单任务用 Copilot 就够了，复杂的长周期任务需要三个层次来协同：L1 执行层、L2 编排层、L3 接力层。理解每层的分工，才能设计可靠的人机协作流程。</div>
+      <div class="course-meta">
+        <span>预计时长 20 分钟</span>
+        <span>2 章节</span>
+        <span>1 个交互组件</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">学习目标</div>
+      学完本节后，你将能：
+      <br>• 说出三层协同（L1/L2/L3）各层的职责
+      <br>• 用一个自己的任务场景画出三层分工图
+    </div>
+
+    <!-- 第一章 -->
+    <div class="chapter" id="concept">
+      <div class="chapter-num">第一章</div>
+      <div class="chapter-title">三层模型</div>
+      <div class="chapter-body">
+        <p>日常单任务、长周期项目、跨班次协作——不同复杂度的工作需要不同层次的人机协同。点击每层展开看详情。</p>
+      </div>
+
+      <!-- 可展开的三层卡片 -->
+      <div class="layer-stack" id="layerStack">
+        <div class="layer-card active" data-layer="1">
+          <div class="layer-header">
+            <div class="layer-num">L1</div>
+            <div class="layer-name">
+              <div class="layer-title">执行层</div>
+              <div class="layer-sub">日常任务 · 单次完成</div>
+            </div>
+            <div class="layer-arrow">→</div>
+          </div>
+          <div class="layer-body">
+            <div class="layer-content">
+              <strong>谁负责：</strong>AI 主执行，人验收<br>
+              <strong>做什么：</strong>写文案、做表格、翻译、整理数据——规则明确的任务<br>
+              <strong>典型场景：</strong>Step 01-04 学的就是 L1 的工作方式<br>
+              <strong>对应范式：</strong>Copilot
+            </div>
+          </div>
+        </div>
+
+        <div class="layer-card" data-layer="2">
+          <div class="layer-header">
+            <div class="layer-num">L2</div>
+            <div class="layer-name">
+              <div class="layer-title">编排层</div>
+              <div class="layer-sub">长周期项目 · 保持方向</div>
+            </div>
+            <div class="layer-arrow">→</div>
+          </div>
+          <div class="layer-body">
+            <div class="layer-content">
+              <strong>谁负责：</strong>人设定目标 + 里程碑，AI 按编排执行<br>
+              <strong>做什么：</strong>项目拆解、进度跟踪、门禁检查、状态同步<br>
+              <strong>关键机制：</strong>三大锚点（目标锚定/证据验收/状态外置）<br>
+              <strong>对应范式：</strong>Agentic
+            </div>
+          </div>
+        </div>
+
+        <div class="layer-card" data-layer="3">
+          <div class="layer-header">
+            <div class="layer-num">L3</div>
+            <div class="layer-name">
+              <div class="layer-title">接力层</div>
+              <div class="layer-sub">跨班次 · 连轴转</div>
+            </div>
+            <div class="layer-arrow">→</div>
+          </div>
+          <div class="layer-body">
+            <div class="layer-content">
+              <strong>谁负责：</strong>人下发 PROMPT.md，AI 夜间执行，人早起验收<br>
+              <strong>做什么：</strong>人写明目标和约束 → AI 独立执行 → 写 DONE.md 回传<br>
+              <strong>关键机制：</strong>两个角色不直接对话，靠文件交接<br>
+              <strong>对应范式：</strong>Agentic → AI Native
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第二章：交互沙盘 -->
+    <div class="chapter" id="sandbox">
+      <div class="chapter-num">第二章</div>
+      <div class="chapter-title">三层协同沙盘</div>
+      <div class="chapter-body">
+        <p>选一个任务场景，看它在 L1/L2/L3 各层的分工建议。</p>
+      </div>
+
+      <div class="interactive-demo" style="margin-top:var(--space-md)">
+        <div class="demo-header">
+          <span class="demo-icon">🏗️</span>
+          <span class="demo-title">三层协同沙盘</span>
+          <span class="demo-sub">选场景 → 看各层分工</span>
+        </div>
+
+        <div class="sandbox-select">
+          <select id="sceneSelect">
+            <option value="weekly">写周报</option>
+            <option value="research">做竞品调研</option>
+            <option value="feature">开发功能</option>
+            <option value="vendor">供应商评估</option>
+          </select>
+        </div>
+
+        <div id="sandboxOutput">
+          <div class="layer-card active">
+            <div class="layer-header" style="cursor:default">
+              <div class="layer-num" style="color:var(--blue)">L1</div>
+              <div class="layer-name">
+                <div class="layer-title" id="l1Title">AI 收集本周数据，按模板生成初稿</div>
+                <div class="layer-sub">人做什么：提供数据来源，审核修改</div>
+              </div>
+            </div>
+          </div>
+          <div class="layer-card active" style="margin-top:var(--space-sm)">
+            <div class="layer-header" style="cursor:default">
+              <div class="layer-num" style="color:var(--accent)">L2</div>
+              <div class="layer-name">
+                <div class="layer-title" id="l2Title">人设定周报模板和标准，AI 按模板执行</div>
+                <div class="layer-sub" id="l2Sub">门禁：检查数据和结论是否匹配</div>
+              </div>
+            </div>
+          </div>
+          <div class="layer-card active" style="margin-top:var(--space-sm)">
+            <div class="layer-header" style="cursor:default">
+              <div class="layer-num" style="color:var(--purple)">L3</div>
+              <div class="layer-name">
+                <div class="layer-title" id="l3Title">人周五下班前写 prompt → AI 夜间执行 → 人早起验收</div>
+                <div class="layer-sub" id="l3Sub">协作模式：Augmentation</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="finish-area">
+      <div style="font-size:13px;color:var(--text-secondary)">阅读并体验沙盘后，点击下方按钮</div>
+      <button class="btn btn-primary" onclick="completeStep()">✓ 完成当前课程</button>
+      <div style="margin-top:var(--space-sm);font-size:11px;color:var(--text-disabled)" id="nextHint">完成后将解锁下一节</div>
+    </div>
+
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-title">本页目录</div>
+    <div class="sidebar-links">
+      <a href="#concept" class="sidebar-link">第一章：三层模型</a>
+      <a href="#sandbox" class="sidebar-link">第二章：协作沙盘</a>
+    </div>
+    <div class="sidebar-hint">
+      完成本节后，<strong style="color:var(--text-primary)">Step 07 · Vibe OS 案例实验室</strong> 将自动解锁。
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer"><div class="footer-text">人机协同实战课 · Step 06 · 三层协同框架</div></footer>
+
+<script src="assets/utils.js"></script>
+<script>
+// 展开收起
+document.querySelectorAll('.layer-card[data-layer]').forEach(card=>{
+  const header=card.querySelector('.layer-header');
+  header.addEventListener('click',()=>{card.classList.toggle('active')});
+});
+
+// 沙盘场景数据
+const scenes={
+  weekly:{
+    l1:'AI 收集本周数据，按模板生成初稿',
+    l1h:'提供数据来源，审核修改',
+    l2:'人设定周报模板和标准，AI 按模板执行',
+    l2h:'门禁：检查数据和结论是否匹配',
+    l3:'人周五下班前写 prompt → AI 夜间执行 → 人早起验收',
+    l3h:'协作模式：Augmentation'
+  },
+  research:{
+    l1:'AI 搜索竞品信息，整理对比表格',
+    l1h:'提供关键词和范围，审核最终报告',
+    l2:'人定分析框架（产品/价格/用户），AI 按框架填充',
+    l2h:'门禁：每个维度都有数据支撑',
+    l3:'人下发调研指令 → AI 分步执行 → 人审核结论 → 补充追问',
+    l3h:'协作模式：Agent'
+  },
+  feature:{
+    l1:'AI 按交互文档生成功能代码',
+    l1h:'Review 代码，处理边界情况',
+    l2:'项目拆为里程碑（M1 骨架/M2 功能/M3 测试），逐里程碑推进',
+    l2h:'门禁：每里程碑测试通过 + 代码审查',
+    l3:'人编写 PROMPT.md 描述需求 → AI 夜间实现 → 人早起审查 DONE.md',
+    l3h:'协作模式：Agent → Augmentation'
+  },
+  vendor:{
+    l1:'AI 整理供应商资料，对比价格和服务条款',
+    l1h:'提供供应商名单，审核对比结果',
+    l2:'人定评估维度（价格/质量/交期/风险），AI 按维度评分',
+    l2h:'门禁：每个供应商各维度评分完整',
+    l3:'人下发评估任务 → AI 调研+评分+出报告 → 人做最终决策',
+    l3h:'协作模式：Augmentation（最终决策权在人）'
+  }
+};
+
+document.getElementById('sceneSelect').addEventListener('change',function(){
+  const s=scenes[this.value];
+  document.getElementById('l1Title').textContent=s.l1;
+  document.getElementById('l2Title').textContent=s.l2;
+  document.getElementById('l3Title').textContent=s.l3;
+  document.querySelectorAll('#sandboxOutput .layer-sub').forEach(el=>el.remove());
+  // 用更简单的方式更新 subtitle
+  const subs=document.querySelectorAll('#sandboxOutput .layer-card .layer-sub');
+  if(subs[0])subs[0].textContent='人做什么：'+s.l1h;
+  if(subs[1])subs[1].textContent=s.l2h;
+  if(subs[2])subs[2].textContent=s.l3h;
+});
+
+function completeStep(){Progress.complete("step-06");window.location.href="index.html";}
+
+initProgressBar();initSidebar();
+</script>
+</body>
+</html>

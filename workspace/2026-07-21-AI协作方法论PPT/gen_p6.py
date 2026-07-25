@@ -1,0 +1,94 @@
+#!/usr/bin/env python3
+"""Rewrite P6 with 5 habit cards: simplify content, all fonts >=20px, no overflow."""
+from pathlib import Path
+
+DECK = Path(__file__).parent / "deck"
+SVG_DIR = DECK / "_internal/02_svg_source"
+
+p6 = '''<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+<!--
+page_key="page_06"
+data-layout="L05"
+page_mode="rational"
+visual_density="balanced"
+reason="5 习惯横排总览（每卡只保留编号+标题+1 行说明，字号≥20px）。"
+-->
+<rect x="0" y="0" width="1920" height="1080" fill="#F5F7FA"/>
+
+<!-- 主标题 -->
+<rect x="140" y="120" width="4" height="76" fill="#C62828"/>
+<text x="164" y="170" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="38" font-weight="bold" fill="#333333">Gabriel Chua 的 5 个习惯，构成长周期协作的完整框架</text>
+<text x="164" y="214" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#555555">下面 5 页展开每个习惯</text>
+
+<!-- 5 卡横排：每卡只含编号 + 标题 + 副标题（2 行）+ 一句话说明 -->
+<!-- 习惯 1 -->
+<rect x="140" y="310" width="320" height="500" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<circle cx="300" cy="400" r="50" fill="#C62828"/>
+<text x="300" y="418" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="44" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1</text>
+
+<text x="300" y="510" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">自主规划</text>
+<text x="300" y="544" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">+ GOALS.md</text>
+
+<line x1="200" y1="600" x2="400" y2="600" stroke="#E0E0E0" stroke-width="1"/>
+<text x="300" y="660" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">对话启动</text>
+<text x="300" y="700" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">路线图锚定</text>
+
+<!-- 习惯 2 -->
+<rect x="480" y="310" width="320" height="500" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<circle cx="640" cy="400" r="50" fill="#C62828"/>
+<text x="640" y="418" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="44" font-weight="bold" fill="#FFFFFF" text-anchor="middle">2</text>
+
+<text x="640" y="510" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">主线程</text>
+<text x="640" y="544" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">只做协调</text>
+
+<line x1="540" y1="600" x2="740" y2="600" stroke="#E0E0E0" stroke-width="1"/>
+<text x="640" y="660" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">委派 + 评估</text>
+<text x="640" y="700" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">不陷入细节</text>
+
+<!-- 习惯 3 -->
+<rect x="820" y="310" width="320" height="500" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<circle cx="980" cy="400" r="50" fill="#C62828"/>
+<text x="980" y="418" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="44" font-weight="bold" fill="#FFFFFF" text-anchor="middle">3</text>
+
+<text x="980" y="510" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">里程碑审计</text>
+<text x="980" y="544" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">+ review</text>
+
+<line x1="880" y1="600" x2="1080" y2="600" stroke="#E0E0E0" stroke-width="1"/>
+<text x="980" y="660" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">计划还对吗？</text>
+<text x="980" y="700" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">代码质量够吗？</text>
+
+<!-- 习惯 4 -->
+<rect x="1160" y="310" width="320" height="500" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<circle cx="1320" cy="400" r="50" fill="#C62828"/>
+<text x="1320" y="418" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="44" font-weight="bold" fill="#FFFFFF" text-anchor="middle">4</text>
+
+<text x="1320" y="510" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">本机测试</text>
+<text x="1320" y="544" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">分工</text>
+
+<line x1="1220" y1="600" x2="1420" y2="600" stroke="#E0E0E0" stroke-width="1"/>
+<text x="1320" y="660" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">远程跑绝大多数</text>
+<text x="1320" y="700" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">本机专属校验</text>
+
+<!-- 习惯 5 -->
+<rect x="1500" y="310" width="280" height="500" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<circle cx="1640" cy="400" r="50" fill="#C62828"/>
+<text x="1640" y="418" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="44" font-weight="bold" fill="#FFFFFF" text-anchor="middle">5</text>
+
+<text x="1640" y="510" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">简报 +</text>
+<text x="1640" y="544" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="24" font-weight="bold" fill="#333333" text-anchor="middle">仪表盘</text>
+
+<line x1="1540" y1="600" x2="1740" y2="600" stroke="#E0E0E0" stroke-width="1"/>
+<text x="1640" y="660" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">三段式汇报</text>
+<text x="1640" y="700" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#555555" text-anchor="middle">可视化仪表盘</text>
+
+<!-- 底部章节预告 -->
+<line x1="140" y1="900" x2="1780" y2="900" stroke="#E0E0E0" stroke-width="1"/>
+<text x="960" y="950" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#555555" text-anchor="middle">下面 5 页（P7-P11）每页展开一个习惯的具体做法</text>
+
+<text x="1740" y="1015" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#999999" text-anchor="end">06 / 18</text>
+
+</svg>
+'''
+
+(SVG_DIR / "page_06.svg").write_text(p6, encoding="utf-8")
+print("Rewrote page_06.svg with simplified content (all fonts >=20px)")

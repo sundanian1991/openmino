@@ -257,9 +257,9 @@
 | 当前主文件 | `.codex/rules/` | 01~05 + MEMORY-L1 | 会话自动加载 |
 | 工作上下文 | `.codex/workspace/Rules/` | about-me / work-detail / write-style / ai-methodology | 启动时读取 |
 | 原始参考 | `.claude/reference/` | 00-IDENTITY-PUSH / 03-USER / honesty-constitution 等 | 按需读取 |
-| 简洁骨架 | `.claude/rules/` | 02-SOUL / 03-USER / 04-MEMORY | 备用 |
+| 简洁骨架 | `.claude/rules/` | 05-USER / 07-MEMORY / 08-PRINCIPLES | 备用 |
 
-**主从关系**：以 `.codex/rules/` 为当前主文件，`reference/` 为初始版本（03-USER.md 445行深度理解仍有独特价值），`.claude/rules/` 为简洁骨架版。
+**主从关系**：以 `.codex/rules/` 为当前主文件，`reference/` 为初始版本（reference/03-USER.md 445行深度理解仍有独特价值），`.claude/rules/` 为简洁骨架版。
 
 ---
 

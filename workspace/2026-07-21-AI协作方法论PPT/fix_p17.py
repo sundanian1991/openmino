@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+"""Nuclear fix P17: rewrite with left-aligned text, no text-anchor=middle, everything above y=960."""
+from pathlib import Path
+
+DECK = Path(__file__).parent / "deck"
+SVG_DIR = DECK / "_internal/02_svg_source"
+
+p17 = '''<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+<!--
+page_key="page_17"
+data-layout="L12"
+page_mode="rational"
+visual_density="balanced"
+reason="三支柱 + 适用边界，top-justified，no text-anchor=middle."
+-->
+<rect x="0" y="0" width="1920" height="1080" fill="#F5F7FA"/>
+
+<rect x="140" y="120" width="4" height="76" fill="#C62828"/>
+<text x="164" y="170" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="38" font-weight="bold" fill="#333333">持久锚点 + 验收关卡 + 状态外置</text>
+<text x="164" y="214" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#555555">长周期协作底层三要素</text>
+
+<!-- 三支柱（每柱高度缩小到 350px + 底部说明区） -->
+<rect x="140" y="280" width="520" height="350" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<rect x="140" y="280" width="520" height="120" fill="#C62828" rx="8"/>
+<rect x="140" y="360" width="520" height="40" fill="#C62828"/>
+<text x="180" y="340" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" letter-spacing="3">01</text>
+<text x="180" y="390" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">持久锚点</text>
+
+<text x="180" y="480" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#333333">Goal + GOALS.md</text>
+<text x="180" y="518" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#333333">为 AI 提供不会漂移的目标</text>
+<text x="180" y="570" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#999999">里程碑完成后更新 GOALS.md</text>
+
+<rect x="700" y="280" width="520" height="350" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<rect x="700" y="280" width="520" height="120" fill="#C62828" rx="8"/>
+<rect x="700" y="360" width="520" height="40" fill="#C62828"/>
+<text x="740" y="340" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" letter-spacing="3">02</text>
+<text x="740" y="390" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">验收关卡</text>
+
+<text x="740" y="480" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#333333">里程碑审计 + review</text>
+<text x="740" y="518" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#333333">多层验证防止偏差累积</text>
+<text x="740" y="570" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#999999">每个里程碑都检查，不是最后才检查</text>
+
+<rect x="1260" y="280" width="520" height="350" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1" rx="8"/>
+<rect x="1260" y="280" width="520" height="120" fill="#C62828" rx="8"/>
+<rect x="1260" y="360" width="520" height="40" fill="#C62828"/>
+<text x="1300" y="340" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" font-weight="bold" fill="#FFFFFF" letter-spacing="3">03</text>
+<text x="1300" y="390" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="36" font-weight="bold" fill="#FFFFFF">状态外置</text>
+
+<text x="1300" y="480" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#333333">简报 + 仪表盘</text>
+<text x="1300" y="518" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#333333">项目状态不依赖线程上下文</text>
+<text x="1300" y="570" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#999999">几小时后回来，无需读每个 thread</text>
+
+<!-- 适用边界（移到安全区） -->
+<line x1="140" y1="700" x2="1780" y2="700" stroke="#E0E0E0" stroke-width="1"/>
+<text x="164" y="750" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" font-weight="bold" fill="#C62828" letter-spacing="3">APPLICABLE WHEN · 适用边界</text>
+<text x="164" y="800" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#555555">仅当满足以下特征时投入产出比最高：</text>
+<text x="164" y="850" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#555555">· 项目推进会持续涌现新信息</text>
+<text x="164" y="890" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#555555">· 涉及多块独立并行工作</text>
+<text x="164" y="930" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="22" fill="#555555">· 需要多个不同环境的验证证据</text>
+
+<text x="1740" y="1015" font-family="Microsoft YaHei, SimHei, sans-serif" font-size="20" fill="#999999" text-anchor="end">17 / 18</text>
+
+</svg>
+'''
+
+(SVG_DIR / "page_17.svg").write_text(p17, encoding="utf-8")
+print("Fixed P17: nuclear rewrite with all left-anchored text, no text-anchor=middle")

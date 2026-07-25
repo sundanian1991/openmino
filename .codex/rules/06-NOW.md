@@ -12,6 +12,7 @@ pos: .claude/rules/06-NOW.md
 
 ## 活跃项目
 
+- **dev-commander 开发指挥官（07-23创建，07-24修正注册位置）**：`.zcode/commands/dev.md`，把三套开发技能组（agent-skills/Superpowers/VIBE）按研发全生命周期6阶段编排。双模式（`/dev` 门禁 + `/dev auto` 自动）。agent-skills 做骨架，Superpowers/VIBE 做技能池。41个技能名已校验。配套 `docs/agent-skills/` 归档了 agent-skills 完整仓库（24技能）。待真实项目验证编排顺畅度。
 - **warm-editorial 技能（07-17创建，07-18重构）**：Rachel Akinwale作品集衍生的暖调编辑式设计系统，6色+3字体+色带系统，Design.md由用户重构为"设计思维透镜系统"
 - **voice-workstation 稳定性修复（07-21）**：Electron语音工作站，7个问题已定位(P0:ASR状态/sox竞态/云端丢弃)，Phase0观测点已加，待基线测试后修P0
 - **guizang 深图多轮计划（07-13）**：AGNES 3D建模感风格适配，按归藏 9-10 个模式分批调优，遵守速率限制
@@ -55,6 +56,10 @@ pos: .claude/rules/06-NOW.md
 
 详见 `memory/events/` | 任务地图和定期提醒见 `memory/context/`
 
+**07-23 重要事件**：
+- 找回第三套开发技能组：`addyosmani/agent-skills`（Vercel 工程师 Addy Osmani 开源，24技能，6阶段全生命周期）。下载到 `docs/agent-skills/` 归档（不碰 `.agents/skills/`）
+- 创建 `dev-commander`（`.codex/commands/dev`）：三套技能组的总指挥。用 agent-skills 的路由树+编排范式做骨架，把 Superpowers（编排协作）和 VIBE（创意流）嵌入6阶段。双模式 + 硬门禁 + auto恢复机制。校验41个技能名100%真实
+
 **07-21 重要事件**：
 - warm-editorial 技能 soul-sample 用真实内容（人机协同指南）重新生成，展示5种色带位置变化
 - 分析 Rachel Akinwale 设计的"色带系统"——5个固定位置（左/上/中/下/右），每带有内容
@@ -75,4 +80,4 @@ pos: .claude/rules/06-NOW.md
 
 ---
 
-*最后更新：2026-07-21 — 每周记忆维护，更新活跃项目+最近事件*
+*最后更新：2026-07-23 — 新增 dev-commander + agent-skills 技能组归档*

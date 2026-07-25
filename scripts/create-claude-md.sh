@@ -159,7 +159,7 @@ generate_header() {
             ;;
         core)
             echo "---"
-            echo "input: MEMORY-L1.md, 03-USER.md, WAL 协议"
+            echo "input: MEMORY-L1.md, 05-USER.md, WAL 协议"
             echo "output: 永久核心记忆（偏好、决策、身份）"
             echo "pos: .claude/rules/ 和 memory/ 的成员，P0 永久核心"
             echo "# 文件夹变化需同步注释及所属文件夹 md"

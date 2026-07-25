@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI长周期任务：遇到问题就翻这页</title>
+<style>
+:root {
+  --bg: #FAFAF8;
+  --card: #FFFFFF;
+  --ink: #1A1A1A;
+  --ink-2: #4A4A4A;
+  --ink-3: #8A8A8A;
+  --accent: #002FA7;
+  --accent-soft: #E8EDFA;
+  --green: #2D8A4E;
+  --green-soft: #E8F5EC;
+  --red: #D32F2F;
+  --red-soft: #FFEBEE;
+  --orange: #E65100;
+  --orange-soft: #FFF3E0;
+  --border: #E5E5E0;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --radius: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+}
+.container { max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 48px 0 40px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 40px;
+}
+.hero h1 {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+.hero-sub {
+  font-size: 15px;
+  color: var(--ink-2);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* 问题选择器 */
+.problems {
+  margin-bottom: 48px;
+}
+.problems-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.problem-btn {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.problem-btn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,47,167,0.1);
+}
+.problem-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.problem-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.problem-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* 解决方案卡片 */
+.solution {
+  display: none;
+  margin-bottom: 48px;
+}
+.solution.active {
+  display: block;
+}
+.solution-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.solution-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.solution-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+.solution-tag.problem { background: var(--red-soft); color: var(--red); }
+.solution-tag.cause { background: var(--orange-soft); color: var(--orange); }
+.solution-tag.fix { background: var(--green-soft); color: var(--green); }
+.solution-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.solution-desc {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+/* 操作步骤 */
+.steps {
+  padding: 20px 24px;
+}
+.step {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: #F8F8F6;
+  border-radius: 6px;
+}
+.step:last-child { margin-bottom: 0; }
+.step-num {
+  width: 24px;
+  height: 24px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-content { flex: 1; }
+.step-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.step-code {
+  position: relative;
+  background: #1E1E1E;
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-family: "SF Mono", "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #D4D4D4;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: transparent;
+  border: 1px solid #555;
+  color: #AAA;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.copy-btn:hover { background: #3D3D3D; color: #fff; }
+.copy-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+
+/* 验证 */
+.verify {
+  padding: 16px 24px;
+  background: var(--green-soft);
+  border-top: 1px solid var(--border);
+}
+.verify-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+.verify-text {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+/* 工具箱 */
+.toolbox {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.toolbox-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.template-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.template-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #F5F5F0;
+  border-bottom: 1px solid var(--border);
+}
+.template-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.template-body {
+  padding: 12px 16px;
+}
+.template-body pre {
+  font-family: "SF Mono", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+}
+
+/* 底部 */
+.footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 2px solid var(--ink);
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+
+/* 响应式 */
+@media (max-width: 520px) {
+  .problem-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- Hero -->
+<header class="hero">
+  <h1>AI长周期任务：<br>遇到问题就翻这页</h1>
+  <p class="hero-sub">让AI连续跑几小时，它开始还行，跑着跑着就偏了。下面三个问题，点击你遇到的那个，直接给你解法。</p>
+</header>
+
+<!-- 问题选择器 -->
+<div class="problems">
+  <div class="problems-label">你遇到了哪个问题？</div>
+  <div class="problem-grid">
+    <div class="problem-btn active" onclick="showSolution(0)">
+      <div class="problem-icon">🎯</div>
+      <div class="problem-text">AI跑偏了</div>
+    </div>
+    <div class="problem-btn" onclick="showSolution(1)">
+      <div class="problem-icon">🚀</div>
+      <div class="problem-text">不知道从哪开始</div>
+    </div>
+    <div class="problem-btn" onclick="showSolution(2)">
+      <div class="problem-icon">✅</div>
+      <div class="problem-text">做完不知道质量</div>
+    </div>
+  </div>
+</div>
+
+<!-- 解决方案0: AI跑偏了 -->
+<div class="solution active" id="solution-0">
+  <div class="solution-card">
+    <div class="solution-header">
+      <div class="solution-tag problem">问题</div>
+      <div class="solution-title">AI跑着跑着就偏了</div>
+      <div class="solution-desc">开始还记得要什么，跑着跑着就忘了，或者在细节里打转。</div>
+    </div>
+    <div class="solution-header" style="background: #FFFBF0;">
+      <div class="solution-tag cause">原因</div>
+      <div class="solution-desc">目标只存在对话里，context window会清空。AI的"记忆"是临时的。</div>
+    </div>
+    <div class="solution-header" style="background: #F0FAF4;">
+      <div class="solution-tag fix">解法</div>
+      <div class="solution-desc">把目标写进文件。AI每次开工前读文件，做完后更新文件。</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">建一个GOALS.md文件</div>
+          <div class="step-code">在项目根目录创建GOALS.md，写清楚：
+- 项目目标（一句话）
+- 当前里程碑
+- 完成标准（怎么算做完）<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">每次开工先读文件</div>
+          <div class="step-code">先读一下GOALS.md，了解当前项目状态。
+然后告诉我：现在该做什么？有什么阻塞？<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">做完就更新文件</div>
+          <div class="step-code">这个功能做完了。更新一下GOALS.md：
+1. 把完成的标准打勾
+2. 把完成的内容写到"已完成"
+3. 告诉我下一步该做什么<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="verify">
+      <div class="verify-label">怎么知道做对了</div>
+      <div class="verify-text">AI跑了几小时后，还能准确说出"项目目标是XXX，当前在做M2，下一步是XXX"。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 解决方案1: 不知道从哪开始 -->
+<div class="solution" id="solution-1">
+  <div class="solution-card">
+    <div class="solution-header">
+      <div class="solution-tag problem">问题</div>
+      <div class="solution-title">不知道从哪开始</div>
+      <div class="solution-desc">任务太大，不知道怎么拆，也不知道先做什么。</div>
+    </div>
+    <div class="solution-header" style="background: #FFFBF0;">
+      <div class="solution-tag cause">原因</div>
+      <div class="solution-desc">AI需要明确的小目标，不是一个模糊的大方向。</div>
+    </div>
+    <div class="solution-header" style="background: #F0FAF4;">
+      <div class="solution-tag fix">解法</div>
+      <div class="solution-desc">让AI帮你拆任务，写成3-5个里程碑，一个一个来。</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">描述你要做什么</div>
+          <div class="step-code">我要做的项目是：[一句话描述]
+帮我拆成3-5个里程碑，写到GOALS.md里。
+每个里程碑要：
+1. 明确交付什么
+2. 明确怎么算完成
+3. 估算大概工作量<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">先做第一个里程碑</div>
+          <div class="step-code">我们一个一个来，先做M1。
+做完一个再做下一个。<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">每完成一个就更新</div>
+          <div class="step-code">M1做完了。更新GOALS.md：
+- M1打勾
+- 告诉我M2该做什么<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="verify">
+      <div class="verify-label">怎么知道做对了</div>
+      <div class="verify-text">每个里程碑都能独立测试，错了能及时调整，不会做了一大半才发现方向错了。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 解决方案2: 做完不知道质量 -->
+<div class="solution" id="solution-2">
+  <div class="solution-card">
+    <div class="solution-header">
+      <div class="solution-tag problem">问题</div>
+      <div class="solution-title">做完不知道质量</div>
+      <div class="solution-desc">AI说"搞定了"，但不知道真的搞定了没有，有没有坑。</div>
+    </div>
+    <div class="solution-header" style="background: #FFFBF0;">
+      <div class="solution-tag cause">原因</div>
+      <div class="solution-desc">没有明确的验收标准，AI完成的定义和你的不一样。</div>
+    </div>
+    <div class="solution-header" style="background: #F0FAF4;">
+      <div class="solution-tag fix">解法</div>
+      <div class="solution-desc">提前写清楚"怎么算完成"，每完成一步就验证。</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">在GOALS.md里写完成标准</div>
+          <div class="step-code">完成标准：
+- [ ] 测试全部通过
+- [ ] 能跑起来演示
+- [ ] 代码审查通过<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">每完成一步就跑验证</div>
+          <div class="step-code">功能做完了。跑一下测试看看：
+npm test
+告诉我结果。<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">用三句话汇报</div>
+          <div class="step-code">更新一下进度，用三句话告诉我：
+1. 做了什么
+2. 下一步
+3. 有没有阻塞<button class="copy-btn" onclick="copyCode(this)">复制</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="verify">
+      <div class="verify-label">怎么知道做对了</div>
+      <div class="verify-text">每次AI说"搞定了"，你都能用10秒钟验证：跑测试、看演示、检查完成标准。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 工具箱 -->
+<div class="toolbox">
+  <div class="toolbox-title">工具箱：直接复制用</div>
+
+  <div class="template-card">
+    <div class="template-header">
+      <span class="template-name">📄 GOALS.md 模板</span>
+      <button class="copy-btn" onclick="copyTemplate(this, 'goals')">复制</button>
+    </div>
+    <div class="template-body">
+      <pre id="goals-template"># 项目：[一句话]
+
+## 当前目标
+M1：[这个里程碑要交付什么]
+
+## 完成标准
+- [ ] 标准1
+- [ ] 标准2
+
+## 已完成
+（空着，做完再填）
+
+## 阻塞项
+（空着，遇到再填）</pre>
+    </div>
+  </div>
+
+  <div class="template-card">
+    <div class="template-header">
+      <span class="template-name">📋 进度汇报格式</span>
+      <button class="copy-btn" onclick="copyTemplate(this, 'report')">复制</button>
+    </div>
+    <div class="template-body">
+      <pre id="report-template">**做了什么**：[一句话]
+**下一步**：[一句话]
+**阻塞**：[有就说，没有写"无"]</pre>
+    </div>
+  </div>
+</div>
+
+<!-- 底部 -->
+<div class="footer">
+  <p>来源：<a href="https://developers.openai.com/blog/run-long-horizon-tasks-with-codex">Derrick Choi实验</a> + <a href="https://x.com/gabrielchua/status/2074505300766568563">Gabriel Chua实践</a></p>
+</div>
+
+</div>
+
+<script>
+// 问题选择器
+function showSolution(index) {
+  // 更新按钮状态
+  document.querySelectorAll('.problem-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+
+  // 更新解决方案显示
+  document.querySelectorAll('.solution').forEach((sol, i) => {
+    sol.classList.toggle('active', i === index);
+  });
+}
+
+// 复制代码
+function copyCode(btn) {
+  const code = btn.parentElement.textContent.replace('复制', '').trim();
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '已复制';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '复制';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// 复制模板
+function copyTemplate(btn, type) {
+  const pre = document.getElementById(type + '-template');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = '已复制';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '复制';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// 初始化：显示第一个解决方案
+showSolution(0);
+</script>
+
+</body>
+</html>

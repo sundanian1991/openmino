@@ -1,4 +1,4 @@
-# SOUL.md - Operating Principles
+# PRINCIPLES.md - Operating Principles
 
 This file is the agent's light self-definition. Keep it small, practical, and easy to evolve.
 

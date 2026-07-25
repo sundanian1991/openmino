@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实战 1 · 3A 分诊你的工作 — 人机协同实践课</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/course.css">
+<style>
+  /* 3A 分诊器 */
+  .triage-tool{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-lg);padding:var(--s-2xl);margin:var(--s-xl) 0}
+  .triage-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-2xl);align-items:start}
+  @media(max-width:760px){.triage-grid{grid-template-columns:1fr}}
+
+  .triage-input-label{font-family:var(--ff-mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--s-sm)}
+
+  .slider-row{margin-top:var(--s-lg)}
+  .slider-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--s-xs)}
+  .slider-name{font-size:13px;color:var(--ink-1);font-weight:500}
+  .slider-val{font-family:var(--ff-mono);font-size:13px;font-weight:600;color:var(--indigo)}
+  .slider-labels{display:flex;justify-content:space-between;font-family:var(--ff-mono);font-size:10px;color:var(--ink-3);margin-top:4px;letter-spacing:.02em}
+
+  .triage-result{background:var(--ink);color:#E8E5DE;border-radius:var(--r-md);padding:var(--s-xl);text-align:center}
+  .triage-result-label{font-family:var(--ff-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9DB4F5;margin-bottom:var(--s-sm)}
+  .triage-result-mode{font-family:var(--ff-display);font-size:28px;font-weight:600;margin-bottom:var(--s-sm);transition:color .3s}
+  .triage-result-mode.auto{color:#7FD1A8}
+  .triage-result-mode.aug{color:#7BA7F5}
+  .triage-result-mode.agent{color:#C4A0F5}
+  .triage-result-reason{font-size:13px;line-height:1.6;color:#C9C2B6;margin-bottom:var(--s-md)}
+  .triage-roles{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-sm);margin-top:var(--s-md)}
+  .triage-role-box{background:rgba(255,255,255,.06);border-radius:var(--r-sm);padding:var(--s-sm) var(--s-md);text-align:left}
+  .triage-role-label{font-family:var(--ff-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9DB4F5;margin-bottom:2px}
+  .triage-role-text{font-size:12px;color:#E8E5DE;line-height:1.4}
+
+  /* 三模式对比 */
+  .mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-md);margin:var(--s-xl) 0}
+  @media(max-width:760px){.mode-grid{grid-template-columns:1fr}}
+  .mode-card{background:var(--surface);border:1px solid var(--ink-faint);border-radius:var(--r-md);padding:var(--s-lg);border-top:3px solid}
+  .mode-card.auto{border-top-color:var(--success)}
+  .mode-card.aug{border-top-color:var(--indigo)}
+  .mode-card.agent{border-top-color:var(--p3)}
+  .mode-name{font-family:var(--ff-display);font-size:16px;font-weight:600;margin-bottom:var(--s-xs)}
+  .mode-card.auto .mode-name{color:var(--success)}
+  .mode-card.aug .mode-name{color:var(--indigo)}
+  .mode-card.agent .mode-name{color:var(--p3)}
+  .mode-en{font-style:italic;font-size:12px;color:var(--ink-3)}
+  .mode-desc{font-size:13px;color:var(--ink-2);margin-top:var(--s-sm);line-height:1.5}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="index.html" class="topnav-brand">人机协同<em>实践课</em></a>
+    <div class="topnav-links">
+      <a href="index.html" class="topnav-link">首页</a>
+      <a href="path.html" class="topnav-link">学习路径</a>
+    </div>
+    <div class="topnav-progress">
+      <span class="topnav-progress-text">0%</span>
+      <div class="topnav-progress-bar"><div class="topnav-progress-fill"></div></div>
+    </div>
+    <button class="topnav-burger" aria-label="菜单"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="course-head">
+    <div class="breadcrumb"><a href="index.html">首页</a><span class="sep">/</span><a href="path.html">学习路径</a><span class="sep">/</span><span>实战 1</span></div>
+    <span class="paradigm-tag p1">范式一 · Copilot · 实战</span>
+    <h1>3A 分诊法 · <em>30 秒</em>决定怎么分</h1>
+    <div class="course-meta"><span>⏱ 10 分钟</span><span>🎮 1 个交互工具</span><span>🎯 实战练习</span></div>
+  </header>
+
+  <div class="sidebar-layout">
+    <div>
+
+      <section class="chapter" id="ch1">
+        <div class="chapter-head"><span class="chapter-num">第一章</span><h2 class="chapter-title">三个抽屉</h2></div>
+        <div class="chapter-body">
+          <p>每接到一个任务，先扔进三个"抽屉"之一。每个抽屉对应一种你和 AI 的协作方式：</p>
+          <div class="mode-grid">
+            <div class="mode-card auto"><div class="mode-name">自动化 <span class="mode-en">Automation</span></div><div class="mode-desc"><strong>AI 全流程执行</strong>，你验收结果。适合规则清楚、好验证、做错可撤的任务。</div></div>
+            <div class="mode-card aug"><div class="mode-name">增强 <span class="mode-en">Augmentation</span></div><div class="mode-desc"><strong>AI 提供选项和利弊</strong>，你做最终决策。适合需要判断、不可逆的任务。</div></div>
+            <div class="mode-card agent"><div class="mode-name">智能体 <span class="mode-en">Agent</span></div><div class="mode-desc"><strong>AI 自主拆步骤执行</strong>，你设边界。适合多步骤串联、可设边界的任务。</div></div>
+          </div>
+          <div class="callout callout-warn">
+            <span class="callout-label">安全底线</span>
+            <p>不可逆操作（发送、发布、删除、签订）<strong>必须人来按</strong>，不能全交给 AI。这是不可逾越的红线。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter" id="ch2">
+        <div class="chapter-head"><span class="chapter-num">第二章</span><h2 class="chapter-title">三个维度判定</h2></div>
+        <div class="chapter-body">
+          <p>怎么决定任务放哪个抽屉？看三个维度：</p>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>维度</th><th>问自己</th><th>两端</th></tr></thead>
+              <tbody>
+                <tr><td><strong>① 确定性</strong></td><td>规则有多清楚？</td><td>模糊说不清 ↔ 规则明确好验证</td></tr>
+                <tr><td><strong>② 可逆性</strong></td><td>做错了能撤吗？</td><td>不可逆（发送/签订）↔ 随时可撤回</td></tr>
+                <tr><td><strong>③ 任务跨度</strong></td><td>几步能完？</td><td>单步即完 ↔ 多步串联</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-gold">
+            <span class="callout-label">判定逻辑</span>
+            <p>不可逆 → <strong>必须增强</strong>（人决策）。确定性高 + 可逆 → 看跨度：单步<strong>自动化</strong>，多步<strong>智能体</strong>。跨度大 + 一定程度确定 → <strong>智能体</strong>。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="chapter" id="ch3">
+        <div class="chapter-head"><span class="chapter-num">第三章</span><h2 class="chapter-title">动手试：分诊你的真实任务</h2></div>
+        <div class="chapter-body">
+          <p>输入你的真实任务，拖动三个滑块。系统根据你的赋值自动推荐协作模式：</p>
+
+          <div class="triage-tool">
+            <div class="triage-grid">
+              <div>
+                <div class="triage-input-label">任务描述（可选）</div>
+                <textarea id="triageText" placeholder="例：把上个月的招聘数据整理成周会汇报摘要…" style="min-height:48px;margin-bottom:var(--s-md)"></textarea>
+
+                <div class="slider-row">
+                  <div class="slider-head"><span class="slider-name">确定性 · 规则有多清楚？</span><span class="slider-val" id="val-certainty">50</span></div>
+                  <input type="range" id="slider-certainty" min="0" max="100" value="50">
+                  <div class="slider-labels"><span>模糊说不清</span><span>规则明确好验证</span></div>
+                </div>
+
+                <div class="slider-row">
+                  <div class="slider-head"><span class="slider-name">可逆性 · 做错了能撤吗？</span><span class="slider-val" id="val-reversibility">50</span></div>
+                  <input type="range" id="slider-reversibility" min="0" max="100" value="50">
+                  <div class="slider-labels"><span>不可逆（发送/签订）</span><span>随时可撤回</span></div>
+                </div>
+
+                <div class="slider-row">
+                  <div class="slider-head"><span class="slider-name">任务跨度 · 几步能完？</span><span class="slider-val" id="val-span">50</span></div>
+                  <input type="range" id="slider-span" min="0" max="100" value="50">
+                  <div class="slider-labels"><span>单步即完</span><span>多步串联任务</span></div>
+                </div>
+              </div>
+
+              <div class="triage-result">
+                <div class="triage-result-label">推荐模式</div>
+                <div class="triage-result-mode aug" id="triageMode">增强</div>
+                <div class="triage-result-reason" id="triageReason">需要判断、不可逆、或规则不够明确。AI 提供信息和建议，但拍板的是你。</div>
+                <div class="triage-roles" id="triageRoles">
+                  <div class="triage-role-box"><div class="triage-role-label">你做</div><div class="triage-role-text">最终决策</div></div>
+                  <div class="triage-role-box"><div class="triage-role-label">AI 做</div><div class="triage-role-text">提供选项和利弊</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout callout-info">
+            <span class="callout-label">试试这几个场景</span>
+            <p>• 翻译一封英文邮件 → 确定性高 + 可逆 + 单步 = <strong>自动化</strong><br>• 给候选人写晋升推荐信 → 不可逆 + 需判断 = <strong>增强</strong><br>• 做一份完整的竞品调研报告 → 多步串联 + 可设边界 = <strong>智能体</strong></p>
+          </div>
+
+          <div class="practice">
+            <span class="practice-tag">练习卡</span>
+            <div class="practice-title">分诊你的 5 个真实任务</div>
+            <div class="practice-grid">
+              <div><div class="pg-label">动作</div><div class="pg-val">列出你这周的 5 个工作任务，用上面的工具逐个分诊</div></div>
+              <div><div class="pg-label">验收</div><div class="pg-val">每个任务都明确标注了模式（自动化/增强/智能体）和你的角色</div></div>
+              <div><div class="pg-label warn">误区</div><div class="pg-val">把不可逆任务判成自动化；所有任务都判成智能体（偷懒）</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="lesson-foot">
+        <div class="lesson-foot-nav"><a href="c2-rules.html" class="btn btn-outline">← 上一课</a></div>
+        <div style="display:flex;gap:var(--s-sm);align-items:center">
+          <button class="complete-btn" data-module="p1">标记本节完成</button>
+          <a href="c3-agentic.html" class="btn btn-primary">范式二：用项目管理控场 →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <aside class="course-toc">
+      <div class="toc-title">本课目录</div>
+      <nav class="toc-list">
+        <a href="#ch1" class="toc-link active">第一章 · 三个抽屉</a>
+        <a href="#ch2" class="toc-link">第二章 · 三维度判定</a>
+        <a href="#ch3" class="toc-link">第三章 · 动手试</a>
+      </nav>
+      <div class="toc-unlock">完成本节后，<strong>范式二</strong> 全部解锁。</div>
+    </aside>
+  </div>
+
+</div>
+
+<footer class="footer">人机协同实践课 · 实战 1 · 3A 分诊法<br>范式一 · Copilot · 个人提效</footer>
+
+<script src="assets/course.js"></script>
+<script>
+(function(){
+  'use strict';
+  var slC=document.getElementById('slider-certainty'),
+      slR=document.getElementById('slider-reversibility'),
+      slS=document.getElementById('slider-span');
+  var vC=document.getElementById('val-certainty'),
+      vR=document.getElementById('val-reversibility'),
+      vS=document.getElementById('val-span');
+  var mode=document.getElementById('triageMode'),
+      reason=document.getElementById('triageReason'),
+      roles=document.getElementById('triageRoles');
+
+  var DATA={
+    auto:{label:'自动化',cls:'auto',reason:'规则清楚、好验证、做错可撤。AI 独立完成，你拿结果就行。',human:'验收结果',ai:'全流程执行'},
+    aug:{label:'增强',cls:'aug',reason:'需要判断、不可逆、或规则不够明确。AI 提供信息和建议，但拍板的是你。',human:'最终决策',ai:'提供选项和利弊'},
+    agent:{label:'智能体',cls:'agent',reason:'多步串联、可设边界。AI 自主规划执行，你只负责设约束。',human:'设边界和约束',ai:'拆步骤 + 执行'}
+  };
+
+  function update(){
+    var c=parseInt(slC.value),r=parseInt(slR.value),s=parseInt(slS.value);
+    vC.textContent=c;vR.textContent=r;vS.textContent=s;
+    var score=c*0.4+r*0.35+(100-s)*0.25;
+    var k;
+    if(r<35)k='aug';
+    else if(score>=65)k='auto';
+    else if(score<35||s>65)k='agent';
+    else k='aug';
+    var d=DATA[k];
+    mode.textContent=d.label;mode.className='triage-result-mode '+d.cls;
+    reason.textContent=d.reason;
+    roles.innerHTML='<div class="triage-role-box"><div class="triage-role-label">你做</div><div class="triage-role-text">'+d.human+'</div></div><div class="triage-role-box"><div class="triage-role-label">AI 做</div><div class="triage-role-text">'+d.ai+'</div></div>';
+  }
+  [slC,slR,slS].forEach(function(sl){sl.addEventListener('input',update)});
+  update();
+})();
+</script>
+
+</body>
+</html>

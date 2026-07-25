@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 11 · 设计我的 AI 工作流 — 人机协同实战课</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+.course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
+.course-path{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.course-path span{color:var(--accent)}
+.course-title{font-size:22px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.2}
+.course-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:640px;margin-bottom:var(--space-md)}
+.course-meta{display:flex;gap:var(--space-lg);font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.sidebar-layout{display:grid;grid-template-columns:1fr 260px;gap:var(--space-xl)}
+.sidebar{position:sticky;top:80px;align-self:start}
+.sidebar-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-md)}
+.sidebar-links{display:flex;flex-direction:column;gap:var(--space-xs)}
+.sidebar-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:var(--space-xs) 0;border-left:2px solid transparent;padding-left:var(--space-md);transition:all .15s}
+.sidebar-link:hover{color:var(--text-primary)}
+.sidebar-link.active{color:var(--accent);border-left-color:var(--accent)}
+.sidebar-hint{margin-top:var(--space-xl);padding:var(--space-md);background:var(--accent-subtle);border-left:2px solid var(--accent);font-size:12px;color:var(--text-secondary);line-height:1.6}
+.finish-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border);text-align:center}
+.finish-area .btn{margin-top:var(--space-md)}
+
+.wf-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+.wf-field{margin-bottom:var(--space-md)}
+.wf-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.wf-input{width:100%;padding:var(--space-sm) var(--space-md);border:1px solid var(--border-visible);background:var(--bg);font-family:var(--font-body);font-size:13px;color:var(--text-primary);outline:none}
+.wf-input:focus{border-color:var(--text-display)}
+.wf-select{width:100%;padding:var(--space-sm) var(--space-md);border:1px solid var(--border-visible);background:var(--bg);font-family:var(--font-body);font-size:13px;color:var(--text-primary);outline:none;cursor:pointer}
+.wf-result{background:var(--bg);border:1px solid var(--border);padding:var(--space-lg);font-family:var(--font-mono);font-size:11px;line-height:1.6;color:var(--text-primary);white-space:pre-wrap;display:none;margin-top:var(--space-lg)}
+
+@media(max-width:900px){.sidebar-layout{grid-template-columns:1fr}.sidebar{position:static}.wf-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">人机协同 · <em>实战课</em></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">← 路径</a>
+      <a href="#form" class="nav-link">填写</a>
+      <a href="#output" class="nav-link">产出</a>
+    </div>
+  </div>
+</nav>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="sidebar-layout" style="max-width:1200px;margin:var(--space-5xl) auto 0;padding:0 var(--space-xl)">
+  <div>
+    <div class="course-header">
+      <div class="course-path">实战 &gt; <span>Step 11 · 范式三 AI Native</span></div>
+      <div class="course-title">设计我的 AI 工作流</div>
+      <div class="course-desc">把前面学到的所有方法汇总——选一个自己的高频任务，系统自动生成完整的人机分工方案。</div>
+      <div class="course-meta"><span>预计时长 15 分钟</span><span>1 个交互组件</span></div>
+    </div>
+    <div class="callout info"><div class="callout-label">学习目标</div>填写你的岗位和任务信息，系统基于之前的课程内容为你生成：分诊结果 + 人机分工表 + 操作手册 + 验收 checklist。</div>
+
+    <div class="chapter" id="form">
+      <div class="chapter-title">填写你的工作信息</div>
+
+      <div class="wf-grid">
+        <div class="wf-field">
+          <div class="wf-label">你的岗位</div>
+          <select class="wf-select" id="role">
+            <option>产品运营岗</option><option>监管风控岗</option><option>客户运营岗</option>
+            <option>销售运营岗</option><option>投资研究岗</option><option>数据分析岗</option><option>审核顾问岗</option>
+          </select>
+        </div>
+        <div class="wf-field">
+          <div class="wf-label">高频任务名称</div>
+          <input class="wf-input" id="task" placeholder="如：周报生成">
+        </div>
+        <div class="wf-field">
+          <div class="wf-label">当前耗时（分钟/次）</div>
+          <input class="wf-input" id="time" placeholder="如：120">
+        </div>
+        <div class="wf-field">
+          <div class="wf-label">任务频率</div>
+          <select class="wf-select" id="freq"><option>每周</option><option>每天</option><option>每月</option><option>不定期</option></select>
+        </div>
+        <div class="wf-field">
+          <div class="wf-label">规则是否明确？</div>
+          <select class="wf-select" id="clear"><option>是，有固定模板和标准</option><option>部分明确，需要判断</option><option>模糊，每次都不一样</option></select>
+        </div>
+        <div class="wf-field">
+          <div class="wf-label">做错了能撤回吗？</div>
+          <select class="wf-select" id="revert"><option>能，可随时修改</option><option>部分可回滚</option><option>不能，发出即生效</option></select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="generateWorkflow()">⚡ 生成我的 AI 工作流</button>
+    </div>
+
+    <div class="wf-result" id="result"></div>
+
+    <div class="finish-area">
+      <div style="font-size:13px;color:var(--text-secondary)">生成工作流后，点击下方按钮</div>
+      <button class="btn btn-primary" onclick="completeStep()">✓ 完成当前课程</button>
+      <div style="margin-top:var(--space-sm);font-size:11px;color:var(--text-disabled)" id="nextHint">完成后将解锁下一节</div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-title">本页目录</div>
+    <div class="sidebar-links">
+      <a href="#form" class="sidebar-link">填写工作信息</a>
+      <a href="#output" class="sidebar-link">工作流结果</a>
+    </div>
+    <div class="sidebar-hint">完成本节后，<strong style="color:var(--text-primary)">Step 12 · 测验</strong> 将解锁。</div>
+  </div>
+</div>
+
+<footer class="footer"><div class="footer-text">人机协同实战课 · Step 11 · 设计我的 AI 工作流</div></footer>
+
+<script src="assets/utils.js"></script>
+<script>
+function generateWorkflow(){
+  const role=document.getElementById('role').value;
+  const task=document.getElementById('task').value||'高频任务';
+  const time=document.getElementById('time').value||'未知';
+  const freq=document.getElementById('freq').value;
+  const clear=document.getElementById('clear').value;
+  const revert=document.getElementById('revert').value;
+
+  // 简单判定模式
+  let mode='Augmentation';
+  if(clear.includes('是')&&revert.includes('能')) mode='Automation';
+  else if(!clear.includes('是')||!revert.includes('能')) mode='Augmentation';
+
+  let md=`# AI 工作流：${task}\n\n`;
+  md+=`## 基本信息\n- 岗位：${role}\n- 频率：${freq}\n- 当前耗时：${time} 分钟/次\n\n`;
+  md+=`## 3A 分诊结果\n推荐模式：**${mode}**\n`;
+  if(mode==='Automation'){
+    md+=`- AI 独立完成，你验收结果\n- 确定性高 + 可逆，适合全自动化\n`;
+  }else if(mode==='Augmentation'){
+    md+=`- AI 提供初稿，你做最终决策\n- 需要判断或不可逆，适合人机协作\n`;
+  }else{
+    md+=`- AI 自主规划执行，你设边界\n- 多步任务，适合 Agent 模式\n`;
+  }
+  md+=`\n## 人机分工\n| 环节 | 人 | AI |\n|------|-----|-----|\n| 任务规划 | 定目标和边界 | 拆步骤 |\n| 执行 | 审核 | 执行 |\n| 验收 | 最终确认 | 提供结果 |\n`;
+  md+=`\n## 验收 Checklist\n- [ ] 结果是否满足预期？\n- [ ] 是否有需要修改的地方？\n- [ ] 下次是否可以进一步减少人的参与？\n`;
+
+  const el=document.getElementById('result');
+  el.style.display='block';
+  el.textContent=md;
+  Output.save('step11-workflow',md);
+}
+
+(function(){
+  const saved=Output.get('step11-workflow');
+  if(saved){document.getElementById('result').style.display='block';document.getElementById('result').textContent=saved;}
+})();
+
+function completeStep(){Progress.complete("step-11");window.location.href="index.html";}
+initProgressBar();initSidebar();
+</script>
+</body>
+</html>

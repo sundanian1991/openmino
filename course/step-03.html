@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 03 · 给 AI 写规则 — 人机协同实战课</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+.course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
+.course-path{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.course-path span{color:var(--accent)}
+.course-title{font-size:22px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.2}
+.course-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:640px;margin-bottom:var(--space-md)}
+.course-meta{display:flex;gap:var(--space-lg);font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.chapter{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);margin-bottom:var(--space-md)}
+.chapter-num{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-xs)}
+.chapter-title{font-size:16px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-sm)}
+.chapter-body{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.chapter-body strong{color:var(--text-primary);font-weight:500}
+.sidebar-layout{display:grid;grid-template-columns:1fr 260px;gap:var(--space-xl)}
+.sidebar{position:sticky;top:80px;align-self:start}
+.sidebar-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-md)}
+.sidebar-links{display:flex;flex-direction:column;gap:var(--space-xs)}
+.sidebar-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:var(--space-xs) 0;border-left:2px solid transparent;padding-left:var(--space-md);transition:all .15s}
+.sidebar-link:hover{color:var(--text-primary)}
+.sidebar-link.active{color:var(--accent);border-left-color:var(--accent)}
+.sidebar-hint{margin-top:var(--space-xl);padding:var(--space-md);background:var(--accent-subtle);border-left:2px solid var(--accent);font-size:12px;color:var(--text-secondary);line-height:1.6}
+.finish-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border);text-align:center}
+.finish-area .btn{margin-top:var(--space-md)}
+
+/* 操作手册生成器 - 模块化拼装 */
+.generator-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-xl);margin-top:var(--space-md)}
+.gen-field{margin-bottom:var(--space-md)}
+.gen-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.gen-input{width:100%;padding:var(--space-sm) var(--space-md);border:1px solid var(--border-visible);background:var(--bg);font-family:var(--font-body);font-size:13px;color:var(--text-primary);outline:none}
+.gen-input:focus{border-color:var(--text-display)}
+.gen-textarea{width:100%;min-height:50px;padding:var(--space-sm) var(--space-md);border:1px solid var(--border-visible);background:var(--bg);font-family:var(--font-body);font-size:13px;color:var(--text-primary);resize:vertical;outline:none}
+.gen-textarea:focus{border-color:var(--text-display)}
+.gen-tag{display:inline-block;font-family:var(--font-mono);font-size:9px;padding:2px 8px;margin:1px}
+.gen-tag.required{background:var(--accent-subtle);color:var(--accent);border:1px solid rgba(215,25,33,.2)}
+
+/* 预览区 */
+.preview-area{background:var(--bg);border:1px solid var(--border);padding:var(--space-lg)}
+.preview-area pre{font-family:var(--font-mono);font-size:12px;line-height:1.6;color:var(--text-primary);white-space:pre-wrap;overflow-x:auto}
+.preview-empty{color:var(--text-disabled);font-style:italic;font-size:13px}
+
+/* 规则列表 */
+.rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-md)}
+.rule-card{padding:var(--space-md);background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent)}
+.rule-card:nth-child(2){border-left-color:var(--blue)}
+.rule-card:nth-child(3){border-left-color:var(--success)}
+.rule-card:nth-child(4){border-left-color:var(--gold)}
+.rule-card:nth-child(5){border-left-color:var(--purple)}
+.rule-num{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-xs)}
+.rule-card:nth-child(2) .rule-num{color:var(--blue)}
+.rule-card:nth-child(3) .rule-num{color:var(--success)}
+.rule-card:nth-child(4) .rule-num{color:var(--gold)}
+.rule-card:nth-child(5) .rule-num{color:var(--purple)}
+.rule-title{font-size:13px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.rule-body{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+@media(max-width:900px){.sidebar-layout{grid-template-columns:1fr}.sidebar{position:static}.generator-grid,.rules-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">人机协同 · <em>实战课</em></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">← 路径</a>
+      <a href="#concept" class="nav-link">概念</a>
+      <a href="#rules" class="nav-link">法则</a>
+      <a href="#gen" class="nav-link">生成器</a>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="sidebar-layout" style="max-width:1200px;margin:var(--space-5xl) auto 0;padding:0 var(--space-xl)">
+
+  <div>
+
+    <div class="course-header">
+      <div class="course-path">课程 &gt; <span>Step 03 · 范式一 Copilot</span></div>
+      <div class="course-title">给 AI 写规则</div>
+      <div class="course-desc">每次让 AI 做事都要重新说一遍要求？写一份 AGENTS.md，AI 就记住了你的标准。从临时提示词升级为可复用规则。</div>
+      <div class="course-meta">
+        <span>预计时长 15 分钟</span>
+        <span>3 章节</span>
+        <span>1 个交互组件</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">学习目标</div>
+      学完本节后，你将能：
+      <br>• 区分"给人看的 README"和"给 AI 看的操作手册"
+      <br>• 为自己的一项高频工作写一份可复用的 AI 操作手册
+    </div>
+
+    <!-- 第一章 -->
+    <div class="chapter" id="concept">
+      <div class="chapter-num">第一章</div>
+      <div class="chapter-title">为什么需要给 AI 写规则？</div>
+      <div class="chapter-body">
+        <p>README 是给人看的，AGENTS.md / CLAUDE.md 是给 AI 看的。</p>
+        <br>
+        <p>人看文档会"理解意图"，AI 看文档只能"匹配模式"。所以给 AI 的规则必须：<strong>具象、结构化、可检查</strong>。</p>
+      </div>
+      <div class="callout" style="margin-top:var(--space-md)">
+        <div class="callout-label">典型场景</div>
+        "每次让 AI 写 PRD，都要重新说一遍格式要求。写了一份 AGENTS.md 之后，AI 自动按我的模板出——省了每次 15 分钟的沟通成本。"
+      </div>
+    </div>
+
+    <!-- 第二章 -->
+    <div class="chapter" id="rules">
+      <div class="chapter-num">第二章</div>
+      <div class="chapter-title">五条黄金法则</div>
+
+      <div class="rules-grid">
+        <div class="rule-card">
+          <div class="rule-num">法则 01</div>
+          <div class="rule-title">具象优先</div>
+          <div class="rule-body">不要写"写高质量代码"——这是废话。要写"每个函数不超过 50 行，必须有 JSDoc 注释"。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-num">法则 02</div>
+          <div class="rule-title">机器友好格式</div>
+          <div class="rule-body">多用表格、列表、代码块。AI 处理结构化数据远优于散文。路径、命令、参数用表格呈现。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-num">法则 03</div>
+          <div class="rule-title">单一职责</div>
+          <div class="rule-body">只写工程规范，不写业务逻辑。文件不超过 200 行——超过会分散 AI 注意力。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-num">法则 04</div>
+          <div class="rule-title">禁令清单最重要</div>
+          <div class="rule-body">明确写出 Don'ts。必须包含安全约束（如"禁止将 API Key 写在代码里"）。这是防止 AI"好心办坏事"的关键。</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-num">法则 05</div>
+          <div class="rule-title">正误示例</div>
+          <div class="rule-body">正确示例告诉 AI"要这样"，错误示例告诉 AI"不要这样"。两者结合比抽象描述有效 10 倍。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第三章：生成器 -->
+    <div class="chapter" id="gen">
+      <div class="chapter-num">第三章</div>
+      <div class="chapter-title">生成你的 AI 操作手册</div>
+      <div class="chapter-body">
+        <p>填下表，系统会实时生成一份 AI 操作手册。填得越具体，AI 执行越精准。</p>
+      </div>
+
+      <div class="interactive-demo" style="margin-top:var(--space-md)">
+        <div class="demo-header">
+          <span class="demo-icon">📋</span>
+          <span class="demo-title">AI 操作手册生成器</span>
+          <span class="demo-sub">仿 Prompt 五件套组装实验室 · 模块化拼装</span>
+        </div>
+
+        <div class="generator-grid">
+          <!-- 左侧：表单 -->
+          <div>
+            <div class="gen-field">
+              <div class="gen-label">任务名称 <span class="gen-tag required">必填</span></div>
+              <input class="gen-input" id="f1" placeholder="如：周报生成" oninput="updatePreview()">
+            </div>
+            <div class="gen-field">
+              <div class="gen-label">适用场景</div>
+              <input class="gen-input" id="f2" placeholder="什么情况下用这个手册" oninput="updatePreview()">
+            </div>
+            <div class="gen-field">
+              <div class="gen-label">输出格式</div>
+              <input class="gen-input" id="f3" placeholder="Markdown 表格 / JSON / 自然语言 / …" oninput="updatePreview()">
+            </div>
+            <div class="gen-field">
+              <div class="gen-label">必须遵守 <span class="gen-tag required">必填</span></div>
+              <textarea class="gen-textarea" id="f4" placeholder="每行一条规则" oninput="updatePreview()">用数据说话，不要笼统描述
+每条建议附带一个具体案例</textarea>
+            </div>
+            <div class="gen-field">
+              <div class="gen-label">禁止事项 <span class="gen-tag required">至少 3 条</span></div>
+              <textarea class="gen-textarea" id="f5" placeholder="每行一条 Never" oninput="updatePreview()">不要编造没有来源的数据
+不要使用模糊词汇如"大概""可能"
+不要输出超过 800 字</textarea>
+            </div>
+            <div class="gen-field">
+              <div class="gen-label">正确示例（可选）</div>
+              <textarea class="gen-textarea" id="f6" placeholder="一个好的输出长什么样" oninput="updatePreview()"></textarea>
+            </div>
+            <div class="gen-field">
+              <div class="gen-label">错误示例（可选）</div>
+              <textarea class="gen-textarea" id="f7" placeholder="一个不好的输出长什么样" oninput="updatePreview()"></textarea>
+            </div>
+            <div class="gen-field">
+              <div class="gen-label">验收标准</div>
+              <textarea class="gen-textarea" id="f8" placeholder="怎么判断 AI 做对了" oninput="updatePreview()"></textarea>
+            </div>
+          </div>
+
+          <!-- 右侧：预览 -->
+          <div>
+            <div class="gen-label">预览</div>
+            <div class="preview-area">
+              <pre id="previewContent" class="preview-empty">填写左侧表单，这里会实时生成操作手册 Markdown。</pre>
+            </div>
+            <div style="margin-top:var(--space-sm);display:flex;gap:var(--space-sm);flex-wrap:wrap">
+              <button class="btn" onclick="copyManual()">📋 复制手册</button>
+              <button class="btn" onclick="saveManual()">💾 保存手册</button>
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);align-self:center" id="manualHint"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+      <!-- 规则对比演示 -->
+      <div class="interactive-demo" style="margin-top:var(--space-md)">
+        <div class="demo-header"><span class="demo-icon">⚖️</span><span class="demo-title">规则对比演示</span><span class="demo-sub">点切换看差规则 vs 好规则</span></div>
+        <div style="display:flex;gap:var(--space-xs);margin-bottom:var(--space-md)">
+          <div style="flex:1;padding:var(--space-md);border:1px solid var(--accent);background:var(--accent-subtle);text-align:center;cursor:pointer;font-weight:600;color:var(--accent);font-size:14px" onclick="showRule('bad')" id="rbad">❌ 差规则</div>
+          <div style="flex:1;padding:var(--space-md);border:1px solid var(--border);background:var(--surface);text-align:center;cursor:pointer;font-size:14px;color:var(--text-secondary)" onclick="showRule('good')" id="rgood">✅ 好规则</div>
+        </div>
+        <div id="ruleDisplay" style="padding:var(--space-lg);background:var(--bg);border:1px solid var(--border)">
+          <div style="font-family:var(--font-mono);font-size:12px;line-height:1.8;color:var(--text-secondary)">
+            <span style="color:var(--accent)">任务：</span>写一份用户调研总结<br><br>
+            <span style="color:var(--accent)">Prompt：</span>"帮我写一份用户调研总结"<br><br>
+            <span style="color:var(--text-disabled)">问题：只有愿望，没有任务——缺目标读者、缺格式、缺标准。AI 只能猜你要什么。</span>
+          </div>
+        </div>
+      </div>
+      
+  <div class="finish-area">
+      <div style="font-size:13px;color:var(--text-secondary)">生成并保存操作手册后，点击下方按钮</div>
+      <button class="btn btn-primary" onclick="completeStep()">✓ 完成当前课程</button>
+      <div style="margin-top:var(--space-sm);font-size:11px;color:var(--text-disabled)" id="nextHint">完成后将解锁下一节</div>
+    </div>
+
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-title">本页目录</div>
+    <div class="sidebar-links">
+      <a href="#concept" class="sidebar-link">第一章：为什么需要规则</a>
+      <a href="#rules" class="sidebar-link">第二章：五条黄金法则</a>
+      <a href="#gen" class="sidebar-link">第三章：手册生成器</a>
+    </div>
+    <div class="sidebar-hint">
+      完成本节后，<strong style="color:var(--text-primary)">Step 04 · 高频任务小工具化</strong> 将自动解锁。
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer"><div class="footer-text">人机协同实战课 · Step 03 · 给 AI 写规则</div></footer>
+
+<script src="assets/utils.js"></script>
+<script>
+function generateMd(f){
+  const bans=f.f5.split('\n').filter(l=>l.trim()).map(l=>'- Never: '+l.trim()).join('\n');
+  const rules=f.f4.split('\n').filter(l=>l.trim()).map(l=>'- '+l.trim()).join('\n');
+  let md=`# AI 操作手册：${f.f1||'（未命名）'}\n`;
+  if(f.f2) md+=`\n## 适用场景\n${f.f2}\n`;
+  if(f.f3) md+=`\n## 输出格式\n${f.f3}\n`;
+  if(f.f4) md+=`\n## 必须遵守\n${rules}\n`;
+  if(f.f5) md+=`\n## 禁止事项\n${bans}\n`;
+  if(f.f6) md+=`\n## 正确示例\n${f.f6}\n`;
+  if(f.f7) md+=`\n## 错误示例\n${f.f7}\n`;
+  if(f.f8) md+=`\n## 验收标准\n${f.f8}\n`;
+  return md;
+}
+
+function getFields(){
+  return{
+    f1:document.getElementById('f1').value,
+    f2:document.getElementById('f2').value,
+    f3:document.getElementById('f3').value,
+    f4:document.getElementById('f4').value,
+    f5:document.getElementById('f5').value,
+    f6:document.getElementById('f6').value,
+    f7:document.getElementById('f7').value,
+    f8:document.getElementById('f8').value
+  };
+}
+
+function updatePreview(){
+  const f=getFields();
+  const md=generateMd(f);
+  const pre=document.getElementById('previewContent');
+  pre.textContent=md;
+  pre.classList.remove('preview-empty');
+}
+
+function copyManual(){
+  const txt=document.getElementById('previewContent').textContent;
+  if(txt.includes('未命名')&&!document.getElementById('f1').value){
+    document.getElementById('manualHint').textContent='⚠️ 请至少填写任务名称';
+    return;
+  }
+  copyToClipboard(txt);
+  document.getElementById('manualHint').textContent='✓ 已复制';
+  setTimeout(()=>document.getElementById('manualHint').textContent='',2000);
+}
+
+function saveManual(){
+  const f=getFields();
+  if(!f.f1){document.getElementById('manualHint').textContent='⚠️ 请填写任务名称';return;}
+  const bans=f.f5.split('\n').filter(l=>l.trim()).length;
+  if(bans<3){document.getElementById('manualHint').textContent='⚠️ 禁令清单至少 3 条，当前 '+bans+' 条';return;}
+  const md=generateMd(f);
+  Output.save('step03-manual-'+f.f1,md);
+  document.getElementById('manualHint').textContent='✓ 已保存';
+  setTimeout(()=>document.getElementById('manualHint').textContent='',2000);
+}
+
+
+function showRule(mode){
+  document.getElementById('rbad').style.cssText='flex:1;padding:var(--space-md);border:1px solid '+(mode==='bad'?'var(--accent)':'var(--border)')+';background:'+(mode==='bad'?'var(--accent-subtle)':'var(--surface)')+';text-align:center;cursor:pointer;font-weight:'+(mode==='bad'?'600':'400')+';color:'+(mode==='bad'?'var(--accent)':'var(--text-secondary)')+';font-size:14px';
+  document.getElementById('rgood').style.cssText='flex:1;padding:var(--space-md);border:1px solid '+(mode==='good'?'var(--accent)':'var(--border)')+';background:'+(mode==='good'?'var(--accent-subtle)':'var(--surface)')+';text-align:center;cursor:pointer;font-weight:'+(mode==='good'?'600':'400')+';color:'+(mode==='good'?'var(--accent)':'var(--text-secondary)')+';font-size:14px';
+  const badHtml='<div style="font-family:var(--font-mono);font-size:12px;line-height:1.8;color:var(--text-secondary)"><span style="color:var(--accent)">任务：</span>写一份用户调研总结<br><br><span style="color:var(--accent)">Prompt：</span>"帮我写一份用户调研总结"<br><br><span style="color:var(--text-disabled)">问题：只有愿望，没有任务——缺目标读者、缺格式、缺标准。AI 只能猜你要什么，每次输出都不一样。</span></div>';
+  const goodHtml='<div style="font-family:var(--font-mono);font-size:12px;line-height:1.8;color:var(--text-secondary)"><span style="color:var(--success)">任务：</span>写一份用户调研总结<br><br><span style="color:var(--success)">Prompt：</span>"你是一名 B2B SaaS 产品经理。请根据下面访谈记录，整理一份用户调研总结。目标读者是产品负责人和研发负责人。只依据访谈记录，不要编造。输出 Markdown：总体结论 + 表格 + 3 个追问。"<br><br><span style="color:var(--text-disabled)">好在哪里：有角色、有目标读者、有约束、有输出格式。AI 清楚知道自己要做什么、做成什么样。</span></div>';
+  document.getElementById('ruleDisplay').innerHTML = mode==='bad' ? badHtml : goodHtml;
+}
+function completeStep(){Progress.complete("step-03");window.location.href="index.html";}
+
+// 恢复已保存的
+(function(){
+  const keys=Object.keys(Output.getAll()).filter(k=>k.startsWith('step03-manual-'));
+  if(keys.length){
+    document.getElementById('previewContent').textContent=Output.get(keys[0]);
+    document.getElementById('previewContent').classList.remove('preview-empty');
+  }
+})();
+
+initProgressBar();initSidebar();
+</script>
+</body>
+</html>

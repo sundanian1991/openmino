@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人机协同实践课程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#F5F5F5;
+  --surface:#FFFFFF;
+  --surface-raised:#FAFAFA;
+  --border:#E8E8E8;
+  --border-visible:#CCCCCC;
+  --text-display:#000000;
+  --text-primary:#1A1A1A;
+  --text-secondary:#666666;
+  --text-disabled:#999999;
+  --accent:#D71921;
+  --accent-subtle:rgba(215,25,33,0.07);
+  --success:#4A9E5C;
+  --space-xs:4px;
+  --space-sm:8px;
+  --space-md:16px;
+  --space-lg:24px;
+  --space-xl:32px;
+  --space-2xl:48px;
+  --space-3xl:64px;
+  --space-4xl:96px;
+}
+
+html{font-size:16px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{
+  font-family:'Space Grotesk',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text-primary);
+  line-height:1.6;
+  min-height:100vh;
+  background-image:radial-gradient(circle,var(--border) 0.6px,transparent 0.6px);
+  background-size:20px 20px;
+}
+
+/* ===== Layout ===== */
+.app{display:flex;min-height:100vh}
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:240px;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:var(--space-xl) var(--space-md);
+  overflow-y:auto;
+  z-index:50;
+}
+.sidebar-brand{
+  font-family:'Space Mono',monospace;
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text-display);
+  padding:0 var(--space-sm) var(--space-lg);
+  border-bottom:1px solid var(--border);
+  margin-bottom:var(--space-md);
+}
+.sidebar-brand em{font-style:normal;color:var(--accent)}
+.nav-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+.nav-item{
+  font-family:'Space Mono',monospace;
+  font-size:12px;letter-spacing:.04em;
+  color:var(--text-secondary);
+  padding:var(--space-sm) var(--space-md);
+  cursor:pointer;border-left:2px solid transparent;
+  transition:all .2s;display:flex;align-items:center;gap:var(--space-sm);
+  user-select:none;
+}
+.nav-item:hover{color:var(--text-display);background:var(--surface-raised)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-subtle)}
+.nav-item .num{font-size:10px;color:var(--text-disabled);min-width:18px}
+.nav-item.active .num{color:var(--accent)}
+.nav-item.done::after{content:"✓";margin-left:auto;color:var(--success);font-size:11px}
+
+.progress-wrap{
+  margin-top:var(--space-lg);
+  padding:var(--space-md);
+  background:var(--surface-raised);
+  border:1px solid var(--border);
+}
+.progress-label{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.08em;
+  color:var(--text-secondary);
+  text-transform:uppercase;
+  margin-bottom:var(--space-sm);
+  display:flex;justify-content:space-between;
+}
+.progress-bar{
+  height:4px;background:var(--border);position:relative;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:var(--accent);width:0%;
+  transition:width .4s ease;
+}
+
+.main{
+  margin-left:240px;
+  flex:1;
+  padding:var(--space-4xl) var(--space-3xl) var(--space-3xl);
+  max-width:1100px;
+}
+
+/* ===== Section ===== */
+.section{display:none;animation:fadeIn .3s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.module-head{margin-bottom:var(--space-2xl)}
+.module-meta{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:.12em;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:var(--space-sm);
+}
+.module-title{
+  font-size:clamp(28px,3.6vw,44px);
+  font-weight:700;color:var(--text-display);
+  letter-spacing:-.02em;line-height:1.1;
+  margin-bottom:var(--space-md);
+}
+.module-title em{font-style:normal;color:var(--accent)}
+.module-lead{
+  font-size:15px;color:var(--text-secondary);
+  max-width:680px;line-height:1.75;
+}
+
+/* ===== Sub block ===== */
+.block{margin-bottom:var(--space-3xl)}
+.block-title{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:.1em;
+  color:var(--text-secondary);text-transform:uppercase;
+  margin-bottom:var(--space-md);
+  padding-bottom:var(--space-sm);
+  border-bottom:1px solid var(--border);
+}
+
+/* ===== Timeline (PMP) ===== */
+.timeline{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:0;
+  margin-bottom:var(--space-lg);
+}
+.tl-step{
+  position:relative;
+  padding:var(--space-md) var(--space-md) var(--space-md) var(--space-md);
+  border-top:2px solid var(--border);
+}
+.tl-step::before{
+  content:"";
+  position:absolute;top:-7px;left:0;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--surface);border:2px solid var(--border);
+}
+.tl-step.active::before{background:var(--accent);border-color:var(--accent)}
+.tl-step.active{border-top-color:var(--accent)}
+.tl-num{
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--text-disabled);
+  margin-bottom:var(--space-xs);
+}
+.tl-step.active .tl-num{color:var(--accent)}
+.tl-name{font-size:13px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.tl-q{font-size:12px;color:var(--text-secondary);line-height:1.55;margin-bottom:var(--space-xs)}
+.tl-out{
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--accent);
+  background:var(--accent-subtle);
+  padding:2px 6px;display:inline-block;
+}
+
+/* ===== Checklist ===== */
+.checklist{
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:var(--space-lg);
+  margin-bottom:var(--space-md);
+}
+.cl-flow{
+  font-family:'Space Mono',monospace;
+  font-size:11px;color:var(--text-secondary);
+  padding:var(--space-md);
+  background:var(--surface-raised);
+  border:1px dashed var(--border-visible);
+  margin-bottom:var(--space-md);
+  text-align:center;line-height:1.8;
+}
+.cl-flow span{color:var(--accent)}
+.cl-items{list-style:none;display:flex;flex-direction:column;gap:var(--space-sm)}
+.cl-items li{
+  display:flex;gap:var(--space-sm);
+  font-size:13px;color:var(--text-primary);
+  line-height:1.6;
+}
+.cl-items li::before{
+  content:"☐";color:var(--accent);
+  font-size:14px;flex-shrink:0;
+}
+.cl-warn{
+  background:var(--accent);color:#fff;
+  padding:var(--space-md) var(--space-lg);
+  font-size:13px;font-weight:500;
+  margin-top:var(--space-md);
+}
+
+/* ===== Practice card ===== */
+.practice{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  padding:var(--space-xl);
+}
+.practice-head{
+  display:flex;align-items:center;gap:var(--space-sm);
+  margin-bottom:var(--space-md);
+}
+.practice-tag{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.08em;
+  color:var(--accent);text-transform:uppercase;
+  background:var(--accent-subtle);
+  padding:3px 8px;
+}
+.practice-title{font-size:15px;font-weight:600;color:var(--text-display)}
+.practice-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:var(--space-md);
+}
+.practice-grid > div{}
+.pg-label{
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--text-disabled);
+  text-transform:uppercase;letter-spacing:.06em;
+  margin-bottom:var(--space-xs);
+}
+.pg-val{font-size:13px;color:var(--text-primary);line-height:1.6}
+.pg-val.warn{color:var(--accent)}
+
+/* ===== Dark section (M4 architecture) ===== */
+.dark-block{
+  background:#000;color:#fff;
+  padding:var(--space-2xl);
+  margin-bottom:var(--space-md);
+}
+.dark-block .block-title{color:#999;border-bottom-color:#222}
+.arch-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--space-md);
+}
+.arch-card{
+  background:#111;color:#fff;
+  border:1px solid #222;
+  padding:var(--space-lg);
+}
+.arch-tag{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.1em;
+  color:var(--accent);margin-bottom:var(--space-sm);
+}
+.arch-name{font-size:15px;font-weight:600;margin-bottom:var(--space-sm);color:#fff}
+.arch-desc{font-size:12px;color:#aaa;line-height:1.65;margin-bottom:var(--space-sm)}
+.arch-flow{
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:#888;
+  padding:var(--space-sm);
+  background:#000;border:1px solid #222;
+  line-height:1.7;
+}
+.arch-flow .arr{color:var(--accent)}
+
+/* ===== Anchor cards ===== */
+.anchor-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);
+  margin-bottom:var(--space-md);
+}
+.anchor-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  padding:var(--space-xl);
+  border-top:3px solid var(--accent);
+}
+.anchor-num{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:.08em;
+  color:var(--accent);margin-bottom:var(--space-sm);
+}
+.anchor-title{font-size:15px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-sm)}
+.anchor-desc{font-size:13px;color:var(--text-secondary);line-height:1.65}
+
+/* ===== Workflow steps (7) ===== */
+.flow-7{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:0;margin-bottom:var(--space-md);
+}
+.flow-7 .tl-step{padding:var(--space-md) var(--space-sm)}
+.flow-7 .tl-name{font-size:12px}
+.flow-7 .tl-step.highlight{border-top-color:var(--accent)}
+.flow-7 .tl-step.highlight::before{background:var(--accent);border-color:var(--accent)}
+.flow-7 .tl-step.highlight .tl-num{color:var(--accent)}
+
+/* ===== Model split ===== */
+.model-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);
+}
+.model-card{
+  background:var(--surface);border:1px solid var(--border);
+  padding:var(--space-lg);
+}
+.model-role{
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--accent);
+  letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:var(--space-xs);
+}
+.model-name{font-size:14px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-sm)}
+.model-note{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+/* ===== M5 5Q form ===== */
+.q-form{
+  background:#000;color:#fff;
+  padding:var(--space-2xl);
+  margin-bottom:var(--space-lg);
+}
+.q-form .block-title{color:#999;border-bottom-color:#222}
+.q-list{display:flex;flex-direction:column;gap:var(--space-md)}
+.q-item{
+  background:#111;border:1px solid #222;padding:var(--space-md);
+}
+.q-label{
+  font-family:'Space Mono',monospace;
+  font-size:11px;color:var(--accent);
+  letter-spacing:.06em;margin-bottom:var(--space-sm);
+}
+.q-text{font-size:13px;color:#ddd;line-height:1.6;margin-bottom:var(--space-sm)}
+.q-input{
+  width:100%;
+  background:#000;border:1px solid #333;
+  color:#fff;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:13px;
+  padding:var(--space-sm) var(--space-md);
+  outline:none;resize:vertical;min-height:60px;
+}
+.q-input:focus{border-color:var(--accent)}
+.q-input::placeholder{color:#555}
+
+.q-gen-btn{
+  margin-top:var(--space-md);
+  background:var(--accent);color:#fff;border:none;
+  padding:var(--space-md) var(--space-xl);
+  font-family:'Space Mono',monospace;
+  font-size:12px;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;
+  transition:opacity .2s;
+}
+.q-gen-btn:hover{opacity:.85}
+
+.q-result{
+  background:#111;border:1px solid #222;
+  padding:var(--space-lg);
+  font-family:'Space Mono',monospace;
+  font-size:12px;color:#ddd;
+  line-height:1.8;white-space:pre-wrap;
+  min-height:80px;display:none;
+}
+.q-result.show{display:block}
+
+/* ===== Stair (4 steps) ===== */
+.stair{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:var(--space-md);margin-bottom:var(--space-md);
+}
+.stair-card{
+  background:var(--surface);border:1px solid var(--border);
+  padding:var(--space-lg);
+  position:relative;
+}
+.stair-card:nth-child(1){margin-top:48px}
+.stair-card:nth-child(2){margin-top:32px}
+.stair-card:nth-child(3){margin-top:16px}
+.stair-card:nth-child(4){margin-top:0}
+.stair-num{
+  font-family:'Space Mono',monospace;
+  font-size:10px;color:var(--accent);
+  letter-spacing:.08em;margin-bottom:var(--space-xs);
+}
+.stair-title{font-size:13px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.stair-desc{font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+/* ===== Complete button ===== */
+.complete-btn{
+  display:inline-block;
+  background:transparent;border:1px solid var(--border-visible);
+  color:var(--text-secondary);
+  padding:var(--space-sm) var(--space-lg);
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;
+  margin-top:var(--space-xl);
+  transition:all .2s;
+}
+.complete-btn:hover{border-color:var(--accent);color:var(--accent)}
+.complete-btn.done{background:var(--success);border-color:var(--success);color:#fff}
+
+/* ===== Summary ===== */
+.summary-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-top:4px solid var(--accent);
+  padding:var(--space-2xl);
+  text-align:center;
+}
+.summary-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:.12em;
+  color:var(--accent);text-transform:uppercase;
+  margin-bottom:var(--space-md);
+}
+.summary-title{
+  font-size:clamp(24px,3vw,36px);
+  font-weight:700;color:var(--text-display);
+  letter-spacing:-.02em;line-height:1.15;
+  margin-bottom:var(--space-md);
+}
+.summary-title em{font-style:normal;color:var(--accent)}
+.summary-sub{
+  font-size:14px;color:var(--text-secondary);
+  max-width:560px;margin:0 auto;line-height:1.7;
+}
+
+.footer{
+  max-width:1100px;margin:0 auto;
+  padding:var(--space-2xl) var(--space-3xl);
+  border-top:1px solid var(--border);
+  text-align:center;
+}
+.footer-text{
+  font-family:'Space Mono',monospace;
+  font-size:11px;color:var(--text-disabled);
+  letter-spacing:.04em;
+}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .main{margin-left:0;padding:var(--space-3xl) var(--space-md)}
+  .timeline,.flow-7{grid-template-columns:repeat(2,1fr)}
+  .arch-grid,.anchor-grid,.model-grid,.stair,.practice-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">人机协同 <em>实践课</em></div>
+    <ul class="nav-list">
+      <li class="nav-item" data-target="m0"><span class="num">00</span> 自测定位</li>
+      <li class="nav-item" data-target="m1"><span class="num">01</span> 认知重构</li>
+      <li class="nav-item" data-target="m2"><span class="num">02</span> 日常协同</li>
+      <li class="nav-item" data-target="m3"><span class="num">03</span> 项目协同</li>
+      <li class="nav-item" data-target="m4"><span class="num">04</span> 长周期协同</li>
+      <li class="nav-item" data-target="m5"><span class="num">05</span> 判断力资产</li>
+    </ul>
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>进度</span>
+        <span id="progressText">0 / 6</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ===== M0 自测定位 ===== -->
+    <section class="section" id="m0">
+      <div class="module-head">
+        <div class="module-meta">模块 00 / 自测定位</div>
+        <h1 class="module-title">你在<em>哪一阶</em>？</h1>
+        <p class="module-lead">勾选你已经具备的能力。系统会自动判断你当前所在阶段，并推荐从哪里开始学。不需要全部勾——诚实回答即可。</p>
+      </div>
+
+      <div class="block">
+        <div class="block-title">四阶段说明</div>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;max-width:680px;margin-bottom:var(--space-lg)">
+          阶段1 入门（会用AI生成内容）→ 阶段2 工具化（把高频重复工作做成可复用工具）→ 阶段3 判断力（能把判断说清楚、显式化）→ 阶段4 分身化（知识库+技能+判断档案=数字分身）。多数人卡在阶段1，少数到达阶段2。
+        </p>
+      </div>
+
+      <div class="block">
+        <div class="block-title">勾选你的能力</div>
+        <div id="assessGrid" style="display:flex;flex-direction:column;gap:var(--space-md)">
+
+          <div class="assess-tier" data-tier="1" style="background:var(--surface);border:1px solid var(--border);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--space-lg);border-bottom:1px solid var(--border);background:var(--surface-raised);border-left:3px solid #999">
+              <div><span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;color:#999">STAGE 1</span> <span style="font-size:14px;font-weight:500;margin-left:var(--space-sm)">入门 · 会用AI生成内容</span></div>
+              <span class="tier-count" id="count-1" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text-disabled)">0/3</span>
+            </div>
+            <div style="padding:var(--space-md) var(--space-lg);display:flex;flex-direction:column;gap:var(--space-sm)">
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="1" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我会用AI生成JD、邮件、面试题等内容</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="1" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我知道不同AI工具的基本区别（ChatGPT / Copilot / Codex等）</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="1" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我能判断AI产出是否可用，知道何时该自己改</span></label>
+            </div>
+          </div>
+
+          <div class="assess-tier" data-tier="2" style="background:var(--surface);border:1px solid var(--border);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--space-lg);border-bottom:1px solid var(--border);background:var(--surface-raised);border-left:3px solid #5B9BF6">
+              <div><span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;color:#5B9BF6">STAGE 2</span> <span style="font-size:14px;font-weight:500;margin-left:var(--space-sm)">工具化 · 把重复工作变成可复用工具</span></div>
+              <span class="tier-count" id="count-2" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text-disabled)">0/3</span>
+            </div>
+            <div style="padding:var(--space-md) var(--space-lg);display:flex;flex-direction:column;gap:var(--space-sm)">
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="2" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我写过 AGENTS.md 或类似的规则文件，让AI按我的标准工作</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="2" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我有至少一个"做一次就能反复用"的AI工作流或工具</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="2" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我用AI不只是写文案，还能做分析、出报告、搭流程</span></label>
+            </div>
+          </div>
+
+          <div class="assess-tier" data-tier="3" style="background:var(--surface);border:1px solid var(--border);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--space-lg);border-bottom:1px solid var(--border);background:var(--surface-raised);border-left:3px solid #8B7CF6">
+              <div><span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;color:#8B7CF6">STAGE 3</span> <span style="font-size:14px;font-weight:500;margin-left:var(--space-sm)">判断力 · 能把判断说清楚</span></div>
+              <span class="tier-count" id="count-3" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text-disabled)">0/3</span>
+            </div>
+            <div style="padding:var(--space-md) var(--space-lg);display:flex;flex-direction:column;gap:var(--space-sm)">
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="3" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>每次给AI下指令时，我能清晰定义目标、验收标准和边界</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="3" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我有沉淀判断的习惯（判断档案、经验文档、复盘记录）</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="3" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我能在AI理解偏差时精准纠偏，而不是笼统说"不对，重做"</span></label>
+            </div>
+          </div>
+
+          <div class="assess-tier" data-tier="4" style="background:var(--surface);border:1px solid var(--border);overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-md) var(--space-lg);border-bottom:1px solid var(--border);background:var(--surface-raised);border-left:3px solid #D4A843">
+              <div><span style="font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;color:#D4A843">STAGE 4</span> <span style="font-size:14px;font-weight:500;margin-left:var(--space-sm)">分身化 · 数字分身</span></div>
+              <span class="tier-count" id="count-4" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text-disabled)">0/3</span>
+            </div>
+            <div style="padding:var(--space-md) var(--space-lg);display:flex;flex-direction:column;gap:var(--space-sm)">
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="4" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我有结构化的知识库，AI能随时调用我的专业知识</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="4" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我的AI工具具备长期记忆，跨会话记住我的偏好和历史</span></label>
+              <label style="display:flex;align-items:flex-start;gap:var(--space-md);cursor:pointer;font-size:14px;line-height:1.6;color:var(--text-primary)"><input type="checkbox" data-tier="4" style="width:18px;height:18px;min-width:18px;margin-top:2px"><span>我有多个配置好的技能/Agent，可以按场景自动分工</span></label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="assessResult" style="margin-top:var(--space-xl);padding:var(--space-xl);background:var(--text-display);color:var(--surface);display:none">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:var(--space-sm)">你的定位</div>
+        <div id="resultTier" style="font-size:32px;font-weight:700;margin-bottom:var(--space-sm)">—</div>
+        <div id="resultDesc" style="font-size:15px;opacity:.8;line-height:1.7;max-width:600px"></div>
+        <div id="resultNext" style="margin-top:var(--space-md);font-family:'Space Mono',monospace;font-size:13px"></div>
+      </div>
+
+      <button class="complete-btn" data-module="m0">标记本模块完成</button>
+    </section>
+
+    <!-- ===== M1 认知重构 ===== -->
+    <section class="section" id="m1">
+      <div class="module-head">
+        <div class="module-meta">模块 01 / 认知重构</div>
+        <h1 class="module-title">协同的<em>本质</em>是什么</h1>
+        <p class="module-lead">人机协同的本质，不是静态地划"AI干什么、人干什么"，而是动态地把人的判断力，从脑子里传递到AI可执行的流程里。</p>
+      </div>
+
+      <div class="block">
+        <div class="block-title">四层递进分工模型</div>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:680px;margin-bottom:var(--space-lg)">分工不是一张静态表，是四层递进结构。越往上越核心，越往下越容易外包。</p>
+
+        <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+
+          <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-lg);border-left:3px solid #D71921">
+            <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-sm)">
+              <span style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#D71921">04</span>
+              <span style="font-size:15px;font-weight:600">进化分工</span>
+              <span style="font-size:12px;color:var(--text-disabled)">谁在变好？</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-sm)">
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">人 · 往上游走</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">把隐性判断显式化（判断档案）。不断把低层任务交出去，自己往更高层走。</div></div>
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">AI · 往下游接</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">按显式化的判断执行。随着判断框架越来越清晰，承担越来越多的任务。</div></div>
+            </div>
+            <div style="font-size:12px;color:var(--text-primary);margin-top:var(--space-sm);padding-top:var(--space-sm);border-top:1px solid var(--border);line-height:1.6"><strong>传递过程：</strong>第一次做→人全程参与+提取判断样本；第二次→人给框架AI执行；第三次→AI自主执行人只验收异常；第N次→完全由AI承担。</div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-lg);border-left:3px solid #8B7CF6">
+            <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-sm)">
+              <span style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#8B7CF6">03</span>
+              <span style="font-size:15px;font-weight:600">知识分工</span>
+              <span style="font-size:12px;color:var(--text-disabled)">谁记住什么？</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-sm)">
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">人记住</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">"意味着什么"——判断、风格、直觉、为什么这么定、下次遇到类似的怎么判断。</div></div>
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">AI记住</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">"发生了什么"——事实、过程、上下文。什么文件在哪、上次怎么定的、谁说了什么。</div></div>
+            </div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-lg);border-left:3px solid #5B9BF6">
+            <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-sm)">
+              <span style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#5B9BF6">02</span>
+              <span style="font-size:15px;font-weight:600">判断分工</span>
+              <span style="font-size:12px;color:var(--text-disabled)">谁定标准？</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-sm)">
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">人只握两个环节</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6"><strong>判断决策</strong>（做出裁决）+ <strong>结果验收</strong>（确认对不对）。这两个环节不可外包。</div></div>
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">AI承接四个环节</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">信息收集 → 信息整理 → 模式识别 → 执行落地。判断前后的"体力活"都可以外包。</div></div>
+            </div>
+            <div style="font-size:12px;color:var(--accent);margin-top:var(--space-sm);padding-top:var(--space-sm);border-top:1px solid var(--border);line-height:1.6"><strong>陷阱：</strong>AI整理得不对，人的判断就建立在错误信息上。不能把AI当裁判。</div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-lg);border-left:3px solid #999">
+            <div style="display:flex;align-items:center;gap:var(--space-md);margin-bottom:var(--space-sm)">
+              <span style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:#999">01</span>
+              <span style="font-size:15px;font-weight:600">执行分工</span>
+              <span style="font-size:12px;color:var(--text-disabled)">谁做？</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-top:var(--space-sm)">
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">人做</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">低频高价 + 不可逆 + 创造性跳跃。关键决策、危机处理、从0到1的框架。</div></div>
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled);margin-bottom:4px">AI做</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.6">高频重复 + 可验证 + 模式匹配。编程、格式转换、数据汇总、分类检索。</div></div>
+            </div>
+            <div style="font-size:12px;color:var(--text-primary);margin-top:var(--space-sm);padding-top:var(--space-sm);border-top:1px solid var(--border);line-height:1.6"><strong>实证：</strong>40万次Claude Code真实对话——人做约70%规划决策（What），AI做约80%执行决策（How）。</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">3A分诊法 · 30秒决定怎么分</div>
+        <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:680px;margin-bottom:var(--space-lg)">每接到一个任务，先扔进三个"抽屉"之一。拖动三个维度的滑块，系统自动推荐你应该用哪种模式。</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-lg);align-items:start">
+          <div>
+            <div style="margin-bottom:var(--space-md)">
+              <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-secondary);margin-bottom:var(--space-xs)">任务描述（可选）</div>
+              <textarea id="triageText" placeholder="例：把上个月的招聘数据整理成周会汇报摘要…" style="width:100%;min-height:60px;padding:var(--space-sm) var(--space-md);border:1px solid var(--border-visible);background:var(--surface);font-family:'Space Grotesk',sans-serif;font-size:13px;resize:vertical"></textarea>
+            </div>
+
+            <div style="margin-bottom:var(--space-md)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs)">
+                <span style="font-size:13px;font-weight:500">确定性 · 规则有多清楚？</span>
+                <span id="val-certainty" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text-secondary)">50</span>
+              </div>
+              <input type="range" id="slider-certainty" min="0" max="100" value="50" style="width:100%;accent-color:var(--accent)">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-disabled);margin-top:2px"><span>模糊说不清</span><span>规则明确好验证</span></div>
+            </div>
+
+            <div style="margin-bottom:var(--space-md)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs)">
+                <span style="font-size:13px;font-weight:500">可逆性 · 做错了能撤吗？</span>
+                <span id="val-reversibility" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text-secondary)">50</span>
+              </div>
+              <input type="range" id="slider-reversibility" min="0" max="100" value="50" style="width:100%;accent-color:var(--accent)">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-disabled);margin-top:2px"><span>不可逆（发送/签订）</span><span>随时可撤回</span></div>
+            </div>
+
+            <div style="margin-bottom:var(--space-md)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs)">
+                <span style="font-size:13px;font-weight:500">任务跨度 · 几步能完？</span>
+                <span id="val-span" style="font-family:'Space Mono',monospace;font-size:12px;color:var(--text-secondary)">50</span>
+              </div>
+              <input type="range" id="slider-span" min="0" max="100" value="50" style="width:100%;accent-color:var(--accent)">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-disabled);margin-top:2px"><span>单步即完</span><span>多步串联任务</span></div>
+            </div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);padding:var(--space-lg)">
+            <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text-secondary);margin-bottom:var(--space-sm)">推荐模式</div>
+            <div id="triageResult" style="font-size:24px;font-weight:700;color:#5B9BF6;margin-bottom:var(--space-sm)">Augmentation</div>
+            <div id="triageReason" style="font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:var(--space-md)">拖动滑块或输入任务描述，系统会根据三个维度自动推荐你应该用哪种协同模式。</div>
+            <div id="triageRoles" style="display:none">
+              <div style="margin-bottom:var(--space-sm)"><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">你做</div><div id="triageHuman" style="font-size:13px;color:var(--text-primary)">—</div></div>
+              <div><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--text-disabled)">AI做</div><div id="triageAI" style="font-size:13px;color:var(--text-primary)">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md);margin-top:var(--space-xl)">
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border);border-top:3px solid #4A9E5C">
+            <div style="font-size:14px;font-weight:700;color:#4A9E5C;margin-bottom:var(--space-xs)">Automation · 自动化</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6"><strong>AI独立完成确定性任务</strong>，你不用盯，结果好验证。<br><strong>你做：</strong>验收结果<br><strong>场景：</strong>格式转换、数据清洗、日报汇总</div>
+          </div>
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border);border-top:3px solid #5B9BF6">
+            <div style="font-size:14px;font-weight:700;color:#5B9BF6;margin-bottom:var(--space-xs)">Augmentation · 增强</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6"><strong>AI给你信息和建议，你拍板。</strong><br><strong>你做：</strong>最终决策<br><strong>场景：</strong>竞品调研、要不要做某需求、方案对比</div>
+          </div>
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border);border-top:3px solid #8B7CF6">
+            <div style="font-size:14px;font-weight:700;color:#8B7CF6;margin-bottom:var(--space-xs)">Agent · 智能体</div>
+            <div style="font-size:12px;color:var(--text-secondary);line-height:1.6"><strong>AI自主规划执行多步任务</strong>，你只负责设边界。<br><strong>你做：</strong>设边界和约束<br><strong>场景：</strong>完整调研+出报告、代码重构</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="practice">
+          <div class="practice-head">
+            <span class="practice-tag">练习卡</span>
+            <span class="practice-title">用3A分诊法分类5个真实任务</span>
+          </div>
+          <div class="practice-grid">
+            <div>
+              <div class="pg-label">动作</div>
+              <div class="pg-val">列出你本周5个真实工作任务，逐一用3A分诊法判断应该用Auto/Augment/Agent</div>
+            </div>
+            <div>
+              <div class="pg-label">方法</div>
+              <div class="pg-val">对每个任务评估确定性、可逆性、任务跨度三个维度</div>
+            </div>
+            <div>
+              <div class="pg-label">验收</div>
+              <div class="pg-val">5个任务都有明确的模式推荐和"你做/AI做"分工</div>
+            </div>
+            <div>
+              <div class="pg-label">误区</div>
+              <div class="pg-val warn">所有任务都用同一种模式；把不可逆任务交给Agent</div>
+            </div>
+            <div style="grid-column:span 2">
+              <div class="pg-label">时间</div>
+              <div class="pg-val">约30分钟</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="complete-btn" data-module="m1">标记本模块完成</button>
+    </section>
+
+    <!-- ===== M2 日常协同 ===== -->
+    <section class="section" id="m2">
+      <div class="module-head">
+        <div class="module-meta">模块 02 / 日常协同</div>
+        <h1 class="module-title">给AI写<em>操作手册</em></h1>
+        <p class="module-lead">README.md是给人看的项目门面，AGENTS.md是给AI看的项目操作手册。通过机器友好的Markdown格式，以极低Token成本让AI"瞬间入职"。适用于日常单次任务——你给AI规则，它按规则执行，你验收结果。</p>
+      </div>
+
+      <div class="block">
+        <div class="block-title">AGENTS.md 五条最佳实践</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md)">
+
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border)">
+            <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--text-disabled);margin-bottom:var(--space-sm)">01</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:var(--space-xs)">用强语气词</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">用 <code style="background:var(--surface-raised);padding:2px 6px;font-family:'Space Mono',monospace;font-size:12px">Must</code> / <code style="background:var(--surface-raised);padding:2px 6px;font-family:'Space Mono',monospace;font-size:12px">Never</code> / <code style="background:var(--surface-raised);padding:2px 6px;font-family:'Space Mono',monospace;font-size:12px">Always</code>，效果远好于 Should / Recommend。AI对强指令的遵从度显著更高。</div>
+          </div>
+
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border)">
+            <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--text-disabled);margin-bottom:var(--space-sm)">02</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:var(--space-xs)">提供正误对比</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">展示 错误 vs 正确，是最高效的沟通方式。比写500字描述规则，不如给一对正反示例。</div>
+          </div>
+
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border)">
+            <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--text-disabled);margin-bottom:var(--space-sm)">03</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:var(--space-xs)">机器友好格式</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">多用表格、列表、代码块。AI处理结构化数据远优于散文。把命令、路径、参数用表格呈现。</div>
+          </div>
+
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border)">
+            <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--text-disabled);margin-bottom:var(--space-sm)">04</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:var(--space-xs)">单一职责</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">只写工程规范，不写业务逻辑。业务逻辑让AI通过阅读代码/文档获取。文件不超过200行。</div>
+          </div>
+
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border)">
+            <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--text-disabled);margin-bottom:var(--space-sm)">05</div>
+            <div style="font-size:14px;font-weight:700;margin-bottom:var(--space-xs)">禁令清单最重要</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">明确写出 Don'ts。必须包含安全约束（如"禁止将API Key写在代码里"）。这是防止AI"好心办坏事"的关键。</div>
+          </div>
+
+          <div style="padding:var(--space-lg);background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent)">
+            <div style="font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--accent);margin-bottom:var(--space-sm)">!</div>
+            <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:var(--space-xs)">防坑</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6">最常见错误：①含糊其辞（"写高质量代码"是废话）②信息过时 ③文件太大 ④忘记安全约束</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="practice">
+          <div class="practice-head">
+            <span class="practice-tag">练习卡</span>
+            <span class="practice-title">给一个高频重复工作写AGENTS.md</span>
+          </div>
+          <div class="practice-grid">
+            <div>
+              <div class="pg-label">动作</div>
+              <div class="pg-val">选一个每周做3次以上的任务，按四层结构（核心上下文/运行指南/质量约束/禁令清单）写规则文件</div>
+            </div>
+            <div>
+              <div class="pg-label">方法</div>
+              <div class="pg-val">AGENTS.md 五条最佳实践</div>
+            </div>
+            <div>
+              <div class="pg-label">验收</div>
+              <div class="pg-val">AI读完文件后能独立完成该任务，你只需审批结果</div>
+            </div>
+            <div>
+              <div class="pg-label">误区</div>
+              <div class="pg-val warn">把业务逻辑写进去（应只写工程规范）；文件超过200行</div>
+            </div>
+            <div style="grid-column:span 2">
+              <div class="pg-label">时间</div>
+              <div class="pg-val">约2小时</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="complete-btn" data-module="m2">标记本模块完成</button>
+    </section>
+
+    <!-- ===== M3 项目协同 ===== -->
+    <section class="section" id="m3">
+      <div class="module-head">
+        <div class="module-meta">模块 03 / 项目协同</div>
+        <h1 class="module-title">用<em>项目管理思维</em>控场</h1>
+        <p class="module-lead">把使用AI从"写代码做任务"升级为"AI辅助项目管理"。适用于有明确开始和结束的标准项目——1-4周。</p>
+      </div>
+
+      <div class="block">
+        <div class="block-title">PMP 五阶段时间线</div>
+        <div class="timeline">
+          <div class="tl-step active">
+            <div class="tl-num">① 启动 · 定调</div>
+            <div class="tl-name">要做什么？不做什么？验收标准？</div>
+            <div class="tl-out">→ PROJ.md</div>
+          </div>
+          <div class="tl-step active">
+            <div class="tl-num">② 规划 · 拆解</div>
+            <div class="tl-name">不写代码，先拆任务，列风险和验证方式</div>
+            <div class="tl-out">→ PLAN.md</div>
+          </div>
+          <div class="tl-step active">
+            <div class="tl-num">③ 执行 · 小步快跑</div>
+            <div class="tl-name">按计划执行，逐步交付</div>
+            <div class="tl-out">→ 代码/文档</div>
+          </div>
+          <div class="tl-step active">
+            <div class="tl-num">④ 监控 · 门禁检查</div>
+            <div class="tl-name">边做边检查，防止偏离</div>
+            <div class="tl-out">→ 纠偏</div>
+          </div>
+          <div class="tl-step active">
+            <div class="tl-num">⑤ 收尾 · 验收</div>
+            <div class="tl-name">对照验收标准确认</div>
+            <div class="tl-out">→ 交付</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">Agent 最小闭环与验收底线</div>
+        <div class="checklist">
+          <div class="cl-flow">
+            User Task <span>→</span> Plan <span>→</span> Tool Call <span>→</span> Observation <span>→</span> Revise Plan / Finish
+          </div>
+          <ul class="cl-items">
+            <li>同一输入连续跑5次，关键步骤一致（可复现）</li>
+            <li>工具失败时不会无限重试，有上限和兜底</li>
+            <li>每一步都有日志，可追溯可回放</li>
+            <li>人类可以在关键节点中断或接管</li>
+          </ul>
+          <div class="cl-warn">达不到这四条，就先别加更多工具。</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="practice">
+          <div class="practice-head">
+            <span class="practice-tag">练习卡</span>
+            <span class="practice-title">用 PMP 五阶段法做一个完整项目</span>
+          </div>
+          <div class="practice-grid">
+            <div>
+              <div class="pg-label">动作</div>
+              <div class="pg-val">选一个1-4周可交付的小项目，按五阶段走完整流程</div>
+            </div>
+            <div>
+              <div class="pg-label">方法</div>
+              <div class="pg-val">每阶段产出对应文档（PROJ.md / PLAN.md / 交付物 / 纠偏记录 / 验收报告）</div>
+            </div>
+            <div>
+              <div class="pg-label">验收</div>
+              <div class="pg-val">五份产物齐全；Agent 闭环满足四条底线；最终交付对照验收标准通过</div>
+            </div>
+            <div>
+              <div class="pg-label">误区</div>
+              <div class="pg-val warn">跳过规划直接执行；监控只看进度不看偏离；收尾不对照启动时定的验收标准</div>
+            </div>
+            <div style="grid-column:span 2">
+              <div class="pg-label">时间</div>
+              <div class="pg-val">1-4 周（项目实际周期）</div>
+            </div>
+          </div>
+        </div>
+        <button class="complete-btn" data-module="m3">标记本模块完成</button>
+      </div>
+    </section>
+
+    <!-- ===== M4 长周期协同 ===== -->
+    <section class="section" id="m4">
+      <div class="module-head">
+        <div class="module-meta">模块 04 / 长周期协同</div>
+        <h1 class="module-title">带<em>AI团队</em>做大事</h1>
+        <p class="module-lead">当项目跨越数天甚至数周，AI会丢失目标、偏离路线、遗忘决策。解决核心问题：怎么在长周期项目中保持AI不漂移。</p>
+      </div>
+
+      <div class="block">
+        <div class="dark-block">
+          <div class="block-title">三层协同架构</div>
+          <div class="arch-grid">
+            <div class="arch-card">
+              <div class="arch-tag">L1 · 执行层</div>
+              <div class="arch-name">VIBE 流水线</div>
+              <div class="arch-desc">把想法做成产物。6步走完从灵感到实现的全过程。</div>
+              <div class="arch-flow">idea <span class="arr">→</span> interaction <span class="arr">→</span> architecture <span class="arr">→</span> design <span class="arr">→</span> prototype <span class="arr">→</span> implement</div>
+            </div>
+            <div class="arch-card">
+              <div class="arch-tag">L2 · 编排层</div>
+              <div class="arch-name">ORCHESTRATE</div>
+              <div class="arch-desc">让长周期不迷失。里程碑、路线图、共驾仪表盘、验证门禁。</div>
+              <div class="arch-flow">里程碑 <span class="arr">+</span> ROADMAP <span class="arr">+</span> dashboard共驾 <span class="arr">+</span> 验证门禁</div>
+            </div>
+            <div class="arch-card">
+              <div class="arch-tag">L3 · 接力层</div>
+              <div class="arch-name">TASK-HANDOFF</div>
+              <div class="arch-desc">跨班次连轴转。人下发任务，AI夜间执行，人验收。</div>
+              <div class="arch-flow">人 → PROMPT.md <span class="arr">→</span> AI夜间执行 <span class="arr">→</span> DONE.md <span class="arr">→</span> 人验收</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">三大锚点</div>
+        <div class="anchor-grid">
+          <div class="anchor-card">
+            <div class="anchor-num">ANCHOR 01</div>
+            <div class="anchor-title">目标锚定</div>
+            <div class="anchor-desc">把目标外置到持久文件 GOALS.md，不随对话漂移。每次启动会话先读目标，对齐再动手。</div>
+          </div>
+          <div class="anchor-card">
+            <div class="anchor-num">ANCHOR 02</div>
+            <div class="anchor-title">证据验收</div>
+            <div class="anchor-desc">里程碑不是AI说了算，是证据说了算。双轨审计：AI自报 + 独立验证，对不上就回退。</div>
+          </div>
+          <div class="anchor-card">
+            <div class="anchor-num">ANCHOR 03</div>
+            <div class="anchor-title">状态外置</div>
+            <div class="anchor-desc">项目状态存在于文件中，不存在于对话上下文中。上下文会丢，文件不会。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">七步工作流</div>
+        <div class="flow-7">
+          <div class="tl-step">
+            <div class="tl-num">01</div>
+            <div class="tl-name">对话启动</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">02</div>
+            <div class="tl-name">主线程协调</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">03</div>
+            <div class="tl-name">里程碑审计</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">04</div>
+            <div class="tl-name">本地线程</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">05</div>
+            <div class="tl-name">状态同步</div>
+          </div>
+          <div class="tl-step">
+            <div class="tl-num">06</div>
+            <div class="tl-name">项目收尾</div>
+          </div>
+          <div class="tl-step highlight">
+            <div class="tl-num">07</div>
+            <div class="tl-name">会话接力</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">模型分工</div>
+        <div class="model-grid">
+          <div class="model-card">
+            <div class="model-role">主线程</div>
+            <div class="model-name">协调者（强模型）</div>
+            <div class="model-note">负责理解目标、拆解任务、分配子代理、汇总结果。用最强模型，慢但准。</div>
+          </div>
+          <div class="model-card">
+            <div class="model-role">子代理</div>
+            <div class="model-name">执行者（快速模型）</div>
+            <div class="model-note">跑工具、写代码、出初稿。用快速模型，多并发，主线程把关。</div>
+          </div>
+          <div class="model-card">
+            <div class="model-role">审计员</div>
+            <div class="model-name">独立审计（独立线程）</div>
+            <div class="model-note">只做验证，不参与执行。对照证据和验收标准，红牌一票否决。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="practice">
+          <div class="practice-head">
+            <span class="practice-tag">练习卡</span>
+            <span class="practice-title">模拟走一遍三层协同流程</span>
+          </div>
+          <div class="practice-grid">
+            <div>
+              <div class="pg-label">动作</div>
+              <div class="pg-val">选一个需要2-3天跨会话的项目，搭L1+L2+L3最小骨架</div>
+            </div>
+            <div>
+              <div class="pg-label">方法</div>
+              <div class="pg-val">写GOALS.md + ROADMAP.md，用PROMPT.md/DONE.md跑一次夜间接力，主线程收尾审计</div>
+            </div>
+            <div>
+              <div class="pg-label">验收</div>
+              <div class="pg-val">跨3次会话目标不漂移；里程碑有证据；DONE.md对照PROMPT.md无遗漏</div>
+            </div>
+            <div>
+              <div class="pg-label">误区</div>
+              <div class="pg-val warn">只用对话不用文件；审计员和执行者同一个线程；里程碑只看AI自报不独立验证</div>
+            </div>
+            <div style="grid-column:span 2">
+              <div class="pg-label">时间</div>
+              <div class="pg-val">2-3 天</div>
+            </div>
+          </div>
+        </div>
+        <button class="complete-btn" data-module="m4">标记本模块完成</button>
+      </div>
+    </section>
+
+    <!-- ===== M5 判断力资产 ===== -->
+    <section class="section" id="m5">
+      <div class="module-head">
+        <div class="module-meta">模块 05 / 判断力资产</div>
+        <h1 class="module-title">从<em>判断力</em>到数字分身</h1>
+        <p class="module-lead">成本最低、长期复利最大。每次做完一个重要判断后，用5问把隐性判断显式化。积累2-3个月，就有一份不可替代的职业判断资产。</p>
+      </div>
+
+      <div class="block">
+        <div class="q-form">
+          <div class="block-title">判断档案 5 问法</div>
+          <div class="q-list">
+            <div class="q-item">
+              <div class="q-label">Q1</div>
+              <div class="q-text">你做了什么判断？（一句话描述决策本身）</div>
+              <textarea class="q-input" id="q1" placeholder="例：决定用 SQLite 而不是 Postgres 作为初始数据库"></textarea>
+            </div>
+            <div class="q-item">
+              <div class="q-label">Q2</div>
+              <div class="q-text">为什么这么定？关键考量是什么？（列出2-3个决定因素）</div>
+              <textarea class="q-input" id="q2" placeholder="例：①部署简单 ②单机够用 ③迁移成本低"></textarea>
+            </div>
+            <div class="q-item">
+              <div class="q-label">Q3</div>
+              <div class="q-text">当时排除了哪些选项？为什么排除？（被否的方案+否决理由）</div>
+              <textarea class="q-input" id="q3" placeholder="例：排除了Postgres，因为初期不需要并发写"></textarea>
+            </div>
+            <div class="q-item">
+              <div class="q-label">Q4</div>
+              <div class="q-text">如果重来一次，什么条件变了你会改判断？（可变条件）</div>
+              <textarea class="q-input" id="q4" placeholder="例：如果日活过万或需要多写并发，就换Postgres"></textarea>
+            </div>
+            <div class="q-item">
+              <div class="q-label">Q5</div>
+              <div class="q-text">下次遇到类似的，你的判断框架是什么？（可复用的 if-then 规则）</div>
+              <textarea class="q-input" id="q5" placeholder="例：if 初期 + 单机 + 低并发 then SQLite else Postgres"></textarea>
+            </div>
+          </div>
+          <button class="q-gen-btn" id="genBtn">生成判断样本</button>
+          <div class="q-result" id="qResult"></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block-title">数字分身搭建路径</div>
+        <div class="stair">
+          <div class="stair-card">
+            <div class="stair-num">Step 1</div>
+            <div class="stair-title">积累判断档案</div>
+            <div class="stair-desc">用5问法持续记录，攒够20条以上。这是原材料，没有这一步后面都是空架子。</div>
+          </div>
+          <div class="stair-card">
+            <div class="stair-num">Step 2</div>
+            <div class="stair-title">搭建结构化知识库</div>
+            <div class="stair-desc">把判断样本按主题归类，提取共性规则，形成可检索的知识库。</div>
+          </div>
+          <div class="stair-card">
+            <div class="stair-num">Step 3</div>
+            <div class="stair-title">配置 Agent</div>
+            <div class="stair-desc">技能 + 知识库 + 记忆 + 工具权限四件套，让Agent能调用你的判断框架。</div>
+          </div>
+          <div class="stair-card">
+            <div class="stair-num">Step 4</div>
+            <div class="stair-title">持续迭代</div>
+            <div class="stair-desc">每次Agent判断有偏差，回写新档案。越用越像你，越用越准。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="practice">
+          <div class="practice-head">
+            <span class="practice-tag">练习卡</span>
+            <span class="practice-title">积累 5 条判断样本</span>
+          </div>
+          <div class="practice-grid">
+            <div>
+              <div class="pg-label">动作</div>
+              <div class="pg-val">回顾最近一周，挑5个你做过的重要判断，用5问法各写一份档案</div>
+            </div>
+            <div>
+              <div class="pg-label">方法</div>
+              <div class="pg-val">用上面的表单逐条填写，生成markdown后存档</div>
+            </div>
+            <div>
+              <div class="pg-label">验收</div>
+              <div class="pg-val">5条档案齐全；每条Q5都提炼出可复用的 if-then 规则；档案存进固定目录</div>
+            </div>
+            <div>
+              <div class="pg-label">误区</div>
+              <div class="pg-val warn">只写结论不写排除项；Q5写成空话没有条件触发；写完就丢不归档</div>
+            </div>
+            <div style="grid-column:span 2">
+              <div class="pg-label">时间</div>
+              <div class="pg-val">每条约10-15分钟，共约1小时</div>
+            </div>
+          </div>
+        </div>
+        <button class="complete-btn" data-module="m5">标记本模块完成</button>
+      </div>
+    </section>
+
+    <!-- ===== Summary ===== -->
+    <section class="section" id="summary">
+      <div class="summary-card">
+        <div class="summary-eyebrow">课程完成</div>
+        <h2 class="summary-title">你已完成<em>人机协同实践课程</em></h2>
+        <p class="summary-sub">从任务级协同到项目协同，从长周期编排到判断力资产。这些不是知识点，是练出来的肌肉记忆——去用，去错，去迭代。</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <div class="footer-text">人机协同实践课程 · 从判断力传递到数字分身</div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  // ===== 1. 模块切换 =====
+  var navItems = document.querySelectorAll('.nav-item');
+  var sections = document.querySelectorAll('.section');
+  var moduleIds = ['m0','m1','m2','m3','m4','m5'];
+
+  function showSection(id){
+    sections.forEach(function(s){
+      s.classList.remove('active');
+    });
+    var target = document.getElementById(id);
+    if(target){
+      target.classList.add('active');
+    }
+    navItems.forEach(function(n){
+      n.classList.toggle('active', n.getAttribute('data-target') === id);
+    });
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  navItems.forEach(function(n){
+    n.addEventListener('click', function(){
+      showSection(n.getAttribute('data-target'));
+    });
+  });
+
+  // ===== 2. M0 自测定位 =====
+  var assessCheckboxes = document.querySelectorAll('#assessGrid input[type="checkbox"]');
+  var assessResult = document.getElementById('assessResult');
+  var resultTier = document.getElementById('resultTier');
+  var resultDesc = document.getElementById('resultDesc');
+  var resultNext = document.getElementById('resultNext');
+
+  var tierInfo = {
+    0: { tier: 'STAGE 0', desc: '你还没开始用AI。建议从M1开始，先建立认知框架。', next: '→ 开始学习 M1 认知重构' },
+    1: { tier: 'STAGE 1 · 入门', desc: '你已经在用AI生成内容，但还没有系统化。建议从M2开始——学会给AI写规则文件，让AI按你的标准工作。', next: '→ 跳转到 M2 日常协同' },
+    2: { tier: 'STAGE 2 · 工具化', desc: '你已经有可复用的AI工具。下一步是把判断说清楚——建议从M3开始，用项目管理思维控场。', next: '→ 跳转到 M3 项目协同' },
+    3: { tier: 'STAGE 3 · 判断力', desc: '你能把判断说清楚。下一步是长周期协同——学会带AI团队做大事，以及积累判断档案。', next: '→ 跳转到 M4 长周期协同' },
+    4: { tier: 'STAGE 4 · 分身化', desc: '你已经有数字分身的雏形。直接进入M5，深化判断力资产。', next: '→ 跳转到 M5 判断力资产' }
+  };
+
+  function updateAssess(){
+    var counts = {1:0,2:0,3:0,4:0};
+    assessCheckboxes.forEach(function(cb){
+      var t = parseInt(cb.getAttribute('data-tier'));
+      if(cb.checked && counts[t] !== undefined) counts[t]++;
+    });
+
+    // 更新计数
+    [1,2,3,4].forEach(function(t){
+      var el = document.getElementById('count-' + t);
+      if(el) el.textContent = counts[t] + '/3';
+    });
+
+    // 判断最高完整阶段
+    var maxTier = 0;
+    if(counts[1] >= 2) maxTier = 1;
+    if(counts[1] >= 2 && counts[2] >= 2) maxTier = 2;
+    if(counts[1] >= 2 && counts[2] >= 2 && counts[3] >= 2) maxTier = 3;
+    if(counts[1] >= 2 && counts[2] >= 2 && counts[3] >= 2 && counts[4] >= 2) maxTier = 4;
+
+    // 至少勾选一个才显示结果
+    var anyChecked = false;
+    assessCheckboxes.forEach(function(cb){ if(cb.checked) anyChecked = true; });
+    if(!anyChecked){
+      assessResult.style.display = 'none';
+      return;
+    }
+
+    var info = tierInfo[maxTier];
+    assessResult.style.display = 'block';
+    resultTier.textContent = info.tier;
+    resultDesc.textContent = info.desc;
+    resultNext.textContent = info.next;
+  }
+
+  assessCheckboxes.forEach(function(cb){
+    cb.addEventListener('change', updateAssess);
+  });
+
+  // ===== 2b. M1 3A分诊 =====
+  var slC = document.getElementById('slider-certainty');
+  var slR = document.getElementById('slider-reversibility');
+  var slS = document.getElementById('slider-span');
+  var valC = document.getElementById('val-certainty');
+  var valR = document.getElementById('val-reversibility');
+  var valS = document.getElementById('val-span');
+  var triageResult = document.getElementById('triageResult');
+  var triageReason = document.getElementById('triageReason');
+  var triageRoles = document.getElementById('triageRoles');
+  var triageHuman = document.getElementById('triageHuman');
+  var triageAI = document.getElementById('triageAI');
+
+  function updateTriage(){
+    var c = parseInt(slC.value), r = parseInt(slR.value), s = parseInt(slS.value);
+    valC.textContent = c; valR.textContent = r; valS.textContent = s;
+
+    var score = c * 0.4 + r * 0.35 + (100-s) * 0.25;
+
+    var mode, color, reason, human, ai;
+    if(score >= 65){
+      mode = 'Automation'; color = '#4A9E5C';
+      reason = '任务规则明确、可验证、做错可撤。让AI独立完成，你只需验收结果。';
+      human = '验收结果'; ai = '独立完成全流程';
+    } else if(score >= 35){
+      mode = 'Augmentation'; color = '#5B9BF6';
+      reason = '任务有一定模糊性或不可逆。AI提供信息和建议，你做最终决策。';
+      human = '最终决策'; ai = '信息收集 + 方案整理';
+    } else {
+      mode = 'Agent'; color = '#8B7CF6';
+      reason = '任务复杂、模糊、多步串联。AI自主规划执行，你设边界和约束。';
+      human = '设边界和约束'; ai = '自主拆解 + 多步执行';
+    }
+
+    triageResult.textContent = mode;
+    triageResult.style.color = color;
+    triageReason.textContent = reason;
+    triageRoles.style.display = 'block';
+    triageHuman.textContent = human;
+    triageAI.textContent = ai;
+  }
+
+  if(slC) slC.addEventListener('input', updateTriage);
+  if(slR) slR.addEventListener('input', updateTriage);
+  if(slS) slS.addEventListener('input', updateTriage);
+  if(slC) updateTriage();
+
+  // ===== 2c. M5 5问生成 =====
+  var genBtn = document.getElementById('genBtn');
+  var qResult = document.getElementById('qResult');
+  if(genBtn){
+    genBtn.addEventListener('click', function(){
+      var q1 = (document.getElementById('q1').value || '').trim();
+      var q2 = (document.getElementById('q2').value || '').trim();
+      var q3 = (document.getElementById('q3').value || '').trim();
+      var q4 = (document.getElementById('q4').value || '').trim();
+      var q5 = (document.getElementById('q5').value || '').trim();
+
+      if(!q1 && !q2 && !q3 && !q4 && !q5){
+        qResult.textContent = '请至少填写一个问题再生成。';
+        qResult.classList.add('show');
+        return;
+      }
+
+      var md = '';
+      md += '# 判断档案\n\n';
+      md += '> 生成时间：' + new Date().toLocaleString('zh-CN') + '\n\n';
+      md += '## Q1 · 判断本身\n' + (q1 || '—') + '\n\n';
+      md += '## Q2 · 关键考量\n' + (q2 || '—') + '\n\n';
+      md += '## Q3 · 排除的选项\n' + (q3 || '—') + '\n\n';
+      md += '## Q4 · 可变条件\n' + (q4 || '—') + '\n\n';
+      md += '## Q5 · 判断框架\n' + (q5 || '—') + '\n';
+
+      qResult.textContent = md;
+      qResult.classList.add('show');
+    });
+  }
+
+  // ===== 3. 进度追踪 =====
+  var STORAGE_KEY = 'hac_course_progress';
+  var completed = {};
+
+  try{
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){
+      completed = JSON.parse(saved) || {};
+    }
+  }catch(e){
+    completed = {};
+  }
+
+  var completeBtns = document.querySelectorAll('.complete-btn');
+  var progressFill = document.getElementById('progressFill');
+  var progressText = document.getElementById('progressText');
+
+  function updateProgress(){
+    var doneCount = 0;
+    moduleIds.forEach(function(id){
+      if(completed[id]){ doneCount++; }
+    });
+    var pct = Math.round((doneCount / moduleIds.length) * 100);
+    progressFill.style.width = pct + '%';
+    progressText.textContent = doneCount + ' / ' + moduleIds.length;
+
+    // 更新导航项的 done 标记
+    navItems.forEach(function(n){
+      var t = n.getAttribute('data-target');
+      n.classList.toggle('done', !!completed[t]);
+    });
+
+    // 全部完成时跳到总结
+    if(doneCount === moduleIds.length){
+      // 不自动跳，仅高亮；用户可自行查看 summary
+    }
+  }
+
+  completeBtns.forEach(function(btn){
+    var mod = btn.getAttribute('data-module');
+    // 初始化按钮状态
+    if(completed[mod]){
+      btn.classList.add('done');
+      btn.textContent = '已完成 ✓';
+    }
+    btn.addEventListener('click', function(){
+      if(completed[mod]){
+        delete completed[mod];
+        btn.classList.remove('done');
+        btn.textContent = '标记本模块完成';
+      }else{
+        completed[mod] = true;
+        btn.classList.add('done');
+        btn.textContent = '已完成 ✓';
+      }
+      try{
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+      }catch(e){}
+      updateProgress();
+    });
+  });
+
+  updateProgress();
+
+  // ===== 4. 默认显示 M3（页面加载时） =====
+  // URL hash 优先，否则显示第一个模块
+  var hash = window.location.hash.replace('#','');
+  if(hash && document.getElementById(hash)){
+    showSection(hash);
+  }else{
+    showSection('m0');
+  }
+
+  // hash 变化时同步
+  window.addEventListener('hashchange', function(){
+    var h = window.location.hash.replace('#','');
+    if(h && document.getElementById(h)){
+      showSection(h);
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

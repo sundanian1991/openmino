@@ -50,7 +50,7 @@ memory/
 | 当前主文件 | `.codex/rules/` (01-SOUL, 02-COLLAB, 03-OUTPUT, 04-HONESTY, 05-AI-METH, MEMORY-L1) | 每次会话启动自动加载 |
 | 工作上下文 | `.codex/workspace/Rules/` (about-me, work-detail, write-style, ai-methodology) | 会话启动时读取 |
 | 原始深度版 | `.claude/reference/` (03-USER 445行, 00-IDENTITY-PUSH, honesty-constitution 等) | 需要深度理解时按需读取 |
-| 简洁骨架 | `.claude/rules/` (02-SOUL, 03-USER, 04-MEMORY) | 备用/校验 |
+| 简洁骨架 | `.claude/rules/` (05-USER, 07-MEMORY, 08-PRINCIPLES) | 备用/校验 |
 
 ---
 

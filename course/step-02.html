@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 02 · 3A 分诊法 — 人机协同实战课</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+.course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
+.course-path{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.course-path span{color:var(--accent)}
+.course-title{font-size:22px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.2}
+.course-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:640px;margin-bottom:var(--space-md)}
+.course-meta{display:flex;gap:var(--space-lg);font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.chapter{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);margin-bottom:var(--space-md)}
+.chapter-num{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-xs)}
+.chapter-title{font-size:16px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-sm)}
+.chapter-body{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.chapter-body strong{color:var(--text-primary);font-weight:500}
+.sidebar-layout{display:grid;grid-template-columns:1fr 260px;gap:var(--space-xl)}
+.sidebar{position:sticky;top:80px;align-self:start}
+.sidebar-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-md)}
+.sidebar-links{display:flex;flex-direction:column;gap:var(--space-xs)}
+.sidebar-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:var(--space-xs) 0;border-left:2px solid transparent;padding-left:var(--space-md);transition:all .15s}
+.sidebar-link:hover{color:var(--text-primary)}
+.sidebar-link.active{color:var(--accent);border-left-color:var(--accent)}
+.sidebar-hint{margin-top:var(--space-xl);padding:var(--space-md);background:var(--accent-subtle);border-left:2px solid var(--accent);font-size:12px;color:var(--text-secondary);line-height:1.6}
+
+/* 3A 分诊器 */
+.triage-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-xl);margin-top:var(--space-md)}
+.triage-field{margin-bottom:var(--space-md)}
+.triage-field-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.triage-textarea{width:100%;min-height:60px;padding:var(--space-md);border:1px solid var(--border-visible);background:var(--bg);font-family:var(--font-body);font-size:13px;color:var(--text-primary);resize:vertical;outline:none}
+.triage-textarea:focus{border-color:var(--text-display)}
+.triage-slider-row{margin-bottom:var(--space-md)}
+.triage-slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-xs)}
+.triage-slider-name{font-size:13px;font-weight:500;color:var(--text-primary)}
+.triage-slider-val{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent)}
+.triage-slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--border-visible);outline:none;cursor:pointer}
+.triage-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;background:var(--text-display);cursor:pointer;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--border-visible);border-radius:50%}
+.triage-slider-labels{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;text-transform:uppercase;color:var(--text-disabled)}
+.triage-output{background:var(--bg);border:1px solid var(--border);padding:var(--space-xl);display:flex;flex-direction:column;gap:var(--space-md)}
+.triage-output-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled)}
+.triage-result{font-size:28px;font-weight:700;letter-spacing:-.01em;transition:color .3s}
+.triage-result.auto{color:var(--blue)}
+.triage-result.aug{color:var(--accent)}
+.triage-result.agent{color:var(--purple)}
+.triage-reason{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.triage-roles{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+.triage-role{padding:var(--space-md);background:var(--surface);border:1px solid var(--border)}
+.triage-role-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-xs)}
+.triage-role-text{font-size:13px;color:var(--text-primary);line-height:1.6}
+.triage-warning{padding:var(--space-sm) var(--space-md);font-size:12px;color:var(--accent);background:var(--accent-subtle);border-left:2px solid var(--accent);line-height:1.6}
+
+/* 角色模块卡片 */
+.role-modules{display:flex;flex-direction:column;gap:var(--space-sm)}
+.role-module{display:grid;grid-template-columns:24px 1fr auto auto;gap:var(--space-sm);align-items:center;padding:var(--space-sm) var(--space-md);background:var(--surface);border:1px solid var(--border);transition:border-color .15s}
+.role-module:hover{border-color:var(--text-disabled)}
+.role-module-num{font-family:var(--font-mono);font-size:9px;color:var(--text-disabled);text-align:center}
+.role-module-name{font-size:12px;color:var(--text-primary);line-height:1.3}
+.role-module-name span{display:block;font-size:10px;color:var(--text-secondary)}
+.role-module-pot{font-size:9px;font-family:var(--font-mono);padding:2px 8px;border-radius:2px;text-transform:uppercase}
+.role-module-pot.high{background:var(--success-subtle);color:var(--success)}
+.role-module-pot.mid{background:rgba(212,168,67,0.12);color:#b8942e}
+.role-module-pot.low{background:var(--accent-subtle);color:var(--accent)}
+.role-module-action{font-family:var(--font-mono);font-size:9px;font-weight:600;padding:2px 10px;text-align:center}
+.role-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-sm)}
+.role-count{font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+
+/* 模式卡片 */
+.mode-card{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md)}
+.mode-item{padding:var(--space-lg);border:1px solid var(--border);background:var(--surface);border-top:3px solid var(--blue)}
+.mode-item:nth-child(2){border-top-color:var(--accent)}
+.mode-item:nth-child(3){border-top-color:var(--purple)}
+.mode-name{font-size:15px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.mode-ai{font-size:12px;color:var(--text-secondary);line-height:1.6}
+.mode-ai strong{color:var(--text-primary)}
+
+.finish-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border);text-align:center}
+.finish-area .btn{margin-top:var(--space-md)}
+
+@media(max-width:900px){.sidebar-layout{grid-template-columns:1fr}.sidebar{position:static}.triage-grid,.triage-roles,.mode-card{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">人机协同 · <em>实战课</em></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">← 路径</a>
+      <a href="#model" class="nav-link">三抽屉</a>
+      <a href="#dims" class="nav-link">三维度</a>
+      <a href="#triage" class="nav-link">分诊器</a>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="sidebar-layout" style="max-width:1200px;margin:var(--space-5xl) auto 0;padding:0 var(--space-xl)">
+
+  <!-- 主体 -->
+  <div>
+
+    <div class="course-header">
+      <div class="course-path">实战 &gt; <span>Step 02 · 范式一 Copilot</span></div>
+      <div class="course-title">3A 分诊法：30 秒决定怎么分</div>
+      <div class="course-desc">每接到一个任务，先扔进三个"抽屉"之一。三抽屉模型 + 三维度判定，30 秒决定当前任务应该用 Automation、Augmentation 还是 Agent。</div>
+      <div class="course-meta">
+        <span>预计时长 15 分钟</span>
+        <span>3 章节</span>
+        <span>1 个交互组件</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">学习目标</div>
+      学完本节后，你将能：
+      <br>• 用 3A 框架判断任意日常任务应使用哪种协同模式
+      <br>• 说出每种模式下人和 AI 各自负责什么
+    </div>
+
+    <!-- 第一章 -->
+    <div class="chapter" id="model">
+      <div class="chapter-num">第一章</div>
+      <div class="chapter-title">三抽屉模型</div>
+      <div class="chapter-body">
+        <p>把任务分成三类，每类对应不同的协同模式：</p>
+      </div>
+      <div class="table-scroll" style="margin-top:var(--space-md)">
+        <table class="comp-table">
+          <thead><tr><th>模式</th><th>AI 角色</th><th>人角色</th><th>典型场景</th></tr></thead>
+          <tbody>
+            <tr><td><strong style="color:var(--blue)">Automation</strong></td><td>全流程执行</td><td>验收结果</td><td>格式转换、日报汇总、翻译</td></tr>
+            <tr><td><strong style="color:var(--accent)">Augmentation</strong></td><td>提供选项和利弊分析</td><td>最终决策</td><td>竞品调研、方案对比</td></tr>
+            <tr><td><strong style="color:var(--purple)">Agent</strong></td><td>拆步骤 + 调工具 + 执行</td><td>设边界和约束</td><td>完整调研报告、代码重构</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout" style="margin-top:var(--space-md)">
+        <div class="callout-label">核心原则</div>
+        不可逆操作（发送/发布/删除）那段必须人来按，不能全交给 Agent。这是安全的底线。
+      </div>
+    </div>
+
+    <!-- 第二章 -->
+    <div class="chapter" id="dims">
+      <div class="chapter-num">第二章</div>
+      <div class="chapter-title">三维度判定</div>
+      <div class="chapter-body">
+        <p>三个维度决定任务应该放在哪个抽屉：</p>
+        <br>
+        <p><strong>① 确定性</strong> — 规则有多清楚？模糊说不清 → 规则明确好验证</p>
+        <p><strong>② 可逆性</strong> — 做错了能撤吗？不可逆（发送/签订）→ 随时可撤回</p>
+        <p><strong>③ 任务跨度</strong> — 几步能完？单步即完 → 多步串联任务</p>
+      </div>
+      <div class="callout gold" style="margin-top:var(--space-md)">
+        <div class="callout-label">判定逻辑</div>
+        不可逆 → 必须 Augmentation（人决策）。确定性高 + 可逆 → 看跨度：短 → Automation，长 → Agent。跨度大 + 一定程度确定 → Agent。
+      </div>
+    </div>
+
+    <!-- 第三章：交互分诊器 -->
+    <div class="chapter" id="triage">
+      <div class="chapter-num">第三章</div>
+      <div class="chapter-title">实战：3A 分诊你自己的工作</div>
+      <div class="chapter-body">
+        <p>输入你的真实任务场景，拖动三个滑块。系统根据你的赋值自动推荐协同模式。</p>
+      </div>
+
+      <div class="interactive-demo" style="margin-top:var(--space-md)">
+        <div class="demo-header">
+          <span class="demo-icon">⚡</span>
+          <span class="demo-title">3A 分诊交互演示</span>
+          <span class="demo-sub">仿 Token 成本计算器 · 拖动滑块实时推荐</span>
+        </div>
+
+        <div class="triage-grid">
+          <!-- 左侧：输入区 -->
+          <div>
+            <div class="triage-field">
+              <div class="triage-field-label">任务描述</div>
+      <!-- 岗位选择 -->
+      <div class="triage-field">
+        <div class="triage-field-label">你的岗位</div>
+        <select id="roleSelect" style="width:100%;padding:var(--space-sm) var(--space-md);border:1px solid var(--border-visible);background:var(--bg);font-family:var(--font-body);font-size:13px;color:var(--text-primary);outline:none" onchange="updateRoleExamples()">
+          <option value="product">产品运营岗</option>
+          <option value="risk">监管风控岗</option>
+          <option value="customer">客户运营岗</option>
+          <option value="sales">销售运营岗</option>
+          <option value="invest">投资研究岗</option>
+          <option value="data">数据分析岗</option>
+          <option value="audit">审核顾问岗</option>
+        </select>
+        <div id="roleExamples" style="margin-top:var(--space-sm);font-size:12px;color:var(--text-secondary);line-height:1.6;padding:var(--space-sm) var(--space-md);background:var(--surface-raised);border:1px solid var(--border)">
+          <div class="role-header"><strong>产品运营岗</strong><span class="role-count">400人次 · 多个部门</span></div>
+          <div style="font-size:10px;color:var(--text-disabled);padding:var(--space-sm) 0">选一个岗位查看详细的任务模式和推荐</div>
+        </div>
+      </div>
+      
+              <textarea class="triage-textarea" id="taskDesc" placeholder="例：把上个月的招聘数据整理成周会汇报摘要…">把上个月的招聘数据整理成周会汇报摘要</textarea>
+            </div>
+
+            <div class="triage-slider-row">
+              <div class="triage-slider-header">
+                <span class="triage-slider-name">确定性 · 规则有多清楚？</span>
+                <span class="triage-slider-val" id="val1">70</span>
+              </div>
+              <input type="range" class="triage-slider" id="sl1" min="0" max="100" value="70">
+              <div class="triage-slider-labels"><span>模糊说不清</span><span>规则明确好验证</span></div>
+            </div>
+
+            <div class="triage-slider-row">
+              <div class="triage-slider-header">
+                <span class="triage-slider-name">可逆性 · 做错了能撤吗？</span>
+                <span class="triage-slider-val" id="val2">80</span>
+              </div>
+              <input type="range" class="triage-slider" id="sl2" min="0" max="100" value="80">
+              <div class="triage-slider-labels"><span>不可逆（发送/签订）</span><span>随时可撤回</span></div>
+            </div>
+
+            <div class="triage-slider-row">
+              <div class="triage-slider-header">
+                <span class="triage-slider-name">任务跨度 · 几步能完？</span>
+                <span class="triage-slider-val" id="val3">40</span>
+              </div>
+              <input type="range" class="triage-slider" id="sl3" min="0" max="100" value="40">
+              <div class="triage-slider-labels"><span>单步即完</span><span>多步串联任务</span></div>
+            </div>
+          </div>
+
+          <!-- 右侧：输出区 -->
+          <div class="triage-output">
+            <div class="triage-output-label">推荐模式</div>
+            <div class="triage-result auto" id="resultDisplay">Automation · 自动化</div>
+            <div class="triage-reason" id="resultReason">规则清楚、好验证、做错可撤。AI 独立完成，你拿结果就行。</div>
+            <div class="triage-roles" id="resultRoles">
+              <div class="triage-role"><div class="triage-role-label">你做</div><div class="triage-role-text">验收结果</div></div>
+              <div class="triage-role"><div class="triage-role-label">AI做</div><div class="triage-role-text">全流程执行</div></div>
+            </div>
+            <div class="triage-warning" id="resultWarning" style="display:none"></div>
+            <div style="margin-top:var(--space-sm)">
+              <button class="btn" onclick="copyResult()">📋 复制结果</button>
+              <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);margin-left:var(--space-sm)" id="copyHint"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 完成 -->
+    
+      <!-- 匹配练习 -->
+      <div class="interactive-demo" style="margin-top:var(--space-md)">
+        <div class="demo-header"><span class="demo-icon">🎯</span><span class="demo-title">任务匹配练习</span><span class="demo-sub">点选正确的抽屉</span></div>
+        <div id="matchArea">
+          <div style="font-size:13px;color:var(--text-primary);margin-bottom:var(--space-md)" id="matchQ">任务：<strong>把上个月的招聘数据整理成周会汇报摘要</strong></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-sm);margin-bottom:var(--space-md)">
+            <div style="padding:var(--space-md);border:2px solid var(--border);text-align:center;cursor:pointer;background:var(--surface);transition:all .15s" onclick="matchPick('auto')" id="m-auto" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:11px;font-weight:600;color:var(--blue)">Automation</div><div style="font-size:10px;color:var(--text-disabled)">AI 独立完成</div></div>
+            <div style="padding:var(--space-md);border:2px solid var(--border);text-align:center;cursor:pointer;background:var(--surface);transition:all .15s" onclick="matchPick('aug')" id="m-aug" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:11px;font-weight:600;color:var(--accent)">Augmentation</div><div style="font-size:10px;color:var(--text-disabled)">人做决策</div></div>
+            <div style="padding:var(--space-md);border:2px solid var(--border);text-align:center;cursor:pointer;background:var(--surface);transition:all .15s" onclick="matchPick('agent')" id="m-agent" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:11px;font-weight:600;color:var(--purple)">Agent</div><div style="font-size:10px;color:var(--text-disabled)">AI 自主执行</div></div>
+          </div>
+          <div id="matchResult" style="font-size:13px;color:var(--text-secondary);line-height:1.6;min-height:30px">点击上面的抽屉，判断这个任务属于哪种模式。</div>
+          <div style="margin-top:var(--space-sm)"><button class="btn" onclick="matchReset()">下一题 →</button><span style="font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);margin-left:var(--space-sm)" id="matchScore">第 1/3 题</span></div>
+        </div>
+      </div>
+      
+  <div class="finish-area">
+      <div style="font-size:13px;color:var(--text-secondary)">完成分诊练习后，点击下方按钮</div>
+      <button class="btn btn-primary" onclick="completeStep()">✓ 完成当前课程</button>
+      <div style="margin-top:var(--space-sm);font-size:11px;color:var(--text-disabled)" id="nextHint">完成后将解锁下一节</div>
+    </div>
+
+  </div>
+
+  <!-- 侧边栏 -->
+  <div class="sidebar">
+    <div class="sidebar-title">本页目录</div>
+    <div class="sidebar-links">
+      <a href="#model" class="sidebar-link">第一章：三抽屉模型</a>
+      <a href="#dims" class="sidebar-link">第二章：三维度判定</a>
+      <a href="#triage" class="sidebar-link">第三章：交互分诊</a>
+    </div>
+    <div class="sidebar-hint">
+      完成本节后，<strong style="color:var(--text-primary)">Step 03 · 给 AI 写规则</strong> 将自动解锁。
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer"><div class="footer-text">人机协同实战课 · Step 02 · 3A 分诊法</div></footer>
+
+<script src="assets/utils.js"></script>
+<script>
+// === 3A 分诊器 ===
+(function(){
+  const s1=document.getElementById('sl1'),s2=document.getElementById('sl2'),s3=document.getElementById('sl3');
+  const v1=document.getElementById('val1'),v2=document.getElementById('val2'),v3=document.getElementById('val3');
+  const res=document.getElementById('resultDisplay'),reason=document.getElementById('resultReason');
+  const roles=document.getElementById('resultRoles'),warn=document.getElementById('resultWarning');
+
+  function triage(c,r,s){
+    if(r<35){return {mode:'augmentation',label:'Augmentation · 增强',cls:'aug',
+      reason:'不可逆操作必须由人决策。AI 提供信息和建议，但拍板的是你。',
+      human:'最终决策',ai:'提供选项和利弊分析',
+      warning:'⚠️ 高风险提醒：此任务不可逆（可逆性 ≤ 30）。关键步骤必须人确认，不能全权交给 AI。'};}
+    if(c>65&&r>50){
+      if(s>60){return {mode:'agent',label:'Agent · 智能体',cls:'agent',
+        reason:'多步串联、可设边界。AI 自主规划执行，你只负责设约束。',
+        human:'设边界和约束',ai:'拆步骤 + 调工具 + 执行',warning:''};}
+      return {mode:'automation',label:'Automation · 自动化',cls:'auto',
+        reason:'规则清楚、好验证、做错可撤。AI 独立完成，你拿结果就行。',
+        human:'验收结果',ai:'全流程执行',warning:''};
+    }
+    if(s>65&&c>45&&r>45){return {mode:'agent',label:'Agent · 智能体',cls:'agent',
+      reason:'多步串联、可设边界。AI 自主规划执行，你只负责设约束。',
+      human:'设边界和约束',ai:'拆步骤 + 调工具 + 执行',warning:''};}
+    if(c>60){return {mode:'automation',label:'Automation · 自动化',cls:'auto',
+      reason:'规则清楚、好验证、做错可撤。AI 独立完成，你拿结果就行。',
+      human:'验收结果',ai:'全流程执行',warning:''};}
+    return {mode:'augmentation',label:'Augmentation · 增强',cls:'aug',
+      reason:'需要判断、规则不够明确。AI 提供信息和建议，但拍板的是你。',
+      human:'最终决策',ai:'提供选项和利弊分析',
+      warning: c<35?'💡 提示：确定性较低（≤ 35）。建议先补充判断标准再交给 AI。':''};
+  }
+
+  function update(){
+    const c=parseInt(s1.value),r=parseInt(s2.value),s=parseInt(s3.value);
+    v1.textContent=c;v2.textContent=r;v3.textContent=s;
+    const d=triage(c,r,s);
+    res.textContent=d.label;res.className='triage-result '+d.cls;
+    reason.textContent=d.reason;
+    roles.innerHTML='<div class="triage-role"><div class="triage-role-label">你做</div><div class="triage-role-text">'+d.human+'</div></div><div class="triage-role"><div class="triage-role-label">AI做</div><div class="triage-role-text">'+d.ai+'</div></div>';
+    if(d.warning){warn.textContent=d.warning;warn.style.display='block';}else{warn.style.display='none';}
+  }
+
+  [s1,s2,s3].forEach(el=>el.addEventListener('input',update));
+})();
+
+// === 复制结果 ===
+function copyResult(){
+  const c=parseInt(document.getElementById('sl1').value);
+  const r=parseInt(document.getElementById('sl2').value);
+  const s=parseInt(document.getElementById('sl3').value);
+  const task=document.getElementById('taskDesc').value||'（未填写）';
+  const mode=document.getElementById('resultDisplay').textContent;
+  const txt=`# 3A 分诊结果\n\n任务：${task}\n推荐模式：${mode}\n\n## 输入维度\n- 确定性：${c}/100\n- 可逆性：${r}/100\n- 任务跨度：${s}/100`;
+  copyToClipboard(txt);
+  document.getElementById('copyHint').textContent='✓ 已复制';
+  setTimeout(()=>document.getElementById('copyHint').textContent='',2000);
+}
+
+// === 完成 ===
+
+// 匹配练习
+const matchTasks=[
+  {task:'把上个月的招聘数据整理成周会汇报摘要',ans:'auto',explain:'规则明确（数据→报表）、可逆（可修改）、单步 → Automation'},
+  {task:'评估两个供应商方案并给出推荐',ans:'aug',explain:'需要人做最终判断、不可逆（选择影响合作）→ Augmentation'},
+  {task:'完整调研某个竞品并输出分析报告',ans:'agent',explain:'多步串联（搜索→整理→对比→出报告）、可设边界 → Agent'}
+];
+let matchIdx=0,matchCorrect=0;
+
+function matchPick(pick){
+  const t=matchTasks[matchIdx];
+  const el=document.getElementById('matchResult');
+  if(pick===t.ans){
+    matchCorrect++;
+    el.innerHTML='✅ 正确！'+t.explain;
+    // highlight the correct one
+  }else{
+    el.innerHTML='❌ 不对。'+t.explain;
+  }
+  // Disable further clicks
+  document.querySelectorAll('#matchArea [onclick*="matchPick"]').forEach(el=>el.onclick=null);
+}
+
+function matchReset(){
+  matchIdx++;
+  if(matchIdx>=matchTasks.length){
+    document.getElementById('matchArea').innerHTML='<div style="padding:var(--space-lg);text-align:center"><div style="font-size:24px;margin-bottom:var(--space-sm)">🎉</div><div style="font-size:15px;font-weight:600;color:var(--text-display)">练习完成</div><div style="font-size:13px;color:var(--text-secondary)">你答对了 '+matchCorrect+'/'+matchTasks.length+' 题</div></div>';
+    return;
+  }
+  const t=matchTasks[matchIdx];
+  document.getElementById('matchQ').innerHTML='任务：<strong>'+t.task+'</strong>';
+  document.getElementById('matchResult').textContent='点击上面的抽屉，判断这个任务属于哪种模式。';
+  document.getElementById('matchScore').textContent='第 '+(matchIdx+1)+'/'+matchTasks.length+' 题';
+  // Re-enable clicks
+  document.querySelectorAll('#matchArea [onclick*="matchPick"]').forEach(el=>{
+    const mode=el.getAttribute('onclick').match(/matchPick\('(\w+)'\)/)[1];
+    el.onclick=function(){matchPick(mode);};
+  });
+}
+
+const roleTaskData={
+  product:{name:'产品运营岗',count:400,dept:'多个部门',modules:[
+    {l1:'数据分析',l2:'数据提取·趋势分析',potential:'高',action:'Automation'},
+    {l1:'客户服务',l2:'咨询解答·活动执行',potential:'中',action:'Agent'},
+    {l1:'会议与沟通',l2:'汇报材料·跨部门协调',potential:'高',action:'Augmentation'},
+    {l1:'资料收集',l2:'信息检索·知识管理',potential:'高',action:'Agent'},
+    {l1:'文档处理',l2:'文案撰写·文件润色',potential:'高',action:'Augmentation'},
+    {l1:'内容创作',l2:'流程规范·培训材料',potential:'中',action:'Augmentation'},
+    {l1:'项目管理',l2:'进度跟踪·资源调配',potential:'中',action:'Agent'}
+  ]},
+  risk:{name:'监管风控岗',count:293,dept:'风控/合规',modules:[
+    {l1:'合规管理',l2:'监管对接·合规审查',potential:'低',action:'人判断'},
+    {l1:'文档处理',l2:'文案撰写·文件润色',potential:'高',action:'Augmentation'},
+    {l1:'数据分析',l2:'数据提取·异常检测',potential:'高',action:'Automation'},
+    {l1:'风险评估',l2:'预警监控·风险识别',potential:'中',action:'Agent'},
+    {l1:'资料收集',l2:'信息检索·知识管理',potential:'高',action:'Agent'},
+    {l1:'会议与沟通',l2:'汇报材料·纪要整理',potential:'高',action:'Automation'}
+  ]},
+  customer:{name:'客户运营岗',count:215,dept:'客户/支付',modules:[
+    {l1:'数据分析',l2:'数据提取·趋势分析',potential:'高',action:'Automation'},
+    {l1:'客户服务',l2:'咨询解答·异常处理',potential:'中',action:'Agent'},
+    {l1:'资料收集',l2:'信息检索',potential:'高',action:'Agent'},
+    {l1:'文档处理',l2:'文案撰写',potential:'高',action:'Augmentation'},
+    {l1:'项目管理',l2:'进度跟踪',potential:'中',action:'Agent'},
+    {l1:'会议与沟通',l2:'汇报材料',potential:'高',action:'Augmentation'}
+  ]},
+  sales:{name:'销售运营岗',count:145,dept:'销售',modules:[
+    {l1:'数据分析',l2:'数据提取·趋势分析',potential:'高',action:'Automation'},
+    {l1:'客户服务',l2:'咨询解答·关系维护',potential:'中',action:'Augmentation'},
+    {l1:'策略制定',l2:'方案设计·优化建议',potential:'中',action:'Augmentation'},
+    {l1:'文档处理',l2:'文案撰写·文件润色',potential:'高',action:'Augmentation'},
+    {l1:'项目管理',l2:'进度跟踪·资源调配',potential:'中',action:'Agent'}
+  ]},
+  invest:{name:'投资研究岗',count:31,dept:'投资',modules:[
+    {l1:'数据分析',l2:'趋势分析·可视化',potential:'高',action:'Augmentation'},
+    {l1:'策略制定',l2:'方案设计·决策支持',potential:'中',action:'Augmentation'},
+    {l1:'资料收集',l2:'信息检索',potential:'高',action:'Agent'},
+    {l1:'风险评估',l2:'预警监控',potential:'中',action:'Agent'},
+    {l1:'内容创作',l2:'流程规范·报告撰写',potential:'中',action:'Augmentation'}
+  ]},
+  data:{name:'数据分析岗',count:30,dept:'数据',modules:[
+    {l1:'数据分析',l2:'数据底层建设·数据提取',potential:'高',action:'Agent'},
+    {l1:'技术实施',l2:'脚本编写·工具搭建',potential:'高',action:'Agent'},
+    {l1:'资料收集',l2:'信息检索',potential:'高',action:'Automation'},
+    {l1:'会议与沟通',l2:'汇报材料',potential:'高',action:'Augmentation'}
+  ]},
+  audit:{name:'审核顾问岗',count:14,dept:'农业金融',modules:[
+    {l1:'资料收集',l2:'信息检索 (84h/月!)',potential:'高',action:'Agent'},
+    {l1:'合规管理',l2:'合规审查',potential:'低',action:'人判断'},
+    {l1:'文档处理',l2:'文案撰写',potential:'高',action:'Augmentation'},
+    {l1:'客户服务',l2:'咨询解答',potential:'中',action:'Agent'}
+  ]}
+};
+
+function updateRoleExamples(){
+  const role=document.getElementById('roleSelect').value;
+  const d=roleTaskData[role];
+  if(!d){document.getElementById('roleExamples').innerHTML='';return;}
+  const actionColors={'Automation':'var(--blue)','Augmentation':'var(--accent)','Agent':'var(--purple)','人判断':'var(--accent)'};
+  const potBadge={'高':'high','中':'mid','低':'low'};
+  let html='<div class="role-header"><strong>'+d.name+'</strong><span class="role-count">'+d.count+'人次 · '+d.dept+'</span></div>';
+  html+='<div class="role-modules">';
+  d.modules.forEach((m,i)=>{
+    html+= '<div class="role-module">'
+      + '<div class="role-module-num">'+String(i+1).padStart(2,'0')+'</div>'
+      + '<div class="role-module-name">'+m.l1+'<span>'+m.l2+'</span></div>'
+      + '<div class="role-module-pot '+potBadge[m.potential]+'">'+m.potential+'潜力</div>'
+      + '<div class="role-module-action" style="color:'+actionColors[m.action]+'">'+m.action+'</div>'
+      + '</div>';
+  });
+  html+='</div>';
+  html+='<div style="margin-top:var(--space-sm);padding:var(--space-sm) var(--space-md);font-size:10px;color:var(--text-disabled);line-height:1.5;border-left:2px solid var(--border);background:var(--bg)">';
+  html+='<strong style="color:var(--text-secondary)">怎么读：</strong> ';
+  html+='<span style="color:var(--blue)">Automation</span>=AI全自动你验收 | ';
+  html+='<span style="color:var(--accent)">Augmentation</span>=AI给建议你拍板 | ';
+  html+='<span style="color:var(--purple)">Agent</span>=AI自主执行你设边界 | ';
+  html+='<span style="color:var(--accent)">人判断</span>=不可外包';
+  html+='</div>';
+  document.getElementById('roleExamples').innerHTML=html;
+}
+function completeStep(){Progress.complete("step-02");window.location.href="index.html";}
+
+initProgressBar();initSidebar();updateRoleExamples();
+</script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>版式方向审阅 — AI长周期任务协作方法论</title>
+<style>
+  :root{--ink:#17202A;--muted:#6B7480;--soft:#EEF2F6;--paper:#FFFFFF;--line:#DDE4EC;--navy:#051C2C;--accent:#D46A00;--ok:#007A53;--danger:#E60012;--blue:#006BA6;--wash:#F7F9FC}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,#E9EEF4 0,#F5F7FA 320px);color:var(--ink);line-height:1.58;letter-spacing:0}
+  .header{background:rgba(5,28,44,.96);color:#FFF;padding:16px 30px;position:sticky;top:0;z-index:10;box-shadow:0 10px 26px rgba(5,28,44,.16)}
+  .header h1{font-size:23px;font-weight:850;letter-spacing:0}
+  .header .meta{font-size:13px;opacity:.72;margin-top:3px}
+  .header .warning-banner{background:#FFF3E0;color:#8A4700;padding:10px 14px;border-radius:8px;margin-top:10px;font-size:13px;font-weight:800;border:1px solid rgba(212,106,0,.28)}
+  .workspace{max-width:1600px;margin:0 auto;padding:22px 24px;display:grid;grid-template-columns:116px minmax(0,1fr);gap:16px;align-items:start}
+  .side-nav{position:sticky;top:92px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:8px;padding:8px;box-shadow:0 14px 36px rgba(5,28,44,.08);backdrop-filter:blur(10px)}
+  .side-nav-title{font-size:12px;font-weight:850;color:var(--muted);margin-bottom:8px}
+  .nav-list{display:flex;flex-direction:column;gap:7px;max-height:calc(100vh - 138px);overflow:auto;padding-right:2px}
+  .nav-item{display:grid;grid-template-columns:7px 1fr;align-items:center;gap:6px;padding:7px 8px;border-radius:7px;color:#46515E;text-decoration:none;font-size:12px;font-weight:800;background:#F5F7FA;border:1px solid transparent;transition:.16s ease}
+  .nav-item:hover,.nav-item.active{background:#FFF7EB;border-color:#F0C48C;color:#8A4700;transform:translateX(2px)}
+  .nav-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+  .container{min-width:0}
+  .page-card{background:var(--paper);border-radius:8px;margin-bottom:26px;box-shadow:0 18px 44px rgba(5,28,44,.08);overflow:hidden;border:1px solid var(--line)}
+  .page-card.error{border-left:5px solid var(--danger)}
+  .page-card.warning{border-left:5px solid var(--accent)}
+  .page-header{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:linear-gradient(180deg,#FFFFFF,#FAFBFD)}
+  .page-header h2{font-size:22px;line-height:1.35;font-weight:900;max-width:1000px}
+  .badges{display:flex;gap:8px;flex-wrap:wrap}
+  .badge{font-size:13px;padding:4px 12px;border-radius:12px;font-weight:bold}
+  .badge.rational{background:#E3F2FD;color:#006BA6}
+  .badge.emotional{background:#FFEBEE;color:#C62828}
+  .badge.dense{background:#F5F7FA;color:#555}
+  .badge.balanced{background:#E8F5E9;color:#007A53}
+  .badge.airy{background:#FFF3E0;color:#D46A00}
+  .page-body{padding:22px 24px 24px}
+  .layout-grid{display:grid;grid-template-columns:minmax(520px,1.05fr) minmax(520px,.95fr);gap:24px;align-items:start}
+  .visual-panel{position:sticky;top:104px}
+  .review-panel{min-width:0}
+  .compact-card{background:var(--wash);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .copy-summary{display:grid;gap:8px;background:#FFF;border-color:#DDE4EC}
+  .section-label{font-size:13px;font-weight:900;color:#8A929C;margin-bottom:8px;letter-spacing:0;margin-top:16px}
+  .section-label:first-child{margin-top:0}
+  .copy-blocks{margin-bottom:16px}
+  .copy-blocks .action-title{font-size:22px;font-weight:900;color:var(--ink);margin-bottom:10px;padding:12px 14px;background:#FFF7EB;border-left:4px solid var(--accent);border-radius:6px}
+  .copy-blocks .core-message{font-size:16px;color:#4F5965;margin-bottom:12px;padding:10px 12px;background:#FFF;border:1px solid #E8ECF2;border-radius:6px;font-style:normal}
+  .on-slide-list{display:grid;gap:7px;margin-top:2px}
+  .on-slide-item{font-size:15px;color:#39424E;background:#FFF;border:1px solid #E8ECF2;border-radius:6px;padding:8px 10px}
+  .copy-rationale{display:grid;gap:7px;margin-top:10px}
+  .copy-rationale-item{font-size:14px;color:#4F5965;background:#F8FAFC;border:1px solid #E1E7EF;border-radius:6px;padding:8px 10px}
+  .copy-decision{font-size:14px;color:#59636F;background:#F7F9FC;border:1px solid #E6EBF2;border-radius:8px;padding:10px 12px;margin-bottom:10px;line-height:1.65}
+  .notes-list{display:grid;gap:7px;margin-top:10px}
+  .notes-item{font-size:14px;color:#35536B;background:#F0F7FC;border:1px solid #CFE3F2;border-radius:6px;padding:8px 10px}
+  .copy-full{max-height:520px;overflow:auto;background:#FFF;border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:14px}
+  .copy-full-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px;color:#59636F;font-size:13px;font-weight:900}
+  .copy-full-title span:last-child{font-weight:700;color:#9AA2AC}
+  .copy-blocks .body-line{font-size:15px;color:#4F5965;margin-bottom:7px;padding-left:16px;position:relative}
+  .copy-blocks .body-line::before{content:'';position:absolute;left:0;top:.7em;width:5px;height:5px;border-radius:50%;background:var(--danger)}
+  .table-wrap{overflow-x:auto;margin-bottom:12px}
+  .table-wrap table{border-collapse:collapse;width:100%;font-size:14px}
+  .table-wrap th{background:#051C2C;color:#FFF;padding:8px 12px;text-align:left;font-weight:bold}
+  .table-wrap td{padding:8px 12px;border-bottom:1px solid #E0E0E0}
+  .table-wrap caption{font-size:13px;color:#999;margin-bottom:6px;text-align:left}
+  .speaker-notes{margin-bottom:16px}
+  .speaker-notes summary{font-size:14px;color:#006BA6;cursor:pointer;font-weight:bold;padding:4px 0}
+  .speaker-notes .notes-content{font-size:14px;color:#777;padding:8px 12px;background:#F5F7FA;border-radius:6px;margin-top:6px;font-style:italic}
+  .wireframe{margin-bottom:16px;background:#FFF;border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7)}
+  .wireframe svg{width:100%;height:auto;border:1px solid #D5DCE5;border-radius:6px;background:#FAFAFA;display:block}
+  .reason{font-size:15px;color:#46515E;padding:12px 14px;background:#F7F9FC;border-radius:8px;margin-bottom:12px;border:1px solid #E8ECF2}
+  .asset-card{font-size:15px;color:#46515E;padding:13px 14px;background:#FFF;border:1px solid #DDE4EC;border-radius:8px;margin-bottom:12px}
+  .asset-row{display:grid;grid-template-columns:72px 1fr;gap:10px;padding:5px 0;border-bottom:1px solid #EEF2F6}
+  .asset-row:last-child{border-bottom:none}
+  .asset-k{font-weight:900;color:#7A8490}
+  .asset-v{color:#26323F}
+  .asset-pill{display:inline-block;padding:2px 9px;border-radius:999px;background:#E3F2FD;color:#006BA6;font-weight:900;font-size:12px;margin-right:6px}
+  .asset-pill.required{background:#FFEBEE;color:#C62828}
+  .asset-pill.optional{background:#FFF3E0;color:#D46A00}
+  .asset-pill.none{background:#F5F7FA;color:#6B7480}
+  .copy-handling{margin-bottom:12px}
+  .copy-handling .ch-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .copy-handling .ch-tag{font-size:13px;padding:3px 10px;border-radius:8px;font-weight:bold}
+  .ch-tag.kept{background:#E8F5E9;color:#007A53}
+  .ch-tag.compressed{background:#FFF3E0;color:#D46A00}
+  .ch-tag.notes{background:#E3F2FD;color:#006BA6}
+  .capacity-card{background:#FFF;border:1px solid var(--line);border-radius:8px;padding:13px 14px;margin-bottom:14px}
+  .capacity-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+  .capacity-status{font-size:12px;font-weight:900;border-radius:999px;padding:3px 9px;background:#E8F5E9;color:#007A53}
+  .capacity-status.tight{background:#FFF3E0;color:#D46A00}
+  .capacity-status.overfull{background:#FFEBEE;color:#C62828}
+  .capacity-status.too_empty{background:#F5F7FA;color:#6B7480}
+  .capacity-summary{font-size:13px;color:#59636F;margin-bottom:8px}
+  .capacity-region{display:grid;grid-template-columns:1fr auto;gap:10px;border-top:1px solid #EEF2F6;padding:7px 0;font-size:13px;color:#46515E}
+  .capacity-region:first-of-type{border-top:none}
+  .capacity-metric{color:#8A929C;font-weight:800;white-space:nowrap}
+  .capacity-rec{font-size:13px;color:#8A4700;background:#FFF8ED;border:1px solid #F0C48C;border-radius:6px;padding:8px 10px;margin-top:8px}
+  .risks{margin-bottom:12px}
+  .risks li{font-size:14px;color:#B35A00;margin-left:18px;margin-bottom:4px}
+  .suggestions{margin-bottom:16px}
+  .suggestions{display:grid;gap:10px;margin-bottom:18px}
+  .suggestions label{display:flex;align-items:center;gap:12px;padding:15px 16px;font-size:16px;color:#39424E;cursor:pointer;background:#FFF;border:1px solid var(--line);border-radius:8px;min-height:58px;transition:.16s ease}
+  .suggestions input,.approve-row input{width:22px;height:22px;accent-color:#007A53;flex:0 0 auto}
+  .suggestions label:hover{border-color:#007A53;background:#F2FBF7;transform:translateY(-1px)}
+  .feedback-text{margin-bottom:16px}
+  .feedback-text textarea{width:100%;min-height:88px;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:16px;font-family:inherit;resize:vertical;background:#FFF}
+  .action-zone{position:sticky;bottom:14px;background:rgba(255,255,255,.94);border:1px solid var(--line);box-shadow:0 14px 34px rgba(5,28,44,.10);border-radius:8px;padding:14px;margin-top:10px;backdrop-filter:blur(10px)}
+  .approve-row{display:flex;align-items:center;gap:12px;padding:14px 16px;font-size:16px;color:#26323F;background:#F7FBF8;border:1px solid #CFE8D8;border-radius:8px;font-weight:850}
+  .page-error{background:#FFEBEE;color:#C62828;padding:12px 16px;border-radius:8px;font-size:14px;margin-bottom:16px;border:1px solid #E60012}
+  .submit-area{text-align:center;padding:20px 0 40px}
+  .submit-btn{background:var(--danger);color:#FFF;border:none;padding:14px 42px;font-size:18px;font-weight:850;border-radius:8px;cursor:pointer;margin:0 6px;box-shadow:0 12px 28px rgba(230,0,18,.18)}
+  .submit-btn.green{background:#007A53;box-shadow:0 12px 28px rgba(0,122,83,.18)}
+  .submit-btn:hover{background:#C50010}
+  .toast{position:fixed;top:20px;right:20px;background:#051C2C;color:#FFF;padding:14px 24px;border-radius:8px;font-size:15px;display:none;z-index:999}
+  .toast.show{display:block}
+  .project-credit{max-width:1600px;margin:0 auto 28px;padding:0 24px;text-align:center;color:#8A929C;font-size:13px;font-weight:800}
+  .project-credit a{color:#59636F;text-decoration:none;border-bottom:1px solid #C8D0DA}
+  .global-error{background:#FFEBEE;border:2px solid #E60012;color:#C62828;padding:16px 24px;border-radius:12px;margin-bottom:20px;font-size:15px;font-weight:bold}
+  details.compact-details{border:1px solid var(--line);border-radius:8px;background:#FFF;margin-bottom:14px}
+  details.compact-details summary{list-style:none;cursor:pointer;padding:13px 16px;font-size:15px;font-weight:800;color:#59636F}
+  details.compact-details summary::-webkit-details-marker{display:none}
+  details.compact-details .details-body{padding:0 16px 16px}
+  /* Compact review UI override. Keep content intact; reduce chrome and visual noise. */
+  body{background:#EEF3F8;color:#182433}
+  .header{background:#06131B;padding:20px 40px;display:grid;grid-template-columns:1fr auto;grid-template-areas:"title meta" ". brand";align-items:center;gap:8px 18px;box-shadow:none;transition:padding .18s ease}
+  .header h1{grid-area:title;font-size:25px}
+  .header .meta{grid-area:meta;justify-self:end;font-size:13px;color:#A9B4BF;opacity:1}
+  .header .creator{grid-area:brand;justify-self:end;font-size:15px;font-weight:900;color:#FFFFFF;white-space:nowrap}
+  body.review-scrolled .header{padding:10px 40px;grid-template-areas:"title meta"}
+  body.review-scrolled .header .creator{display:none}
+  body.review-scrolled .header h1{font-size:21px}
+  .workspace{max-width:none;padding:14px 18px 14px 0;grid-template-columns:104px minmax(0,1fr);gap:0}
+  .side-nav{justify-self:center;top:92px;width:46px;padding:8px 5px;border-radius:9px;box-shadow:0 10px 28px rgba(5,28,44,.08)}
+  body.review-scrolled .side-nav{top:58px}
+  .side-nav-title{display:none}
+  .nav-list{counter-reset:pageNav;align-items:center;gap:8px;max-height:calc(100vh - 120px);padding:0;overflow:visible}
+  .nav-item{counter-increment:pageNav;display:grid;grid-template-columns:1fr;place-items:center;width:32px;height:32px;padding:0;border-radius:999px;background:#F4F7FA;font-size:0;line-height:1}
+  .nav-item::before{content:counter(pageNav);display:block;width:100%;height:32px;font-size:13px;font-weight:950;line-height:32px;text-align:center;transform:translateY(1px);color:#66717E}
+  .nav-item:hover,.nav-item.active{transform:none;background:#FFF4E3;border-color:#F0C48C}
+  .nav-item:hover::before,.nav-item.active::before{color:#D46A00}
+  .nav-dot{display:none}
+  .page-card{border-radius:9px;margin-bottom:18px;box-shadow:0 10px 26px rgba(5,28,44,.05)}
+  .page-card.error,.page-card.warning{border-left:1px solid var(--line)}
+  .page-header{padding:18px 28px}
+  .page-header h2{font-size:24px}
+  .page-body{padding:18px 28px}
+  .layout-grid{grid-template-columns:minmax(520px,.95fr) minmax(520px,1fr);gap:22px}
+  .visual-panel{top:96px}
+  .wireframe{display:grid;place-items:center;padding:0;border-color:#E6ECF3;background:#FFFFFF;box-shadow:none}
+  .wireframe svg{width:100%;margin:0 auto;border:0;background:#FFFFFF}
+  .asset-card{border-color:#E8EDF3;box-shadow:none}
+  .copy-summary{gap:10px;background:#F6F9FC}
+  .copy-decision{font-size:13px;border-color:#E8EDF3;background:#FFFFFF}
+  .copy-blocks .action-title{border-left:0;padding:14px 18px;border-radius:8px;margin-bottom:10px;font-size:19px}
+  .on-slide-combined,.copy-rationale-combined{background:#FFF;border:1px solid #E6ECF3;border-radius:8px;padding:10px 14px;color:#39424E}
+  .combined-lead{font-size:14px;color:#4F5965;margin-bottom:7px;line-height:1.65}
+  .combined-line{font-size:14px;color:#39424E;border-top:1px solid #EFF3F7;padding:7px 0}
+  .combined-line:first-child{border-top:0}
+  .copy-rationale-combined .combined-line{color:#6A4309;border-top-color:#F6DEC0}
+  .approve-row{cursor:pointer}
+  .action-zone{box-shadow:0 10px 28px rgba(5,28,44,.08)}
+  .submit-area{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;padding:28px 0 34px;background:linear-gradient(180deg,#EEF3F8,#F7F9FC)}
+  .submit-btn{min-width:210px;border-radius:10px;margin:0;padding:13px 28px;box-shadow:none}
+  .submit-area div,.submit-area p{flex-basis:100%;text-align:center}
+  .project-credit{font-size:14px;padding-bottom:22px}
+  @media(max-width:980px){.workspace{grid-template-columns:1fr;padding-left:18px}.side-nav{position:static;width:auto}.nav-list{flex-direction:row;overflow:auto}.layout-grid{grid-template-columns:1fr}.visual-panel{position:static}.header{grid-template-columns:1fr;grid-template-areas:"title" "meta" "brand"}.header .meta,.header .creator{justify-self:start;white-space:normal}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>版式方向审阅</h1>
+  <div class="meta">项目: AI长周期任务协作方法论 | 页面数: 18</div>
+  <div class="creator">小红书 @阿祖不看 TVC</div>
+  
+</div>
+<div class="workspace">
+  <aside class="side-nav">
+    <div class="side-nav-title">页面导航</div>
+    <nav class="nav-list" id="pageNav"></nav>
+  </aside>
+  <main class="container" id="container"></main>
+</div>
+<div class="submit-area">
+  <button class="submit-btn green" onclick="submitFeedback()">提交全部调整意见</button>
+  <button class="submit-btn" onclick="approveAll()">全部通过并继续</button>
+  <div style="margin-top:12px">
+    <input id="approvalKey" type="password" autocomplete="off" placeholder="人工审批口令（批准时必填）" style="width:min(420px,90%);padding:12px 14px;border:1px solid #D6DEE8;border-radius:8px;font-size:16px">
+  </div>
+  <p style="margin-top:12px;font-size:14px;color:#999">请使用本地审阅服务器提交反馈，不要直接打开 file:// HTML。</p>
+</div>
+<div class="toast" id="toast"></div>
+<footer class="project-credit">
+  Planner's PPT Hell © 2026 · 小红书 @阿祖不看 TVC · 网站 <a href="https://demyth.info" target="_blank" rel="noreferrer">demyth.info</a>
+</footer>
+<script>
+var pages = [{"page_key": "page_01", "page_number": 1, "page_title": "封面", "action_title": "AI 长周期任务协作方法论", "core_message": "当 AI 能连续运行 25 小时，真正的问题不是「它能跑多久」，而是「怎么让它不跑偏」。两篇 OpenAI 内部实践，合成一套完整方法论。", "body_blocks": [{"type": "paragraph", "text": "AI 长周期任务协作方法论：从实验验证到实操框架。"}, {"type": "paragraph", "text": "核心命题：真正的问题不是「能跑多久」，而是「怎么让它不跑偏」。"}], "tables": [], "speaker_notes": "开场页。传达核心命题——能力已验证，关键在协作流程。", "source_excerpt": "当 AI 能连续运行 25 小时，真正的问题不是「它能跑多久」，而是「怎么让它不跑偏」。", "has_full_copy": true, "page_mode": "emotional", "visual_density": "airy", "layout_id": "L01", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "emotionalize", "content_relation": "single_claim", "information_anchor": "核心命题：怎么不跑偏", "reader_takeaway": "能力已验证，关键在协作流程。"}, "why_this_layout": "封面单一命题，参考 L01 开启式命题。", "why_not_other_layouts": "不用对比表（无对照关系）；不用 KPI（不是数字主导）。", "adaptation_note": "左对齐主标题 + 副标题命题 + 底部署名条。", "anti_laziness_check": "用「能跑多久 vs 怎么不跑偏」的对照句式建立张力。", "grid": "full-width", "wireframe": [{"label": "主标题", "x": 140, "y": 400, "w": 1640, "h": 200, "zone": "header"}, {"label": "副标题命题", "x": 140, "y": 640, "w": 1400, "h": 120, "zone": "main_center"}, {"label": "底部来源条", "x": 140, "y": 960, "w": 1640, "h": 60, "zone": "footer"}], "layout_reason": "PageMode: emotional\nPurpose: emotionalize\nInformationAnchor: 主标题命题\nReadingPath: 主标题 → 副标题 → 底部来源\nSpatialPlan: 全幅留白营造定调张力。", "copy_handling": {"final_on_slide": {"title": "AI 长周期任务协作方法论", "subtitle": "从实验验证到实操框架", "body": ["真正的问题不是「能跑多久」，而是「怎么让它不跑偏」。"], "footer_takeaway": "Derrick Choi × Gabriel Chua · OpenAI 内部实践"}, "kept_on_slide": ["action_title", "core_message"], "compression_rationale": ["只保留命题一句；两篇来源合并为底部条。"], "compressed": ["完整背景移入 notes"], "moved_to_notes": ["完整方法论背景"]}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主标题", "box": {"x": 140, "y": 400, "w": 1640, "h": 200}, "estimated_chars": 11.3, "font_size": 46, "estimated_lines": 1, "max_lines": 2, "utilization": 0.5, "status": "ok"}, {"zone": "main_center", "label": "副标题命题", "box": {"x": 140, "y": 640, "w": 1400, "h": 120}, "estimated_chars": 11.3, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "footer", "label": "底部来源条", "box": {"x": 140, "y": 960, "w": 1640, "h": 60}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 1, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "optional", "asset_type": "svg_background", "placement": "background", "reason": "极简背景几何呼应「长周期」节奏。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_02", "page_number": 2, "page_title": "实验验证：25h 实验", "action_title": "25 小时连续运行，从空仓库构建真实可测试的设计工具", "core_message": "Derrick Choi 让 GPT-5.3-Codex 在空仓库上以 Extra High 推理级别从零构建设计工具。25h / 13M tokens / 30k 行代码 / 10 个核心功能。", "body_blocks": [{"type": "kpi_set", "items": ["25h 连续运行", "13M 消耗 tokens", "30k 生成代码行数", "10 核心功能模块"]}, {"type": "paragraph", "text": "这不是「模型变聪明了」的简单升级。真正的变化是：Agent 能保持更长时间的连贯性，端到端完成更大的工作块，并且在出错时能恢复而不丢失主线。"}], "tables": [], "speaker_notes": "核心数据冲击 + 核心发现定位。", "source_excerpt": "Derrick Choi 给了 GPT-5.3-Codex 一个空仓库、完全权限、一个任务：从零构建一个设计工具。25h / 13M / 30k / 10。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L03", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "prove", "content_relation": "evidence_chain", "information_anchor": "Agent 能保持更长时间的连贯性，端到端完成更大的工作块，并且在出错时能恢复而不丢失主线。", "reader_takeaway": "数字证明主张。"}, "why_this_layout": "4 个关键数字是核心证据", "why_not_other_layouts": "不用纯 bullet（数字会被埋没）。", "adaptation_note": "4 KPI 横排 + 主张 + 锚点结论", "anti_laziness_check": "数字成为视觉主角，不是 bullet 中的普通项。", "grid": "4-col", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "KPI 行", "x": 140, "y": 280, "w": 1640, "h": 280, "zone": "main_center"}, {"label": "锚点结论", "x": 140, "y": 620, "w": 1640, "h": 200, "zone": "main_center"}, {"label": "副标题", "x": 140, "y": 880, "w": 1640, "h": 80, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: prove\nInformationAnchor: Agent 能保持更长时间的连贯性，端到端完成更大的工作块，并且在出错时能恢复而不丢失主线。\nReadingPath: 主张 → KPI → 锚点结论\nSpatialPlan: 4 列 KPI 横排。\nReason: 4 个关键数字是核心证据", "copy_handling": {"final_on_slide": {"title": "25 小时连续运行，从空仓库构建真实可测试的设计工具", "subtitle": "Derrick Choi · GPT-5.3-Codex · Extra High 推理级别", "body": ["25h 连续运行", "13M 消耗 tokens", "30k 生成代码行数", "10 核心功能模块"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "kpis", "anchor"], "compression_rationale": ["KPI 原样保留为视觉主角；锚点结论独立强调。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 24.4, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "KPI 行", "box": {"x": 140, "y": 280, "w": 1640, "h": 280}, "estimated_chars": 41.2, "font_size": 28, "estimated_lines": 1, "max_lines": 6, "utilization": 0.17, "status": "too_empty"}, {"zone": "main_center", "label": "锚点结论", "box": {"x": 140, "y": 620, "w": 1640, "h": 200}, "estimated_chars": 14.1, "font_size": 28, "estimated_lines": 1, "max_lines": 4, "utilization": 0.25, "status": "ok"}, {"zone": "footer", "label": "副标题", "box": {"x": 140, "y": 880, "w": 1640, "h": 80}, "estimated_chars": 24.4, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "数字本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_03", "page_number": 3, "page_title": "真实案例：语音工作站", "action_title": "真实案例：用这套方法论构建出「语音工作站」", "core_message": "桌面端语音工具，围绕「练 / 写 / 记」三大能力，包含 8 种训练场景、5 种成文类型、会议纪要三大模块。", "body_blocks": [{"type": "paragraph", "text": "练 / 写 / 记 三大能力模块："}, {"type": "bullet_list", "items": ["练·8 种场景训练：自由训练 / 材料讲解 / 汇报演练 / 话题展开 / 会议发言 / 沟通说服 / 面试模拟 / 即兴表达", "写·5 种成文类型：报告 / 方案 / 邮件 / 汇报稿 / 日志", "记·会议纪要：议题拆分 / 讨论要点 / 决议 / 待办事项 / 未决问题", "训练后产出：词库分析（填充词/犹豫词/笼统词/情绪词）+ 表达力报告 + 逐句改写建议 + 教练观察"]}], "tables": [], "speaker_notes": "用我自己的语音工作站项目作为真实落地案例，比设计工具更有说服力。", "source_excerpt": "语音工作站：练（8 场景）/ 写（5 类型）/ 记（会议纪要）；训练后获得词库分析+表达力报告+改写建议+教练观察。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L12", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "prove", "content_relation": "parallel_set", "information_anchor": "练/写/记 三大能力", "reader_takeaway": "真实案例证明方法论可行。"}, "why_this_layout": "练/写/记是三个同级核心能力，参考 L12 三支柱。", "why_not_other_layouts": "不用 10 卡网格（已改为 3 大模块）；不用对照表（无对照关系）。", "adaptation_note": "3 卡并列（练/写/记）+ 底部训练产出条。", "anti_laziness_check": "三卡不是泛泛标签，每卡承载具体子能力。", "grid": "3-col", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "练/写/记 三大能力卡", "x": 140, "y": 280, "w": 1640, "h": 500, "zone": "main_center"}, {"label": "训练产出条", "x": 140, "y": 820, "w": 1640, "h": 140, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: prove\nInformationAnchor: 练/写/记 三大能力\nReason: 3 个同级能力用三支柱呈现。", "copy_handling": {"final_on_slide": {"title": "真实案例：用这套方法论构建出「语音工作站」", "subtitle": "桌面端语音工具 · 围绕练/写/记三大能力", "body": ["练·8 种场景：自由训练 / 材料讲解 / 汇报演练 / 话题展开 / 会议发言 / 沟通说服 / 面试模拟 / 即兴表达", "写·5 种成文：报告 / 方案 / 邮件 / 汇报稿 / 日志", "记·会议纪要：议题拆分 / 讨论要点 / 决议 / 待办 / 未决问题"], "footer_takeaway": "训练产出：词库分析 + 表达力报告 + 逐句改写 + 教练观察"}, "kept_on_slide": ["action_title", "3 modules", "训练产出"], "compression_rationale": ["练/写/记三模块并列；训练产出作为底部条收束。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 21.0, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "练/写/记 三大能力卡", "box": {"x": 140, "y": 280, "w": 1640, "h": 500}, "estimated_chars": 140.1, "font_size": 28, "estimated_lines": 2, "max_lines": 11, "utilization": 0.18, "status": "ok"}, {"zone": "footer", "label": "训练产出条", "box": {"x": 140, "y": 820, "w": 1640, "h": 140}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 4, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "三卡并列本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_04", "page_number": 4, "page_title": "Agent Loop：六步循环", "action_title": "长时间运行的关键不是巨大的 prompt，而是循环结构", "core_message": "Agent 运行的循环结构：Plan → Edit → Run Tools → Observe → Repair → Update。这个循环给 Agent 提供真实反馈、外部化状态、可转向性。", "body_blocks": [{"type": "numbered_list", "items": ["Plan 规划", "Edit 编辑代码", "Run Tools 运行测试 / 构建", "Observe 观察结果", "Repair 修复失败", "Update 更新文档"]}], "tables": [], "speaker_notes": "核心机制页。强调这是循环结构而非一次性 prompt。", "source_excerpt": "六步循环：Plan → Edit → Run Tools → Observe → Repair → Update。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L06", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "sequence", "content_relation": "sequence", "information_anchor": "六步循环", "reader_takeaway": "步骤顺序就是核心信息。"}, "why_this_layout": "流程结构是本页核心", "why_not_other_layouts": "不用 bullet（流程感丢）。", "adaptation_note": "顶部主张 + 水平/网格流程 + 底部结论。", "anti_laziness_check": "不是普通 bullet，用编号 + 箭头强化顺序。", "grid": "full-width", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "流程区", "x": 140, "y": 300, "w": 1640, "h": 500, "zone": "main_center"}, {"label": "结论", "x": 140, "y": 850, "w": 1640, "h": 100, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: sequence\nInformationAnchor: 六步循环\nReadingPath: 主张 → 流程 → 结论\nReason: 流程结构是本页核心", "copy_handling": {"final_on_slide": {"title": "长时间运行的关键不是巨大的 prompt，而是循环结构", "subtitle": "Agent Loop 六步循环", "body": ["① Plan 规划", "② Edit 编辑代码", "③ Run Tools 运行测试", "④ Observe 观察结果", "⑤ Repair 修复失败", "⑥ Update 更新文档"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "steps"], "compression_rationale": ["步骤原样保留；辅助说明移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 23.6, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "流程区", "box": {"x": 140, "y": 300, "w": 1640, "h": 500}, "estimated_chars": 61.4, "font_size": 28, "estimated_lines": 1, "max_lines": 11, "utilization": 0.09, "status": "too_empty"}, {"zone": "footer", "label": "结论", "box": {"x": 140, "y": 850, "w": 1640, "h": 100}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 2, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "流程本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_05", "page_number": 5, "page_title": "循环三大收益", "action_title": "循环结构为 Agent 提供三种关键能力", "core_message": "真实反馈（错误/diff/日志）+ 外部化状态（不依赖 context window）+ 可转向性（基于结果调整方向不丢失进度）。", "body_blocks": [{"type": "bullet_list", "items": ["真实反馈：跑测试后看到 traceback、diff、错误日志——不是猜哪里错了，是看到实际结果", "外部化状态：repo、文件、GOALS.md、worktrees——不依赖 context window，关掉笔记本状态还在", "可转向性：基于结果调整方向，比如发现某模块实现错了，回滚不丢失其他模块进度"]}], "tables": [], "speaker_notes": "解释循环为什么有效的三个底层原因。", "source_excerpt": "真实反馈 / 外部化状态 / 可转向性。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L12", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "parallel_set", "information_anchor": "三大收益", "reader_takeaway": "并列结构清晰。"}, "why_this_layout": "三个同级收益", "why_not_other_layouts": "不用纯 bullet（并列感丢）。", "adaptation_note": "3 卡并列 + 顶部主张。", "anti_laziness_check": "每卡有独立信息，不是泛泛标签。", "grid": "3-col", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "3 卡并列区", "x": 140, "y": 280, "w": 1640, "h": 680, "zone": "main_center"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 三大收益\nReadingPath: 主张 → 并列卡\nReason: 三个同级收益", "copy_handling": {"final_on_slide": {"title": "循环结构为 Agent 提供三种关键能力", "subtitle": "Plan-Edit-Run-Observe-Repair-Update 的底层收益", "body": ["真实反馈：跑测试看到 traceback、diff、日志——不是猜，是实际结果", "外部化状态：repo / 文件 / GOALS.md——不依赖 context window，状态持久", "可转向性：基于结果调整方向，回滚不丢失进度"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "pillars"], "compression_rationale": ["每卡保留核心动作。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 16.2, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "3 卡并列区", "box": {"x": 140, "y": 280, "w": 1640, "h": 680}, "estimated_chars": 113.0, "font_size": 28, "estimated_lines": 2, "max_lines": 16, "utilization": 0.12, "status": "too_empty"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "并列卡本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_06", "page_number": 6, "page_title": "5 个协作习惯总览", "action_title": "Gabriel Chua 的 5 个习惯，构成长周期协作的完整框架", "core_message": "5 个习惯覆盖：路线图维护 / 主线程协调 / 里程碑审计 / 本机分工 / 进度同步。", "body_blocks": [{"type": "numbered_list", "items": ["让 Codex 自主规划并维护路线图 —— 用对话启动，用 GOALS.md 锚定", "主线程只做全局协调 —— 目标、约束、决策、状态，不陷入实现细节", "里程碑后先审计路线图，再 review 代码 —— 双重验证", "本机测试交给「本地线程」—— 远程跑绝大多数，本机只做专属校验", "用简报和仪表盘同步全局进度 —— 三段式汇报 + 可视化仪表盘"]}], "tables": [], "speaker_notes": "章节总览页。下面 5 页每页展开一个习惯。", "source_excerpt": "5 个协作习惯：路线图 / 主线程协调 / 里程碑审计 / 本机分工 / 进度同步。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L05", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "parallel_set", "information_anchor": "5 个习惯并列", "reader_takeaway": "完整框架总览。"}, "why_this_layout": "5 个习惯是同级要点，参考 L05 Evidence Grid 5 卡横排。", "why_not_other_layouts": "不用 L12 三支柱（不是 3 个）。", "adaptation_note": "5 卡横排，每卡一个习惯名 + 一句话核心动作。", "anti_laziness_check": "不是泛泛编号列表，每卡有独立核心动作。", "grid": "5-col", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "5 卡横排", "x": 140, "y": 300, "w": 1640, "h": 600, "zone": "main_center"}, {"label": "底部章节预告", "x": 140, "y": 920, "w": 1640, "h": 80, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 5 习惯并列\nReason: 5 个同级要点用并列网格。", "copy_handling": {"final_on_slide": {"title": "Gabriel Chua 的 5 个习惯，构成长周期协作的完整框架", "body": ["① 自主规划 + GOALS.md", "② 主线程只做协调", "③ 里程碑审计 + review", "④ 本机测试分工", "⑤ 简报 + 仪表盘"], "footer_takeaway": "下面 5 页展开每个习惯"}, "kept_on_slide": ["action_title", "5 habits"], "compression_rationale": ["每习惯压缩到一句话核心动作。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 24.6, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "5 卡横排", "box": {"x": 140, "y": 300, "w": 1640, "h": 600}, "estimated_chars": 55.4, "font_size": 28, "estimated_lines": 1, "max_lines": 14, "utilization": 0.07, "status": "too_empty"}, {"zone": "footer", "label": "底部章节预告", "box": {"x": 140, "y": 920, "w": 1640, "h": 80}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 1, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "5 卡本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_07", "page_number": 7, "page_title": "习惯 1：让 Codex 自主规划并维护路线图", "action_title": "跳过 /plan 模式，先对话；用 GOALS.md 锚定持久目标", "core_message": "用对话启动，让 Codex 采访你补全上下文，生成初版计划。大项目写入 GOALS.md 按里程碑结构化记录。", "body_blocks": [{"type": "bullet_list", "items": ["保持灵活性：早期不需要把半成型想法写成正式规格文档", "让它采访你：Codex 反思理解、识别缺口、转化为可执行计划", "设置 Goal：让 Codex 综合上下文设定持久目标，自动定义完成证据", "GOALS.md：按里程碑结构化记录产出、范围、决策、阻塞、下一步证据", "持续迭代：新发现可能改变里程碑范围或完成标准"]}, {"type": "paragraph", "text": "关键：只有一个 Goal-mode 目标同时激活。里程碑完成后，Codex 更新 GOALS.md，激活下一个目标，继续工作。"}], "tables": [], "speaker_notes": "强调「先对话后规格」「一个 Goal 同时激活」两个关键约束。", "source_excerpt": "习惯 1：跳过 /plan 模式先对话；GOALS.md 按里程碑结构化；一个 Goal 同时激活。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L10", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "evidence_chain", "information_anchor": "一个 Goal 同时激活", "reader_takeaway": "结构 + 解释互相支撑。"}, "why_this_layout": "习惯 1：让 Codex 自主规划并维护路线图 需要解释 + 结构", "why_not_other_layouts": "不用纯 bullet（结构感丢）。", "adaptation_note": "左栏解释 + 右栏结构化清单/示意。", "anti_laziness_check": "不是 bullet 罗列，而是结构化拆解。", "grid": "5-7", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "左栏：核心逻辑", "x": 140, "y": 260, "w": 800, "h": 700, "zone": "main_left"}, {"label": "右栏：结构化清单/示意", "x": 980, "y": 260, "w": 800, "h": 700, "zone": "main_right"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 一个 Goal 同时激活\nReadingPath: 标题 → 左解释 → 右结构\nReason: 习惯 1：让 Codex 自主规划并维护路线图 需要解释 + 结构", "copy_handling": {"final_on_slide": {"title": "跳过 /plan 模式，先对话；用 GOALS.md 锚定持久目标", "subtitle": "习惯 1：让 Codex 自主规划并维护路线图", "body": ["保持灵活性：早期不需要把半成型想法写成正式规格文档", "让它采访你：Codex 反思理解、识别缺口、转化为可执行计划", "设置 Goal：综合上下文设定持久目标，自动定义完成证据", "GOALS.md：按里程碑结构化记录产出、范围、决策、阻塞、证据", "持续迭代：新发现可能改变里程碑范围或完成标准", "关键：只有一个 Goal-mode 目标同时激活"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "body_bullets"], "compression_rationale": ["保留每条核心动作；背景细节移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 24.2, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_left", "label": "左栏：核心逻辑", "box": {"x": 140, "y": 260, "w": 800, "h": 700}, "estimated_chars": 92.6, "font_size": 28, "estimated_lines": 3, "max_lines": 17, "utilization": 0.18, "status": "too_empty"}, {"zone": "main_right", "label": "右栏：结构化清单/示意", "box": {"x": 980, "y": 260, "w": 800, "h": 700}, "estimated_chars": 73.0, "font_size": 28, "estimated_lines": 3, "max_lines": 17, "utilization": 0.18, "status": "too_empty"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "结构本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_08", "page_number": 8, "page_title": "习惯 2：主线程只做全局协调", "action_title": "目标、约束、决策、状态 —— 主线程不陷入实现细节", "core_message": "主线程决定下一步做什么、委派任务、评估结果。Worker 做实现，主线程做协调。", "body_blocks": [{"type": "bullet_list", "items": ["Worker 可能花一小时读不熟悉的代码、尝试多种方法、追踪失败的测试", "协调者只需要：worker 学到了什么、什么变了、支持证据是什么、下一步该做什么", "委派方式：subagent 或独立 thread；独立 thread 有完整历史可回溯", "并行推进：多个工作并行时，主线程继续协调，每个调查/实现/审查都保持可检查"]}], "tables": [], "speaker_notes": "架构示意：主线程（协调者）→ Worker A/B/C → GOALS.md + Documentation.md。", "source_excerpt": "主线程做协调，Worker 做实现；委派方式可用 subagent 或独立 thread。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L13", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "evidence_chain", "information_anchor": "主线程 vs Worker 分工", "reader_takeaway": "结构 + 解释互相支撑。"}, "why_this_layout": "主线程-Worker 是层级关系，参考 L13 Hierarchy。", "why_not_other_layouts": "不用纯 bullet（结构感丢）。", "adaptation_note": "顶层主线程 → 中层 Worker A/B/C → 底层 GOALS.md + Documentation.md。", "anti_laziness_check": "不是 bullet 罗列，而是结构化拆解。", "grid": "hierarchy", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "顶层：主线程（协调者）", "x": 700, "y": 280, "w": 520, "h": 120, "zone": "main_center"}, {"label": "中层：Worker A/B/C", "x": 200, "y": 460, "w": 1520, "h": 200, "zone": "main_center"}, {"label": "底层：GOALS.md + Documentation.md", "x": 200, "y": 720, "w": 1520, "h": 160, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: structure (hierarchy)\nInformationAnchor: 主线程 vs Worker 分工\nReadingPath: 标题 → 左解释 → 右结构\nReason: 习惯 2：主线程只做全局协调 需要解释 + 结构", "copy_handling": {"final_on_slide": {"title": "目标、约束、决策、状态 —— 主线程不陷入实现细节", "subtitle": "习惯 2：主线程只做全局协调", "body": ["Worker 可能花一小时读不熟悉的代码、尝试多种方法", "协调者只需要：worker 学到了什么、什么变了、证据是什么", "委派方式：subagent 或独立 thread；独立 thread 有完整历史", "并行推进：多工作并行时，每个调查/实现/审查都保持可检查", "主线程架构：协调者 → Worker A/B/C → GOALS.md + Documentation.md"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "body_bullets"], "compression_rationale": ["保留每条核心动作；背景细节移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "overfull", "summary": "Planned copy likely cannot fit without layout or copy-handling changes.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 23.5, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "顶层：主线程（协调者）", "box": {"x": 700, "y": 280, "w": 520, "h": 120}, "estimated_chars": 67.0, "font_size": 28, "estimated_lines": 4, "max_lines": 2, "utilization": 2.0, "status": "overfull"}, {"zone": "main_center", "label": "中层：Worker A/B/C", "box": {"x": 200, "y": 460, "w": 1520, "h": 200}, "estimated_chars": 84.6, "font_size": 28, "estimated_lines": 2, "max_lines": 4, "utilization": 0.5, "status": "ok"}, {"zone": "footer", "label": "底层：GOALS.md + Documentation.md", "box": {"x": 200, "y": 720, "w": 1520, "h": 160}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 4, "utilization": 0.0, "status": "ok"}], "recommendations": ["Primary copy likely exceeds its planned region. Change layout, move explanatory copy to notes, or split the page before SVG generation."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "结构本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_09", "page_number": 9, "page_title": "习惯 3：里程碑后先审计路线图，再 review 代码", "action_title": "双重验证：计划还对吗？代码质量够吗？", "core_message": "每个里程碑结束后，用独立线程做两件事：审计路线图 + 审查代码。", "body_blocks": [{"type": "paragraph", "text": "路线图审计 5 问："}, {"type": "numbered_list", "items": ["里程碑真的完成了吗？", "下一个目标还是对的吗？", "有遗漏的里程碑吗？", "新证据是否调整了工作顺序？", "「完成定义」还成立吗？"]}, {"type": "paragraph", "text": "同步运行 /review：路线图审计可能发现缺失的浏览器测试；同时 /review 可能发现 token 存储方式不对，即使远程测试通过了。"}, {"type": "paragraph", "text": "协调者更新 GOALS.md，委派 token 修复，添加缺失的浏览器验证，然后才激活下一个里程碑。"}], "tables": [], "speaker_notes": "强调双重验证：路线图审计（计划维度）+ /review（代码维度）。", "source_excerpt": "习惯 3：5 问审计路线图 + 同步 /review；更新 GOALS.md 后才激活下一里程碑。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L06", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "evidence_chain", "information_anchor": "路线图审计 5 问 + /review", "reader_takeaway": "结构 + 解释互相支撑。"}, "why_this_layout": "5 问审计 + 同步 review 是流程，参考 L06 Process。", "why_not_other_layouts": "不用纯 bullet（结构感丢）。", "adaptation_note": "顶部主张 + 5 问水平流程 + 底部 review 收束。", "anti_laziness_check": "不是 bullet 罗列，而是结构化拆解。", "grid": "full-width", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "5 问水平流程", "x": 140, "y": 300, "w": 1640, "h": 360, "zone": "main_center"}, {"label": "底部 /review 收束", "x": 140, "y": 720, "w": 1640, "h": 160, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 路线图审计 5 问 + /review\nReadingPath: 标题 → 左解释 → 右结构\nReason: 习惯 3：里程碑后先审计路线图，再 review 代码 需要解释 + 结构", "copy_handling": {"final_on_slide": {"title": "双重验证：计划还对吗？代码质量够吗？", "subtitle": "习惯 3：里程碑后先审计路线图，再 review 代码", "body": ["路线图审计 5 问：里程碑真完成了吗？下一个目标还对吗？", "有遗漏里程碑吗？新证据调整顺序吗？完成定义还成立吗？", "同步 /review：可能发现 token 存储问题，即使远程测试通过", "协调者更新 GOALS.md，委派修复，添加缺失验证", "更新完成才激活下一个里程碑"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "body_bullets"], "compression_rationale": ["保留每条核心动作；背景细节移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 18.0, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "5 问水平流程", "box": {"x": 140, "y": 300, "w": 1640, "h": 360}, "estimated_chars": 136.9, "font_size": 28, "estimated_lines": 2, "max_lines": 8, "utilization": 0.25, "status": "ok"}, {"zone": "footer", "label": "底部 /review 收束", "box": {"x": 140, "y": 720, "w": 1640, "h": 160}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 4, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "结构本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_10", "page_number": 10, "page_title": "习惯 4：本机测试交给「本地线程」", "action_title": "远程（UU）跑绝大多数，本机只做环境依赖的专属校验", "core_message": "大部分 session 跑在 UU 远程实例上，笔记本关了也能继续。但有些检查依赖本机环境。", "body_blocks": [{"type": "paragraph", "text": "需要本机的场景："}, {"type": "bullet_list", "items": ["登录态浏览器", "本地凭据", "Xcode", "macOS 权限", "iOS 模拟器"]}, {"type": "paragraph", "text": "典型闭环流程：UU 远程 Worker 实现功能 → 远程测试通过 → 本地线程环境校验 → 发现 Bug 回传远程 → 远程修复。"}, {"type": "paragraph", "text": "项目保持远程优先（UU）。你的电脑只在需要时加入。"}], "tables": [], "speaker_notes": "强调远程优先 + 本机只做必要校验。", "source_excerpt": "习惯 4：UU 远程优先，本机只做环境依赖校验。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L06", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "evidence_chain", "information_anchor": "远程优先 + 本地校验", "reader_takeaway": "结构 + 解释互相支撑。"}, "why_this_layout": "UU 远程→本地→远程是闭环流程，参考 L06 Process。", "why_not_other_layouts": "不用纯 bullet（结构感丢）。", "adaptation_note": "顶部主张 + 5 步闭环流程 + 底部远程优先结论。", "anti_laziness_check": "不是 bullet 罗列，而是结构化拆解。", "grid": "full-width", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "5 步闭环流程", "x": 140, "y": 300, "w": 1640, "h": 400, "zone": "main_center"}, {"label": "底部结论：UU 远程优先", "x": 140, "y": 760, "w": 1640, "h": 120, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: sequence\nInformationAnchor: 5 步闭环\nReason: 远程→本地→远程是流程关系。", "copy_handling": {"final_on_slide": {"title": "远程（UU）跑绝大多数，本机只做环境依赖的专属校验", "subtitle": "习惯 4：本机测试交给「本地线程」", "body": ["UU 远程跑大部分 session，笔记本关了也能继续", "本机场景：登录态浏览器 / 本地凭据 / Xcode / macOS 权限 / iOS 模拟器", "闭环：UU 远程实现 → 远程测试 → 本地校验 → 发现 Bug → 远程修复", "项目保持远程优先（UU），电脑只在需要时加入"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "body_bullets"], "compression_rationale": ["保留每条核心动作；背景细节移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 24.1, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "5 步闭环流程", "box": {"x": 140, "y": 300, "w": 1640, "h": 400}, "estimated_chars": 121.4, "font_size": 28, "estimated_lines": 2, "max_lines": 9, "utilization": 0.22, "status": "ok"}, {"zone": "footer", "label": "底部结论：UU 远程优先", "box": {"x": 140, "y": 760, "w": 1640, "h": 120}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 3, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "结构本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_11", "page_number": 11, "page_title": "习惯 5：用简报和仪表盘同步全局进度", "action_title": "三段式汇报 + 可视化仪表盘", "core_message": "Worker thread 只报告单个任务。回到项目时，需要全局视图：三段式汇报 + 仪表盘。", "body_blocks": [{"type": "paragraph", "text": "三段式汇报（每次状态变化时输出）："}, {"type": "bullet_list", "items": ["What's done：已完成什么", "What's next：下一步是什么", "Any blockers：有无阻塞"]}, {"type": "paragraph", "text": "就像和 Codex 做每日站会，只不过是每小时一次。"}, {"type": "paragraph", "text": "可视化仪表盘（progress-dashboard.html）包含：当前活跃目标 / 已完成里程碑 / 证据状态 / 阻塞项 / 决策记录 / 最近更新。"}, {"type": "paragraph", "text": "Codex 可将仪表盘部署为 Site，保持远程可访问。"}], "tables": [], "speaker_notes": "强调「每小时一次站会」+ 「仪表盘外置状态」。", "source_excerpt": "习惯 5：三段式汇报（done/next/blockers）+ progress-dashboard.html。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L03", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "evidence_chain", "information_anchor": "三段式汇报 + 仪表盘", "reader_takeaway": "结构 + 解释互相支撑。"}, "why_this_layout": "三段式汇报 + 仪表盘 6 模块用 KPI 网格呈现，参考 L03。", "why_not_other_layouts": "不用纯 bullet（结构感丢）。", "adaptation_note": "顶部主张 + 三段式 3 卡 + 仪表盘 6 模块网格。", "anti_laziness_check": "不是 bullet 罗列，而是结构化拆解。", "grid": "3-3", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "三段式汇报 3 卡", "x": 140, "y": 260, "w": 1640, "h": 200, "zone": "main_center"}, {"label": "仪表盘 6 模块网格", "x": 140, "y": 500, "w": 1640, "h": 380, "zone": "main_center"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 三段式汇报 + 仪表盘\nReadingPath: 标题 → 左解释 → 右结构\nReason: 习惯 5：用简报和仪表盘同步全局进度 需要解释 + 结构", "copy_handling": {"final_on_slide": {"title": "三段式汇报 + 可视化仪表盘", "subtitle": "习惯 5：用简报和仪表盘同步全局进度", "body": ["三段式汇报：What's done / What's next / Any blockers", "像每小时一次的站会", "progress-dashboard.html：活跃目标 / 已完成里程碑 / 证据状态", "阻塞项 / 决策记录 / 最近更新", "Codex 可部署为 Site，保持远程可访问"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "body_bullets"], "compression_rationale": ["保留每条核心动作；背景细节移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 12.1, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "三段式汇报 3 卡", "box": {"x": 140, "y": 260, "w": 1640, "h": 200}, "estimated_chars": 39.4, "font_size": 28, "estimated_lines": 1, "max_lines": 4, "utilization": 0.25, "status": "ok"}, {"zone": "main_center", "label": "仪表盘 6 模块网格", "box": {"x": 140, "y": 500, "w": 1640, "h": 380}, "estimated_chars": 73.6, "font_size": 28, "estimated_lines": 2, "max_lines": 8, "utilization": 0.25, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "结构本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_12", "page_number": 12, "page_title": "完整方法论的核心共识", "action_title": "完整方法论的四个核心共识", "core_message": "能力基础（能跑 25 小时）+ 协作流程（怎么不翻车）= 完整方法论。四个核心共识贯穿其中。", "body_blocks": [{"type": "paragraph", "text": "能力已验证，关键在协作流程。完整方法论建立在四个核心共识之上："}, {"type": "bullet_list", "items": ["持久 Goal：为 AI 提供不会漂移的锚点", "里程碑审计：为项目设置多层验收关卡", "状态外置：文件/仪表盘避免信息仅存在于线程上下文", "持续验证：每个里程碑都检查，不是最后才检查"]}], "tables": [], "speaker_notes": "收敛方法论到四个核心共识。能力是地基，协作流程是建筑，二者合一才是完整方法论。", "source_excerpt": "核心共识：持久 Goal / 里程碑审计 / 状态外置 / 持续验证。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L12", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "parallel_set", "information_anchor": "四个核心共识", "reader_takeaway": "方法论收敛到四点。"}, "why_this_layout": "四个核心共识是同级要点，参考 L12 多支柱（4 卡 2×2 网格）。", "why_not_other_layouts": "不用对照表（不再比较两篇文章）；不用纯 bullet（弱化支柱感）。", "adaptation_note": "2×2 网格四卡 + 顶部主张 + 底部一句话总结。", "anti_laziness_check": "四卡不是任意 4 条 bullet，是完整方法论的四个支柱。", "grid": "2-2", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "四共识 2×2 网格", "x": 140, "y": 280, "w": 1640, "h": 560, "zone": "main_center"}, {"label": "底部一句话总结", "x": 140, "y": 880, "w": 1640, "h": 100, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 四个核心共识\nReadingPath: 主张 → 2×2 网格 → 底部总结\nReason: 4 个同级共识用 2×2 网格呈现。", "copy_handling": {"final_on_slide": {"title": "完整方法论的四个核心共识", "subtitle": "能力基础 + 协作流程 = 完整方法论", "body": ["① 持久 Goal：为 AI 提供不会漂移的锚点", "② 里程碑审计：为项目设置多层验收关卡", "③ 状态外置：避免信息仅存在于线程上下文", "④ 持续验证：每个里程碑都检查，不是最后才检查"], "footer_takeaway": "能力是地基，协作流程是建筑。"}, "kept_on_slide": ["action_title", "4 共识"], "compression_rationale": ["四共识原样保留；去掉两篇文章作者归因。"], "compressed": ["原 7 行对比表删除"], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 12.0, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "四共识 2×2 网格", "box": {"x": 140, "y": 280, "w": 1640, "h": 560}, "estimated_chars": 108.4, "font_size": 28, "estimated_lines": 2, "max_lines": 13, "utilization": 0.15, "status": "too_empty"}, {"zone": "footer", "label": "底部一句话总结", "box": {"x": 140, "y": 880, "w": 1640, "h": 100}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 2, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "2×2 网格本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_13", "page_number": 13, "page_title": "可迁移框架：跨工具适用", "action_title": "核心骨架不依赖特定工具，是 AI 时代的新型项目管理模式", "core_message": "4 个核心骨架：路线图锚定 / 里程碑验收 / 远程本地分工 / 状态外置。任何支持多 session 的工具都适用。", "body_blocks": [{"type": "bullet_list", "items": ["路线图锚定：GOALS.md 记录里程碑、范围、决策、证据", "里程碑验收：审计 + review，可用独立对话或 subagent", "远程本地分工：远程跑大部分，本机只做环境依赖校验", "状态外置：进度汇报 + 仪表盘，可用 markdown 或 HTML"]}], "tables": [{"caption": "工具对应关系", "headers": ["Codex 能力", "Claude Code 对应", "Cursor 对应"], "rows": [["/goal（持久目标）", "CLAUDE.md + memory 文件", ".cursorrules + 项目上下文"], ["GOALS.md（路线图）", "任何 markdown 文件", "任何 markdown 文件"], ["Subagent（委派）", "Agent tool（/agent）", "多文件编辑 + terminal"], ["/review（代码审查）", "独立对话 + review 指令", "独立对话 + 代码审查"], ["Computer Use（本机测试）", "本地 terminal 执行", "本地 terminal 执行"]]}], "speaker_notes": "强调跨工具通用性。", "source_excerpt": "4 个核心骨架 + Codex/Claude/Cursor 工具对应表。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L09", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "matrix", "information_anchor": "4 骨架 + 工具对应表", "reader_takeaway": "跨工具通用。"}, "why_this_layout": "两表并列（骨架 + 工具对应）。", "why_not_other_layouts": "不用 bullet（结构感丢）。", "adaptation_note": "顶部主张 + 4 骨架速览 + 工具对应表。", "anti_laziness_check": "两表都承载独立信息。", "grid": "full-width", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "4 骨架速览", "x": 140, "y": 260, "w": 1640, "h": 200, "zone": "main_center"}, {"label": "工具对应表", "x": 140, "y": 500, "w": 1640, "h": 480, "zone": "main_center"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 4 骨架 + 工具对应表\nReason: 两表并列呈现跨工具通用性。", "copy_handling": {"final_on_slide": {"title": "核心骨架不依赖特定工具，是 AI 时代的新型项目管理模式", "body": ["4 骨架：路线图锚定 / 里程碑验收 / 远程本地分工 / 状态外置"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "4 骨架", "工具对应表"], "compression_rationale": ["两表原样保留。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 25.6, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "4 骨架速览", "box": {"x": 140, "y": 260, "w": 1640, "h": 200}, "estimated_chars": 27.0, "font_size": 28, "estimated_lines": 1, "max_lines": 4, "utilization": 0.25, "status": "ok"}, {"zone": "main_center", "label": "工具对应表", "box": {"x": 140, "y": 500, "w": 1640, "h": 480}, "estimated_chars": 0.0, "font_size": 28, "estimated_lines": 0, "max_lines": 11, "utilization": 0.0, "status": "too_empty"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "两表本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_14", "page_number": 14, "page_title": "实操工具箱：启动 Prompt", "action_title": "可复制的长周期项目启动 Prompt", "core_message": "用一段 prompt 让 AI 进入「协调者」模式：采访 → 计划 → GOALS.md → 单目标 → 委派 → 审计 → 三段式汇报。", "body_blocks": [{"type": "paragraph", "text": "启动 Prompt 7 段指令（左原文 / 右解读）："}, {"type": "bullet_list", "items": ["Coordinate this as a long-running project → 声明这是长周期项目", "Begin by interviewing me → 先采访我，不要直接动手", "Create GOALS.md as the shared roadmap → 创建共享路线图", "Set and maintain one objective at a time → 单目标同时激活", "Delegate implementation to subagents → 委派给 subagent，主线程不实现", "After each milestone, audit GOALS.md → 每里程碑后审计 + review", "Report only: done / next / blockers → 只汇报三段式", "Do not declare completion until evidence exists → 没证据不宣布完成"]}], "tables": [], "speaker_notes": "Prompt 关键指令拆解。", "source_excerpt": "启动 Prompt：Coordinate / Interview / GOALS.md / one objective / delegate / audit / three-segment report.", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L10", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "evidence_chain", "information_anchor": "启动 Prompt 6 段指令", "reader_takeaway": "可复制 prompt。"}, "why_this_layout": "Prompt 是核心产出，需要结构化拆解 + 代码区。", "why_not_other_layouts": "不用纯代码（失去结构解读）。", "adaptation_note": "左侧 prompt 原文代码块 + 右侧 7 段中文解读，便于理解每段意图。", "anti_laziness_check": "不是贴一段代码，而是左右对照让每段都可理解。", "grid": "6-6", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "左栏：Prompt 原文（英文代码块）", "x": 140, "y": 260, "w": 800, "h": 700, "zone": "main_left"}, {"label": "右栏：7 段中文解读", "x": 980, "y": 260, "w": 800, "h": 700, "zone": "main_right"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 7 段指令拆解\nReason: 把 prompt 拆解为可理解结构。", "copy_handling": {"final_on_slide": {"title": "可复制的长周期项目启动 Prompt", "body": ["Coordinate this as a long-running project → 声明长周期项目", "Begin by interviewing me → 先采访后计划", "Create GOALS.md → 创建共享路线图", "One objective at a time → 单目标激活", "Delegate to subagents → 委派不亲为", "After each milestone, audit → 里程碑后审计", "Report done/next/blockers → 三段式汇报", "No completion without evidence → 没证据不宣布完成"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "prompt segments"], "compression_rationale": ["Prompt 拆解为 7 段核心指令。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 14.6, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_left", "label": "左栏：Prompt 原文（英文代码块）", "box": {"x": 140, "y": 260, "w": 800, "h": 700}, "estimated_chars": 84.1, "font_size": 28, "estimated_lines": 3, "max_lines": 17, "utilization": 0.18, "status": "too_empty"}, {"zone": "main_right", "label": "右栏：7 段中文解读", "box": {"x": 980, "y": 260, "w": 800, "h": 700}, "estimated_chars": 85.0, "font_size": 28, "estimated_lines": 3, "max_lines": 17, "utilization": 0.18, "status": "too_empty"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "Prompt 结构本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_15", "page_number": 15, "page_title": "实操工具箱：GOALS.md + 进度模板", "action_title": "GOALS.md 路线图模板 + 三段式进度汇报模板", "core_message": "GOALS.md 按里程碑结构化记录（状态/产出/范围/决策/阻塞/证据）；进度汇报固定四段（done/next/blockers/证据）。", "body_blocks": [{"type": "paragraph", "text": "GOALS.md 每个里程碑需记录："}, {"type": "bullet_list", "items": ["状态（进行中 / 待开始 / 已完成）", "目标产出（具体交付物）", "工作范围（任务清单）", "重要决策（描述 + 原因）", "已知阻塞", "完成证据（测试 / 审查 / 演示）"]}, {"type": "paragraph", "text": "进度汇报模板四段：What's done / What's next / Any blockers / 证据。"}], "tables": [], "speaker_notes": "提供可直接复制的模板结构。", "source_excerpt": "GOALS.md 模板：项目目标 / 当前状态 / 里程碑（状态/产出/范围/决策/阻塞/证据）/ 决策日志。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L10", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "evidence_chain", "information_anchor": "两模板结构", "reader_takeaway": "结构 + 解释互相支撑。"}, "why_this_layout": "两模板并列", "why_not_other_layouts": "不用纯 bullet（结构感丢）。", "adaptation_note": "左栏解释 + 右栏结构化清单/示意。", "anti_laziness_check": "不是 bullet 罗列，而是结构化拆解。", "grid": "5-7", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "左栏：核心逻辑", "x": 140, "y": 260, "w": 800, "h": 700, "zone": "main_left"}, {"label": "右栏：结构化清单/示意", "x": 980, "y": 260, "w": 800, "h": 700, "zone": "main_right"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 两模板结构\nReadingPath: 标题 → 左解释 → 右结构\nReason: 两模板并列", "copy_handling": {"final_on_slide": {"title": "GOALS.md 路线图模板 + 三段式进度汇报模板", "subtitle": "两个可直接复制的结构化模板", "body": ["GOALS.md 每个里程碑记录：", "  状态 / 目标产出 / 工作范围 / 重要决策 / 已知阻塞 / 完成证据", "决策日志：日期 / 决策 / 原因 / 影响", "进度汇报模板四段：", "  What's done / What's next / Any blockers / 证据"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "body_bullets"], "compression_rationale": ["保留每条核心动作；背景细节移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 19.7, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_left", "label": "左栏：核心逻辑", "box": {"x": 140, "y": 260, "w": 800, "h": 700}, "estimated_chars": 49.8, "font_size": 28, "estimated_lines": 2, "max_lines": 17, "utilization": 0.12, "status": "too_empty"}, {"zone": "main_right", "label": "右栏：结构化清单/示意", "box": {"x": 980, "y": 260, "w": 800, "h": 700}, "estimated_chars": 52.2, "font_size": 28, "estimated_lines": 2, "max_lines": 17, "utilization": 0.12, "status": "too_empty"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "结构本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_16", "page_number": 16, "page_title": "范式升级：开发者角色转变", "action_title": "不会带团队，你就自己干到死 —— AI 时代同样成立", "core_message": "管理者不懂授权只能累死。AI 时代的开发者同理：不懂带 AI 团队，只能自己写代码到死。", "body_blocks": [{"type": "paragraph", "text": "管理学金句：不会带团队，你就自己干到死（赵伟同名管理书）。"}, {"type": "paragraph", "text": "AI 时代同样成立：开发者如果不学会委派给 AI、设计验证流程，就会陷入事必躬亲的累死循环。"}, {"type": "paragraph", "text": "角色转变："}], "tables": [{"caption": "角色转变", "headers": ["过去", "现在"], "rows": [["亲自写代码的执行者", "带领 AI 团队的技术负责人"], ["关注实现细节", "关注目标、里程碑、验收标准"], ["手动测试验证", "设计验证流程让 AI 自动执行"], ["单线程工作", "多 worker 并行协调"]]}], "speaker_notes": "强调开发者角色升级，不是被替代。", "source_excerpt": "管理学金句「不会带团队，你就自己干到死」应用到 AI 时代：不懂带 AI 团队，只能自己写代码到死。", "has_full_copy": true, "page_mode": "emotional", "visual_density": "airy", "layout_id": "L08", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "compare", "content_relation": "matrix", "information_anchor": "角色转变表", "reader_takeaway": "对照清晰。"}, "why_this_layout": "金句页：用「不会带团队，你就自己干到死」作为情感锚点。", "why_not_other_layouts": "不用并列卡（维度多）。", "adaptation_note": "顶部主张 + 中间对照表 + 底部共识（可选）。", "anti_laziness_check": "对照维度对称，非泛泛罗列。", "grid": "full-width", "wireframe": [{"label": "顶部铺垫：管理学金句", "x": 140, "y": 200, "w": 1640, "h": 100, "zone": "header"}, {"label": "金句主体：AI 时代同样成立", "x": 140, "y": 340, "w": 1640, "h": 280, "zone": "main_center"}, {"label": "底部角色转变表", "x": 140, "y": 660, "w": 1640, "h": 320, "zone": "footer"}], "layout_reason": "PageMode: emotional\nPurpose: emotionalize\nInformationAnchor: 金句\nReason: 用管理学金句做情感切入，比纯对比表更有冲击。", "copy_handling": {"final_on_slide": {"title": "不会带团队，你就自己干到死 —— AI 时代同样成立", "subtitle": "管理学金句（赵伟同名管理书）", "body": ["金句：不会带团队，你就自己干到死", "AI 时代：不懂带 AI 团队，只能自己写代码到死", "执行者 → 技术负责人 · 实现细节 → 目标/验收 · 手动测试 → 设计验证流程 · 单线程 → 多 worker 并行"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "headers", "rows"], "compression_rationale": ["对照表原样保留；多余说明移 notes。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "顶部铺垫：管理学金句", "box": {"x": 140, "y": 200, "w": 1640, "h": 100}, "estimated_chars": 22.9, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "金句主体：AI 时代同样成立", "box": {"x": 140, "y": 340, "w": 1640, "h": 280}, "estimated_chars": 98.5, "font_size": 32, "estimated_lines": 2, "max_lines": 5, "utilization": 0.4, "status": "ok"}, {"zone": "footer", "label": "底部角色转变表", "box": {"x": 140, "y": 660, "w": 1640, "h": 320}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 11, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "对照表本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_17", "page_number": 17, "page_title": "底层三要素 + 适用边界", "action_title": "持久锚点 + 验收关卡 + 状态外置 = AI 长周期协作的底层三要素", "core_message": "三要素：Goal + GOALS.md（锚点）/ 里程碑审计 + review（关卡）/ 简报 + 仪表盘（外置）。", "body_blocks": [{"type": "numbered_list", "items": ["持久锚点：Goal + GOALS.md，为 AI 提供不会漂移的目标", "验收关卡：里程碑审计 + review，多层验证防止偏差累积", "状态外置：简报 + 仪表盘，项目状态不依赖线程上下文"]}, {"type": "paragraph", "text": "适用边界（仅当满足以下特征时投入产出比最高）："}, {"type": "bullet_list", "items": ["项目推进过程中会持续涌现新信息", "涉及多块独立并行工作", "需要多个不同环境的验证证据"]}], "tables": [], "speaker_notes": "核心方法论收敛到三要素，加适用边界防止滥用。", "source_excerpt": "底层三要素：持久锚点 / 验收关卡 / 状态外置。适用边界：新信息/并行/多环境。", "has_full_copy": true, "page_mode": "rational", "visual_density": "balanced", "layout_id": "L12", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "structure", "content_relation": "parallel_set", "information_anchor": "三要素", "reader_takeaway": "方法论收敛到 3 点。"}, "why_this_layout": "3 个同级要素是真正的三支柱。", "why_not_other_layouts": "不用 bullet（弱化支柱感）。", "adaptation_note": "3 支柱 + 底部适用边界。", "anti_laziness_check": "三支柱不是任意 3 条 bullet。", "grid": "3-col", "wireframe": [{"label": "主张标题", "x": 140, "y": 120, "w": 1640, "h": 100, "zone": "header"}, {"label": "三支柱区", "x": 140, "y": 280, "w": 1640, "h": 480, "zone": "main_center"}, {"label": "适用边界", "x": 140, "y": 800, "w": 1640, "h": 140, "zone": "footer"}], "layout_reason": "PageMode: rational\nPurpose: structure\nInformationAnchor: 三要素\nReason: 3 个同级要素用三支柱。", "copy_handling": {"final_on_slide": {"title": "持久锚点 + 验收关卡 + 状态外置 = 长周期协作底层三要素", "body": ["① 持久锚点：Goal + GOALS.md，为 AI 提供不会漂移的目标", "② 验收关卡：里程碑审计 + review，多层验证防止偏差累积", "③ 状态外置：简报 + 仪表盘，项目状态不依赖线程上下文", "适用边界：仅当涌现新信息 / 多块并行 / 多环境验证时投入产出比最高"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "3 elements", "适用边界"], "compression_rationale": ["三要素原样保留；适用边界独立强调。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "主张标题", "box": {"x": 140, "y": 120, "w": 1640, "h": 100}, "estimated_chars": 25.2, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "三支柱区", "box": {"x": 140, "y": 280, "w": 1640, "h": 480}, "estimated_chars": 110.2, "font_size": 28, "estimated_lines": 2, "max_lines": 11, "utilization": 0.18, "status": "ok"}, {"zone": "footer", "label": "适用边界", "box": {"x": 140, "y": 800, "w": 1640, "h": 140}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 4, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "三支柱本身是视觉。"}, "design_risks": [], "review_suggestions": []}, {"page_key": "page_18", "page_number": 18, "page_title": "结语", "action_title": "模型负责智能，开发者负责引导智能锚定目标", "core_message": "这套方法的本质不是工具使用技巧，而是 AI 时代的新型项目管理模式。", "body_blocks": [{"type": "paragraph", "text": "模型负责发挥智能能力，而开发者的核心作用是引导这份智能始终锚定同一目标，沿着验证证据的路径稳步推进。"}, {"type": "paragraph", "text": "起点：下次启动长周期任务时，先写一份 GOALS.md，再让 AI 采访你。"}], "tables": [], "speaker_notes": "行动召唤。", "source_excerpt": "模型负责智能，开发者负责引导。起点：写 GOALS.md，让 AI 采访你。", "has_full_copy": true, "page_mode": "emotional", "visual_density": "airy", "layout_id": "L15", "layout_usage": "adapted", "design_judgment": {"persuasion_action": "summarize", "content_relation": "summary", "information_anchor": "行动召唤", "reader_takeaway": "下一步动作。"}, "why_this_layout": "收束 + 行动召唤", "why_not_other_layouts": "不用感谢页（泛泛无特异性）。", "adaptation_note": "主张 + 行动召唤 + 留白结束。", "anti_laziness_check": "落到具体动作，不是泛泛 Thank you。", "grid": "full-width", "wireframe": [{"label": "资产转型主张", "x": 140, "y": 320, "w": 1640, "h": 160, "zone": "header"}, {"label": "行动召唤", "x": 140, "y": 520, "w": 1640, "h": 240, "zone": "main_center"}, {"label": "结束留白", "x": 140, "y": 800, "w": 1640, "h": 200, "zone": "footer"}], "layout_reason": "PageMode: emotional\nPurpose: summarize\nInformationAnchor: 行动召唤\nReason: 收束 + 行动召唤", "copy_handling": {"final_on_slide": {"title": "模型负责智能，开发者负责引导智能锚定目标", "subtitle": "AI 时代的新型项目管理模式", "body": ["起点：下次启动长周期任务时，先写一份 GOALS.md，再让 AI 采访你。"], "footer_takeaway": ""}, "kept_on_slide": ["action_title", "call_to_action"], "compression_rationale": ["收束到单一动作。"], "compressed": [], "moved_to_notes": []}, "capacity": {"status": "tight", "summary": "Planned copy may fit but needs careful line breaks or a larger zone.", "regions": [{"zone": "header", "label": "资产转型主张", "box": {"x": 140, "y": 320, "w": 1640, "h": 160}, "estimated_chars": 20.0, "font_size": 46, "estimated_lines": 1, "max_lines": 1, "utilization": 1.0, "status": "tight"}, {"zone": "main_center", "label": "行动召唤", "box": {"x": 140, "y": 520, "w": 1640, "h": 240}, "estimated_chars": 43.8, "font_size": 32, "estimated_lines": 1, "max_lines": 4, "utilization": 0.25, "status": "ok"}, {"zone": "footer", "label": "结束留白", "box": {"x": 140, "y": 800, "w": 1640, "h": 200}, "estimated_chars": 0.0, "font_size": 18, "estimated_lines": 0, "max_lines": 6, "utilization": 0.0, "status": "ok"}], "recommendations": ["Copy may fit but needs deliberate line breaks and spacing. Avoid solving this by shrinking body text below readability limits."]}, "visual_asset_strategy": {"asset_need": "none", "asset_type": "none", "placement": "none", "reason": "收束页用文字张力。"}, "design_risks": [], "review_suggestions": []}];
+
+function renderWireframeSVG(wireframe) {
+  if (!wireframe || !wireframe.length) return '<div class="page-error">缺少线框图数据 — 请重新生成 layout_plan.json</div>';
+  var vbW = 1920, vbH = 1080;
+  var colors = ['#EEF3F8','#F4F6F1','#FFF3E4','#F5EFF7','#EEF7F4','#F7F2EE'];
+  var rects = wireframe.map(function(r, i) {
+    var label = (r.label||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    var fill = colors[i % colors.length];
+    var labelX = Number(r.x) + 20;
+    var labelY = Number(r.y) + 42;
+    return '<rect x="'+r.x+'" y="'+r.y+'" width="'+r.w+'" height="'+r.h+'" fill="'+fill+'" stroke="#C9D2DC" stroke-width="2" rx="10"/>'+
+           '<rect x="'+(Number(r.x)+16)+'" y="'+(Number(r.y)+16)+'" width="'+Math.min(360, Math.max(160, label.length * 34))+'" height="42" fill="#FFFFFF" opacity=".86" rx="8"/>'+
+           '<text x="'+labelX+'" y="'+labelY+'" font-family="PingFang SC,Microsoft YaHei,SimHei,sans-serif" font-size="24" font-weight="700" fill="#7B858F">'+label+'</text>';
+  });
+  return '<svg width="960" height="540" viewBox="0 0 '+vbW+' '+vbH+'" xmlns="http://www.w3.org/2000/svg">'+
+         '<rect width="1920" height="1080" fill="#FBFCFD"/>'+
+         '<rect x="44" y="44" width="1832" height="992" fill="none" stroke="#E2E7EE" stroke-width="3" stroke-dasharray="12 12"/>'+
+         rects.join('')+'</svg>';
+}
+
+function modeLabel(v) {
+  return {rational:'理性页', emotional:'情绪页'}[v] || v || '?';
+}
+
+function densityLabel(v) {
+  return {dense:'高密度', balanced:'均衡', airy:'留白'}[v] || v || '?';
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderBodyBlock(block) {
+  if (!block) return '';
+  if (block.type === 'bullet_list' && block.items) {
+    return block.items.map(function(item) {
+      return '<div class="body-line">'+escapeHtml(item)+'</div>';
+    }).join('');
+  }
+  if ((block.type === 'paragraph' || block.type === 'quote') && block.text) {
+    return '<div class="body-line">'+escapeHtml(block.text)+'</div>';
+  }
+  if (block.type === 'numbered_list' && block.items) {
+    return block.items.map(function(item, i) {
+      return '<div class="body-line">'+(i+1)+'. '+escapeHtml(item)+'</div>';
+    }).join('');
+  }
+  if (block.type === 'kpi_set' && block.items) {
+    return block.items.map(function(item) {
+      return '<div class="body-line" style="font-size:18px;font-weight:bold;color:#333">'+escapeHtml(item)+'</div>';
+    }).join('');
+  }
+  return '';
+}
+
+function renderTable(table) {
+  if (!table) return '';
+  var html = '<div class="table-wrap">';
+  if (table.caption) html += '<caption>'+escapeHtml(table.caption)+'</caption>';
+  html += '<table>';
+  if (table.headers && table.headers.length) {
+    html += '<thead><tr>';
+    table.headers.forEach(function(h) { html += '<th>'+escapeHtml(h)+'</th>'; });
+    html += '</tr></thead>';
+  }
+  if (table.rows && table.rows.length) {
+    html += '<tbody>';
+    table.rows.forEach(function(row) {
+      html += '<tr>';
+      row.forEach(function(cell) { html += '<td>'+escapeHtml(cell)+'</td>'; });
+      html += '</tr>';
+    });
+    html += '</tbody>';
+  }
+  html += '</table></div>';
+  return html;
+}
+
+function renderVisualAssetStrategy(strategy) {
+  if (!strategy) {
+    return '<div class="page-error">缺少素材需求：请在版式计划中说明本页是否需要配图。</div>';
+  }
+  var need = strategy.asset_need || 'unknown';
+  var pillClass = ['required','optional','none'].indexOf(need) >= 0 ? need : '';
+  var needText = need === 'none' ? '无' : (need === 'optional' ? '可选' : '有');
+  var typeLabels = {
+    real_asset: '真实素材/截图/照片',
+    data_visual: '数据图表/结构图',
+    editable_schematic: '可编辑示意图',
+    photo_placeholder: '图片占位',
+    screenshot_placeholder: '截图占位',
+    svg_background: 'SVG 背景',
+    svg_illustration: 'SVG 插画',
+    generated_image: '生成图片',
+    chart: '图表',
+    none: '不需要素材'
+  };
+  var typeText = typeLabels[strategy.asset_type] || strategy.asset_type || '不需要素材';
+  var html = '<div class="asset-card">';
+  html += '<div class="asset-row"><div class="asset-k">配图</div><div class="asset-v"><span class="asset-pill '+pillClass+'">'+escapeHtml(needText)+'</span></div></div>';
+  html += '<div class="asset-row"><div class="asset-k">类型</div><div class="asset-v">'+escapeHtml(typeText)+'</div></div>';
+  if (strategy.prompt_or_source) html += '<div class="asset-row"><div class="asset-k">来源</div><div class="asset-v">'+escapeHtml(strategy.prompt_or_source)+'</div></div>';
+  if (strategy.fallback_if_missing) html += '<div class="asset-row"><div class="asset-k">缺失时</div><div class="asset-v">'+escapeHtml(strategy.fallback_if_missing)+'</div></div>';
+  html += '</div>';
+  return html;
+}
+
+function renderOnSlideCopy(p) {
+  var html = '<div class="copy-blocks copy-summary compact-card">';
+  var ch = p.copy_handling || {};
+  var finalCopy = ch.final_on_slide || {};
+  var title = finalCopy.title || p.action_title || '';
+  var subtitle = finalCopy.subtitle || p.core_message || '';
+  var moved = ch.moved_to_notes || [];
+  var compressed = ch.compressed || [];
+  var decisionBits = [];
+  if (title) decisionBits.push('记住这一句: ' + title);
+  if (compressed.length) decisionBits.push('压缩/合并 ' + compressed.length + ' 项说明');
+  if (moved.length) decisionBits.push('移入备注 ' + moved.length + ' 项');
+  if (decisionBits.length) {
+    html += '<div class="copy-decision">' + escapeHtml(decisionBits.join(' · ')) + '</div>';
+  }
+  if (title) html += '<div class="action-title">' + escapeHtml(title) + '</div>';
+
+  var body = [];
+  if (Array.isArray(finalCopy.body)) {
+    body = finalCopy.body;
+  } else if (typeof finalCopy.body === 'string' && finalCopy.body.trim()) {
+    body = [finalCopy.body];
+  }
+  if (!body.length) {
+    body = (ch.kept_on_slide || []).filter(function(s) {
+      var v = String(s || '').toLowerCase();
+      return v && v !== 'action_title' && v !== 'core_message';
+    });
+  }
+  if (subtitle || body.length) {
+    html += '<div class="on-slide-combined">';
+    if (subtitle) html += '<div class="combined-lead">' + escapeHtml(subtitle) + '</div>';
+    body.forEach(function(s) {
+      html += '<div class="combined-line">' + escapeHtml(s) + '</div>';
+    });
+    html += '</div>';
+  }
+  if (finalCopy.footer_takeaway) {
+    html += '<div class="on-slide-item" style="margin-top:8px;font-weight:850;border-color:#F0C48C;background:#FFF8ED">' + escapeHtml(finalCopy.footer_takeaway) + '</div>';
+  }
+  var rationale = ch.compression_rationale || [];
+  if (rationale.length) {
+    html += '<div class="section-label" style="margin-top:14px">文案处理原则</div><div class="copy-rationale-combined">';
+    rationale.forEach(function(s) { html += '<div class="combined-line">' + escapeHtml(s) + '</div>'; });
+    html += '</div>';
+  }
+  if (compressed.length) {
+    html += '<div class="section-label" style="margin-top:14px">精简/合并</div><div class="copy-rationale-combined">';
+    compressed.forEach(function(s) { html += '<div class="combined-line">' + escapeHtml(s) + '</div>'; });
+    html += '</div>';
+  }
+  if (moved.length) {
+    html += '<div class="section-label" style="margin-top:14px">移入备注</div><div class="notes-list">';
+    moved.forEach(function(s) { html += '<div class="notes-item">' + escapeHtml(s) + '</div>'; });
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderPages() {
+  var container = document.getElementById('container');
+  var nav = document.getElementById('pageNav');
+  pages.forEach(function(p, idx) {
+    var card = document.createElement('div');
+    var pageNo = idx + 1;
+    var sourceNo = p.page_number;
+    var anchor = 'page-' + pageNo;
+    var hasError = !!p.error;
+    var hasWarning = (!hasError && ((!p.wireframe || !p.wireframe.length) || !p.has_full_copy));
+    card.id = anchor;
+    card.className = 'page-card' + (hasError ? ' error' : (hasWarning ? ' warning' : ''));
+
+    if (nav) {
+      var link = document.createElement('a');
+      link.className = 'nav-item';
+      link.href = '#' + anchor;
+      link.innerHTML = '<span class="nav-dot"></span><span>第' + pageNo + '页</span>';
+      nav.appendChild(link);
+    }
+
+    var modeBadge = '<span class="badge ' + (p.page_mode||'') + '">' + escapeHtml(modeLabel(p.page_mode)) + '</span>';
+    var densityBadge = '<span class="badge ' + (p.visual_density||'') + '">' + escapeHtml(densityLabel(p.visual_density)) + '</span>';
+
+    var html = '<div class="page-header">';
+    html += '<h2>第' + pageNo + '页: ' + escapeHtml(p.page_title||('page_' + String(pageNo).padStart(2,'0'))) + '</h2>';
+    html += '<div class="badges">' + modeBadge + densityBadge;
+    if (sourceNo && sourceNo !== pageNo) html += '<span class="badge" style="background:#F5F7FA;color:#59636F">源稿P' + escapeHtml(sourceNo) + '</span>';
+    if (p.layout_id) html += '<span class="badge" style="background:#F5F7FA;color:#333">' + escapeHtml(p.layout_id) + '</span>';
+    if (p.grid) html += '<span class="badge" style="background:#F5F7FA;color:#333">' + escapeHtml(p.grid) + '</span>';
+    html += '</div></div>';
+
+    html += '<div class="page-body"><div class="layout-grid">';
+    if (p.error) html += '<div class="page-error">' + escapeHtml(p.error) + '</div>';
+    if (!p.has_full_copy && !p.error) html += '<div class="page-error">页面文案不完整：缺少 action_title、core_message 或 body_blocks。请检查 page_content.json。</div>';
+
+    // Visual decision first
+    html += '<section class="visual-panel">';
+    html += '<div class="section-label">空间线框图</div><div class="wireframe">';
+    html += renderWireframeSVG(p.wireframe);
+    html += '</div>';
+    html += '<div class="section-label">素材需求</div>';
+    html += renderVisualAssetStrategy(p.visual_asset_strategy);
+
+    // Review suggestions and approval controls stay next to the wireframe.
+    if (p.review_suggestions && p.review_suggestions.length) {
+      html += '<div class="section-label">改进建议（勾选即采纳）</div><div class="suggestions">';
+      var shown = p.review_suggestions.slice(0, 3);
+      shown.forEach(function(s, si) {
+        html += '<label><input type="checkbox" name="sugg_'+idx+'" value="' + si + '"> ' + escapeHtml(s) + '</label>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="action-zone"><div class="section-label">您的反馈</div><div class="feedback-text">';
+    html += '<textarea name="feedback_'+idx+'" placeholder="对此页版式的调整意见、顾虑或备注..."></textarea>';
+    html += '</div>';
+    html += '<label class="approve-row"><input type="checkbox" name="approve_'+idx+'" value="1"> <strong>确认此页版式</strong></label>';
+    html += '</div>';
+    html += '</section>';
+
+    html += '<section class="review-panel">';
+    html += '<div class="section-label">最终上屏文案</div>';
+    html += renderOnSlideCopy(p);
+
+    html += '<details class="compact-details"><summary>原始完整文稿（默认收起）</summary><div class="details-body">';
+    html += '<div class="copy-full"><div class="copy-full-title"><span>用于对照最终上屏文案是否过度简化</span><span>可滚动</span></div><div class="copy-blocks">';
+    if (p.source_excerpt) {
+      html += '<pre style="white-space:pre-wrap;font-family:inherit;font-size:15px;color:#4F5965;line-height:1.7">' + escapeHtml(p.source_excerpt) + '</pre>';
+    } else {
+      html += '<div class="body-line">未提供原始完整文稿；下方显示结构化正文。</div>';
+    }
+    if (p.body_blocks && p.body_blocks.length) {
+      if (p.source_excerpt) html += '<div class="section-label" style="margin-top:14px">结构化正文</div>';
+      p.body_blocks.forEach(function(block) { html += renderBodyBlock(block); });
+    }
+    if (p.tables && p.tables.length) {
+      html += '<div class="section-label" style="margin-top:12px">表格数据</div>';
+      p.tables.forEach(function(t) { html += renderTable(t); });
+    }
+    html += '</div></div></div></details>';
+
+    // Speaker notes (collapsible)
+    if (p.speaker_notes) {
+      html += '<details class="compact-details"><summary>演讲者备注</summary>';
+      html += '<div class="details-body notes-content">' + escapeHtml(p.speaker_notes) + '</div></details>';
+    }
+    html += '</section></div></div>'; // review-panel, layout-grid, page-body
+
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+function submitFeedback() {
+  var payload = {pages:{}, all_approved: false};
+  pages.forEach(function(p, idx) {
+    var pageKey = p.page_key || ('page_' + String(p.page_number||(idx+1)).padStart(2,'0'));
+    var selected = [];
+    var checkboxes = document.getElementsByName('sugg_'+idx);
+    checkboxes.forEach(function(cb) { if (cb.checked) selected.push(parseInt(cb.value)); });
+    var customFeedback = (document.getElementsByName('feedback_'+idx)[0]||{}).value||'';
+    var approved = (document.getElementsByName('approve_'+idx)[0]||{}).checked||false;
+    payload.pages[pageKey] = {
+      selected_suggestions: selected,
+      custom_feedback: customFeedback,
+      approved: approved
+    };
+  });
+  payload.all_approved = Object.values(payload.pages).every(function(p) { return p.approved; });
+  payload.approval_key = (document.getElementById('approvalKey')||{}).value || '';
+
+  var toast = document.getElementById('toast');
+  if (payload.all_approved && !payload.approval_key.trim()) {
+    toast.textContent = '全部通过需要输入人工审批口令。';
+    toast.className = 'toast show';
+    setTimeout(function(){ toast.className='toast'; }, 5000);
+    return;
+  }
+
+  fetch('/layout-feedback', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).then(function(r) {
+    if (r.ok) {
+      toast.textContent = '反馈已提交。模型将根据反馈调整版式。';
+      toast.className = 'toast show';
+      setTimeout(function(){ toast.className='toast'; }, 3000);
+    } else {
+      toast.textContent = '提交失败。审阅服务器是否在运行？';
+      toast.className = 'toast show';
+      setTimeout(function(){ toast.className='toast'; }, 5000);
+    }
+  }).catch(function() {
+    toast.textContent = '无法连接服务器。请先启动 review_server.py。';
+    toast.className = 'toast show';
+    setTimeout(function(){ toast.className='toast'; }, 5000);
+  });
+}
+
+function approveAll() {
+  pages.forEach(function(p, idx) {
+    var cb = document.getElementsByName('approve_'+idx)[0];
+    if (cb) cb.checked = true;
+  });
+  submitFeedback();
+}
+
+renderPages();
+
+function updateHeaderCompactState() {
+  document.body.classList.toggle('review-scrolled', window.scrollY > 24);
+}
+updateHeaderCompactState();
+window.addEventListener('scroll', updateHeaderCompactState, {passive:true});
+
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (!entry.isIntersecting) return;
+    document.querySelectorAll('.nav-item').forEach(function(a) { a.classList.remove('active'); });
+    var active = document.querySelector('.nav-item[href="#'+entry.target.id+'"]');
+    if (active) active.classList.add('active');
+  });
+}, {rootMargin:'-35% 0px -55% 0px', threshold:0});
+document.querySelectorAll('.page-card').forEach(function(card) { observer.observe(card); });
+</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 07 · Vibe OS 案例实验室 — 人机协同实战课</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+.course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
+.course-path{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.course-path span{color:var(--accent)}
+.course-title{font-size:22px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.2}
+.course-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:640px;margin-bottom:var(--space-md)}
+.course-meta{display:flex;gap:var(--space-lg);font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.finish-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border);text-align:center}
+.finish-area .btn{margin-top:var(--space-md)}
+
+/* 案例实验室主布局 */
+.case-main{display:grid;grid-template-columns:1fr 380px;gap:var(--space-xl);min-height:600px}
+.case-diagram{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);overflow:auto}
+.case-panel{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);overflow-y:auto;max-height:700px}
+
+/* SVG 架构图 */
+.case-svg{width:100%;max-width:600px;display:block;margin:0 auto}
+.case-svg text{font-family:'Space Grotesk',sans-serif;fill:var(--text-primary)}
+.case-svg .mono{font-family:'Space Mono',monospace}
+.case-svg .node-rect{fill:var(--surface);stroke:var(--text-display);stroke-width:1;cursor:pointer;transition:fill .15s}
+.case-svg .node-rect:hover{fill:var(--surface-raised)}
+.case-svg .node-group:focus{outline:none}
+.case-svg .node-group:focus .node-rect{stroke:var(--accent);stroke-width:2}
+.case-svg .node-rect.active{fill:var(--text-display)}
+.case-svg .node-rect.active+text,.case-svg .node-rect.active~text{fill:var(--surface)}
+.case-svg .layer-bg{fill:none;stroke:var(--border);stroke-width:1;stroke-dasharray:3 3}
+.case-svg .flow-line{stroke:var(--text-display);stroke-width:1.5;fill:none}
+.case-svg .arrow-head{fill:var(--text-display)}
+.case-svg .terminal-bg{fill:var(--text-display)}
+.case-svg .terminal-bg~text{fill:var(--surface)}
+
+/* 故事面板 */
+.panel-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.panel-title{font-size:18px;font-weight:600;color:var(--text-display);margin-bottom:4px;line-height:1.2}
+.panel-meta{font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);margin-bottom:var(--space-lg);padding-bottom:var(--space-md);border-bottom:1px solid var(--border)}
+.panel-section{margin-bottom:var(--space-lg)}
+.panel-section-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:var(--space-sm)}
+.panel-story{font-size:13px;line-height:1.7;color:var(--text-secondary)}
+.panel-story strong{color:var(--text-display)}
+.panel-output{background:var(--surface-raised);padding:var(--space-md);font-family:var(--font-mono);font-size:11px;line-height:1.6;color:var(--text-primary);border-left:2px solid var(--text-display);margin-bottom:var(--space-sm);white-space:pre-wrap}
+.panel-btn{display:inline-block;margin-top:var(--space-sm);padding:6px 16px;border:1px solid var(--text-display);font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-display);cursor:pointer;background:var(--surface);transition:all .15s}
+.panel-btn:hover{background:var(--text-display);color:var(--surface)}
+.panel-empty{color:var(--text-disabled);font-size:12px;font-style:italic}
+
+/* 映射区 - 引导式 */
+.mapping-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border)}
+.mapping-title{font-size:16px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-md)}
+.map-box textarea{width:100%;min-height:50px;border:1px solid var(--border-visible);background:var(--bg);padding:var(--space-sm);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none}
+
+@media(max-width:900px){.case-main{grid-template-columns:1fr}.case-panel{max-height:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">人机协同 · <em>实战课</em></div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">← 路径</a>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div style="max-width:1200px;margin:var(--space-5xl) auto 0;padding:0 var(--space-xl)">
+
+  <div class="course-header">
+    <div class="course-path">案例 &gt; <span>Step 07 · 范式二 Agentic</span></div>
+    <div class="course-title">Vibe OS 三层协同拆解</div>
+    <div class="course-desc">一个真实跑通的项目——它用三层协同开发自己，所有过程都被记录。点击左侧架构图的任意节点，右侧展开：当时发生了什么、产物长什么样、你怎么复制。</div>
+    <div class="course-meta">
+      <span>预计时长 20 分钟</span>
+      <span>1 个交互案例</span>
+    </div>
+  </div>
+
+  <!-- 主布局 -->
+  <div class="case-main">
+    <!-- 左：SVG 架构图 -->
+    <div class="case-diagram" id="diagramArea">
+      <svg class="case-svg" viewBox="0 0 580 780" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" class="arrow-head"/></marker></defs>
+
+        <!-- 起点 -->
+        <g class="node-group" data-node="user">
+          <rect class="node-rect" x="220" y="20" width="140" height="40"/>
+          <text x="290" y="46" text-anchor="middle" font-size="13" font-weight="600">你的一个想法</text>
+        </g>
+        <line class="flow-line" x1="290" y1="60" x2="290" y2="90" marker-end="url(#ar)"/>
+
+        <!-- L1 执行层 -->
+        <rect class="layer-bg" x="20" y="95" width="540" height="180"/>
+        <text x="36" y="115" font-size="9" class="mono" fill="#999">L1 · 执行层</text>
+        <text x="544" y="115" font-size="9" class="mono" fill="#999" text-anchor="end">把想法做成产物</text>
+
+        <g class="node-group" data-node="idea">
+          <rect class="node-rect" x="36" y="135" width="120" height="48"/>
+          <text x="96" y="164" text-anchor="middle" font-size="12" font-weight="600">idea 立项</text>
+        </g>
+        <g class="node-group" data-node="interaction">
+          <rect class="node-rect" x="172" y="135" width="120" height="48"/>
+          <text x="232" y="164" text-anchor="middle" font-size="12" font-weight="600">交互文档</text>
+        </g>
+        <g class="node-group" data-node="architecture">
+          <rect class="node-rect" x="308" y="135" width="120" height="48"/>
+          <text x="368" y="164" text-anchor="middle" font-size="12" font-weight="600">技术骨架</text>
+        </g>
+        <g class="node-group" data-node="design">
+          <rect class="node-rect" x="36" y="205" width="120" height="48"/>
+          <text x="96" y="234" text-anchor="middle" font-size="12" font-weight="600">视觉设计</text>
+        </g>
+        <g class="node-group" data-node="prototype">
+          <rect class="node-rect" x="172" y="205" width="120" height="48"/>
+          <text x="232" y="234" text-anchor="middle" font-size="12" font-weight="600">原型</text>
+        </g>
+        <g class="node-group" data-node="implement">
+          <rect class="node-rect" x="308" y="205" width="120" height="48"/>
+          <text x="368" y="234" text-anchor="middle" font-size="12" font-weight="600">代码实现</text>
+        </g>
+
+        <line class="flow-line" x1="290" y1="275" x2="290" y2="300" marker-end="url(#ar)"/>
+
+        <!-- L2 编排层 -->
+        <rect class="layer-bg" x="20" y="305" width="540" height="120"/>
+        <text x="36" y="325" font-size="9" class="mono" fill="#999">L2 · 编排层</text>
+        <text x="544" y="325" font-size="9" class="mono" fill="#999" text-anchor="end">让长周期不迷失</text>
+
+        <g class="node-group" data-node="orchestrate">
+          <rect class="node-rect" x="36" y="345" width="150" height="48"/>
+          <text x="111" y="374" text-anchor="middle" font-size="12" font-weight="600">里程碑+路线图</text>
+        </g>
+        <g class="node-group" data-node="dashboard">
+          <rect class="node-rect" x="210" y="345" width="150" height="48"/>
+          <text x="285" y="374" text-anchor="middle" font-size="12" font-weight="600">共驾仪表盘</text>
+        </g>
+        <g class="node-group" data-node="gates">
+          <rect class="node-rect" x="384" y="345" width="150" height="48"/>
+          <text x="459" y="374" text-anchor="middle" font-size="12" font-weight="600">验证门禁</text>
+        </g>
+
+        <line class="flow-line" x1="290" y1="425" x2="290" y2="450" marker-end="url(#ar)"/>
+
+        <!-- L3 接力层 -->
+        <rect class="layer-bg" x="20" y="455" width="540" height="100"/>
+        <text x="36" y="475" font-size="9" class="mono" fill="#999">L3 · 接力层</text>
+        <text x="544" y="475" font-size="9" class="mono" fill="#999" text-anchor="end">跨班次连轴转</text>
+
+        <g class="node-group" data-node="handoff_plan">
+          <rect class="node-rect" x="60" y="490" width="200" height="48"/>
+          <text x="160" y="512" text-anchor="middle" font-size="10" class="mono" fill="#666">人规划</text>
+          <text x="160" y="528" text-anchor="middle" font-size="12" font-weight="600">下发 PROMPT.md</text>
+        </g>
+        <g class="node-group" data-node="handoff_run">
+          <rect class="node-rect" x="310" y="490" width="200" height="48"/>
+          <text x="410" y="512" text-anchor="middle" font-size="10" class="mono" fill="#666">AI 执行</text>
+          <text x="410" y="528" text-anchor="middle" font-size="12" font-weight="600">夜间 codex 跑</text>
+        </g>
+
+        <line class="flow-line" x1="290" y1="555" x2="290" y2="580" marker-end="url(#ar)"/>
+
+        <!-- 终点 -->
+        <g class="node-group" data-node="terminal">
+          <rect class="terminal-bg" x="150" y="585" width="280" height="56"/>
+          <text x="290" y="608" text-anchor="middle" font-size="10" class="mono" fill="#FAFAF7">终点</text>
+          <text x="290" y="628" text-anchor="middle" font-size="16" font-weight="600" fill="#FAFAF7">完整成品</text>
+        </g>
+
+        <line class="flow-line" x1="290" y1="641" x2="290" y2="660" marker-end="url(#ar)"/>
+
+        <!-- 模板包 + 动手试 -->
+        <g class="node-group" data-node="templates">
+          <rect class="node-rect" x="60" y="665" width="200" height="48"/>
+          <text x="160" y="694" text-anchor="middle" font-size="12" font-weight="600">可复制做法包</text>
+        </g>
+        <g class="node-group" data-node="playground">
+          <rect class="node-rect" x="310" y="665" width="200" height="48"/>
+          <text x="410" y="694" text-anchor="middle" font-size="12" font-weight="600">自己模拟走一遍</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- 右：故事面板 -->
+    <div class="case-panel" id="storyPanel">
+      <div class="panel-label">点击左侧任意节点</div>
+      <div class="panel-title">Vibe OS · 真实故事</div>
+      <div class="panel-meta">点图中节点 · 右侧看真实故事</div>
+      <div class="panel-empty" id="defaultHint">点击左侧架构图的节点，这里会展开：发生了什么、产物长什么样、怎么复制。</div>
+      <div id="storyContent"></div>
+    </div>
+  </div>
+
+
+<!-- 技能链路区 -->
+  <div class="mapping-area">
+    <div class="mapping-title">🔗 完整开发链路：技能怎么串联</div>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:var(--space-lg)">从想法到成品，一条链串起所有技能。<strong style="color:var(--text-primary)">L1 每步都有对应的 vibe 技能</strong>，<strong style="color:var(--accent)">L2 编排贯穿全程</strong>，<strong style="color:var(--blue)">L3 接力处理跨班次</strong>。点击 SVG 中每个节点看详情。</p>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:var(--space-xl)">
+      <div style="padding:var(--space-sm);border:1px solid var(--border);background:var(--surface);text-align:center;border-top:3px solid var(--accent)"><div style="font-family:var(--font-mono);font-size:8px;color:var(--accent);margin-bottom:2px">STEP 1</div><div style="font-size:11px;font-weight:600;color:var(--text-display)">vibe-idea</div><div style="font-size:9px;color:var(--text-secondary)">立项</div></div>
+      <div style="padding:var(--space-sm);border:1px solid var(--border);background:var(--surface);text-align:center;border-top:3px solid var(--accent)"><div style="font-family:var(--font-mono);font-size:8px;color:var(--accent);margin-bottom:2px">STEP 2</div><div style="font-size:11px;font-weight:600;color:var(--text-display)">vibe-interaction</div><div style="font-size:9px;color:var(--text-secondary)">交互文档</div></div>
+      <div style="padding:var(--space-sm);border:1px solid var(--border);background:var(--surface);text-align:center;border-top:3px solid var(--accent)"><div style="font-family:var(--font-mono);font-size:8px;color:var(--accent);margin-bottom:2px">STEP 3</div><div style="font-size:11px;font-weight:600;color:var(--text-display)">vibe-architecture</div><div style="font-size:9px;color:var(--text-secondary)">技术骨架</div></div>
+      <div style="padding:var(--space-sm);border:1px solid var(--border);background:var(--surface);text-align:center;border-top:3px solid var(--accent)"><div style="font-family:var(--font-mono);font-size:8px;color:var(--accent);margin-bottom:2px">STEP 4</div><div style="font-size:11px;font-weight:600;color:var(--text-display)">vibe-design</div><div style="font-size:9px;color:var(--text-secondary)">视觉设计</div></div>
+      <div style="padding:var(--space-sm);border:1px solid var(--border);background:var(--surface);text-align:center;border-top:3px solid var(--accent)"><div style="font-family:var(--font-mono);font-size:8px;color:var(--accent);margin-bottom:2px">STEP 5</div><div style="font-size:11px;font-weight:600;color:var(--text-display)">vibe-prototype</div><div style="font-size:9px;color:var(--text-secondary)">原型</div></div>
+      <div style="padding:var(--space-sm);border:1px solid var(--border);background:var(--surface);text-align:center;border-top:3px solid var(--accent)"><div style="font-family:var(--font-mono);font-size:8px;color:var(--accent);margin-bottom:2px">STEP 6</div><div style="font-size:11px;font-weight:600;color:var(--text-display)">vibe-implement</div><div style="font-size:9px;color:var(--text-secondary)">代码实现</div></div>
+      <div style="padding:var(--space-sm);border:1px solid var(--border);background:var(--surface);text-align:center;border-top:3px solid var(--success)"><div style="font-family:var(--font-mono);font-size:8px;color:var(--success);margin-bottom:2px">交付</div><div style="font-size:11px;font-weight:600;color:var(--text-display)">成品</div><div style="font-size:9px;color:var(--text-secondary)">可分享</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-xl)">
+      <div style="padding:var(--space-md);border-left:3px solid var(--accent);background:var(--accent-subtle)">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-xs)">L2 编排 · 贯穿全程</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.6"><strong>orchestrate-projects</strong> 从第一步就开始运行：<br>— 建 .planning/ 工件体系（PROJECT/ROADMAP/STATE）<br>— 每步完成后跑验证门禁（PASS 才进下一步）<br>— 维护共驾仪表盘，人和 AI 随时知道进展<br>— 状态变化写入文件，不靠对话记忆</div>
+      </div>
+      <div style="padding:var(--space-md);border-left:3px solid var(--blue);background:var(--blue-subtle)">
+        <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:.08em;color:var(--blue);margin-bottom:var(--space-xs)">L3 接力 · 跨班次交接</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.6">需要跨夜或跨班次时：<br>— 人写 <strong>PROMPT.md</strong>（目标/scope/验收标准）<br>— AI 收到后按约束执行，完成后写 <strong>DONE.md</strong><br>— 人早起审查 DONE.md，验收或补充指令<br>— 两个角色不直接对话，靠文件交接</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-md)">✏️ 你的项目链路规划</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm)">
+        <div style="padding:var(--space-md);border:1px solid var(--border)"><div style="font-family:var(--font-mono);font-size:9px;color:var(--text-disabled);margin-bottom:var(--space-xs)">① 想法（→ vibe-idea）</div><textarea id="mapIdea" style="width:100%;min-height:50px;border:1px solid var(--border-visible);background:var(--bg);padding:var(--space-sm);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="你想做什么？"></textarea></div>
+        <div style="padding:var(--space-md);border:1px solid var(--border)"><div style="font-family:var(--font-mono);font-size:9px;color:var(--text-disabled);margin-bottom:var(--space-xs)">② 交互（→ vibe-interaction）</div><textarea id="mapInteraction" style="width:100%;min-height:50px;border:1px solid var(--border-visible);background:var(--bg);padding:var(--space-sm);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="用户怎么用？"></textarea></div>
+        <div style="padding:var(--space-md);border:1px solid var(--border)"><div style="font-family:var(--font-mono);font-size:9px;color:var(--text-disabled);margin-bottom:var(--space-xs)">③ 技术约束（→ vibe-architecture）</div><textarea id="mapArch" style="width:100%;min-height:50px;border:1px solid var(--border-visible);background:var(--bg);padding:var(--space-sm);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="有什么技术限制？"></textarea></div>
+        <div style="padding:var(--space-md);border:1px solid var(--border)"><div style="font-family:var(--font-mono);font-size:9px;color:var(--text-disabled);margin-bottom:var(--space-xs)">④ 关键判断（→ 判断档案）</div><textarea id="mapDecision" style="width:100%;min-height:50px;border:1px solid var(--border-visible);background:var(--bg);padding:var(--space-sm);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="最重要的决策是什么？"></textarea></div>
+      </div>
+      <button class="btn" style="margin-top:var(--space-md)" onclick="saveMapping()">💾 保存链路规划</button>
+      <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);margin-left:var(--space-sm)" id="mapHint"></span>
+    </div>
+  </div>
+
+  <div class="finish-area">
+    <div style="font-size:13px;color:var(--text-secondary)">浏览案例并填写映射后，点击下方按钮</div>
+    <button class="btn btn-primary" onclick="completeStep()">✓ 完成当前课程</button>
+    <div style="margin-top:var(--space-sm);font-size:11px;color:var(--text-disabled)" id="nextHint">完成后将解锁下一节</div>
+  </div>
+
+</div>
+
+<footer class="footer"><div class="footer-text">人机协同实战课 · Step 07 · Vibe OS 案例实验室</div></footer>
+
+<script src="assets/utils.js"></script>
+<script>
+// === 节点故事数据 ===
+const stories={
+  user:{title:'起点',meta:'你的一个想法 · 2026-07-18',story:'晚上 7 点，用户说"我想做一套教别人用 AI 协同开发的教学产品"。这句话很模糊——不知道做什么形态、给谁、怎么教。这就是所有项目的起点：一个模糊的想法。三层协同的第一步，就是把这个模糊想法逼问到"可立项"。',output:'"我想做一套教别人用 AI 协同开发的教学产品"'},
+  idea:{title:'idea 立项',meta:'L1 · STEP 1',story:'调用 vibe-idea 技能，用"11 维基础体检 + AI 时代四透镜"把模糊想法逼问到 idea.md。关键决策：定位从"做教程"拔高到"交付一套可复用的人机共驾开发操作系统"。',output:'# Vibe OS：人机共驾开发操作系统\n\n让从没做过产品的职场人，通过调度 AI 能力矩阵，第一次做出完整产品。',copy:'我想做一个 [产品想法]。用 vibe-idea 技能，通过 11 维体检 + 四透镜，逼问到可立项的 idea.md。'},
+  interaction:{title:'交互文档',meta:'L1 · STEP 2',story:'调用 vibe-interaction，但做了裁剪——因为 MVP 是单页产品。裁剪决策：只对主页写交互文档，taxonomy 只用 popover + inline-expand 两个。这个"编排层主动裁剪执行层"的决策本身，就是一个教学样本。',output:'# 交互文档\n\nA.1 站点地图：7 个页面\nD 节：4 类可交互元素\nE 节：taxonomy 只用 popover + inline-expand'},
+  architecture:{title:'技术骨架',meta:'L1 · STEP 3',story:'最大单点风险被解决的里程碑。默认绑定 Next.js+CloudBase+shadcn，但对目标人群（非技术岗）门槛太高。决策：改造为纯静态架构（HTML+CSS+原生JS，零依赖）+ 三层分离。',output:'# 技术骨架\n\n技术栈：纯静态 HTML+CSS+原生JS\n页面生成：数据(JSON) + 模板(HTML) + 渲染(JS) 三层分离'},
+  design:{title:'视觉设计',meta:'L1 · STEP 4',story:'视觉决策在 M2 就做完了（Nothing Light + B+C 融合，来回迭代 A/B/C 三版）。design.md 只是把 standup.html 的内联样式抽成 tokens。',output:'# 视觉设计系统\n\ncolors: primary #0A0A0A / secondary #1A1A1A / error #D71921\ntypography: Space Grotesk + Space Mono\n风格：Nothing Light'},
+  prototype:{title:'原型',meta:'L1 · STEP 5',story:'vibe-prototype 默认用 Google Stitch MCP 出原型，但放弃了——Stitch 需要 GCP 计费，对学习者是门槛。替代方案：手写 HTML，来回做了 4 版迭代。',output:'4 个版本迭代：\n1. 紫绿版（首版，风格不对）\n2. Nothing Light（方向对，但散）\n3. A 中轴 / B 数字 / C 单卡（三版对比）\n4. B+C 融合（锁定）'},
+  implement:{title:'代码实现',meta:'L1 · STEP 6',story:'没有走完整 vibe-implement。核心代码 standup.js（399行原生JS）由 codex 夜间接力完成——这就是 L3 接力层的实战。验收：主协调亲验 6 项通过。',output:'standup.js (399行, 纯原生JS, 零依赖)\nstandup.css (331行)\nstandup-data.json (8顶层key)'},
+  orchestrate:{title:'里程碑 + ROADMAP',meta:'L2 · 编排层',story:'项目立项后第一件事不是写代码，是用 orchestrate-projects 把项目编排起来——建 .planning/，把"做这个产品"切成 8 个里程碑。一个里程碑 = 一个 vibe 阶段。',output:'8 个里程碑：\nM0 编排工件 / M1 立项 / M2 交互 / M3 架构\nM4 视觉 / M5 原型 / M6 实现 / M7 接力 / M8 走读'},
+  dashboard:{title:'共驾仪表盘',meta:'L2 · 编排层',story:'dashboard.html 是编排层的灵魂产物——让"AI 在干什么、到哪了、何时轮到我"一眼可见。灵感来自 Gabriel Chua 全网 89 万浏览的文章。',output:'两版：\ndashboard.html（冷数据，orchestrate 标准版）\nstandup.html（站会版，给人看的共驾页）'},
+  gates:{title:'验证门禁',meta:'L2 · 编排层',story:'五类门禁。每个里程碑 PASS 才进下一个。M7 接力验收时主协调没有只看 codex 自报 success，而是亲验 6 项。这就是门禁的真实应用。',output:'每个里程碑完成后输出：\nVerdict: PASS / NEEDS_REVISION / BLOCKED\n+ 证据清单 + 偏差项'},
+  handoff_plan:{title:'下发 PROMPT.md',meta:'L3 · 人规划',story:'晚上 22:00，用 task-handoff 把"写 standup.js"派给 codex。关键产物：PROMPT.md——自包含的任务约束文件。scope 严格限定只能改 4 个文件，禁止越界。',output:'task: standup-js\nexecutor: codex\nscope: [standup.js, standup.html, standup.css, standup-data.json]\n\n# 目标：实现 standup.js 渲染脚本...'},
+  handoff_run:{title:'夜间 codex 执行',meta:'L3 · AI 执行',story:'codex 夜间接手：399 行原生 JS、331 行 CSS、schema 完整的 JSON。自己跑了 12 项 playwright 验证全过，写了详尽的 DONE.md。两个模型不直接对话，靠文件交接。',output:'status: success\n\n改了什么：4 文件就位\n怎么验证：12 项 playwright 全过\n关键决策：popover 全局单例 + mouseleave 延迟 120ms'},
+  terminal:{title:'完整成品',meta:'终点',story:'经过三层协同，从一个模糊想法到一个能分享的完整产品——一个 GitHub 仓库，全套产物 + 教学包 + 模板。三层协同的终点不是一个漂亮的成品，是一套可复制的能力。',output:'vibe-demo/\n├── learn.html\n├── demos/\n├── .planning/\n├── idea.md → design.md\n└── docs/templates/'},
+  templates:{title:'可复制做法包',meta:'模板包',story:'每一步都有标准化的可复制做法。拷贝到你的新项目，照着跑。',output:'docs/templates/\n├── 01-vibe-idea-启动.md\n├── 02-vibe-interaction-启动.md\n├── 03-vibe-architecture-决策模板.md\n├── 04-orchestrate-启动.md\n├── 05-task-handoff-下发模板.md\n├── 06-三层协同-完整启动序列.md'},
+  playground:{title:'自己模拟走一遍',meta:'动手试',story:'输入你自己的产品想法，前端 JS 会模拟 vibe-idea 的部分逻辑。不是真调 AI，是预设模板 + 文本处理。教学价值在让你体验"输入 → 结构化输出"的过程感。',output:'输入框 + "用 vibe-idea 处理"按钮 + 结果展示'}
+};
+
+// === 渲染故事 ===
+let currentNode='user';
+
+function renderStory(key){
+  const s=stories[key];
+  if(!s) return;
+  currentNode=key;
+
+  // 高亮节点
+  document.querySelectorAll('.case-svg .active').forEach(el=>el.classList.remove('active'));
+  const group=document.querySelector(`.case-svg [data-node="${key}"]`);
+  if(group){
+    const rect=group.querySelector('.node-rect')||group.querySelector('.terminal-bg');
+    if(rect) rect.classList.add('active');
+  }
+
+  // 渲染面板
+  let html='';
+  html+=`<div class="panel-label">${s.meta}</div>`;
+  html+=`<div class="panel-title">${s.title}</div>`;
+  html+=`<div class="panel-meta">本项目的真实记录 · 可复制</div>`;
+  html+=`<div class="panel-section"><div class="panel-section-label">真实故事</div><div class="panel-story">${s.story}</div></div>`;
+  if(s.output){
+    html+=`<div class="panel-section"><div class="panel-section-label">产物</div><div class="panel-output">${s.output}</div></div>`;
+  }
+  if(s.copy){
+    html+=`<button class="panel-btn" onclick="copyTemplate('${key}')">📋 复制做法</button>`;
+    html+=`<span style="font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);margin-left:var(--space-sm)" id="cpy-${key}"></span>`;
+  }
+
+  document.getElementById('storyContent').innerHTML=html;
+  document.getElementById('defaultHint').style.display='none';
+}
+
+function copyTemplate(key){
+  const s=stories[key];
+  if(s&&s.copy){
+    copyToClipboard(s.copy);
+    const el=document.getElementById('cpy-'+key);
+    if(el){el.textContent='✓ 已复制';setTimeout(()=>el.textContent='',2000);}
+  }
+}
+
+// === 绑定 SVG 节点点击 ===
+document.querySelectorAll('.case-svg .node-group').forEach(g=>{
+  const key=g.dataset.node;
+  g.setAttribute('role','button');
+  g.setAttribute('tabindex','0');
+  g.addEventListener('click',()=>renderStory(key));
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();renderStory(key)}});
+});
+
+// === 默认选中起点 ===
+renderStory('user');
+
+// === 学员映射 ===
+function saveMapping(){
+  const map={
+    idea:document.getElementById('mapIdea').value,
+    interaction:document.getElementById('mapInteraction').value,
+    arch:document.getElementById('mapArch').value,
+    design:document.getElementById('mapDesign').value,
+    decision:document.getElementById('mapDecision').value,
+    impl:document.getElementById('mapImpl').value
+  };
+  Output.save('step07-mapping',JSON.stringify(map));
+  document.getElementById('mapHint').textContent='✓ 已保存';
+  setTimeout(()=>document.getElementById('mapHint').textContent='',2000);
+}
+
+(function(){
+  const saved=Output.get('step07-mapping');
+  if(saved){try{const m=JSON.parse(saved);
+    document.getElementById('mapIdea').value=m.idea||'';
+    document.getElementById('mapInteraction').value=m.interaction||'';
+    document.getElementById('mapArch').value=m.arch||'';
+    document.getElementById('mapDesign').value=m.design||'';
+    document.getElementById('mapDecision').value=m.decision||'';
+    document.getElementById('mapImpl').value=m.impl||'';
+  }catch(e){}}
+})();
+
+function completeStep(){Progress.complete("step-07");window.location.href="index.html";}
+
+initProgressBar();
+</script>
+</body>
+</html>

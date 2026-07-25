@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI长周期任务协作方法论：从实验验证到实操框架</title>
+<style>
+:root {
+  --bg: #FAFAF8;
+  --card: #FFFFFF;
+  --ink: #1A1A1A;
+  --ink-2: #4A4A4A;
+  --ink-3: #8A8A8A;
+  --accent: #002FA7;
+  --accent-soft: #E8EDFA;
+  --orange: #FF6B35;
+  --green: #2D8A4E;
+  --red: #E60012;
+  --yellow: #F5A623;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --border: #E5E5E0;
+  --radius: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 导航栏 */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  padding: 0 24px;
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 32px;
+}
+.nav-brand {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-link {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--ink-3);
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.nav-link:hover { background: var(--accent-soft); color: var(--accent); }
+.nav-link.active { background: var(--accent); color: #fff; }
+.nav-progress {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* 主容器 */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 80px 24px 64px;
+}
+
+/* Hero */
+.hero {
+  padding: 48px 0 40px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 48px;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+.hero h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+.hero-sub {
+  font-size: 17px;
+  color: var(--ink-2);
+  max-width: 640px;
+  line-height: 1.7;
+}
+.hero-sources {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.hero-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.hero-source a { color: var(--accent); text-decoration: none; }
+.hero-source a:hover { text-decoration: underline; }
+
+/* 章节 */
+.section {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 72px;
+}
+.section:last-child { border-bottom: none; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.section-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.section-num.orange { background: var(--orange); }
+.section-num.green { background: var(--green); }
+.section-num.red { background: var(--red); }
+.section-num.yellow { background: var(--yellow); color: var(--ink); }
+.section-num.gray { background: var(--ink-3); }
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+  color: var(--ink);
+}
+p { margin-bottom: 14px; font-size: 16px; color: var(--ink-2); }
+
+/* 卡片 */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.card-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+/* 统计数据 */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 4px;
+}
+
+/* 流程图 */
+.flow-diagram {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  margin: 24px 0;
+  overflow-x: auto;
+}
+.flow-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 600px;
+}
+.flow-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+.flow-step-box {
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  padding: 12px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  position: relative;
+  z-index: 1;
+}
+.flow-step-num {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+  z-index: 2;
+}
+.flow-arrow {
+  width: 32px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* 对比表格 */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 14px;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.compare-table th {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+}
+.compare-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-2);
+  vertical-align: top;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:nth-child(even) { background: #FAFAF8; }
+
+/* 习惯卡片 */
+.habit-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 20px 0;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.habit-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.habit-header:hover { background: #F8F8F6; }
+.habit-num {
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.habit-info { flex: 1; }
+.habit-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.habit-brief {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.habit-toggle {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-3);
+  transition: transform 0.3s;
+}
+.habit-card.open .habit-toggle { transform: rotate(180deg); }
+.habit-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.habit-card.open .habit-content { max-height: 2000px; }
+.habit-body {
+  padding: 0 24px 24px;
+  border-top: 1px solid var(--border);
+}
+.habit-body ul {
+  margin: 16px 0 16px 20px;
+}
+.habit-body li {
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.habit-body li strong { color: var(--ink); }
+
+/* 代码块 */
+.code-block {
+  background: #1E1E1E;
+  border-radius: var(--radius);
+  margin: 20px 0;
+  overflow: hidden;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #2D2D2D;
+  border-bottom: 1px solid #3D3D3D;
+}
+.code-lang {
+  font-size: 12px;
+  color: #8A8A8A;
+  font-family: "JetBrains Mono", monospace;
+}
+.code-copy {
+  background: transparent;
+  border: 1px solid #555;
+  color: #AAA;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.code-copy:hover { background: #3D3D3D; color: #fff; }
+.code-copy.copied { background: var(--green); color: #fff; border-color: var(--green); }
+.code-body {
+  padding: 16px;
+  overflow-x: auto;
+}
+.code-body pre {
+  font-family: "JetBrains Mono", "SF Mono", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #D4D4D4;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 高亮框 */
+.highlight {
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--accent-soft);
+}
+.highlight.orange { border-left-color: var(--orange); background: #FFF8F3; }
+.highlight.green { border-left-color: var(--green); background: #F0FAF4; }
+.highlight.red { border-left-color: var(--red); background: #FFF0F0; }
+.highlight.yellow { border-left-color: var(--yellow); background: #FFFBF0; }
+.highlight p { margin-bottom: 0; color: var(--ink); font-size: 14px; }
+.highlight-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+
+/* 列表 */
+ul, ol { margin: 12px 0 12px 20px; }
+li { margin-bottom: 8px; font-size: 15px; color: var(--ink-2); }
+li strong { color: var(--ink); }
+
+/* 架构图 */
+.arch-diagram {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin: 24px 0;
+  text-align: center;
+}
+.arch-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.arch-box {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 120px;
+}
+.arch-box.main { background: var(--accent); color: #fff; }
+.arch-box.worker { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
+.arch-box.local { background: #FFF3EE; color: var(--orange); border: 1px solid var(--orange); }
+.arch-box.file { background: #F0FAF4; color: var(--green); border: 1px solid var(--green); }
+.arch-arrow {
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 20px;
+  margin: 8px 0;
+}
+
+/* 底部导航 */
+.bottom-nav {
+  display: flex;
+  justify-content: space-between;
+  padding: 32px 0;
+  margin-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.bottom-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.bottom-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 24px; }
+  .nav-inner { gap: 16px; }
+  .nav-brand { display: none; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .flow-steps { min-width: 500px; }
+  .arch-row { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">AI协作方法论</div>
+    <div class="nav-links">
+      <a class="nav-link active" data-section="hero">概述</a>
+      <a class="nav-link" data-section="s1">实验验证</a>
+      <a class="nav-link" data-section="s2">Agent Loop</a>
+      <a class="nav-link" data-section="s3">5个习惯</a>
+      <a class="nav-link" data-section="s4">对比分析</a>
+      <a class="nav-link" data-section="s5">可迁移框架</a>
+      <a class="nav-link" data-section="s6">实操工具箱</a>
+      <a class="nav-link" data-section="s7">范式升级</a>
+    </div>
+    <div class="nav-progress" id="progress">0%</div>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- Hero -->
+<header class="hero" id="hero">
+  <div class="hero-tag">DEEP DIVE</div>
+  <h1>AI长周期任务协作方法论<br>从实验验证到实操框架</h1>
+  <p class="hero-sub">当AI能连续运行25小时，真正的问题不是"它能跑多久"，而是"怎么让它不跑偏"。两篇OpenAI内部实践，合成一套完整的方法论。</p>
+  <div class="hero-sources">
+    <div class="hero-source">
+      <span>Derrick Choi · Codex产品经理</span>
+      <a href="https://developers.openai.com/blog/run-long-horizon-tasks-with-codex" target="_blank">原文</a>
+    </div>
+    <div class="hero-source">
+      <span>Gabriel Chua · Codex DX工程师</span>
+      <a href="https://x.com/gabrielchua/status/2074505300766568563" target="_blank">原文</a>
+    </div>
+  </div>
+</header>
+
+<!-- 第一章：实验验证 -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>实验验证：25小时构建设计工具</h2>
+  </div>
+
+  <p>Derrick Choi给了GPT-5.3-Codex一个空仓库、完全权限、一个任务：从零构建一个设计工具。然后让它以"Extra High"推理级别运行。</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">25h</div>
+      <div class="stat-label">连续运行时间</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">13M</div>
+      <div class="stat-label">消耗tokens</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">30k</div>
+      <div class="stat-label">生成代码行数</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">10</div>
+      <div class="stat-label">核心功能模块</div>
+    </div>
+  </div>
+
+  <div class="highlight yellow">
+    <div class="highlight-title">核心发现</div>
+    <p>这不是"模型变聪明了"的简单升级。真正的变化是：Agent能保持更长时间的连贯性，端到端完成更大的工作块，并且在出错时能恢复而不丢失主线。</p>
+  </div>
+
+  <h3>构建了什么</h3>
+  <p>结果不是完美的，但是真实可测试的。10个核心功能：</p>
+  <ul>
+    <li><strong>画布编辑</strong>：框架、分组、形状、文本、图片/图标、按钮、图表</li>
+    <li><strong>实时协作</strong>：在线状态、光标、选择、跨标签同步编辑</li>
+    <li><strong>检查器控件</strong>：几何、样式、文本</li>
+    <li><strong>图层管理</strong>：搜索、重命名、锁定/隐藏、排序</li>
+    <li><strong>辅助线/对齐/吸附</strong></li>
+    <li><strong>历史快照+恢复</strong></li>
+    <li><strong>回放时间线+从任意点分支</strong></li>
+    <li><strong>原型模式</strong>：热点+流程导航</li>
+    <li><strong>评论</strong>：固定线程，可解决/重新打开</li>
+    <li><strong>导出</strong>：保存/导入/导出 + CLI导出为JSON和React+Tailwind</li>
+  </ul>
+</section>
+
+<!-- 第二章：Agent Loop -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num orange">2</div>
+    <h2>Agent Loop：为什么能保持连贯</h2>
+  </div>
+
+  <p>长时间运行的关键不是一个巨大的prompt，而是Agent运行的循环结构。</p>
+
+  <div class="flow-diagram">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <div class="flow-step-box">Plan<br>规划</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <div class="flow-step-box">Edit<br>编辑代码</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <div class="flow-step-box">Run Tools<br>运行测试/构建</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-step-num">4</div>
+        <div class="flow-step-box">Observe<br>观察结果</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-step-num">5</div>
+        <div class="flow-step-box">Repair<br>修复失败</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-step-num">6</div>
+        <div class="flow-step-box">Update<br>更新文档</div>
+      </div>
+    </div>
+  </div>
+
+  <p>这个循环之所以重要，是因为它给Agent提供了：</p>
+  <ul>
+    <li><strong>真实反馈</strong>：错误、diff、日志——不是猜测，是实际结果</li>
+    <li><strong>外部化状态</strong>：repo、文件、文档、worktrees、输出——不依赖context window</li>
+    <li><strong>可转向性</strong>：基于结果调整方向，中途修正不会丢失进度</li>
+  </ul>
+
+  <div class="highlight">
+    <p>这也是为什么Codex模型在Codex表面上比通用聊天窗口表现更好：harness提供了结构化上下文（repo元数据、文件树、diffs、命令输出），并强制执行严格的"完成条件"流程。</p>
+  </div>
+</section>
+
+<!-- 第三章：5个习惯 -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num green">3</div>
+    <h2>5个协作习惯</h2>
+  </div>
+
+  <p>Gabriel Chua在数周实践中总结的五个习惯，构成完整的长周期任务协作框架。</p>
+
+  <!-- 习惯1 -->
+  <div class="habit-card open">
+    <div class="habit-header" onclick="toggleHabit(this)">
+      <div class="habit-num">1</div>
+      <div class="habit-info">
+        <div class="habit-title">让Codex自主规划并维护路线图</div>
+        <div class="habit-brief">用对话启动，用GOALS.md锚定</div>
+      </div>
+      <div class="habit-toggle">▼</div>
+    </div>
+    <div class="habit-content">
+      <div class="habit-body">
+        <p><strong>核心逻辑</strong>：跳过/plan模式，先对话。描述想法、约束，让Codex提问补全上下文，生成初版计划。</p>
+        <ul>
+          <li><strong>保持灵活性</strong>：早期不需要把半成型的想法写成正式规格文档</li>
+          <li><strong>让它采访你</strong>：Codex可以反思理解、识别缺口、逐步转化为可执行计划</li>
+          <li><strong>设置Goal</strong>：让Codex综合对话上下文设定持久目标，自动定义"完成所需的验证证据"</li>
+          <li><strong>GOALS.md</strong>：大项目写入这个文件，按里程碑结构化记录：产出、工作范围、重要决策、已知阻塞、下一步所需证据</li>
+          <li><strong>持续迭代</strong>：Codex随项目推进更新这个文件，新发现可能改变里程碑范围或完成标准</li>
+        </ul>
+        <div class="highlight green">
+          <p>关键：只有一个Goal-mode目标同时激活。里程碑完成后，Codex更新GOALS.md，激活下一个目标，继续工作。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 习惯2 -->
+  <div class="habit-card">
+    <div class="habit-header" onclick="toggleHabit(this)">
+      <div class="habit-num">2</div>
+      <div class="habit-info">
+        <div class="habit-title">主线程只做全局协调</div>
+        <div class="habit-brief">目标、约束、决策、状态——不陷入实现细节</div>
+      </div>
+      <div class="habit-toggle">▼</div>
+    </div>
+    <div class="habit-content">
+      <div class="habit-body">
+        <p><strong>核心逻辑</strong>：主线程决定下一步做什么、委派任务、评估结果。不需要承载所有实现细节。</p>
+        <ul>
+          <li><strong>Worker可能花一小时</strong>读不熟悉的代码、尝试多种方法、追踪失败的测试</li>
+          <li><strong>协调者只需要</strong>：worker学到了什么、什么变了、支持证据是什么、下一步该做什么</li>
+          <li><strong>委派方式</strong>：可以用subagent或独立thread。独立thread的好处是有完整历史，后续可回溯</li>
+          <li><strong>并行推进</strong>：多个工作并行时，主线程继续协调，每个调查/实现/审查都保持可检查</li>
+        </ul>
+        <div class="card">
+          <div class="card-label">架构示意</div>
+          <div class="arch-diagram">
+            <div class="arch-row">
+              <div class="arch-box main">主线程（协调者）</div>
+            </div>
+            <div class="arch-arrow">↓ 委派任务</div>
+            <div class="arch-row">
+              <div class="arch-box worker">Worker A<br>功能实现</div>
+              <div class="arch-box worker">Worker B<br>代码审查</div>
+              <div class="arch-box worker">Worker C<br>测试验证</div>
+            </div>
+            <div class="arch-arrow">↓ 返回结论+证据</div>
+            <div class="arch-row">
+              <div class="arch-box file">GOALS.md<br>路线图更新</div>
+              <div class="arch-box file">Documentation.md<br>状态日志</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 习惯3 -->
+  <div class="habit-card">
+    <div class="habit-header" onclick="toggleHabit(this)">
+      <div class="habit-num">3</div>
+      <div class="habit-info">
+        <div class="habit-title">里程碑后先审计路线图，再review代码</div>
+        <div class="habit-brief">双重验证：计划还对吗？代码质量够吗？</div>
+      </div>
+      <div class="habit-toggle">▼</div>
+    </div>
+    <div class="habit-content">
+      <div class="habit-body">
+        <p><strong>核心逻辑</strong>：每个里程碑结束后，用独立线程做两件事：审计路线图 + 审查代码。</p>
+
+        <h3>路线图审计5问</h3>
+        <ul>
+          <li>里程碑真的完成了吗？</li>
+          <li>下一个目标还是对的吗？</li>
+          <li>有遗漏的里程碑吗？</li>
+          <li>新证据是否调整了工作顺序？</li>
+          <li>"完成定义"还成立吗？</li>
+        </ul>
+
+        <h3>同步运行/review</h3>
+        <p>假设登录流程的实现和远程测试都完成了。路线图审计可能发现：没人用真实登录浏览器测试过。同时/review可能发现：新路径存储token的方式不对，即使远程测试通过了。</p>
+
+        <div class="highlight orange">
+          <p>协调者更新GOALS.md，委派token修复，添加缺失的浏览器验证，然后才激活下一个里程碑。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 习惯4 -->
+  <div class="habit-card">
+    <div class="habit-header" onclick="toggleHabit(this)">
+      <div class="habit-num">4</div>
+      <div class="habit-info">
+        <div class="habit-title">本机测试交给"本地线程"</div>
+        <div class="habit-brief">远程跑绝大多数，本机只做专属校验</div>
+      </div>
+      <div class="habit-toggle">▼</div>
+    </div>
+    <div class="habit-content">
+      <div class="habit-body">
+        <p><strong>核心逻辑</strong>：大部分Codex session跑在远程实例上，笔记本关了也能继续。但有些检查依赖本机环境。</p>
+
+        <h3>需要本机的场景</h3>
+        <ul>
+          <li>登录态浏览器</li>
+          <li>本地凭据</li>
+          <li>Xcode</li>
+          <li>macOS权限</li>
+          <li>iOS模拟器</li>
+        </ul>
+
+        <h3>典型闭环流程</h3>
+        <div class="flow-diagram">
+          <div class="flow-steps" style="min-width: 500px;">
+            <div class="flow-step">
+              <div class="flow-step-box">远程Worker<br>实现功能</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="flow-step-box">远程<br>测试通过</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="flow-step-box">本地线程<br>环境校验</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="flow-step-box">发现Bug<br>回传远程</div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="flow-step-box">远程<br>修复</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight green">
+          <p>项目保持远程优先。你的电脑只在需要时加入。远程线程还可以在你打开笔记本后，继续检查本地线程是否可用。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 习惯5 -->
+  <div class="habit-card">
+    <div class="habit-header" onclick="toggleHabit(this)">
+      <div class="habit-num">5</div>
+      <div class="habit-info">
+        <div class="habit-title">用简报和仪表盘同步全局进度</div>
+        <div class="habit-brief">三段式汇报 + 可视化仪表盘</div>
+      </div>
+      <div class="habit-toggle">▼</div>
+    </div>
+    <div class="habit-content">
+      <div class="habit-body">
+        <p><strong>核心逻辑</strong>：Worker thread通常只报告一个任务。当你回到项目时，需要一个全局视图。</p>
+
+        <h3>三段式汇报</h3>
+        <div class="card">
+          <div class="card-label">每次状态变化时输出</div>
+          <ul style="margin-top: 12px;">
+            <li><strong>What's done</strong>：已完成什么</li>
+            <li><strong>What's next</strong>：下一步是什么</li>
+            <li><strong>Any blockers</strong>：有无阻塞</li>
+          </ul>
+        </div>
+
+        <p>就像和Codex做每日站会，只不过是每小时一次。</p>
+
+        <h3>可视化仪表盘</h3>
+        <p>对于跨多个里程碑或并行工作流的项目，维护一个progress-dashboard.html：</p>
+        <ul>
+          <li>当前活跃目标</li>
+          <li>已完成里程碑</li>
+          <li>证据状态</li>
+          <li>阻塞项</li>
+          <li>决策记录</li>
+          <li>最近更新</li>
+        </ul>
+
+        <div class="highlight">
+          <p>Codex可以将仪表盘部署为Site，保持远程可访问。几小时后回来，无需读取每个worker thread就能理解项目状态。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 第四章：对比分析 -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num red">4</div>
+    <h2>对比分析：两篇文章的互补</h2>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th style="width: 20%">维度</th>
+        <th style="width: 40%">Derrick Choi（产品经理）</th>
+        <th style="width: 40%">Gabriel Chua（DX工程师）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>核心问题</strong></td>
+        <td>模型能跑多久？边界在哪？</td>
+        <td>怎么让它不跑偏？</td>
+      </tr>
+      <tr>
+        <td><strong>回答方式</strong></td>
+        <td>压力测试实验（25小时）</td>
+        <td>数周实践总结（5个习惯）</td>
+      </tr>
+      <tr>
+        <td><strong>侧重</strong></td>
+        <td>模型能力验证</td>
+        <td>人机协作流程</td>
+      </tr>
+      <tr>
+        <td><strong>核心贡献</strong></td>
+        <td>四文件架构（Prompt/Plan/Implement/Documentation.md）</td>
+        <td>五习惯框架 + GOALS.md + 仪表盘</td>
+      </tr>
+      <tr>
+        <td><strong>验证方式</strong></td>
+        <td>代码质量（tests/lint/typecheck）</td>
+        <td>路线图审计 + /review双重验证</td>
+      </tr>
+      <tr>
+        <td><strong>环境</strong></td>
+        <td>单机运行</td>
+        <td>远程+本地线程分工</td>
+      </tr>
+      <tr>
+        <td><strong>角色定位</strong></td>
+        <td>实验设计者</td>
+        <td>技术负责人（带领AI团队）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="highlight yellow">
+    <div class="highlight-title">合在一起才是完整方法论</div>
+    <p>Derrick证明了"能跑25小时"（能力边界），Gabriel解决了"怎么跑25小时不翻车"（协作流程）。前者是地基，后者是建筑。</p>
+  </div>
+
+  <h3>核心共识</h3>
+  <ul>
+    <li><strong>持久Goal</strong>为AI提供不会漂移的锚点</li>
+    <li><strong>里程碑审计</strong>为项目设置多层验收关卡</li>
+    <li><strong>状态外置</strong>（文件/仪表盘）避免信息仅存在于线程上下文</li>
+    <li><strong>持续验证</strong>（tests/review）不是最后才检查，而是每个里程碑都检查</li>
+  </ul>
+</section>
+
+<!-- 第五章：可迁移框架 -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num yellow">5</div>
+    <h2>可迁移框架：跨工具适用</h2>
+  </div>
+
+  <p>这套方法的核心不是特定工具的使用技巧，而是AI时代的新型项目管理模式。核心骨架完全通用。</p>
+
+  <h3>核心骨架（不依赖特定工具）</h3>
+  <div class="stats" style="grid-template-columns: repeat(2, 1fr);">
+    <div class="stat" style="text-align: left; padding: 20px;">
+      <div class="stat-value" style="font-size: 20px; margin-bottom: 8px;">路线图锚定</div>
+      <div class="stat-label" style="font-size: 13px; line-height: 1.5;">用结构化文件（GOALS.md）记录里程碑、范围、决策、证据。不依赖/codex的/goal指令。</div>
+    </div>
+    <div class="stat" style="text-align: left; padding: 20px;">
+      <div class="stat-value" style="font-size: 20px; margin-bottom: 8px;">里程碑验收</div>
+      <div class="stat-label" style="font-size: 13px; line-height: 1.5;">每个里程碑完成后审计+review。不依赖/review指令，可以用独立对话或subagent。</div>
+    </div>
+    <div class="stat" style="text-align: left; padding: 20px;">
+      <div class="stat-value" style="font-size: 20px; margin-bottom: 8px;">远程本地分工</div>
+      <div class="stat-label" style="font-size: 13px; line-height: 1.5;">远程跑大部分，本机只做环境依赖的校验。任何支持多session的工具都适用。</div>
+    </div>
+    <div class="stat" style="text-align: left; padding: 20px;">
+      <div class="stat-value" style="font-size: 20px; margin-bottom: 8px;">状态外置</div>
+      <div class="stat-label" style="font-size: 13px; line-height: 1.5;">进度汇报+仪表盘。不依赖/side指令，可以用markdown文件或简单HTML。</div>
+    </div>
+  </div>
+
+  <h3>工具对应关系</h3>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Codex能力</th>
+        <th>Claude Code对应</th>
+        <th>Cursor对应</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>/goal（持久目标）</td>
+        <td>CLAUDE.md + memory文件</td>
+        <td>.cursorrules + 项目上下文</td>
+      </tr>
+      <tr>
+        <td>GOALS.md（路线图）</td>
+        <td>任何markdown文件</td>
+        <td>任何markdown文件</td>
+      </tr>
+      <tr>
+        <td>Subagent（委派）</td>
+        <td>Agent tool（/agent）</td>
+        <td>多文件编辑 + terminal</td>
+      </tr>
+      <tr>
+        <td>独立Thread（可回溯）</td>
+        <td>新对话窗口</td>
+        <td>新对话窗口</td>
+      </tr>
+      <tr>
+        <td>/review（代码审查）</td>
+        <td>独立对话 + review指令</td>
+        <td>独立对话 + 代码审查</td>
+      </tr>
+      <tr>
+        <td>/side（不打断主线程）</td>
+        <td>并行对话窗口</td>
+        <td>并行对话窗口</td>
+      </tr>
+      <tr>
+        <td>Computer Use（本机测试）</td>
+        <td>本地terminal执行</td>
+        <td>本地terminal执行</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 第六章：实操工具箱 -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>实操工具箱</h2>
+  </div>
+
+  <h3>可复制的启动Prompt</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">prompt</span>
+      <button class="code-copy" onclick="copyCode(this)">复制</button>
+    </div>
+    <div class="code-body">
+      <pre>Coordinate this as a long-running project.
+
+Begin by interviewing me about what I am trying to build.
+Let me describe rough ideas and constraints conversationally,
+then turn that discussion into an initial plan.
+
+Create GOALS.md as the shared roadmap. Organize it around
+milestones, with the intended outcome, scope, decisions,
+blockers, and evidence required for each one.
+
+Set and maintain one objective at a time. The active objective
+should correspond to the current milestone.
+
+Keep this thread focused on the objective, constraints,
+decisions, and project state. Delegate implementation to
+subagents or new threads.
+
+Require workers to return conclusions, changes, and evidence
+rather than full transcripts.
+
+After each milestone, audit GOALS.md against the current state
+and review the implementation. Update the roadmap before
+activating the next objective.
+
+When the project state changes, report only:
+- What's done
+- What's next
+- Any blockers
+
+Do not declare completion until the agreed evidence exists.</pre>
+    </div>
+  </div>
+
+  <h3>GOALS.md模板</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">markdown</span>
+      <button class="code-copy" onclick="copyCode(this)">复制</button>
+    </div>
+    <div class="code-body">
+      <pre># 项目路线图
+
+## 项目目标
+[一句话描述最终要交付什么]
+
+## 当前状态
+- 活跃里程碑：M1
+- 完成度：15%
+- 最后更新：2026-07-21
+
+---
+
+## M1：[里程碑名称]
+**状态**：进行中
+**目标产出**：[具体交付物]
+**工作范围**：
+- [ ] 任务1
+- [ ] 任务2
+
+**重要决策**：
+- 决策1：[描述] — 原因：[为什么]
+
+**已知阻塞**：
+- [阻塞描述]
+
+**完成证据**：
+- [ ] 测试通过
+- [ ] 代码审查通过
+- [ ] 功能演示
+
+---
+
+## M2：[里程碑名称]
+**状态**：待开始
+**目标产出**：[具体交付物]
+...
+
+---
+
+## 决策日志
+| 日期 | 决策 | 原因 | 影响 |
+|------|------|------|------|
+| 07-21 | 选择方案A | 性能更好 | M1范围扩大 |</pre>
+    </div>
+  </div>
+
+  <h3>进度汇报模板</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">markdown</span>
+      <button class="code-copy" onclick="copyCode(this)">复制</button>
+    </div>
+    <div class="code-body">
+      <pre>## 进度更新 — [日期 时间]
+
+### What's done
+- [完成项1]
+- [完成项2]
+
+### What's next
+- [下一步1]
+- [下一步2]
+
+### Any blockers
+- [阻塞项，或"无"]
+
+### 证据
+- [测试结果/审查结论/演示截图]</pre>
+    </div>
+  </div>
+</section>
+
+<!-- 第七章：范式升级 -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num gray">7</div>
+    <h2>范式升级：开发者角色转变</h2>
+  </div>
+
+  <p>这套方法的本质不是工具使用技巧，而是AI时代的新型项目管理模式。</p>
+
+  <div class="card">
+    <div class="card-title">角色转变</div>
+    <table class="compare-table" style="margin: 0; box-shadow: none;">
+      <thead>
+        <tr>
+          <th>过去</th>
+          <th>现在</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>亲自写代码的执行者</td>
+          <td>带领AI团队的技术负责人</td>
+        </tr>
+        <tr>
+          <td>关注实现细节</td>
+          <td>关注目标、里程碑、验收标准</td>
+        </tr>
+        <tr>
+          <td>手动测试验证</td>
+          <td>设计验证流程让AI自动执行</td>
+        </tr>
+        <tr>
+          <td>单线程工作</td>
+          <td>多worker并行协调</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>底层三要素</h3>
+  <div class="stats" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="stat" style="text-align: left; padding: 20px;">
+      <div class="stat-value" style="font-size: 40px;">1</div>
+      <div class="stat-label" style="font-size: 14px; color: var(--ink); margin-top: 8px;"><strong>持久锚点</strong></div>
+      <div class="stat-label" style="font-size: 13px; line-height: 1.5;">Goal + GOALS.md<br>为AI提供不会漂移的目标</div>
+    </div>
+    <div class="stat" style="text-align: left; padding: 20px;">
+      <div class="stat-value" style="font-size: 40px;">2</div>
+      <div class="stat-label" style="font-size: 14px; color: var(--ink); margin-top: 8px;"><strong>验收关卡</strong></div>
+      <div class="stat-label" style="font-size: 13px; line-height: 1.5;">里程碑审计 + review<br>多层验证防止偏差累积</div>
+    </div>
+    <div class="stat" style="text-align: left; padding: 20px;">
+      <div class="stat-value" style="font-size: 40px;">3</div>
+      <div class="stat-label" style="font-size: 14px; color: var(--ink); margin-top: 8px;"><strong>状态外置</strong></div>
+      <div class="stat-label" style="font-size: 13px; line-height: 1.5;">简报 + 仪表盘<br>项目状态不依赖线程上下文</div>
+    </div>
+  </div>
+
+  <div class="highlight green">
+    <div class="highlight-title">核心逻辑</div>
+    <p>模型负责发挥智能能力，而开发者的核心作用是引导这份智能始终锚定同一目标，沿着验证证据的路径稳步推进。</p>
+  </div>
+
+  <h3>适用边界</h3>
+  <p>这套架构不是适用于所有小任务。仅当项目满足以下特征时投入产出比最高：</p>
+  <ul>
+    <li>项目推进过程中会持续涌现新信息</li>
+    <li>涉及多块独立并行工作</li>
+    <li>需要多个不同环境的验证证据</li>
+  </ul>
+
+  <div class="bottom-nav">
+    <a class="bottom-btn" href="#hero">↑ 回到顶部</a>
+    <a class="bottom-btn" href="https://developers.openai.com/blog/run-long-horizon-tasks-with-codex" target="_blank">Derrick Choi原文 →</a>
+    <a class="bottom-btn" href="https://x.com/gabrielchua/status/2074505300766568563" target="_blank">Gabriel Chua原文 →</a>
+  </div>
+</section>
+
+</div>
+
+<script>
+// 导航高亮
+const navLinks = document.querySelectorAll('.nav-link');
+const sections = document.querySelectorAll('.section, .hero');
+
+function updateNav() {
+  const scrollPos = window.scrollY + 100;
+
+  sections.forEach((section, i) => {
+    const top = section.offsetTop;
+    const height = section.offsetHeight;
+
+    if (scrollPos >= top && scrollPos < top + height) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const id = section.id;
+      const activeLink = document.querySelector(`.nav-link[data-section="${id}"]`);
+      if (activeLink) activeLink.classList.add('active');
+    }
+  });
+
+  // 更新进度
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = Math.round((window.scrollY / total) * 100);
+  document.getElementById('progress').textContent = progress + '%';
+}
+
+window.addEventListener('scroll', updateNav);
+updateNav();
+
+// 习惯展开/收起
+function toggleHabit(header) {
+  const card = header.closest('.habit-card');
+  card.classList.toggle('open');
+}
+
+// 代码复制
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('pre').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '已复制';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '复制';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// 点击导航链接平滑滚动
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const targetId = link.getAttribute('data-section');
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
