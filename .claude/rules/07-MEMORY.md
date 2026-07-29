@@ -41,6 +41,7 @@ Information should flow from raw notes to topic files, then into this file only 
 - **guizang-material-illustration 技能**（2026-07-09）：已安装并链接，能力边界已分析
 - **电视机海报项目**（2026-07-09）：J-Space 概念插图生成 + HTML 海报页面已完成
 - **qiaomu-anything-to-notebooklm 技能**（2026-07-29）：仓库文件补全 + notebooklm CLI 装好登录 + weixin-reader MCP 配置写入（待重启生效）。微信抓取走 getnote MCP（fetch_url.sh 对微信失效）。详见 `memory/topics/tools/qiaomu-notebooklm.md`
+- **人机协同课程设计**（2026-07-29）：3个资源已分析（你的课程+Vibe OS+JD课程），优化方案v2已出：交互式方法中心+三层方法地图+真实案例+技能包。待获取JD课程03-10结构信息。详见 `memory/topics/human-ai-collaboration-course.md`
 
 Add the current state of important projects here as short pointers. Put detailed timelines in `memory/topics/`.
 
