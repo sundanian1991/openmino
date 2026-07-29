@@ -31,6 +31,7 @@ Information should flow from raw notes to topic files, then into this file only 
 ## Current Context
 
 - **供应商管理目标树**（2026-07-22）：MyAgents Space `gong-ying-shang-guan-li` 三层目标树已建成（战略3+战术5），15 Issues 挂载，#7浙江阅文已关闭，逐个确认推进中。详见 `memory/topics/supplier-management.md`
+- **分级盘点模板**（2026-07-29）：赛马数据（1-6月×11家×首贷/复贷）已灌入，Sheet5拆分为首贷/复贷独立评级，所有sheet公式就绪。待填SLA/稳定性/供管自评后出ABC评级。详见 `memory/topics/supplier-management.md` "分级盘点SOP进展"
 - **金条低分电销项目**（2026-07-22）：与蚂蚁、天创等第三方机构合作，存在竞对合作+数据合规风险，法务评估需先提交完整合作模式文字描述再评估，预计八月初启动
 - **Agent Reach + last30days**（2026-07-22）：已安装到本地环境。Agent Reach 11/15 渠道可用（GitHub/YouTube/Twitter/Reddit/小红书等），last30days v3.16.0 核心文件已就绪
 - **voice-workstation**（2026-07-22）：代码重构完成（三模式总行数 -15%），云端 ASR 过渡 UI 优化
@@ -121,3 +122,18 @@ Add cross-project lessons and working principles here when they have repeated va
 - 只有完整纪要，没有分层输出 → 不同场景需要不同版本
 - 口语化版本太书面 → 早会念起来像读稿
 - 风险点不突出 → 老板看不到关键问题
+
+### Excel 模板工作原则（2026-07-29）
+
+**公式优先于数值**：用户要改扣分项后自动联动，写死数值=白做。所有计算列必须用Excel公式。
+
+**公式链太长时 Excel 可能不自动重算**：跨sheet引用3层以上（Sheet1→Sheet5→Sheet6），打开时可能显示空值。解决方案：设 `fullCalcOnLoad=True` 或提示用户 Ctrl+Alt+F9 强制重算。
+
+**拆分维度要考虑管理粒度**：年老师汇报后要求首贷/复贷分开评级——"首贷有问题就首贷做管理"。设计模板前先确认管理视角，不要自行合并维度。
+
+**清空操作要小心合并单元格**：openpyxl 的 `unmerge_cells` + 重新 `merge_cells` 容易因 border/NoneType 报错。先清值再处理合并。
+
+**失败模式**：
+- 写死数值 → 用户改了上游数据，下游不联动
+- 清空区域误删表头 → 用户打开看到空表
+- 公式引用行偏移 → 数据错位（如引用 row4 但数据在 row6）
