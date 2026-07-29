@@ -55,6 +55,12 @@
 - [ ] 验证 weixin-reader MCP 实际抓取效果（vs getnote 后台渲染）
 - [ ] feishu-read-mcp 若要用深度分析+飞书，需配进 ~/.claude.json + 装 lark-cli
 
+## Session 更新记录
+
+| 日期 | 更新 |
+|------|------|
+| 2026-07-29 | 补全+配置打通：仓库文件补齐、notebooklm CLI 装好登录、weixin-reader MCP 配置写入、12问深度分析跑通
+
 ## 链路验证记录（2026-07-29）
 
 完整跑通：微信文章 → getnote 抓取 → notebooklm 上传 → 12问深度分析 → markdown
