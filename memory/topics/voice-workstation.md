@@ -1,7 +1,7 @@
 # voice-workstation 项目
 
 > 创建：2026-07-22
-> 最后更新：2026-07-22
+> 最后更新：2026-07-29
 
 ---
 
@@ -34,6 +34,8 @@
 | P2 云端 ASR | ✅ | mimo-v2.5-asr 双模式 |
 | P3 UI 增强 | ✅ | 分层深度体系、顶栏重设计 |
 | 代码重构 | ✅ | 2026-07-22 完成 |
+| P4 布局统一 + 组件库 | ✅ | 2026-07-29 完成 |
+| P5 商业化 UI 优化 | 🚧 | 进行中（视觉精细化、微交互、品牌感） |
 
 ---
 
@@ -77,6 +79,8 @@ src/renderer/src/
 | 2026-07-22 | TrainMode 不迁移到 useRecordingSession | 训练专属逻辑多，迁移风险大收益小 |
 | 2026-07-22 | asr.ts 不拆分 | 425 行可管理，函数间共享状态多 |
 | 2026-07-22 | AI 反馈 prompt 不调优 | 已经相当完善，调优是长期迭代 |
+| 2026-07-29 | 提取 PageContainer 组件 | 统一所有模式的布局结构，减少重复代码 |
+| 2026-07-29 | 创建 LoadingSpinner/ConfirmDialog/Skeleton | 统一组件库，提升开发效率和一致性 |
 
 ---
 
@@ -85,6 +89,29 @@ src/renderer/src/
 - 三模式的 organizing useEffect 仍各写一份（可下沉到 hook）
 - 三模式的 processing UI 结构相似（可提取组件）
 - TrainMode 仍用旧 useTrainSession hook
+
+## 商业化 UI 优化方向（2026-07-29）
+
+**已完成**：
+- PageContainer 组件（统一布局）
+- LoadingSpinner 组件（统一加载状态）
+- ConfirmDialog 组件（确认对话框）
+- Skeleton 组件（骨架屏）
+- format.ts 工具函数（统一时间格式化）
+- animations.css 动画系统
+
+**待优化**：
+- 视觉精致度：卡片阴影、圆角、边框需要更细腻
+- 微交互：hover效果、点击反馈不够丰富
+- 品牌感：缺少独特的品牌视觉元素（logo、品牌色）
+- 细节处理：文字大小、行高、字间距需要调整
+- 可访问性：键盘导航、颜色对比度需要完善
+
+**商业化标准**：
+- 参考 Notion、Linear、Figma 等产品的 UI
+- 每个像素都经过精心设计
+- 微交互丰富且一致
+- 品牌视觉识别度高
 
 ---
 

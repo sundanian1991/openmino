@@ -6,6 +6,8 @@
 
 - **上游**：`github.com/joeseesun/qiaomu-anything-to-notebooklm`
 - **本地两处**：项目内 `skills/qiaomu-anything-to-notebooklm/` + 全局 `~/.claude/skills/qiaomu-anything-to-notebooklm/`（都补齐）
+- **软链**：`skills/qiaomu-anything-to-notebooklm → ~/.agents/skills/qiaomu-anything-to-notebooklm`
+- **注册**：2026-07-29 补入 `skills-lock.json`，技能系统内可用
 - **关键**：`wexin-read-mcp/` 是外部仓库 `Bwkyd/wexin-read-mcp`，install.sh 检测到目录存在就跳过克隆——本地曾因此留下两个 0 字节空壳（requirements.txt + src/server.py）。修复方式：从 Bwkyd 重新克隆真实源码替换空壳
 
 ## 运行时配置（2026-07-29 打通）

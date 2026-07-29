@@ -34,7 +34,7 @@ Information should flow from raw notes to topic files, then into this file only 
 - **分级盘点模板**（2026-07-29）：赛马数据（1-6月×11家×首贷/复贷）已灌入，Sheet5拆分为首贷/复贷独立评级，所有sheet公式就绪。待填SLA/稳定性/供管自评后出ABC评级。详见 `memory/topics/supplier-management.md` "分级盘点SOP进展"
 - **金条低分电销项目**（2026-07-22）：与蚂蚁、天创等第三方机构合作，存在竞对合作+数据合规风险，法务评估需先提交完整合作模式文字描述再评估，预计八月初启动
 - **Agent Reach + last30days**（2026-07-22）：已安装到本地环境。Agent Reach 11/15 渠道可用（GitHub/YouTube/Twitter/Reddit/小红书等），last30days v3.16.0 核心文件已就绪
-- **voice-workstation**（2026-07-22）：代码重构完成（三模式总行数 -15%），云端 ASR 过渡 UI 优化
+- **voice-workstation**（2026-07-29）：P4 布局统一完成（PageContainer/LoadingSpinner/ConfirmDialog/Skeleton），P5 商业化 UI 优化进行中（视觉精细化、微交互、品牌感）
 - **Superpowers 插件**（2026-07-22）：已安装到 MyAgents（v5.0.7），包含 14 个核心技能（TDD、调试、协作模式等）
 - **AI长周期任务协作教学材料**（2026-07-22）：迭代3版，v3-task-cards.html 采用问题卡片式布局，用户反馈待验证
 - **CloudBase MCP 生图流程**（2026-07-09）：配置已完成，待新会话验证工具加载
@@ -138,3 +138,36 @@ Add cross-project lessons and working principles here when they have repeated va
 - 写死数值 → 用户改了上游数据，下游不联动
 - 清空区域误删表头 → 用户打开看到空表
 - 公式引用行偏移 → 数据错位（如引用 row4 但数据在 row6）
+
+### 商业化 UI 设计标准（2026-07-29）
+
+**视觉精致度**：
+- 卡片阴影、圆角、边框需要更细腻
+- 间距系统要统一（使用 CSS 变量）
+- 颜色对比度要符合 WCAG AA 标准
+
+**微交互**：
+- hover效果要丰富（上浮、放大、高亮）
+- 点击反馈要及时（scale 变换）
+- 过渡动画要流畅（使用 CSS transition）
+
+**品牌感**：
+- 需要独特的品牌视觉元素（logo、品牌色）
+- 视觉识别度要高
+- 与竞品有明显区分
+
+**细节处理**：
+- 文字大小、行高、字间距要精心调整
+- 空状态设计要精致
+- 图标大小、颜色要统一
+
+**可访问性**：
+- 键盘导航要完整
+- 屏幕阅读器要支持
+- 颜色对比度要足够
+
+**失败模式**：
+- 只有功能没有设计感 → 用户觉得"丑"
+- 微交互缺失 → 用户觉得"不流畅"
+- 品牌感弱 → 用户记不住产品
+- 细节粗糙 → 用户觉得"不专业"
