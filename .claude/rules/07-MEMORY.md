@@ -39,12 +39,20 @@ Information should flow from raw notes to topic files, then into this file only 
 - **CloudBase MCP 生图流程**（2026-07-09）：配置已完成，待新会话验证工具加载
 - **guizang-material-illustration 技能**（2026-07-09）：已安装并链接，能力边界已分析
 - **电视机海报项目**（2026-07-09）：J-Space 概念插图生成 + HTML 海报页面已完成
+- **qiaomu-anything-to-notebooklm 技能**（2026-07-29）：仓库文件补全 + notebooklm CLI 装好登录 + weixin-reader MCP 配置写入（待重启生效）。微信抓取走 getnote MCP（fetch_url.sh 对微信失效）。详见 `memory/topics/tools/qiaomu-notebooklm.md`
 
 Add the current state of important projects here as short pointers. Put detailed timelines in `memory/topics/`.
 
 ## Durable Lessons
 
 Add cross-project lessons and working principles here when they have repeated value.
+
+### Homebrew Python 装 CLI 工具（2026-07-29）
+
+**用 pipx，不用 pip3**。Homebrew Python 启用 PEP 668，`pip3 install` 报 "externally-managed-environment"。
+- CLI 工具：`pipx install <pkg>`，装在 `~/.local/bin`（`pipx ensurepath` 加 PATH，需重开终端）
+- pipx 隔离环境缺可选依赖时（如 notebooklm 缺 playwright）：`pipx inject <pkg> <dep>`，不要 `pip3 install`（系统的包不共享给 pipx 隔离环境）
+- 反例：rookiepy 在 Python 3.14.6 无预编译 wheel，装不上——新 Python 版本下依赖 Rust 编译的包常踩坑，提前判断止损
 
 ### 目标树设计原则（2026-07-22）
 
