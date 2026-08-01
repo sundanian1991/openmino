@@ -32,6 +32,7 @@ Information should flow from raw notes to topic files, then into this file only 
 
 - **供应商管理目标树**（2026-07-22）：MyAgents Space `gong-ying-shang-guan-li` 三层目标树已建成（战略3+战术5），15 Issues 挂载，#7浙江阅文已关闭，逐个确认推进中。详见 `memory/topics/supplier-management.md`
 - **分级盘点模板**（2026-07-29）：赛马数据（1-6月×11家×首贷/复贷）已灌入，Sheet5拆分为首贷/复贷独立评级，所有sheet公式就绪。待填SLA/稳定性/供管自评后出ABC评级。详见 `memory/topics/supplier-management.md` "分级盘点SOP进展"
+- **金条赛马调整方案**（2026-08-01）：业管25页AI生成PDF，年老师立场备忘已就绪（6条核心立场：比例6%/周期双月/集中度360+30%/保护20%/约束写进方案/风险预警），待和老板讨论。详见 `memory/topics/supplier-management.md` "金条赛马调整方案讨论"
 - **金条低分电销项目**（2026-07-22）：与蚂蚁、天创等第三方机构合作，存在竞对合作+数据合规风险，法务评估需先提交完整合作模式文字描述再评估，预计八月初启动
 - **Agent Reach + last30days**（2026-07-22）：已安装到本地环境。Agent Reach 11/15 渠道可用（GitHub/YouTube/Twitter/Reddit/小红书等），last30days v3.16.0 核心文件已就绪
 - **voice-workstation**（2026-07-29）：P4 布局统一完成（PageContainer/LoadingSpinner/ConfirmDialog/Skeleton），P5 商业化 UI 优化进行中（视觉精细化、微交互、品牌感）
@@ -171,3 +172,29 @@ Add cross-project lessons and working principles here when they have repeated va
 - 微交互缺失 → 用户觉得"不流畅"
 - 品牌感弱 → 用户记不住产品
 - 细节粗糙 → 用户觉得"不专业"
+
+### 供应商管理中的集中度约束（2026-08-01）
+
+**硬性红线**：
+- 单一供应商人数上限：360人
+- 单一供应商人数占比上限：30%
+- 取孰低值：哪个限制更严就按哪个执行
+
+**关键约束**：
+- 供应商月度招聘能力≤20人（铁律）
+- 3个月新人占比≤35%（含新人流失）
+- 新供应商适应期2个月
+- 新坐席适应期1-2个月
+
+**会议立场备忘分析框架**：
+- 用数据说话：引用PDF数据反驳结论
+- 引入硬性约束：集中度限制、人力供给约束
+- 预测未来影响：方案通过后供应商的真实反应
+- 准备应对预案：如果供应商联合反对怎么办
+- 保护自己：避免被贴上"阻碍改革"标签
+
+**失败模式**：
+- 只看当前数据，忽略未来影响 → 方案通过后被动
+- 数据不够深入，用经验判断 → 立场缺乏说服力
+- 叙事太对抗 → 被贴上"阻碍改革"标签
+- 忽略供应商视角 → 供应商联合反对
