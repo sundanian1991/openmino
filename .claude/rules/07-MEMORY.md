@@ -33,6 +33,7 @@ Information should flow from raw notes to topic files, then into this file only 
 - **供应商管理目标树**（2026-07-22）：MyAgents Space `gong-ying-shang-guan-li` 三层目标树已建成（战略3+战术5），15 Issues 挂载，#7浙江阅文已关闭，逐个确认推进中。详见 `memory/topics/supplier-management.md`
 - **分级盘点模板**（2026-07-29）：赛马数据（1-6月×11家×首贷/复贷）已灌入，Sheet5拆分为首贷/复贷独立评级，所有sheet公式就绪。待填SLA/稳定性/供管自评后出ABC评级。详见 `memory/topics/supplier-management.md` "分级盘点SOP进展"
 - **金条赛马调整方案**（2026-08-01）：业管25页AI生成PDF，年老师立场备忘已就绪（6条核心立场：比例6%/周期双月/集中度360+30%/保护20%/约束写进方案/风险预警），待和老板讨论。详见 `memory/topics/supplier-management.md` "金条赛马调整方案讨论"
+- **金条C坐席专项改善机制**（2026-08-01）：机制文档初稿完成（通用模板，不定期申请制触发，尾部清退+中段辅导双轨），待填入百分比数值后提交领导审批。详见 `memory/topics/supplier-management.md` "金条C坐席专项改善机制"
 - **金条低分电销项目**（2026-07-22）：与蚂蚁、天创等第三方机构合作，存在竞对合作+数据合规风险，法务评估需先提交完整合作模式文字描述再评估，预计八月初启动
 - **Agent Reach + last30days**（2026-07-22）：已安装到本地环境。Agent Reach 11/15 渠道可用（GitHub/YouTube/Twitter/Reddit/小红书等），last30days v3.16.0 核心文件已就绪
 - **voice-workstation**（2026-07-29）：P4 布局统一完成（PageContainer/LoadingSpinner/ConfirmDialog/Skeleton），P5 商业化 UI 优化进行中（视觉精细化、微交互、品牌感）
@@ -198,3 +199,14 @@ Add cross-project lessons and working principles here when they have repeated va
 - 数据不够深入，用经验判断 → 立场缺乏说服力
 - 叙事太对抗 → 被贴上"阻碍改革"标签
 - 忽略供应商视角 → 供应商联合反对
+
+### 机制文档写作原则（2026-08-01）
+
+**正文写规则，附件放数据**：给领导审批的机制文档，正文只写适用范围、触发条件、处置流程、职责分工等通用规则。具体人名、数据、职场分布放附件。正文出现具体数字会让机制变成"这次事件的处理方案"而非"可复用的管理工具"。
+
+**触发机制用申请制优于自动制**：不定期+申请启动，比评级周期后自动启动更有管理力度。申请制让每一轮都有明确改善目标，领导更容易批。
+
+**失败模式**：
+- 正文塞入具体名单和数字 → 读起来像一次性通知，不像机制
+- 自动触发 → 变成例行公事，失去"专项"的管理力度
+- 没有退出机制 → 改善类坐席反复改善不出结果，陷入死循环
