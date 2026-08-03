@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Step 12 · 人机协同能力测验 — 人机协同实战课</title>
+<title>Step 12 · 人机协同能力测验 — AI 素养与人机协作</title>
 <link rel="stylesheet" href="assets/theme.css">
 <style>
 .course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
@@ -191,33 +191,43 @@ function grade(){
   }
 
   const objScore=correct*10;
-  const total=objScore;
+
+  // 场景题：检查关键要素是否涵盖（不只是字数）
+  const s1=document.getElementById('s1').value.trim();
+  const s2=document.getElementById('s2').value.trim();
+  // 场景题应包含"人做什么 / AI 做什么 / 验收"等要素
+  const kwSet=['人','我','ai','验收','检查','审核','分诊','判断','规则','自动化','分工'];
+  function sceneScore(text){
+    if(text.length<=20) return 0;
+    const lower=text.toLowerCase();
+    const hits=kwSet.filter(k=>lower.includes(k)).length;
+    return Math.min(25,Math.round((hits/3)*25)); // 涵盖3+关键词即满分
+  }
+  const sc1=sceneScore(s1), sc2=sceneScore(s2);
+  const total=objScore+sc1+sc2;
 
   const el=document.getElementById('result');
   el.style.display='block';
   document.getElementById('scoreDisplay').textContent=total;
 
-  const s1=document.getElementById('s1').value.trim();
-  const s2=document.getElementById('s2').value.trim();
-
   let detail='';
-  if(total>=80&&s1.length>20&&s2.length>20){
+  if(total>=80&&sc1>=15&&sc2>=15){
     document.getElementById('verdictDisplay').textContent='🎉 通过！';
-    detail='客观题得分：'+objScore+'/100。场景题已填写。';
-    document.getElementById('nextHint').textContent='✅ 通过！Step 13 · SOP 生成器 已解锁';
+    detail='客观题：'+objScore+'/100 · 场景题：'+(sc1+sc2)+'/50。';
+    document.getElementById('nextHint').textContent='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A9E5C" stroke-width="2.5" style="display:inline;vertical-align:middle"><polyline points="20 6 9 17 4 12"/></svg> 通过！模板包已解锁';
   }else{
     document.getElementById('verdictDisplay').textContent='📖 建议复习';
     const misses=[];
-    if(total<80) misses.push('客观题得分 '+objScore+'/100，建议复习 Step 01-06');
-    if(s1.length<=20) misses.push('场景题 Q11 请补充完整');
-    if(s2.length<=20) misses.push('场景题 Q12 请补充完整');
+    if(objScore<80) misses.push('客观题 '+objScore+'/100，建议复习 Step 01-06');
+    if(sc1<15) misses.push('场景题 Q11 要写清楚"人做什么、AI做什么、怎么验收"');
+    if(sc2<15) misses.push('场景题 Q12 要写清楚"人做什么、AI做什么、怎么验收"');
     detail=misses.join('；');
   }
   document.getElementById('detailDisplay').textContent=detail;
 }
 
 function completeStep(){
-  Progress.complete('step-12');
+  Progress.complete('quiz');
   const btn=document.querySelector('.finish-area .btn-primary');
   btn.textContent='✓ 已完成';btn.disabled=true;btn.style.opacity='0.5';
 }

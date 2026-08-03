@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step 04.5 · AI 输出检查法 — AI 素养与人机协作</title>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+.course-header{background:var(--surface);border:1px solid var(--border);padding:var(--space-2xl);margin-bottom:var(--space-xl)}
+.course-path{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--text-disabled);margin-bottom:var(--space-sm)}
+.course-path span{color:var(--accent)}
+.course-title{font-size:22px;font-weight:700;color:var(--text-display);margin-bottom:var(--space-sm);line-height:1.2}
+.course-desc{font-size:14px;color:var(--text-secondary);line-height:1.7;max-width:640px;margin-bottom:var(--space-md)}
+.course-meta{display:flex;gap:var(--space-lg);font-family:var(--font-mono);font-size:10px;color:var(--text-disabled)}
+.chapter{background:var(--surface);border:1px solid var(--border);padding:var(--space-xl);margin-bottom:var(--space-md)}
+.chapter-num{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--accent);margin-bottom:var(--space-xs)}
+.chapter-title{font-size:16px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-sm)}
+.chapter-body{font-size:14px;color:var(--text-secondary);line-height:1.7}
+.chapter-body strong{color:var(--text-primary);font-weight:500}
+.sidebar-layout{display:grid;grid-template-columns:1fr 260px;gap:var(--space-xl)}
+.sidebar{position:sticky;top:80px;align-self:start}
+.sidebar-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-md)}
+.sidebar-links{display:flex;flex-direction:column;gap:var(--space-xs)}
+.sidebar-link{font-size:12px;color:var(--text-secondary);text-decoration:none;padding:var(--space-xs) 0;border-left:2px solid transparent;padding-left:var(--space-md);transition:all .15s}
+.sidebar-link:hover{color:var(--text-primary)}
+.sidebar-link.active{color:var(--accent);border-left-color:var(--accent)}
+.sidebar-hint{margin-top:var(--space-xl);padding:var(--space-md);background:var(--accent-subtle);border-left:2px solid var(--accent);font-size:12px;color:var(--text-secondary);line-height:1.6}
+.finish-area{margin-top:var(--space-xl);padding:var(--space-xl);background:var(--surface);border:1px solid var(--border);text-align:center}
+.finish-area .btn{margin-top:var(--space-md)}
+.check-card{padding:var(--space-lg);border:1px solid var(--border);border-left:4px solid var(--accent);background:var(--surface);margin-bottom:var(--space-md);cursor:pointer;transition:background 0.2s,transform 0.15s}
+.check-card:hover{background:var(--surface-raised);transform:translateX(2px)}
+.check-card .check-flip{display:none;margin-top:var(--space-sm);padding-top:var(--space-sm);border-top:1px solid var(--border);font-size:12px;color:var(--accent);line-height:1.6}
+.check-card.expanded .check-flip{display:block}
+.check-letter{font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--accent);float:left;margin-right:var(--space-md);line-height:1}
+.check-title{font-size:15px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.check-desc{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.check-card:nth-child(2){border-left-color:var(--blue)}.check-card:nth-child(2) .check-letter{color:var(--blue)}
+.check-card:nth-child(3){border-left-color:var(--success)}.check-card:nth-child(3) .check-letter{color:var(--success)}
+.check-card:nth-child(4){border-left-color:var(--purple)}.check-card:nth-child(4) .check-letter{color:var(--purple)}
+.level-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-md);margin:var(--space-lg) 0}
+.level-card{padding:var(--space-lg);border:1px solid var(--border);background:var(--surface);text-align:center}
+.level-icon{font-size:28px;margin-bottom:var(--space-sm)}
+.level-name{font-size:14px;font-weight:600;color:var(--text-display);margin-bottom:var(--space-xs)}
+.level-q{font-size:12px;color:var(--text-secondary);line-height:1.5}
+@media(max-width:900px){.sidebar-layout{grid-template-columns:1fr}.sidebar{position:static}.level-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="nav-inner"><div class="nav-brand">AI 素养 · <em>人机协作</em></div><div class="nav-links"><a href="index.html" class="nav-link">← 路径</a><a href="#check" class="nav-link">CHECK（快速检查法）</a><a href="#levels" class="nav-link">三层次</a><a href="#practice" class="nav-link">实战</a></div></div></nav>
+<div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="sidebar-layout" style="max-width:1200px;margin:var(--space-5xl) auto 0;padding:0 var(--space-xl)">
+<div>
+  <div class="course-header">
+    <div class="course-path">课程 &gt; <span>Step 04.5 · Discernment 判断与评估</span></div>
+    <div class="chapter-title" style="font-size:22px;font-weight:700;margin-bottom:var(--space-sm)">AI 输出检查法</div>
+    <div class="course-desc">AI 的输出不能自动被视为正确。学会用 CHECK 法和三层次判断，快速识别 AI 输出中的问题。</div>
+    <div class="course-meta"><span>10 分钟</span><span>3 章节</span><span>1 个互动练习</span></div>
+  </div>
+
+  <div class="callout info"><div class="callout-label">学习目标</div>学完本节后：<br>• 掌握 CHECK 检查法，30 秒内判断 AI 输出是否可用<br>• 理解产品/过程/表现三个判断层次<br>• 能识别 AI "过度迎合"和"过度自信"的信号</div>
+
+    <div class="callout" style="margin-top:var(--space-sm)">
+      <div class="callout-label">跟 4D 框架的关系</div>
+      Step 01 介绍的 <strong>4D 框架</strong>里有一个 D 是 <strong>Discernment（判断审查）</strong>——怎么检查 AI 的输出对不对。这个页面就是展开讲这个能力。
+    </div>
+    <div class="callout" style="margin-top:var(--space-sm);font-size:12px;color:var(--text-disabled)">前置知识：Step 04 的判断标准概念</div>
+
+  <!-- CHECK 四字母 -->
+  <div class="chapter" id="check">
+    <div class="chapter-num">第一章</div>
+    <div class="chapter-title">CHECK 检查法：30 秒快速判断</div>
+    <div class="chapter-body">
+      <p>每次拿到 AI 输出，花 30 秒过一遍这四个字母。不需要每次都用——重要输出必须过。</p>
+    </div>
+
+    <div style="margin-top:var(--space-lg)">
+      <div class="check-card" onclick="this.classList.toggle('expanded')">
+        <div class="check-letter">C</div>
+        <div class="check-title">Correct — 准确吗？</div>
+        <div class="check-desc">事实对不对？数据能不能核实？引用的来源存不存在？</div>
+        <div class="check-flip">⚠️ 常见翻车：AI 编造不存在的论文、捏造数据、张冠李戴。</div>
+        <div style="clear:both"></div>
+      </div>
+      <div class="check-card" onclick="this.classList.toggle('expanded')">
+        <div class="check-letter">H</div>
+        <div class="check-title">Human — 像人写的吗？</div>
+        <div class="check-desc">有没有"AI味"（过度整齐、空洞的"高质量""专业"）？需不需要调语气？</div>
+        <div class="check-flip">⚠️ 常见翻车：读起来像模板、缺乏具体细节、语气跟你的风格不匹配。</div>
+        <div style="clear:both"></div>
+      </div>
+      <div class="check-card" onclick="this.classList.toggle('expanded')">
+        <div class="check-letter">E</div>
+        <div class="check-title">Equitable — 有偏见吗？</div>
+        <div class="check-desc">是不是只给了一个角度？有没有不合理的假设或倾向？</div>
+        <div class="check-flip">⚠️ 常见翻车：只给支持性论据、忽略反面观点、隐含文化偏见。</div>
+        <div style="clear:both"></div>
+      </div>
+      <div class="check-card" onclick="this.classList.toggle('expanded')">
+        <div class="check-letter">K</div>
+        <div class="check-title">Kompliance — 合规吗？</div>
+        <div class="check-desc">有隐私风险吗？涉及版权吗？能对外发吗？符合公司/行业规范吗？</div>
+        <div class="check-flip">⚠️ 常见翻车：泄露敏感信息、使用未授权素材、违反行业规定。</div>
+        <div style="clear:both"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三层次判断 -->
+  <div class="chapter" id="levels">
+    <div class="chapter-num">第二章</div>
+    <div class="chapter-title">三层次判断：不只是看结果</div>
+    <div class="chapter-body">
+      <p>CHECK 是快速扫描。遇到重要输出，还需要深一层：不只检查"结果对不对"，还要检查"过程对不对"和"AI 的表现对不对"。</p>
+    </div>
+
+    <div class="level-grid">
+      <div class="level-card">
+        <div class="level-icon">📦</div>
+        <div class="level-name">产品判断</div>
+        <div class="level-q">结果对不对？<br>完整吗？<br>适合受众吗？<br>符合要求吗？</div>
+      </div>
+      <div class="level-card">
+        <div class="level-icon">⚙️</div>
+        <div class="level-name">过程判断</div>
+        <div class="level-q">推理有跳跃吗？<br>漏了重要信息吗？<br>用了错误假设吗？<br>有没有其他可能？</div>
+      </div>
+      <div class="level-card">
+        <div class="level-icon">🎭</div>
+        <div class="level-name">表现判断</div>
+        <div class="level-q">在迎合你吗？<br>不确定时过度自信吗？<br>听取了反馈吗？<br>语气合适吗？</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:var(--space-md)"><div class="callout-label">⚠️ 最容易忽略的</div><strong>表现判断</strong>——AI 最常见的两个问题是"过度迎合"（你说什么都对）和"过度自信"（不确定的事说得斩钉截铁）。如果你发现 AI 从不反驳你，或者对所有问题都给确定答案，这是危险信号。</div>
+  </div>
+
+  <!-- 实战练习 -->
+  <div class="chapter" id="practice">
+    <div class="chapter-num">第三章</div>
+    <div class="chapter-title">实战：用 CHECK 审查一段 AI 输出</div>
+    <div class="chapter-body">
+      <p>下面是一段 AI 生成的市场分析。用 CHECK 法找找问题：</p>
+    </div>
+
+    <div style="padding:var(--space-lg);background:var(--bg);border:1px solid var(--border);margin:var(--space-md) 0;font-size:13px;color:var(--text-secondary);line-height:1.7">
+      "根据最新数据，2025年中国AI市场规模将达到<strong>8500亿元</strong>，同比增长<strong>42%</strong>。主要驱动力包括大模型技术突破、企业数字化转型加速，以及<strong>政策持续利好</strong>。其中，生成式AI占比已超过<strong>60%</strong>，成为最大增长引擎。建议加大在该领域的投入，预计未来三年复合增长率将保持在<strong>35%以上</strong>。"
+    </div>
+
+    <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-disabled);margin-bottom:var(--space-sm)">你的 CHECK 结果</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--accent);margin-bottom:var(--space-xs)">C — 准确吗？</div>
+        <textarea id="checkC" style="width:100%;min-height:60px;padding:var(--space-sm);border:1px solid var(--border-visible);background:var(--surface);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="数据能核实吗？来源可靠吗？"></textarea>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:var(--space-xs)">H — 像人写的吗？</div>
+        <textarea id="checkH" style="width:100%;min-height:60px;padding:var(--space-sm);border:1px solid var(--border-visible);background:var(--surface);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="有没有AI味？语气对吗？"></textarea>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--success);margin-bottom:var(--space-xs)">E — 有偏见吗？</div>
+        <textarea id="checkE" style="width:100%;min-height:60px;padding:var(--space-sm);border:1px solid var(--border-visible);background:var(--surface);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="只给了一个角度吗？有没有反面观点？"></textarea>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--purple);margin-bottom:var(--space-xs)">K — 合规吗？</div>
+        <textarea id="checkK" style="width:100%;min-height:60px;padding:var(--space-sm);border:1px solid var(--border-visible);background:var(--surface);font-family:var(--font-body);font-size:12px;color:var(--text-primary);resize:vertical;outline:none" placeholder="能对外发吗？有隐私或版权风险吗？"></textarea>
+      </div>
+    </div>
+
+    <button class="btn" style="margin-top:var(--space-md)" onclick="saveCheck()">保存我的 CHECK 结果</button>
+    <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-disabled);margin-left:var(--space-sm)" id="checkSaved"></span>
+
+    <!-- 参考答案 -->
+    <div class="callout gold" style="margin-top:var(--space-lg)"><div class="callout-label">参考答案</div>
+      <strong>C：</strong>8500 亿、42% 增长率、60% 占比——这些具体数字无法核实来源，AI 可能编造。<br>
+      <strong>H：</strong>"政策持续利好""最大增长引擎"——典型 AI 套话，缺乏具体细节。<br>
+      <strong>E：</strong>只给了乐观数据，没有提到风险、挑战、竞品格局。<br>
+      <strong>K：</strong>如果是内部材料可以，但如果对外发布需要核实数据来源。
+    </div>
+  </div>
+
+  <div class="chapter" id="glossary">
+    <div class="chapter-num">附录</div>
+    <div class="chapter-title">本页术语</div>
+    <div class="chapter-body" style="margin-bottom:var(--space-md)">本页出现的专业术语，按首次出现顺序排列。</div>
+    <div class="table-scroll">
+      <table class="comp-table">
+        <thead><tr><th style="width:180px">术语</th><th>一句话解释</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CHECK 检查法</strong></td><td>四个字母快速判断 AI 输出——C(Correct 准确吗)、H(Human 像人写的吗)、E(Equitable 有偏见吗)、K(Kompliance 合规吗)。</td></tr>
+          <tr><td><strong>产品判断</strong></td><td>检查 AI 最终输出的结果——事实对不对、完不完整、适不适合受众。</td></tr>
+          <tr><td><strong>过程判断</strong></td><td>检查 AI 做任务的方法——推理有没有跳跃、漏没漏重要信息。</td></tr>
+          <tr><td><strong>表现判断</strong></td><td>检查 AI 在交流中的行为——是不是在迎合你、是不是过度自信。</td></tr>
+          <tr><td><strong>Kompliance</strong></td><td>故意用 K 开头（而非 C），是为了和 CHECK 的 C(Correct) 区分。意思就是"合规"——有没有隐私风险、版权问题、能不能对外发。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="finish-area">
+    <div style="font-size:13px;color:var(--text-secondary)">完成练习后，点击下方按钮</div>
+    <button class="btn btn-primary" onclick="completeStep()">✓ 完成当前课程</button>
+    <div style="margin-top:var(--space-sm);font-size:11px;color:var(--text-disabled)">完成后将解锁下一节</div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <div class="sidebar-title">本页目录</div>
+  <div class="sidebar-links">
+    <a href="#check" class="sidebar-link">第一章：CHECK 检查法</a>
+    <a href="#levels" class="sidebar-link">第二章：三层次判断</a>
+    <a href="#practice" class="sidebar-link">第三章：实战练习</a>
+  </div>
+  <div class="sidebar-hint">完成后 <strong style="color:var(--text-primary)">Step 05</strong> 将解锁。</div>
+</div>
+</div>
+
+<footer class="footer"><div class="footer-text">AI 素养与人机协作 · Step 04.5 · AI 输出检查法</div></footer>
+
+<script src="assets/utils.js"></script>
+<script>
+function saveCheck(){
+  const c=document.getElementById('checkC').value;
+  const h=document.getElementById('checkH').value;
+  const e=document.getElementById('checkE').value;
+  const k=document.getElementById('checkK').value;
+  if(!c&&!h&&!e&&!k){document.getElementById('checkSaved').textContent='请先填写至少一项';return;}
+  Output.save('step04.5-check',JSON.stringify({c,h,e,k}));
+  document.getElementById('checkSaved').textContent='✓ 已保存';
+}
+(function(){
+  const saved=Output.get('step04.5-check');
+  if(saved){
+    try{const d=JSON.parse(saved);if(d.c)document.getElementById('checkC').value=d.c;if(d.h)document.getElementById('checkH').value=d.h;if(d.e)document.getElementById('checkE').value=d.e;if(d.k)document.getElementById('checkK').value=d.k;}catch(e){}
+  }
+})();
+function completeStep(){showNextStep('step-04.5');}
+initProgressBar();initSidebar();
+</script>
+</body>
+</html>
