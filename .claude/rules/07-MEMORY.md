@@ -34,6 +34,7 @@ Information should flow from raw notes to topic files, then into this file only 
 - **分级盘点模板**（2026-07-29）：赛马数据（1-6月×11家×首贷/复贷）已灌入，Sheet5拆分为首贷/复贷独立评级，所有sheet公式就绪。待填SLA/稳定性/供管自评后出ABC评级。详见 `memory/topics/supplier-management.md` "分级盘点SOP进展"
 - **金条赛马调整方案**（2026-08-01）：业管25页AI生成PDF，年老师立场备忘已就绪（6条核心立场：比例6%/周期双月/集中度360+30%/保护20%/约束写进方案/风险预警），待和老板讨论。详见 `memory/topics/supplier-management.md` "金条赛马调整方案讨论"
 - **金条C坐席专项改善机制**（2026-08-01）：机制文档初稿完成（通用模板，不定期申请制触发，尾部清退+中段辅导双轨），待填入百分比数值后提交领导审批。详见 `memory/topics/supplier-management.md` "金条C坐席专项改善机制"
+- **借钱项目扩量寻源**（2026-08-03）：借钱8月扩量至40万+，新增30人（翰锐+9/伽玛+9/华啸+12），新引入选定华啸（5-6月金条复贷赛马综合第1，7月数据出来结论不变）。三份对外材料已出：新增寻源函/存量产能摸底/续期方案。存量沟通走产能摸底非测试逻辑；续期信息可见性已处理（内部业绩数据不给供应商）。详见 `memory/topics/supplier-management.md` "借钱项目扩量寻源"
 - **金条低分电销项目**（2026-07-22）：与蚂蚁、天创等第三方机构合作，存在竞对合作+数据合规风险，法务评估需先提交完整合作模式文字描述再评估，预计八月初启动
 - **Agent Reach + last30days**（2026-07-22）：已安装到本地环境。Agent Reach 11/15 渠道可用（GitHub/YouTube/Twitter/Reddit/小红书等），last30days v3.16.0 核心文件已就绪
 - **voice-workstation**（2026-07-29）：P4 布局统一完成（PageContainer/LoadingSpinner/ConfirmDialog/Skeleton），P5 商业化 UI 优化进行中（视觉精细化、微交互、品牌感）
