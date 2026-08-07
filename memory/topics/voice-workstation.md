@@ -113,6 +113,22 @@ src/renderer/src/
 - 微交互丰富且一致
 - 品牌视觉识别度高
 
+**设计资源（2026-08-01）**：
+- 安装了 Refero MCP（styles.refero.design），200+精选设计系统目录
+- 可用自然语言搜索匹配风格，生成 DESIGN.md
+- 待用 Refero 搜索适合语音工作站的深色科技风设计
+
+**森林绿色科技风 DESIGN.md（2026-08-07）**：
+- 生成 `workspace/voice-workstation-DESIGN.md`，基于 Linear 设计系统拆解适配
+- 画布 `#090c0a`（绿调深黑）、主色 `#22c55e` Forest Green
+- 保留 Linear 精密仪器哲学：发丝边框、内阴影、4级表面阶梯、三半径词汇表
+- 新增语音工作站专属组件：波形可视化器、录音指示器
+- 完整 CSS Variables + Agent Prompt Guide
+
+**Refero MCP 接入 MyAgents（2026-08-07）**：
+- 已添加到 `~/.myagents/config.json`（全局 + voice-workstation agent）
+- 待重启 MyAgents 后生效，可用 `refero_search → refero_get → design_md` 链路
+
 ---
 
 ## 参考资料
