@@ -220,3 +220,13 @@ Add cross-project lessons and working principles here when they have repeated va
 ### 合规事件排查交叉核验（2026-08-06）
 
 排查供应商违规时，搜索到的历史/聚合信息**不算有效证据**——必须逐条实测链接"打得开 + 当前在招"才作为问题处理，并标注失效、错位、需人工确认三类。时效优先：已下架/页面错位的剔除，反爬挡住（如 BOSS/智联安全验证）的标注需人工打开。同时：用供应商站点表**准确公司全称**搜索比简称命中更准；多引擎交叉验证能挖到标题之外的正文硬证据。
+
+### MiMo 模型配置（2026-08-17）
+
+MiMo 有两种计费模式，endpoint 和模型支持不同：
+- **Token Plan**（预付费）：endpoint 为 `token-plan-cn.xiaomimimo.com/anthropic`，支持 `mimo-v2.5`、`mimo-v2.5-pro`
+- **API 模式**（按量付费）：endpoint 为 `api.xiaomimimo.com/v1`，支持 `mimo-v2.5-pro-ultraspeed`
+
+**UltraSpeed 只支持 API 模式**，Token Plan 的 key（`tp-` 开头）无法调用。需要去 platform.xiaomimimo.com 创建 API Key（`sk-` 开头）才能使用 UltraSpeed。
+
+验证方法：`curl /v1/models` 列出 endpoint 支持的模型列表。
