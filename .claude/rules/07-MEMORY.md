@@ -38,16 +38,9 @@ Information should flow from raw notes to topic files, then into this file only 
 - **金条向借钱导流242人切量**（2026-08-25）：v2版本影响242人（纯人219+人机22），一期99人已执行（金企22/人机7/末位20/汇讯22复贷/伽玛25复贷/大额转移50），二期132人（首贷33+复贷102）待9/15执行。一期后基数1159人，等比例减：首贷5.1%+复贷19.8%。老板要求稳健，尾部清退/大额转移方案被否。详见 `memory/topics/supplier-management.md` "金条向借钱导流242人切量方案"
 - **速迅达涉嫌分转包事件**（2026-08-18）：举报签约供应商速讯达将菁卡拉新业务整体转包翼铖、再外包新米人力（五年链条，结算 1052 万，流水 1,121 万，44/49 月对平）。issue #19 已建，材料全套在 `workspace/2026-08-18-速迅达涉嫌分转包/`（01 事实梳理 / 02 汇报 / 03 沟通函 / 04 补充分析 + 2 个 HTML）。**零犀人机合作京东知悉**（年老师澄清）仅覆盖技术层，交付/人力层认定不动。待：主协议+报备复核、股权穿透、领导对齐处置档位 A（冻结→清退→追偿）。详见 `memory/topics/supplier-management.md` "速迅达涉嫌分转包合规事件"
 - **供应商冒用京东名义招聘事件**（2026-08-06）：BOSS直聘「汇讯商务」以京东名义招聘+泄露供应商大会视频。**全产线26家供应商已排查完**，确认 **7 家系统性冒用**（汇讯/毅航+广州毅航/翰锐/毛毛虫/博岳/海腾/中乾），19 家未检索到、言犀不适用。链接检测 18 条可访问。issue #18 已建并更新，取证目录 `workspace/2026-08-06-汇讯冒用京东名义招聘取证/`。**已固化为巡检自动化**（2026-08-07）：skill `supplier-brand-compliance`（项目级）+ 每周巡检 Task `781898d6`（周一9点）+ 基线台账 `workspace/招聘平台合规巡检/`。待领导对齐"通晒 vs 处罚"后进入处置。详见 `memory/topics/supplier-management.md` "供应商冒用京东名义招聘合规事件"
-- **金条低分电销项目**（2026-07-22）：与蚂蚁、天创等第三方机构合作，存在竞对合作+数据合规风险，法务评估需先提交完整合作模式文字描述再评估，预计八月初启动
-- **Agent Reach + last30days**（2026-07-22）：已安装到本地环境。Agent Reach 11/15 渠道可用（GitHub/YouTube/Twitter/Reddit/小红书等），last30days v3.16.0 核心文件已就绪
-- **voice-workstation**（2026-07-29）：P4 布局统一完成（PageContainer/LoadingSpinner/ConfirmDialog/Skeleton），P5 商业化 UI 优化进行中（视觉精细化、微交互、品牌感）
-- **Superpowers 插件**（2026-07-22）：已安装到 MyAgents（v5.0.7），包含 14 个核心技能（TDD、调试、协作模式等）
-- **AI长周期任务协作教学材料**（2026-07-22）：迭代3版，v3-task-cards.html 采用问题卡片式布局，用户反馈待验证
-- **CloudBase MCP 生图流程**（2026-07-09）：配置已完成，待新会话验证工具加载
-- **guizang-material-illustration 技能**（2026-07-09）：已安装并链接，能力边界已分析
-- **电视机海报项目**（2026-07-09）：J-Space 概念插图生成 + HTML 海报页面已完成
-- **qiaomu-anything-to-notebooklm 技能**（2026-07-29）：仓库文件补全 + notebooklm CLI 装好登录 + weixin-reader MCP 配置写入（待重启生效）。微信抓取走 getnote MCP（fetch_url.sh 对微信失效）。详见 `memory/topics/tools/qiaomu-notebooklm.md`
-- **人机协同课程设计**（2026-07-29）：3个资源已分析（你的课程+Vibe OS+JD课程），优化方案v2已出：交互式方法中心+三层方法地图+真实案例+技能包。待获取JD课程03-10结构信息。详见 `memory/topics/human-ai-collaboration-course.md`
+- **voice-workstation**（2026-07-29）：P4 布局统一完成，P5 商业化 UI 优化进行中。详见 `memory/topics/voice-workstation.md`
+- **qiaomu-anything-to-notebooklm 技能**（2026-07-29）：已安装，微信抓取走 getnote MCP。详见 `memory/topics/tools/qiaomu-notebooklm.md`
+- **人机协同课程设计**（2026-07-29）：优化方案v2已出，待获取JD课程03-10结构信息。详见 `memory/topics/human-ai-collaboration-course.md`
 
 Add the current state of important projects here as short pointers. Put detailed timelines in `memory/topics/`.
 
