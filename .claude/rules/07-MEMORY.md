@@ -41,6 +41,7 @@ Information should flow from raw notes to topic files, then into this file only 
 - **voice-workstation**（2026-07-29）：P4 布局统一完成，P5 商业化 UI 优化进行中。详见 `memory/topics/voice-workstation.md`
 - **qiaomu-anything-to-notebooklm 技能**（2026-07-29）：已安装，微信抓取走 getnote MCP。详见 `memory/topics/tools/qiaomu-notebooklm.md`
 - **人机协同课程设计**（2026-07-29）：优化方案v2已出，待获取JD课程03-10结构信息。详见 `memory/topics/human-ai-collaboration-course.md`
+- **供应商联盟第四期共创工作坊**（2026-09-07）：Word文档已全部生成（8诊断卡+5模板+1分组方案=14个文件），模板B-E已补充引导内容（脚手架员开场话术/时间分配/填卡要点/会后整理）。详见 `memory/topics/supplier-management.md`
 
 Add the current state of important projects here as short pointers. Put detailed timelines in `memory/topics/`.
 
@@ -229,3 +230,15 @@ MiMo 有两种计费模式，endpoint 和模型支持不同：
 **UltraSpeed 只支持 API 模式**，Token Plan 的 key（`tp-` 开头）无法调用。需要去 platform.xiaomimimo.com 创建 API Key（`sk-` 开头）才能使用 UltraSpeed。
 
 验证方法：`curl /v1/models` 列出 endpoint 支持的模型列表。
+
+### Python 字符串内中文引号冲突（2026-09-07）
+
+生成中文文档时，ASCII 双引号（`"`）常被用作中文强调标记（如 `"已有经验"`）。当这些引号出现在 Python 双引号字符串内部时，Python 会将其误判为字符串终止符，导致 `SyntaxError`。
+
+**修复方式**：将外层 Python 字符串定界符改为单引号（`'...'`），或对内层引号转义（`\"`）。
+
+**批量排查方法**：`python3 -c "import py_compile; py_compile.compile('file.py', doraise=True)"` 快速验证语法。
+
+**失败模式**：
+- 用脚本批量替换中文引号为弯引号（`""`）→ 容易引入不一致，部分转换部分未转
+- 忘记检查→脚本运行时才报错，且错误信息不直观（指向引号后的内容而非引号本身）
