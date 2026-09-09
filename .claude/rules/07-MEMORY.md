@@ -41,7 +41,7 @@ Information should flow from raw notes to topic files, then into this file only 
 - **voice-workstation**（2026-07-29）：P4 布局统一完成，P5 商业化 UI 优化进行中。详见 `memory/topics/voice-workstation.md`
 - **qiaomu-anything-to-notebooklm 技能**（2026-07-29）：已安装，微信抓取走 getnote MCP。详见 `memory/topics/tools/qiaomu-notebooklm.md`
 - **人机协同课程设计**（2026-07-29）：优化方案v2已出，待获取JD课程03-10结构信息。详见 `memory/topics/human-ai-collaboration-course.md`
-- **供应商联盟第四期共创工作坊**（2026-09-07）：Word文档已全部生成（8诊断卡+5模板+1分组方案=14个文件），模板B-E已补充引导内容（脚手架员开场话术/时间分配/填卡要点/会后整理）。详见 `memory/topics/supplier-management.md`
+- **供应商联盟第四期共创工作坊**（2026-09-09）：Word文档已全部生成并完善（8诊断卡+5模板+1分组方案=14个文件）。8家供应商D板块数据已全部提取补全（汇讯/赛维斯部分字段未填）。模板B-E补充了脚手架员指引。分组方案按供应商"最想攻坚"重新分配（6组×4人）。详见 `memory/topics/supplier-management.md`
 
 Add the current state of important projects here as short pointers. Put detailed timelines in `memory/topics/`.
 
@@ -242,3 +242,13 @@ MiMo 有两种计费模式，endpoint 和模型支持不同：
 **失败模式**：
 - 用脚本批量替换中文引号为弯引号（`""`）→ 容易引入不一致，部分转换部分未转
 - 忘记检查→脚本运行时才报错，且错误信息不直观（指向引号后的内容而非引号本身）
+
+### 批量数据提取必须逐家检查（2026-09-09）
+
+处理多供应商/多文件的结构化数据提取时，不能只读前几家就下结论。本次只读了8家xlsx中的前3家就标记5家为"无数据"，实际8家全部有"D 三降三提基线"sheet。
+
+**规则**：批量处理多文件时，必须先检查所有文件的sheet结构是否一致，再逐家提取。"没有数据"的结论需要建立在**逐家确认**的基础上，而非抽样推断。
+
+**失败模式**：
+- 读前3家后跳过剩余 → 遗漏有效数据，产出物大面积空白
+- 假设所有文件结构相同 → 不同供应商可能有不同的sheet命名或数据格式
